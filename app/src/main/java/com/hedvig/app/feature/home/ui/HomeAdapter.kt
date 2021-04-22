@@ -433,19 +433,16 @@ class HomeAdapter(
                 } else {
                     if (data.pendingAddress != null) {
                         title.setHapticClickListener {
-                            // TODO String resources
                             MaterialAlertDialogBuilder(root.context)
-                                .setTitle("You already have a pending address change")
-                                .setMessage("You already have an offer for an address change to ${data.pendingAddress}")
-                                .setPositiveButton("Go to pending offer") { _, _ ->
-                                    Toast.makeText(
-                                        root.context, "Go to pending offer not implemented", Toast.LENGTH_LONG
-                                    ).show()
+                                .setTitle(R.string.home_tab_moving_info_card_title)
+                                .setMessage(root.context.getString(R.string.home_tab_moving_action_sheet_description, data.pendingAddress))
+                                .setPositiveButton(R.string.home_tab_moving_info_card_button_text) { _, _ ->
+                                    Toast.makeText(root.context, "Go to pending offer not implemented", Toast.LENGTH_LONG).show()
                                 }
-                                .setNegativeButton("Change to new address") { _, _ ->
+                                .setNegativeButton(R.string.home_tab_moving_action_sheet_start_new_offer_button) { _, _ ->
                                     root.context.startActivity(ChangeAddressActivity.newInstance(root.context))
                                 }
-                                .setNeutralButton("Cancel") { dialog, _ -> dialog.dismiss() }
+                                .setNeutralButton(R.string.general_cancel_button) { dialog, _ -> dialog.dismiss() }
                                 .show()
                         }
                     } else {
