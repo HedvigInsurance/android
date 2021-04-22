@@ -779,10 +779,10 @@ val STORY_WITH_OR_EXPRESSION = EmbarkStoryDataBuilder(
                                 subExpressions = listOf(
                                     ExpressionBuilder(
                                         type = ExpressionBuilder.ExpressionType.ALWAYS
-                                    ).buildSubExpression(),
+                                    ).build(),
                                     ExpressionBuilder(
                                         type = ExpressionBuilder.ExpressionType.NEVER
-                                    ).buildSubExpression()
+                                    ).build()
                                 )
                             ).build()
                         )
@@ -796,10 +796,10 @@ val STORY_WITH_OR_EXPRESSION = EmbarkStoryDataBuilder(
                                 subExpressions = listOf(
                                     ExpressionBuilder(
                                         type = ExpressionBuilder.ExpressionType.NEVER
-                                    ).buildSubExpression(),
+                                    ).build(),
                                     ExpressionBuilder(
                                         type = ExpressionBuilder.ExpressionType.NEVER
-                                    ).buildSubExpression()
+                                    ).build()
                                 )
                             ).build()
                         )
@@ -826,10 +826,10 @@ val STORY_WITH_AND_EXPRESSION = EmbarkStoryDataBuilder(
                                 subExpressions = listOf(
                                     ExpressionBuilder(
                                         type = ExpressionBuilder.ExpressionType.ALWAYS
-                                    ).buildSubExpression(),
+                                    ).build(),
                                     ExpressionBuilder(
                                         type = ExpressionBuilder.ExpressionType.ALWAYS
-                                    ).buildSubExpression()
+                                    ).build()
                                 )
                             ).build()
                         )
@@ -843,10 +843,10 @@ val STORY_WITH_AND_EXPRESSION = EmbarkStoryDataBuilder(
                                 subExpressions = listOf(
                                     ExpressionBuilder(
                                         type = ExpressionBuilder.ExpressionType.ALWAYS
-                                    ).buildSubExpression(),
+                                    ).build(),
                                     ExpressionBuilder(
                                         type = ExpressionBuilder.ExpressionType.NEVER
-                                    ).buildSubExpression()
+                                    ).build()
                                 )
                             ).build()
                         )
@@ -992,8 +992,8 @@ val STORY_WITH_MULTIPLE_REDIRECTS = EmbarkStoryDataBuilder(
                         expression = ExpressionBuilder(
                             type = ExpressionBuilder.ExpressionType.AND,
                             subExpressions = listOf(
-                                ExpressionBuilder(type = ExpressionBuilder.ExpressionType.ALWAYS).buildSubExpression(),
-                                ExpressionBuilder(type = ExpressionBuilder.ExpressionType.ALWAYS).buildSubExpression()
+                                ExpressionBuilder(type = ExpressionBuilder.ExpressionType.ALWAYS).build(),
+                                ExpressionBuilder(type = ExpressionBuilder.ExpressionType.ALWAYS).build(),
                             )
                         ).build()
                     ).build()
