@@ -102,6 +102,7 @@ query EmbarkStory($name: String!, $locale: String!) {
             }
             storeKey
             insuranceProviders {
+              id
               name
               logo {
                 variants {

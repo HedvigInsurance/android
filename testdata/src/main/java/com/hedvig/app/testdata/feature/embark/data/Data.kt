@@ -17,7 +17,7 @@ import com.hedvig.app.testdata.feature.embark.builders.MessageBuilder
 import com.hedvig.app.testdata.feature.embark.builders.NumberActionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.NumberActionSetBuilder
 import com.hedvig.app.testdata.feature.embark.builders.PassageBuilder
-import com.hedvig.app.testdata.feature.embark.builders.PreviousInsurerAction
+import com.hedvig.app.testdata.feature.embark.builders.PreviousInsurerActionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.RedirectBuilder
 import com.hedvig.app.testdata.feature.embark.builders.SelectActionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.SelectOptionBuilder
@@ -373,7 +373,7 @@ val STORY_WITH_TEXT_ACTION_SWEDISH_POSTAL_CODE = EmbarkStoryDataBuilder(
 val PREVIOUS_INSURER_STORY = EmbarkStoryDataBuilder(
     passages = listOf(
         STANDARD_FIRST_PASSAGE_BUILDER.copy(
-            action = PreviousInsurerAction(
+            action = PreviousInsurerActionBuilder(
                 storeKey = "BAR",
                 next = STANDARD_FIRST_LINK
             ).build()

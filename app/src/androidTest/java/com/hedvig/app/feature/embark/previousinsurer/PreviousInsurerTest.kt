@@ -75,7 +75,7 @@ class PreviousInsurerTest : TestCase() {
             step("Check that selected insurer is visible on next view") {
                 messages {
                     childAt<EmbarkScreen.MessageRow>(0) {
-                        text { hasText("IF was entered") }
+                        text { hasText("if was entered") }
                     }
                 }
             }

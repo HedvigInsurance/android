@@ -4,23 +4,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-abstract class PreviousInsurerViewModel : ViewModel() {
-    abstract val previousInsurer: LiveData<String?>
-    abstract fun setPreviousInsurer(id: String)
-}
+class PreviousInsurerViewModel : ViewModel() {
 
-class PreviousInsurerViewModelImpl : PreviousInsurerViewModel() {
+    private val _previousInsurer = MutableLiveData<PreviousInsurerItem.Insurer?>()
 
-    private val _previousInsurer = MutableLiveData<String?>()
-
-    override val previousInsurer: LiveData<String?>
-        get() = _previousInsurer
+    val previousInsurer: LiveData<PreviousInsurerItem.Insurer?> = _previousInsurer
 
     init {
         _previousInsurer.value = null
     }
 
-    override fun setPreviousInsurer(id: String) {
-        _previousInsurer.value = id
+    fun setPreviousInsurer(previousInsurer: PreviousInsurerItem.Insurer) {
+        _previousInsurer.value = previousInsurer
     }
 }
