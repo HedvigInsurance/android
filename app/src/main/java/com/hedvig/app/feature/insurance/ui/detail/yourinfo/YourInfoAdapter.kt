@@ -8,7 +8,6 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.ChangeAddressButtonBinding
 import com.hedvig.app.databinding.ChangeAddressPendingChangeCardBinding
 import com.hedvig.app.databinding.YourInfoChangeBinding
-import com.hedvig.app.databinding.YourInfoChatButtonBinding
 import com.hedvig.app.databinding.YourInfoCoinsuredBinding
 import com.hedvig.app.databinding.YourInfoHomeBinding
 import com.hedvig.app.feature.chat.ui.ChatActivity
@@ -68,16 +67,6 @@ class YourInfoAdapter : ListAdapter<YourInfoModel, YourInfoAdapter.ViewHolder>(G
                     postcodeValue.text = data.postalCode
                     typeValue.text = data.type?.let(root.context::getString)
                     sizeValue.text = data.size.toString()
-                }
-            }
-        }
-
-        class ChatButton(parent: ViewGroup) :
-            ViewHolder(parent.inflate(R.layout.your_info_chat_button)) {
-            private val binding by viewBinding(YourInfoChatButtonBinding::bind)
-            override fun bind(data: YourInfoModel) {
-                binding.root.setHapticClickListener {
-                    binding.root.context.startActivity(ChatActivity.newInstance(binding.root.context, true))
                 }
             }
         }
