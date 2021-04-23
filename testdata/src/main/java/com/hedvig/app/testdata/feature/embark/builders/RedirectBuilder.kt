@@ -1,16 +1,16 @@
 package com.hedvig.app.testdata.feature.embark.builders
 
-import com.hedvig.android.owldroid.fragment.MessageFragment
+import com.hedvig.android.owldroid.fragment.ExpressionFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 
 data class RedirectBuilder(
     private val to: String,
-    private val expression: MessageFragment.Expression,
+    private val expression: ExpressionFragment,
     private val passedExpressionKey: String? = null,
-    private val passedExpressionValue: String? = null
+    private val passedExpressionValue: String? = null,
 ) {
     fun build() = EmbarkStoryQuery.Redirect(
-        asEmbarkRedirectUnaryExpression = expression.asEmbarkExpressionUnary?.let {
+        asEmbarkRedirectUnaryExpression = expression.fragments.basicExpressionFragment.asEmbarkExpressionUnary?.let {
             EmbarkStoryQuery.AsEmbarkRedirectUnaryExpression(
                 unaryType = it.unaryType,
                 to = to,
@@ -18,7 +18,7 @@ data class RedirectBuilder(
                 passedExpressionValue = passedExpressionValue
             )
         },
-        asEmbarkRedirectBinaryExpression = expression.asEmbarkExpressionBinary?.let {
+        asEmbarkRedirectBinaryExpression = expression.fragments.basicExpressionFragment.asEmbarkExpressionBinary?.let {
             EmbarkStoryQuery.AsEmbarkRedirectBinaryExpression(
                 binaryType = it.binaryType,
                 to = to,
@@ -36,7 +36,12 @@ data class RedirectBuilder(
                 passedExpressionValue = passedExpressionValue,
                 subExpressions = it.subExpressions.map { se ->
                     EmbarkStoryQuery.SubExpression(
-                        fragments = EmbarkStoryQuery.SubExpression.Fragments(se.fragments.subExpressionFragment)
+                        fragments = EmbarkStoryQuery.SubExpression.Fragments(
+                            ExpressionFragment(
+                                fragments = ExpressionFragment.Fragments(se.fragments.basicExpressionFragment),
+                                asEmbarkExpressionMultiple = null
+                            )
+                        )
                     )
                 }
             )

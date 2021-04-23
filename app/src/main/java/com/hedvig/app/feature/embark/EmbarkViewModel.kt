@@ -5,9 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.fragment.ApiFragment
+import com.hedvig.android.owldroid.fragment.BasicExpressionFragment
+import com.hedvig.android.owldroid.fragment.ExpressionFragment
 import com.hedvig.android.owldroid.fragment.GraphQLVariablesFragment
 import com.hedvig.android.owldroid.fragment.MessageFragment
-import com.hedvig.android.owldroid.fragment.SubExpressionFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLSingleVariableCasting
 import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLVariableGeneratedType
@@ -280,6 +281,19 @@ abstract class EmbarkViewModel(
         response.fragments.messageFragment?.let { message ->
             preProcessMessage(message)?.let { return it.text }
         }
+
+        response.asEmbarkResponseExpression?.let { exp ->
+            preProcessMessage(
+                MessageFragment(
+                    text = exp.text,
+                    expressions = exp.expressions.map {
+                        MessageFragment.Expression(
+                            fragments = MessageFragment.Expression.Fragments(it.fragments.expressionFragment)
+                        )
+                    }
+                )
+            )?.let { return it.text }
+        }
         return null
     }
 
@@ -325,7 +339,7 @@ abstract class EmbarkViewModel(
 
         val expressionText = message
             .expressions
-            .map(::evaluateExpression)
+            .map { evaluateExpression(it.fragments.expressionFragment) }
             .filterIsInstance<ExpressionResult.True>()
             .firstOrNull()
             ?.resultValue
@@ -336,15 +350,15 @@ abstract class EmbarkViewModel(
         )
     }
 
-    private fun evaluateExpression(expression: MessageFragment.Expression): ExpressionResult {
-        expression.asEmbarkExpressionUnary?.let { unaryExpression ->
+    private fun evaluateExpression(expression: ExpressionFragment): ExpressionResult {
+        expression.fragments.basicExpressionFragment.asEmbarkExpressionUnary?.let { unaryExpression ->
             return when (unaryExpression.unaryType) {
                 EmbarkExpressionTypeUnary.ALWAYS -> ExpressionResult.True(unaryExpression.text)
                 EmbarkExpressionTypeUnary.NEVER -> ExpressionResult.False
                 else -> ExpressionResult.False
             }
         }
-        expression.asEmbarkExpressionBinary?.let { binaryExpression ->
+        expression.fragments.basicExpressionFragment.asEmbarkExpressionBinary?.let { binaryExpression ->
             when (binaryExpression.binaryType) {
                 EmbarkExpressionTypeBinary.EQUALS -> {
                     if (valueStore.get(binaryExpression.key) == binaryExpression.value) {
@@ -387,7 +401,12 @@ abstract class EmbarkViewModel(
         }
         expression.asEmbarkExpressionMultiple?.let { multipleExpression ->
             val results =
-                multipleExpression.subExpressions.map { evaluateExpression(it.fragments.subExpressionFragment.into()) }
+                multipleExpression.subExpressions.map {
+                    evaluateExpression(ExpressionFragment(
+                        fragments = ExpressionFragment.Fragments(it.fragments.basicExpressionFragment),
+                        asEmbarkExpressionMultiple = null,
+                    ))
+                }
             when (multipleExpression.multipleType) {
                 EmbarkExpressionTypeMultiple.AND -> {
                     if (results.all { it is ExpressionResult.True }) {
@@ -420,77 +439,33 @@ abstract class EmbarkViewModel(
 
         private fun Result<JSONObject?>.hasErrors() = getOrNull()?.has("errors") == true
 
-        private fun SubExpressionFragment.into(): MessageFragment.Expression =
-            MessageFragment.Expression(
-                asEmbarkExpressionUnary = asEmbarkExpressionUnary?.let {
-                    MessageFragment.AsEmbarkExpressionUnary(
-                        unaryType = it.unaryType,
-                        text = it.text
-                    )
-                },
-                asEmbarkExpressionBinary = asEmbarkExpressionBinary?.let {
-                    MessageFragment.AsEmbarkExpressionBinary(
-                        binaryType = it.binaryType,
-                        key = it.key,
-                        value = it.value,
-                        text = it.text
-                    )
-                },
-                asEmbarkExpressionMultiple = asEmbarkExpressionMultiple?.let {
-                    MessageFragment.AsEmbarkExpressionMultiple(
-                        multipleType = it.multipleType,
-                        text = it.text,
-                        subExpressions = it.subExpressions.map { se -> se.into() }
-                    )
-                }
-            )
-
-        private fun SubExpressionFragment.SubExpression.into(): MessageFragment.SubExpression =
-            MessageFragment.SubExpression(
-                fragments = MessageFragment.SubExpression.Fragments(
-                    SubExpressionFragment(
-                        asEmbarkExpressionUnary = asEmbarkExpressionUnary1?.let {
-                            SubExpressionFragment.AsEmbarkExpressionUnary(
+        private fun EmbarkStoryQuery.Redirect.into(): ExpressionFragment =
+            ExpressionFragment(
+                fragments = ExpressionFragment.Fragments(
+                    BasicExpressionFragment(
+                        asEmbarkExpressionUnary = asEmbarkRedirectUnaryExpression?.let {
+                            BasicExpressionFragment.AsEmbarkExpressionUnary(
                                 unaryType = it.unaryType,
-                                text = it.text
+                                text = null
                             )
                         },
-                        asEmbarkExpressionBinary = asEmbarkExpressionBinary1?.let {
-                            SubExpressionFragment.AsEmbarkExpressionBinary(
+                        asEmbarkExpressionBinary = asEmbarkRedirectBinaryExpression?.let {
+                            BasicExpressionFragment.AsEmbarkExpressionBinary(
                                 binaryType = it.binaryType,
                                 key = it.key,
                                 value = it.value,
-                                text = it.text
+                                text = null
                             )
                         },
-                        asEmbarkExpressionMultiple = null
                     )
-                )
-            )
-
-        private fun EmbarkStoryQuery.Redirect.into(): MessageFragment.Expression =
-            MessageFragment.Expression(
-                asEmbarkExpressionUnary = asEmbarkRedirectUnaryExpression?.let {
-                    MessageFragment.AsEmbarkExpressionUnary(
-                        unaryType = it.unaryType,
-                        text = null
-                    )
-                },
-                asEmbarkExpressionBinary = asEmbarkRedirectBinaryExpression?.let {
-                    MessageFragment.AsEmbarkExpressionBinary(
-                        binaryType = it.binaryType,
-                        key = it.key,
-                        value = it.value,
-                        text = null
-                    )
-                },
+                ),
                 asEmbarkExpressionMultiple = asEmbarkRedirectMultipleExpressions?.let {
-                    MessageFragment.AsEmbarkExpressionMultiple(
+                    ExpressionFragment.AsEmbarkExpressionMultiple(
                         multipleType = it.multipleExpressionType,
                         text = null,
                         subExpressions = it.subExpressions.map { se ->
-                            MessageFragment.SubExpression(
-                                fragments = MessageFragment.SubExpression.Fragments(se.fragments.subExpressionFragment)
+                            ExpressionFragment.SubExpression(
+                                fragments = ExpressionFragment.SubExpression.Fragments(se.fragments.expressionFragment.fragments.basicExpressionFragment)
                             )
                         }
                     )

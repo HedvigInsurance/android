@@ -23,6 +23,12 @@ query EmbarkStory($name: String!, $locale: String!) {
       }
       response {
         ...MessageFragment
+        ... on EmbarkResponseExpression {
+          text
+          expressions {
+            ...ExpressionFragment
+          }
+        }
       }
       redirects {
         ... on EmbarkRedirectUnaryExpression {
@@ -45,7 +51,7 @@ query EmbarkStory($name: String!, $locale: String!) {
           passedExpressionKey
           passedExpressionValue
           subExpressions {
-            ...SubExpressionFragment
+            ...ExpressionFragment
           }
         }
       }
@@ -171,28 +177,12 @@ fragment EmbarkLinkFragment on EmbarkLink {
 
 fragment MessageFragment on EmbarkMessage {
   expressions {
-    ... on EmbarkExpressionUnary {
-      unaryType: type
-      text
-    }
-    ... on EmbarkExpressionBinary {
-      binaryType: type
-      key
-      value
-      text
-    }
-    ... on EmbarkExpressionMultiple {
-      multipleType: type
-      text
-      subExpressions {
-        ...SubExpressionFragment
-      }
-    }
+    ...ExpressionFragment
   }
   text
 }
 
-fragment SubExpressionFragment on EmbarkExpression {
+fragment BasicExpressionFragment on EmbarkExpression {
   ... on EmbarkExpressionUnary {
     unaryType: type
     text
@@ -203,20 +193,15 @@ fragment SubExpressionFragment on EmbarkExpression {
     value
     text
   }
+}
+
+fragment ExpressionFragment on EmbarkExpression {
+  ...BasicExpressionFragment
   ... on EmbarkExpressionMultiple {
     multipleType: type
     text
     subExpressions {
-      ... on EmbarkExpressionUnary {
-        unaryType: type
-        text
-      }
-      ... on EmbarkExpressionBinary {
-        binaryType: type
-        key
-        value
-        text
-      }
+      ...BasicExpressionFragment
     }
   }
 }
