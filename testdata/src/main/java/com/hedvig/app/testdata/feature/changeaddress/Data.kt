@@ -2,7 +2,6 @@ package com.hedvig.app.testdata.feature.changeaddress
 
 import com.hedvig.android.owldroid.graphql.SelfChangeEligibilityQuery
 import com.hedvig.android.owldroid.graphql.UpcomingAgreementQuery
-import com.hedvig.android.owldroid.type.SelfChangeBlocker
 import com.hedvig.app.testdata.feature.changeaddress.builders.SelfChangeEligibilityBuilder
 import com.hedvig.app.testdata.feature.changeaddress.builders.UpcomingAgreementBuilder
 
@@ -32,10 +31,11 @@ val UPCOMING_AGREEMENT_SWEDISH_HOUSE = UpcomingAgreementQuery.Data(
     )
 )
 
-val SELF_CHANGE_ELIGIBILITY = SelfChangeEligibilityQuery.Data(SelfChangeEligibilityBuilder().build())
+val SELF_CHANGE_ELIGIBILITY = SelfChangeEligibilityQuery.Data(
+    SelfChangeEligibilityBuilder(
+        embarkStoryId = "testId").build()
+)
 
 val BLOCKED_SELF_CHANGE_ELIGIBILITY = SelfChangeEligibilityQuery.Data(
-    SelfChangeEligibilityBuilder(
-        blockers = listOf(SelfChangeBlocker.COINSURED_MISMATCH)
-    ).build()
+    SelfChangeEligibilityBuilder().build()
 )

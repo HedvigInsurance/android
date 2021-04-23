@@ -11,6 +11,7 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ChangeAddressActivityBinding
 import com.hedvig.app.feature.chat.ui.ChatActivity
+import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.Error.GeneralError
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.Error.NoContractsError
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement
@@ -76,13 +77,20 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
             binding.spinner.loadingSpinner.show()
             binding.contentScrollView.remove()
         }
-        SelfChangeAddress -> setContent(
+        is SelfChangeAddress -> setContent(
             titleText = getString(R.string.moving_intro_title),
             subtitleText = getString(R.string.moving_intro_description),
             buttonText = getString(R.string.moving_intro_open_flow_button_text),
             buttonIcon = null,
-            // TODO: Start Embark
-            onContinue = { }
+            onContinue = {
+                startActivity(
+                    EmbarkActivity.newInstance(
+                        context = this,
+                        storyName = viewState.embarkStoryId,
+                        storyTitle = "Change address"
+                    )
+                )
+            }
         )
         ManualChangeAddress -> setContent(
             titleText = getString(R.string.moving_intro_title),

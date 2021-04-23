@@ -22,18 +22,21 @@ class PreviousInsurerBottomSheet : ExpandableBottomSheet() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.recycler.adapter = PreviousInsurerAdapter(insurers, requestBuilder, ::onInsurerSelected)
+        binding.recycler.adapter = PreviousInsurerAdapter(
+            context = requireContext(),
+            previousInsurers = insurers,
+            requestBuilder = requestBuilder,
+            onInsurerClicked = ::onInsurerSelected)
     }
 
-    private fun onInsurerSelected(id: String) {
-        viewModel.setPreviousInsurer(id)
+    private fun onInsurerSelected(item: PreviousInsurerItem.Insurer) {
+        viewModel.setPreviousInsurer(item)
         dismiss()
     }
 
     companion object {
 
         val TAG: String = PreviousInsurerBottomSheet::class.java.name
-        const val EXTRA_INSURER_ID = "INSURER_ID"
         private const val PREVIOUS_INSURERS = "PREVIOUS_INSURERS"
 
         fun newInstance(previousInsurers: List<PreviousInsurerParameter.PreviousInsurer>) = PreviousInsurerBottomSheet().apply {

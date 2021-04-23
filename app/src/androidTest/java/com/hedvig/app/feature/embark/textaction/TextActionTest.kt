@@ -11,6 +11,7 @@ import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
+import com.hedvig.app.util.hasPlaceholderText
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
@@ -41,7 +42,7 @@ class TextActionTest : TestCase() {
             onScreen<EmbarkScreen> {
                 messages { firstChild<EmbarkScreen.MessageRow> { text { hasText("test message") } } }
             }
-            input { edit { hasHint("Test hint") } }
+            input { hasPlaceholderText("Test hint") }
             submitButton {
                 hasText("Another test passage")
                 isDisabled()

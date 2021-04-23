@@ -1,6 +1,10 @@
 package com.hedvig.app.feature.embark.textaction
 
-import com.agoda.kakao.edit.KEditText
+import android.view.View
+import androidx.test.espresso.matcher.BoundedMatcher
+import com.agoda.kakao.common.builders.ViewBuilder
+import com.agoda.kakao.edit.KTextInputLayout
+import com.google.android.material.textfield.TextInputLayout
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.screens.TextActionSetScreen
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
@@ -10,8 +14,9 @@ import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
-import com.hedvig.app.util.withHint
+import com.hedvig.app.util.withPlaceholder
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import org.hamcrest.Description
 import org.junit.Rule
 import org.junit.Test
 
@@ -31,6 +36,7 @@ class TextActionSetValidation : TestCase() {
     @get:Rule
     val apolloCacheClearRule = ApolloCacheClearRule()
 
+
     @Test
     fun textActionSetTest() = run {
         activityRule.launch(
@@ -43,23 +49,19 @@ class TextActionSetValidation : TestCase() {
 
         TextActionSetScreen {
             submit { isDisabled() }
-            val editTextPersonalNumber = KEditText {
-                withHint("901124-1234")
+            val editTextPersonalNumber = KTextInputLayout {
+                withPlaceholder("901124-1234")
             }
             editTextPersonalNumber {
-                typeText("9704071234")
-            }
-            editTextPersonalNumber {
-                hasHint("901124-1234")
-                typeText("9704071234")
+                edit { typeText("9704071234") }
             }
 
             submit { isDisabled() }
-            val editTextEmail = KEditText {
-                withHint("example@email.com")
+            val editTextEmail = KTextInputLayout {
+                withPlaceholder("example@email.com")
             }
             editTextEmail {
-                typeText("email@hedvig.com")
+                edit { typeText("email@hedvig.com") }
             }
             submit { isEnabled() }
         }

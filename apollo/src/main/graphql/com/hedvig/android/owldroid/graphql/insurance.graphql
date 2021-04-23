@@ -68,9 +68,3 @@ query InsuranceQuery($locale: Locale!) {
     }
   }
 }
-
-fragment AddressFragment on Address {
-  street
-  postalCode
-  city
-}

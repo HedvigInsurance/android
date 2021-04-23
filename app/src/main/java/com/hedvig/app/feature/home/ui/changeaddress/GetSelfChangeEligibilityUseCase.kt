@@ -2,7 +2,6 @@ package com.hedvig.app.feature.home.ui.changeaddress
 
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.SelfChangeEligibilityQuery
-import com.hedvig.android.owldroid.type.SelfChangeBlocker
 import com.hedvig.app.feature.home.ui.changeaddress.GetSelfChangeEligibilityUseCase.SelfChangeEligibilityResult.Blocked
 import com.hedvig.app.feature.home.ui.changeaddress.GetSelfChangeEligibilityUseCase.SelfChangeEligibilityResult.Eligible
 import com.hedvig.app.feature.home.ui.changeaddress.GetSelfChangeEligibilityUseCase.SelfChangeEligibilityResult.Error
@@ -15,21 +14,16 @@ class GetSelfChangeEligibilityUseCase(
 
     suspend operator fun invoke(): SelfChangeEligibilityResult {
         return when (val result = apolloClient.query(SelfChangeEligibilityQuery()).safeQuery()) {
-            is QueryResult.Success -> {
-                val blockers = result.data?.selfChangeEligibility?.blockers
-                if (!blockers.isNullOrEmpty()) {
-                    Blocked(blockers)
-                } else {
-                    Eligible
-                }
-            }
+            is QueryResult.Success -> result.data?.selfChangeEligibility?.embarkStoryId
+                    ?.let(::Eligible)
+                    ?: Blocked
             is QueryResult.Error -> Error(result.message)
         }
     }
 
     sealed class SelfChangeEligibilityResult {
-        object Eligible : SelfChangeEligibilityResult()
-        data class Blocked(val blockers: List<SelfChangeBlocker>?) : SelfChangeEligibilityResult()
+        data class Eligible(val embarkStoryId: String) : SelfChangeEligibilityResult()
+        object Blocked : SelfChangeEligibilityResult()
         data class Error(val message: String?) : SelfChangeEligibilityResult()
     }
 }

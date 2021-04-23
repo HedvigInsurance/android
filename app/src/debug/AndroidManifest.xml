@@ -94,6 +94,17 @@
             android:name="com.mixpanel.android.MPConfig.DisableEmulatorBindingUI"
             android:value="true" />
 
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+
+            <meta-data
+                android:name="com.hedvig.app.ShakeInitializer"
+                android:value="androidx.startup" />
+        </provider>
+
     </application>
 
 </manifest>

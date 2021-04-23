@@ -99,16 +99,18 @@ class NumberActionFragment : Fragment(R.layout.number_action_set_fragment) {
                 EditorInfo.IME_ACTION_DONE
             }
             binding.input.imeOptions = imeOptions
-            binding.input.onImeAction(imeActionId = imeOptions) {
-                if (numberActionViewModel.valid.value == true) {
-                    viewLifecycleScope.launch {
-                        saveAndAnimate()
-                        model.navigateToPassage(data.link)
+            if (imeOptions == EditorInfo.IME_ACTION_DONE) {
+                binding.input.onImeAction(imeActionId = imeOptions) {
+                    if (numberActionViewModel.valid.value == true) {
+                        viewLifecycleScope.launch {
+                            saveAndAnimate()
+                            model.navigateToPassage(data.link)
+                        }
                     }
                 }
             }
 
-            model.getFromStore(numberAction.key)?.let { binding.input.setText(it) }
+            model.getPrefillFromStore(numberAction.key)?.let { binding.input.setText(it) }
             binding.root
         }
     }

@@ -93,7 +93,7 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
         textActionSetViewModel.inputs.value?.let { inputs ->
             data.keys.zip(inputs.values).forEachIndexed { index, (key, input) ->
                 key?.let {
-                    val mask = data.mask[index]
+                    val mask = data.mask.getOrNull(index)
                     val unmasked = unmask(input, mask)
                     model.putInStore(key, unmasked)
                     derivedValues(unmasked, key, mask, clock).forEach { (key, value) ->
@@ -113,8 +113,8 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
         val inputView = EmbarkInputItemBinding.inflate(layoutInflater, binding.inputContainer, false)
 
         inputView.textField.isExpandedHintEnabled = false
-        data.hints[index]?.let { inputView.textField.hint = it }
-        data.placeholders[index]?.let { inputView.textField.placeholderText = it }
+        data.hints.getOrNull(index)?.let { inputView.textField.hint = it }
+        data.placeholders.getOrNull(index)?.let { inputView.textField.placeholderText = it }
         val mask = data.mask.getOrNull(index)
         mask?.let {
             inputView.input.apply {
@@ -147,16 +147,18 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
 
         inputView.input.imeOptions = imeOptions
 
-        inputView.input.onImeAction(imeActionId = imeOptions) {
-            if (textActionSetViewModel.isValid.value == true) {
-                viewLifecycleScope.launch {
-                    saveAndAnimate(data)
-                    model.navigateToPassage(data.link)
+        if (imeOptions == EditorInfo.IME_ACTION_DONE) {
+            inputView.input.onImeAction(imeActionId = imeOptions) {
+                if (textActionSetViewModel.isValid.value == true) {
+                    viewLifecycleScope.launch {
+                        saveAndAnimate(data)
+                        model.navigateToPassage(data.link)
+                    }
                 }
             }
         }
 
-        key?.let(model::getFromStore)
+        key?.let(model::getPrefillFromStore)
             ?.let { remask(it, mask) }
             ?.let(inputView.input::setText)
         inputView.root

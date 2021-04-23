@@ -5,6 +5,7 @@ sealed class PreviousInsurerItem {
 
     data class Insurer(
         val name: String,
-        val icon: String
+        val icon: String?,
+        val id: String,
     ) : PreviousInsurerItem()
 }

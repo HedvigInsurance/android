@@ -53,7 +53,7 @@ class ChangeAddressViewModelImpl(
         }
 
     private suspend fun getSelfChangeState() = when (val selfChangeEligibility = getSelfChangeEligibility()) {
-        SelfChangeEligibilityResult.Eligible -> SelfChangeAddress
+        is SelfChangeEligibilityResult.Eligible -> SelfChangeAddress(selfChangeEligibility.embarkStoryId)
         is SelfChangeEligibilityResult.Blocked -> ManualChangeAddress
         is SelfChangeEligibilityResult.Error -> SelfChangeError(selfChangeEligibility)
     }
@@ -65,7 +65,7 @@ class ChangeAddressViewModelImpl(
 
 sealed class ViewState {
     object Loading : ViewState()
-    object SelfChangeAddress : ViewState()
+    data class SelfChangeAddress(val embarkStoryId: String) : ViewState()
     object ManualChangeAddress : ViewState()
     data class UpcomingAgreementError(val error: UpcomingAgreementResult.Error) : ViewState()
     data class SelfChangeError(val error: SelfChangeEligibilityResult.Error) : ViewState()

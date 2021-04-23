@@ -288,6 +288,11 @@ dependencies {
     androidTestImplementation("com.kaspersky.android-components:kaspresso:1.2.0")
 
     debugImplementation("com.squareup.leakcanary:leakcanary-android:2.6")
+    debugImplementation("com.shakebugs:shake:14.1.4")
+    "stagingImplementation"("com.shakebugs:shake:14.1.4")
+
+    debugImplementation("androidx.startup:startup-runtime:1.0.0")
+    "stagingImplementation"("androidx.startup:startup-runtime:1.0.0")
 }
 
 apply(plugin = "com.google.gms.google-services")

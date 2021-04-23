@@ -10,18 +10,19 @@ data class PreviousInsurerParameter(
     val next: String,
     val skip: String,
     val storeKey: String,
-    val previousInsurers: List<PreviousInsurer>
+    val previousInsurers: List<PreviousInsurer>,
 ) : Parcelable {
     @Parcelize
     data class PreviousInsurer(
         val name: String,
-        val icon: String
+        val icon: String,
+        val id: String,
     ) : Parcelable
 
     companion object {
         fun from(
             messages: List<String>,
-            previousInsuranceAction: EmbarkStoryQuery.AsEmbarkPreviousInsuranceProviderAction
+            previousInsuranceAction: EmbarkStoryQuery.AsEmbarkPreviousInsuranceProviderAction,
         ) =
             PreviousInsurerParameter(
                 messages = messages,
@@ -33,7 +34,8 @@ data class PreviousInsurerParameter(
                     .map {
                         PreviousInsurer(
                             it.name,
-                            it.logo.variants.fragments.iconVariantsFragment.light.svgUrl
+                            it.logo.variants.fragments.iconVariantsFragment.light.svgUrl,
+                            it.id,
                         )
                     },
                 storeKey = previousInsuranceAction.previousInsurerData.storeKey,

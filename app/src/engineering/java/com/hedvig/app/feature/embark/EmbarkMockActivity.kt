@@ -26,6 +26,7 @@ import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_MANY_TOOLTIP
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_MULTIPLE_REDIRECTS
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_NOT_EQUALS_EXPRESSION
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_NUMBER_ACTION
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_NUMBER_ACTION_AND_CUSTOM_RESPONSE
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_OR_EXPRESSION
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_PASSED_KEY_VALUE
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_SELECT_ACTION_AND_CUSTOM_RESPONSE
@@ -99,6 +100,13 @@ class EmbarkMockActivity : MockActivity() {
             }
             startActivity(EmbarkActivity.newInstance(context, this.javaClass.name, "Number Action"))
         }
+        clickableItem("Custom response") {
+            MockEmbarkViewModel.apply {
+                shouldLoad = true
+                mockedData = STORY_WITH_NUMBER_ACTION_AND_CUSTOM_RESPONSE
+            }
+            startActivity(EmbarkActivity.newInstance(context, this.javaClass.name, "Custom Response"))
+        }
         header("Text Action")
         clickableItem("Regular") {
             MockEmbarkViewModel.apply {
@@ -154,7 +162,13 @@ class EmbarkMockActivity : MockActivity() {
                 shouldLoad = true
                 mockedData = STORY_WITH_INCOMPATIBLE_ACTION
             }
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name, "Incompatible Action"))
+            startActivity(
+                EmbarkActivity.newInstance(
+                    this@EmbarkMockActivity,
+                    this.javaClass.name,
+                    "Incompatible Action",
+                )
+            )
         }
         header("Template Values")
         clickableItem("Open") {
@@ -189,63 +203,117 @@ class EmbarkMockActivity : MockActivity() {
                 shouldLoad = true
                 mockedData = STORY_WITH_UNARY_EXPRESSIONS
             }
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name, "Message Expressions"))
+            startActivity(
+                EmbarkActivity.newInstance(
+                    this@EmbarkMockActivity,
+                    this.javaClass.name,
+                    "Message Expressions",
+                )
+            )
         }
         clickableItem("Equals (==)") {
             MockEmbarkViewModel.apply {
                 shouldLoad = true
                 mockedData = STORY_WITH_EQUALS_EXPRESSION
             }
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name, "Message Expressions"))
+            startActivity(
+                EmbarkActivity.newInstance(
+                    this@EmbarkMockActivity,
+                    this.javaClass.name,
+                    "Message Expressions",
+                )
+            )
         }
         clickableItem("Not Equals (!=)") {
             MockEmbarkViewModel.apply {
                 shouldLoad = true
                 mockedData = STORY_WITH_NOT_EQUALS_EXPRESSION
             }
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name, "Message Expressions"))
+            startActivity(
+                EmbarkActivity.newInstance(
+                    this@EmbarkMockActivity,
+                    this.javaClass.name,
+                    "Message Expressions",
+                )
+            )
         }
         clickableItem("Greater Than (>)") {
             MockEmbarkViewModel.apply {
                 shouldLoad = true
                 mockedData = STORY_WITH_GREATER_THAN_EXPRESSION
             }
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name, "Message Expressions"))
+            startActivity(
+                EmbarkActivity.newInstance(
+                    this@EmbarkMockActivity,
+                    this.javaClass.name,
+                    "Message Expressions",
+                )
+            )
         }
         clickableItem("Greater Than or Equals (>=)") {
             MockEmbarkViewModel.apply {
                 shouldLoad = true
                 mockedData = STORY_WITH_GREATER_THAN_OR_EQUALS_EXPRESSION
             }
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name, "Message Expressions"))
+            startActivity(
+                EmbarkActivity.newInstance(
+                    this@EmbarkMockActivity,
+                    this.javaClass.name,
+                    "Message Expressions",
+                )
+            )
         }
         clickableItem("Less Than (<)") {
             MockEmbarkViewModel.apply {
                 shouldLoad = true
                 mockedData = STORY_WITH_LESS_THAN_EXPRESSION
             }
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name, "Message Expressions"))
+            startActivity(
+                EmbarkActivity.newInstance(
+                    this@EmbarkMockActivity,
+                    this.javaClass.name,
+                    "Message Expressions",
+                )
+            )
         }
         clickableItem("Less Than or Equals (<=)") {
             MockEmbarkViewModel.apply {
                 shouldLoad = true
                 mockedData = STORY_WITH_LESS_THAN_OR_EQUALS_EXPRESSION
             }
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name, "Message Expressions"))
+            startActivity(
+                EmbarkActivity.newInstance(
+                    this@EmbarkMockActivity,
+                    this.javaClass.name,
+                    "Message Expressions",
+                )
+            )
         }
         clickableItem("Or (||)") {
             MockEmbarkViewModel.apply {
                 shouldLoad = true
                 mockedData = STORY_WITH_OR_EXPRESSION
             }
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name, "Message Expressions"))
+            startActivity(
+                EmbarkActivity.newInstance(
+                    this@EmbarkMockActivity,
+                    this.javaClass.name,
+                    "Message Expressions",
+                )
+            )
         }
         clickableItem("And (&&)") {
             MockEmbarkViewModel.apply {
                 shouldLoad = true
                 mockedData = STORY_WITH_OR_EXPRESSION
             }
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name, "Message Expressions"))
+            startActivity(
+                EmbarkActivity.newInstance(
+                    this@EmbarkMockActivity,
+                    this.javaClass.name,
+                    "Message Expressions",
+                )
+            )
         }
         header("Redirects")
         clickableItem("Unary") {
@@ -283,7 +351,13 @@ class EmbarkMockActivity : MockActivity() {
                 mockedData = STORY_WITH_GRAPHQL_QUERY_API
                 graphQLQueryResponse = jsonObjectOf("hello" to "world")
             }
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name, "GraphQL Query"))
+            startActivity(
+                EmbarkActivity.newInstance(
+                    this@EmbarkMockActivity,
+                    this.javaClass.name,
+                    "GraphQL Query",
+                )
+            )
         }
         header("More Options")
         clickableItem("More Options Error") {
@@ -297,7 +371,13 @@ class EmbarkMockActivity : MockActivity() {
                 mockedData = PROGRESSABLE_STORY
                 shouldLoad = true
             }
-            startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name, "Story with progress"))
+            startActivity(
+                EmbarkActivity.newInstance(
+                    this@EmbarkMockActivity,
+                    this.javaClass.name,
+                    "Story with progress",
+                )
+            )
         }
     }
 }

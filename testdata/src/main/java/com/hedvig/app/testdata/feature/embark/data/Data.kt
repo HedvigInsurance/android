@@ -17,7 +17,7 @@ import com.hedvig.app.testdata.feature.embark.builders.MessageBuilder
 import com.hedvig.app.testdata.feature.embark.builders.NumberActionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.NumberActionSetBuilder
 import com.hedvig.app.testdata.feature.embark.builders.PassageBuilder
-import com.hedvig.app.testdata.feature.embark.builders.PreviousInsurerAction
+import com.hedvig.app.testdata.feature.embark.builders.PreviousInsurerActionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.RedirectBuilder
 import com.hedvig.app.testdata.feature.embark.builders.SelectActionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.SelectOptionBuilder
@@ -67,7 +67,7 @@ val STANDARD_FIRST_PASSAGE_BUILDER =
         id = "1",
         response = MessageBuilder(
             text = "{TestPassageResult}"
-        ).build(),
+        ).buildMessageResponse(),
         messages = listOf(
             STANDARD_FIRST_MESSAGE
         ),
@@ -373,7 +373,7 @@ val STORY_WITH_TEXT_ACTION_SWEDISH_POSTAL_CODE = EmbarkStoryDataBuilder(
 val PREVIOUS_INSURER_STORY = EmbarkStoryDataBuilder(
     passages = listOf(
         STANDARD_FIRST_PASSAGE_BUILDER.copy(
-            action = PreviousInsurerAction(
+            action = PreviousInsurerActionBuilder(
                 storeKey = "BAR",
                 next = STANDARD_FIRST_LINK
             ).build()
@@ -477,7 +477,7 @@ val STORY_WITH_TEXT_ACTION_AND_CUSTOM_RESPONSE = EmbarkStoryDataBuilder(
     passages = listOf(
         STANDARD_FIRST_PASSAGE_BUILDER
             .copy(
-                response = MessageBuilder(text = "{BAR} response").build(),
+                response = MessageBuilder(text = "{BAR} response").buildMessageResponse(),
                 action = TextActionBuilder(
                     key = "BAR", link = STANDARD_FIRST_LINK
                 ).build()
@@ -491,7 +491,7 @@ val STORY_WITH_SELECT_ACTION_AND_CUSTOM_RESPONSE = EmbarkStoryDataBuilder(
     passages = listOf(
         STANDARD_FIRST_PASSAGE_BUILDER
             .copy(
-                response = MessageBuilder(text = "{FOO} response").build(),
+                response = MessageBuilder(text = "{FOO} response").buildMessageResponse(),
                 action = SelectActionBuilder(
                     options = listOf(
                         SelectOptionBuilder(
@@ -779,10 +779,10 @@ val STORY_WITH_OR_EXPRESSION = EmbarkStoryDataBuilder(
                                 subExpressions = listOf(
                                     ExpressionBuilder(
                                         type = ExpressionBuilder.ExpressionType.ALWAYS
-                                    ).buildSubExpression(),
+                                    ).build(),
                                     ExpressionBuilder(
                                         type = ExpressionBuilder.ExpressionType.NEVER
-                                    ).buildSubExpression()
+                                    ).build()
                                 )
                             ).build()
                         )
@@ -796,10 +796,10 @@ val STORY_WITH_OR_EXPRESSION = EmbarkStoryDataBuilder(
                                 subExpressions = listOf(
                                     ExpressionBuilder(
                                         type = ExpressionBuilder.ExpressionType.NEVER
-                                    ).buildSubExpression(),
+                                    ).build(),
                                     ExpressionBuilder(
                                         type = ExpressionBuilder.ExpressionType.NEVER
-                                    ).buildSubExpression()
+                                    ).build()
                                 )
                             ).build()
                         )
@@ -826,10 +826,10 @@ val STORY_WITH_AND_EXPRESSION = EmbarkStoryDataBuilder(
                                 subExpressions = listOf(
                                     ExpressionBuilder(
                                         type = ExpressionBuilder.ExpressionType.ALWAYS
-                                    ).buildSubExpression(),
+                                    ).build(),
                                     ExpressionBuilder(
                                         type = ExpressionBuilder.ExpressionType.ALWAYS
-                                    ).buildSubExpression()
+                                    ).build()
                                 )
                             ).build()
                         )
@@ -843,10 +843,10 @@ val STORY_WITH_AND_EXPRESSION = EmbarkStoryDataBuilder(
                                 subExpressions = listOf(
                                     ExpressionBuilder(
                                         type = ExpressionBuilder.ExpressionType.ALWAYS
-                                    ).buildSubExpression(),
+                                    ).build(),
                                     ExpressionBuilder(
                                         type = ExpressionBuilder.ExpressionType.NEVER
-                                    ).buildSubExpression()
+                                    ).build()
                                 )
                             ).build()
                         )
@@ -992,8 +992,8 @@ val STORY_WITH_MULTIPLE_REDIRECTS = EmbarkStoryDataBuilder(
                         expression = ExpressionBuilder(
                             type = ExpressionBuilder.ExpressionType.AND,
                             subExpressions = listOf(
-                                ExpressionBuilder(type = ExpressionBuilder.ExpressionType.ALWAYS).buildSubExpression(),
-                                ExpressionBuilder(type = ExpressionBuilder.ExpressionType.ALWAYS).buildSubExpression()
+                                ExpressionBuilder(type = ExpressionBuilder.ExpressionType.ALWAYS).build(),
+                                ExpressionBuilder(type = ExpressionBuilder.ExpressionType.ALWAYS).build(),
                             )
                         ).build()
                     ).build()
@@ -1290,7 +1290,31 @@ val STORY_WITH_NUMBER_ACTION = EmbarkStoryDataBuilder(
                     maxValue = 75,
                     minValue = 1,
                     link = STANDARD_FIRST_LINK,
-                ).build()
+                ).build(),
+            )
+            .build(),
+        STANDARD_SECOND_PASSAGE_BUILDER.copy(
+            messages = listOf(
+                MessageBuilder("{BAR} was entered")
+                    .build()
+            )
+        ).build()
+    )
+).build()
+
+val STORY_WITH_NUMBER_ACTION_AND_CUSTOM_RESPONSE = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER
+            .copy(
+                action = NumberActionBuilder(
+                    unit = "other people",
+                    placeholder = "1",
+                    label = "Co-insured",
+                    maxValue = 75,
+                    minValue = 1,
+                    link = STANDARD_FIRST_LINK,
+                ).build(),
+                response = MessageBuilder("custom response").buildExpressionResponse(),
             )
             .build(),
         STANDARD_SECOND_PASSAGE_BUILDER.copy(
@@ -1337,7 +1361,6 @@ val STORY_WITH_NUMBER_ACTION_SET = EmbarkStoryDataBuilder(
         ).build()
     )
 ).build()
-
 
 val STORY_WITCH_DATE_PICKER = EmbarkStoryDataBuilder(
     passages = listOf(
@@ -1427,7 +1450,7 @@ val STORY_WITH_COMPUTED_VALUE = EmbarkStoryDataBuilder(
             id = "1",
             response = MessageBuilder(
                 text = "{TestPassageResult}"
-            ).build(),
+            ).buildMessageResponse(),
             messages = listOf(
                 MessageFragment(
                     text = "Text on input in next passage will have added 3 to your input",
@@ -1444,7 +1467,7 @@ val STORY_WITH_COMPUTED_VALUE = EmbarkStoryDataBuilder(
             id = "2",
             response = MessageBuilder(
                 text = "{TestPassageResult}"
-            ).build(),
+            ).buildMessageResponse(),
             messages = listOf(
                 MessageBuilder(
                     text = "Computed value is previous input + 3 = {BAR}"
@@ -1455,5 +1478,32 @@ val STORY_WITH_COMPUTED_VALUE = EmbarkStoryDataBuilder(
                 key = "BAR"
             ).build()
         ).build(),
+    )
+).build()
+
+val STORY_FOR_STORE_VERSIONING = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER
+            .copy(
+                action = SelectActionBuilder(
+                    options = listOf(
+                        SelectOptionBuilder(link = STANDARD_FIRST_LINK, keyValues = listOf("FOO" to "BAR")).build(),
+                        SelectOptionBuilder(link = STANDARD_FIRST_LINK).build()
+                    )
+                ).build()
+            )
+            .build(),
+        STANDARD_SECOND_PASSAGE_BUILDER
+            .copy(
+                redirects = listOf(
+                    RedirectBuilder(
+                        to = LINK_TO_THIRD_PASSAGE.name,
+                        expression = ExpressionBuilder(ExpressionBuilder.ExpressionType.EQUALS,
+                            key = "FOO",
+                            value = "BAR").build()
+                    ).build())
+            )
+            .build(),
+        STANDARD_THIRD_PASSAGE_BUILDER.build(),
     )
 ).build()

@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.embark.textaction
 
-import com.agoda.kakao.edit.KEditText
+import com.agoda.kakao.edit.KTextInputLayout
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
@@ -12,7 +12,7 @@ import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
-import com.hedvig.app.util.withHint
+import com.hedvig.app.util.withPlaceholder
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
@@ -29,8 +29,8 @@ class TextActionSetTest : TestCase() {
     @get:Rule
     val apolloCacheClearRule = ApolloCacheClearRule()
 
-    val input1 = KEditText { withHint("Placeholder") }
-    val input2 = KEditText { withHint("Second Placeholder") }
+    val input1 = KTextInputLayout { withPlaceholder("Placeholder") }
+    val input2 = KTextInputLayout { withPlaceholder("Second Placeholder") }
 
     @Test
     fun textActionSetTest() = run {
@@ -50,11 +50,11 @@ class TextActionSetTest : TestCase() {
                 isDisabled()
             }
             input1 {
-                typeText("First Text")
+                edit { typeText("First Text") }
             }
             submit { isDisabled() }
             input2 {
-                typeText("Second Text")
+                edit { typeText("Second Text") }
             }
             submit { click() }
             onScreen<EmbarkScreen> {
@@ -77,8 +77,8 @@ class TextActionSetTest : TestCase() {
 
         TextActionSetScreen {
             step("Fill in data and submit") {
-                input1 { replaceText("Test") }
-                input2 { replaceText("Testerson") }
+                input1 { edit { replaceText("Test") } }
+                input2 { edit { replaceText("Testerson") } }
                 submit { click() }
             }
             step("Verify that previous passage is no longer shown") {
@@ -92,11 +92,54 @@ class TextActionSetTest : TestCase() {
             }
             step("Go back and verify that the previous answers are prefilled") {
                 pressBack()
-                input1 { replaceText("Test") }
-                input2 { replaceText("Testerson") }
+                input1 { edit { replaceText("Test") } }
+                input2 { edit { replaceText("Testerson") } }
             }
             step("Check that validation passes on prefilled input") {
                 submit { isEnabled() }
+            }
+        }
+    }
+
+    @Test
+    fun shouldTriggerCorrectActionsForImeButton() = run {
+        activityRule.launch(
+            EmbarkActivity.newInstance(
+                context(),
+                this.javaClass.name,
+                "",
+            )
+        )
+
+        TextActionSetScreen {
+            step("Focus first field and fill in data") {
+                input1 {
+                    edit {
+                        click()
+                        typeText("Test")
+                    }
+                }
+            }
+            step("Press IME Button") {
+                input1 { edit { pressImeAction() } }
+            }
+            step("Check that second field has focus") {
+                input2 { edit { isFocused() } }
+            }
+            step("Fill out second field") {
+                input2 { edit { typeText("Testerson") } }
+            }
+            step("Press IME Button") {
+                input2 { edit { pressImeAction() } }
+            }
+            step("Verify that next passage is shown") {
+                onScreen<EmbarkScreen> {
+                    messages {
+                        childAt<EmbarkScreen.MessageRow>(0) {
+                            text { hasText("Test Testerson was entered") }
+                        }
+                    }
+                }
             }
         }
     }

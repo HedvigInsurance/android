@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.doOnNextLayout
 import androidx.fragment.app.Fragment
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hedvig.app.R
 import com.hedvig.app.databinding.PreviousInsurerFragmentBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
@@ -49,8 +50,8 @@ class PreviousInsurerFragment : Fragment(R.layout.previous_insurer_fragment) {
 
             previousInsurerViewModel.previousInsurer.observe(viewLifecycleOwner) { selectedInsurer ->
                 continueButton.isEnabled = selectedInsurer != null
-                if (selectedInsurer?.isNotEmpty() == true) {
-                    currentInsurerLabel.text = selectedInsurer
+                if (selectedInsurer?.name?.isNotEmpty() == true) {
+                    currentInsurerLabel.text = selectedInsurer.name
                 }
             }
 
@@ -61,9 +62,17 @@ class PreviousInsurerFragment : Fragment(R.layout.previous_insurer_fragment) {
     }
 
     private fun onContinue() {
-        previousInsurerViewModel.previousInsurer.value?.let { id ->
-            model.putInStore(insurerData.storeKey, id)
-            model.navigateToPassage(insurerData.next)
+        previousInsurerViewModel.previousInsurer.value?.let { item ->
+            if (item.id == getString(R.string.EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION)) {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(getString(R.string.EXTERNAL_INSURANCE_PROVIDER_ALERT_TITLE))
+                    .setMessage(getString(R.string.EXTERNAL_INSURANCE_PROVIDER_ALERT_MESSAGE))
+                    .setPositiveButton(getString(R.string.ALERT_OK)) { dialog, _,  -> dialog.dismiss() }
+                    .show()
+            } else {
+                model.putInStore(insurerData.storeKey, item.id)
+                model.navigateToPassage(insurerData.next)
+            }
         }
     }
 

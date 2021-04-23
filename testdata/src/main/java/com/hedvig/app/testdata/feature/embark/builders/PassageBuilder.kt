@@ -9,7 +9,7 @@ data class PassageBuilder(
     private val name: String,
     private val id: String,
     private val messages: List<MessageFragment> = emptyList(),
-    private val response: MessageFragment = MessageBuilder(text = "").build(),
+    private val response: EmbarkStoryQuery.Response = MessageBuilder(text = "").buildMessageResponse(),
     private val redirects: List<EmbarkStoryQuery.Redirect> = emptyList(),
     private val action: EmbarkStoryQuery.Action,
     private val api: EmbarkStoryQuery.Api? = null,
@@ -17,7 +17,7 @@ data class PassageBuilder(
     private val links: List<EmbarkLinkFragment> = emptyList(),
     private val tracks: List<EmbarkStoryQuery.Track> = emptyList(),
     private val externalRedirect: EmbarkExternalRedirectLocation? = null,
-    private val offerRedirectKeys: List<String> = emptyList()
+    private val offerRedirectKeys: List<String> = emptyList(),
 ) {
     fun build() = EmbarkStoryQuery.Passage(
         name = name,
@@ -29,11 +29,7 @@ data class PassageBuilder(
                 )
             )
         },
-        response = EmbarkStoryQuery.Response(
-            fragments = EmbarkStoryQuery.Response.Fragments(
-                response
-            )
-        ),
+        response = response,
         tooltips = tooltip,
         redirects = redirects,
         action = action,

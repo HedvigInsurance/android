@@ -37,7 +37,6 @@ import com.hedvig.app.feature.embark.passages.datepicker.DatePickerViewModel
 import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionParams
 import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionViewModel
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerViewModel
-import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerViewModelImpl
 import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
 import com.hedvig.app.feature.embark.passages.textaction.TextActionViewModel
 import com.hedvig.app.feature.home.data.HomeRepository
@@ -246,19 +245,19 @@ val applicationModule = module {
 
 fun makeUserAgent(context: Context, market: Market?) =
     "${
-    BuildConfig.APPLICATION_ID
+        BuildConfig.APPLICATION_ID
     } ${
-    BuildConfig.VERSION_NAME
+        BuildConfig.VERSION_NAME
     } (Android ${
-    Build.VERSION.RELEASE
+        Build.VERSION.RELEASE
     }; ${
-    Build.BRAND
+        Build.BRAND
     } ${
-    Build.MODEL
+        Build.MODEL
     }; ${
-    Build.DEVICE
+        Build.DEVICE
     }; ${
-    getLocale(context, market).language
+        getLocale(context, market).language
     })"
 
 fun makeLocaleString(context: Context, market: Market?): String = getLocale(context, market).toLanguageTag()
@@ -344,11 +343,11 @@ val embarkModule = module {
 }
 
 val valueStoreModule = module {
-    single<ValueStore> { ValueStoreImpl() }
+    factory<ValueStore> { ValueStoreImpl() }
 }
 
 val previousInsViewModel = module {
-    viewModel<PreviousInsurerViewModel> { PreviousInsurerViewModelImpl() }
+    viewModel { PreviousInsurerViewModel() }
 }
 
 val moreOptionsModule = module {
