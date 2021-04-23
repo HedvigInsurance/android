@@ -29,8 +29,8 @@ class PreviousInsurerBottomSheet : ExpandableBottomSheet() {
             onInsurerClicked = ::onInsurerSelected)
     }
 
-    private fun onInsurerSelected(id: String) {
-        viewModel.setPreviousInsurer(id)
+    private fun onInsurerSelected(item: PreviousInsurerItem.Insurer) {
+        viewModel.setPreviousInsurer(item)
         dismiss()
     }
 

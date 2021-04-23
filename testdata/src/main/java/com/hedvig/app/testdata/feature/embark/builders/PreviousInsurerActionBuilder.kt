@@ -4,7 +4,7 @@ import com.hedvig.android.owldroid.fragment.EmbarkLinkFragment
 import com.hedvig.android.owldroid.fragment.IconVariantsFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 
-data class PreviousInsurerAction(
+data class PreviousInsurerActionBuilder(
     val storeKey: String = "BAR",
     val next: EmbarkLinkFragment,
 ) {
@@ -16,6 +16,7 @@ data class PreviousInsurerAction(
             previousInsurerData = EmbarkStoryQuery.PreviousInsurerData(
                 insuranceProviders = listOf(
                     EmbarkStoryQuery.InsuranceProvider(
+                        id = "if",
                         name = "IF",
                         logo = EmbarkStoryQuery.Logo(
                             variants = EmbarkStoryQuery.Variants(
@@ -29,6 +30,7 @@ data class PreviousInsurerAction(
                         )
                     ),
                     EmbarkStoryQuery.InsuranceProvider(
+                        id = "trygghansa",
                         name = "Trygg-Hansa",
                         logo = EmbarkStoryQuery.Logo(
                             variants = EmbarkStoryQuery.Variants(
@@ -42,6 +44,7 @@ data class PreviousInsurerAction(
                         )
                     ),
                     EmbarkStoryQuery.InsuranceProvider(
+                        id = "folksam",
                         name = "Folksam",
                         logo = EmbarkStoryQuery.Logo(
                             variants = EmbarkStoryQuery.Variants(

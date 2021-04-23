@@ -3,16 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".feature.embark.passages.datepicker.DatePickerFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/messages"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginVertical="@dimen/base_margin"
-        android:layout_marginStart="@dimen/base_margin_double"
-        android:layout_marginEnd="@dimen/base_margin_double"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        style="@style/Hedvig.Theme.EmbarkList"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -54,9 +50,9 @@
                 android:layout_marginTop="@dimen/base_margin_triple"
                 android:layout_marginEnd="@dimen/base_margin_quadruple"
                 android:layout_marginBottom="@dimen/base_margin_double"
-                android:text="Access date"
                 android:textAppearance="?textAppearanceBody1"
-                app:drawableEndCompat="@drawable/ic_chevron_down" />
+                app:drawableEndCompat="@drawable/ic_chevron_down"
+                tools:text="Access date" />
 
             <View
                 android:layout_width="match_parent"

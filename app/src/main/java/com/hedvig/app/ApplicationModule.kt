@@ -37,7 +37,6 @@ import com.hedvig.app.feature.embark.passages.datepicker.DatePickerViewModel
 import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionParams
 import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionViewModel
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerViewModel
-import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerViewModelImpl
 import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
 import com.hedvig.app.feature.embark.passages.textaction.TextActionViewModel
 import com.hedvig.app.feature.home.data.HomeRepository
@@ -348,7 +347,7 @@ val valueStoreModule = module {
 }
 
 val previousInsViewModel = module {
-    viewModel<PreviousInsurerViewModel> { PreviousInsurerViewModelImpl() }
+    viewModel { PreviousInsurerViewModel() }
 }
 
 val moreOptionsModule = module {
