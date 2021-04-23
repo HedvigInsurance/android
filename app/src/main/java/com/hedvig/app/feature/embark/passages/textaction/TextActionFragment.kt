@@ -111,7 +111,7 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
 
     private fun createInputViews(): List<View> = data.keys.mapIndexed { index, key ->
         val inputView = EmbarkInputItemBinding.inflate(layoutInflater, binding.inputContainer, false)
-    
+
         inputView.textField.isExpandedHintEnabled = false
         data.hints.getOrNull(index)?.let { inputView.textField.hint = it }
         data.placeholders.getOrNull(index)?.let { inputView.textField.placeholderText = it }
@@ -147,11 +147,13 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
 
         inputView.input.imeOptions = imeOptions
 
-        inputView.input.onImeAction(imeActionId = imeOptions) {
-            if (textActionSetViewModel.isValid.value == true) {
-                viewLifecycleScope.launch {
-                    saveAndAnimate(data)
-                    model.navigateToPassage(data.link)
+        if (imeOptions == EditorInfo.IME_ACTION_DONE) {
+            inputView.input.onImeAction(imeActionId = imeOptions) {
+                if (textActionSetViewModel.isValid.value == true) {
+                    viewLifecycleScope.launch {
+                        saveAndAnimate(data)
+                        model.navigateToPassage(data.link)
+                    }
                 }
             }
         }

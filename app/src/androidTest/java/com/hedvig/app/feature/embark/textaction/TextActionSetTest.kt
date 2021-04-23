@@ -100,4 +100,47 @@ class TextActionSetTest : TestCase() {
             }
         }
     }
+
+    @Test
+    fun shouldTriggerCorrectActionsForImeButton() = run {
+        activityRule.launch(
+            EmbarkActivity.newInstance(
+                context(),
+                this.javaClass.name,
+                "",
+            )
+        )
+
+        TextActionSetScreen {
+            step("Focus first field and fill in data") {
+                input1 {
+                    edit {
+                        click()
+                        typeText("Test")
+                    }
+                }
+            }
+            step("Press IME Button") {
+                input1 { edit { pressImeAction() } }
+            }
+            step("Check that second field has focus") {
+                input2 { edit { isFocused() } }
+            }
+            step("Fill out second field") {
+                input2 { edit { typeText("Testerson") } }
+            }
+            step("Press IME Button") {
+                input2 { edit { pressImeAction() } }
+            }
+            step("Verify that next passage is shown") {
+                onScreen<EmbarkScreen> {
+                    messages {
+                        childAt<EmbarkScreen.MessageRow>(0) {
+                            text { hasText("Test Testerson was entered") }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
