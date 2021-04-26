@@ -44,7 +44,7 @@ class ZignSecWebViewFragment : Fragment(R.layout.activity_zign_sec_authenticatio
                         if (request?.url?.toString()?.contains("success") == true) {
                             return true
                         }
-                        if (request?.url?.toString()?.contains("failure") == true) {
+                        if (request?.url?.toString()?.contains("fail") == true) {
                             model.authFailed()
                             return true
                         }
