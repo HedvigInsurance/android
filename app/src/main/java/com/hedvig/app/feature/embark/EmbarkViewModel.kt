@@ -404,7 +404,29 @@ abstract class EmbarkViewModel(
                 multipleExpression.subExpressions.map {
                     evaluateExpression(ExpressionFragment(
                         fragments = ExpressionFragment.Fragments(it.fragments.basicExpressionFragment),
-                        asEmbarkExpressionMultiple = null,
+                        asEmbarkExpressionMultiple = it.asEmbarkExpressionMultiple1?.let { asMulti ->
+                            ExpressionFragment.AsEmbarkExpressionMultiple(
+                                multipleType = asMulti.multipleType,
+                                text = asMulti.text,
+                                subExpressions = asMulti.subExpressions.map { se ->
+                                    ExpressionFragment.SubExpression2(
+                                        fragments = ExpressionFragment.SubExpression2.Fragments(se.fragments.basicExpressionFragment),
+                                        asEmbarkExpressionMultiple1 = se.asEmbarkExpressionMultiple2?.let { asMulti2 ->
+                                            ExpressionFragment.AsEmbarkExpressionMultiple1(
+                                                multipleType = asMulti2.multipleType,
+                                                text = asMulti2.text,
+                                                subExpressions = asMulti2.subExpressions.map { se2 ->
+                                                    ExpressionFragment.SubExpression1(
+                                                        fragments = ExpressionFragment.SubExpression1.Fragments(se2.fragments.basicExpressionFragment),
+                                                        asEmbarkExpressionMultiple2 = null,
+                                                    )
+                                                }
+                                            )
+                                        }
+                                    )
+                                }
+                            )
+                        },
                     ))
                 }
             when (multipleExpression.multipleType) {
@@ -464,8 +486,32 @@ abstract class EmbarkViewModel(
                         multipleType = it.multipleExpressionType,
                         text = null,
                         subExpressions = it.subExpressions.map { se ->
-                            ExpressionFragment.SubExpression(
-                                fragments = ExpressionFragment.SubExpression.Fragments(se.fragments.expressionFragment.fragments.basicExpressionFragment)
+                            ExpressionFragment.SubExpression2(
+                                fragments = ExpressionFragment.SubExpression2.Fragments(se.fragments.expressionFragment.fragments.basicExpressionFragment),
+                                asEmbarkExpressionMultiple1 = se.fragments.expressionFragment.asEmbarkExpressionMultiple?.let { asMulti ->
+                                    ExpressionFragment.AsEmbarkExpressionMultiple1(
+                                        multipleType = asMulti.multipleType,
+                                        text = asMulti.text,
+                                        subExpressions = asMulti.subExpressions.map { se2 ->
+                                            ExpressionFragment.SubExpression1(
+                                                fragments = ExpressionFragment.SubExpression1.Fragments(se2.fragments.basicExpressionFragment),
+                                                asEmbarkExpressionMultiple2 = se2.asEmbarkExpressionMultiple1?.let { asMulti2 ->
+                                                    ExpressionFragment.AsEmbarkExpressionMultiple2(
+                                                        multipleType = asMulti2.multipleType,
+                                                        text = asMulti2.text,
+                                                        subExpressions = asMulti2.subExpressions.map { se3 ->
+                                                            ExpressionFragment.SubExpression(
+                                                                fragments = ExpressionFragment.SubExpression.Fragments(
+                                                                    se3.fragments.basicExpressionFragment
+                                                                )
+                                                            )
+                                                        }
+                                                    )
+                                                }
+                                            )
+                                        }
+                                    )
+                                }
                             )
                         }
                     )
