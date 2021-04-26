@@ -203,10 +203,23 @@ fragment ExpressionFragment on EmbarkExpression {
     text
     subExpressions {
       ...BasicExpressionFragment
+      ... on EmbarkExpressionMultiple {
+        multipleType: type
+        text
+        subExpressions {
+          ...BasicExpressionFragment
+          ... on EmbarkExpressionMultiple {
+            multipleType: type
+            text
+            subExpressions {
+              ...BasicExpressionFragment
+            }
+          }
+        }
+      }
     }
   }
 }
-
 fragment ApiFragment on EmbarkApi {
   ... on EmbarkApiGraphQLQuery {
     queryData: data {

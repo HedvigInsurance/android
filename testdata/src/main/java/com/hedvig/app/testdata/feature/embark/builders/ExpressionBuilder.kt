@@ -56,9 +56,31 @@ data class ExpressionBuilder(
                     else -> throw Error("Unreachable")
                 },
                 text = text,
-                subExpressions = subExpressions.map {
-                    ExpressionFragment.SubExpression(
-                        fragments = ExpressionFragment.SubExpression.Fragments(it.fragments.basicExpressionFragment)
+                subExpressions = subExpressions.map { subEx ->
+                    ExpressionFragment.SubExpression2(
+                        fragments = ExpressionFragment.SubExpression2.Fragments(subEx.fragments.basicExpressionFragment),
+                        asEmbarkExpressionMultiple1 = subEx.asEmbarkExpressionMultiple?.let { asMulti ->
+                            ExpressionFragment.AsEmbarkExpressionMultiple1(
+                                multipleType = asMulti.multipleType,
+                                text = asMulti.text,
+                                subExpressions = asMulti.subExpressions.map { subEx2 ->
+                                    ExpressionFragment.SubExpression1(
+                                        fragments = ExpressionFragment.SubExpression1.Fragments(subEx2.fragments.basicExpressionFragment),
+                                        asEmbarkExpressionMultiple2 = subEx2.asEmbarkExpressionMultiple1?.let { asMulti2 ->
+                                            ExpressionFragment.AsEmbarkExpressionMultiple2(
+                                                multipleType = asMulti2.multipleType,
+                                                text = asMulti2.text,
+                                                subExpressions = asMulti2.subExpressions.map { subEx3 ->
+                                                    ExpressionFragment.SubExpression(
+                                                        fragments = ExpressionFragment.SubExpression.Fragments(subEx3.fragments.basicExpressionFragment)
+                                                    )
+                                                }
+                                            )
+                                        }
+                                    )
+                                }
+                            )
+                        }
                     )
                 },
             )
