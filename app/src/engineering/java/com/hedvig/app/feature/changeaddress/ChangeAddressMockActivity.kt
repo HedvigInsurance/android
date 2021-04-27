@@ -51,7 +51,8 @@ class ChangeAddressMockActivity : MockActivity() {
                         ),
                         squareMeters = 123,
                         activeFrom = LocalDate.of(2021, 3, 15),
-                        addressType = R.string.NORWEIGIAN_HOME_CONTENT_LOB_RENT
+                        addressType = R.string.NORWEIGIAN_HOME_CONTENT_LOB_RENT,
+                        nrOfCoInsured = 2
                     )
                 )
             )

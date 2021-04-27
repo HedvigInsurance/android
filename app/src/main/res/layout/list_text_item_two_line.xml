@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/base_margin_double"
+    android:layout_marginVertical="@dimen/base_margin_and_a_half">
+
+    <TextView
+        android:id="@+id/label"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/Hedvig.TextAppearance.Subtitle1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Address" />
+
+    <TextView
+        android:id="@+id/value"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/Hedvig.TextAppearance.Body1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/label"
+        tools:text="Askergatan 112 B" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

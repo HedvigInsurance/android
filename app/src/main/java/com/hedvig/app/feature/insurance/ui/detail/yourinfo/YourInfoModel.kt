@@ -17,4 +17,8 @@ sealed class YourInfoModel {
     object ChangeAddressButton : YourInfoModel()
 
     data class PendingAddressChange(val upcomingAgreement: UpcomingAgreement?) : YourInfoModel()
+
+    object PendingChangeError : YourInfoModel()
+
+    object ContractError : YourInfoModel()
 }
