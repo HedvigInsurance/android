@@ -11,9 +11,9 @@ import com.hedvig.app.feature.home.ui.changeaddress.ViewState
 import com.hedvig.app.feature.home.ui.changeaddress.result.ChangeAddressResultActivity
 import com.hedvig.app.feature.table.Table
 import com.hedvig.app.genericDevelopmentAdapter
+import java.time.LocalDate
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
-import java.time.LocalDate
 
 class ChangeAddressMockActivity : MockActivity() {
     override val original = listOf(changeAddressModule)
