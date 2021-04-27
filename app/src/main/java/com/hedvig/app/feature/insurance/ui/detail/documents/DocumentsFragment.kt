@@ -21,33 +21,10 @@ class DocumentsFragment : Fragment(R.layout.contract_detail_documents_fragment) 
             doOnApplyWindowInsets { view, insets, initialState ->
                 view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
             }
+
             val documentsAdapter = DocumentsAdapter()
             adapter = documentsAdapter
-            model.data.observe(viewLifecycleOwner) { d ->
-                d.getOrNull()?.let { data ->
-                    if (data.currentAgreement.asAgreementCore?.status == AgreementStatus.PENDING) {
-                        // Do not show anything if status is pending
-                        // TODO: Show error state
-                    } else {
-                        documentsAdapter.submitList(
-                            listOfNotNull(
-                                data.currentAgreement.asAgreementCore?.certificateUrl?.let {
-                                    DocumentsModel(
-                                        getString(R.string.MY_DOCUMENTS_INSURANCE_CERTIFICATE),
-                                        getString(R.string.insurance_details_view_documents_full_terms_subtitle),
-                                        it
-                                    )
-                                },
-                                DocumentsModel(
-                                    getString(R.string.MY_DOCUMENTS_INSURANCE_TERMS),
-                                    getString(R.string.insurance_details_view_documents_insurance_letter_subtitle),
-                                    data.termsAndConditions.url
-                                )
-                            )
-                        )
-                    }
-                }
-            }
+            model.documentsList.observe(viewLifecycleOwner, documentsAdapter::submitList)
         }
     }
 }

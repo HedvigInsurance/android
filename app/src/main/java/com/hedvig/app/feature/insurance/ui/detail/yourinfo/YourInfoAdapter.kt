@@ -2,6 +2,7 @@ package com.hedvig.app.feature.insurance.ui.detail.yourinfo
 
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
@@ -18,7 +19,9 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import e
 
-class YourInfoAdapter : ListAdapter<YourInfoModel, YourInfoAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
+class YourInfoAdapter(
+    private val fragmentManager: FragmentManager
+) : ListAdapter<YourInfoModel, YourInfoAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun getItemViewType(position: Int) = when (currentList[position]) {
         is YourInfoModel.Home -> R.layout.your_info_home
@@ -26,6 +29,8 @@ class YourInfoAdapter : ListAdapter<YourInfoModel, YourInfoAdapter.ViewHolder>(G
         YourInfoModel.Change -> R.layout.your_info_change
         is YourInfoModel.Coinsured -> R.layout.your_info_coinsured
         is YourInfoModel.PendingAddressChange -> R.layout.change_address_pending_change_card
+        YourInfoModel.ContractError -> TODO()
+        YourInfoModel.PendingChangeError -> TODO()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
@@ -38,11 +43,11 @@ class YourInfoAdapter : ListAdapter<YourInfoModel, YourInfoAdapter.ViewHolder>(G
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(currentList[position])
+        holder.bind(currentList[position], fragmentManager)
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        abstract fun bind(data: YourInfoModel): Any?
+        abstract fun bind(data: YourInfoModel, fragmentManager: FragmentManager): Any?
 
         fun invalid(data: YourInfoModel) {
             e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }
@@ -50,7 +55,7 @@ class YourInfoAdapter : ListAdapter<YourInfoModel, YourInfoAdapter.ViewHolder>(G
 
         class Change(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.your_info_change)) {
             private val binding by viewBinding(YourInfoChangeBinding::bind)
-            override fun bind(data: YourInfoModel) = with(binding) {
+            override fun bind(data: YourInfoModel, fragmentManager: FragmentManager) = with(binding) {
                 openChatButton.setHapticClickListener {
                     root.context.startActivity(ChatActivity.newInstance(root.context, true))
                 }
@@ -59,7 +64,7 @@ class YourInfoAdapter : ListAdapter<YourInfoModel, YourInfoAdapter.ViewHolder>(G
 
         class Home(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.your_info_home)) {
             private val binding by viewBinding(YourInfoHomeBinding::bind)
-            override fun bind(data: YourInfoModel) = with(binding) {
+            override fun bind(data: YourInfoModel, fragmentManager: FragmentManager) = with(binding) {
                 if (data !is YourInfoModel.Home) {
                     invalid(data)
                 } else {
@@ -73,7 +78,7 @@ class YourInfoAdapter : ListAdapter<YourInfoModel, YourInfoAdapter.ViewHolder>(G
 
         class Coinsured(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.your_info_coinsured)) {
             private val binding by viewBinding(YourInfoCoinsuredBinding::bind)
-            override fun bind(data: YourInfoModel) = with(binding) {
+            override fun bind(data: YourInfoModel, fragmentManager: FragmentManager) = with(binding) {
                 if (data !is YourInfoModel.Coinsured) {
                     invalid(data)
                 } else {
@@ -88,7 +93,7 @@ class YourInfoAdapter : ListAdapter<YourInfoModel, YourInfoAdapter.ViewHolder>(G
 
         class ChangeAddressButton(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.change_address_button)) {
             private val binding by viewBinding(ChangeAddressButtonBinding::bind)
-            override fun bind(data: YourInfoModel) {
+            override fun bind(data: YourInfoModel, fragmentManager: FragmentManager) {
                 binding.root.setHapticClickListener {
                     binding.root.context.startActivity(ChangeAddressActivity.newInstance(binding.root.context))
                 }
@@ -97,11 +102,21 @@ class YourInfoAdapter : ListAdapter<YourInfoModel, YourInfoAdapter.ViewHolder>(G
 
         class PendingAddressChange(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.change_address_pending_change_card)) {
             private val binding by viewBinding(ChangeAddressPendingChangeCardBinding::bind)
-            override fun bind(data: YourInfoModel) = with(binding) {
+            override fun bind(data: YourInfoModel, fragmentManager: FragmentManager) = with(binding) {
                 if (data !is YourInfoModel.PendingAddressChange) {
                     invalid(data)
                 } else {
-                    continueButton.text = "See full update"
+                    continueButton.text = root.context.getString(R.string.home_tab_moving_action_sheet_open_offer_button)
+                    continueButton.setHapticClickListener {
+                        if (data.upcomingAgreement != null) {
+                            UpcomingChangeBottomSheet.newInstance(data.upcomingAgreement).show(
+                                fragmentManager,
+                                UpcomingChangeBottomSheet.TAG
+                            )
+                        } else {
+                            // TODO
+                        }
+                    }
                     paragraph.text = "Your insurance will be updated on ${data.upcomingAgreement?.activeFrom} to your new home on ${data.upcomingAgreement?.address?.street}."
                 }
             }

@@ -232,54 +232,54 @@ class InsuranceMockActivity : MockActivity() {
         header("Detail Screen")
         clickableItem("Swedish Apartment") {
             MockContractDetailViewModel.mockData = INSURANCE_DATA_SWEDISH_APARTMENT
-            startActivity(ContractDetailActivity.newInstance(context, ""))
+            startActivity(ContractDetailActivity.newInstance(context, INSURANCE_DATA_SWEDISH_APARTMENT.contracts.first().id))
         }
         clickableItem("Swedish House") {
             MockContractDetailViewModel.mockData = INSURANCE_DATA_SWEDISH_HOUSE
-            startActivity(ContractDetailActivity.newInstance(context, ""))
+            startActivity(ContractDetailActivity.newInstance(context, INSURANCE_DATA_SWEDISH_HOUSE.contracts.first().id))
         }
         clickableItem("Norwegian Home Contents") {
             MockContractDetailViewModel.mockData = INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS
-            startActivity(ContractDetailActivity.newInstance(context, ""))
+            startActivity(ContractDetailActivity.newInstance(context, INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS.contracts.first().id))
         }
         clickableItem("Norwegian Travel") {
             MockContractDetailViewModel.mockData = INSURANCE_DATA_NORWEGIAN_TRAVEL
-            startActivity(ContractDetailActivity.newInstance(context, ""))
+            startActivity(ContractDetailActivity.newInstance(context, INSURANCE_DATA_NORWEGIAN_TRAVEL.contracts.first().id))
         }
         clickableItem("Swedish Apartment Error") {
             MockContractDetailViewModel.apply {
                 mockData = INSURANCE_DATA_SWEDISH_APARTMENT
                 shouldError = true
             }
-            startActivity(ContractDetailActivity.newInstance(context, ""))
+            startActivity(ContractDetailActivity.newInstance(context, INSURANCE_DATA_SWEDISH_APARTMENT.contracts.first().id))
         }
         clickableItem("Danish Home Contents") {
             MockContractDetailViewModel.apply {
                 mockData = INSURANCE_DATA_DANISH_HOME_CONTENTS
                 shouldError = false
             }
-            startActivity(ContractDetailActivity.newInstance(context, ""))
+            startActivity(ContractDetailActivity.newInstance(context, INSURANCE_DATA_DANISH_HOME_CONTENTS.contracts.first().id))
         }
         clickableItem("Danish Travel") {
             MockContractDetailViewModel.apply {
                 mockData = INSURANCE_DATA_DANISH_TRAVEL
                 shouldError = false
             }
-            startActivity(ContractDetailActivity.newInstance(context, ""))
+            startActivity(ContractDetailActivity.newInstance(context, INSURANCE_DATA_DANISH_TRAVEL.contracts.first().id))
         }
         clickableItem("Danish Accident") {
             MockContractDetailViewModel.apply {
                 mockData = INSURANCE_DATA_DANISH_ACCIDENT
                 shouldError = false
             }
-            startActivity(ContractDetailActivity.newInstance(context, ""))
+            startActivity(ContractDetailActivity.newInstance(context, INSURANCE_DATA_DANISH_ACCIDENT.contracts.first().id))
         }
         clickableItem("Pending contract") {
             MockContractDetailViewModel.apply {
                 mockData = INSURANCE_DATA_PENDING_CONTRACT
                 shouldError = false
             }
-            startActivity(ContractDetailActivity.newInstance(context, ""))
+            startActivity(ContractDetailActivity.newInstance(context, INSURANCE_DATA_PENDING_CONTRACT.contracts.first().id))
         }
         header("Terminated Contracts-Screen")
         clickableItem("One Active + One Terminated") {

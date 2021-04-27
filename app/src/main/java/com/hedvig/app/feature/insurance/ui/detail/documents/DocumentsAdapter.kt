@@ -24,8 +24,8 @@ class DocumentsAdapter :
         RecyclerView.ViewHolder(parent.inflate(R.layout.contract_detail_documents_document)) {
         private val binding by viewBinding(ContractDetailDocumentsDocumentBinding::bind)
         fun bind(data: DocumentsModel) = with(binding) {
-            text.text = data.label
-            subtitle.text = data.subtitle
+            text.text = root.context.getString(data.label)
+            subtitle.text = root.context.getString(data.subtitle)
             val uri = android.net.Uri.parse(data.url)
             root.setHapticClickListener {
                 if (root.context.canOpenUri(uri)) {

@@ -15,7 +15,6 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
 
     private val binding by viewBinding(ContractDetailYourInfoFragmentBinding::bind)
     private val model: ContractDetailViewModel by sharedViewModel()
-    private val adapter = YourInfoAdapter()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.root.apply {
@@ -24,6 +23,7 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
             }
         }
 
+        val adapter = YourInfoAdapter(parentFragmentManager)
         binding.recycler.adapter = adapter
         model.yourInfoList.observe(viewLifecycleOwner, adapter::submitList)
     }

@@ -29,6 +29,7 @@ fragment UpcomingAgreementFragment on UpcomingAgreementChange {
       squareMeters
       activeFrom
       saType: type
+      numberCoInsured
     }
     ... on SwedishHouseAgreement {
       address {
@@ -36,6 +37,18 @@ fragment UpcomingAgreementFragment on UpcomingAgreementChange {
       }
       squareMeters
       activeFrom
+      ancillaryArea
+      yearOfConstruction
+      extraBuildings {
+        ...on ExtraBuildingCore {
+          area
+          displayName
+          hasWaterConnected
+        }
+      }
+      isSubleted
+      numberCoInsured
+      numberOfBathrooms
     }
     ... on NorwegianHomeContentAgreement {
       address {
@@ -44,6 +57,7 @@ fragment UpcomingAgreementFragment on UpcomingAgreementChange {
       squareMeters
       activeFrom
       nhcType: type
+      numberCoInsured
     }
     ... on DanishHomeContentAgreement {
       address {
@@ -52,6 +66,7 @@ fragment UpcomingAgreementFragment on UpcomingAgreementChange {
       squareMeters
       activeFrom
       dhcType: type
+      numberCoInsured
     }
   }
 }
