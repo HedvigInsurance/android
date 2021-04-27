@@ -167,132 +167,99 @@ dependencies {
 
     "stagingImplementation"(project(":testdata"))
 
-    coreLibraryDesugaring(Dependencies.coreLibraryDesugaring)
-    implementation(kotlin("stdlib", Dependencies.Versions.kotlin))
+    coreLibraryDesugaring(Libs.coreLibraryDesugaring)
+    implementation(Libs.kotlin)
 
-    // AndroidX
-    implementation("androidx.appcompat:appcompat:1.2.0")
-    implementation("androidx.media:media:1.2.1")
-    implementation("androidx.legacy:legacy-support-v4:1.0.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.0.4")
-    implementation("com.google.android.material:material:1.3.0")
-    implementation("androidx.dynamicanimation:dynamicanimation:1.0.0")
-    implementation("androidx.preference:preference-ktx:1.1.1")
-    implementation("androidx.core:core-ktx:1.5.0-beta03")
-    implementation("com.google.android:flexbox:2.0.1")
-    implementation("androidx.viewpager2:viewpager2:1.0.0")
-    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
-    implementation("androidx.recyclerview:recyclerview:1.1.0")
-    implementation("androidx.fragment:fragment-ktx:1.3.0-rc01")
-    implementation("androidx.browser:browser:1.3.0")
+    implementation(Libs.Coroutines.core)
+    implementation(Libs.Coroutines.android)
 
-    // Android lifecycle
-    implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
-    implementation("androidx.lifecycle:lifecycle-common-java8:2.3.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.0")
+    implementation(Libs.AndroidX.appCompat)
+    implementation(Libs.AndroidX.media)
+    implementation(Libs.AndroidX.constraintLayout)
+    implementation(Libs.AndroidX.dynamicAnimation)
+    implementation(Libs.AndroidX.preference)
+    implementation(Libs.AndroidX.core)
+    implementation(Libs.AndroidX.viewPager2)
+    implementation(Libs.AndroidX.swipeRefreshLayout)
+    implementation(Libs.AndroidX.recyclerView)
+    implementation(Libs.AndroidX.fragment)
+    implementation(Libs.AndroidX.browser)
+    implementation(Libs.AndroidX.Lifecycle.common)
+    implementation(Libs.AndroidX.Lifecycle.liveData)
+    implementation(Libs.AndroidX.Lifecycle.viewModel)
+    implementation(Libs.AndroidX.workManager)
+    debugImplementation(Libs.AndroidX.startup)
+    "stagingImplementation"(Libs.AndroidX.startup)
+    androidTestImplementation(Libs.AndroidX.Espresso.core)
+    androidTestImplementation(Libs.AndroidX.Espresso.intents)
+    androidTestImplementation(Libs.AndroidX.Espresso.contrib)
+    testImplementation(Libs.AndroidX.Test.junit)
+    androidTestImplementation(Libs.AndroidX.Test.runner)
+    androidTestImplementation(Libs.AndroidX.Test.rules)
+    androidTestImplementation(Libs.AndroidX.Test.junit)
 
-    implementation("com.github.Zhuinden:livedata-combinetuple-kt:1.2.1")
+    implementation(Libs.materialComponents)
+    implementation(Libs.flexbox)
 
-    // WorkManager
-    val workmanager_version = "2.5.0"
-    implementation("androidx.work:work-runtime:$workmanager_version")
-    implementation("androidx.work:work-runtime-ktx:$workmanager_version")
+    implementation(Libs.combineTuple)
 
-    // Okhttp
-    val okhttp3_version = "4.9.1"
-    implementation("com.squareup.okhttp3:logging-interceptor:$okhttp3_version")
-    androidTestImplementation("com.squareup.okhttp3:mockwebserver:$okhttp3_version")
-    implementation("ru.gildor.coroutines:kotlin-coroutines-okhttp:1.0")
+    implementation(Libs.OkHttp.loggingInterceptor)
+    implementation(Libs.OkHttp.coroutines)
+    androidTestImplementation(Libs.OkHttp.mockWebServer)
 
-    // Firebase
-    implementation("com.google.android.gms:play-services-base:17.6.0")
-    implementation("com.google.firebase:firebase-crashlytics:17.3.1")
+    implementation(Libs.Firebase.playServicesBase)
+    implementation(Libs.Firebase.crashlytics)
+    implementation(Libs.Firebase.dynamicLinks)
+    implementation(Libs.Firebase.config)
+    implementation(Libs.Firebase.messaging)
 
-    implementation("com.google.firebase:firebase-dynamic-links:19.1.1")
-    implementation("com.google.firebase:firebase-config:20.0.3")
-    implementation("com.google.firebase:firebase-messaging:21.0.1")
+    implementation(Libs.mixpanel)
 
-    implementation("com.mixpanel.android:mixpanel-android:5.8.6")
+    implementation(Libs.Koin.android)
+    implementation(Libs.Koin.viewModel)
+    androidTestImplementation(Libs.Koin.test)
 
-    // Koin
-    val koin_version = "2.2.2"
-    implementation("org.koin:koin-android:$koin_version")
-    implementation("org.koin:koin-android-viewmodel:$koin_version")
+    implementation(Libs.timber)
+    implementation(Libs.slimber)
 
-    // Timber
-    implementation("com.jakewharton.timber:timber:4.7.1")
+    implementation(Libs.lottie)
 
-    // Slimber
-    implementation("com.github.PaulWoitaschek:Slimber:1.0.7")
+    implementation(Libs.ReactiveX.kotlin)
+    implementation(Libs.ReactiveX.android)
 
-    // Lottie
-    implementation("com.airbnb.android:lottie:3.6.1")
+    implementation(Libs.svg)
 
-    // coroutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.2")
-
-    // ReactiveX
-    implementation("io.reactivex.rxjava2:rxandroid:2.1.1")
-    implementation("io.reactivex.rxjava2:rxkotlin:2.4.0")
-
-    // Svg
-    implementation("com.caverock:androidsvg-aar:1.4")
-
-    // Glide
-    implementation("com.github.bumptech.glide:glide:4.12.0")
-    kapt("com.github.bumptech.glide:compiler:4.12.0")
-    implementation("com.github.bumptech.glide:recyclerview-integration:4.12.0") {
+    implementation(Libs.Glide.base)
+    kapt(Libs.Glide.compiler)
+    implementation(Libs.Glide.recyclerView) {
         isTransitive = false
     }
 
-    // Tooltip
-    implementation("com.github.florent37:viewtooltip:1.2.2")
+    implementation(Libs.tooltip)
 
-    // ZXing
-    implementation("com.google.zxing:core:3.4.1")
+    implementation(Libs.ZXing)
 
-    // insetter
-    implementation("dev.chrisbanes:insetter:0.3.1")
-    implementation("dev.chrisbanes:insetter-ktx:0.3.1")
+    implementation(Libs.insetter)
 
-    // markwon
-    implementation("io.noties.markwon:core:4.6.2")
+    implementation(Libs.markwon)
 
-    // adyen
-    implementation("com.adyen.checkout:drop-in:3.8.2")
+    implementation(Libs.adyen)
 
-    // JSR-354
-    implementation("org.javamoney:moneta:1.4.2")
+    implementation(Libs.moneta)
 
-    // shimmer
-    implementation("com.facebook.shimmer:shimmer:0.5.0")
+    implementation(Libs.shimmer)
 
-    // test
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")
-    androidTestImplementation("androidx.test:runner:1.3.0")
-    androidTestImplementation("androidx.test:rules:1.3.0")
-    androidTestImplementation("androidx.test.ext:junit:1.1.2")
-    androidTestImplementation("androidx.test.espresso:espresso-intents:3.3.0")
-    androidTestImplementation("androidx.test.espresso:espresso-contrib:3.3.0")
-    androidTestImplementation("com.agoda.kakao:kakao:2.4.0")
-    androidTestImplementation(
-        "com.apollographql.apollo:apollo-idling-resource:${Dependencies.Versions.apollo}"
-    )
-    testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.22")
-    androidTestImplementation("com.willowtreeapps.assertk:assertk-jvm:0.22")
-    androidTestImplementation("org.koin:koin-test:$koin_version")
-    androidTestImplementation("io.mockk:mockk-android:1.10.6")
-    androidTestImplementation("com.kaspersky.android-components:kaspresso:1.2.0")
+    androidTestImplementation(Libs.Apollo.idlingResource)
 
-    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.6")
-    debugImplementation("com.shakebugs:shake:14.1.4")
-    "stagingImplementation"("com.shakebugs:shake:14.1.4")
+    testImplementation(Libs.assertK)
+    androidTestImplementation(Libs.assertK)
+    androidTestImplementation(Libs.mockK)
+    androidTestImplementation(Libs.kaspresso)
 
-    debugImplementation("androidx.startup:startup-runtime:1.0.0")
-    "stagingImplementation"("androidx.startup:startup-runtime:1.0.0")
+    debugImplementation(Libs.leakCanary)
+    debugImplementation(Libs.shake)
+    "stagingImplementation"(Libs.shake)
+
 }
 
 apply(plugin = "com.google.gms.google-services")
