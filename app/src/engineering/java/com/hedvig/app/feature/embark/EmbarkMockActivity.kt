@@ -45,7 +45,7 @@ import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION_SWEDIS
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_UNARY_EXPRESSIONS
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_UNARY_REDIRECT
 import com.hedvig.app.util.jsonObjectOf
-import org.koin.android.viewmodel.dsl.viewModel
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 class EmbarkMockActivity : MockActivity() {

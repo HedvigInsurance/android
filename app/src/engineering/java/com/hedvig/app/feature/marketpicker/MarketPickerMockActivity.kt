@@ -15,7 +15,7 @@ import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.marketPickerModule
 import org.koin.android.ext.android.inject
-import org.koin.android.viewmodel.dsl.viewModel
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 class MarketPickerMockActivity : MockActivity() {

@@ -11,7 +11,7 @@ import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import org.koin.android.ext.android.inject
-import org.koin.android.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class MarketPickerFragment : Fragment(R.layout.fragment_market_picker) {
     private val viewModel: MarketPickerViewModel by sharedViewModel()

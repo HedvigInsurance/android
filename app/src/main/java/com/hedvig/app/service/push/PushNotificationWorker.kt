@@ -9,11 +9,9 @@ import com.hedvig.android.owldroid.graphql.RegisterPushTokenMutation
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import e
 import i
-import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-@OptIn(KoinApiExtension::class)
 class PushNotificationWorker(
     val context: Context,
     params: WorkerParameters,

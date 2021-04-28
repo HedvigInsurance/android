@@ -18,7 +18,7 @@ import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import org.koin.android.ext.android.inject
-import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class TerminatedContractsActivity : BaseActivity(R.layout.terminated_contracts_activity) {
     private val binding by viewBinding(TerminatedContractsActivityBinding::bind)

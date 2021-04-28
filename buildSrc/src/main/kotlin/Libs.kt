@@ -1,9 +1,9 @@
 object Libs {
     const val kotlin = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${CommonVersions.kotlin}"
-    const val coreLibraryDesugaring = "com.android.tools:desugar_jdk_libs:1.1.1"
+    const val coreLibraryDesugaring = "com.android.tools:desugar_jdk_libs:1.1.5"
 
     object Coroutines {
-        private const val version = "1.4.2"
+        private const val version = "1.4.3"
         const val core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${version}"
         const val android = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${version}"
     }
@@ -11,20 +11,20 @@ object Libs {
     object AndroidX {
         const val constraintLayout = "androidx.constraintlayout:constraintlayout:2.0.4"
         const val appCompat = "androidx.appcompat:appcompat:1.2.0"
-        const val media = "androidx.media:media:1.2.1"
+        const val media = "androidx.media:media:1.3.0"
         const val dynamicAnimation = "androidx.dynamicanimation:dynamicanimation:1.0.0"
         const val preference = "androidx.preference:preference-ktx:1.1.1"
         const val core = "androidx.core:core-ktx:1.5.0-beta03"
         const val viewPager2 = "androidx.viewpager2:viewpager2:1.0.0"
         const val swipeRefreshLayout = "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
-        const val recyclerView = "androidx.recyclerview:recyclerview:1.1.0"
-        const val fragment = "androidx.fragment:fragment-ktx:1.3.0-rc01"
+        const val recyclerView = "androidx.recyclerview:recyclerview:1.2.0"
+        const val fragment = "androidx.fragment:fragment-ktx:1.3.3"
         const val browser = "androidx.browser:browser:1.3.0"
         const val workManager = "androidx.work:work-runtime-ktx:2.5.0"
         const val startup = "androidx.startup:startup-runtime:1.0.0"
 
         object Lifecycle {
-            private const val version = "2.3.0"
+            private const val version = "2.3.1"
             const val common = "androidx.lifecycle:lifecycle-common-java8:${version}"
             const val liveData = "androidx.lifecycle:lifecycle-livedata-ktx:${version}"
             const val viewModel = "androidx.lifecycle:lifecycle-viewmodel-ktx:${version}"
@@ -50,7 +50,7 @@ object Libs {
     const val combineTuple = "com.github.Zhuinden:livedata-combinetuple-kt:1.2.1"
 
     object OkHttp {
-        private const val version = "4.9.0"
+        private const val version = "4.9.1"
         const val loggingInterceptor = "com.squareup.okhttp3:logging-interceptor:${version}"
         const val mockWebServer = "com.squareup.okhttp3:mockwebserver:${version}"
         const val coroutines = "ru.gildor.coroutines:kotlin-coroutines-okhttp:1.0"
@@ -58,24 +58,23 @@ object Libs {
 
     object Firebase {
         const val playServicesBase = "com.google.android.gms:play-services-base:17.6.0"
-        const val crashlytics = "com.google.firebase:firebase-crashlytics:17.3.1"
+        const val crashlytics = "com.google.firebase:firebase-crashlytics:17.4.1"
         const val dynamicLinks = "com.google.firebase:firebase-dynamic-links:19.1.1"
-        const val config = "com.google.firebase:firebase-config:20.0.3"
-        const val messaging = "com.google.firebase:firebase-messaging:21.0.1"
+        const val config = "com.google.firebase:firebase-config:20.0.4"
+        const val messaging = "com.google.firebase:firebase-messaging:21.1.0"
     }
 
-    const val mixpanel = "com.mixpanel.android:mixpanel-android:5.8.6"
+    const val mixpanel = "com.mixpanel.android:mixpanel-android:5.8.8"
 
     object Koin {
-        private const val version = "2.2.2"
-        const val android = "org.koin:koin-android:${version}"
-        const val viewModel = "org.koin:koin-android-viewmodel:${version}"
-        const val test = "org.koin:koin-test:${version}"
+        private const val version = "3.0.1"
+        const val android = "io.insert-koin:koin-android:${version}"
+        const val test = "io.insert-koin:koin-test:${version}"
     }
 
     const val timber = "com.jakewharton.timber:timber:4.7.1"
     const val slimber = "com.github.PaulWoitaschek:Slimber:1.0.7"
-    const val lottie = "com.airbnb.android:lottie:3.6.1"
+    const val lottie = "com.airbnb.android:lottie:3.7.0"
 
     object ReactiveX {
         const val android = "io.reactivex.rxjava2:rxandroid:2.1.1"
@@ -98,9 +97,9 @@ object Libs {
     const val moneta = "org.javamoney:moneta:1.4.2"
     const val shimmer = "com.facebook.shimmer:shimmer:0.5.0"
     const val kaspresso = "com.kaspersky.android-components:kaspresso:1.2.0"
-    const val assertK = "com.willowtreeapps.assertk:assertk-jvm:0.22"
-    const val mockK = "io.mockk:mockk-android:1.10.6"
-    const val leakCanary = "com.squareup.leakcanary:leakcanary-android:2.6"
+    const val assertK = "com.willowtreeapps.assertk:assertk-jvm:0.23.1"
+    const val mockK = "io.mockk:mockk-android:1.11.0"
+    const val leakCanary = "com.squareup.leakcanary:leakcanary-android:2.7"
     const val shake = "com.shakebugs:shake:14.1.4"
 
     object Apollo {

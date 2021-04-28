@@ -8,7 +8,7 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.ConnectPayoutResultFragmentBinding
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
-import org.koin.android.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class ConnectPayoutResultFragment : Fragment(R.layout.connect_payout_result_fragment) {
     private val model: AdyenConnectPayoutViewModel by sharedViewModel()

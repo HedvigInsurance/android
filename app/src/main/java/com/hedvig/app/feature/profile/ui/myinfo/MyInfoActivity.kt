@@ -22,7 +22,7 @@ import com.hedvig.app.util.validateEmail
 import com.hedvig.app.util.validatePhoneNumber
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
-import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MyInfoActivity : BaseActivity(R.layout.activity_my_info) {
     private val profileViewModel: ProfileViewModel by viewModel()

@@ -7,7 +7,7 @@ import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.testdata.feature.loggedin.NO_WHATS_NEW
 import com.hedvig.app.testdata.feature.loggedin.WHATS_NEW
 import com.hedvig.app.whatsNewModule
-import org.koin.android.viewmodel.dsl.viewModel
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 class LoggedInMockActivity : MockActivity() {

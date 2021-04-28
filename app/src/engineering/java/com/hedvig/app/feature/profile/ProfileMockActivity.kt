@@ -13,7 +13,7 @@ import com.hedvig.app.testdata.feature.profile.PROFILE_DATA
 import com.hedvig.app.testdata.feature.profile.PROFILE_DATA_ADYEN_CONNECTED
 import com.hedvig.app.testdata.feature.profile.PROFILE_DATA_ADYEN_NOT_CONNECTED
 import com.hedvig.app.testdata.feature.profile.PROFILE_DATA_BANK_ACCOUNT_ACTIVE
-import org.koin.android.viewmodel.dsl.viewModel
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 class ProfileMockActivity : MockActivity() {
