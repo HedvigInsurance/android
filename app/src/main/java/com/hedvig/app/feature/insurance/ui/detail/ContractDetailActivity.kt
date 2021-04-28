@@ -29,7 +29,7 @@ import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
 import org.koin.android.ext.android.inject
-import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
     private val binding by viewBinding(ContractDetailActivityBinding::bind)

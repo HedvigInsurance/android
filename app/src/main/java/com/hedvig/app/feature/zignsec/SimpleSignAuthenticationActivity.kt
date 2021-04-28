@@ -19,7 +19,7 @@ import com.hedvig.app.util.extensions.addToBackStack
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
-import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 class SimpleSignAuthenticationActivity : BaseActivity(R.layout.simple_sign_authentication_activity) {

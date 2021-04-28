@@ -14,7 +14,7 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.whenApiVersion
-import org.koin.android.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class PreviousInsurerFragment : Fragment(R.layout.previous_insurer_fragment) {
 

@@ -16,7 +16,7 @@ import com.hedvig.app.util.extensions.setHelperText
 import com.hedvig.app.util.extensions.setMaxLength
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
-import org.koin.android.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.core.parameter.parametersOf
 
 class IdentityInputFragment : Fragment(R.layout.identity_input_fragment) {

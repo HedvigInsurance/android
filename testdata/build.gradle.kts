@@ -11,8 +11,8 @@ android {
 }
 
 dependencies {
-    implementation(kotlin("stdlib", version = Dependencies.Versions.kotlin))
-    coreLibraryDesugaring(Dependencies.coreLibraryDesugaring)
+    implementation(Libs.kotlin)
+    coreLibraryDesugaring(Libs.coreLibraryDesugaring)
 
     implementation(project(":apollo"))
 }

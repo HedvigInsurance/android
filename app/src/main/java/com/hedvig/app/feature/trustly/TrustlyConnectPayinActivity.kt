@@ -12,7 +12,7 @@ import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
 import com.hedvig.app.feature.connectpayin.PostSignExplainerFragment
 import com.hedvig.app.feature.connectpayin.TransitionType
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class TrustlyConnectPayinActivity : BaseActivity(R.layout.fragment_container_activity) {
     private val connectPaymentViewModel: ConnectPaymentViewModel by viewModel()

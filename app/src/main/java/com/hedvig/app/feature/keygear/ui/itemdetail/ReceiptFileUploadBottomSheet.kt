@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.View
 import com.hedvig.app.R
 import com.hedvig.app.ui.fragment.FileUploadBottomSheet
-import org.koin.android.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class ReceiptFileUploadBottomSheet : FileUploadBottomSheet() {
     private val model: KeyGearItemDetailViewModel by sharedViewModel()

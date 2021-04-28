@@ -10,7 +10,7 @@ import com.hedvig.app.feature.home.ui.changeaddress.GetSelfChangeEligibilityUseC
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase
 import com.hedvig.app.feature.home.ui.changeaddress.ViewState
 import com.hedvig.app.genericDevelopmentAdapter
-import org.koin.android.viewmodel.dsl.viewModel
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import java.time.LocalDate
 

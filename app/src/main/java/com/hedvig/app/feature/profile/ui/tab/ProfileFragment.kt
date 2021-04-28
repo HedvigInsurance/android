@@ -26,7 +26,7 @@ import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
 import org.koin.android.ext.android.inject
-import org.koin.android.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import javax.money.MonetaryAmount
 
 class ProfileFragment : Fragment(R.layout.profile_fragment) {

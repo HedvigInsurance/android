@@ -9,7 +9,7 @@ import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.marketManagerModule
 import com.hedvig.app.mocks.MockMarketManager
-import org.koin.android.viewmodel.dsl.viewModel
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 class OnboardingMockActivity : MockActivity() {

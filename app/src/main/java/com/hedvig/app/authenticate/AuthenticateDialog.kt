@@ -22,7 +22,7 @@ import com.hedvig.app.util.extensions.viewBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AuthenticateDialog : DialogFragment() {
     private val model: UserViewModel by viewModel()

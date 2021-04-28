@@ -26,13 +26,13 @@ import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import org.koin.android.ext.android.inject
-import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.lang.IllegalArgumentException
 
 class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
     private val binding by viewBinding(ActivityChoosePlanBinding::bind)
     private val marketProvider: MarketManager by inject()
-    private val viewModel: ChoosePlanViewModel by viewModel()
+    private val model: ChoosePlanViewModel by viewModel()
     private val marketManager: MarketManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,14 +53,14 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
             toolbar.setNavigationOnClickListener { onBackPressed() }
 
             recycler.itemAnimator = ViewHolderReusingDefaultItemAnimator()
-            recycler.adapter = OnboardingAdapter(viewModel, marketProvider)
+            recycler.adapter = OnboardingAdapter(model, marketProvider)
 
             continueButton.setHapticClickListener {
-                val storyName = viewModel.selectedQuoteType.value?.embarkStory?.name ?: throw IllegalArgumentException("No story name found")
-                val storyTitle = viewModel.selectedQuoteType.value?.embarkStory?.title ?: throw IllegalArgumentException("No story title found")
+                val storyName = model.selectedQuoteType.value?.embarkStory?.name ?: throw IllegalArgumentException("No story name found")
+                val storyTitle = model.selectedQuoteType.value?.embarkStory?.title ?: throw IllegalArgumentException("No story title found")
                 startActivity(EmbarkActivity.newInstance(this@ChoosePlanActivity, storyName, storyTitle))
             }
-            viewModel.data.observe(this@ChoosePlanActivity) { response ->
+            model.data.observe(this@ChoosePlanActivity) { response ->
                 val bundles = response.getOrNull()
                 if (response.isFailure || bundles == null) {
                     (recycler.adapter as OnboardingAdapter).submitList(listOf(OnboardingModel.Error))
@@ -69,7 +69,7 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
                 }
                 continueButton.show()
                 getMobileTypesNew(bundles).find { it.selected }?.let {
-                    viewModel.setSelectedQuoteType(it)
+                    model.setSelectedQuoteType(it)
                 }
                 (recycler.adapter as OnboardingAdapter).submitList(
                     listOfNotNull(
@@ -77,9 +77,9 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
                     )
                 )
             }
-            viewModel.load()
-            viewModel.selectedQuoteType.observe(this@ChoosePlanActivity) { selected ->
-                val data = viewModel.data.value?.getOrNull()
+            model.load()
+            model.selectedQuoteType.observe(this@ChoosePlanActivity) { selected ->
+                val data = model.data.value?.getOrNull()
                 val bundles = data?.map {
                     OnboardingModel.Bundle(
                         selected = it.name == selected.embarkStory.name,

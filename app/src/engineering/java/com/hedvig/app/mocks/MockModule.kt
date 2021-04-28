@@ -13,7 +13,7 @@ import com.hedvig.app.feature.offer.MockOfferViewModel
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.profile.MockProfileViewModel
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
-import org.koin.android.viewmodel.dsl.viewModel
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val mockModule = module {

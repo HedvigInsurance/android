@@ -10,7 +10,7 @@ import com.hedvig.app.databinding.ListBottomSheetBinding
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.extensions.viewBinding
 import org.koin.android.ext.android.inject
-import org.koin.android.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class MarketPickerBottomSheet : BottomSheetDialogFragment() {
     private val binding by viewBinding(ListBottomSheetBinding::bind)

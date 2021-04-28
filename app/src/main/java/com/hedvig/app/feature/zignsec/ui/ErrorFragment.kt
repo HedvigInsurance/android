@@ -9,7 +9,7 @@ import com.hedvig.app.databinding.GenericErrorBinding
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
-import org.koin.android.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class ErrorFragment : Fragment(R.layout.generic_error) {
     private val binding by viewBinding(GenericErrorBinding::bind)

@@ -23,7 +23,7 @@ import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.viewBinding
 import org.koin.android.ext.android.inject
-import org.koin.android.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class OfferSignDialog : DialogFragment() {
     private val model: OfferViewModel by sharedViewModel()

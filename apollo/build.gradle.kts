@@ -27,16 +27,14 @@ android {
 }
 
 dependencies {
-    implementation(kotlin("stdlib", version = Dependencies.Versions.kotlin))
-    coreLibraryDesugaring(Dependencies.coreLibraryDesugaring)
+    implementation(Libs.kotlin)
+    coreLibraryDesugaring(Libs.coreLibraryDesugaring)
 
-    implementation("androidx.constraintlayout:constraintlayout:2.0.4")
+    implementation(Libs.AndroidX.constraintLayout)
 
-    // Apollo
-    api("com.apollographql.apollo:apollo-runtime:${Dependencies.Versions.apollo}")
-    api("com.apollographql.apollo:apollo-android-support:${Dependencies.Versions.apollo}")
-    api("com.apollographql.apollo:apollo-coroutines-support:${Dependencies.Versions.apollo}")
+    api(Libs.Apollo.runtime)
+    api(Libs.Apollo.android)
+    api(Libs.Apollo.coroutines)
 
-    // adyen
-    implementation("com.adyen.checkout:drop-in:3.8.2")
+    implementation(Libs.adyen)
 }

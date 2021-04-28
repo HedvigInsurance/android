@@ -7,7 +7,7 @@ import androidx.core.os.bundleOf
 import com.bumptech.glide.RequestBuilder
 import com.hedvig.app.ui.view.ExpandableBottomSheet
 import org.koin.android.ext.android.inject
-import org.koin.android.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class PreviousInsurerBottomSheet : ExpandableBottomSheet() {
 

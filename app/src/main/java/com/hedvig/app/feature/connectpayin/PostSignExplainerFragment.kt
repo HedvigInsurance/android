@@ -11,7 +11,7 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.onBackPressedCallback
 import e
-import org.koin.android.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class PostSignExplainerFragment : Fragment(R.layout.connect_payment_explainer_fragment) {
     private val model: ConnectPaymentViewModel by sharedViewModel()
