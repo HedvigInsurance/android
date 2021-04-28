@@ -39,7 +39,7 @@ import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.whenApiVersion
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import org.koin.android.ext.android.inject
-import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 class EmbarkActivity : BaseActivity(R.layout.activity_embark) {

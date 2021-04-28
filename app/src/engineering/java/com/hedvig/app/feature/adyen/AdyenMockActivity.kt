@@ -11,7 +11,7 @@ import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.marketManagerModule
 import com.hedvig.app.mocks.MockMarketManager
 import com.hedvig.app.util.extensions.makeToast
-import org.koin.android.viewmodel.dsl.viewModel
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 class AdyenMockActivity : MockActivity() {

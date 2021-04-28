@@ -216,7 +216,6 @@ dependencies {
     implementation(Libs.mixpanel)
 
     implementation(Libs.Koin.android)
-    implementation(Libs.Koin.viewModel)
     androidTestImplementation(Libs.Koin.test)
 
     implementation(Libs.timber)

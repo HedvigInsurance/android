@@ -30,13 +30,13 @@ import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.Insetter
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
-import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.time.format.DateTimeFormatter
 
 class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
 
     private val binding by viewBinding(ChangeAddressActivityBinding::bind)
-    private val viewModel: ChangeAddressViewModel by viewModel()
+    private val model: ChangeAddressViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,7 +66,7 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
     }
 
     private fun observeViewModel() {
-        viewModel.viewState.observe(this) { viewState ->
+        model.viewState.observe(this) { viewState ->
             TransitionManager.beginDelayedTransition(binding.root)
             setViewState(viewState)
         }
@@ -115,14 +115,14 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
             },
             buttonText = "Try again",
             buttonIcon = null,
-            onContinue = { viewModel.reload() }
+            onContinue = { model.reload() }
         )
         is SelfChangeError -> setContent(
             titleText = getString(R.string.error_dialog_title),
             subtitleText = viewState.error.message ?: "Could not continue, please try again later",
             buttonText = "Try again",
             buttonIcon = null,
-            onContinue = { viewModel.reload() }
+            onContinue = { model.reload() }
         )
     }
 

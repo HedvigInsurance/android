@@ -21,7 +21,7 @@ import com.hedvig.app.feature.marketpicker.MarketSelectedFragment
 import com.hedvig.app.util.BlurHashDecoder
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
-import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MarketingActivity : BaseActivity(R.layout.activity_marketing) {
     private val model: MarketingViewModel by viewModel()

@@ -15,7 +15,7 @@ import com.hedvig.app.util.extensions.setupToolbar
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
-import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AboutAppActivity : BaseActivity(R.layout.activity_about_app) {
     private val binding by viewBinding(ActivityAboutAppBinding::bind)

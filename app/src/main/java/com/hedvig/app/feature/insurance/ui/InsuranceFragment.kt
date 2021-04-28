@@ -15,7 +15,7 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
 import org.koin.android.ext.android.inject
-import org.koin.android.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
     private val insuranceViewModel: InsuranceViewModel by sharedViewModel()

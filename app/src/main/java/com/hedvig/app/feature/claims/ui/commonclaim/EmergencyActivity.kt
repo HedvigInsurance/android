@@ -26,7 +26,7 @@ import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
-import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class EmergencyActivity : BaseActivity(R.layout.activity_emergency) {
     private val claimsViewModel: ClaimsViewModel by viewModel()

@@ -27,7 +27,7 @@ import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.transitionPair
 import org.koin.android.ext.android.inject
-import org.koin.android.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class KeyGearFragment : Fragment(R.layout.fragment_key_gear) {
 

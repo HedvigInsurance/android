@@ -11,11 +11,11 @@ import com.hedvig.app.feature.onboarding.MoreOptionsViewModel
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
-import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MoreOptionsActivity : BaseActivity(R.layout.activity_more_options) {
     private val binding by viewBinding(ActivityMoreOptionsBinding::bind)
-    private val viewModel: MoreOptionsViewModel by viewModel()
+    private val model: MoreOptionsViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,9 +31,9 @@ class MoreOptionsActivity : BaseActivity(R.layout.activity_more_options) {
                 onBackPressed()
             }
 
-            recycler.adapter = MoreOptionsAdapter(viewModel)
+            recycler.adapter = MoreOptionsAdapter(model)
 
-            viewModel.data.observe(this@MoreOptionsActivity) { result ->
+            model.data.observe(this@MoreOptionsActivity) { result ->
                 if (result.isFailure) {
                     (recycler.adapter as MoreOptionsAdapter).submitList(
                         listOf(

@@ -13,7 +13,7 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import e
 import org.koin.android.ext.android.inject
-import org.koin.android.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class ConnectPaymentResultFragment : Fragment(R.layout.connect_payment_result_fragment) {
     private val binding by viewBinding(ConnectPaymentResultFragmentBinding::bind)
