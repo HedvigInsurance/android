@@ -240,7 +240,8 @@ dependencies {
 
     implementation(Libs.insetter)
 
-    implementation(Libs.markwon)
+    implementation(Libs.Markwon.core)
+    implementation(Libs.Markwon.linkify)
 
     implementation(Libs.adyen)
 

@@ -93,7 +93,13 @@ object Libs {
     const val tooltip = "com.github.florent37:viewtooltip:1.2.2"
     const val ZXing = "com.google.zxing:core:3.4.1"
     const val insetter = "dev.chrisbanes:insetter-ktx:0.3.1"
-    const val markwon = "io.noties.markwon:core:4.6.2"
+
+    object Markwon {
+        private const val version = "4.6.2"
+        const val core = "io.noties.markwon:core:${version}"
+        const val linkify = "io.noties.markwon:linkify:${version}"
+    }
+
     const val moneta = "org.javamoney:moneta:1.4.2"
     const val shimmer = "com.facebook.shimmer:shimmer:0.5.0"
     const val kaspresso = "com.kaspersky.android-components:kaspresso:1.2.0"

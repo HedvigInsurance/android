@@ -23,6 +23,7 @@ import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_INCOMPATIBLE_ACTIO
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_LESS_THAN_EXPRESSION
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_LESS_THAN_OR_EQUALS_EXPRESSION
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_MANY_TOOLTIP
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_MARKDOWN_MESSAGE
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_MULTIPLE_REDIRECTS
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_NOT_EQUALS_EXPRESSION
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_NUMBER_ACTION
@@ -58,6 +59,11 @@ class EmbarkMockActivity : MockActivity() {
     )
 
     override fun adapter() = genericDevelopmentAdapter {
+        header("Markdown message")
+        clickableItem("Kitchen sink") {
+            MockEmbarkViewModel.mockedData = STORY_WITH_MARKDOWN_MESSAGE
+            startActivity(EmbarkActivity.newInstance(context, this.javaClass.name, "Markdown"))
+        }
         header("Date Picker Action")
         clickableItem("Regular") {
             MockEmbarkViewModel.mockedData = STORY_WITCH_DATE_PICKER
