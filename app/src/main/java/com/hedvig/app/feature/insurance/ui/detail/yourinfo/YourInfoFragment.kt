@@ -9,7 +9,7 @@ import com.hedvig.app.databinding.ContractDetailYourInfoFragmentBinding
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
 import com.hedvig.app.util.apollo.stringRes
 import com.hedvig.app.util.extensions.view.updatePadding
-import com.hedvig.app.util.extensions.viewBinding
+import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 

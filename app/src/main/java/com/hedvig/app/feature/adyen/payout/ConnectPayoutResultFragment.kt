@@ -7,7 +7,7 @@ import com.google.android.material.transition.MaterialFadeThrough
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ConnectPayoutResultFragmentBinding
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.viewBinding
+import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class ConnectPayoutResultFragment : Fragment(R.layout.connect_payout_result_fragment) {

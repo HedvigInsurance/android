@@ -202,6 +202,7 @@ dependencies {
     implementation(Libs.flexbox)
 
     implementation(Libs.combineTuple)
+    implementation(Libs.fragmentViewBindingDelegate)
 
     implementation(Libs.OkHttp.loggingInterceptor)
     implementation(Libs.OkHttp.coroutines)

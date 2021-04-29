@@ -12,7 +12,7 @@ import com.hedvig.app.util.extensions.makeKeyboardAware
 import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.extensions.viewBinding
+import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import e
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable

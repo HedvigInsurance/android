@@ -14,9 +14,9 @@ import com.hedvig.app.feature.embark.passages.animateResponse
 import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_MILLIS
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
-import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.hedvig.app.util.whenApiVersion
+import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import e
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn

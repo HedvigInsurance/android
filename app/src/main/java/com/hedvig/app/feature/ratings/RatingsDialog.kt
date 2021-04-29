@@ -13,7 +13,7 @@ import androidx.fragment.app.DialogFragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.DialogRatingsBinding
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.viewBinding
+import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.android.ext.android.inject
 
 class RatingsDialog : DialogFragment() {
