@@ -8,7 +8,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.BottomSheetCharityExplanationBinding
 import com.hedvig.app.util.extensions.setMarkdownText
-import com.hedvig.app.util.extensions.viewBinding
+import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 
 class CharityExplanationBottomSheet : BottomSheetDialogFragment() {
     private val binding by viewBinding(BottomSheetCharityExplanationBinding::bind)

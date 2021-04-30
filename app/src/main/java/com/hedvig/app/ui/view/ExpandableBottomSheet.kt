@@ -17,7 +17,7 @@ import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.extensions.viewBinding
+import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 
 private const val PEEK_HEIGHT = 380
 
@@ -28,7 +28,7 @@ abstract class ExpandableBottomSheet : BottomSheetDialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View = inflater.inflate(R.layout.expandable_bottom_sheet, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -60,7 +60,8 @@ abstract class ExpandableBottomSheet : BottomSheetDialogFragment() {
                                     dialog?.window?.statusBarColor = requireContext().colorAttr(R.attr.colorSurface)
                                     if (!requireContext().isDarkThemeActive) {
                                         dialog?.window?.decorView?.let {
-                                            it.systemUiVisibility = it.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                                            it.systemUiVisibility =
+                                                it.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
                                         }
                                     }
                                 }

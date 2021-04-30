@@ -10,8 +10,8 @@ import com.bumptech.glide.RequestBuilder
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.databinding.DismissiblePageTitleFragmentBinding
-import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.svg.buildRequestBuilder
+import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import e
 
 class DismissiblePageTitleFragment : Fragment(R.layout.dismissible_page_title_fragment) {

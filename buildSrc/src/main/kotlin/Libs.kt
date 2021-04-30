@@ -48,6 +48,7 @@ object Libs {
     const val materialComponents = "com.google.android.material:material:1.3.0"
     const val flexbox = "com.google.android:flexbox:2.0.1"
     const val combineTuple = "com.github.Zhuinden:livedata-combinetuple-kt:1.2.1"
+    const val fragmentViewBindingDelegate = "com.github.Zhuinden:fragmentviewbindingdelegate-kt:1.0.0"
 
     object OkHttp {
         private const val version = "4.9.1"
