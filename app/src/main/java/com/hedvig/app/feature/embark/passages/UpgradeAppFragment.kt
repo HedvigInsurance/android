@@ -5,7 +5,9 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentEmbarkUpgradeAppBinding
+import com.hedvig.app.feature.ratings.canOpenPlayStore
 import com.hedvig.app.feature.ratings.openPlayStore
+import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 
@@ -15,7 +17,11 @@ class UpgradeAppFragment : Fragment(R.layout.fragment_embark_upgrade_app) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.upgradeApp.setHapticClickListener {
-            requireContext().openPlayStore()
+            if (requireContext().canOpenPlayStore()) {
+                requireContext().openPlayStore()
+            } else {
+                requireContext().makeToast(R.string.TOAST_PLAY_STORE_MISSING_ON_DEVICE)
+            }
         }
     }
 
