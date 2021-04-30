@@ -13,7 +13,6 @@ class ShakeInitializer : Initializer<Unit> {
         }
         Shake.getReportConfiguration().isInvokeShakeOnShakeDeviceEvent = true
         Shake.getReportConfiguration().isInvokeShakeOnScreenshot = true
-        Shake.getReportConfiguration().isShowFloatingReportButton = true
         Shake.start(
             context.applicationContext as Application,
             context.getString(R.string.SHAKE_CLIENT_ID),
