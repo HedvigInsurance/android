@@ -48,7 +48,7 @@ class TrackTest : TestCase() {
 
         onScreen<EmbarkScreen> {
             step("Check that initial passage-track is tracked") {
-                verify(exactly = 1) { tracker.track("Enter Passage") }
+                flakySafely { verify(exactly = 1) { tracker.track("Enter Passage") } }
             }
             step("Navigate to next passage, populating store with data") {
                 selectActions {
