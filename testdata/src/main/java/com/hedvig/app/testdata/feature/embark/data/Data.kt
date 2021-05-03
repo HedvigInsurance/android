@@ -1507,3 +1507,21 @@ val STORY_FOR_STORE_VERSIONING = EmbarkStoryDataBuilder(
         STANDARD_THIRD_PASSAGE_BUILDER.build(),
     )
 ).build()
+
+val STORY_WITH_MARKDOWN_MESSAGE = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER
+            .copy(
+                messages = listOf(
+                    MessageBuilder(text="*Hello* **world** ~strikethrough~").build(),
+                    MessageBuilder(text="[link](https://www.example.com)").build(),
+                    MessageBuilder(text="# heading").build(),
+                    MessageBuilder(text=">quote").build(),
+                    MessageBuilder(text="`code`").build(),
+                    MessageBuilder(text="1. one\n2. two").build(),
+                    MessageBuilder(text="- one\n- two").build(),
+                )
+            )
+            .build()
+    )
+).build()

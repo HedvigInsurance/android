@@ -6,10 +6,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
-import kotlinx.android.synthetic.main.embark_message_item.view.message
+import com.hedvig.app.util.extensions.setMarkdownText
+import kotlinx.android.synthetic.main.embark_message_item.view.*
 
 class MessageAdapter(
-    messages: List<String>
+    messages: List<String>,
 ) : ListAdapter<String, MessageAdapter.MessageViewHolder>(GenericDiffUtilItemCallback()) {
 
     init {
@@ -26,7 +27,7 @@ class MessageAdapter(
         private val messageView = itemView.message
 
         fun bind(message: String) {
-            messageView.text = message
+            messageView.setMarkdownText(message)
         }
     }
 }
