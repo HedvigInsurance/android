@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.databinding.MoreOptionsRowBinding
-import com.hedvig.app.feature.onboarding.MoreOptionsViewModel
+import com.hedvig.app.feature.onboarding.MemberIdViewModel
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.inflate
@@ -16,7 +16,7 @@ import com.hedvig.app.util.extensions.putCompoundDrawablesRelativeWithIntrinsicB
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 
-class MoreOptionsAdapter(private val viewModel: MoreOptionsViewModel) :
+class MoreOptionsAdapter(private val viewModel: MemberIdViewModel) :
     ListAdapter<MoreOptionsModel, MoreOptionsAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
@@ -41,16 +41,16 @@ class MoreOptionsAdapter(private val viewModel: MoreOptionsViewModel) :
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        abstract fun bind(item: MoreOptionsModel, viewModel: MoreOptionsViewModel)
+        abstract fun bind(item: MoreOptionsModel, viewModel: MemberIdViewModel)
 
         class Header(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.more_options_header)) {
-            override fun bind(item: MoreOptionsModel, viewModel: MoreOptionsViewModel) = Unit
+            override fun bind(item: MoreOptionsModel, viewModel: MemberIdViewModel) = Unit
         }
 
         class UserIdSuccess(parent: ViewGroup) :
             ViewHolder(parent.inflate(R.layout.more_options_row)) {
             private val binding by viewBinding(MoreOptionsRowBinding::bind)
-            override fun bind(item: MoreOptionsModel, viewModel: MoreOptionsViewModel) {
+            override fun bind(item: MoreOptionsModel, viewModel: MemberIdViewModel) {
                 if (item !is MoreOptionsModel.UserId.Success) {
                     invalid(item)
                     return
@@ -69,7 +69,7 @@ class MoreOptionsAdapter(private val viewModel: MoreOptionsViewModel) :
         class UserIdError(parent: ViewGroup) :
             ViewHolder(parent.inflate(R.layout.more_options_row)) {
             private val binding by viewBinding(MoreOptionsRowBinding::bind)
-            override fun bind(item: MoreOptionsModel, viewModel: MoreOptionsViewModel) {
+            override fun bind(item: MoreOptionsModel, viewModel: MemberIdViewModel) {
                 if (item !is MoreOptionsModel.UserId.Error) {
                     invalid(item)
                     return
@@ -94,7 +94,7 @@ class MoreOptionsAdapter(private val viewModel: MoreOptionsViewModel) :
 
         class Version(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.more_options_row)) {
             private val binding by viewBinding(MoreOptionsRowBinding::bind)
-            override fun bind(item: MoreOptionsModel, viewModel: MoreOptionsViewModel) {
+            override fun bind(item: MoreOptionsModel, viewModel: MemberIdViewModel) {
                 binding.apply {
                     label.apply {
                         setText(R.string.embark_onboarding_more_options_version_label)
@@ -107,7 +107,7 @@ class MoreOptionsAdapter(private val viewModel: MoreOptionsViewModel) :
         }
 
         class Copyright(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.copyright)) {
-            override fun bind(item: MoreOptionsModel, viewModel: MoreOptionsViewModel) = Unit
+            override fun bind(item: MoreOptionsModel, viewModel: MemberIdViewModel) = Unit
         }
     }
 

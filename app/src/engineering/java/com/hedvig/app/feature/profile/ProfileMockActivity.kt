@@ -49,4 +49,13 @@ class ProfileMockActivity : MockActivity() {
         }
         marketSpinner { MockMarketManager.mockedMarket = it }
     }
+
+    private fun startLoggedInActivity() {
+        startActivity(
+            LoggedInActivity.newInstance(
+                this@ProfileMockActivity,
+                initialTab = LoggedInTabs.PROFILE
+            )
+        )
+    }
 }

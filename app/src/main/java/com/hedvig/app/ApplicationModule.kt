@@ -354,10 +354,6 @@ val previousInsViewModel = module {
     viewModel { PreviousInsurerViewModel() }
 }
 
-val moreOptionsModule = module {
-    viewModel<MoreOptionsViewModel> { MoreOptionsViewModelImpl(get()) }
-}
-
 val textActionSetModule = module {
     viewModel { (data: TextActionParameter) -> TextActionViewModel(data) }
 }

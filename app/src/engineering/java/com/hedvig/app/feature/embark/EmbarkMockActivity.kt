@@ -4,10 +4,10 @@ import com.hedvig.app.MockActivity
 import com.hedvig.app.embarkModule
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
-import com.hedvig.app.feature.onboarding.MockMoreOptionsViewModel
-import com.hedvig.app.feature.onboarding.MoreOptionsViewModel
+import com.hedvig.app.feature.onboarding.MemberIdViewModel
+import com.hedvig.app.feature.onboarding.MockMemberIdViewModel
 import com.hedvig.app.genericDevelopmentAdapter
-import com.hedvig.app.moreOptionsModule
+import com.hedvig.app.onboardingModule
 import com.hedvig.app.testdata.feature.embark.data.PREVIOUS_INSURER_STORY
 import com.hedvig.app.testdata.feature.embark.data.PROGRESSABLE_STORY
 import com.hedvig.app.testdata.feature.embark.data.STANDARD_STORY
@@ -50,11 +50,11 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 class EmbarkMockActivity : MockActivity() {
-    override val original = listOf(embarkModule, moreOptionsModule)
+    override val original = listOf(embarkModule, onboardingModule)
     override val mocks = listOf(
         module {
             viewModel<EmbarkViewModel> { MockEmbarkViewModel(get()) }
-            viewModel<MoreOptionsViewModel> { MockMoreOptionsViewModel() }
+            viewModel<MemberIdViewModel> { MockMemberIdViewModel() }
         }
     )
 
@@ -368,7 +368,7 @@ class EmbarkMockActivity : MockActivity() {
         header("More Options")
         clickableItem("More Options Error") {
             MockEmbarkViewModel.mockedData = STANDARD_STORY
-            MockMoreOptionsViewModel.shouldLoad = false
+            MockMemberIdViewModel.shouldLoad = false
             startActivity(MoreOptionsActivity.newInstance(this@EmbarkMockActivity))
         }
         header("Progress")
