@@ -64,7 +64,7 @@ class AboutAppActivity : BaseActivity(R.layout.activity_about_app) {
                 resources.getString(R.string.PROFILE_ABOUT_APP_VERSION, BuildConfig.VERSION_NAME)
 
             profileViewModel.data.observe(this@AboutAppActivity) { data ->
-                data.member.id?.let { id ->
+                data.getOrNull()?.member?.id?.let { id ->
                     memberId.text = resources.getString(R.string.PROFILE_ABOUT_APP_MEMBER_ID, id)
                 }
             }

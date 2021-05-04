@@ -23,7 +23,7 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityLoggedInBinding
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
-import com.hedvig.app.feature.profile.ui.ProfileViewModel
+import com.hedvig.app.feature.onboarding.MemberIdViewModel
 import com.hedvig.app.feature.referrals.ui.ReferralsInformationActivity
 import com.hedvig.app.feature.welcome.WelcomeDialog
 import com.hedvig.app.feature.welcome.WelcomeViewModel
@@ -55,7 +55,8 @@ import javax.money.MonetaryAmount
 class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     private val claimsViewModel: ClaimsViewModel by viewModel()
     private val whatsNewViewModel: WhatsNewViewModel by viewModel()
-    private val profileViewModel: ProfileViewModel by viewModel()
+
+    private val memberIdViewModel: MemberIdViewModel by viewModel()
     private val welcomeViewModel: WelcomeViewModel by viewModel()
     private val loggedInViewModel: LoggedInViewModel by viewModel()
 
@@ -334,8 +335,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 ?.let { referralsIncentive = it }
         }
 
-        profileViewModel.data.observe(this) { data ->
-            data.member.id?.let { id ->
+        memberIdViewModel.data.observe(this) { data ->
+            data.getOrNull()?.member?.id?.let { id ->
                 loggedInTracker.setMemberId(id)
             }
         }

@@ -14,16 +14,40 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 abstract class KeyGearViewModel : ViewModel() {
-    abstract val data: LiveData<KeyGearItemsQuery.Data>
+    abstract val data: LiveData<Result<KeyGearItemsQuery.Data>>
 
     abstract fun sendAutoAddedItems()
+    abstract fun load()
 }
 
 class KeyGearViewModelImpl(
     private val repository: KeyGearItemsRepository,
     private val deviceInformationService: DeviceInformationService
 ) : KeyGearViewModel() {
-    override val data = MutableLiveData<KeyGearItemsQuery.Data>()
+    override val data = MutableLiveData<Result<KeyGearItemsQuery.Data>>()
+
+    init {
+        load()
+    }
+
+    override fun load() {
+        viewModelScope.launch {
+            repository
+                .keyGearItems()
+                .onEach { response ->
+                    response.errors?.let {
+                        data.postValue(Result.failure(Error()))
+                        return@onEach
+                    }
+                    response.data?.let { data.postValue(Result.success(it)) }
+                }
+                .catch { e ->
+                    e(e)
+                    data.postValue(Result.failure(e))
+                }
+                .collect()
+        }
+    }
 
     override fun sendAutoAddedItems() {
         viewModelScope.launch {
@@ -42,18 +66,6 @@ class KeyGearViewModelImpl(
             if (result.isFailure) {
                 result.exceptionOrNull()?.let { e(it) }
             }
-        }
-    }
-
-    init {
-        viewModelScope.launch {
-            repository
-                .keyGearItems()
-                .onEach { response ->
-                    response.data?.let { data.postValue(it) }
-                }
-                .catch { e -> e(e) }
-                .collect()
         }
     }
 }

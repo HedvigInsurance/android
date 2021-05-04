@@ -17,7 +17,7 @@ class OnboardingMockActivity : MockActivity() {
     override val original = listOf(choosePlanModule, marketManagerModule)
     override val mocks = listOf(
         module {
-            viewModel<MoreOptionsViewModel> { MockMoreOptionsViewModel() }
+            viewModel<MemberIdViewModel> { MockMemberIdViewModel() }
             viewModel<ChoosePlanViewModel> { MockChoosePlanViewModel() }
             single<MarketManager> { marketManager }
         }
@@ -32,7 +32,7 @@ class OnboardingMockActivity : MockActivity() {
         header("More Options")
         clickableItem("ID error") {
             MockMarketManager.mockedMarket = Market.NO
-            MockMoreOptionsViewModel.shouldLoad = false
+            MockMemberIdViewModel.shouldLoad = false
             startActivity(MoreOptionsActivity.newInstance(this@OnboardingMockActivity))
         }
     }

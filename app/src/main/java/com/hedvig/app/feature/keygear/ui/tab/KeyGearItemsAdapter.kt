@@ -69,11 +69,6 @@ class KeyGearItemsAdapter(
         }
     }
 
-    companion object {
-        private const val NEW_ITEM = 0
-        private const val ITEM = 1
-    }
-
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         class NewItem(view: View) : ViewHolder(view) {
             val binding by viewBinding(KeyGearAddItemBinding::bind)
@@ -134,5 +129,10 @@ class KeyGearItemsAdapter(
                 }
             }
         }
+    }
+
+    companion object {
+        private const val NEW_ITEM = 0
+        private const val ITEM = 1
     }
 }
