@@ -154,7 +154,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: Homebrew/actions/setup-homebrew@master
-      - run: brew install ktlint
+      - run: brew install ktlint --build-from-source ktlint
       - name: run ktlint
         continue-on-error: true
         run: |
