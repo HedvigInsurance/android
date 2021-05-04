@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.embark.screens
 
-import android.content.Intent
 import android.view.View
 import com.agoda.kakao.dialog.KAlertDialog
 import com.agoda.kakao.edit.KEditText
@@ -26,12 +25,7 @@ class EmbarkScreen : Screen<EmbarkScreen>() {
     val textActionSubmit = KButton { withId(R.id.textActionSubmit) }
 
     val upgradeApp = KButton { withId(R.id.upgradeApp) }
-    val playStoreIntent = KIntent {
-        hasAction(Intent.ACTION_VIEW)
-        hasData {
-            hasScheme("market")
-        }
-    }
+
     val offer = KIntent {
         hasComponent(WebOnboardingActivity::class.java.name)
     }

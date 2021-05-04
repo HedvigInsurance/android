@@ -29,7 +29,7 @@ class RatingsDialog : DialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         parent: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? = inflater.inflate(
         R.layout.dialog_ratings,
         parent,
@@ -64,7 +64,7 @@ class RatingsDialog : DialogFragment() {
                 when (choice) {
                     RatingsChoice.YES -> {
                         tracker.rate()
-                        requireContext().openPlayStore()
+                        requireContext().tryOpenPlayStore()
                         dismissAndStore()
                     }
                     RatingsChoice.NO -> {
