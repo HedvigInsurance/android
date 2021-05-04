@@ -4,9 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.distinctUntilChanged
-import androidx.lifecycle.map
-import com.hedvig.app.feature.embark.passages.multiaction.MultiAction.*
+import com.hedvig.app.feature.embark.passages.multiaction.MultiActionItem.*
 import com.hedvig.app.util.LiveEvent
 import com.hedvig.app.util.extensions.replace
 
@@ -15,7 +13,7 @@ class MultiActionViewModel(
 ) : ViewModel() {
 
     private val _addedComponents = MutableLiveData<List<Component>>(listOf())
-    val components: LiveData<List<MultiAction>> = Transformations.map(_addedComponents) { components ->
+    val components: LiveData<List<MultiActionItem>> = Transformations.map(_addedComponents) { components ->
         val addButton = AddButton(::createNewComponent)
         listOf(addButton) + components
     }
@@ -45,18 +43,31 @@ class MultiActionViewModel(
     }
 
     fun onContinue(addToStore: (String, String) -> Unit) {
-        val componentData = multiActionParams.components.first()
-        _addedComponents.value?.forEach { addedComponent ->
-            componentData.number?.key?.let { numberKey ->
-                addToStore(numberKey, addedComponent.input)
+        multiActionParams.components.map { component ->
+
+            when (component) {
+                is MultiActionComponent.Dropdown -> {
+
+                }
+                is MultiActionComponent.Number -> TODO()
+                is MultiActionComponent.Switch -> TODO()
             }
-            componentData.dropdown?.key?.let { dropDownKey ->
-                addToStore(dropDownKey, addedComponent.selectedDropDown)
-            }
-            componentData.switch?.key?.let { switchKey ->
-                addToStore(switchKey, addedComponent.switch.toString())
+
+            _addedComponents.value?.forEach { addedComponent ->
+                /*
+                component.number?.key?.let { numberKey ->
+                    addToStore(numberKey, addedComponent.inputs)
+                }
+                component.dropdown?.key?.let { dropDownKey ->
+                    addToStore(dropDownKey, addedComponent.selectedDropDown)
+                }
+                component.switch?.key?.let { switchKey ->
+                    addToStore(switchKey, addedComponent.switch.toString())
+                }
+                 */
             }
         }
+
     }
 }
 

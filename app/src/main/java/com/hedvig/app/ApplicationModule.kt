@@ -36,7 +36,7 @@ import com.hedvig.app.feature.embark.ValueStoreImpl
 import com.hedvig.app.feature.embark.passages.datepicker.DatePickerViewModel
 import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionParams
 import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionViewModel
-import com.hedvig.app.feature.embark.passages.multiaction.MultiAction
+import com.hedvig.app.feature.embark.passages.multiaction.MultiActionItem
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionParams
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionViewModel
 import com.hedvig.app.feature.embark.passages.multiaction.add.AddComponentViewModel
@@ -292,7 +292,7 @@ val viewModelModule = module {
     viewModel { DatePickerViewModel() }
     viewModel { params -> SimpleSignAuthenticationViewModel(params.get(), get(), get(), get()) }
     viewModel { (data: MultiActionParams) -> MultiActionViewModel(data) }
-    viewModel { (data: MultiActionParams, componentState: MultiAction.Component?) -> AddComponentViewModel(data, componentState) }
+    viewModel { (componentState: MultiActionItem.Component?, multiActionParams: MultiActionParams) -> AddComponentViewModel(componentState, multiActionParams) }
 }
 
 val choosePlanModule = module {

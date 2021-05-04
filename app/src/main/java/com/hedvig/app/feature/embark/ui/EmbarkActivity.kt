@@ -24,13 +24,9 @@ import com.hedvig.app.feature.embark.passages.datepicker.DatePickerFragment
 import com.hedvig.app.feature.embark.passages.datepicker.DatePickerParams
 import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionFragment
 import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionParams
-import com.hedvig.app.feature.embark.passages.multiaction.Dropdown
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionComponent
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionFragment
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionParams
-import com.hedvig.app.feature.embark.passages.multiaction.Number
-import com.hedvig.app.feature.embark.passages.multiaction.Option
-import com.hedvig.app.feature.embark.passages.multiaction.Switch
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerFragment
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerParameter
 import com.hedvig.app.feature.embark.passages.selectaction.SelectActionFragment
@@ -113,7 +109,8 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
             val offerIds = offerKeys.mapNotNull { model.getFromStore(it) }
             showWebOffer(offerIds)
         } else if (embarkData.passage?.externalRedirect?.data?.location == EmbarkExternalRedirectLocation.OFFER) {
-            val key = model.getFromStore("quoteId") ?: throw IllegalArgumentException("Could not find value with key quoteId from store")
+            val key = model.getFromStore("quoteId")
+                ?: throw IllegalArgumentException("Could not find value with key quoteId from store")
             showWebOffer(listOf(key))
         } else {
             transitionToNextPassage(embarkData.navigationDirection, passage)
@@ -289,36 +286,36 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 passage.messages.map { it.fragments.messageFragment.text },
                 passage.name,
                 multiAction.multiActionData.components.map {
-                    MultiActionComponent(
-                        dropdown = it.asEmbarkDropdownAction?.dropDownActionData?.let { dropdownData ->
-                            Dropdown(
-                                dropdownData.key,
-                                dropdownData.label,
-                                dropdownData.options.map {
-                                    Option(it.text, it.value)
-                                }
-                            )
-                        },
-                        switch = it.asEmbarkSwitchAction?.switchActionData?.let { switchData ->
-                            Switch(
-                                switchData.key,
-                                switchData.label,
-                                switchData.defaultValue
-                            )
-                        },
-                        number = it.asEmbarkNumberAction1?.numberActionData?.let { numberData ->
-                            Number(
-                                numberData.fragments.embarkNumberActionFragment.key,
-                                numberData.fragments.embarkNumberActionFragment.label,
-                                numberData.fragments.embarkNumberActionFragment.placeholder,
-                                numberData.fragments.embarkNumberActionFragment.unit,
-                                numberData.fragments.embarkNumberActionFragment.maxValue,
-                                numberData.fragments.embarkNumberActionFragment.minValue,
-                                numberData.fragments.embarkNumberActionFragment.link.fragments.embarkLinkFragment.label,
-                                numberData.fragments.embarkNumberActionFragment.link.fragments.embarkLinkFragment.name,
-                            )
-                        }
-                    )
+                    val dropDownActionData = it.asEmbarkDropdownAction?.dropDownActionData
+                    val switchActionData = it.asEmbarkSwitchAction?.switchActionData
+                    val numberActionData = it.asEmbarkNumberAction1?.numberActionData
+
+                    when {
+                        dropDownActionData != null -> MultiActionComponent.Dropdown(
+                            dropDownActionData.key,
+                            dropDownActionData.label,
+                            dropDownActionData.options.map {
+                                MultiActionComponent.Dropdown.Option(it.text, it.value)
+                            }
+                        )
+                        switchActionData != null -> MultiActionComponent.Switch(
+                            switchActionData.key,
+                            switchActionData.label,
+                            switchActionData.defaultValue
+                        )
+
+                        numberActionData != null -> MultiActionComponent.Number(
+                            numberActionData.fragments.embarkNumberActionFragment.key,
+                            numberActionData.fragments.embarkNumberActionFragment.label,
+                            numberActionData.fragments.embarkNumberActionFragment.placeholder,
+                            numberActionData.fragments.embarkNumberActionFragment.unit,
+                            numberActionData.fragments.embarkNumberActionFragment.maxValue,
+                            numberActionData.fragments.embarkNumberActionFragment.minValue,
+                            numberActionData.fragments.embarkNumberActionFragment.link.fragments.embarkLinkFragment.label,
+                            numberActionData.fragments.embarkNumberActionFragment.link.fragments.embarkLinkFragment.name,
+                        )
+                        else -> throw java.lang.IllegalArgumentException("Could not match ${it.asEmbarkDropdownAction} to a component")
+                    }
                 }
             )
             return MultiActionFragment.newInstance(params)

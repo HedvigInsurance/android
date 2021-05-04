@@ -9,6 +9,10 @@ class MockEmbarkViewModel(tracker: EmbarkTracker) : EmbarkViewModel(tracker, Val
         fetchStory("")
     }
 
+    init {
+        fetchStory("")
+    }
+
     override fun fetchStory(name: String) {
         if (!shouldLoad) {
             return

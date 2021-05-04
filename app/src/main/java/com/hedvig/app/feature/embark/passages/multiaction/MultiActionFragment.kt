@@ -12,13 +12,11 @@ import com.hedvig.app.feature.embark.passages.animateResponse
 import com.hedvig.app.feature.embark.passages.multiaction.add.AddComponentBottomSheet
 import com.hedvig.app.feature.embark.passages.multiaction.add.AddComponentBottomSheet.Companion.ADD_COMPONENT_REQUEST_KEY
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
-import com.hedvig.app.util.extensions.hideKeyboardWithDelay
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import dev.chrisbanes.insetter.Insetter
-import kotlinx.android.synthetic.main.picker_button.continueButton
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
@@ -46,7 +44,7 @@ class MultiActionFragment : Fragment(R.layout.fragment_embark_multi_action) {
 
         setFragmentResultListener(ADD_COMPONENT_REQUEST_KEY) { requestKey: String, bundle: Bundle ->
             if (requestKey == ADD_COMPONENT_REQUEST_KEY) {
-                bundle.getParcelable<MultiAction.Component>(AddComponentBottomSheet.RESULT)?.let {
+                bundle.getParcelable<MultiActionItem.Component>(AddComponentBottomSheet.RESULT)?.let {
                     multiActionViewModel.onComponentCreated(it)
                 }
             }
@@ -67,7 +65,10 @@ class MultiActionFragment : Fragment(R.layout.fragment_embark_multi_action) {
         binding.continueButton
             .hapticClicks()
             .mapLatest { saveAndAnimate() }
-            .onEach { model.navigateToPassage(multiActionParams.components.first().number?.link!!) }
+            .onEach {
+                // TODO
+                model.navigateToPassage("")
+            }
             .launchIn(viewLifecycleScope)
     }
 
@@ -78,7 +79,7 @@ class MultiActionFragment : Fragment(R.layout.fragment_embark_multi_action) {
         delay(EmbarkActivity.PASSAGE_ANIMATION_DELAY_MILLIS)
     }
 
-    private fun showAddBuildingSheet(componentState: MultiAction.Component?) {
+    private fun showAddBuildingSheet(componentState: MultiActionItem.Component?) {
         AddComponentBottomSheet
             .newInstance(componentState, multiActionParams)
             .show(parentFragmentManager, BOTTOM_SHEET_TAG)

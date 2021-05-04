@@ -13,11 +13,11 @@ import com.hedvig.app.util.extensions.viewBinding
 class MultiActionAdapter(
     private val onComponentClick: (Long) -> Unit,
     private val onComponentRemove: (Long) -> Unit
-) : ListAdapter<MultiAction, MultiActionViewHolder>(GenericDiffUtilItemCallback()) {
+) : ListAdapter<MultiActionItem, MultiActionViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
-        is MultiAction.AddButton -> R.layout.view_multi_action_add
-        is MultiAction.Component -> R.layout.view_multi_action_component
+        is MultiActionItem.AddButton -> R.layout.view_multi_action_add
+        is MultiActionItem.Component -> R.layout.view_multi_action_component
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
@@ -28,11 +28,11 @@ class MultiActionAdapter(
 
     override fun onBindViewHolder(holder: MultiActionViewHolder, position: Int) = when (holder) {
         is ComponentViewHolder -> {
-            val item = (getItem(position) as MultiAction.Component)
+            val item = (getItem(position) as MultiActionItem.Component)
             holder.bind(item, onComponentClick, onComponentRemove)
         }
         is ButtonViewHolder -> {
-            val item = (getItem(position) as MultiAction.AddButton)
+            val item = (getItem(position) as MultiActionItem.AddButton)
             holder.itemView.setOnClickListener {
                 item.onClick()
             }
@@ -48,12 +48,13 @@ class ComponentViewHolder(parent: ViewGroup) : MultiActionViewHolder(parent.infl
     private val binding by viewBinding(ViewMultiActionComponentBinding::bind)
 
     fun bind(
-        item: MultiAction.Component,
+        item: MultiActionItem.Component,
         onComponentClick: (Long) -> Unit,
         onComponentRemove: (Long) -> Unit
     ) {
-        binding.title.text = item.selectedDropDown
-        binding.subtitle.text = "${item.input} ${item.inputUnit}"
+        binding.title.text = item.selectedDropDowns.joinToString { it.value }
+        binding.subtitle.text = item.inputs.joinToString()
+
         binding.removeButton.setOnClickListener {
             onComponentRemove(item.id)
         }
