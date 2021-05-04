@@ -12,7 +12,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.DialogRatingsBinding
-import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.android.ext.android.inject
@@ -65,11 +64,7 @@ class RatingsDialog : DialogFragment() {
                 when (choice) {
                     RatingsChoice.YES -> {
                         tracker.rate()
-                        if (requireContext().canOpenPlayStore()) {
-                            requireContext().openPlayStore()
-                        } else {
-                            requireContext().makeToast(R.string.TOAST_PLAY_STORE_MISSING_ON_DEVICE)
-                        }
+                        requireContext().tryOpenPlayStore()
                         dismissAndStore()
                     }
                     RatingsChoice.NO -> {
