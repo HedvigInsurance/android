@@ -5,6 +5,7 @@
     android:id="@+id/offerRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/gradient_summer_sky"
     tools:context=".feature.offer.ui.OfferActivity">
 
     <androidx.recyclerview.widget.RecyclerView
@@ -21,69 +22,18 @@
         android:id="@+id/offerToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:navigationIcon="@drawable/ic_back"
         tools:layout_height="?attr/actionBarSize">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/toolbar_title"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/base_margin"
-                android:layout_marginEnd="@dimen/base_margin_double"
-                android:layout_marginBottom="@dimen/base_margin"
-                android:orientation="vertical"
-                tools:layout_marginStart="@dimen/base_margin_double">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/OFFER_TITLE"
-                    android:textAppearance="?textAppearanceSubtitle1"
-                    android:textColor="@color/white" />
-
-                <TextView
-                    android:id="@+id/offerToolbarAddress"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?textAppearanceBody2"
-                    android:textColor="@color/white"
-                    tools:text="Storgatan 32" />
-
-            </LinearLayout>
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1" />
-
-            <ImageView
-                android:id="@+id/offerChatButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="@dimen/base_margin_double"
-                android:layout_marginTop="@dimen/base_margin"
-                android:layout_marginEnd="@dimen/base_margin_double"
-                android:layout_marginBottom="@dimen/base_margin"
-                android:background="?selectableItemBackgroundBorderless"
-                android:contentDescription="@string/OFFER_CHAT_ACCESSIBILITY_HINT"
-                app:srcCompat="@drawable/ic_chat_white" />
-
-            <ImageView
-                android:id="@+id/settings"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/settings_custom_offset"
-                android:layout_marginEnd="@dimen/base_margin_double"
-                android:layout_marginBottom="@dimen/base_margin"
-                android:contentDescription="@string/SETTINGS_ACCESSIBILITY_HINT"
-                app:srcCompat="@drawable/ic_settings"
-                app:tint="@color/white" />
-
-        </LinearLayout>
+            android:layout_gravity="center"
+            android:text="@string/APP_NAME"
+            android:textColor="@color/black"
+            android:textSize="26sp"
+            app:titleTextAppearance="@style/Hedvig.TextAppearance.Subtitle1" />
 
     </androidx.appcompat.widget.Toolbar>
 
