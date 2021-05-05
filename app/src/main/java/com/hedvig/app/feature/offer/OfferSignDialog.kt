@@ -28,7 +28,6 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 class OfferSignDialog : DialogFragment() {
     private val model: OfferViewModel by sharedViewModel()
     private val binding by viewBinding(DialogSignBinding::bind)
-    private val tracker: OfferTracker by inject()
     private val marketManager: MarketManager by inject()
 
     val handler = Handler(getMainLooper())
@@ -109,23 +108,7 @@ class OfferSignDialog : DialogFragment() {
                     }
                     SignState.COMPLETED -> {
                         binding.signStatus.setText(R.string.SIGN_SUCCESSFUL)
-                        tracker.userDidSign(
-                            model
-                                .data
-                                .value
-                                ?.lastQuoteOfMember
-                                ?.asCompleteQuote
-                                ?.insuranceCost
-                                ?.fragments
-                                ?.costFragment
-                                ?.monthlyNet
-                                ?.fragments
-                                ?.monetaryAmountFragment
-                                ?.amount
-                                ?.toBigDecimal()
-                                ?.toDouble()
-                                ?: 0.0
-                        )
+                        model.trackUserSign()
                         goToDirectDebit()
                     }
                     else -> {

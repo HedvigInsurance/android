@@ -81,50 +81,37 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             offerToolbar.setNavigationOnClickListener { onBackPressed() }
             offerToolbar.setOnMenuItemClickListener(::handleMenuItem)
 
-            offerScroll.adapter = OfferAdapter(
-                supportFragmentManager,
-                tracker,
-                marketManager
-            ) {
-                model.removeDiscount()
-            }
+            val adapter = OfferAdapter(
+                fragmentManager = supportFragmentManager,
+                tracker = tracker,
+                marketManager = marketManager,
+                removeDiscount = model::removeDiscount
+            )
+            offerScroll.adapter = adapter
 
-            model.data.observe(this@OfferActivity) {
-                it?.let { data ->
-                    if (data.contracts.isNotEmpty()) {
-                        storeBoolean(IS_VIEWING_OFFER, false)
-                        startActivity(
-                            Intent(
-                                this@OfferActivity,
-                                LoggedInActivity::class.java
-                            ).apply {
-                                putExtra(LoggedInActivity.EXTRA_IS_FROM_ONBOARDING, true)
-                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                            }
-                        )
-                    } else {
-                        (offerScroll.adapter as? OfferAdapter)?.submitList(
-                            listOfNotNull(
-                                OfferModel.Header(data),
-                                OfferModel.Info,
-                                OfferModel.Facts(data),
-                                OfferModel.Perils(data),
-                                OfferModel.Terms(data),
-                                data.lastQuoteOfMember.asCompleteQuote?.currentInsurer?.let { currentInsurer ->
-                                    if (currentInsurer.switchable == true) {
-                                        OfferModel.Switcher(currentInsurer.displayName)
-                                    } else {
-                                        null
-                                    }
-                                },
-                                OfferModel.Footer
-                            )
-                        )
-                    }
+            model.viewState.observe(this@OfferActivity) { viewState ->
+                when (viewState) {
+                    OfferViewModel.ViewState.HasContracts -> startLoggedInActivity()
+                    is OfferViewModel.ViewState.OfferItems -> adapter.submitList(viewState.items)
+                    is OfferViewModel.ViewState.Error.GeneralError -> showErrorDialog(viewState.message)
+                    is OfferViewModel.ViewState.Error -> showErrorDialog(getString(R.string.home_tab_error_body))
                 }
             }
         }
+    }
+
+    private fun startLoggedInActivity() {
+        storeBoolean(IS_VIEWING_OFFER, false)
+        startActivity(
+            Intent(
+                this@OfferActivity,
+                LoggedInActivity::class.java
+            ).apply {
+                putExtra(LoggedInActivity.EXTRA_IS_FROM_ONBOARDING, true)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            }
+        )
     }
 
     private fun handleMenuItem(menuItem: MenuItem) = when (menuItem.itemId) {
@@ -153,6 +140,14 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             true
         }
         else -> false
+    }
+
+    private fun showErrorDialog(message: String?) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.error_dialog_title)
+            .setMessage(message)
+            .setPositiveButton(R.string.ALERT_OK) { _, _ -> finish() }
+            .show()
     }
 
     private fun showRestartDialog() {
