@@ -65,7 +65,7 @@ object Libs {
         const val messaging = "com.google.firebase:firebase-messaging:21.1.0"
     }
 
-    const val mixpanel = "com.mixpanel.android:mixpanel-android:5.8.8"
+    const val mixpanel = "com.mixpanel.android:mixpanel-android:5.9.0"
 
     object Koin {
         private const val version = "3.0.1"
@@ -107,7 +107,7 @@ object Libs {
     const val assertK = "com.willowtreeapps.assertk:assertk-jvm:0.23.1"
     const val mockK = "io.mockk:mockk-android:1.11.0"
     const val leakCanary = "com.squareup.leakcanary:leakcanary-android:2.7"
-    const val shake = "com.shakebugs:shake:14.1.4"
+    const val shake = "com.shakebugs:shake:14.1.5"
 
     object Apollo {
         const val runtime = "com.apollographql.apollo:apollo-runtime:${CommonVersions.apollo}"

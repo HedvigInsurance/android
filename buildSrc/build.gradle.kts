@@ -2,10 +2,10 @@ plugins {
     `kotlin-dsl`
 }
 repositories {
-    jcenter()
+    mavenCentral()
     google()
 }
 dependencies {
-    implementation("com.android.tools.build:gradle:4.1.3")
-    implementation(kotlin("gradle-plugin", version = "1.4.10"))
+    implementation("com.android.tools.build:gradle:4.2.0")
+    implementation(kotlin("gradle-plugin", version = "1.4.32"))
 }
