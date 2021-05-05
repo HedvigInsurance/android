@@ -4,13 +4,19 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.view.MenuItem
+import android.widget.Toast
+import androidx.core.graphics.ColorUtils
 import androidx.core.view.doOnLayout
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityOfferBinding
+import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
+import com.hedvig.app.feature.embark.ui.TooltipBottomSheet
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
@@ -18,6 +24,7 @@ import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.boundedColorLerp
+import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.storeBoolean
@@ -27,6 +34,7 @@ import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.lang.Float.min
 
 class OfferActivity : BaseActivity(R.layout.activity_offer) {
     private val model: OfferViewModel by viewModel()
@@ -48,7 +56,6 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
                 applyInsets(view.height)
             }
-            setSupportActionBar(offerToolbar)
 
             offerScroll.doOnApplyWindowInsets { view, insets, initialState ->
                 view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
@@ -64,12 +71,15 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     offerToolbar.setBackgroundColor(
                         boundedColorLerp(
                             Color.TRANSPARENT,
-                            compatColor(R.color.translucent_tool_bar),
+                            colorAttr(android.R.attr.colorBackground),
                             percentage
                         )
                     )
                 }
             })
+
+            offerToolbar.setNavigationOnClickListener { onBackPressed() }
+            offerToolbar.setOnMenuItemClickListener(::handleMenuItem)
 
             offerScroll.adapter = OfferAdapter(
                 supportFragmentManager,
@@ -81,10 +91,6 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
             model.data.observe(this@OfferActivity) {
                 it?.let { data ->
-                    data.lastQuoteOfMember.asCompleteQuote?.street?.let { street ->
-                        offerToolbarAddress.text = street
-                    }
-
                     if (data.contracts.isNotEmpty()) {
                         storeBoolean(IS_VIEWING_OFFER, false)
                         startActivity(
@@ -118,19 +124,47 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     }
                 }
             }
-
-            settings.setHapticClickListener {
-                tracker.settings()
-                startActivity(SettingsActivity.newInstance(this@OfferActivity))
-            }
-
-            offerChatButton.setHapticClickListener {
-                tracker.openChat()
-                model.triggerOpenChat {
-                    startClosableChat(true)
-                }
-            }
         }
+    }
+
+    private fun handleMenuItem(menuItem: MenuItem) = when (menuItem.itemId) {
+        R.id.chat -> {
+            tracker.openChat()
+            model.triggerOpenChat {
+                startClosableChat(true)
+            }
+            true
+        }
+        R.id.app_settings -> {
+            tracker.settings()
+            startActivity(SettingsActivity.newInstance(this))
+            true
+        }
+        R.id.app_info -> {
+            startActivity(MoreOptionsActivity.newInstance(this))
+            true
+        }
+        R.id.login -> {
+            marketManager.market?.openAuth(this, supportFragmentManager)
+            true
+        }
+        R.id.restart -> {
+            showRestartDialog()
+            true
+        }
+        else -> false
+    }
+
+    private fun showRestartDialog() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.settings_alert_restart_onboarding_title)
+            .setMessage(R.string.settings_alert_restart_onboarding_description)
+            .setPositiveButton(R.string.ALERT_OK) { _, _ ->
+                // TODO
+                Toast.makeText(this, "Not implemented", Toast.LENGTH_LONG).show()
+            }
+            .setNegativeButton(R.string.ALERT_CANCEL) { dialog, _ -> dialog.dismiss() }
+            .show()
     }
 
     private fun applyInsets(height: Int) {
@@ -139,12 +173,5 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
     companion object {
         fun newInstance(context: Context) = Intent(context, OfferActivity::class.java)
-
-        val OfferQuery.AsCompleteQuote.street: String?
-            get() {
-                quoteDetails.asSwedishApartmentQuoteDetails?.street?.let { return it }
-                quoteDetails.asSwedishHouseQuoteDetails?.street?.let { return it }
-                return null
-            }
     }
 }
