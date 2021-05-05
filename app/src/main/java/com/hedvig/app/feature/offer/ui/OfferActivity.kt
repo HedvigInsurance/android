@@ -93,7 +93,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 when (viewState) {
                     OfferViewModel.ViewState.HasContracts -> startLoggedInActivity()
                     is OfferViewModel.ViewState.OfferItems -> adapter.submitList(viewState.items)
-                    is OfferViewModel.ViewState.Error.GeneralError -> showErrorDialog(viewState.message)
+                    is OfferViewModel.ViewState.Error.GeneralError -> showErrorDialog(viewState.message ?: getString(R.string.home_tab_error_body))
                     is OfferViewModel.ViewState.Error -> showErrorDialog(getString(R.string.home_tab_error_body))
                 }
             }
@@ -142,7 +142,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         else -> false
     }
 
-    private fun showErrorDialog(message: String?) {
+    private fun showErrorDialog(message: String) {
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.error_dialog_title)
             .setMessage(message)
