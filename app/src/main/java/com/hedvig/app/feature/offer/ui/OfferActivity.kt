@@ -24,6 +24,7 @@ import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.boundedColorLerp
+import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.storeBoolean
@@ -70,7 +71,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     offerToolbar.setBackgroundColor(
                         boundedColorLerp(
                             Color.TRANSPARENT,
-                            compatColor(R.color.colorBackground),
+                            colorAttr(android.R.attr.colorBackground),
                             percentage
                         )
                     )
@@ -78,7 +79,6 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             })
 
             offerToolbar.setNavigationOnClickListener { onBackPressed() }
-            offerToolbar.inflateMenu(R.menu.offer_menu)
             offerToolbar.setOnMenuItemClickListener(::handleMenuItem)
 
             offerScroll.adapter = OfferAdapter(
