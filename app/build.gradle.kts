@@ -22,6 +22,7 @@ android {
         viewBinding = true
         aidl = false
         renderScript = false
+        compose = true
     }
 
     defaultConfig {
@@ -39,6 +40,10 @@ android {
 
     kotlinOptions {
         jvmTarget = "1.8"
+    }
+    composeOptions {
+        kotlinCompilerVersion = CommonVersions.kotlin
+        kotlinCompilerExtensionVersion = CommonVersions.compose
     }
 
     lintOptions {
@@ -149,6 +154,13 @@ dependencies {
     androidTestImplementation(Libs.AndroidX.Test.runner)
     androidTestImplementation(Libs.AndroidX.Test.rules)
     androidTestImplementation(Libs.AndroidX.Test.junit)
+
+    implementation(Libs.AndroidX.Compose.runtime)
+    implementation(Libs.AndroidX.Compose.ui)
+    implementation(Libs.AndroidX.Compose.foundation)
+    implementation(Libs.AndroidX.Compose.material)
+    implementation(Libs.AndroidX.Compose.materialThemeAdapter)
+    implementation(Libs.AndroidX.Compose.activity)
 
     implementation(Libs.materialComponents)
     implementation(Libs.flexbox)

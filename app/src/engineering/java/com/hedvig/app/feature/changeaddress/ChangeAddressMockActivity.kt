@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import com.hedvig.app.MockActivity
 import com.hedvig.app.changeAddressModule
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
+import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressResultActivity
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressViewModel
 import com.hedvig.app.feature.home.ui.changeaddress.GetAddressChangeStoryIdUseCase
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase
@@ -95,6 +96,10 @@ class ChangeAddressMockActivity : MockActivity() {
         clickableItem("Loading") {
             MockChangeAddressViewModel.mockedState = MutableLiveData(ViewState.Loading)
             startActivity(ChangeAddressActivity.newInstance(context))
+        }
+        header("Address change result")
+        clickableItem("Successful") {
+            startActivity(ChangeAddressResultActivity.newInstance(context))
         }
     }
 }

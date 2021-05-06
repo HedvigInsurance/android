@@ -43,6 +43,16 @@ object Libs {
             const val intents = "androidx.test.espresso:espresso-intents:$version"
             const val contrib = "androidx.test.espresso:espresso-contrib:$version"
         }
+
+        object Compose {
+            const val runtime = "androidx.compose.runtime:runtime:${CommonVersions.compose}"
+            const val ui = "androidx.compose.ui:ui:${CommonVersions.compose}"
+            const val foundation = "androidx.compose.foundation:foundation:${CommonVersions.compose}"
+            const val material = "androidx.compose.material:material:${CommonVersions.compose}"
+            const val materialThemeAdapter =
+                "com.google.android.material:compose-theme-adapter:${CommonVersions.compose}"
+            const val activity = "androidx.activity:activity-compose:1.3.0-alpha07"
+        }
     }
 
     const val materialComponents = "com.google.android.material:material:1.3.0"
