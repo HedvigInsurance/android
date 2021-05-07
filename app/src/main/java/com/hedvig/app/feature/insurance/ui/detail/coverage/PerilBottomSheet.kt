@@ -5,16 +5,17 @@ import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
+import androidx.core.view.updatePadding
 import com.bumptech.glide.RequestBuilder
 import com.hedvig.android.owldroid.fragment.PerilFragment
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.ui.view.ExpandableBottomSheet
+import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.isDarkThemeActive
 import e
 import org.koin.android.ext.android.inject
 
 class PerilBottomSheet : ExpandableBottomSheet() {
-
     private val requestBuilder: RequestBuilder<PictureDrawable> by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -26,6 +27,7 @@ class PerilBottomSheet : ExpandableBottomSheet() {
             return
         }
 
+        binding.recycler.updatePadding(bottom = binding.recycler.paddingBottom + 56.dp)
         binding.recycler.adapter = PerilAdapter(requestBuilder).also { adapter ->
             adapter.submitList(
                 expandedList(
@@ -46,17 +48,31 @@ class PerilBottomSheet : ExpandableBottomSheet() {
         info: String,
         covered: List<String>,
         exceptions: List<String>,
-        iconLink: String
-    ) = listOf(
+        iconLink: String,
+    ) = listOfNotNull(
         PerilModel.Icon(iconLink),
         PerilModel.Title(title),
         PerilModel.Description(description),
-        PerilModel.Header.CoveredHeader,
+        if (covered.isNotEmpty()) {
+            PerilModel.Header.CoveredHeader
+        } else {
+            null
+        },
         *covered.map { PerilModel.PerilList.Covered(it) }.toTypedArray(),
-        PerilModel.Header.ExceptionHeader,
+        if (exceptions.isNotEmpty()) {
+            PerilModel.Header.ExceptionHeader
+        } else {
+            null
+        },
         *exceptions.map { PerilModel.PerilList.Exception(it) }.toTypedArray(),
-        PerilModel.Header.InfoHeader,
-        PerilModel.Paragraph(info)
+        *(
+            if (info.isNotBlank()) {
+                arrayOf(PerilModel.Header.InfoHeader, PerilModel.Paragraph(info))
+            } else {
+                emptyArray()
+            }
+            )
+
     )
 
     companion object {
@@ -70,11 +86,11 @@ class PerilBottomSheet : ExpandableBottomSheet() {
                     title = peril.title,
                     description = peril.description,
                     iconUrl = "${BuildConfig.BASE_URL}${
-                    if (context.isDarkThemeActive) {
-                        peril.icon.variants.dark.svgUrl
-                    } else {
-                        peril.icon.variants.light.svgUrl
-                    }
+                        if (context.isDarkThemeActive) {
+                            peril.icon.variants.dark.svgUrl
+                        } else {
+                            peril.icon.variants.light.svgUrl
+                        }
                     }",
                     exception = peril.exceptions,
                     covered = peril.covered,
