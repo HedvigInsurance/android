@@ -1,9 +1,7 @@
 package com.hedvig.app.feature.embark.multiaction
 
-import com.agoda.kakao.common.views.KView
 import com.agoda.kakao.edit.KEditText
 import com.agoda.kakao.edit.KTextInputLayout
-import com.agoda.kakao.text.KButton
 import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
 import com.hedvig.app.feature.embark.passages.multiaction.add.AddComponentBottomSheet
@@ -18,5 +16,4 @@ object AddBuildingBottomSheetScreen : KScreen<AddBuildingBottomSheetScreen>() {
 
     val numberLayout = KTextInputLayout { withId(R.id.numberLayout) }
     val numberInput = KEditText { withId(R.id.numberInput) }
-
 }

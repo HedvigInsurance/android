@@ -34,12 +34,12 @@ import com.hedvig.app.feature.embark.EmbarkViewModelImpl
 import com.hedvig.app.feature.embark.ValueStore
 import com.hedvig.app.feature.embark.ValueStoreImpl
 import com.hedvig.app.feature.embark.passages.datepicker.DatePickerViewModel
-import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionParams
-import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionViewModel
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionItem
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionParams
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionViewModel
 import com.hedvig.app.feature.embark.passages.multiaction.add.AddComponentViewModel
+import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionParams
+import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionViewModel
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerViewModel
 import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
 import com.hedvig.app.feature.embark.passages.textaction.TextActionViewModel
@@ -249,19 +249,19 @@ val applicationModule = module {
 
 fun makeUserAgent(context: Context, market: Market?) =
     "${
-        BuildConfig.APPLICATION_ID
+    BuildConfig.APPLICATION_ID
     } ${
-        BuildConfig.VERSION_NAME
+    BuildConfig.VERSION_NAME
     } (Android ${
-        Build.VERSION.RELEASE
+    Build.VERSION.RELEASE
     }; ${
-        Build.BRAND
+    Build.BRAND
     } ${
-        Build.MODEL
+    Build.MODEL
     }; ${
-        Build.DEVICE
+    Build.DEVICE
     }; ${
-        getLocale(context, market).language
+    getLocale(context, market).language
     })"
 
 fun makeLocaleString(context: Context, market: Market?): String = getLocale(context, market).toLanguageTag()

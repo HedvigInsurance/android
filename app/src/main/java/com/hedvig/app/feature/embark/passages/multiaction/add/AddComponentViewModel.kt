@@ -10,9 +10,7 @@ import com.hedvig.app.util.LiveEvent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.startWith
 import java.util.UUID
 
 class AddComponentViewModel(

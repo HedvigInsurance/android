@@ -1,9 +1,6 @@
 package com.hedvig.app.util
 
 import com.hedvig.app.feature.embark.ValueStore
-import com.hedvig.app.feature.settings.Market
-import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.marketManagerModule
 import com.hedvig.app.valueStoreModule
 import io.mockk.every
 import io.mockk.mockk

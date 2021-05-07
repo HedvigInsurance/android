@@ -1,8 +1,6 @@
 package com.hedvig.app.feature.embark.passages.multiaction.add
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,13 +17,13 @@ import com.hedvig.app.databinding.DialogAddBuildingBinding
 import com.hedvig.app.databinding.LayoutComponentDropdownBinding
 import com.hedvig.app.databinding.LayoutComponentNumberBinding
 import com.hedvig.app.databinding.LayoutComponentSwitchBinding
-import com.hedvig.app.feature.embark.passages.multiaction.MultiActionItem
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionComponent
+import com.hedvig.app.feature.embark.passages.multiaction.MultiActionItem
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionParams
 import com.hedvig.app.util.extensions.hideKeyboard
 import com.hedvig.app.util.extensions.onImeAction
 import com.hedvig.app.util.extensions.viewBinding
-import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 class AddComponentBottomSheet : BottomSheetDialogFragment() {

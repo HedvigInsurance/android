@@ -32,5 +32,4 @@ object MultiActionScreen : KScreen<MultiActionScreen>() {
     }
 
     val continueButton = KButton { withId(R.id.continueButton) }
-
 }

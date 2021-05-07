@@ -39,4 +39,3 @@ sealed class MultiActionItem {
         val value: Boolean,
     ) : Parcelable
 }
-

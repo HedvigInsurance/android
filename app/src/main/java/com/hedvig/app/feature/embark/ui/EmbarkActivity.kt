@@ -23,11 +23,11 @@ import com.hedvig.app.feature.embark.NavigationDirection
 import com.hedvig.app.feature.embark.passages.UpgradeAppFragment
 import com.hedvig.app.feature.embark.passages.datepicker.DatePickerFragment
 import com.hedvig.app.feature.embark.passages.datepicker.DatePickerParams
-import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionFragment
-import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionParams
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionComponent
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionFragment
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionParams
+import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionFragment
+import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionParams
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerFragment
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerParameter
 import com.hedvig.app.feature.embark.passages.selectaction.SelectActionFragment

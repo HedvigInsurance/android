@@ -45,5 +45,4 @@ sealed class MultiActionComponent : Parcelable {
         val minValue: Int?,
         val submitLabel: String,
     ) : MultiActionComponent()
-
 }

@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentEmbarkMultiActionBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
@@ -22,7 +21,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
-import org.koin.android.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.core.parameter.parametersOf
 
 class MultiActionFragment : Fragment(R.layout.fragment_embark_multi_action) {

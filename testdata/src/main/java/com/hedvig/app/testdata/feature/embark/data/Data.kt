@@ -1483,7 +1483,6 @@ val STORY_WITH_COMPUTED_VALUE = EmbarkStoryDataBuilder(
     )
 ).build()
 
-
 val STORY_FOR_STORE_VERSIONING = EmbarkStoryDataBuilder(
     passages = listOf(
         STANDARD_FIRST_PASSAGE_BUILDER
@@ -1501,10 +1500,13 @@ val STORY_FOR_STORE_VERSIONING = EmbarkStoryDataBuilder(
                 redirects = listOf(
                     RedirectBuilder(
                         to = LINK_TO_THIRD_PASSAGE.name,
-                        expression = ExpressionBuilder(ExpressionBuilder.ExpressionType.EQUALS,
+                        expression = ExpressionBuilder(
+                            ExpressionBuilder.ExpressionType.EQUALS,
                             key = "FOO",
-                            value = "BAR").build()
-                    ).build())
+                            value = "BAR"
+                        ).build()
+                    ).build()
+                )
             )
             .build(),
         STANDARD_THIRD_PASSAGE_BUILDER.build()
@@ -1518,7 +1520,7 @@ val STORY_WITH_MULTI_ACTION = EmbarkStoryDataBuilder(
             id = "1",
             response = MessageBuilder(
                 text = "{TestPassageResult}"
-            ).build(),
+            ).buildMessageResponse(),
             messages = listOf(
                 MessageFragment(
                     text = "OK. We need some information about any extra buildings on the site, if you want them to be covered by the insurance",
@@ -1539,7 +1541,7 @@ val STORY_WITH_MULTI_ACTION = EmbarkStoryDataBuilder(
             id = "2",
             response = MessageBuilder(
                 text = "{TestPassageResult}"
-            ).build(),
+            ).buildMessageResponse(),
             messages = listOf(
                 MessageBuilder(
                     text = "Computed value is previous input + 3 = {BAR}"
