@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentEmbarkMultiActionBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
@@ -57,6 +58,7 @@ class MultiActionFragment : Fragment(R.layout.fragment_embark_multi_action) {
         binding.apply {
             messages.adapter = MessageAdapter(multiActionParams.messages)
             componentContainer.adapter = adapter
+            continueButton.text = multiActionParams.addLabel
         }
 
         multiActionViewModel.components.observe(viewLifecycleOwner, adapter::submitList)

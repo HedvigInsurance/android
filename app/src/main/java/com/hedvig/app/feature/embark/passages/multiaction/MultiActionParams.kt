@@ -5,8 +5,12 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class MultiActionParams(
+    val key: String,
     val messages: List<String>,
     val passageName: String,
+    val link: String,
+    val addLabel: String,
+    val maxAmount: Int,
     val components: List<MultiActionComponent>
 ) : Parcelable
 
@@ -39,7 +43,6 @@ sealed class MultiActionComponent : Parcelable {
         val unit: String?,
         val maxValue: Int?,
         val minValue: Int?,
-        val link: String,
         val submitLabel: String,
     ) : MultiActionComponent()
 

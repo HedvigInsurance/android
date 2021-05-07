@@ -144,6 +144,12 @@ query EmbarkStory($name: String!, $locale: String!) {
         }
         ... on EmbarkMultiAction {
           multiActionData: data {
+            key
+            maxAmount
+            addLabel
+            link {
+              ... EmbarkLinkFragment
+            }
             components {
               ... on EmbarkNumberAction {
                 numberActionData: data {

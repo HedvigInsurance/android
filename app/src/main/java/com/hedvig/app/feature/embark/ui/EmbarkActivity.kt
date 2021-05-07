@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.observe
 import androidx.transition.Transition
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialFadeThrough
@@ -283,9 +284,13 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
 
         passage?.action?.asEmbarkMultiAction?.let { multiAction ->
             val params = MultiActionParams(
-                passage.messages.map { it.fragments.messageFragment.text },
-                passage.name,
-                multiAction.multiActionData.components.map {
+                key = multiAction.multiActionData.key ?: "",
+                link = multiAction.multiActionData.link.fragments.embarkLinkFragment.name,
+                addLabel = multiAction.multiActionData.addLabel ?: getString(R.string.continue_button),
+                maxAmount = multiAction.multiActionData.maxAmount.toInt(),
+                messages = passage.messages.map { it.fragments.messageFragment.text },
+                passageName = passage.name,
+                components = multiAction.multiActionData.components.map {
                     val dropDownActionData = it.asEmbarkDropdownAction?.dropDownActionData
                     val switchActionData = it.asEmbarkSwitchAction?.switchActionData
                     val numberActionData = it.asEmbarkNumberAction1?.numberActionData
@@ -311,8 +316,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                             numberActionData.fragments.embarkNumberActionFragment.unit,
                             numberActionData.fragments.embarkNumberActionFragment.maxValue,
                             numberActionData.fragments.embarkNumberActionFragment.minValue,
-                            numberActionData.fragments.embarkNumberActionFragment.link.fragments.embarkLinkFragment.label,
-                            numberActionData.fragments.embarkNumberActionFragment.link.fragments.embarkLinkFragment.name,
+                            numberActionData.fragments.embarkNumberActionFragment.link.fragments.embarkLinkFragment.label
                         )
                         else -> throw java.lang.IllegalArgumentException("Could not match ${it.asEmbarkDropdownAction} to a component")
                     }

@@ -34,7 +34,9 @@ class AddComponentViewModel(
         }
     }
 
-    val inputsViewState = inputStates.asLiveData()
+    val inputsViewState = inputStates
+        .debounce(750)
+        .asLiveData()
 
     val viewState: LiveData<ViewState> = combine(
         inputStates,

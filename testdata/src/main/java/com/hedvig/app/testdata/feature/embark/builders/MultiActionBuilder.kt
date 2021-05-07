@@ -18,6 +18,14 @@ data class MultiActionBuilder(
         asEmbarkNumberActionSet = null,
         asEmbarkMultiAction = EmbarkStoryQuery.AsEmbarkMultiAction(
             multiActionData = EmbarkStoryQuery.MultiActionData(
+                key = "testkey",
+                addLabel = "Continue",
+                maxAmount = "2",
+                link = EmbarkStoryQuery.Link4(
+                    fragments = EmbarkStoryQuery.Link4.Fragments(
+                        embarkLinkFragment = link
+                    )
+                ),
                 components = listOf(
                     EmbarkStoryQuery.Component(
                         asEmbarkDropdownAction = EmbarkStoryQuery.AsEmbarkDropdownAction(
@@ -44,17 +52,6 @@ data class MultiActionBuilder(
                         asEmbarkNumberAction1 = null
                     ),
                     EmbarkStoryQuery.Component(
-                        asEmbarkSwitchAction = EmbarkStoryQuery.AsEmbarkSwitchAction(
-                            switchActionData = EmbarkStoryQuery.SwitchActionData(
-                                label = "Water connected",
-                                key = "water",
-                                defaultValue = true
-                            )
-                        ),
-                        asEmbarkDropdownAction = null,
-                        asEmbarkNumberAction1 = null
-                    ),
-                    EmbarkStoryQuery.Component(
                         asEmbarkNumberAction1 = EmbarkStoryQuery.AsEmbarkNumberAction1(
                             numberActionData = EmbarkStoryQuery.NumberActionData1(
                                 fragments = EmbarkStoryQuery.NumberActionData1.Fragments(
@@ -76,7 +73,18 @@ data class MultiActionBuilder(
                         ),
                         asEmbarkDropdownAction = null,
                         asEmbarkSwitchAction = null
-                    )
+                    ),
+                    EmbarkStoryQuery.Component(
+                        asEmbarkSwitchAction = EmbarkStoryQuery.AsEmbarkSwitchAction(
+                            switchActionData = EmbarkStoryQuery.SwitchActionData(
+                                label = "Water connected",
+                                key = "water",
+                                defaultValue = true
+                            )
+                        ),
+                        asEmbarkDropdownAction = null,
+                        asEmbarkNumberAction1 = null
+                    ),
                 )
             )
         ),

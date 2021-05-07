@@ -143,4 +143,92 @@ class MultiActionTest : TestCase() {
             }
         }
     }
+
+    @Test
+    fun addMaxComponents() = run {
+        activityRule.launch(EmbarkActivity.newInstance(context(), this.javaClass.name, ""))
+
+        step("Press add building to display bottom sheet") {
+            MultiActionScreen {
+                multiActionList {
+                    childAt<MultiActionScreen.AddBuildingButton>(0) {
+                        click()
+                    }
+                }
+            }
+        }
+
+        step("Add building") {
+            AddBuildingBottomSheetScreen {
+                dropDownMenu {
+                    click()
+                }
+
+                onView(withText("Attefall"))
+                    .inRoot(RootMatchers.isPlatformPopup())
+                    .perform(click());
+
+                numberInput {
+                    typeText("23")
+                    pressImeAction()
+                }
+            }
+
+            MultiActionScreen {
+                continueButton {
+                    isEnabled()
+                    click()
+                }
+            }
+        }
+
+        step("Press add building to display bottom sheet") {
+            MultiActionScreen {
+                multiActionList {
+                    childAt<MultiActionScreen.AddBuildingButton>(0) {
+                        click()
+                    }
+                }
+            }
+        }
+
+        step("Add another building") {
+            AddBuildingBottomSheetScreen {
+                dropDownMenu {
+                    click()
+                }
+
+                onView(withText("Friggebod"))
+                    .inRoot(RootMatchers.isPlatformPopup())
+                    .perform(click());
+
+                numberInput {
+                    typeText("124")
+                    pressImeAction()
+                }
+            }
+
+            MultiActionScreen {
+                continueButton {
+                    isEnabled()
+                    click()
+                }
+            }
+        }
+
+        step("Check that add building button is not visible") {
+            MultiActionScreen {
+                multiActionList {
+                    childAt<MultiActionScreen.Component>(0) {
+                        title.hasText("Attefall")
+                    }
+                    childAt<MultiActionScreen.Component>(1) {
+                        title.hasText("Friggebod")
+                    }
+                    hasSize(2)
+                }
+            }
+        }
+    }
+
 }
