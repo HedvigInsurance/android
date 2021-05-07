@@ -10,6 +10,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.os.bundleOf
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.setFragmentResult
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.textfield.TextInputLayout
@@ -101,13 +102,9 @@ class AddComponentBottomSheet : BottomSheetDialogFragment() {
                 requireContext().hideKeyboard(numberInput)
             }
 
-            numberInput.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-                override fun afterTextChanged(s: Editable?) {}
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    viewModel.onNumberChanged(number.key, s.toString(), number.minValue, number.maxValue, number.unit)
-                }
-            })
+            numberInput.doOnTextChanged { text, _, _, _ ->
+                viewModel.onNumberChanged(number.key, text.toString(), number.minValue, number.maxValue, number.unit)
+            }
 
             viewModel.inputsViewState.observe(viewLifecycleOwner) {
                 when (it[number.key]) {
