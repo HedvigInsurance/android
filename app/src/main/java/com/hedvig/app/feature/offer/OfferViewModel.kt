@@ -20,7 +20,8 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 abstract class OfferViewModel : ViewModel() {
-    abstract val viewState: LiveData<ViewState>
+    protected val _viewState = MutableLiveData<ViewState>()
+    val viewState: LiveData<ViewState> = _viewState
     abstract val autoStartToken: MutableLiveData<SignOfferMutation.Data>
     abstract val signStatus: MutableLiveData<SignStatusFragment>
     abstract val signError: MutableLiveData<Boolean>
@@ -32,7 +33,6 @@ abstract class OfferViewModel : ViewModel() {
     abstract fun manuallyRecheckSignStatus()
     abstract fun chooseStartDate(id: String, date: LocalDate)
     abstract fun removeStartDate(id: String)
-    abstract fun trackUserSign()
 
     sealed class ViewState {
         data class OfferItems(val items: List<OfferModel>) : ViewState()
@@ -40,18 +40,14 @@ abstract class OfferViewModel : ViewModel() {
             data class GeneralError(val message: String?) : Error()
             object EmptyResponse : Error()
         }
+
         object HasContracts : ViewState()
     }
 }
 
 class OfferViewModelImpl(
-    private val offerRepository: OfferRepository,
-    private val tracker: OfferTracker
+    private val offerRepository: OfferRepository
 ) : OfferViewModel() {
-
-    private val _viewState = MutableLiveData<ViewState>()
-    override val viewState: LiveData<ViewState>
-        get() = _viewState
 
     override val autoStartToken = MutableLiveData<SignOfferMutation.Data>()
     override val signStatus = MutableLiveData<SignStatusFragment>()
@@ -176,13 +172,6 @@ class OfferViewModelImpl(
                 return@launch
             }
             response.getOrNull()?.data?.let { offerRepository.removeStartDateFromCache(it) }
-        }
-    }
-
-    override fun trackUserSign() {
-        viewModelScope.launch {
-            val price = offerRepository.offer().firstOrNull()?.priceOrNull() ?: 0.0
-            tracker.userDidSign(price)
         }
     }
 }

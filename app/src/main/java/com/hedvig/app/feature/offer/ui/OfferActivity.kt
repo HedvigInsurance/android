@@ -102,15 +102,10 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
     private fun startLoggedInActivity() {
         storeBoolean(IS_VIEWING_OFFER, false)
-        startActivity(
-            Intent(
-                this@OfferActivity,
-                LoggedInActivity::class.java
-            ).apply {
-                putExtra(LoggedInActivity.EXTRA_IS_FROM_ONBOARDING, true)
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            }
+        LoggedInActivity.newInstance(
+            context = this,
+            isFromOnboarding = true,
+            withoutHistory = true
         )
     }
 

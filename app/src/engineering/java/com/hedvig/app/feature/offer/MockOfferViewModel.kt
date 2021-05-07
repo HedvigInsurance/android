@@ -19,10 +19,6 @@ import java.time.LocalDate
 
 class MockOfferViewModel : OfferViewModel() {
 
-    private val _viewState = MutableLiveData<ViewState>()
-    override val viewState: LiveData<ViewState>
-        get() = _viewState
-
     override val autoStartToken = MutableLiveData<SignOfferMutation.Data>()
     override val signStatus = MutableLiveData<SignStatusFragment>()
     override val signError = MutableLiveData<Boolean>()
@@ -71,10 +67,6 @@ class MockOfferViewModel : OfferViewModel() {
                 )
             )
         )
-    }
-
-    override fun trackUserSign() {
-
     }
 
     companion object {
