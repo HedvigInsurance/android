@@ -53,7 +53,15 @@ class ComponentViewHolder(parent: ViewGroup) : MultiActionViewHolder(parent.infl
         onComponentRemove: (Long) -> Unit
     ) {
         binding.title.text = item.selectedDropDowns.joinToString { it.value }
-        binding.subtitle.text = item.inputs.joinToString()
+
+        val switchLabels = item.switches
+            .filter { it.value }
+            .takeIf { it.isNotEmpty() }
+            ?.joinToString(prefix = " ・ ") { it.label } ?: ""
+
+        val inputLabels = item.inputs.joinToString()
+
+        binding.subtitle.text = inputLabels + switchLabels
 
         binding.removeButton.setOnClickListener {
             onComponentRemove(item.id)

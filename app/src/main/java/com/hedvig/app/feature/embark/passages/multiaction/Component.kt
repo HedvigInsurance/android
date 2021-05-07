@@ -36,6 +36,7 @@ sealed class MultiActionItem {
     @Parcelize
     data class Switch(
         val key: String,
+        val label: String,
         val value: Boolean,
     ) : Parcelable
 }

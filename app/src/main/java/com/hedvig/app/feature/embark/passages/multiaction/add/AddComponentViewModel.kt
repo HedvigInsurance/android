@@ -27,7 +27,7 @@ class AddComponentViewModel(
             when (it) {
                 is MultiActionComponent.Dropdown -> onDropDownChanged(it.key, null)
                 is MultiActionComponent.Number -> onNumberChanged(it.key, null, it.minValue, it.maxValue, null)
-                is MultiActionComponent.Switch -> onSwitchChanged(it.key, it.defaultValue)
+                is MultiActionComponent.Switch -> onSwitchChanged(it.key, it.defaultValue, it.label)
             }
         }
     }
@@ -77,7 +77,8 @@ class AddComponentViewModel(
         switches = switchStates.value.map {
             MultiActionItem.Switch(
                 key = it.key,
-                value = it.value.checked
+                value = it.value.checked,
+                label = it.value.label
             )
         }
     )
@@ -93,9 +94,9 @@ class AddComponentViewModel(
         }
     }
 
-    fun onSwitchChanged(key: String, checked: Boolean) {
+    fun onSwitchChanged(key: String, checked: Boolean, label: String) {
         switchStates.value = switchStates.value.toMutableMap().apply {
-            put(key, SwitchState(checked))
+            put(key, SwitchState(checked, label))
         }
     }
 
@@ -131,7 +132,10 @@ class AddComponentViewModel(
         object NotSelected : DropDownState()
     }
 
-    data class SwitchState(val checked: Boolean)
+    data class SwitchState(
+        val checked: Boolean,
+        val label: String,
+    )
 
     sealed class ViewState {
         object Invalid : ViewState()

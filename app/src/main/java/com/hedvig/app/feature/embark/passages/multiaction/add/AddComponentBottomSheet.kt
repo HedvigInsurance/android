@@ -125,7 +125,7 @@ class AddComponentBottomSheet : BottomSheetDialogFragment() {
             componentSwitch.text = switch.label
             componentSwitch.isChecked = switch.defaultValue
             componentSwitch.setOnCheckedChangeListener { _, isChecked ->
-                viewModel.onSwitchChanged(switch.key, isChecked)
+                viewModel.onSwitchChanged(switch.key, isChecked, switch.label)
             }
 
             componentState?.switches?.firstOrNull { it.key == switch.key }?.let {
