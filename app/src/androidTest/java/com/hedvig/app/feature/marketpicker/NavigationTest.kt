@@ -34,7 +34,7 @@ class NavigationTest : TestCase() {
     @Test
     fun shouldShowPickerIfNoMarketIsSelected() = run {
         every {
-            marketRule.marketManager.hasSelectedMarket()
+            marketRule.marketManager.hasSelectedMarket
         }.returns(false)
 
         activityRule.launch()
@@ -47,7 +47,7 @@ class NavigationTest : TestCase() {
     @Test
     fun shouldShowMarketSelectedIfMarketSelected() = run {
         every {
-            marketRule.marketManager.hasSelectedMarket()
+            marketRule.marketManager.hasSelectedMarket
         }.returns(true)
 
         activityRule.launch()

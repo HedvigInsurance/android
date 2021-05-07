@@ -47,7 +47,7 @@ class KnownGeoTest : TestCase() {
     @Test
     fun shouldPreselectMarketWhenUserIsInSupportedGeoArea() = run {
         every {
-            marketRule.marketManager.hasSelectedMarket()
+            marketRule.marketManager.hasSelectedMarket
         }.returns(false)
 
         every {
