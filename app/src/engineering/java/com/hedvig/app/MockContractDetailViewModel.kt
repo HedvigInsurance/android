@@ -1,6 +1,7 @@
 package com.hedvig.app
 
-import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement
+import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase
+import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement.UpcomingAgreementTable
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
 import com.hedvig.app.feature.insurance.ui.detail.coverage.CoverageModel
 import com.hedvig.app.feature.insurance.ui.detail.documents.DocumentsModel
@@ -21,30 +22,47 @@ class MockContractDetailViewModel : ContractDetailViewModel() {
             contract?.let {
                 _data.value = Result.success(it)
                 _yourInfoList.value = listOf(YourInfoModel.PendingAddressChange(
-                    upcomingAgreement = UpcomingAgreement(
-                        address = UpcomingAgreement.Address(
-                            street = "Test Address 12",
-                            postalCode = "11234",
-                            city = "Test City"
-                        ),
-                        squareMeters = 123,
-                        activeFrom = LocalDate.of(2021, 4, 8),
-                        addressType = R.string.SWEDISH_APARTMENT_LOB_RENT,
-                        nrOfCoInsured = 2,
-                        yearBuilt = 2010,
-                        numberOfBaths = 2,
-                        partlySubleted = true,
-                        ancillaryArea = 32,
-                        extraBuildings = listOf(
-                            UpcomingAgreement.Building(
-                                name = "Garage",
-                                area = 22,
-                                hasWaterConnected = true
-                            ),
-                            UpcomingAgreement.Building(
-                                name = "Attefall",
-                                area = 15,
-                                hasWaterConnected = false
+                    upcomingAgreement = GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement(
+                        activeFrom = LocalDate.of(2021, 1, 30),
+                        address = "Test Address 12",
+                        table = UpcomingAgreementTable(
+                            title = "Mock Upcoming Agreement",
+                            sections = listOf(
+                                UpcomingAgreementTable.Section(
+                                    title = "Details",
+                                    rows = listOf(
+                                        UpcomingAgreementTable.Row(
+                                            title = "Address",
+                                            value = "Test Address 12",
+                                            subTitle = null
+                                        ),
+                                        UpcomingAgreementTable.Row(
+                                            title = "Postal code",
+                                            value = "11234",
+                                            subTitle = null
+                                        ),
+                                        UpcomingAgreementTable.Row(
+                                            title = "City",
+                                            value = "Test city",
+                                            subTitle = null
+                                        )
+                                    )
+                                ),
+                                UpcomingAgreementTable.Section(
+                                    title = "Extra buildings",
+                                    rows = listOf(
+                                        UpcomingAgreementTable.Row(
+                                            title = "Garage",
+                                            value = "22 sqm",
+                                            subTitle = null
+                                        ),
+                                        UpcomingAgreementTable.Row(
+                                            title = "Attefall",
+                                            value = "15 sqm",
+                                            subTitle = null
+                                        )
+                                    )
+                                )
                             )
                         )
                     )

@@ -1,16 +1,13 @@
 package com.hedvig.app.feature.home.ui.changeaddress
 
 import android.os.Parcelable
-import androidx.annotation.StringRes
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.fragment.UpcomingAgreementFragment
 import com.hedvig.android.owldroid.graphql.UpcomingAgreementQuery
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.Error
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.NoUpcomingAgreementChange
-import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
-import com.hedvig.app.util.apollo.stringRes
 import kotlinx.android.parcel.Parcelize
 import java.time.LocalDate
 
@@ -25,10 +22,8 @@ class GetUpcomingAgreementUseCase(
                 if (contracts.isNullOrEmpty()) {
                     Error.NoContractsError
                 } else {
-                    contracts
-                        .firstOrNull { it.upcomingAgreementChange() != null }
-                        ?.upcomingAgreementChange()
-                        ?.let { it.newAgreement.toUpComingAgreement() ?: Error.NoContractsError }
+                    contracts.firstOrNull { it.upcomingAgreementDetailsTable.sections.isNotEmpty() }
+                        ?.toUpcomingAgreementResult()
                         ?: NoUpcomingAgreementChange
                 }
             }
@@ -36,97 +31,80 @@ class GetUpcomingAgreementUseCase(
         }
     }
 
-    private fun UpcomingAgreementFragment.NewAgreement.toUpComingAgreement(): UpcomingAgreement? {
-        return asSwedishApartmentAgreement?.let {
-            UpcomingAgreement(
-                address = UpcomingAgreement.Address(
-                    street = it.address.fragments.addressFragment.street,
-                    postalCode = it.address.fragments.addressFragment.postalCode,
-                    city = it.address.fragments.addressFragment.city
-                ),
-                squareMeters = it.squareMeters,
-                activeFrom = it.activeFrom,
-                addressType = it.saType.stringRes(),
-                nrOfCoInsured = it.numberCoInsured
-            )
-        } ?: asSwedishHouseAgreement?.let {
-            UpcomingAgreement(
-                address = UpcomingAgreement.Address(
-                    street = it.address.fragments.addressFragment.street,
-                    postalCode = it.address.fragments.addressFragment.postalCode,
-                    city = it.address.fragments.addressFragment.city
-                ),
-                squareMeters = it.squareMeters,
-                activeFrom = it.activeFrom,
-                addressType = null,
-                nrOfCoInsured = it.numberCoInsured,
-                yearBuilt = it.yearOfConstruction,
-                numberOfBaths = it.numberOfBathrooms,
-                partlySubleted = it.isSubleted,
-                ancillaryArea = it.ancillaryArea,
-                extraBuildings = it.extraBuildings.mapNotNull { it?.asExtraBuildingCore }.map {
-                    UpcomingAgreement.Building(
-                        name = it.displayName,
-                        area = it.area,
-                        hasWaterConnected = it.hasWaterConnected
-                    )
-                }
-            )
-        } ?: asNorwegianHomeContentAgreement?.let {
-            UpcomingAgreement(
-                address = UpcomingAgreement.Address(
-                    street = it.address.fragments.addressFragment.street,
-                    postalCode = it.address.fragments.addressFragment.postalCode,
-                    city = it.address.fragments.addressFragment.city
-                ),
-                squareMeters = it.squareMeters,
-                activeFrom = it.activeFrom,
-                addressType = it.nhcType?.stringRes(),
-                nrOfCoInsured = it.numberCoInsured
-            )
-        } ?: asDanishHomeContentAgreement?.let {
-            UpcomingAgreement(
-                address = UpcomingAgreement.Address(
-                    street = it.address.fragments.addressFragment.street,
-                    postalCode = it.address.fragments.addressFragment.postalCode,
-                    city = it.address.fragments.addressFragment.city
-                ),
-                squareMeters = it.squareMeters,
-                activeFrom = it.activeFrom,
-                addressType = it.dhcType?.stringRes(),
-                nrOfCoInsured = it.numberCoInsured
-            )
-        }
+    private fun UpcomingAgreementQuery.Contract.toUpcomingAgreementResult(): UpcomingAgreementResult.UpcomingAgreement {
+        return UpcomingAgreementResult.UpcomingAgreement(
+            activeFrom = activeFrom(),
+            address = address(),
+            table = createTable()
+        )
+    }
+
+    private fun UpcomingAgreementQuery.Contract.createTable() =
+        UpcomingAgreementResult.UpcomingAgreement.UpcomingAgreementTable(
+            title = upcomingAgreementDetailsTable.title,
+            sections = upcomingAgreementDetailsTable.sections.map { section ->
+                UpcomingAgreementResult.UpcomingAgreement.UpcomingAgreementTable.Section(
+                    title = section.title,
+                    rows = section.rows.map { row ->
+                        UpcomingAgreementResult.UpcomingAgreement.UpcomingAgreementTable.Row(
+                            title = row.title,
+                            value = row.value,
+                            subTitle = row.subtitle
+                        )
+                    })
+            }
+        )
+
+    private fun UpcomingAgreementQuery.Contract.activeFrom(): LocalDate? {
+        val newAgreement = newAgreement()
+
+        return newAgreement?.asNorwegianHomeContentAgreement?.activeFrom
+            ?: newAgreement?.asDanishHomeContentAgreement?.activeFrom
+            ?: newAgreement?.asSwedishApartmentAgreement?.activeFrom
+            ?: newAgreement?.asSwedishHouseAgreement?.activeFrom
+    }
+
+    private fun UpcomingAgreementQuery.Contract.address(): String? {
+        val newAgreement = newAgreement()
+
+        return newAgreement?.asNorwegianHomeContentAgreement?.address?.fragments?.addressFragment?.street
+            ?: newAgreement?.asDanishHomeContentAgreement?.address?.fragments?.addressFragment?.street
+            ?: newAgreement?.asSwedishApartmentAgreement?.address?.fragments?.addressFragment?.street
+            ?: newAgreement?.asSwedishHouseAgreement?.address?.fragments?.addressFragment?.street
+    }
+
+    private fun UpcomingAgreementQuery.Contract.newAgreement(): UpcomingAgreementFragment.NewAgreement? {
+        return status.asActiveStatus?.upcomingAgreementChange?.fragments?.upcomingAgreementFragment?.newAgreement
+            ?: status.asTerminatedInFutureStatus?.upcomingAgreementChange?.fragments?.upcomingAgreementFragment?.newAgreement
+            ?: status.asTerminatedTodayStatus?.upcomingAgreementChange?.fragments?.upcomingAgreementFragment?.newAgreement
     }
 
     sealed class UpcomingAgreementResult {
+
         @Parcelize
         data class UpcomingAgreement(
-            val address: Address,
-            val squareMeters: Int,
             val activeFrom: LocalDate?,
-            @StringRes
-            val addressType: Int?,
-            val nrOfCoInsured: Int,
-            val yearBuilt: Int? = null,
-            val numberOfBaths: Int? = null,
-            val partlySubleted: Boolean? = null,
-            val ancillaryArea: Int? = null,
-            val extraBuildings: List<Building?> = emptyList()
+            val address: String?,
+            val table: UpcomingAgreementTable
         ) : UpcomingAgreementResult(), Parcelable {
             @Parcelize
-            data class Address(
-                val street: String,
-                val postalCode: String,
-                val city: String?,
-            ) : Parcelable
+            data class UpcomingAgreementTable(
+                val title: String,
+                val sections: List<Section>
+            ) : Parcelable {
+                @Parcelize
+                data class Section(
+                    val title: String,
+                    val rows: List<Row>
+                ) : Parcelable
 
-            @Parcelize
-            data class Building(
-                val name: String,
-                val area: Int,
-                val hasWaterConnected: Boolean
-            ) : Parcelable
+                @Parcelize
+                data class Row(
+                    val title: String,
+                    val subTitle: String?,
+                    val value: String
+                ) : Parcelable
+            }
         }
 
         object NoUpcomingAgreementChange : UpcomingAgreementResult()

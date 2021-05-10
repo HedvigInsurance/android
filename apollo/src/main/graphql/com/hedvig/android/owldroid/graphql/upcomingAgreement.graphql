@@ -17,6 +17,18 @@ query UpcomingAgreement {
         }
       }
     }
+
+    upcomingAgreementDetailsTable {
+      title
+      sections {
+        title
+        rows {
+          title
+          subtitle
+          value
+        }
+      }
+    }
   }
 }
 
@@ -26,47 +38,25 @@ fragment UpcomingAgreementFragment on UpcomingAgreementChange {
       address {
         ...AddressFragment
       }
-      squareMeters
       activeFrom
-      saType: type
-      numberCoInsured
     }
     ... on SwedishHouseAgreement {
       address {
         ...AddressFragment
       }
-      squareMeters
       activeFrom
-      ancillaryArea
-      yearOfConstruction
-      extraBuildings {
-        ...on ExtraBuildingCore {
-          area
-          displayName
-          hasWaterConnected
-        }
-      }
-      isSubleted
-      numberCoInsured
-      numberOfBathrooms
     }
     ... on NorwegianHomeContentAgreement {
       address {
         ...AddressFragment
       }
-      squareMeters
       activeFrom
-      nhcType: type
-      numberCoInsured
     }
     ... on DanishHomeContentAgreement {
       address {
         ...AddressFragment
       }
-      squareMeters
       activeFrom
-      dhcType: type
-      numberCoInsured
     }
   }
 }

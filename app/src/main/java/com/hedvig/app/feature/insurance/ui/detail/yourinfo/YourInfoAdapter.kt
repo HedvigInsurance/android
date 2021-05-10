@@ -108,16 +108,12 @@ class YourInfoAdapter(
                 } else {
                     continueButton.text = root.context.getString(R.string.home_tab_moving_action_sheet_open_offer_button)
                     continueButton.setHapticClickListener {
-                        if (data.upcomingAgreement != null) {
-                            UpcomingChangeBottomSheet.newInstance(data.upcomingAgreement).show(
-                                fragmentManager,
-                                UpcomingChangeBottomSheet.TAG
-                            )
-                        } else {
-                            // TODO
-                        }
+                        UpcomingChangeBottomSheet.newInstance(data.upcomingAgreement.table).show(
+                            fragmentManager,
+                            UpcomingChangeBottomSheet.TAG
+                        )
                     }
-                    paragraph.text = "Your insurance will be updated on ${data.upcomingAgreement?.activeFrom} to your new home on ${data.upcomingAgreement?.address?.street}."
+                    paragraph.text = "Your insurance will be updated on ${data.upcomingAgreement.activeFrom} to your new home on ${data.upcomingAgreement.address}"
                 }
             }
         }
