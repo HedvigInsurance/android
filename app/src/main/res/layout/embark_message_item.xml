@@ -6,7 +6,6 @@
     android:layout_height="wrap_content"
     android:layout_marginVertical="@dimen/base_margin_half"
     android:maxWidth="@dimen/embark_chat_bubble_max_width"
-    android:autoLink="web"
-    android:theme="@style/ThemeOverlay.Hedvig.Embark.Chat.Hedvig"
     android:textAppearance="?textAppearanceSubtitle1"
+    android:theme="@style/ThemeOverlay.Hedvig.Embark.Chat.Hedvig"
     tools:text="Hejsan" />

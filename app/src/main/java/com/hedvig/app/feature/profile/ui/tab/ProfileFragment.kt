@@ -24,7 +24,7 @@ import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.extensions.view.updatePadding
-import com.hedvig.app.util.extensions.viewBinding
+import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import javax.money.MonetaryAmount
@@ -82,16 +82,21 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                 updatePadding(bottom = scrollInitialBottomPadding + bottomTabInset)
             }
 
-            adapter = ProfileAdapter(viewLifecycleOwner)
+            adapter = ProfileAdapter(viewLifecycleOwner, model::load)
         }
 
         model.data.observe(viewLifecycleOwner) { data ->
+            if (data.isFailure) {
+                (binding.recycler.adapter as? ProfileAdapter)?.submitList(listOf(ProfileModel.Error))
+                return@observe
+            }
+            val successData = data.getOrNull() ?: return@observe
             (binding.recycler.adapter as? ProfileAdapter)?.submitList(
                 listOf(
                     ProfileModel.Title,
                     ProfileModel.Row(
                         getString(R.string.PROFILE_MY_INFO_ROW_TITLE),
-                        "${data.member.firstName} ${data.member.lastName}",
+                        "${successData.member.firstName} ${successData.member.lastName}",
                         R.drawable.ic_contact_information
                     ) {
                         tracker.myInfoRow()
@@ -99,7 +104,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                     },
                     ProfileModel.Row(
                         getString(R.string.PROFILE_MY_CHARITY_ROW_TITLE),
-                        data.cashback?.fragments?.cashbackFragment?.name ?: "",
+                        successData.cashback?.fragments?.cashbackFragment?.name ?: "",
                         R.drawable.ic_profile_charity
                     ) {
                         tracker.charityRow()
@@ -108,8 +113,10 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                     ProfileModel.Row(
                         getString(R.string.PROFILE_ROW_PAYMENT_TITLE),
                         getPriceCaption(
-                            data,
-                            data.insuranceCost?.fragments?.costFragment?.monetaryMonthlyNet?.format(requireContext(), marketManager.market)
+                            successData,
+                            successData.insuranceCost?.fragments?.costFragment?.monetaryMonthlyNet?.format(
+                                requireContext(),
+                                marketManager.market)
                                 ?: ""
                         ),
                         R.drawable.ic_payment
@@ -151,7 +158,8 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                 -> getString(R.string.Direct_Debit_Not_Connected, monetaryMonthlyNet)
             }
             Market.DK,
-            Market.NO -> if (data.activePaymentMethods == null) {
+            Market.NO,
+            -> if (data.activePaymentMethods == null) {
                 getString(R.string.Card_Not_Connected, monetaryMonthlyNet)
             } else {
                 getString(R.string.Card_Connected, monetaryMonthlyNet)

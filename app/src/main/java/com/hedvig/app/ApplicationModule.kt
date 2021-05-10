@@ -89,8 +89,8 @@ import com.hedvig.app.feature.onboarding.ChoosePlanRepository
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModelImpl
 import com.hedvig.app.feature.onboarding.MemberIdRepository
-import com.hedvig.app.feature.onboarding.MoreOptionsViewModel
-import com.hedvig.app.feature.onboarding.MoreOptionsViewModelImpl
+import com.hedvig.app.feature.onboarding.MemberIdViewModel
+import com.hedvig.app.feature.onboarding.MemberIdViewModelImpl
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.feature.profile.service.ProfileTracker
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
@@ -293,6 +293,10 @@ val choosePlanModule = module {
     viewModel<ChoosePlanViewModel> { ChoosePlanViewModelImpl(get()) }
 }
 
+val onboardingModule = module {
+    viewModel<MemberIdViewModel> { MemberIdViewModelImpl(get()) }
+}
+
 val marketPickerModule = module {
     viewModel<MarketPickerViewModel> { MarketPickerViewModelImpl(get(), get(), get(), get(), get()) }
 }
@@ -319,7 +323,7 @@ val offerModule = module {
 }
 
 val profileModule = module {
-    viewModel<ProfileViewModel> { ProfileViewModelImpl(get(), get(), get()) }
+    viewModel<ProfileViewModel> { ProfileViewModelImpl(get(), get()) }
 }
 
 val keyGearModule = module {
@@ -348,10 +352,6 @@ val valueStoreModule = module {
 
 val previousInsViewModel = module {
     viewModel { PreviousInsurerViewModel() }
-}
-
-val moreOptionsModule = module {
-    viewModel<MoreOptionsViewModel> { MoreOptionsViewModelImpl(get()) }
 }
 
 val textActionSetModule = module {

@@ -48,6 +48,7 @@ object Libs {
     const val materialComponents = "com.google.android.material:material:1.3.0"
     const val flexbox = "com.google.android:flexbox:2.0.1"
     const val combineTuple = "com.github.Zhuinden:livedata-combinetuple-kt:1.2.1"
+    const val fragmentViewBindingDelegate = "com.github.Zhuinden:fragmentviewbindingdelegate-kt:1.0.0"
 
     object OkHttp {
         private const val version = "4.9.1"
@@ -64,7 +65,7 @@ object Libs {
         const val messaging = "com.google.firebase:firebase-messaging:21.1.0"
     }
 
-    const val mixpanel = "com.mixpanel.android:mixpanel-android:5.8.8"
+    const val mixpanel = "com.mixpanel.android:mixpanel-android:5.9.0"
 
     object Koin {
         private const val version = "3.0.1"
@@ -93,14 +94,20 @@ object Libs {
     const val tooltip = "com.github.florent37:viewtooltip:1.2.2"
     const val ZXing = "com.google.zxing:core:3.4.1"
     const val insetter = "dev.chrisbanes:insetter-ktx:0.3.1"
-    const val markwon = "io.noties.markwon:core:4.6.2"
+
+    object Markwon {
+        private const val version = "4.6.2"
+        const val core = "io.noties.markwon:core:${version}"
+        const val linkify = "io.noties.markwon:linkify:${version}"
+    }
+
     const val moneta = "org.javamoney:moneta:1.4.2"
     const val shimmer = "com.facebook.shimmer:shimmer:0.5.0"
     const val kaspresso = "com.kaspersky.android-components:kaspresso:1.2.0"
     const val assertK = "com.willowtreeapps.assertk:assertk-jvm:0.23.1"
     const val mockK = "io.mockk:mockk-android:1.11.0"
     const val leakCanary = "com.squareup.leakcanary:leakcanary-android:2.7"
-    const val shake = "com.shakebugs:shake:14.1.4"
+    const val shake = "com.shakebugs:shake:14.1.5"
 
     object Apollo {
         const val runtime = "com.apollographql.apollo:apollo-runtime:${CommonVersions.apollo}"

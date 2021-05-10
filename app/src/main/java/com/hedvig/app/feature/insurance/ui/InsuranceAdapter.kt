@@ -11,8 +11,8 @@ import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.R
 import com.hedvig.app.databinding.DashboardUpsellBinding
+import com.hedvig.app.databinding.GenericErrorBinding
 import com.hedvig.app.databinding.InsuranceContractCardBinding
-import com.hedvig.app.databinding.InsuranceErrorBinding
 import com.hedvig.app.databinding.InsuranceTerminatedContractsBinding
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.insurance.service.InsuranceTracker
@@ -38,7 +38,7 @@ class InsuranceAdapter(
         R.layout.insurance_contract_card -> ViewHolder.ContractViewHolder(parent)
         R.layout.dashboard_upsell -> ViewHolder.UpsellViewHolder(parent)
         R.layout.insurance_header -> ViewHolder.TitleViewHolder(parent)
-        R.layout.insurance_error -> ViewHolder.Error(parent)
+        R.layout.generic_error -> ViewHolder.Error(parent)
         R.layout.insurance_terminated_contracts_header -> ViewHolder.TerminatedContractsHeader(
             parent
         )
@@ -58,7 +58,7 @@ class InsuranceAdapter(
         is InsuranceModel.Header -> R.layout.insurance_header
         InsuranceModel.TerminatedContractsHeader -> R.layout.insurance_terminated_contracts_header
         is InsuranceModel.TerminatedContracts -> R.layout.insurance_terminated_contracts
-        InsuranceModel.Error -> R.layout.insurance_error
+        InsuranceModel.Error -> R.layout.generic_error
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -158,8 +158,8 @@ class InsuranceAdapter(
             ) = Unit
         }
 
-        class Error(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.insurance_error)) {
-            private val binding by viewBinding(InsuranceErrorBinding::bind)
+        class Error(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.generic_error)) {
+            private val binding by viewBinding(GenericErrorBinding::bind)
             override fun bind(
                 data: InsuranceModel,
                 retry: () -> Unit,

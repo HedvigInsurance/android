@@ -29,7 +29,7 @@ android {
         applicationId = "com.hedvig"
 
         versionCode = 43
-        versionName = "5.1.1"
+        versionName = "5.1.2"
 
         vectorDrawables.useSupportLibrary = true
 
@@ -202,6 +202,7 @@ dependencies {
     implementation(Libs.flexbox)
 
     implementation(Libs.combineTuple)
+    implementation(Libs.fragmentViewBindingDelegate)
 
     implementation(Libs.OkHttp.loggingInterceptor)
     implementation(Libs.OkHttp.coroutines)
@@ -240,7 +241,8 @@ dependencies {
 
     implementation(Libs.insetter)
 
-    implementation(Libs.markwon)
+    implementation(Libs.Markwon.core)
+    implementation(Libs.Markwon.linkify)
 
     implementation(Libs.adyen)
 

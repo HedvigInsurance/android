@@ -78,6 +78,12 @@ jobs:
           target: google_apis
           profile: pixel_3a
           script: ./gradlew connectedDebugAndroidTest
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-reports
+          path: app/build/reports
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -148,7 +154,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: Homebrew/actions/setup-homebrew@master
-      - run: brew install ktlint
+      - run: brew install ktlint --build-from-source ktlint
       - name: run ktlint
         continue-on-error: true
         run: |

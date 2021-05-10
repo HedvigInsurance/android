@@ -21,11 +21,12 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.ui.animator.SlideInItemAnimator
 import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
 import com.hedvig.app.util.extensions.view.remove
+import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.updatePadding
-import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.transitionPair
+import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
@@ -73,6 +74,10 @@ class KeyGearFragment : Fragment(R.layout.fragment_key_gear) {
                 }
             }
 
+            errorContainer.retry.setHapticClickListener {
+                viewModel.load()
+            }
+
             items.adapter =
                 KeyGearItemsAdapter(
                     tracker,
@@ -102,7 +107,14 @@ class KeyGearFragment : Fragment(R.layout.fragment_key_gear) {
             items.itemAnimator = SlideInItemAnimator()
 
             viewModel.data.observe(viewLifecycleOwner) { data ->
-                bind(data)
+                if (data.isFailure) {
+                    errorContainer.root.show()
+                    contentContainer.remove()
+                    return@observe
+                }
+                errorContainer.root.remove()
+                contentContainer.show()
+                data.getOrNull()?.let { bind(it) }
                 if (!hasSentAutoAddedItems) {
                     hasSentAutoAddedItems = true
                     viewModel.sendAutoAddedItems()

@@ -4,10 +4,10 @@ import com.hedvig.app.MockActivity
 import com.hedvig.app.embarkModule
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
-import com.hedvig.app.feature.onboarding.MockMoreOptionsViewModel
-import com.hedvig.app.feature.onboarding.MoreOptionsViewModel
+import com.hedvig.app.feature.onboarding.MemberIdViewModel
+import com.hedvig.app.feature.onboarding.MockMemberIdViewModel
 import com.hedvig.app.genericDevelopmentAdapter
-import com.hedvig.app.moreOptionsModule
+import com.hedvig.app.onboardingModule
 import com.hedvig.app.testdata.feature.embark.data.PREVIOUS_INSURER_STORY
 import com.hedvig.app.testdata.feature.embark.data.PROGRESSABLE_STORY
 import com.hedvig.app.testdata.feature.embark.data.STANDARD_STORY
@@ -23,6 +23,7 @@ import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_INCOMPATIBLE_ACTIO
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_LESS_THAN_EXPRESSION
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_LESS_THAN_OR_EQUALS_EXPRESSION
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_MANY_TOOLTIP
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_MARKDOWN_MESSAGE
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_MULTIPLE_REDIRECTS
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_NOT_EQUALS_EXPRESSION
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_NUMBER_ACTION
@@ -49,15 +50,20 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 class EmbarkMockActivity : MockActivity() {
-    override val original = listOf(embarkModule, moreOptionsModule)
+    override val original = listOf(embarkModule, onboardingModule)
     override val mocks = listOf(
         module {
             viewModel<EmbarkViewModel> { MockEmbarkViewModel(get()) }
-            viewModel<MoreOptionsViewModel> { MockMoreOptionsViewModel() }
+            viewModel<MemberIdViewModel> { MockMemberIdViewModel() }
         }
     )
 
     override fun adapter() = genericDevelopmentAdapter {
+        header("Markdown message")
+        clickableItem("Kitchen sink") {
+            MockEmbarkViewModel.mockedData = STORY_WITH_MARKDOWN_MESSAGE
+            startActivity(EmbarkActivity.newInstance(context, this.javaClass.name, "Markdown"))
+        }
         header("Date Picker Action")
         clickableItem("Regular") {
             MockEmbarkViewModel.mockedData = STORY_WITCH_DATE_PICKER
@@ -362,7 +368,7 @@ class EmbarkMockActivity : MockActivity() {
         header("More Options")
         clickableItem("More Options Error") {
             MockEmbarkViewModel.mockedData = STANDARD_STORY
-            MockMoreOptionsViewModel.shouldLoad = false
+            MockMemberIdViewModel.shouldLoad = false
             startActivity(MoreOptionsActivity.newInstance(this@EmbarkMockActivity))
         }
         header("Progress")

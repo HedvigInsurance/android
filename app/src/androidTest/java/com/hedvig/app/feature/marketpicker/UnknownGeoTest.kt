@@ -50,7 +50,7 @@ class UnknownGeoTest : TestCase() {
     @Test
     fun shouldPreselectMarketWhenUserIsInUnknownGeo() = run {
         every {
-            marketRule.marketManager.hasSelectedMarket()
+            marketRule.marketManager.hasSelectedMarket
         }.returns(false)
 
         every {

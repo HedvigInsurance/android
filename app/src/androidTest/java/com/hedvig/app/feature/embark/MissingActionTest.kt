@@ -42,9 +42,7 @@ class MissingActionTest : TestCase() {
         onScreen<EmbarkScreen> {
             upgradeApp {
                 isVisible()
-                click()
             }
-            playStoreIntent { intended() }
         }
     }
 }

@@ -15,7 +15,7 @@ import com.hedvig.app.databinding.FileUploadDialogBinding
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.extensions.viewBinding
+import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 
 abstract class FileUploadBottomSheet : BottomSheetDialogFragment() {
     abstract fun onFileChosen(uri: Uri)

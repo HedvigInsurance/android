@@ -9,7 +9,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.DialogValidationBinding
-import com.hedvig.app.util.extensions.viewBinding
+import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 
 class ValidationDialog : DialogFragment() {
     private val binding by viewBinding(DialogValidationBinding::bind)

@@ -4,7 +4,6 @@ import androidx.annotation.DrawableRes
 
 sealed class ProfileModel {
     object Title : ProfileModel()
-
     data class Row(
         val title: String,
         val caption: String,
@@ -13,6 +12,6 @@ sealed class ProfileModel {
     ) : ProfileModel()
 
     object Subtitle : ProfileModel()
-
     object Logout : ProfileModel()
+    object Error : ProfileModel()
 }

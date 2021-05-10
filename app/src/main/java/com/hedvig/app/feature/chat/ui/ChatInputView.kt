@@ -71,6 +71,7 @@ class ChatInputView : FrameLayout {
                 is TextInput -> bindTextInput(value)
                 is SingleSelect -> bindSingleSelect(value)
                 is ParagraphInput -> bindParagraphInput()
+                is Audio -> bindAudio()
             }
         }
 
@@ -278,6 +279,18 @@ class ChatInputView : FrameLayout {
         binding.singleSelectContainer.measure(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
         chatRecyclerView.updatePadding(
             bottom = chatRecyclerViewInitialPadding + binding.singleSelectContainer.measuredHeight
+        )
+    }
+
+    private fun bindAudio() {
+        if (binding.audioRecorder.measuredHeight == 0) {
+            binding.audioRecorder.measure(
+                MeasureSpec.makeMeasureSpec(binding.root.width, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(binding.root.height, MeasureSpec.UNSPECIFIED),
+            )
+        }
+        chatRecyclerView.updatePadding(
+            bottom = chatRecyclerViewInitialPadding + binding.audioRecorder.measuredHeight
         )
     }
 

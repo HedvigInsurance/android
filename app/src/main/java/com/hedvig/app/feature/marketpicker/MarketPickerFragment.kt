@@ -7,14 +7,15 @@ import androidx.fragment.app.Fragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentMarketPickerBinding
 import com.hedvig.app.feature.marketing.ui.MarketingViewModel
+import com.hedvig.app.feature.marketing.ui.NavigationState
 import com.hedvig.app.util.extensions.view.updateMargin
-import com.hedvig.app.util.extensions.viewBinding
+import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class MarketPickerFragment : Fragment(R.layout.fragment_market_picker) {
-    private val viewModel: MarketPickerViewModel by sharedViewModel()
+    private val model: MarketPickerViewModel by sharedViewModel()
     private val marketingViewModel: MarketingViewModel by sharedViewModel()
     private val binding by viewBinding(FragmentMarketPickerBinding::bind)
     private val tracker: MarketPickerTracker by inject()
@@ -23,14 +24,27 @@ class MarketPickerFragment : Fragment(R.layout.fragment_market_picker) {
         postponeEnterTransition()
 
         binding.apply {
-
-            picker.adapter = PickerAdapter(parentFragmentManager, marketingViewModel, tracker)
+            picker.adapter = PickerAdapter(
+                parentFragmentManager,
+                onSubmit = { sharedElements ->
+                    tracker.submit()
+                    model.submit()
+                    marketingViewModel.navigateTo(
+                        NavigationState(
+                            destination = CurrentFragment.MARKETING,
+                            sharedElements = sharedElements,
+                            reorderingAllowed = true,
+                            addToBackStack = true,
+                        )
+                    )
+                }
+            )
             picker.doOnApplyWindowInsets { view, insets, initialState ->
                 view.updateMargin(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
             }
 
             var firstLayout = true
-            viewModel.pickerState.observe(viewLifecycleOwner) { data ->
+            model.pickerState.observe(viewLifecycleOwner) { data ->
                 (picker.adapter as PickerAdapter).apply {
                     submitList(
                         listOf(

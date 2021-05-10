@@ -8,15 +8,15 @@ import com.hedvig.android.owldroid.graphql.MemberIdQuery
 import e
 import kotlinx.coroutines.launch
 
-abstract class MoreOptionsViewModel : ViewModel() {
+abstract class MemberIdViewModel : ViewModel() {
     protected val _data = MutableLiveData<Result<MemberIdQuery.Data>>()
     val data: LiveData<Result<MemberIdQuery.Data>> = _data
     abstract fun load()
 }
 
-class MoreOptionsViewModelImpl(
+class MemberIdViewModelImpl(
     private val memberIdRepository: MemberIdRepository
-) : MoreOptionsViewModel() {
+) : MemberIdViewModel() {
 
     init {
         load()

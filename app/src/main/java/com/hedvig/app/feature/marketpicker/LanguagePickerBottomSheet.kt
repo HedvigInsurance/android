@@ -8,12 +8,12 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ListBottomSheetBinding
 import com.hedvig.app.feature.settings.Language
-import com.hedvig.app.util.extensions.viewBinding
+import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class LanguagePickerBottomSheet : BottomSheetDialogFragment() {
-    val binding by viewBinding(ListBottomSheetBinding::bind)
+    private val binding by viewBinding(ListBottomSheetBinding::bind)
 
     private val model: MarketPickerViewModel by sharedViewModel()
     private val tracker: MarketPickerTracker by inject()
@@ -21,7 +21,7 @@ class LanguagePickerBottomSheet : BottomSheetDialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? = inflater.inflate(R.layout.list_bottom_sheet, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -33,8 +33,8 @@ class LanguagePickerBottomSheet : BottomSheetDialogFragment() {
                         listOf(
                             LanguageAdapterModel.Header,
                             LanguageAdapterModel.Description,
-                            LanguageAdapterModel.LanguageList(Language.getAvailableLanguages(market))
-                        )
+                        ) +
+                            Language.getAvailableLanguages(market).map { l -> LanguageAdapterModel.LanguageItem(l) }
                     )
                 }
             }

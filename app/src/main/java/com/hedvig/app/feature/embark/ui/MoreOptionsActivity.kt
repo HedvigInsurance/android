@@ -7,7 +7,7 @@ import androidx.core.view.updatePaddingRelative
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityMoreOptionsBinding
-import com.hedvig.app.feature.onboarding.MoreOptionsViewModel
+import com.hedvig.app.feature.onboarding.MemberIdViewModel
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
@@ -15,7 +15,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MoreOptionsActivity : BaseActivity(R.layout.activity_more_options) {
     private val binding by viewBinding(ActivityMoreOptionsBinding::bind)
-    private val model: MoreOptionsViewModel by viewModel()
+    private val model: MemberIdViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

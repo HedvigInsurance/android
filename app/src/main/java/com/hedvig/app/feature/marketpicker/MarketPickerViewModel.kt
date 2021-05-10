@@ -13,8 +13,9 @@ import kotlinx.coroutines.launch
 abstract class MarketPickerViewModel : ViewModel() {
     protected val _pickerState = MutableLiveData<PickerState>()
     val pickerState: LiveData<PickerState> = _pickerState
-    abstract fun submitMarketAndReload(market: Market)
-    abstract fun submitLanguageAndReload(language: Language)
+    abstract fun applyMarketAndReload(market: Market)
+    abstract fun applyLanguageAndReload(language: Language)
+    abstract fun submit()
 }
 
 class MarketPickerViewModelImpl(
@@ -22,21 +23,25 @@ class MarketPickerViewModelImpl(
     private val languageRepository: LanguageRepository,
     private val localeBroadcastManager: LocaleBroadcastManager,
     private val marketManager: MarketManager,
-    private val context: Context
+    private val context: Context,
 ) : MarketPickerViewModel() {
 
-    override fun submitMarketAndReload(market: Market) {
+    override fun applyMarketAndReload(market: Market) {
         _pickerState.value = _pickerState.value?.let {
             updateState(market, market.toLanguage())
             PickerState(market, market.toLanguage())
         }
     }
 
-    override fun submitLanguageAndReload(language: Language) {
+    override fun applyLanguageAndReload(language: Language) {
         _pickerState.value = _pickerState.value?.let {
             updateState(it.market, language)
             PickerState(it.market, language)
         }
+    }
+
+    override fun submit() {
+        marketManager.hasSelectedMarket = true
     }
 
     private fun updateState(market: Market, language: Language) {
@@ -57,7 +62,8 @@ class MarketPickerViewModelImpl(
     init {
         viewModelScope.launch {
             val market = runCatching { marketRepository.getMarket() }.getOrNull() ?: return@launch
-            _pickerState.value = PickerState(market, market.toLanguage())
+            val language = Language.fromSettings(context, market)
+            _pickerState.value = PickerState(market, language)
             marketManager.market = market
         }
     }
@@ -65,16 +71,16 @@ class MarketPickerViewModelImpl(
 
 data class PickerState(
     val market: Market,
-    val language: Language
+    val language: Language,
 )
 
 sealed class Model {
     data class MarketModel(
-        val selection: Market
+        val selection: Market,
     ) : Model()
 
     data class LanguageModel(
-        val selection: Language
+        val selection: Language,
     ) : Model()
 
     object Button : Model()

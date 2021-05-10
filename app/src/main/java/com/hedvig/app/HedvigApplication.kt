@@ -70,7 +70,6 @@ open class HedvigApplication : Application() {
                     trustlyModule,
                     notificationModule,
                     marketPickerModule,
-                    moreOptionsModule,
                     textActionSetModule,
                     numberActionSetModule,
                     choosePlanModule,
@@ -80,6 +79,7 @@ open class HedvigApplication : Application() {
                     changeAddressModule,
                     useCaseModule,
                     valueStoreModule,
+                    onboardingModule,
                 )
             )
         }

@@ -34,7 +34,7 @@ class MarketingViewModelImpl(
     override val marketingBackground = MutableLiveData<MarketingBackgroundQuery.AppMarketingImage>()
 
     init {
-        _navigationState.value = if (marketManager.hasSelectedMarket()) {
+        _navigationState.value = if (marketManager.hasSelectedMarket) {
             NavigationState(CurrentFragment.MARKETING)
         } else {
             NavigationState(CurrentFragment.MARKET_PICKER)

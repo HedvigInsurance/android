@@ -6,7 +6,6 @@ import android.view.HapticFeedbackConstants
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.view.menu.ActionMenuItemView
-import androidx.lifecycle.Observer
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityMyInfoBinding
@@ -62,8 +61,8 @@ class MyInfoActivity : BaseActivity(R.layout.activity_my_info) {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val prevEmail = profileViewModel.data.value?.member?.email ?: ""
-        val prevPhoneNumber = profileViewModel.data.value?.member?.phoneNumber ?: ""
+        val prevEmail = profileViewModel.data.value?.getOrNull()?.member?.email ?: ""
+        val prevPhoneNumber = profileViewModel.data.value?.getOrNull()?.member?.phoneNumber ?: ""
 
         binding.apply {
             val newEmail = emailInput.text.toString()
@@ -108,28 +107,19 @@ class MyInfoActivity : BaseActivity(R.layout.activity_my_info) {
         findViewById<ActionMenuItemView>(R.id.save)?.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
 
     private fun loadData() {
-        profileViewModel.data.observe(
-            this,
-            Observer { profileData ->
-                binding.apply {
-                    spinner.loadingSpinner.remove()
-
-                    contactDetailsContainer.show()
-
-                    profileData?.let { data ->
-                        setupEmailInput(data.member.email ?: "")
-                        setupPhoneNumberInput(data.member.phoneNumber ?: "")
-                    }
+        profileViewModel.data.observe(this) { profileData ->
+            binding.apply {
+                spinner.loadingSpinner.remove()
+                contactDetailsContainer.show()
+                profileData?.let { data ->
+                    setupEmailInput(data.getOrNull()?.member?.email ?: "")
+                    setupPhoneNumberInput(data.getOrNull()?.member?.phoneNumber ?: "")
                 }
-
-                profileViewModel.dirty.observe(
-                    this,
-                    Observer {
-                        invalidateOptionsMenu()
-                    }
-                )
             }
-        )
+        }
+        profileViewModel.dirty.observe(this) {
+            invalidateOptionsMenu()
+        }
     }
 
     private fun setupEmailInput(prefilledEmail: String) {

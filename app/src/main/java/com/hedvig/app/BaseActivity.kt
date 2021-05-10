@@ -55,7 +55,10 @@ abstract class BaseActivity : AppCompatActivity {
 
     inner class LocaleListener : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            if (!preventRecreation) recreate()
+            if (!preventRecreation) {
+                viewModelStore.clear()
+                recreate()
+            }
         }
     }
 }

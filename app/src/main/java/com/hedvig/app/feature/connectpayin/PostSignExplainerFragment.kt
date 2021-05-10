@@ -8,8 +8,8 @@ import com.google.android.material.transition.MaterialSharedAxis
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ConnectPaymentExplainerFragmentBinding
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.onBackPressedCallback
+import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import e
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
