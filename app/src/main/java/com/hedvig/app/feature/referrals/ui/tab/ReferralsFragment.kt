@@ -102,9 +102,7 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
 
             invites.itemAnimator = ViewHolderReusingDefaultItemAnimator()
             invites.adapter = ReferralsAdapter(
-                {
-                    referralsViewModel.load()
-                },
+                referralsViewModel::load,
                 tracker,
                 marketManager
             ).also {

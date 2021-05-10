@@ -2,6 +2,7 @@ package com.hedvig.app.feature.settings
 
 import android.annotation.SuppressLint
 import android.content.Context
+import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import com.hedvig.app.HedvigApplication
 import com.hedvig.app.shouldOverrideFeatureFlags
@@ -9,7 +10,7 @@ import com.hedvig.app.shouldOverrideFeatureFlags
 interface MarketManager {
     val enabledMarkets: List<Market>
     var market: Market?
-    fun hasSelectedMarket(): Boolean
+    var hasSelectedMarket: Boolean
 }
 
 class MarketManagerImpl(
@@ -34,6 +35,15 @@ class MarketManagerImpl(
         set(value) {
             value?.let(::setMarketLocally) ?: removeMarket()
         }
+    override var hasSelectedMarket: Boolean
+        get() {
+            return sharedPreferences.getBoolean("HAS_SELECTED_MARKET", false)
+        }
+        set(value) {
+            sharedPreferences.edit {
+                putBoolean("HAS_SELECTED_MARKET", value)
+            }
+        }
 
     private fun getMarketLocally(): Market? {
         return sharedPreferences
@@ -55,6 +65,5 @@ class MarketManagerImpl(
             .commit()
     }
 
-    override fun hasSelectedMarket() = sharedPreferences
-        .getString(Market.MARKET_SHARED_PREF, null) != null
+
 }

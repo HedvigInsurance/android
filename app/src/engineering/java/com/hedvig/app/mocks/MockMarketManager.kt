@@ -4,15 +4,14 @@ import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 
 class MockMarketManager : MarketManager {
-
     override val enabledMarkets
         get() = mockedEnabledMarkets
 
     override var market: Market? = mockedMarket
 
-    override fun hasSelectedMarket(): Boolean {
-        return true
-    }
+    override var hasSelectedMarket: Boolean
+        get() = true
+        set(value) {}
 
     companion object {
         var mockedMarket: Market? = null
