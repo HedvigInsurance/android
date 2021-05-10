@@ -18,6 +18,7 @@ import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import e
+import kotlinx.android.synthetic.main.dialog_ratings.view.paragraph
 
 class YourInfoAdapter(
     private val fragmentManager: FragmentManager
@@ -106,14 +107,14 @@ class YourInfoAdapter(
                 if (data !is YourInfoModel.PendingAddressChange) {
                     invalid(data)
                 } else {
-                    continueButton.text = root.context.getString(R.string.home_tab_moving_action_sheet_open_offer_button)
+                    continueButton.text = root.context.getString(R.string.insurance_details_address_update_button)
                     continueButton.setHapticClickListener {
                         UpcomingChangeBottomSheet.newInstance(data.upcomingAgreement.table).show(
                             fragmentManager,
                             UpcomingChangeBottomSheet.TAG
                         )
                     }
-                    paragraph.text = "Your insurance will be updated on ${data.upcomingAgreement.activeFrom} to your new home on ${data.upcomingAgreement.address}"
+                    paragraph.text = root.context.getString(R.string.insurance_details_address_update_body, data.upcomingAgreement.activeFrom, data.upcomingAgreement.address)
                 }
             }
         }
