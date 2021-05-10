@@ -43,6 +43,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/base_margin_sextuple"
+        android:clipToPadding="false"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/covered_and_exception_item" />
 
@@ -56,6 +57,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
+            android:contentDescription="@null"
             app:srcCompat="@drawable/peril_shadow" />
 
         <ImageView

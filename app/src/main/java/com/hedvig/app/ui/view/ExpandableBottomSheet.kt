@@ -22,8 +22,7 @@ import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 private const val PEEK_HEIGHT = 380
 
 abstract class ExpandableBottomSheet : BottomSheetDialogFragment() {
-
-    val binding by viewBinding(ExpandableBottomSheetBinding::bind)
+    protected val binding by viewBinding(ExpandableBottomSheetBinding::bind)
 
     override fun onCreateView(
         inflater: LayoutInflater,
