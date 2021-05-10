@@ -1,9 +1,8 @@
 package com.hedvig.app.feature.embark.multiaction
 
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.matcher.RootMatchers
-import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.matcher.ViewMatchers
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_MULTI_ACTION
@@ -29,66 +28,6 @@ class MultiActionTest : TestCase() {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun errorInput() = run {
-        activityRule.launch(EmbarkActivity.newInstance(context(), this.javaClass.name, ""))
-
-        step("Press add building to display bottom sheet") {
-            MultiActionScreen {
-                multiActionList {
-                    childAt<MultiActionScreen.AddBuildingButton>(0) {
-                        click()
-                    }
-                }
-            }
-        }
-
-        step("Input more than max value") {
-            AddBuildingBottomSheetScreen {
-                dropDownMenu {
-                    click()
-                }
-
-                onView(withText("Attefall"))
-                    .inRoot(RootMatchers.isPlatformPopup())
-                    .perform(click())
-
-                numberInput {
-                    typeText("15000")
-                }
-
-                numberLayout {
-                    hasError("Max input")
-                }
-            }
-        }
-
-        step("Input less than min value") {
-            AddBuildingBottomSheetScreen {
-                numberInput {
-                    clearText()
-                    typeText("5")
-                }
-
-                numberLayout {
-                    hasError("Min input")
-                }
-
-                numberInput {
-                    pressImeAction()
-                }
-            }
-        }
-
-        step("Continue button is disabled") {
-            MultiActionScreen {
-                continueButton {
-                    isDisabled()
-                }
-            }
-        }
-    }
-
-    @Test
     fun addComponent() = run {
         activityRule.launch(EmbarkActivity.newInstance(context(), this.javaClass.name, ""))
 
@@ -103,14 +42,29 @@ class MultiActionTest : TestCase() {
         }
 
         step("Add building") {
-            AddBuildingBottomSheetScreen {
+            AddComponentBottomSheetScreen {
                 dropDownMenu {
                     click()
                 }
 
-                onView(withText("Attefall"))
-                    .inRoot(RootMatchers.isPlatformPopup())
-                    .perform(click())
+                list {
+                    inRoot {
+                        isPlatformPopup()
+                    }
+
+                    isVisible()
+                    hasSize(3)
+
+                    childWith<AddComponentBottomSheetScreen.Item> {
+                        isInstanceOf(String::class.java)
+                        equals("Attefall")
+                    } perform {
+                        text {
+                            isDisplayed()
+                            click()
+                        }
+                    }
+                }
 
                 numberInput {
                     typeText("23")
@@ -152,14 +106,29 @@ class MultiActionTest : TestCase() {
         }
 
         step("Add building") {
-            AddBuildingBottomSheetScreen {
+            AddComponentBottomSheetScreen {
                 dropDownMenu {
                     click()
                 }
 
-                onView(withText("Attefall"))
-                    .inRoot(RootMatchers.isPlatformPopup())
-                    .perform(click())
+                list {
+                    inRoot {
+                        isPlatformPopup()
+                    }
+
+                    isVisible()
+                    hasSize(3)
+
+                    childWith<AddComponentBottomSheetScreen.Item> {
+                        isInstanceOf(String::class.java)
+                        equals("Attefall")
+                    } perform {
+                        text {
+                            isDisplayed()
+                            click()
+                        }
+                    }
+                }
 
                 numberInput {
                     typeText("23")
@@ -186,14 +155,29 @@ class MultiActionTest : TestCase() {
         }
 
         step("Add another building") {
-            AddBuildingBottomSheetScreen {
+            AddComponentBottomSheetScreen {
                 dropDownMenu {
                     click()
                 }
 
-                onView(withText("Friggebod"))
-                    .inRoot(RootMatchers.isPlatformPopup())
-                    .perform(click())
+                list {
+                    inRoot {
+                        isPlatformPopup()
+                    }
+
+                    isVisible()
+                    hasSize(3)
+
+                    childWith<AddComponentBottomSheetScreen.Item> {
+                        isInstanceOf(String::class.java)
+                        equals("Friggebod")
+                    } perform {
+                        text {
+                            isDisplayed()
+                            click()
+                        }
+                    }
+                }
 
                 numberInput {
                     typeText("124")

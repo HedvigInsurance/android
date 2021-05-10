@@ -13,7 +13,7 @@ import androidx.fragment.app.setFragmentResult
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.textfield.TextInputLayout
 import com.hedvig.app.R
-import com.hedvig.app.databinding.DialogAddBuildingBinding
+import com.hedvig.app.databinding.AddComponentBottomSheetBinding
 import com.hedvig.app.databinding.LayoutComponentDropdownBinding
 import com.hedvig.app.databinding.LayoutComponentNumberBinding
 import com.hedvig.app.databinding.LayoutComponentSwitchBinding
@@ -38,13 +38,13 @@ class AddComponentBottomSheet : BottomSheetDialogFragment() {
     }
 
     private val viewModel: AddComponentViewModel by viewModel { parametersOf(componentState, multiActionParams) }
-    private val binding by viewBinding(DialogAddBuildingBinding::bind)
+    private val binding by viewBinding(AddComponentBottomSheetBinding::bind)
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.dialog_add_building, container, false)
+    ): View? = inflater.inflate(R.layout.add_component_bottom_sheet, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -69,8 +69,7 @@ class AddComponentBottomSheet : BottomSheetDialogFragment() {
         }
 
         viewModel.componentResultEvent.observe(this) {
-            val bundle = Bundle().apply { putParcelable(RESULT, it) }
-            setFragmentResult(ADD_COMPONENT_REQUEST_KEY, bundle)
+            setFragmentResult(ADD_COMPONENT_REQUEST_KEY, bundleOf(RESULT to it))
             dismiss()
         }
     }
@@ -78,7 +77,7 @@ class AddComponentBottomSheet : BottomSheetDialogFragment() {
     private fun createDropDownComponent(dropdown: MultiActionComponent.Dropdown): TextInputLayout {
         return LayoutComponentDropdownBinding.inflate(LayoutInflater.from(requireContext()), binding.componentContainer, false).apply {
             val dropDownOptions = dropdown.options.map { it.text }
-            val adapter = ArrayAdapter(requireContext(), R.layout.dropdown_menu_popup_item, dropDownOptions)
+            val adapter = ArrayAdapter(requireContext(), R.layout.dropdown_menu_popup_item, R.id.dropdown_popup, dropDownOptions)
 
             dropdownLayout.hint = dropdown.label
             dropdownInput.setAdapter(adapter)
@@ -102,16 +101,6 @@ class AddComponentBottomSheet : BottomSheetDialogFragment() {
 
             numberInput.doOnTextChanged { text, _, _, _ ->
                 viewModel.onNumberChanged(number.key, text.toString(), number.unit)
-            }
-
-            viewModel.inputsViewState.observe(viewLifecycleOwner) {
-                when (it[number.key]) {
-                    AddComponentViewModel.NumberState.Error.MaxInput -> numberLayout.error = "Max input"
-                    AddComponentViewModel.NumberState.Error.MinInput -> numberLayout.error = "Min input"
-                    AddComponentViewModel.NumberState.NoInput,
-                    is AddComponentViewModel.NumberState.Valid,
-                    null -> numberLayout.error = null
-                }
             }
 
             componentState?.inputs?.firstOrNull { it.key == number.key }?.let {

@@ -32,21 +32,17 @@ class AddComponentViewModel(
         }
     }
 
-    val inputsViewState = inputStates
-        .debounce(750)
-        .asLiveData()
-
     val viewState: LiveData<ViewState> = combine(
         inputStates,
         dropDownStates,
-        ::validateSate
+        ::validateState
     )
         .onStart { emit(ViewState.Invalid) }
         .asLiveData()
 
     val componentResultEvent = LiveEvent<MultiActionItem.Component>()
 
-    private fun validateSate(inputs: Map<String, NumberState>, dropDowns: Map<String, DropDownState>) = when {
+    private fun validateState(inputs: Map<String, NumberState>, dropDowns: Map<String, DropDownState>) = when {
         inputs.values.any { it !is NumberState.Valid } -> ViewState.Invalid
         dropDowns.values.any { it !is DropDownState.Selected } -> ViewState.Invalid
         else -> ViewState.Valid
@@ -118,11 +114,6 @@ class AddComponentViewModel(
         ) : NumberState()
 
         object NoInput : NumberState()
-
-        sealed class Error : NumberState() {
-            object MaxInput : Error()
-            object MinInput : Error()
-        }
     }
 
     sealed class DropDownState {
