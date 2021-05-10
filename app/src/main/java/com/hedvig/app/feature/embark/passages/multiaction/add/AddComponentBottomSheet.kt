@@ -22,7 +22,7 @@ import com.hedvig.app.feature.embark.passages.multiaction.MultiActionItem
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionParams
 import com.hedvig.app.util.extensions.hideKeyboard
 import com.hedvig.app.util.extensions.onImeAction
-import com.hedvig.app.util.extensions.viewBinding
+import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -101,7 +101,7 @@ class AddComponentBottomSheet : BottomSheetDialogFragment() {
             }
 
             numberInput.doOnTextChanged { text, _, _, _ ->
-                viewModel.onNumberChanged(number.key, text.toString(), number.minValue, number.maxValue, number.unit)
+                viewModel.onNumberChanged(number.key, text.toString(), number.unit)
             }
 
             viewModel.inputsViewState.observe(viewLifecycleOwner) {

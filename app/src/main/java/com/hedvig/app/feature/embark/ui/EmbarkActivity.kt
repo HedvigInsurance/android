@@ -310,13 +310,11 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                         )
 
                         numberActionData != null -> MultiActionComponent.Number(
-                            numberActionData.fragments.embarkNumberActionFragment.key,
-                            numberActionData.fragments.embarkNumberActionFragment.label,
-                            numberActionData.fragments.embarkNumberActionFragment.placeholder,
-                            numberActionData.fragments.embarkNumberActionFragment.unit,
-                            numberActionData.fragments.embarkNumberActionFragment.maxValue,
-                            numberActionData.fragments.embarkNumberActionFragment.minValue,
-                            numberActionData.fragments.embarkNumberActionFragment.link.fragments.embarkLinkFragment.label
+                                numberActionData.fragments.embarkNumberActionFragment.key,
+                                numberActionData.fragments.embarkNumberActionFragment.label,
+                                numberActionData.fragments.embarkNumberActionFragment.placeholder,
+                                numberActionData.fragments.embarkNumberActionFragment.unit,
+                                numberActionData.fragments.embarkNumberActionFragment.link.fragments.embarkLinkFragment.label
                         )
                         else -> throw java.lang.IllegalArgumentException("Could not match ${it.asEmbarkDropdownAction} to a component")
                     }

@@ -16,6 +16,7 @@ import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.extensions.viewLifecycleScope
+import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import dev.chrisbanes.insetter.Insetter
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn

@@ -26,7 +26,7 @@ class AddComponentViewModel(
         multiActionParams.components.forEach {
             when (it) {
                 is MultiActionComponent.Dropdown -> onDropDownChanged(it.key, null)
-                is MultiActionComponent.Number -> onNumberChanged(it.key, null, it.minValue, it.maxValue, null)
+                is MultiActionComponent.Number -> onNumberChanged(it.key, null, null)
                 is MultiActionComponent.Switch -> onSwitchChanged(it.key, it.defaultValue, it.label)
             }
         }
@@ -52,10 +52,8 @@ class AddComponentViewModel(
         else -> ViewState.Valid
     }
 
-    private fun validateNumberInput(key: String, input: String?, minValue: Int?, maxValue: Int?, unit: String?) = when {
+    private fun validateNumberInput(key: String, input: String?, unit: String?) = when {
         input.isNullOrBlank() -> NumberState.NoInput
-        input.toInt() < minValue ?: 0 -> NumberState.Error.MinInput
-        input.toInt() > maxValue ?: 0 -> NumberState.Error.MaxInput
         else -> NumberState.Valid(key, input, unit)
     }
 
@@ -88,9 +86,9 @@ class AddComponentViewModel(
         componentResultEvent.postValue(component)
     }
 
-    fun onNumberChanged(key: String, value: String?, minValue: Int?, maxValue: Int?, unit: String?) {
+    fun onNumberChanged(key: String, value: String?, unit: String?) {
         inputStates.value = inputStates.value.toMutableMap().apply {
-            put(key, validateNumberInput(key, value, minValue, maxValue, unit))
+            put(key, validateNumberInput(key, value, unit))
         }
     }
 
