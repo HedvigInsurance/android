@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.insurance.ui.detail.yourinfo
 
-import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
@@ -17,49 +16,19 @@ import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.viewBinding
 
 class UpcomingAgreementAdapter(
-    upcomingAgreement: UpcomingAgreementResult.UpcomingAgreement,
-    context: Context
+    upcomingAgreement: UpcomingAgreementResult.UpcomingAgreement.UpcomingAgreementTable
 ) : ListAdapter<UpcomingAgreementAdapter.UpcomingAgreementItem, UpcomingAgreementAdapter.UpcomingAgreementViewHolder>(GenericDiffUtilItemCallback()) {
 
     init {
         val list = mutableListOf<UpcomingAgreementItem>()
 
-        CenteredHeader("STRING RES MISSING").let(list::add)
-
-        ListItem(context.getString(R.string.housing_info_list_postal_code_label), upcomingAgreement.address.street).let(list::add)
-        ListItem("STRING RES MISSING", upcomingAgreement.address.postalCode).let(list::add)
-        ListItem(context.getString(R.string.housing_info_list_insured_people_label), context.getString(R.string.DASHBOARD_MY_INFO_COINSURED, upcomingAgreement.nrOfCoInsured)).let(list::add)
-        ListItem(context.getString(R.string.housing_info_list_living_space_label), upcomingAgreement.squareMeters.toString()).let(list::add)
-
-        upcomingAgreement.ancillaryArea
-            ?.let { ListItem(context.getString(R.string.housing_info_list_ancillary_area_label), context.getString(R.string.HOUSE_INFO_BOYTA_SQUAREMETERS, it)) }
-            ?.let(list::add)
-
-        upcomingAgreement.yearBuilt
-            ?.let { ListItem(context.getString(R.string.housing_info_list_construction_year_label), it.toString()) }
-            ?.let(list::add)
-
-        upcomingAgreement.numberOfBaths
-            ?.let { ListItem(context.getString(R.string.housing_info_list_baths_label), it.toString()) }
-            ?.let(list::add)
-
-        upcomingAgreement.partlySubleted
-            ?.let {
-                val valueString = if (it) {
-                    context.getString(R.string.HOUSE_INFO_SUBLETED_TRUE)
-                } else {
-                    context.getString(R.string.HOUSE_INFO_SUBLETED_FALSE)
-                }
-                ListItem(context.getString(R.string.housing_info_list_sublet_label), valueString)
+        CenteredHeader(upcomingAgreement.title).let(list::add)
+        upcomingAgreement.sections.forEach { section ->
+            Header(section.title).let(list::add)
+            section.rows.forEach { row ->
+                ListItem(row.title, row.value).let(list::add)
             }
-            ?.let(list::add)
-
-        Header(context.getString(R.string.housing_info_list_extra_buildings_subheadline)).let(list::add)
-
-        upcomingAgreement.extraBuildings.filterNotNull().forEach {
-            BuildingItem(it.name, it.area, it.hasWaterConnected).let(list::add)
         }
-
         submitList(list)
     }
 
