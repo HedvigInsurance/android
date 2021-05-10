@@ -12,11 +12,15 @@ import java.time.LocalDate
 val UPCOMING_AGREEMENT_NONE = UpcomingAgreementQuery.Data(
     contracts = listOf(
         UpcomingAgreementQuery.Contract(
+            upcomingAgreementDetailsTable = UpcomingAgreementQuery.UpcomingAgreementDetailsTable(
+                title = "",
+                sections = listOf()
+            ),
             status = UpcomingAgreementQuery.Status(
                 asActiveStatus = null,
                 asTerminatedInFutureStatus = null,
                 asTerminatedTodayStatus = null,
-            )
+            ),
         )
     )
 )
@@ -24,6 +28,21 @@ val UPCOMING_AGREEMENT_NONE = UpcomingAgreementQuery.Data(
 val UPCOMING_AGREEMENT_SWEDISH_APARTMENT = UpcomingAgreementQuery.Data(
     contracts = listOf(
         UpcomingAgreementQuery.Contract(
+            upcomingAgreementDetailsTable = UpcomingAgreementQuery.UpcomingAgreementDetailsTable(
+                title = "Upcoming Agreement",
+                sections = listOf(
+                    UpcomingAgreementQuery.Section(
+                        title = "Details",
+                        rows = listOf(
+                            UpcomingAgreementQuery.Row(
+                                title = "Address",
+                                value = "Testgatan 123",
+                                subtitle = "Subtitle"
+                            )
+                        )
+                    )
+                )
+            ),
             status = UpcomingAgreementQuery.Status(
                 asActiveStatus = UpcomingAgreementQuery.AsActiveStatus(
                     upcomingAgreementChange = UpcomingAgreementBuilder(
@@ -38,10 +57,7 @@ val UPCOMING_AGREEMENT_SWEDISH_APARTMENT = UpcomingAgreementQuery.Data(
                                         )
                                     )
                                 ),
-                                squareMeters = 50,
                                 activeFrom = LocalDate.of(2021, 4, 11),
-                                saType = SwedishApartmentLineOfBusiness.RENT,
-                                numberCoInsured = 2
                             ),
                             asDanishHomeContentAgreement = null,
                             asNorwegianHomeContentAgreement = null,
@@ -76,40 +92,32 @@ val UPCOMING_AGREEMENT_SWEDISH_HOUSE = UpcomingAgreementQuery.Data(
                                         )
                                     )
                                 ),
-                                squareMeters = 50,
                                 activeFrom = LocalDate.of(2021, 4, 11),
-                                numberCoInsured = 2,
-                                yearOfConstruction = 2002,
-                                ancillaryArea = 34,
-                                extraBuildings = listOf(
-                                    UpcomingAgreementFragment.ExtraBuilding(
-                                        asExtraBuildingCore = UpcomingAgreementFragment.AsExtraBuildingCore(
-                                            area = 34,
-                                            displayName = "Garage",
-                                            hasWaterConnected = true
-                                        )
-                                    ),
-                                    UpcomingAgreementFragment.ExtraBuilding(
-                                        asExtraBuildingCore = UpcomingAgreementFragment.AsExtraBuildingCore(
-                                            area = 14,
-                                            displayName = "Attefall",
-                                            hasWaterConnected = false
-                                        )
-                                    )
-                                ),
-                                isSubleted = false,
-                                numberOfBathrooms = 2
                             )
                         )
-                    ).build()
+                    ).build(),
                 ),
-                asTerminatedInFutureStatus = null,
                 asTerminatedTodayStatus = null,
+                asTerminatedInFutureStatus = null
+            ),
+            upcomingAgreementDetailsTable = UpcomingAgreementQuery.UpcomingAgreementDetailsTable(
+                title = "Upcoming Agreement",
+                sections = listOf(
+                    UpcomingAgreementQuery.Section(
+                        title = "Details",
+                        rows = listOf(
+                            UpcomingAgreementQuery.Row(
+                                title = "Address",
+                                value = "Testgatan 123",
+                                subtitle = "Subtitle"
+                            )
+                        )
+                    )
+                )
             )
         )
     )
 )
-
 
 val SELF_CHANGE_ELIGIBILITY = SelfChangeEligibilityQuery.Data(
     SelfChangeEligibilityBuilder(

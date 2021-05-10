@@ -9,13 +9,13 @@ import com.hedvig.app.ui.view.ExpandableBottomSheet
 class UpcomingChangeBottomSheet : ExpandableBottomSheet() {
 
     private val upcomingAgreement by lazy {
-        requireArguments().getParcelable<UpcomingAgreement>(UPCOMING_AGREEMENT)
+        requireArguments().getParcelable<UpcomingAgreement.UpcomingAgreementTable>(UPCOMING_AGREEMENT)
             ?: throw IllegalArgumentException("No argument passed to ${this.javaClass.name}")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.recycler.adapter = UpcomingAgreementAdapter(upcomingAgreement, requireContext())
+        binding.recycler.adapter = UpcomingAgreementAdapter(upcomingAgreement)
     }
 
     companion object {
@@ -23,7 +23,7 @@ class UpcomingChangeBottomSheet : ExpandableBottomSheet() {
         val TAG = UpcomingChangeBottomSheet::class.java.name
         private const val UPCOMING_AGREEMENT = "UPCOMING_AGREEMENT"
 
-        fun newInstance(upcomingAgreement: UpcomingAgreement) = UpcomingChangeBottomSheet().apply {
+        fun newInstance(upcomingAgreement: UpcomingAgreement.UpcomingAgreementTable) = UpcomingChangeBottomSheet().apply {
             arguments = bundleOf(UPCOMING_AGREEMENT to upcomingAgreement)
         }
     }

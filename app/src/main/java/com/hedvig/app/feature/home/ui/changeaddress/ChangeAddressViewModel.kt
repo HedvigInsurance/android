@@ -69,7 +69,5 @@ sealed class ViewState {
     object ManualChangeAddress : ViewState()
     data class UpcomingAgreementError(val error: UpcomingAgreementResult.Error) : ViewState()
     data class SelfChangeError(val error: SelfChangeEligibilityResult.Error) : ViewState()
-    data class ChangeAddressInProgress(
-        val upcomingAgreementResult: UpcomingAgreementResult.UpcomingAgreement,
-    ) : ViewState()
+    data class ChangeAddressInProgress(val upcomingAgreementResult: UpcomingAgreementResult.UpcomingAgreement) : ViewState()
 }
