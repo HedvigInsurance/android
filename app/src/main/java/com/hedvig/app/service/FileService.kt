@@ -5,10 +5,12 @@ import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
+import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.Locale
+import javax.inject.Inject
 
-class FileService(
-    private val context: Context
+class FileService @Inject constructor(
+    @ApplicationContext private val context: Context
 ) {
     fun getFileName(uri: Uri): String? {
         if (uri.scheme == ContentResolver.SCHEME_CONTENT) {

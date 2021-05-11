@@ -7,8 +7,9 @@ import com.hedvig.android.owldroid.graphql.CommonClaimQuery
 import com.hedvig.android.owldroid.graphql.TriggerClaimChatMutation
 import com.hedvig.android.owldroid.type.TriggerClaimChatInput
 import com.hedvig.app.util.LocaleManager
+import javax.inject.Inject
 
-class ClaimsRepository(
+class ClaimsRepository @Inject constructor(
     private val apolloClient: ApolloClient,
     private val localeManager: LocaleManager,
 ) {

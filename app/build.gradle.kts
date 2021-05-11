@@ -9,9 +9,11 @@ plugins {
     id("kotlin-parcelize")
     id("kotlin-kapt")
     id("com.hedvig.android.lokalise")
+    id("dagger.hilt.android.plugin")
 }
 
 apply(plugin = "com.jaredsburrows.license")
+
 configure<com.jaredsburrows.license.LicenseReportExtension> {
     copyHtmlReportToAssets = true
 }
@@ -186,6 +188,9 @@ dependencies {
 
     implementation(Libs.Koin.android)
     androidTestImplementation(Libs.Koin.test)
+
+    implementation(Libs.Hilt.hiltAndroid)
+    kapt(Libs.Hilt.hiltCompiler)
 
     implementation(Libs.timber)
     implementation(Libs.slimber)

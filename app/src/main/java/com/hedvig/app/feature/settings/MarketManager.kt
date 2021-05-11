@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
 interface MarketManager {
     val enabledMarkets: List<Market>
@@ -11,8 +13,8 @@ interface MarketManager {
     var hasSelectedMarket: Boolean
 }
 
-class MarketManagerImpl(
-    context: Context,
+class MarketManagerImpl @Inject constructor(
+    @ApplicationContext context: Context
 ) : MarketManager {
 
     private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)

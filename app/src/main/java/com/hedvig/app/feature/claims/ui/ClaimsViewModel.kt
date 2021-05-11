@@ -6,10 +6,13 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.CommonClaimQuery
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.claims.data.ClaimsRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import e
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ClaimsViewModel(
+@HiltViewModel
+class ClaimsViewModel @Inject constructor(
     private val claimsRepository: ClaimsRepository,
     private val chatRepository: ChatRepository
 ) : ViewModel() {

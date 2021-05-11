@@ -31,7 +31,7 @@ class MarketRepository(
         return try {
             Market.valueOf(
                 if (geo.countryISOCode == "DK") {
-                    if (shouldOverrideFeatureFlags(application)) {
+                    if (shouldOverrideFeatureFlags()) {
                         geo.countryISOCode
                     } else {
                         Market.SE.name

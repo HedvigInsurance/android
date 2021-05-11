@@ -185,8 +185,8 @@ import java.util.Locale
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APPLICATION_ID == "com.hedvig.test.app"
 
-fun shouldOverrideFeatureFlags(app: HedvigApplication): Boolean {
-    if (app.isTestBuild) {
+fun shouldOverrideFeatureFlags(): Boolean {
+    if (false) {
         return false
     }
     if (BuildConfig.DEBUG) {

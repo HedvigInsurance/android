@@ -6,4 +6,5 @@ object BuildLibs {
     const val ApolloPlugin = "com.apollographql.apollo:apollo-gradle-plugin:${CommonVersions.apollo}"
     const val LicensesPlugin = "com.jaredsburrows:gradle-license-plugin:0.8.90"
     const val LokalisePlugin = "com.hedvig.android:lokalise-plugin:1.4.1"
+    const val HiltPlugin = "com.google.dagger:hilt-android-gradle-plugin:${CommonVersions.hilt}"
 }

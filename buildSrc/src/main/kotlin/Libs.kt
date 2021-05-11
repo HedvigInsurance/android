@@ -95,6 +95,11 @@ object Libs {
         const val test = "io.insert-koin:koin-test:$version"
     }
 
+    object Hilt {
+        const val hiltAndroid = "com.google.dagger:hilt-android:${CommonVersions.hilt}"
+        const val hiltCompiler = "com.google.dagger:hilt-compiler:${CommonVersions.hilt}"
+    }
+
     const val timber = "com.jakewharton.timber:timber:4.7.1"
     const val slimber = "com.github.PaulWoitaschek:Slimber:1.0.7"
     const val lottie = "com.airbnb.android:lottie:3.7.2"

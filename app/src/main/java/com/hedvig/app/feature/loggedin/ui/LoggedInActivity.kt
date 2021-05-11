@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.viewModels
 import androidx.core.view.forEach
 import androidx.dynamicanimation.animation.FloatValueHolder
 import androidx.dynamicanimation.animation.SpringAnimation
@@ -17,7 +18,6 @@ import com.github.florent37.viewtooltip.ViewTooltip
 import com.hedvig.android.owldroid.type.Feature
 import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.BaseActivity
-import com.hedvig.app.HedvigApplication
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityLoggedInBinding
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
@@ -47,18 +47,20 @@ import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.performOnTapHapticFeedback
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
+import dagger.hilt.android.AndroidEntryPoint
 import e
+import java.time.LocalDate
+import javax.money.MonetaryAmount
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.time.LocalDate
-import javax.money.MonetaryAmount
 
+@AndroidEntryPoint
 class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
-    private val claimsViewModel: ClaimsViewModel by viewModel()
+    private val claimsViewModel: ClaimsViewModel by viewModels()
     private val whatsNewViewModel: WhatsNewViewModel by viewModel()
 
     private val memberIdViewModel: MemberIdViewModel by viewModel()
@@ -316,13 +318,13 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
         loggedInViewModel.data.observe(this) { data ->
             val keyGearEnabled =
-                if (shouldOverrideFeatureFlags(application as HedvigApplication)) {
+                if (shouldOverrideFeatureFlags()) {
                     true
                 } else {
                     data.member.features.contains(Feature.KEYGEAR)
                 }
             val referralsEnabled =
-                if (shouldOverrideFeatureFlags(application as HedvigApplication)) {
+                if (shouldOverrideFeatureFlags()) {
                     true
                 } else {
                     data.member.features.contains(Feature.REFERRALS)

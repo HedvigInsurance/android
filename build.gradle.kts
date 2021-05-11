@@ -29,6 +29,7 @@ buildscript {
         classpath(BuildLibs.ApolloPlugin)
         classpath(BuildLibs.LicensesPlugin)
         classpath(BuildLibs.LokalisePlugin)
+        classpath(BuildLibs.HiltPlugin)
     }
 }
 

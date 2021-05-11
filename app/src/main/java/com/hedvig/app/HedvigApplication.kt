@@ -16,6 +16,7 @@ import com.hedvig.app.util.FirebaseCrashlyticsLogExceptionTree
 import com.hedvig.app.util.extensions.SHARED_PREFERENCE_TRIED_MIGRATION_OF_TOKEN
 import com.hedvig.app.util.extensions.getStoredBoolean
 import com.hedvig.app.util.extensions.storeBoolean
+import dagger.hilt.android.HiltAndroidApp
 import e
 import i
 import kotlinx.coroutines.CoroutineScope
@@ -23,11 +24,17 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import timber.log.Timber
+import javax.inject.Inject
 
+@HiltAndroidApp
 open class HedvigApplication : Application() {
-    protected val apolloClient: ApolloClient by inject()
+    @Inject
+    lateinit var apolloClient: ApolloClient
+    @Inject
+    lateinit var marketManager: MarketManager
+
     private val whatsNewRepository: WhatsNewRepository by inject()
-    private val marketManager: MarketManager by inject()
+
     private val authenticationTokenService: AuthenticationTokenService by inject()
 
     override fun onCreate() {

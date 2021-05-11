@@ -5,10 +5,12 @@ import com.hedvig.android.owldroid.type.Locale
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.getLocale
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
-class LocaleManager(
+class LocaleManager @Inject constructor(
     private val marketManager: MarketManager,
-    private val context: Context
+    @ApplicationContext private val context: Context
 ) {
     fun defaultLocale(): Locale {
         val localeFromSettings = Language.fromSettings(context, marketManager.market).apply(context)
