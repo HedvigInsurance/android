@@ -2,6 +2,7 @@ package com.hedvig.app.feature.offer
 
 import android.os.Handler
 import android.os.Looper.getMainLooper
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.IncentiveFragment
@@ -17,7 +18,7 @@ import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
 import java.time.LocalDate
 
 class MockOfferViewModel : OfferViewModel() {
-    override val data = MutableLiveData<OfferQuery.Data>()
+
     override val autoStartToken = MutableLiveData<SignOfferMutation.Data>()
     override val signStatus = MutableLiveData<SignStatusFragment>()
     override val signError = MutableLiveData<Boolean>()
@@ -25,7 +26,8 @@ class MockOfferViewModel : OfferViewModel() {
     init {
         Handler(getMainLooper()).postDelayed(
             {
-                data.postValue(mockData)
+                val items = OfferItemsBuilder.createItems(mockData)
+                _viewState.postValue(ViewState.OfferItems(items))
             },
             500
         )
@@ -38,24 +40,30 @@ class MockOfferViewModel : OfferViewModel() {
     override fun clearPreviousErrors() = Unit
     override fun manuallyRecheckSignStatus() = Unit
     override fun chooseStartDate(id: String, date: LocalDate) {
-        data.postValue(
-            mockData.copy(
-                lastQuoteOfMember = mockData.lastQuoteOfMember.copy(
-                    asCompleteQuote = mockData.lastQuoteOfMember.asCompleteQuote!!.copy(
-                        startDate = date
+        _viewState.postValue(
+            ViewState.OfferItems(
+                OfferItemsBuilder.createItems(mockData.copy(
+                    lastQuoteOfMember = mockData.lastQuoteOfMember.copy(
+                        asCompleteQuote = mockData.lastQuoteOfMember.asCompleteQuote!!.copy(
+                            startDate = date
+                        )
                     )
+                )
                 )
             )
         )
     }
 
     override fun removeStartDate(id: String) {
-        data.postValue(
-            mockData.copy(
-                lastQuoteOfMember = mockData.lastQuoteOfMember.copy(
-                    asCompleteQuote = mockData.lastQuoteOfMember.asCompleteQuote!!.copy(
-                        startDate = null
+        _viewState.postValue(
+            ViewState.OfferItems(
+                OfferItemsBuilder.createItems(mockData.copy(
+                    lastQuoteOfMember = mockData.lastQuoteOfMember.copy(
+                        asCompleteQuote = mockData.lastQuoteOfMember.asCompleteQuote!!.copy(
+                            startDate = null
+                        )
                     )
+                )
                 )
             )
         )

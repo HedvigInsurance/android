@@ -1,22 +1,27 @@
 package com.hedvig.app.feature.offer
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.apollographql.apollo.api.Response
 import com.hedvig.android.owldroid.fragment.SignStatusFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
+import com.hedvig.app.feature.offer.ui.OfferModel
 import e
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 abstract class OfferViewModel : ViewModel() {
-    abstract val data: MutableLiveData<OfferQuery.Data>
+    protected val _viewState = MutableLiveData<ViewState>()
+    val viewState: LiveData<ViewState> = _viewState
     abstract val autoStartToken: MutableLiveData<SignOfferMutation.Data>
     abstract val signStatus: MutableLiveData<SignStatusFragment>
     abstract val signError: MutableLiveData<Boolean>
@@ -28,12 +33,22 @@ abstract class OfferViewModel : ViewModel() {
     abstract fun manuallyRecheckSignStatus()
     abstract fun chooseStartDate(id: String, date: LocalDate)
     abstract fun removeStartDate(id: String)
+
+    sealed class ViewState {
+        data class OfferItems(val items: List<OfferModel>) : ViewState()
+        sealed class Error : ViewState() {
+            data class GeneralError(val message: String?) : Error()
+            object EmptyResponse : Error()
+        }
+
+        object HasContracts : ViewState()
+    }
 }
 
 class OfferViewModelImpl(
     private val offerRepository: OfferRepository
 ) : OfferViewModel() {
-    override val data = MutableLiveData<OfferQuery.Data>()
+
     override val autoStartToken = MutableLiveData<SignOfferMutation.Data>()
     override val signStatus = MutableLiveData<SignStatusFragment>()
     override val signError = MutableLiveData<Boolean>()
@@ -43,15 +58,24 @@ class OfferViewModelImpl(
     }
 
     fun load() {
-        viewModelScope.launch {
-            offerRepository
-                .offer()
-                .onEach { response ->
-                    response.data?.let { data.postValue(it) }
-                }
-                .catch { e(it) }
-                .collect()
-        }
+        offerRepository.offer()
+            .map(::toViewState)
+            .onEach(_viewState::postValue)
+            .catch { _viewState.postValue(ViewState.Error.GeneralError(it.message)) }
+            .launchIn(viewModelScope)
+    }
+
+    private fun toViewState(response: Response<OfferQuery.Data>): ViewState {
+        return response.errors?.let {
+            ViewState.Error.GeneralError(it.firstOrNull()?.message)
+        } ?: response.data?.let { data ->
+            if (data.contracts.isNotEmpty()) {
+                ViewState.HasContracts
+            } else {
+                val items = OfferItemsBuilder.createItems(data)
+                ViewState.OfferItems(items)
+            }
+        } ?: ViewState.Error.EmptyResponse
     }
 
     override fun removeDiscount() {
