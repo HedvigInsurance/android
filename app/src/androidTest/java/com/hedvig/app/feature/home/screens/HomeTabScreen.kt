@@ -94,6 +94,7 @@ class HomeTabScreen : Screen<HomeTabScreen>() {
     }
 
     class ChangeAddressItem(parent: Matcher<View>) : KRecyclerItem<ChangeAddressItem>(parent) {
-        val changeAddressButton = KTextView(parent) { withMatcher(parent) }
+        val changeAddressButton = KButton(parent) { withId(R.id.continueButton) }
+        val paragraph = KTextView(parent) { withId(R.id.paragraph) }
     }
 }
