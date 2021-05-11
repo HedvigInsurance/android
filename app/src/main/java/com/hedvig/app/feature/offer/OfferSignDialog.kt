@@ -109,6 +109,7 @@ class OfferSignDialog : DialogFragment() {
                     }
                     SignState.COMPLETED -> {
                         binding.signStatus.setText(R.string.SIGN_SUCCESSFUL)
+                        model.clearLocallyStoredQuoteIds()
                         tracker.userDidSign(
                             model
                                 .data

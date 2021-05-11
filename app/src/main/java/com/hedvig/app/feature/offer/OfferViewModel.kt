@@ -28,6 +28,7 @@ abstract class OfferViewModel : ViewModel() {
     abstract fun manuallyRecheckSignStatus()
     abstract fun chooseStartDate(id: String, date: LocalDate)
     abstract fun removeStartDate(id: String)
+    abstract fun clearLocallyStoredQuoteIds()
 }
 
 class OfferViewModelImpl(
@@ -149,5 +150,9 @@ class OfferViewModelImpl(
             }
             response.getOrNull()?.data?.let { offerRepository.removeStartDateFromCache(it) }
         }
+    }
+
+    override fun clearLocallyStoredQuoteIds() {
+        offerRepository.clearLocallyStoredQuoteIds()
     }
 }

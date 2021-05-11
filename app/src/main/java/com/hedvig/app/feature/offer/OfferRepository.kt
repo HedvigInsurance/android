@@ -220,4 +220,8 @@ class OfferRepository(
                 .execute()
         }
     }
+
+    fun clearLocallyStoredQuoteIds() {
+        offerPersistenceManager.removeAllQuoteIds()
+    }
 }
