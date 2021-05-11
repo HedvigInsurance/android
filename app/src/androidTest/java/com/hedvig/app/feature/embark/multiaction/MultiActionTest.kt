@@ -68,7 +68,7 @@ class MultiActionTest : TestCase() {
 
                 numberInput {
                     typeText("23")
-                    pressImeAction()
+                    onView(ViewMatchers.isRoot()).perform(ViewActions.closeSoftKeyboard())
                 }
             }
 
@@ -132,7 +132,7 @@ class MultiActionTest : TestCase() {
 
                 numberInput {
                     typeText("23")
-                    pressImeAction()
+                    onView(ViewMatchers.isRoot()).perform(ViewActions.closeSoftKeyboard())
                 }
             }
 
@@ -181,7 +181,7 @@ class MultiActionTest : TestCase() {
 
                 numberInput {
                     typeText("124")
-                    pressImeAction()
+                    onView(ViewMatchers.isRoot()).perform(ViewActions.closeSoftKeyboard())
                 }
             }
 

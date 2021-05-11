@@ -7,6 +7,5 @@
     android:layout_marginHorizontal="@dimen/base_margin_double"
     android:layout_marginTop="@dimen/base_margin_double"
     android:padding="@dimen/base_margin"
-    android:focusable="false"
     android:textAppearance="?textAppearanceSubtitle1"
     tools:text="Water" />
