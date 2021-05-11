@@ -104,10 +104,10 @@ object Libs {
     const val moneta = "org.javamoney:moneta:1.4.2"
     const val shimmer = "com.facebook.shimmer:shimmer:0.5.0"
     const val kaspresso = "com.kaspersky.android-components:kaspresso:1.2.0"
-    const val assertK = "com.willowtreeapps.assertk:assertk-jvm:0.23.1"
+    const val assertK = "com.willowtreeapps.assertk:assertk-jvm:0.24"
     const val mockK = "io.mockk:mockk-android:1.11.0"
     const val leakCanary = "com.squareup.leakcanary:leakcanary-android:2.7"
-    const val shake = "com.shakebugs:shake:14.1.5"
+    const val shake = "com.shakebugs:shake:14.2.0"
 
     object Apollo {
         const val runtime = "com.apollographql.apollo:apollo-runtime:${CommonVersions.apollo}"

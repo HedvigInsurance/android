@@ -9,7 +9,6 @@ buildscript {
         google()
         mavenCentral()
         mavenLocal()
-        jcenter()
         gradlePluginPortal()
     }
 
@@ -27,17 +26,15 @@ buildscript {
 allprojects {
     repositories {
         google()
+        mavenCentral()
         mavenLocal()
-        jcenter()
         maven(
             "https://maven.google.com"
         )
         maven(
             "https://jitpack.io"
         )
-        maven(
-            "https://dl.bintray.com/hedvig/hedvig-java"
-        )
+        jcenter()
     }
 }
 
