@@ -3,6 +3,7 @@ package com.hedvig.app
 import android.content.Context
 import android.graphics.drawable.PictureDrawable
 import android.os.Build
+import androidx.preference.PreferenceManager
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.NormalizedCacheFactory
 import com.apollographql.apollo.cache.normalized.lru.EvictionPolicy
@@ -81,6 +82,7 @@ import com.hedvig.app.feature.marketpicker.MarketPickerTracker
 import com.hedvig.app.feature.marketpicker.MarketPickerViewModel
 import com.hedvig.app.feature.marketpicker.MarketPickerViewModelImpl
 import com.hedvig.app.feature.marketpicker.MarketRepository
+import com.hedvig.app.feature.offer.OfferPersistenceManagerImpl
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
@@ -409,7 +411,7 @@ val repositoriesModule = module {
     single { UserRepository(get()) }
     single { WhatsNewRepository(get(), get(), get()) }
     single { WelcomeRepository(get(), get()) }
-    single { OfferRepository(get(), get()) }
+    single { OfferRepository(get(), get(), get()) }
     single { LanguageRepository(get(), get(), get(), get()) }
     single { KeyGearItemsRepository(get(), get(), get(), get()) }
     single { MarketRepository(get(), get(), get()) }
@@ -418,7 +420,7 @@ val repositoriesModule = module {
     single { EmbarkRepository(get(), get(), get(), get()) }
     single { ReferralsRepository(get()) }
     single { LoggedInRepository(get(), get()) }
-    single { HomeRepository(get(), get()) }
+    single { HomeRepository(get(), get(), get()) }
     single { TrustlyRepository(get()) }
     single { MemberIdRepository(get()) }
     single { PaymentRepository(get()) }
@@ -475,4 +477,11 @@ val useCaseModule = module {
     single { StartDanishAuthUseCase(get()) }
     single { StartNorwegianAuthUseCase(get()) }
     single { SubscribeToAuthStatusUseCase(get()) }
+}
+
+val offerPersistenceManagerModule = module {
+    single {
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(get())
+        OfferPersistenceManagerImpl(sharedPreferences)
+    }
 }

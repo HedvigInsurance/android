@@ -3,6 +3,7 @@ package com.hedvig.app.feature.home.ui
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
@@ -18,12 +19,19 @@ import kotlinx.coroutines.launch
 abstract class HomeViewModel : ViewModel() {
     protected val _homeData = MutableLiveData<Result<HomeQuery.Data>>()
     protected val _payinStatusData = MutableLiveData<PayinStatusQuery.Data>()
-    // TODO Fetch address change in progress
-    protected val _addressChangeInProgress = MutableLiveData( "New Test Address 123")
+    private val _newStreetAddress = _homeData.map {
+        it.getOrNull()?.quoteBundle?.quotes?.firstOrNull()?.let { quote ->
+            quote.quoteDetails.asDanishHomeContentsDetails?.street
+                ?: quote.quoteDetails.asNorwegianHomeContentsDetails?.street
+                ?: quote.quoteDetails.asSwedishApartmentQuoteDetails?.street
+                ?: quote.quoteDetails.asSwedishHouseQuoteDetails?.street
+        }
+    }
+
     val data: LiveData<Triple<Result<HomeQuery.Data>?, PayinStatusQuery.Data?, String?>> = combineTuple(
         _homeData,
         _payinStatusData,
-        _addressChangeInProgress
+        _newStreetAddress
     )
 
     abstract fun load()

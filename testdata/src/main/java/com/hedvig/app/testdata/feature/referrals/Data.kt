@@ -2,8 +2,10 @@ package com.hedvig.app.testdata.feature.referrals
 
 import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.fragment.ReferralFragment
+import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.type.Feature
 import com.hedvig.app.testdata.common.builders.CostBuilder
+import com.hedvig.app.testdata.feature.home.builders.HomeDataBuilder
 import com.hedvig.app.testdata.feature.referrals.builders.EditCodeDataBuilder
 import com.hedvig.app.testdata.feature.referrals.builders.LoggedInDataBuilder
 import com.hedvig.app.testdata.feature.referrals.builders.ReferralsDataBuilder

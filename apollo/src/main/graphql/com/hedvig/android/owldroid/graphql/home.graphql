@@ -1,4 +1,4 @@
-query HomeQuery($locale: Locale!, $languageCode: String!) {
+query HomeQuery($locale: Locale!, $languageCode: String!, $quoteBundleInput: QuoteBundleInput!) {
   member {
     firstName
   }
@@ -72,5 +72,24 @@ query HomeQuery($locale: Locale!, $languageCode: String!) {
       }
     }
     body
+  }
+
+  quoteBundle(input: $quoteBundleInput) {
+    quotes {
+      quoteDetails {
+        ... on SwedishHouseQuoteDetails {
+          street
+        }
+        ... on SwedishApartmentQuoteDetails {
+          street
+        }
+        ... on NorwegianHomeContentsDetails {
+          street
+        }
+        ... on DanishHomeContentsDetails {
+          street
+        }
+      }
+    }
   }
 }

@@ -17,7 +17,8 @@ data class HomeDataBuilder(
         CommonClaimBuilder(title = "Försenat bagage").build()
     ),
     private val importantMessages: List<HomeQuery.ImportantMessage> = emptyList(),
-    private val renewalDate: LocalDate? = null
+    private val renewalDate: LocalDate? = null,
+    private val pendingQuotesList: List<HomeQuery.Quote> = emptyList()
 ) {
     fun build() = HomeQuery.Data(
         member = HomeQuery.Member(
@@ -144,7 +145,8 @@ data class HomeDataBuilder(
                 ),
                 body = "3"
             )
-        )
+        ),
+        quoteBundle = HomeQuery.QuoteBundle(quotes = pendingQuotesList)
     )
 }
 

@@ -21,6 +21,7 @@ import com.hedvig.app.util.FeatureFlag
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.android.ext.android.inject
+import com.hedvig.app.util.extensions.view.updatePadding
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -116,9 +117,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             if (isPending(successData.contracts)) {
                 (binding.recycler.adapter as? HomeAdapter)?.submitList(
                     listOf(
-                        HomeModel.BigText.Pending(
-                            firstName
-                        ),
+                        HomeModel.BigText.Pending(firstName),
                         HomeModel.BodyText.Pending
                     )
                 )

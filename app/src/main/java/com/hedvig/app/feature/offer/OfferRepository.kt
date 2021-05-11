@@ -16,10 +16,12 @@ import com.hedvig.android.owldroid.graphql.SignStatusQuery
 import com.hedvig.android.owldroid.graphql.SignStatusSubscription
 import com.hedvig.app.util.LocaleManager
 import e
+import kotlinx.coroutines.flow.onEach
 import java.time.LocalDate
 
 class OfferRepository(
     private val apolloClient: ApolloClient,
+    private val offerPersistenceManager: OfferPersistenceManager,
     localeManager: LocaleManager
 ) {
     private val offerQuery = OfferQuery(localeManager.defaultLocale())
@@ -28,6 +30,11 @@ class OfferRepository(
         .query(offerQuery)
         .watcher()
         .toFlow()
+        .onEach { response ->
+            response.data?.lastQuoteOfMember?.asCompleteQuote?.id?.let {
+                offerPersistenceManager.persistQuoteIds(setOf(it))
+            }
+        }
 
     fun writeDiscountToCache(data: RedeemReferralCodeMutation.Data) {
         val cachedData = apolloClient
