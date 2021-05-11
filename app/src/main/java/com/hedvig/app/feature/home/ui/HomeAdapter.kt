@@ -469,7 +469,8 @@ class HomeAdapter(
                     return invalid(data)
                 }
 
-                paragraph.text = "Continue with your address change to ${data.address}"
+                paragraph.text = root.context.getString(R.string.home_tab_moving_info_card_description, data.address)
+                continueButton.text = root.context.getString(R.string.home_tab_moving_info_card_button_text)
                 continueButton.setHapticClickListener {
                     root.context.startActivity(ChangeAddressActivity.newInstance(binding.root.context))
                 }
