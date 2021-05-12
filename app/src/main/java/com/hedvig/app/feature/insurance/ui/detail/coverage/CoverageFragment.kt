@@ -19,11 +19,9 @@ class CoverageFragment : Fragment(R.layout.contract_detail_coverage_fragment) {
     private val binding by viewBinding(ContractDetailCoverageFragmentBinding::bind)
     private val model: ContractDetailViewModel by sharedViewModel()
     private val requestBuilder: RequestBuilder<PictureDrawable> by inject()
-    private val coverageAdapter: CoverageAdapter by lazy {
-        CoverageAdapter(requestBuilder, parentFragmentManager)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val coverageAdapter = CoverageAdapter(requestBuilder, parentFragmentManager)
         binding.root.apply {
             doOnApplyWindowInsets { view, insets, initialState ->
                 view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)

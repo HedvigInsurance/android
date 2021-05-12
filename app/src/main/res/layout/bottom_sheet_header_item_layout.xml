@@ -7,5 +7,5 @@
         android:id="@+id/header_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/Hedvig.TextAppearance.Headline6"
+        android:textAppearance="?textAppearanceHeadline6"
         tools:text="Make changes" />
