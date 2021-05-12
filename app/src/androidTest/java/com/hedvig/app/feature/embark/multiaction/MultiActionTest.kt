@@ -1,8 +1,5 @@
 package com.hedvig.app.feature.embark.multiaction
 
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.matcher.ViewMatchers
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_MULTI_ACTION
@@ -68,8 +65,8 @@ class MultiActionTest : TestCase() {
 
                 numberInput {
                     typeText("23")
-                    onView(ViewMatchers.isRoot()).perform(ViewActions.closeSoftKeyboard())
                 }
+                closeSoftKeyboard()
             }
 
             MultiActionScreen {
@@ -132,8 +129,8 @@ class MultiActionTest : TestCase() {
 
                 numberInput {
                     typeText("23")
-                    onView(ViewMatchers.isRoot()).perform(ViewActions.closeSoftKeyboard())
                 }
+                closeSoftKeyboard()
             }
 
             MultiActionScreen {
@@ -181,8 +178,8 @@ class MultiActionTest : TestCase() {
 
                 numberInput {
                     typeText("124")
-                    onView(ViewMatchers.isRoot()).perform(ViewActions.closeSoftKeyboard())
                 }
+                closeSoftKeyboard()
             }
 
             MultiActionScreen {
