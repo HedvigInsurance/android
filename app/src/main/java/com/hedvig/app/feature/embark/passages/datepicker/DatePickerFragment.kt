@@ -13,7 +13,6 @@ import com.hedvig.app.feature.embark.passages.animateResponse
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
-import kotlinx.android.synthetic.main.picker_button.*
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
@@ -46,7 +45,7 @@ class DatePickerFragment : Fragment(R.layout.fragment_embark_date_picker) {
         }
 
         datePickerViewModel.selectedDate.observe(viewLifecycleOwner) { selectedDate ->
-            continueButton.isEnabled = selectedDate != null
+            binding.continueButton.isEnabled = selectedDate != null
             binding.dateLabel.text = if (selectedDate != null) {
                 selectedDate.format(SHORT_DATE)
             } else {

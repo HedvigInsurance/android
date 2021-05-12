@@ -7,7 +7,8 @@ import com.hedvig.app.R
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.setMarkdownText
-import kotlinx.android.synthetic.main.embark_message_item.view.*
+import com.hedvig.app.util.extensions.viewBinding
+import com.hedvig.app.databinding.EmbarkMessageItemBinding
 
 class MessageAdapter(
     messages: List<String>,
@@ -24,10 +25,10 @@ class MessageAdapter(
     }
 
     class MessageViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate(R.layout.embark_message_item)) {
-        private val messageView = itemView.message
+        private val binding by viewBinding(EmbarkMessageItemBinding::bind)
 
         fun bind(message: String) {
-            messageView.setMarkdownText(message)
+            binding.root.setMarkdownText(message)
         }
     }
 }

@@ -5,7 +5,7 @@ plugins {
     id("com.android.application")
     id("com.google.firebase.crashlytics")
     id("kotlin-android")
-    id("kotlin-android-extensions")
+    id("kotlin-parcelize")
     id("kotlin-kapt")
     id("com.hedvig.android.lokalise")
 }
@@ -18,9 +18,6 @@ configure<com.jaredsburrows.license.LicenseReportExtension> {
 android {
     commonConfig()
 
-    androidExtensions {
-        isExperimental = true
-    }
     buildFeatures {
         viewBinding = true
     }
