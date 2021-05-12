@@ -59,7 +59,7 @@ class AddComponentBottomSheet : BottomSheetDialogFragment() {
             binding.componentContainer.addView(componentView)
         }
 
-        viewModel.viewState.observe(this) {
+        viewModel.viewState.observe(viewLifecycleOwner) {
             binding.continueButton.isEnabled = it is AddComponentViewModel.ViewState.Valid
         }
 
@@ -68,7 +68,7 @@ class AddComponentBottomSheet : BottomSheetDialogFragment() {
             viewModel.onContinue()
         }
 
-        viewModel.componentResultEvent.observe(this) {
+        viewModel.componentResultEvent.observe(viewLifecycleOwner) {
             setFragmentResult(ADD_COMPONENT_REQUEST_KEY, bundleOf(RESULT to it))
             dismiss()
         }

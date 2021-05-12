@@ -68,8 +68,7 @@ class MultiActionFragment : Fragment(R.layout.fragment_embark_multi_action) {
             .hapticClicks()
             .mapLatest { saveAndAnimate() }
             .onEach {
-                // TODO
-                model.navigateToPassage("")
+                model.navigateToPassage(multiActionParams.link)
             }
             .launchIn(viewLifecycleScope)
     }

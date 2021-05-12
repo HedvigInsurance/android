@@ -14,7 +14,7 @@ class MultiActionViewModel(
 ) : ViewModel() {
 
     private val _addedComponents = MutableLiveData<List<Component>>(listOf())
-    val components: LiveData<List<MultiActionItem>> = Transformations.map(_addedComponents) { components ->
+    val components =_addedComponents.map { components ->
         if (components.size < multiActionParams.maxAmount) {
             val addButton = AddButton(::createNewComponent)
             listOf(addButton) + components
