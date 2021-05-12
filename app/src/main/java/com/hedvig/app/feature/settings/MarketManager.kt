@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
-import com.hedvig.app.HedvigApplication
-import com.hedvig.app.shouldOverrideFeatureFlags
 
 interface MarketManager {
     val enabledMarkets: List<Market>
@@ -15,7 +13,6 @@ interface MarketManager {
 
 class MarketManagerImpl(
     context: Context,
-    app: HedvigApplication
 ) : MarketManager {
 
     private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
@@ -23,11 +20,7 @@ class MarketManagerImpl(
     override val enabledMarkets = listOfNotNull(
         Market.SE,
         Market.NO,
-        if (shouldOverrideFeatureFlags(app)) {
-            Market.DK
-        } else {
-            null
-        }
+        Market.DK,
     )
 
     override var market: Market?
@@ -64,6 +57,4 @@ class MarketManagerImpl(
             .remove(Market.MARKET_SHARED_PREF)
             .commit()
     }
-
-
 }
