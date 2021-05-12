@@ -454,7 +454,7 @@ val marketPickerTrackerModule = module {
 }
 
 val marketManagerModule = module {
-    single<MarketManager> { MarketManagerImpl(get(), get()) }
+    single<MarketManager> { MarketManagerImpl(get()) }
 }
 
 val notificationModule = module {
