@@ -1,11 +1,10 @@
 package com.hedvig.app.feature.embark.passages.multiaction
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
-import com.hedvig.app.feature.embark.passages.multiaction.MultiActionItem.*
+import com.hedvig.app.feature.embark.passages.multiaction.MultiActionItem.AddButton
+import com.hedvig.app.feature.embark.passages.multiaction.MultiActionItem.Component
 import com.hedvig.app.util.LiveEvent
 import com.hedvig.app.util.extensions.replace
 
@@ -48,15 +47,15 @@ class MultiActionViewModel(
     }
 
     fun onContinue(addToStore: (String, String) -> Unit) {
-        _addedComponents.value?.forEach { component ->
+        _addedComponents.value?.forEachIndexed { index, component ->
             component.inputs.forEach { input ->
-                addToStore(input.key, input.value)
+                addToStore("${multiActionParams.key}[$index]${input.key}", input.value)
             }
             component.selectedDropDowns.forEach { dropDown ->
-                addToStore(dropDown.key, dropDown.value)
+                addToStore("${multiActionParams.key}[$index]${dropDown.key}", dropDown.value)
             }
             component.switches.forEach { switch ->
-                addToStore(switch.key, switch.value.toString())
+                addToStore("${multiActionParams.key}[$index]${switch.key}", switch.value.toString())
             }
         }
     }
