@@ -2,6 +2,7 @@ package com.hedvig.app.feature.embark.passages.multiaction
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.doOnNextLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import com.hedvig.app.R
@@ -38,6 +39,7 @@ class MultiActionFragment : Fragment(R.layout.fragment_embark_multi_action) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        postponeEnterTransition()
 
         Insetter.builder().setOnApplyInsetsListener { insetView, insets, initialState ->
             insetView.updateMargin(bottom = initialState.paddings.bottom + insets.stableInsetBottom)
@@ -59,6 +61,10 @@ class MultiActionFragment : Fragment(R.layout.fragment_embark_multi_action) {
             messages.adapter = MessageAdapter(multiActionParams.messages)
             componentContainer.adapter = adapter
             continueButton.text = multiActionParams.addLabel
+
+            messages.doOnNextLayout {
+                startPostponedEnterTransition()
+            }
         }
 
         multiActionViewModel.components.observe(viewLifecycleOwner, adapter::submitList)
