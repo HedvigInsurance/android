@@ -257,7 +257,6 @@ dependencies {
     debugImplementation(Libs.leakCanary)
     debugImplementation(Libs.shake)
     "stagingImplementation"(Libs.shake)
-
 }
 
 apply(plugin = "com.google.gms.google-services")

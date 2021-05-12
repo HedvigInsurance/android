@@ -24,18 +24,22 @@ class PreviousInsurerAdapter(
 ) : ListAdapter<PreviousInsurerItem, PreviousInsurerAdapter.PreviousInsurerViewHolder>(GenericDiffUtilItemCallback()) {
 
     init {
-        submitList(listOf(PreviousInsurerItem.Header) + previousInsurers.map { it.toListItem() } + PreviousInsurerItem.Insurer(
-            context.getString(R.string.EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION),
-            null,
-            context.getString(R.string.EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION),
-        ))
+        submitList(
+            listOf(PreviousInsurerItem.Header) + previousInsurers.map { it.toListItem() } + PreviousInsurerItem.Insurer(
+                context.getString(R.string.EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION),
+                null,
+                context.getString(R.string.EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION),
+            )
+        )
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.expandable_bottom_sheet_title -> PreviousInsurerViewHolder.Header(parent)
-        R.layout.previous_insurer_item -> PreviousInsurerViewHolder.InsurerViewHolder(parent,
+        R.layout.previous_insurer_item -> PreviousInsurerViewHolder.InsurerViewHolder(
+            parent,
             requestBuilder,
-            onInsurerClicked)
+            onInsurerClicked
+        )
         else -> throw Error("No view type found for: $viewType")
     }
 

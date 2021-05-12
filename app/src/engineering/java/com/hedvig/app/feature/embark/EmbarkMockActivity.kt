@@ -25,6 +25,7 @@ import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_LESS_THAN_OR_EQUAL
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_MANY_TOOLTIP
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_MARKDOWN_MESSAGE
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_MULTIPLE_REDIRECTS
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_MULTI_ACTION
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_NOT_EQUALS_EXPRESSION
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_NUMBER_ACTION
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_NUMBER_ACTION_AND_CUSTOM_RESPONSE
@@ -63,6 +64,11 @@ class EmbarkMockActivity : MockActivity() {
         clickableItem("Kitchen sink") {
             MockEmbarkViewModel.mockedData = STORY_WITH_MARKDOWN_MESSAGE
             startActivity(EmbarkActivity.newInstance(context, this.javaClass.name, "Markdown"))
+        }
+        header("Multi Action")
+        clickableItem("Regular") {
+            MockEmbarkViewModel.mockedData = STORY_WITH_MULTI_ACTION
+            startActivity(EmbarkActivity.newInstance(context, this.javaClass.name, "Multi action"))
         }
         header("Date Picker Action")
         clickableItem("Regular") {

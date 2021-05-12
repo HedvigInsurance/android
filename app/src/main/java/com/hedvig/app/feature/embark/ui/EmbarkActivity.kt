@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.observe
 import androidx.transition.Transition
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialFadeThrough
@@ -22,6 +23,9 @@ import com.hedvig.app.feature.embark.NavigationDirection
 import com.hedvig.app.feature.embark.passages.UpgradeAppFragment
 import com.hedvig.app.feature.embark.passages.datepicker.DatePickerFragment
 import com.hedvig.app.feature.embark.passages.datepicker.DatePickerParams
+import com.hedvig.app.feature.embark.passages.multiaction.MultiActionComponent
+import com.hedvig.app.feature.embark.passages.multiaction.MultiActionFragment
+import com.hedvig.app.feature.embark.passages.multiaction.MultiActionParams
 import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionFragment
 import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionParams
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerFragment
@@ -106,7 +110,8 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
             val offerIds = offerKeys.mapNotNull { model.getFromStore(it) }
             showWebOffer(offerIds)
         } else if (embarkData.passage?.externalRedirect?.data?.location == EmbarkExternalRedirectLocation.OFFER) {
-            val key = model.getFromStore("quoteId") ?: throw IllegalArgumentException("Could not find value with key quoteId from store")
+            val key = model.getFromStore("quoteId")
+                ?: throw IllegalArgumentException("Could not find value with key quoteId from store")
             showWebOffer(listOf(key))
         } else {
             transitionToNextPassage(embarkData.navigationDirection, passage)
@@ -230,16 +235,16 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                     passage.name,
                     listOf(
                         NumberActionParams.NumberAction(
-                            key = numberAction.key,
-                            title = numberAction.label,
-                            placeholder = numberAction.placeholder,
-                            unit = numberAction.unit,
-                            maxValue = numberAction.maxValue,
-                            minValue = numberAction.minValue
+                            key = numberAction.fragments.embarkNumberActionFragment.key,
+                            title = numberAction.fragments.embarkNumberActionFragment.label,
+                            placeholder = numberAction.fragments.embarkNumberActionFragment.placeholder,
+                            unit = numberAction.fragments.embarkNumberActionFragment.unit,
+                            maxValue = numberAction.fragments.embarkNumberActionFragment.maxValue,
+                            minValue = numberAction.fragments.embarkNumberActionFragment.minValue
                         )
                     ),
-                    link = numberAction.link.fragments.embarkLinkFragment.name,
-                    submitLabel = numberAction.link.fragments.embarkLinkFragment.label,
+                    link = numberAction.fragments.embarkNumberActionFragment.link.fragments.embarkLinkFragment.name,
+                    submitLabel = numberAction.fragments.embarkNumberActionFragment.link.fragments.embarkLinkFragment.label,
                 )
             )
         }
@@ -275,6 +280,47 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 datePickerAction.next.fragments.embarkLinkFragment.name
             )
             return DatePickerFragment.newInstance(params)
+        }
+
+        passage?.action?.asEmbarkMultiAction?.let { multiAction ->
+            val params = MultiActionParams(
+                key = multiAction.multiActionData.key ?: "",
+                link = multiAction.multiActionData.link.fragments.embarkLinkFragment.name,
+                addLabel = multiAction.multiActionData.addLabel ?: getString(R.string.continue_button),
+                maxAmount = multiAction.multiActionData.maxAmount.toInt(),
+                messages = passage.messages.map { it.fragments.messageFragment.text },
+                passageName = passage.name,
+                components = multiAction.multiActionData.components.map {
+                    val dropDownActionData = it.asEmbarkDropdownAction?.dropDownActionData
+                    val switchActionData = it.asEmbarkSwitchAction?.switchActionData
+                    val numberActionData = it.asEmbarkNumberAction1?.numberActionData
+
+                    when {
+                        dropDownActionData != null -> MultiActionComponent.Dropdown(
+                            dropDownActionData.key,
+                            dropDownActionData.label,
+                            dropDownActionData.options.map {
+                                MultiActionComponent.Dropdown.Option(it.text, it.value)
+                            }
+                        )
+                        switchActionData != null -> MultiActionComponent.Switch(
+                            switchActionData.key,
+                            switchActionData.label,
+                            switchActionData.defaultValue
+                        )
+
+                        numberActionData != null -> MultiActionComponent.Number(
+                                numberActionData.fragments.embarkNumberActionFragment.key,
+                                numberActionData.fragments.embarkNumberActionFragment.label,
+                                numberActionData.fragments.embarkNumberActionFragment.placeholder,
+                                numberActionData.fragments.embarkNumberActionFragment.unit,
+                                numberActionData.fragments.embarkNumberActionFragment.link.fragments.embarkLinkFragment.label
+                        )
+                        else -> throw java.lang.IllegalArgumentException("Could not match ${it.asEmbarkDropdownAction} to a component")
+                    }
+                }
+            )
+            return MultiActionFragment.newInstance(params)
         }
 
         return UpgradeAppFragment.newInstance()

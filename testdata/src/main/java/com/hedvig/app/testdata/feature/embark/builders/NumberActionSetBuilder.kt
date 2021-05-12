@@ -24,6 +24,7 @@ data class NumberActionSetBuilder(
         asEmbarkTextActionSet = null,
         asEmbarkPreviousInsuranceProviderAction = null,
         asEmbarkNumberAction = null,
+        asEmbarkMultiAction = null,
         asEmbarkNumberActionSet = EmbarkStoryQuery.AsEmbarkNumberActionSet(
             numberActionSetData = EmbarkStoryQuery.NumberActionSetData(
                 numberActions = numberActions.map {
@@ -38,11 +39,12 @@ data class NumberActionSetBuilder(
                             title = it.title
                         )
                     )
-                }, link = EmbarkStoryQuery.Link4(
-                fragments = EmbarkStoryQuery.Link4.Fragments(
-                    embarkLinkFragment = link
-                )
-            )
+                },
+                link = EmbarkStoryQuery.Link3(
+                    fragments = EmbarkStoryQuery.Link3.Fragments(
+                        embarkLinkFragment = link
+                    )
+                ),
             )
         ),
         asEmbarkDatePickerAction = null,

@@ -14,7 +14,8 @@ class GetSelfChangeEligibilityUseCase(
 
     suspend operator fun invoke(): SelfChangeEligibilityResult {
         return when (val result = apolloClient.query(SelfChangeEligibilityQuery()).safeQuery()) {
-            is QueryResult.Success -> result.data?.selfChangeEligibility?.embarkStoryId
+            is QueryResult.Success ->
+                result.data?.selfChangeEligibility?.embarkStoryId
                     ?.let(::Eligible)
                     ?: Blocked
             is QueryResult.Error -> Error(result.message)

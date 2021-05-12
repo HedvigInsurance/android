@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bottom_sheet_dialog_no_title_fragment_background"
+    android:orientation="vertical"
+    android:paddingTop="@dimen/base_margin">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:contentDescription="@null"
+        app:srcCompat="@drawable/bottom_sheet_handle" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:text="@string/embark.multiaction.add_building_button"
+        android:textAppearance="?textAppearanceHeadline5" />
+
+    <LinearLayout
+        android:id="@+id/component_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin"
+        android:orientation="vertical" />
+
+    <Button
+        android:id="@+id/continueButton"
+        style="?materialButtonContainedLargeStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginTop="@dimen/base_margin_quadruple"
+        android:layout_marginEnd="@dimen/base_margin_double"
+        android:layout_marginBottom="@dimen/base_margin_double"
+        android:enabled="false"
+        android:text="@string/general_save_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</LinearLayout>
