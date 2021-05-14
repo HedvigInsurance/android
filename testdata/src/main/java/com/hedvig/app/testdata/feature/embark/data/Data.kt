@@ -14,6 +14,7 @@ import com.hedvig.app.testdata.feature.embark.builders.ExpressionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.GraphQLApiBuilder
 import com.hedvig.app.testdata.feature.embark.builders.GraphQLVariableBuilder
 import com.hedvig.app.testdata.feature.embark.builders.MessageBuilder
+import com.hedvig.app.testdata.feature.embark.builders.MultiActionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.NumberActionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.NumberActionSetBuilder
 import com.hedvig.app.testdata.feature.embark.builders.PassageBuilder
@@ -467,6 +468,7 @@ val STORY_WITH_INCOMPATIBLE_ACTION = EmbarkStoryDataBuilder(
                     asEmbarkNumberAction = null,
                     asEmbarkNumberActionSet = null,
                     asEmbarkDatePickerAction = null,
+                    asEmbarkMultiAction = null,
                 )
             )
             .build()
@@ -1498,13 +1500,58 @@ val STORY_FOR_STORE_VERSIONING = EmbarkStoryDataBuilder(
                 redirects = listOf(
                     RedirectBuilder(
                         to = LINK_TO_THIRD_PASSAGE.name,
-                        expression = ExpressionBuilder(ExpressionBuilder.ExpressionType.EQUALS,
+                        expression = ExpressionBuilder(
+                            ExpressionBuilder.ExpressionType.EQUALS,
                             key = "FOO",
-                            value = "BAR").build()
-                    ).build())
+                            value = "BAR"
+                        ).build()
+                    ).build()
+                )
             )
             .build(),
-        STANDARD_THIRD_PASSAGE_BUILDER.build(),
+        STANDARD_THIRD_PASSAGE_BUILDER.build()
+    )
+).build()
+
+val STORY_WITH_MULTI_ACTION = EmbarkStoryDataBuilder(
+    passages = listOf(
+        PassageBuilder(
+            name = "TestPassage",
+            id = "1",
+            response = MessageBuilder(
+                text = "{TestPassageResult}"
+            ).buildMessageResponse(),
+            messages = listOf(
+                MessageFragment(
+                    text = "OK. We need some information about any extra buildings on the site, if you want them to be covered by the insurance",
+                    expressions = emptyList()
+                ),
+                MessageFragment(
+                    text = "If you don't want to insure any extra buildings, just press Continue",
+                    expressions = emptyList()
+                )
+            ),
+            action = MultiActionBuilder(
+                "FOO",
+                link = STANDARD_FIRST_LINK
+            ).build()
+        ).build(),
+        PassageBuilder(
+            name = "TestPassage2",
+            id = "2",
+            response = MessageBuilder(
+                text = "{TestPassageResult}"
+            ).buildMessageResponse(),
+            messages = listOf(
+                MessageBuilder(
+                    text = "Computed value is previous input + 3 = {BAR}"
+                ).build()
+            ),
+            action = TextActionBuilder(
+                link = STANDARD_SECOND_LINK,
+                key = "BAR"
+            ).build()
+        ).build(),
     )
 ).build()
 

@@ -33,7 +33,8 @@ val UPCOMING_AGREEMENT_SWEDISH_HOUSE = UpcomingAgreementQuery.Data(
 
 val SELF_CHANGE_ELIGIBILITY = SelfChangeEligibilityQuery.Data(
     SelfChangeEligibilityBuilder(
-        embarkStoryId = "testId").build()
+        embarkStoryId = "testId"
+    ).build()
 )
 
 val BLOCKED_SELF_CHANGE_ELIGIBILITY = SelfChangeEligibilityQuery.Data(

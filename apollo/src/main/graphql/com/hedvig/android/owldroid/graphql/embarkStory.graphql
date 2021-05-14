@@ -114,15 +114,7 @@ query EmbarkStory($name: String!, $locale: String!) {
         }
         ... on EmbarkNumberAction {
           numberActionData: data {
-            key
-            placeholder
-            unit
-            label
-            maxValue
-            minValue
-            link {
-              ...EmbarkLinkFragment
-            }
+            ...EmbarkNumberActionFragment
           }
         }
         ... on EmbarkNumberActionSet {
@@ -150,6 +142,40 @@ query EmbarkStory($name: String!, $locale: String!) {
             ...EmbarkLinkFragment
           }
         }
+        ... on EmbarkMultiAction {
+          multiActionData: data {
+            key
+            maxAmount
+            addLabel
+            link {
+              ... EmbarkLinkFragment
+            }
+            components {
+              ... on EmbarkNumberAction {
+                numberActionData: data {
+                  ...EmbarkNumberActionFragment
+                }
+              }
+              ... on EmbarkDropdownAction {
+                dropDownActionData: data {
+                  label
+                  key
+                  options {
+                    value
+                    text
+                  }
+                }
+              }
+              ... on EmbarkSwitchAction {
+                switchActionData: data {
+                  label
+                  key
+                  defaultValue
+                }
+              }
+            }
+          }
+        }
       }
       api {
         ...ApiFragment
@@ -168,6 +194,18 @@ query EmbarkStory($name: String!, $locale: String!) {
         customData
       }
     }
+  }
+}
+
+fragment EmbarkNumberActionFragment on EmbarkNumberActionData {
+  key
+  placeholder
+  unit
+  label
+  maxValue
+  minValue
+  link {
+    ...EmbarkLinkFragment
   }
 }
 

@@ -5,7 +5,7 @@ plugins {
     id("com.android.application")
     id("com.google.firebase.crashlytics")
     id("kotlin-android")
-    id("kotlin-android-extensions")
+    id("kotlin-parcelize")
     id("kotlin-kapt")
     id("com.hedvig.android.lokalise")
 }
@@ -18,9 +18,6 @@ configure<com.jaredsburrows.license.LicenseReportExtension> {
 android {
     commonConfig()
 
-    androidExtensions {
-        isExperimental = true
-    }
     buildFeatures {
         viewBinding = true
     }
@@ -29,7 +26,7 @@ android {
         applicationId = "com.hedvig"
 
         versionCode = 43
-        versionName = "5.1.2"
+        versionName = "5.1.3"
 
         vectorDrawables.useSupportLibrary = true
 
@@ -260,7 +257,6 @@ dependencies {
     debugImplementation(Libs.leakCanary)
     debugImplementation(Libs.shake)
     "stagingImplementation"(Libs.shake)
-
 }
 
 apply(plugin = "com.google.gms.google-services")

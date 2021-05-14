@@ -26,6 +26,7 @@ data class TextActionBuilder(
         asEmbarkNumberAction = null,
         asEmbarkNumberActionSet = null,
         asEmbarkDatePickerAction = null,
+        asEmbarkMultiAction = null,
     )
 
     companion object {

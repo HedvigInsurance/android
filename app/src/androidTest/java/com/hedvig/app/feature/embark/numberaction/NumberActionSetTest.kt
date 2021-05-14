@@ -1,7 +1,5 @@
 package com.hedvig.app.feature.embark.numberaction
 
-import androidx.test.espresso.matcher.ViewMatchers
-import com.agoda.kakao.edit.KEditText
 import com.agoda.kakao.edit.KTextInputLayout
 import com.agoda.kakao.screen.Screen
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
@@ -33,7 +31,7 @@ class NumberActionSetTest : TestCase() {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     val input1 = KTextInputLayout {
-            withMatcher(hasTextInputLayoutHintText("Co-insured"))
+        withMatcher(hasTextInputLayoutHintText("Co-insured"))
     }
     val input2 = KTextInputLayout {
         withMatcher(hasTextInputLayoutHintText("House size"))
@@ -147,4 +145,3 @@ class NumberActionSetTest : TestCase() {
         }
     }
 }
-

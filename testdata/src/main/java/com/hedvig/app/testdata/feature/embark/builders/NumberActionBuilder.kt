@@ -1,6 +1,7 @@
 package com.hedvig.app.testdata.feature.embark.builders
 
 import com.hedvig.android.owldroid.fragment.EmbarkLinkFragment
+import com.hedvig.android.owldroid.fragment.EmbarkNumberActionFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 
 data class NumberActionBuilder(
@@ -19,16 +20,25 @@ data class NumberActionBuilder(
         asEmbarkPreviousInsuranceProviderAction = null,
         asEmbarkNumberAction = EmbarkStoryQuery.AsEmbarkNumberAction(
             numberActionData = EmbarkStoryQuery.NumberActionData(
-                key = key,
-                placeholder = placeholder,
-                unit = unit,
-                label = label,
-                maxValue = maxValue,
-                minValue = minValue,
-                link = EmbarkStoryQuery.Link3(fragments = EmbarkStoryQuery.Link3.Fragments(embarkLinkFragment = link))
+                fragments = EmbarkStoryQuery.NumberActionData.Fragments(
+                    embarkNumberActionFragment = EmbarkNumberActionFragment(
+                        key = key,
+                        placeholder = placeholder,
+                        unit = unit,
+                        label = label,
+                        maxValue = maxValue,
+                        minValue = minValue,
+                        link = EmbarkNumberActionFragment.Link(
+                            fragments = EmbarkNumberActionFragment.Link.Fragments(
+                                embarkLinkFragment = link
+                            )
+                        )
+                    )
+                )
             )
         ),
         asEmbarkNumberActionSet = null,
         asEmbarkDatePickerAction = null,
+        asEmbarkMultiAction = null,
     )
 }
