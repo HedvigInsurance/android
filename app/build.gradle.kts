@@ -20,6 +20,8 @@ android {
 
     buildFeatures {
         viewBinding = true
+        aidl = false
+        renderScript = false
     }
 
     defaultConfig {
