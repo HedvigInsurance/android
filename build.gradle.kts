@@ -3,6 +3,13 @@ plugins {
     id("com.dipien.releaseshub.gradle.plugin") version "2.0.2"
     id("net.rdrei.android.buildtimetracker") version "0.11.0"
     id("com.github.konifar.gradle.unused-resources-remover") version "0.3.3"
+    id("org.gradle.android.cache-fix") version "2.3.1" apply false
+}
+
+subprojects {
+    plugins.withType<com.android.build.gradle.BasePlugin> {
+        project.apply(plugin = "org.gradle.android.cache-fix")
+    }
 }
 
 buildscript {
