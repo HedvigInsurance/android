@@ -5,7 +5,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import com.hedvig.app.BaseActivity
-import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityCommonClaimBinding
 import com.hedvig.app.feature.claims.ui.commonclaim.bulletpoint.BulletPointsAdapter
@@ -46,14 +45,19 @@ class CommonClaimActivity : BaseActivity(R.layout.activity_common_claim) {
             toolbar.title = data.title
 
             bulletPointsRecyclerView.adapter =
-                BulletPointsAdapter(BuildConfig.BASE_URL, requestBuilder).also {
+                BulletPointsAdapter(getString(R.string.BASE_URL), requestBuilder).also {
                     it.submitList(data.bulletPoints)
                 }
         }
 
         binding.apply {
             requestBuilder
-                .load(Uri.parse(BuildConfig.BASE_URL + data.iconUrls.iconByTheme(this@CommonClaimActivity)))
+                .load(
+                    Uri.parse(
+                        getString(R.string.BASE_URL) +
+                            data.iconUrls.iconByTheme(this@CommonClaimActivity)
+                    )
+                )
                 .into(firstMessage.commonClaimFirstMessageIcon)
 
             firstMessage.commonClaimFirstMessage.text = data.layoutTitle

@@ -150,7 +150,7 @@ open class HedvigApplication : Application() {
         storeBoolean(SHARED_PREFERENCE_TRIED_MIGRATION_OF_TOKEN, true)
     }
 
-    open val graphqlUrl = BuildConfig.GRAPHQL_URL
-    open val graphqlSubscriptionUrl = BuildConfig.WS_GRAPHQL_URL
+    open val graphqlUrl = getString(R.string.GRAPHQL_URL)
+    open val graphqlSubscriptionUrl = getString(R.string.WS_GRAPHQL_URL)
     open val isTestBuild = false
 }

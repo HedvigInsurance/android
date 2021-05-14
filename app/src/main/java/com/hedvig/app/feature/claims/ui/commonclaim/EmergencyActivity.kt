@@ -6,7 +6,6 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.lifecycle.lifecycleScope
 import com.hedvig.app.BaseActivity
-import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityEmergencyBinding
 import com.hedvig.app.feature.claims.service.ClaimsTracker
@@ -63,7 +62,7 @@ class EmergencyActivity : BaseActivity(R.layout.activity_emergency) {
             requestBuilder
                 .load(
                     Uri.parse(
-                        BuildConfig.BASE_URL + data.iconUrls.iconByTheme(
+                        getString(R.string.BASE_URL) + data.iconUrls.iconByTheme(
                             firstMessage.commonClaimFirstMessageIcon.context
                         )
                     )

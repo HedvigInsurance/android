@@ -7,7 +7,6 @@ import android.view.View
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.RequestBuilder
-import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.databinding.DismissiblePageTitleFragmentBinding
 import com.hedvig.app.util.svg.buildRequestBuilder
@@ -30,7 +29,12 @@ class DismissiblePageTitleFragment : Fragment(R.layout.dismissible_page_title_fr
 
         binding.apply {
             requestBuilder
-                .load(Uri.parse(BuildConfig.BASE_URL + model.imageUrls.iconByTheme(requireContext())))
+                .load(
+                    Uri.parse(
+                        requireContext().getString(R.string.BASE_URL) +
+                            model.imageUrls.iconByTheme(requireContext())
+                    )
+                )
                 .into(illustration)
             title.text = model.title
             paragraph.text = model.paragraph
@@ -39,7 +43,7 @@ class DismissiblePageTitleFragment : Fragment(R.layout.dismissible_page_title_fr
 
     companion object {
         fun newInstance(
-            model: DismissiblePagerModel.TitlePage
+            model: DismissiblePagerModel.TitlePage,
         ) = DismissiblePageTitleFragment().also {
             it.arguments = bundleOf(
                 "model" to model

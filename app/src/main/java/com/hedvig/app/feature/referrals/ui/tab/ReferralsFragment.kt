@@ -9,7 +9,6 @@ import androidx.core.view.marginBottom
 import androidx.fragment.app.Fragment
 import com.google.android.material.transition.MaterialFadeThrough
 import com.hedvig.app.BASE_MARGIN_DOUBLE
-import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentReferralsBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
@@ -161,13 +160,13 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                                     R.string.REFERRAL_SMS_MESSAGE,
                                     incentive.format(requireContext(), marketManager.market),
                                     "${
-                                    BuildConfig.WEB_BASE_URL
+                                        requireContext().getString(R.string.WEB_BASE_URL)
                                     }/${
-                                    localeManager.defaultLocale().toWebLocaleTag()
+                                        localeManager.defaultLocale().toWebLocaleTag()
                                     }/forever/${
-                                    Uri.encode(
-                                        code
-                                    )
+                                        Uri.encode(
+                                            code
+                                        )
                                     }"
                                 )
                             )

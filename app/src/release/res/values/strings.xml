@@ -10,4 +10,9 @@
     <string name="alert_message" translatable="false">Message</string>
 
     <string name="fb_login_protocol_scheme" translatable="false">fb170982226921693</string>
+    <string name="GRAPHQL_URL" translatable="false">https://giraffe.hedvig.com/graphql</string>
+    <string name="WS_GRAPHQL_URL" translatable="false">wss://giraffe.hedvig.com/subscriptions</string>
+    <string name="BASE_URL" translatable="false">https://giraffe.hedvig.com</string>
+    <string name="WEB_BASE_URL" translatable="false">https://www.hedvig.com</string>
+    <string name="file_provider_authority" translatable="false">com.hedvig.android.file.provider</string>
 </resources>

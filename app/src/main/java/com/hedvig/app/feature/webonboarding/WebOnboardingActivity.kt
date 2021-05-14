@@ -14,7 +14,6 @@ import androidx.transition.TransitionManager
 import com.google.android.material.transition.MaterialFadeThrough
 import com.hedvig.android.owldroid.type.Locale
 import com.hedvig.app.BaseActivity
-import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityWebOnboardingBinding
 import com.hedvig.app.feature.chat.ui.ChatActivity
@@ -123,6 +122,8 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
 
         val encodedToken = URLEncoder.encode(getAuthenticationToken(), UTF_8)
 
+        val webBaseUrl = getString(R.string.WEB_BASE_URL)
+
         when (marketManager.market) {
             Market.NO -> {
                 val isOffer = intent.getBooleanExtra(OFFER, false)
@@ -139,20 +140,20 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
                     }
 
                     webOnboarding.loadUrl(
-                        "${BuildConfig.WEB_BASE_URL}$localePath/new-member/offer?variation=android&quoteIds=$encodedQuoteIDs#token=$encodedToken"
+                        "${webBaseUrl}$localePath/new-member/offer?variation=android&quoteIds=$encodedQuoteIDs#token=$encodedToken"
                     )
                 } else {
                     val webPath = intent.getStringExtra(WEB_PATH)
                     webOnboarding.loadUrl(
-                        "${BuildConfig.WEB_BASE_URL}$webPath/start?variation=android#token=$encodedToken"
+                        "${webBaseUrl}$webPath/start?variation=android#token=$encodedToken"
                     )
                 }
             }
             Market.DK -> webOnboarding.loadUrl(
-                "${BuildConfig.WEB_BASE_URL}$localePath/new-member?variation=android#token=$encodedToken"
+                "${webBaseUrl}$localePath/new-member?variation=android#token=$encodedToken"
             )
             else -> webOnboarding.loadUrl(
-                "${BuildConfig.WEB_BASE_URL}$localePath/new-member?variation=android#token=$encodedToken"
+                "${webBaseUrl}$localePath/new-member?variation=android#token=$encodedToken"
             )
         }
     }
