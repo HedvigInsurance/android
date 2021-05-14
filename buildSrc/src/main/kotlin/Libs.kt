@@ -47,6 +47,7 @@ object Libs {
         object Compose {
             const val runtime = "androidx.compose.runtime:runtime:${CommonVersions.compose}"
             const val ui = "androidx.compose.ui:ui:${CommonVersions.compose}"
+            const val tooling = "androidx.compose.ui:ui-tooling:${CommonVersions.compose}"
             const val foundation = "androidx.compose.foundation:foundation:${CommonVersions.compose}"
             const val material = "androidx.compose.material:material:${CommonVersions.compose}"
             const val materialThemeAdapter =
