@@ -5,18 +5,6 @@
         <attr name="name" format="string" />
         <attr name="description" format="string" />
     </declare-styleable>
-    <declare-styleable name="PerilCategoryView">
-        <attr name="categoryUrl" format="string" />
-        <attr name="title" format="string" />
-        <attr name="subtitle" format="string" />
-    </declare-styleable>
-    <declare-styleable name="PerilView">
-        <attr name="perilIcon" format="string" />
-        <attr name="perilText" format="string" />
-    </declare-styleable>
-    <declare-styleable name="PagerIndicatorView">
-        <attr name="pager" format="reference" />
-    </declare-styleable>
     <declare-styleable name="HedvigCardView">
         <attr name="android:elevation" format="dimension" />
     </declare-styleable>

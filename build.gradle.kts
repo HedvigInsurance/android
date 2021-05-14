@@ -2,6 +2,7 @@
 plugins {
     id("com.dipien.releaseshub.gradle.plugin") version "2.0.2"
     id("net.rdrei.android.buildtimetracker") version "0.11.0"
+    id("com.github.konifar.gradle.unused-resources-remover") version "0.3.3"
 }
 
 buildscript {

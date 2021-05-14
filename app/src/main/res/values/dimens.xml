@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <dimen name="base_margin_half">4dp</dimen>
@@ -10,18 +11,11 @@
     <dimen name="base_margin_sextuple">48dp</dimen>
     <dimen name="base_margin_septuple">56dp</dimen>
     <dimen name="base_margin_octuple">64dp</dimen>
-    <dimen name="base_margin_dectuple">80dp</dimen>
     <dimen name="base_margin_undecuple">88dp</dimen>
 
     <dimen name="background_rounded_corners_radius">20dp</dimen>
 
     <dimen name="bottom_sheet_dialog_fragment_title_height">40dp</dimen>
-
-    <dimen name="profile_sphere_side_length">160dp</dimen>
-    <dimen name="sphere_text_min_text_size">16sp</dimen>
-    <dimen name="sphere_text_max_text_size">20sp</dimen>
-    <dimen name="sphere_text_step_granularity">2sp</dimen>
-    <dimen name="sphere_text_padding">4dp</dimen>
 
     <dimen name="loading_spinner_width">32dp</dimen>
     <dimen name="loading_spinner_height">32dp</dimen>
@@ -29,12 +23,7 @@
     <dimen name="common_claim_first_message_bottom_margin">60dp</dimen>
 
     <dimen name="dashboard_need_set_up_background_radius">5dp</dimen>
-    <dimen name="peril_icon">40dp</dimen>
-    <dimen name="peril_width">72dp</dimen>
-    <dimen name="peril_bottom_sheet_title_height">88dp</dimen>
-    <dimen name="peril_title_extra_spacing">40dp</dimen>
     <dimen name="peril_bottom_extra_spacing">48dp</dimen>
-    <dimen name="claims_fragment_image_height">180dp</dimen>
     <dimen name="common_claim_icon_size">32dp</dimen>
 
     <dimen name="hedvig_card_view_radius">8dp</dimen>
@@ -43,7 +32,6 @@
     <dimen name="hedvig_card_view_inset_top">16dp</dimen>
     <dimen name="hedvig_card_view_inset_bottom">12dp</dimen>
 
-    <dimen name="peril_category_icon_size">32dp</dimen>
     <dimen name="common_claims_cell_height">100dp</dimen>
 
     <!-- Default screen margins, per the Android Design guidelines. -->
@@ -51,36 +39,17 @@
     <dimen name="chat_top_bar_button_size">32dp</dimen>
     <dimen name="hedvig_logo_margin_top">2dp</dimen>
 
-    <dimen name="referral_title_spacing">40dp</dimen>
     <dimen name="background_rounded_corner_radius">8dp</dimen>
-    <dimen name="background_very_rounded_corner_radius">16dp</dimen>
-    <dimen name="referral_invite_row_status_icon_size">16dp</dimen>
-    <dimen name="referral_invite_avatar_max_size">32dp</dimen>
-    <dimen name="referral_row_height">72dp</dimen>
-    <dimen name="referral_extra_bottom_space">85dp</dimen>
-    <dimen name="bottom_navigation_notification_size">8dp</dimen>
-    <dimen name="profile_row_notification_size">16dp</dimen>
-
-    <dimen name="referral_progress_bar_width">100dp</dimen>
-    <dimen name="referral_progress_roof_height">40dp</dimen>
-    <dimen name="referral_progress_label_margin">10dp</dimen>
-    <dimen name="referral_progress_segment_spacing">1dp</dimen>
-    <dimen name="referral_progress_text_label_radius">8dp</dimen>
-    <dimen name="referral_progress_text_padding">16dp</dimen>
-    <dimen name="referral_progress_arrow_square_size">4dp</dimen>
     <dimen name="referral_receiver_continue_button_height">48dp</dimen>
     <dimen name="referral_receiver_continue_button_padding_edge">32dp</dimen>
     <dimen name="referral_receiver_continue_without_button_padding_edge">24dp</dimen>
     <dimen name="referral_background_edit_text_rounded_corner_radius">32dp</dimen>
     <dimen name="referral_background_edit_text_stroke_width">1dp</dimen>
-    <dimen name="referral_current_discount_huge_text">48sp</dimen>
-
     <dimen name="pager_indicator_inactive_size">4dp</dimen>
     <dimen name="pager_indicator_hedvig_logo_size">16dp</dimen>
     <dimen name="pager_indicator_height">32dp</dimen>
     <dimen name="news_close_button_size">28dp</dimen>
 
-    <dimen name="referrals_button_bottom_margin">80dp</dimen>
     <dimen name="chat_attach_icon_size">40dp</dimen>
     <dimen name="chat_background_edit_text_rounded_corner_radius">8dp</dimen>
     <dimen name="chat_message_corner_radius">8dp</dimen>
@@ -99,10 +68,7 @@
     <dimen name="bottom_sheet_handle_corner_radius">20dp</dimen>
     <dimen name="chat_image_size">240dp</dimen>
     <dimen name="default_qr_code_size">150dp</dimen>
-    <dimen name="trustly_explainer_illustration_offset">60dp</dimen>
-    <dimen name="icon_failure_small_size">16dp</dimen>
     <dimen name="tab_bar_icon_size">26dp</dimen>
-    <dimen name="progress_tank_view_height">200dp</dimen>
     <dimen name="expandable_content_view_collapsed_height">200dp</dimen>
     <dimen name="expandable_content_view_bottom_fade_out_height">100dp</dimen>
     <dimen name="settings_custom_offset">11dp</dimen>
@@ -119,11 +85,9 @@
     <dimen name="horizontal_line_height">1dp</dimen>
     <dimen name="valuation_card_height">100dp</dimen>
     <dimen name="key_gear_item_detail_photos_height">480dp</dimen>
-    <dimen name="hedvig_edit_text_padding">14dp</dimen>
     <dimen name="item_detail_gradient_size">300dp</dimen>
     <dimen name="offer_info_icon">30dp</dimen>
     <dimen name="premium_box_campaign_header_height">30dp</dimen>
-    <dimen name="checkbox_size">24dp</dimen>
     <dimen name="connect_payment_result_icon_size">56dp</dimen>
     <dimen name="referral_icon_placeholder_size">16dp</dimen>
     <dimen name="small_component_corner_radius">4dp</dimen>
@@ -152,5 +116,4 @@
     <dimen name="more_options_list_item_height">48dp</dimen>
     <dimen name="member_id_min_length">80dp</dimen>
     <dimen name="insurer_logo_width">28dp</dimen>
-    <dimen name="insurer_logo_height">28dp</dimen>
 </resources>

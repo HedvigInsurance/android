@@ -1,51 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="marketing_screen_content" type="id" />
-    <item name="logo_content" type="id" />
-    <item name="profile_screen_content" type="id" />
-    <item name="profile_member_info_screen_content" type="id" />
-    <item name="getHedvig" type="id" />
-    <item name="sayHello" type="id" />
-    <item name="pager" type="id" />
-    <item name="blurOverlay" type="id" />
-    <item name="marketing_hedvig_logo" type="id" />
-    <item name="storyProgressIndicatorContainer" type="id" />
-    <item name="hedvigFaceAnimation" type="id" />
     <item name="login" type="id" />
     <item name="loadingSpinner" type="id" />
-    <item name="profile_charity_image" type="id" />
-    <item name="myInfoRow" type="id" />
-    <item name="myHomeRow" type="id" />
-    <item name="rowContainer" type="id" />
-    <item name="profile_my_info_icon" type="id" />
-    <item name="profile_my_info_header" type="id" />
     <item name="emailInput" type="id" />
     <item name="phoneNumberInput" type="id" />
     <item name="contactDetailsContainer" type="id" />
-    <item name="paymentRow" type="id" />
-    <item name="profile_payment_screen_content" type="id" />
-    <item name="profile_payment_header" type="id" />
-    <item name="sphere" type="id" />
-    <item name="priceSphere" type="id" />
-    <item name="profile_payment_deductible_sphere" type="id" />
-    <item name="profile_menu_item_description" type="id" />
-    <item name="profileInfoRow" type="id" />
-    <item name="profilePaymentRow" type="id" />
     <item name="name" type="id" />
-    <item name="app_bar" type="id" />
-    <item name="collapsingToolbar" type="id" />
     <item name="save" type="id" />
-    <item name="coinsuredRow" type="id" />
-    <item name="charityRow" type="id" />
-    <item name="insuranceCertificateRow" type="id" />
-    <item name="feedbackRow" type="id" />
-    <item name="logout" type="id" />
-    <item name="pdf" type="id" />
-    <item name="bugReportEmail" type="id" />
-    <item name="playLink" type="id" />
-    <item name="coinsuredSphere" type="id" />
-    <item name="textContainer" type="id" />
-    <item name="sphereText" type="id" />
     <item name="selectedCharityContainer" type="id" />
     <item name="selectCharityContainer" type="id" />
     <item name="selectedCharityBanner" type="id" />
@@ -57,31 +18,12 @@
     <item name="cashbackOptionParagraph" type="id" />
     <item name="cashbackOptions" type="id" />
     <item name="cashbackSelect" type="id" />
-    <item name="loadingAnimation" type="id" />
-    <item name="aboutAppRow" type="id" />
     <item name="versionNumber" type="id" />
     <item name="dialogTitle" type="id" />
     <item name="dialogConfirm" type="id" />
-    <item name="dialogCancel" type="id" />
     <item name="dialogParagraph" type="id" />
-    <item name="trustlyContainer" type="id" />
-    <item name="successScreen" type="id" />
-    <item name="failScreen" type="id" />
-    <item name="successIcon" type="id" />
-    <item name="successTitle" type="id" />
-    <item name="successParagraph" type="id" />
-    <item name="failureIcon" type="id" />
-    <item name="failureTitle" type="id" />
-    <item name="failureParagraph" type="id" />
-    <item name="trustlyFailClose" type="id" />
-    <item name="trustlySuccessClose" type="id" />
-    <item name="deductibleSphere" type="id" />
-    <item name="autogiroDate" type="id" />
-    <item name="licenseList" type="id" />
     <item name="emailInputContainer" type="id" />
     <item name="phoneNumberInputContainer" type="id" />
-    <item name="profileReferralRow" type="id" />
-
     <!-- SpringUtils-tags -->
     <item name="translation_x" type="id" />
     <item name="translation_y" type="id" />
