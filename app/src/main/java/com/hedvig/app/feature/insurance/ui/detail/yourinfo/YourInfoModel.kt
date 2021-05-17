@@ -19,8 +19,4 @@ sealed class YourInfoModel {
     data class PendingAddressChange(
         val upcomingAgreement: GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement
     ) : YourInfoModel()
-
-    object PendingChangeError : YourInfoModel()
-
-    object ContractError : YourInfoModel()
 }
