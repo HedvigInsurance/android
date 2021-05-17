@@ -18,7 +18,6 @@ import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import e
-import kotlinx.android.synthetic.main.dialog_ratings.view.paragraph
 
 class YourInfoAdapter(
     private val fragmentManager: FragmentManager
