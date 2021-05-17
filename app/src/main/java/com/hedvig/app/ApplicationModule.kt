@@ -317,7 +317,7 @@ val whatsNewModule = module {
 
 val insuranceModule = module {
     viewModel<InsuranceViewModel> { InsuranceViewModelImpl(get()) }
-    viewModel<ContractDetailViewModel> { ContractDetailViewModelImpl(get(), get(), get()) }
+    viewModel<ContractDetailViewModel> { ContractDetailViewModelImpl(get(), get()) }
 }
 
 val marketingModule = module {

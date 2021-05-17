@@ -8,11 +8,11 @@ import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.AgreementStatus
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.data.ChatRepository
-import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase
 import com.hedvig.app.feature.insurance.data.InsuranceRepository
 import com.hedvig.app.feature.insurance.ui.detail.coverage.CoverageModel
 import com.hedvig.app.feature.insurance.ui.detail.documents.DocumentsModel
 import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoModel
+import com.hedvig.app.util.apollo.toUpcomingAgreementResult
 import e
 import kotlinx.coroutines.launch
 
@@ -36,8 +36,7 @@ abstract class ContractDetailViewModel : ViewModel() {
 
 class ContractDetailViewModelImpl(
     private val insuranceRepository: InsuranceRepository,
-    private val chatRepository: ChatRepository,
-    private val getUpcomingAgreement: GetUpcomingAgreementUseCase
+    private val chatRepository: ChatRepository
 ) : ContractDetailViewModel() {
 
     override fun loadContract(id: String) {
@@ -60,16 +59,11 @@ class ContractDetailViewModelImpl(
         }
     }
 
-    private suspend fun createContractItems(contract: InsuranceQuery.Contract): List<YourInfoModel> {
+    private fun createContractItems(contract: InsuranceQuery.Contract): List<YourInfoModel> {
         val contractItems = contract.toModelItems()
-        val upcomingAgreementItem = getUpcomingAgreementItem()
+        val upcomingAgreement = contract.fragments.upcomingAgreementFragment.toUpcomingAgreementResult()
+        val upcomingAgreementItem = YourInfoModel.PendingAddressChange(upcomingAgreement)
         return listOfNotNull(upcomingAgreementItem) + contractItems + listOf(YourInfoModel.Change)
-    }
-
-    private suspend fun getUpcomingAgreementItem() = when (val upcomingAgreement = getUpcomingAgreement()) {
-        is GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement -> YourInfoModel.PendingAddressChange(upcomingAgreement)
-        is GetUpcomingAgreementUseCase.UpcomingAgreementResult.Error -> YourInfoModel.PendingChangeError
-        GetUpcomingAgreementUseCase.UpcomingAgreementResult.NoUpcomingAgreementChange -> null
     }
 
     private fun createDocumentItems(contract: InsuranceQuery.Contract): List<DocumentsModel> {

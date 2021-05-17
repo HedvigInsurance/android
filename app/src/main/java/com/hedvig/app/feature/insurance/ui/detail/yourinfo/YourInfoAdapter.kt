@@ -101,7 +101,8 @@ class YourInfoAdapter(
             }
         }
 
-        class PendingAddressChange(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.change_address_pending_change_card)) {
+        class PendingAddressChange(parent: ViewGroup) :
+            ViewHolder(parent.inflate(R.layout.change_address_pending_change_card)) {
             private val binding by viewBinding(ChangeAddressPendingChangeCardBinding::bind)
             override fun bind(data: YourInfoModel, fragmentManager: FragmentManager) = with(binding) {
                 if (data !is YourInfoModel.PendingAddressChange) {
@@ -109,12 +110,18 @@ class YourInfoAdapter(
                 } else {
                     continueButton.text = root.context.getString(R.string.insurance_details_address_update_button)
                     continueButton.setHapticClickListener {
-                        UpcomingChangeBottomSheet.newInstance(data.upcomingAgreement.table).show(
-                            fragmentManager,
-                            UpcomingChangeBottomSheet.TAG
-                        )
+                        data.upcomingAgreement.table?.let {
+                            UpcomingChangeBottomSheet.newInstance(it).show(
+                                fragmentManager,
+                                UpcomingChangeBottomSheet.TAG
+                            )
+                        }
                     }
-                    paragraph.text = root.context.getString(R.string.insurance_details_address_update_body, data.upcomingAgreement.activeFrom, data.upcomingAgreement.address)
+                    paragraph.text = root.context.getString(
+                        R.string.insurance_details_address_update_body,
+                        data.upcomingAgreement.activeFrom,
+                        data.upcomingAgreement.address
+                    )
                 }
             }
         }
