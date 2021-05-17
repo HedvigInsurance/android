@@ -10,7 +10,6 @@ import com.hedvig.app.databinding.HeaderCenteredItemLayoutBinding
 import com.hedvig.app.databinding.ListTextItemBinding
 import com.hedvig.app.databinding.ListTextItemTwoLineBinding
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult
-import com.hedvig.app.feature.insurance.ui.detail.yourinfo.UpcomingAgreementAdapter.UpcomingAgreementItem.*
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.viewBinding
@@ -22,21 +21,21 @@ class UpcomingAgreementAdapter(
     init {
         val list = mutableListOf<UpcomingAgreementItem>()
 
-        CenteredHeader(upcomingAgreement.title).let(list::add)
+        UpcomingAgreementItem.CenteredHeader(upcomingAgreement.title).let(list::add)
         upcomingAgreement.sections.forEach { section ->
-            Header(section.title).let(list::add)
+            UpcomingAgreementItem.Header(section.title).let(list::add)
             section.rows.forEach { row ->
-                ListItem(row.title, row.value).let(list::add)
+                UpcomingAgreementItem.ListItem(row.title, row.value).let(list::add)
             }
         }
         submitList(list)
     }
 
     override fun getItemViewType(position: Int) = when (currentList[position]) {
-        is ListItem -> R.layout.list_text_item
-        is BuildingItem -> R.layout.list_text_item_two_line
-        is Header -> R.layout.bottom_sheet_header_item_layout
-        is CenteredHeader -> R.layout.header_centered_item_layout
+        is UpcomingAgreementItem.ListItem -> R.layout.list_text_item
+        is UpcomingAgreementItem.BuildingItem -> R.layout.list_text_item_two_line
+        is UpcomingAgreementItem.Header -> R.layout.bottom_sheet_header_item_layout
+        is UpcomingAgreementItem.CenteredHeader -> R.layout.header_centered_item_layout
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
@@ -60,7 +59,7 @@ class UpcomingAgreementAdapter(
         private val binding by viewBinding(ListTextItemBinding::bind)
 
         override fun bind(item: UpcomingAgreementItem) {
-            if (item !is ListItem) throw IllegalArgumentException("Wrong item ($item) in ListViewHolder")
+            if (item !is UpcomingAgreementItem.ListItem) throw IllegalArgumentException("Wrong item ($item) in ListViewHolder")
 
             binding.label.text = item.label
             binding.value.text = item.value
@@ -72,7 +71,7 @@ class UpcomingAgreementAdapter(
         private val binding by viewBinding(ListTextItemTwoLineBinding::bind)
 
         override fun bind(item: UpcomingAgreementItem) {
-            if (item !is BuildingItem) throw IllegalArgumentException("Wrong item ($item) in TwoLineListItemViewHolder")
+            if (item !is UpcomingAgreementItem.BuildingItem) throw IllegalArgumentException("Wrong item ($item) in TwoLineListItemViewHolder")
 
             val areaString = binding.root.context.getString(R.string.HOUSE_INFO_BOYTA_SQUAREMETERS, item.area)
             val waterConnectedString = if (item.waterConnected) ", water connected" else ""
@@ -87,7 +86,7 @@ class UpcomingAgreementAdapter(
         private val binding by viewBinding(BottomSheetHeaderItemLayoutBinding::bind)
 
         override fun bind(item: UpcomingAgreementItem) {
-            if (item !is Header) throw IllegalArgumentException("Wrong item ($item) in HeaderViewHolder")
+            if (item !is UpcomingAgreementItem.Header) throw IllegalArgumentException("Wrong item ($item) in HeaderViewHolder")
 
             binding.headerItem.text = item.text
         }
@@ -98,7 +97,7 @@ class UpcomingAgreementAdapter(
         private val binding by viewBinding(HeaderCenteredItemLayoutBinding::bind)
 
         override fun bind(item: UpcomingAgreementItem) {
-            if (item !is CenteredHeader) throw IllegalArgumentException("Wrong item ($item) in CenteredHeaderViewHolder")
+            if (item !is UpcomingAgreementItem.CenteredHeader) throw IllegalArgumentException("Wrong item ($item) in CenteredHeaderViewHolder")
 
             binding.headerItem.text = item.text
         }
