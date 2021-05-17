@@ -140,7 +140,8 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
                     }
 
                     webOnboarding.loadUrl(
-                        "${webBaseUrl}$localePath/new-member/offer?variation=android&quoteIds=$encodedQuoteIDs#token=$encodedToken"
+                        "${webBaseUrl}$localePath" +
+                            "/new-member/offer?variation=android&quoteIds=$encodedQuoteIDs#token=$encodedToken"
                     )
                 } else {
                     val webPath = intent.getStringExtra(WEB_PATH)
