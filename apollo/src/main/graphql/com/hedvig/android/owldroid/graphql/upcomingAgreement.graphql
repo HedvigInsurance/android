@@ -1,38 +1,42 @@
-query UpcomingAgreement {
+query UpcomingAgreement($showDetailsTable: Boolean! = false) {
   contracts {
-    status {
-      ... on ActiveStatus {
-        upcomingAgreementChange {
-          ... UpcomingAgreementFragment
-        }
-      }
-      ... on TerminatedInFutureStatus {
-        upcomingAgreementChange {
-          ... UpcomingAgreementFragment
-        }
-      }
-      ... on TerminatedTodayStatus {
-        upcomingAgreementChange {
-          ... UpcomingAgreementFragment
-        }
+    ... UpcomingAgreementFragment
+  }
+}
+
+fragment UpcomingAgreementFragment on Contract {
+  status {
+    ... on ActiveStatus {
+      upcomingAgreementChange {
+        ... UpcomingAgreementChangeFragment
       }
     }
+    ... on TerminatedInFutureStatus {
+      upcomingAgreementChange {
+        ... UpcomingAgreementChangeFragment
+      }
+    }
+    ... on TerminatedTodayStatus {
+      upcomingAgreementChange {
+        ... UpcomingAgreementChangeFragment
+      }
+    }
+  }
 
-    upcomingAgreementDetailsTable {
+  upcomingAgreementDetailsTable @include(if: $showDetailsTable) {
+    title
+    sections {
       title
-      sections {
+      rows {
         title
-        rows {
-          title
-          subtitle
-          value
-        }
+        subtitle
+        value
       }
     }
   }
 }
 
-fragment UpcomingAgreementFragment on UpcomingAgreementChange {
+fragment UpcomingAgreementChangeFragment on UpcomingAgreementChange {
   newAgreement {
     ... on SwedishApartmentAgreement {
       address {

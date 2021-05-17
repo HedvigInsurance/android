@@ -72,7 +72,7 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
         }
     }
 
-    private fun setViewState(viewState: ViewState): Any = when (viewState) {
+    private fun setViewState(viewState: ViewState) = when (viewState) {
         Loading -> {
             binding.spinner.loadingSpinner.show()
             binding.contentScrollView.remove()
@@ -170,10 +170,10 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
         continueButton.isVisible = buttonText != null
         continueButton.icon = buttonIcon?.let { compatDrawable(it) }
 
-        upcomingAddressLayout.isVisible = upcomingAgreementResult.table.sections.isNotEmpty()
+        upcomingAddressLayout.isVisible = upcomingAgreementResult.table?.sections?.isNotEmpty() == true
 
         upcomingAgreementResult.table.let { table ->
-            table.sections.forEach { section ->
+            table?.sections?.forEach { section ->
                 section.rows.forEach { row ->
                     ListTextItemBinding.inflate(layoutInflater, upcomingAddressLayout, false).apply {
                         label.text = row.title

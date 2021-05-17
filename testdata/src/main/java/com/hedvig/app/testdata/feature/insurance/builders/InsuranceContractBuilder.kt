@@ -3,12 +3,14 @@ package com.hedvig.app.testdata.feature.insurance.builders
 import com.hedvig.android.owldroid.fragment.AddressFragment
 import com.hedvig.android.owldroid.fragment.ContractStatusFragment
 import com.hedvig.android.owldroid.fragment.InsurableLimitsFragment
+import com.hedvig.android.owldroid.fragment.UpcomingAgreementFragment
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.AgreementStatus
 import com.hedvig.android.owldroid.type.DanishHomeContentLineOfBusiness
 import com.hedvig.android.owldroid.type.NorwegianHomeContentLineOfBusiness
 import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
 import com.hedvig.android.owldroid.type.TypeOfContract
+import com.hedvig.app.testdata.feature.changeaddress.builders.UpcomingAgreementBuilder
 import java.time.LocalDate
 
 class InsuranceContractBuilder(
@@ -168,6 +170,16 @@ class InsuranceContractBuilder(
         termsAndConditions = InsuranceQuery.TermsAndConditions(
             displayName = "Terms and Conditions",
             url = "https://cdn.hedvig.com/info/insurance-terms-tenant-owners-2019-05.pdf"
+        ),
+        fragments = InsuranceQuery.Contract.Fragments(
+            upcomingAgreementFragment = UpcomingAgreementFragment(
+                status = UpcomingAgreementFragment.Status(
+                    asActiveStatus = null,
+                    asTerminatedTodayStatus = null,
+                    asTerminatedInFutureStatus = null
+                ),
+                upcomingAgreementDetailsTable = null
+            )
         )
     )
 }
