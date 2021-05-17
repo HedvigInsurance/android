@@ -30,8 +30,6 @@ class YourInfoAdapter(
         YourInfoModel.Change -> R.layout.your_info_change
         is YourInfoModel.Coinsured -> R.layout.your_info_coinsured
         is YourInfoModel.PendingAddressChange -> R.layout.change_address_pending_change_card
-        YourInfoModel.ContractError -> TODO()
-        YourInfoModel.PendingChangeError -> TODO()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
