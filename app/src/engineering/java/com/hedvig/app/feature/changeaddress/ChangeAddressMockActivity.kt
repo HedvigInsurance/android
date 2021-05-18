@@ -5,7 +5,7 @@ import com.hedvig.app.MockActivity
 import com.hedvig.app.changeAddressModule
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressViewModel
-import com.hedvig.app.feature.home.ui.changeaddress.GetSelfChangeEligibilityUseCase
+import com.hedvig.app.feature.home.ui.changeaddress.GetAddressChangeStoryIdUseCase
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement.*
@@ -30,7 +30,7 @@ class ChangeAddressMockActivity : MockActivity() {
         clickableItem("Error") {
             MockChangeAddressViewModel.mockedState = MutableLiveData(
                 ViewState.SelfChangeError(
-                    GetSelfChangeEligibilityUseCase.SelfChangeEligibilityResult.Error(
+                    GetAddressChangeStoryIdUseCase.SelfChangeEligibilityResult.Error(
                         message = "Test error message, this can happen because of no internet connection, backend errors etc."
                     )
                 )
