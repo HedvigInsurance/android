@@ -4,6 +4,7 @@ plugins {
     id("net.rdrei.android.buildtimetracker") version "0.11.0"
     id("com.github.konifar.gradle.unused-resources-remover") version "0.3.3"
     id("org.gradle.android.cache-fix") version "2.3.1" apply false
+    id("com.osacky.doctor") version "0.7.0"
 }
 
 subprojects {
