@@ -8,5 +8,5 @@
     android:layout_marginHorizontal="@dimen/base_margin_double"
     android:layout_marginTop="@dimen/base_margin_sextuple"
     android:layout_marginBottom="@dimen/base_margin_half"
-    android:textAppearance="@style/Hedvig.TextAppearance.Headline5"
+    android:textAppearance="?textAppearanceHeadline5"
     tools:text="Make changes" />
