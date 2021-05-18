@@ -30,8 +30,8 @@ import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.Insetter
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
-import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.time.format.DateTimeFormatter
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
 
@@ -174,7 +174,8 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
         upcomingAddressLayout.addressLabel.text = upcomingAgreementResult.address.street
         upcomingAddressLayout.postalCodeLabel.text = upcomingAgreementResult.address.postalCode
         upcomingAddressLayout.typeLabel.text = upcomingAgreementResult.addressType?.let(::getString) ?: "-"
-        upcomingAddressLayout.livingSpaceLabel.text = getString(R.string.HOUSE_INFO_BIYTA_SQUAREMETERS, upcomingAgreementResult.squareMeters)
+        upcomingAddressLayout.livingSpaceLabel.text =
+            getString(R.string.HOUSE_INFO_BIYTA_SQUAREMETERS, upcomingAgreementResult.squareMeters)
         upcomingAddressLayout.dateLabel.text = upcomingAgreementResult.activeFrom?.format(DateTimeFormatter.ISO_DATE)
     }
 

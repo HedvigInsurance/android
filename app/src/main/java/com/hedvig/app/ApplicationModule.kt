@@ -49,7 +49,7 @@ import com.hedvig.app.feature.home.ui.HomeViewModel
 import com.hedvig.app.feature.home.ui.HomeViewModelImpl
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressViewModel
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressViewModelImpl
-import com.hedvig.app.feature.home.ui.changeaddress.GetSelfChangeEligibilityUseCase
+import com.hedvig.app.feature.home.ui.changeaddress.GetAddressChangeStoryIdUseCase
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase
 import com.hedvig.app.feature.insurance.data.InsuranceRepository
 import com.hedvig.app.feature.insurance.service.InsuranceTracker
@@ -477,7 +477,7 @@ val localeManagerModule = module {
 
 val useCaseModule = module {
     single { GetUpcomingAgreementUseCase(get()) }
-    single { GetSelfChangeEligibilityUseCase(get()) }
+    single { GetAddressChangeStoryIdUseCase(get()) }
     single { StartDanishAuthUseCase(get()) }
     single { StartNorwegianAuthUseCase(get()) }
     single { SubscribeToAuthStatusUseCase(get()) }

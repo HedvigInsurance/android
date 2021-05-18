@@ -1,21 +1,25 @@
 package com.hedvig.app.feature.home.ui.changeaddress
 
 import com.apollographql.apollo.ApolloClient
-import com.hedvig.android.owldroid.graphql.SelfChangeEligibilityQuery
-import com.hedvig.app.feature.home.ui.changeaddress.GetSelfChangeEligibilityUseCase.SelfChangeEligibilityResult.Blocked
-import com.hedvig.app.feature.home.ui.changeaddress.GetSelfChangeEligibilityUseCase.SelfChangeEligibilityResult.Eligible
-import com.hedvig.app.feature.home.ui.changeaddress.GetSelfChangeEligibilityUseCase.SelfChangeEligibilityResult.Error
+import com.hedvig.android.owldroid.graphql.ActiveContractBundlesQuery
+import com.hedvig.app.feature.home.ui.changeaddress.GetAddressChangeStoryIdUseCase.SelfChangeEligibilityResult.Blocked
+import com.hedvig.app.feature.home.ui.changeaddress.GetAddressChangeStoryIdUseCase.SelfChangeEligibilityResult.Eligible
+import com.hedvig.app.feature.home.ui.changeaddress.GetAddressChangeStoryIdUseCase.SelfChangeEligibilityResult.Error
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
 
-class GetSelfChangeEligibilityUseCase(
+class GetAddressChangeStoryIdUseCase(
     private val apolloClient: ApolloClient,
 ) {
 
     suspend operator fun invoke(): SelfChangeEligibilityResult {
-        return when (val result = apolloClient.query(SelfChangeEligibilityQuery()).safeQuery()) {
+        return when (val result = apolloClient.query(ActiveContractBundlesQuery()).safeQuery()) {
             is QueryResult.Success ->
-                result.data?.selfChangeEligibility?.embarkStoryId
+                result.data
+                    .activeContractBundles
+                    .firstOrNull()
+                    ?.angelStories
+                    ?.addressChange
                     ?.let(::Eligible)
                     ?: Blocked
             is QueryResult.Error -> Error(result.message)
