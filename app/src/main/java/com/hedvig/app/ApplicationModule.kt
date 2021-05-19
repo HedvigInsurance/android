@@ -1,6 +1,7 @@
 package com.hedvig.app
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.drawable.PictureDrawable
 import android.os.Build
 import androidx.preference.PreferenceManager
@@ -87,6 +88,7 @@ import com.hedvig.app.feature.marketpicker.MarketPickerTracker
 import com.hedvig.app.feature.marketpicker.MarketPickerViewModel
 import com.hedvig.app.feature.marketpicker.MarketPickerViewModelImpl
 import com.hedvig.app.feature.marketpicker.MarketRepository
+import com.hedvig.app.feature.offer.OfferPersistenceManager
 import com.hedvig.app.feature.offer.OfferPersistenceManagerImpl
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.OfferTracker
@@ -513,9 +515,14 @@ val pushTokenManagerModule = module {
     single { PushTokenManager(FirebaseMessaging.getInstance()) }
 }
 
+val preferenceManagerModule = module {
+    single<SharedPreferences> {
+        PreferenceManager.getDefaultSharedPreferences(get())
+    }
+}
+
 val offerPersistenceManagerModule = module {
-    single {
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(get())
-        OfferPersistenceManagerImpl(sharedPreferences)
+    single<OfferPersistenceManager> {
+        OfferPersistenceManagerImpl(get())
     }
 }

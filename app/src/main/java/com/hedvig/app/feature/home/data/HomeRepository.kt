@@ -29,8 +29,8 @@ class HomeRepository(
         .await()
 
     private fun homeQuery() = HomeQuery(
-        localeManager.defaultLocale(),
-        localeManager.defaultLocale().rawValue,
-        QuoteBundleInput(persistenceManager.getPersistedQuoteIds().toList())
+        locale = localeManager.defaultLocale(),
+        languageCode = localeManager.defaultLocale().rawValue,
+        quoteBundleInput = QuoteBundleInput(persistenceManager.getPersistedQuoteIds().toList())
     )
 }

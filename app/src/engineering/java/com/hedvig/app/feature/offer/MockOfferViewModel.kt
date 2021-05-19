@@ -62,6 +62,8 @@ class MockOfferViewModel : OfferViewModel() {
         )
     }
 
+    override fun clearLocallyStoredQuoteIds() {}
+
     companion object {
         var mockData = OFFER_DATA_SWEDISH_APARTMENT
     }
