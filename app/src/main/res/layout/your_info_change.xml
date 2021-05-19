@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginHorizontal="@dimen/base_margin_double"
+    android:paddingBottom="@dimen/base_margin_quadruple">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_quintuple"
+        android:layout_marginBottom="@dimen/base_margin_double"
+        android:text="@string/insurance_details_view_your_info.edit_insurance_title"
+        android:textAppearance="?textAppearanceHeadline6" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/insurance_details_view_your_info.edit_insurance_description"
+        android:textAppearance="?textAppearanceBody2" />
+
+    <Button
+        android:id="@+id/openChatButton"
+        style="?materialButtonContainedLargeStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:text="@string/insurance_details_view_your_info.edit_insurance_button" />
+
+</LinearLayout>

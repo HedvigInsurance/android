@@ -10,11 +10,11 @@ import androidx.core.view.isVisible
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ChangeAddressActivityBinding
+import com.hedvig.app.databinding.ListTextItemBinding
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.Error.GeneralError
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.Error.NoContractsError
-import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement
 import com.hedvig.app.feature.home.ui.changeaddress.ViewState.ChangeAddressInProgress
 import com.hedvig.app.feature.home.ui.changeaddress.ViewState.Loading
 import com.hedvig.app.feature.home.ui.changeaddress.ViewState.ManualChangeAddress
@@ -72,7 +72,7 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
         }
     }
 
-    private fun setViewState(viewState: ViewState): Any = when (viewState) {
+    private fun setViewState(viewState: ViewState) = when (viewState) {
         Loading -> {
             binding.spinner.loadingSpinner.show()
             binding.contentScrollView.remove()
@@ -154,7 +154,7 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
         buttonText: String?,
         @DrawableRes buttonIcon: Int?,
         onContinue: () -> Unit,
-        upcomingAgreementResult: UpcomingAgreement
+        upcomingAgreementResult: GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement
     ) = with(binding) {
         spinner.loadingSpinner.remove()
         contentScrollView.show()
@@ -170,12 +170,19 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
         continueButton.isVisible = buttonText != null
         continueButton.icon = buttonIcon?.let { compatDrawable(it) }
 
-        upcomingAddressLayout.upcomingAddressLayoutRoot.show()
-        upcomingAddressLayout.addressLabel.text = upcomingAgreementResult.address.street
-        upcomingAddressLayout.postalCodeLabel.text = upcomingAgreementResult.address.postalCode
-        upcomingAddressLayout.typeLabel.text = upcomingAgreementResult.addressType?.let(::getString) ?: "-"
-        upcomingAddressLayout.livingSpaceLabel.text = getString(R.string.HOUSE_INFO_BIYTA_SQUAREMETERS, upcomingAgreementResult.squareMeters)
-        upcomingAddressLayout.dateLabel.text = upcomingAgreementResult.activeFrom?.format(DateTimeFormatter.ISO_DATE)
+        upcomingAddressLayout.isVisible = upcomingAgreementResult.table?.sections?.isNotEmpty() == true
+
+        upcomingAgreementResult.table.let { table ->
+            table?.sections?.forEach { section ->
+                section.rows.forEach { row ->
+                    ListTextItemBinding.inflate(layoutInflater, upcomingAddressLayout, false).apply {
+                        label.text = row.title
+                        value.text = row.value
+                        upcomingAddressLayout.addView(this.root)
+                    }
+                }
+            }
+        }
     }
 
     companion object {

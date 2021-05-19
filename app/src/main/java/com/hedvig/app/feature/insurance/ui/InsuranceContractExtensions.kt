@@ -54,6 +54,12 @@ fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding, market
                 firstStatusPill.setText(R.string.DASHBOARD_INSURANCE_STATUS_TERMINATED)
             }
             contractStatus.asActiveStatus?.let {
+
+                it.upcomingAgreementChange?.newAgreement?.asSwedishApartmentAgreement?.activeFrom?.let { upcomingChangeDate ->
+                    firstStatusPill.show()
+                    firstStatusPill.text = root.context.getString(R.string.DASHBOARD_INSURANCE_STATUS_ACTIVE_UPDATE_DATE, upcomingChangeDate)
+                }
+
                 when (typeOfContract) {
                     TypeOfContract.SE_APARTMENT_BRF,
                     TypeOfContract.SE_APARTMENT_RENT,

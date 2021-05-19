@@ -2,12 +2,13 @@ package com.hedvig.app.feature.changeaddress
 
 import androidx.lifecycle.MutableLiveData
 import com.hedvig.app.MockActivity
-import com.hedvig.app.R
 import com.hedvig.app.changeAddressModule
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressViewModel
 import com.hedvig.app.feature.home.ui.changeaddress.GetSelfChangeEligibilityUseCase
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase
+import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement
+import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement.*
 import com.hedvig.app.feature.home.ui.changeaddress.ViewState
 import com.hedvig.app.genericDevelopmentAdapter
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -43,15 +44,49 @@ class ChangeAddressMockActivity : MockActivity() {
         clickableItem("Upcoming address change") {
             MockChangeAddressViewModel.mockedState = MutableLiveData(
                 ViewState.ChangeAddressInProgress(
-                    GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement(
-                        address = GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement.Address(
-                            "Test street 1 ",
-                            postalCode = "Test 123 Postal code",
-                            city = "City of Test"
-                        ),
-                        squareMeters = 123,
-                        activeFrom = LocalDate.of(2021, 3, 15),
-                        addressType = R.string.NORWEIGIAN_HOME_CONTENT_LOB_RENT
+                    UpcomingAgreement(
+                        activeFrom = LocalDate.of(2021, 1, 13),
+                        address = "Test Address 12",
+                        table = UpcomingAgreementTable(
+                            title = "Mock Upcoming Agreement",
+                            sections = listOf(
+                                UpcomingAgreementTable.Section(
+                                    title = "Details",
+                                    rows = listOf(
+                                        UpcomingAgreementTable.Row(
+                                            title = "Address",
+                                            value = "Test Address 12",
+                                            subTitle = null
+                                        ),
+                                        UpcomingAgreementTable.Row(
+                                            title = "Postal code",
+                                            value = "11234",
+                                            subTitle = null
+                                        ),
+                                        UpcomingAgreementTable.Row(
+                                            title = "City",
+                                            value = "Test city",
+                                            subTitle = null
+                                        )
+                                    )
+                                ),
+                                UpcomingAgreementTable.Section(
+                                    title = "Extra buildings",
+                                    rows = listOf(
+                                        UpcomingAgreementTable.Row(
+                                            title = "Garage",
+                                            value = "22 sqm",
+                                            subTitle = null
+                                        ),
+                                        UpcomingAgreementTable.Row(
+                                            title = "Attefall",
+                                            value = "15 sqm",
+                                            subTitle = null
+                                        )
+                                    )
+                                )
+                            )
+                        )
                     )
                 )
             )

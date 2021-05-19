@@ -19,43 +19,25 @@ class CoverageFragment : Fragment(R.layout.contract_detail_coverage_fragment) {
     private val binding by viewBinding(ContractDetailCoverageFragmentBinding::bind)
     private val model: ContractDetailViewModel by sharedViewModel()
     private val requestBuilder: RequestBuilder<PictureDrawable> by inject()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val coverageAdapter = CoverageAdapter(requestBuilder, parentFragmentManager)
         binding.root.apply {
             doOnApplyWindowInsets { view, insets, initialState ->
                 view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
             }
-            adapter = CoverageAdapter(requestBuilder, parentFragmentManager)
+            adapter = coverageAdapter
             (layoutManager as? GridLayoutManager)?.spanSizeLookup =
                 object : GridLayoutManager.SpanSizeLookup() {
                     override fun getSpanSize(position: Int) =
-                        when ((adapter as? CoverageAdapter)?.currentList?.get(position)) {
+                        when (coverageAdapter.currentList[position]) {
                             is CoverageModel.Peril -> 1
                             else -> 2
                         }
                 }
-            addItemDecoration(CoverageItemDecoration())
 
-            model.data.observe(viewLifecycleOwner) { d ->
-                d.getOrNull()?.let { data ->
-                    (adapter as? CoverageAdapter)?.submitList(
-                        listOf(
-                            CoverageModel.Header.Perils(
-                                data.typeOfContract
-                            )
-                        ) +
-                            data.perils.map {
-                                CoverageModel.Peril(
-                                    it.fragments.perilFragment
-                                )
-                            } +
-                            CoverageModel.Header.InsurableLimits + data.insurableLimits.map {
-                            CoverageModel.InsurableLimit(
-                                it.fragments.insurableLimitsFragment
-                            )
-                        }
-                    )
-                }
-            }
+            addItemDecoration(CoverageItemDecoration())
+            model.coverageList.observe(viewLifecycleOwner, coverageAdapter::submitList)
         }
     }
 }

@@ -46,35 +46,26 @@ class DanishHomeContentsTest : TestCase() {
             tabContent {
                 childAt<ContractDetailScreen.YourInfoTab>(0) {
                     recycler {
-                        childAt<ContractDetailScreen.YourInfoTab.Header>(0) {
-                            text { hasText(R.string.CONTRACT_DETAIL_HOME_TITLE) }
-                        }
-                        childAt<ContractDetailScreen.YourInfoTab.Row>(1) {
-                            label { hasText(R.string.CONTRACT_DETAIL_HOME_ADDRESS) }
-                            content { hasText("Testvägen 1") }
-                        }
-                        childAt<ContractDetailScreen.YourInfoTab.Row>(2) {
-                            label { hasText(R.string.CONTRACT_DETAIL_HOME_POSTCODE) }
-                            content { hasText("123 45") }
-                        }
-                        childAt<ContractDetailScreen.YourInfoTab.Row>(3) {
-                            label { hasText(R.string.CONTRACT_DETAIL_HOME_TYPE) }
-                            content {
+                        childAt<ContractDetailScreen.YourInfoTab.Home>(0) {
+                            title { hasText(R.string.CONTRACT_DETAIL_HOME_TITLE) }
+                            addressLabel { hasText(R.string.CONTRACT_DETAIL_HOME_ADDRESS) }
+                            address { hasText("Testvägen 1") }
+                            postCodeLabel { hasText(R.string.CONTRACT_DETAIL_HOME_POSTCODE) }
+                            postCode { hasText("123 45") }
+                            typeLabel { hasText(R.string.CONTRACT_DETAIL_HOME_TYPE) }
+                            type {
                                 hasText(
                                     DanishHomeContentLineOfBusiness.RENT.stringRes()?.let(context()::getString) ?: ""
                                 )
                             }
+                            sizeLabel { hasText(R.string.CONTRACT_DETAIL_HOME_SIZE) }
+                            size { hasText(R.string.CONTRACT_DETAIL_HOME_SIZE_INPUT, 50) }
                         }
-                        childAt<ContractDetailScreen.YourInfoTab.Row>(4) {
-                            label { hasText(R.string.CONTRACT_DETAIL_HOME_SIZE) }
-                            content { hasText(R.string.CONTRACT_DETAIL_HOME_SIZE_INPUT, 50) }
-                        }
-                        childAt<ContractDetailScreen.YourInfoTab.Header>(5) {
-                            text { hasText(R.string.CONTRACT_DETAIL_COINSURED_TITLE) }
-                        }
-                        childAt<ContractDetailScreen.YourInfoTab.Row>(6) {
-                            label { hasText(R.string.CONTRACT_DETAIL_COINSURED_TITLE) }
-                            content { hasText(R.string.CONTRACT_DETAIL_COINSURED_NUMBER_INPUT, 2) }
+
+                        childAt<ContractDetailScreen.YourInfoTab.CoInsured>(1) {
+                            title { hasText(R.string.CONTRACT_DETAIL_COINSURED_TITLE) }
+                            coInsuredLabel { hasText(R.string.CONTRACT_DETAIL_COINSURED_TITLE) }
+                            coInsured { hasText(R.string.CONTRACT_DETAIL_COINSURED_NUMBER_INPUT, 2) }
                         }
                     }
                 }

@@ -1,5 +1,6 @@
 package com.hedvig.app.testdata.feature.changeaddress
 
+import com.hedvig.android.owldroid.fragment.UpcomingAgreementFragment
 import com.hedvig.android.owldroid.graphql.SelfChangeEligibilityQuery
 import com.hedvig.android.owldroid.graphql.UpcomingAgreementQuery
 import com.hedvig.app.testdata.feature.changeaddress.builders.SelfChangeEligibilityBuilder
@@ -8,25 +9,29 @@ import com.hedvig.app.testdata.feature.changeaddress.builders.UpcomingAgreementB
 val UPCOMING_AGREEMENT_NONE = UpcomingAgreementQuery.Data(
     contracts = listOf(
         UpcomingAgreementQuery.Contract(
-            status = UpcomingAgreementQuery.Status(
-                asActiveStatus = null,
-                asTerminatedInFutureStatus = null,
-                asTerminatedTodayStatus = null,
+            fragments = UpcomingAgreementQuery.Contract.Fragments(
+                upcomingAgreementFragment = UpcomingAgreementFragment(
+                    upcomingAgreementDetailsTable = UpcomingAgreementFragment.UpcomingAgreementDetailsTable(
+                        title = "",
+                        sections = listOf()
+                    ),
+                    status = UpcomingAgreementFragment.Status(
+                        asActiveStatus = null,
+                        asTerminatedInFutureStatus = null,
+                        asTerminatedTodayStatus = null,
+                    ),
+                )
             )
         )
     )
 )
 
-val UPCOMING_AGREEMENT_SWEDISH_HOUSE = UpcomingAgreementQuery.Data(
+val UPCOMING_AGREEMENT_SWEDISH_APARTMENT = UpcomingAgreementQuery.Data(
     contracts = listOf(
         UpcomingAgreementQuery.Contract(
-            status = UpcomingAgreementQuery.Status(
-                asActiveStatus = UpcomingAgreementQuery.AsActiveStatus(
-                    upcomingAgreementChange = UpcomingAgreementBuilder().build()
-                ),
-                asTerminatedInFutureStatus = null,
-                asTerminatedTodayStatus = null,
-            )
+            fragments = UpcomingAgreementQuery.Contract.Fragments(
+                upcomingAgreementFragment = UpcomingAgreementBuilder().build()
+            ),
         )
     )
 )
