@@ -1,6 +1,7 @@
 package com.hedvig.app
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.drawable.PictureDrawable
 import android.os.Build
 import androidx.preference.PreferenceManager
@@ -82,6 +83,7 @@ import com.hedvig.app.feature.marketpicker.MarketPickerTracker
 import com.hedvig.app.feature.marketpicker.MarketPickerViewModel
 import com.hedvig.app.feature.marketpicker.MarketPickerViewModelImpl
 import com.hedvig.app.feature.marketpicker.MarketRepository
+import com.hedvig.app.feature.offer.OfferPersistenceManager
 import com.hedvig.app.feature.offer.OfferPersistenceManagerImpl
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.OfferTracker
@@ -142,14 +144,14 @@ import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.svg.GlideApp
 import com.hedvig.app.util.svg.SvgSoftwareLayerSetter
 import com.mixpanel.android.mpmetrics.MixpanelAPI
+import java.time.Clock
+import java.util.Locale
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import timber.log.Timber
-import java.time.Clock
-import java.util.Locale
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APP_ID == "com.hedvig.test.app"
 
@@ -247,19 +249,19 @@ val applicationModule = module {
 
 fun makeUserAgent(context: Context, market: Market?) =
     "${
-        BuildConfig.APPLICATION_ID
+    BuildConfig.APPLICATION_ID
     } ${
-        BuildConfig.VERSION_NAME
+    BuildConfig.VERSION_NAME
     } (Android ${
-        Build.VERSION.RELEASE
+    Build.VERSION.RELEASE
     }; ${
-        Build.BRAND
+    Build.BRAND
     } ${
-        Build.MODEL
+    Build.MODEL
     }; ${
-        Build.DEVICE
+    Build.DEVICE
     }; ${
-        getLocale(context, market).language
+    getLocale(context, market).language
     })"
 
 fun makeLocaleString(context: Context, market: Market?): String = getLocale(context, market).toLanguageTag()
@@ -479,9 +481,14 @@ val useCaseModule = module {
     single { SubscribeToAuthStatusUseCase(get()) }
 }
 
+val preferenceManagerModule = module {
+    single<SharedPreferences> {
+        PreferenceManager.getDefaultSharedPreferences(get())
+    }
+}
+
 val offerPersistenceManagerModule = module {
-    single {
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(get())
-        OfferPersistenceManagerImpl(sharedPreferences)
+    single<OfferPersistenceManager> {
+        OfferPersistenceManagerImpl(get())
     }
 }
