@@ -69,7 +69,9 @@ class YourInfoAdapter(
                     addressValue.text = data.street
                     postcodeValue.text = data.postalCode
                     typeValue.text = data.type?.let(root.context::getString)
-                    sizeValue.text = data.size.toString()
+                    sizeValue.text = root.context.getString(
+                        R.string.CONTRACT_DETAIL_HOME_SIZE_INPUT, data.size
+                    )
                 }
             }
         }

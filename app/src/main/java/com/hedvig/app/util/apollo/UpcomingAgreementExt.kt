@@ -5,7 +5,11 @@ import com.hedvig.android.owldroid.fragment.UpcomingAgreementFragment
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase
 import java.time.LocalDate
 
-fun UpcomingAgreementFragment.toUpcomingAgreementResult(): GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement {
+fun UpcomingAgreementFragment.toUpcomingAgreementResult(): GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement? {
+    if (status.newAgreement() == null) {
+        return null
+    }
+
     return GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement(
         activeFrom = activeFrom(),
         address = address(),

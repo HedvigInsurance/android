@@ -10,7 +10,6 @@ import com.hedvig.android.owldroid.type.DanishHomeContentLineOfBusiness
 import com.hedvig.android.owldroid.type.NorwegianHomeContentLineOfBusiness
 import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
 import com.hedvig.android.owldroid.type.TypeOfContract
-import com.hedvig.app.testdata.feature.changeaddress.builders.UpcomingAgreementBuilder
 import java.time.LocalDate
 
 class InsuranceContractBuilder(
@@ -22,6 +21,7 @@ class InsuranceContractBuilder(
             draftCertificateUrl = "https://www.example.com"
         ),
     private val agreementStatus: AgreementStatus = AgreementStatus.ACTIVE,
+    private val showUpcomingAgreement: Boolean = false
 ) {
 
     fun build() = InsuranceQuery.Contract(
@@ -33,13 +33,15 @@ class InsuranceContractBuilder(
                     asActiveInFutureStatus = null,
                     asActiveStatus = ContractStatusFragment.AsActiveStatus(
                         pastInception = LocalDate.of(2020, 2, 1),
-                        upcomingAgreementChange = ContractStatusFragment.UpcomingAgreementChange(
-                            newAgreement = ContractStatusFragment.NewAgreement(
-                                asSwedishApartmentAgreement = ContractStatusFragment.AsSwedishApartmentAgreement(
-                                    activeFrom = LocalDate.of(2021, 4, 6)
+                        upcomingAgreementChange = if (showUpcomingAgreement) {
+                            ContractStatusFragment.UpcomingAgreementChange(
+                                newAgreement = ContractStatusFragment.NewAgreement(
+                                    asSwedishApartmentAgreement = ContractStatusFragment.AsSwedishApartmentAgreement(
+                                        activeFrom = LocalDate.of(2021, 4, 6)
+                                    )
                                 )
                             )
-                        )
+                        } else null
                     ),
                     asActiveInFutureAndTerminatedInFutureStatus = null,
                     asTerminatedInFutureStatus = null,

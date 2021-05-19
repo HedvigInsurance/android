@@ -62,7 +62,7 @@ class ContractDetailViewModelImpl(
     private fun createContractItems(contract: InsuranceQuery.Contract): List<YourInfoModel> {
         val contractItems = contract.toModelItems()
         val upcomingAgreement = contract.fragments.upcomingAgreementFragment.toUpcomingAgreementResult()
-        val upcomingAgreementItem = YourInfoModel.PendingAddressChange(upcomingAgreement)
+        val upcomingAgreementItem = upcomingAgreement?.let { YourInfoModel.PendingAddressChange(it) }
         return listOfNotNull(upcomingAgreementItem) + contractItems + listOf(YourInfoModel.Change)
     }
 

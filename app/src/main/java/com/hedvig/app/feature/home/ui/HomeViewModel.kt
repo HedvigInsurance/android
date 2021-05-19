@@ -19,7 +19,7 @@ abstract class HomeViewModel : ViewModel() {
     protected val _homeData = MutableLiveData<Result<HomeQuery.Data>>()
     protected val _payinStatusData = MutableLiveData<PayinStatusQuery.Data>()
     // TODO Fetch address change in progress
-    protected val _addressChangeInProgress = MutableLiveData( "New Test Address 123")
+    protected val _addressChangeInProgress = MutableLiveData("")
     val data: LiveData<Triple<Result<HomeQuery.Data>?, PayinStatusQuery.Data?, String?>> = combineTuple(
         _homeData,
         _payinStatusData,

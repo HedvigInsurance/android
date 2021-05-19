@@ -45,26 +45,6 @@ class UpcomingChangeAddressTest : TestCase() {
             continueButton {
                 hasText(R.string.moving_intro_manual_handling_button_text)
             }
-
-            address {
-                hasText("Test Street 123")
-            }
-
-            postalCode {
-                hasText("123 TEST")
-            }
-
-            livingSpace {
-                hasText("50 sqm")
-            }
-
-            type {
-                hasText("Rental")
-            }
-
-            date {
-                hasText("2021-04-11")
-            }
         }
     }
 }

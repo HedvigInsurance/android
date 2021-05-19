@@ -20,6 +20,7 @@ import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.FeatureFlag
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
+import kotlinx.android.synthetic.main.trustly_payin_details.pending
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -154,7 +155,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     add(HomeModel.BodyText.Terminated)
                     add(HomeModel.StartClaimOutlined)
                     add(HomeModel.HowClaimsWork(successData.howClaimsWork))
-                    if (pendingAddress != null) {
+                    if (pendingAddress != null && pendingAddress.isNotBlank()) {
                         add(HomeModel.PendingAddressChange(pendingAddress))
                     }
                     if (FeatureFlag.MOVING_FLOW.enabled) {
@@ -171,7 +172,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     add(HomeModel.BigText.Active(firstName))
                     add(HomeModel.StartClaimContained)
                     add(HomeModel.HowClaimsWork(successData.howClaimsWork))
-                    if (pendingAddress != null) {
+                    if (pendingAddress != null && pendingAddress.isNotBlank()) {
                         add(HomeModel.PendingAddressChange(pendingAddress))
                     }
                     addAll(listOfNotNull(*upcomingRenewals(successData.contracts).toTypedArray()))

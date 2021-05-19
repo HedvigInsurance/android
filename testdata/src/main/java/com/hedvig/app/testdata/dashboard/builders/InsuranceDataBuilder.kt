@@ -23,6 +23,7 @@ class InsuranceDataBuilder(
             draftCertificateUrl = "https://www.example.com"
         ),
     private val displayName: String = "Hemförsäkring",
+    private val showUpcomingAgreement: Boolean = false
 ) {
 
     fun build() = InsuranceQuery.Data(
@@ -193,29 +194,31 @@ class InsuranceDataBuilder(
                     upcomingAgreementFragment = UpcomingAgreementFragment(
                         status = UpcomingAgreementFragment.Status(
                             asActiveStatus = UpcomingAgreementFragment.AsActiveStatus(
-                                upcomingAgreementChange = UpcomingAgreementFragment.UpcomingAgreementChange(
-                                    fragments = UpcomingAgreementFragment.UpcomingAgreementChange.Fragments(
-                                        upcomingAgreementChangeFragment = UpcomingAgreementChangeFragment(
-                                            newAgreement = UpcomingAgreementChangeFragment.NewAgreement(
-                                                asSwedishApartmentAgreement = UpcomingAgreementChangeFragment.AsSwedishApartmentAgreement(
-                                                    address = UpcomingAgreementChangeFragment.Address(
-                                                        fragments = UpcomingAgreementChangeFragment.Address.Fragments(
-                                                            addressFragment = AddressFragment(
-                                                                street = "Test street",
-                                                                postalCode = "123",
-                                                                city = "Test city"
+                                upcomingAgreementChange = if (showUpcomingAgreement) {
+                                    UpcomingAgreementFragment.UpcomingAgreementChange(
+                                        fragments = UpcomingAgreementFragment.UpcomingAgreementChange.Fragments(
+                                            upcomingAgreementChangeFragment = UpcomingAgreementChangeFragment(
+                                                newAgreement = UpcomingAgreementChangeFragment.NewAgreement(
+                                                    asSwedishApartmentAgreement = UpcomingAgreementChangeFragment.AsSwedishApartmentAgreement(
+                                                        address = UpcomingAgreementChangeFragment.Address(
+                                                            fragments = UpcomingAgreementChangeFragment.Address.Fragments(
+                                                                addressFragment = AddressFragment(
+                                                                    street = "Test street",
+                                                                    postalCode = "123",
+                                                                    city = "Test city"
+                                                                )
                                                             )
-                                                        )
+                                                        ),
+                                                        activeFrom = LocalDate.of(2021, 1, 13)
                                                     ),
-                                                    activeFrom = LocalDate.of(2021, 1, 13)
-                                                ),
-                                                asDanishHomeContentAgreement = null,
-                                                asNorwegianHomeContentAgreement = null,
-                                                asSwedishHouseAgreement = null
+                                                    asDanishHomeContentAgreement = null,
+                                                    asNorwegianHomeContentAgreement = null,
+                                                    asSwedishHouseAgreement = null
+                                                )
                                             )
                                         )
                                     )
-                                )
+                                } else null
                             ),
                             asTerminatedInFutureStatus = null,
                             asTerminatedTodayStatus = null
