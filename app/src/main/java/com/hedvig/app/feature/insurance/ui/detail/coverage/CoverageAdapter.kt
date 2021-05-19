@@ -124,12 +124,12 @@ class CoverageAdapter(
                 }
 
                 label.text = data.inner.title
-                val iconUrl = "${com.hedvig.app.BuildConfig.BASE_URL}${
-                if (icon.context.isDarkThemeActive) {
-                    data.inner.icon.variants.dark.svgUrl
-                } else {
-                    data.inner.icon.variants.light.svgUrl
-                }
+                val iconUrl = "${icon.context.getString(R.string.BASE_URL)}${
+                    if (icon.context.isDarkThemeActive) {
+                        data.inner.icon.variants.dark.svgUrl
+                    } else {
+                        data.inner.icon.variants.light.svgUrl
+                    }
                 }"
                 requestBuilder
                     .load(iconUrl)

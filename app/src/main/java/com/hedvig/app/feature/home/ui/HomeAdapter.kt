@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.home.ui
 
+import android.content.Context
 import android.graphics.drawable.PictureDrawable
 import android.net.Uri
 import android.view.View
@@ -8,7 +9,6 @@ import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestBuilder
-import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.databinding.GenericErrorBinding
 import com.hedvig.app.databinding.HeaderItemLayoutBinding
@@ -330,7 +330,7 @@ class HomeAdapter(
                     is HomeModel.CommonClaim.Emergency -> {
                         label.text = data.inner.title
                         requestBuilder
-                            .load(requestUri(data.inner.iconUrls))
+                            .load(requestUri(icon.context, data.inner.iconUrls))
                             .into(icon)
                         root.setHapticClickListener {
                             root.context.startActivity(
@@ -344,7 +344,7 @@ class HomeAdapter(
                     is HomeModel.CommonClaim.TitleAndBulletPoints -> {
                         label.text = data.inner.title
                         requestBuilder
-                            .load(requestUri(data.inner.iconUrls))
+                            .load(requestUri(icon.context, data.inner.iconUrls))
                             .into(icon)
                         root.setHapticClickListener {
                             root.context.startActivity(
@@ -358,8 +358,8 @@ class HomeAdapter(
                 }
             }
 
-            private fun requestUri(icons: ThemedIconUrls) = Uri.parse(
-                "${BuildConfig.BASE_URL}${icons.iconByTheme(binding.root.context)}"
+            private fun requestUri(context: Context, icons: ThemedIconUrls) = Uri.parse(
+                "${context.getString(R.string.BASE_URL)}${icons.iconByTheme(binding.root.context)}"
             )
         }
 

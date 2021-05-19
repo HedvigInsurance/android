@@ -153,7 +153,7 @@ import timber.log.Timber
 import java.time.Clock
 import java.util.Locale
 
-fun isDebug() = BuildConfig.DEBUG || BuildConfig.APP_ID == "com.hedvig.test.app"
+fun isDebug() = BuildConfig.DEBUG || BuildConfig.APPLICATION_ID == "com.hedvig.test.app"
 
 fun shouldOverrideFeatureFlags(app: HedvigApplication): Boolean {
     if (app.isTestBuild) {
@@ -162,7 +162,7 @@ fun shouldOverrideFeatureFlags(app: HedvigApplication): Boolean {
     if (BuildConfig.DEBUG) {
         return true
     }
-    if (BuildConfig.APP_ID == "com.hedvig.test.app") {
+    if (BuildConfig.APPLICATION_ID == "com.hedvig.test.app") {
         return true
     }
 

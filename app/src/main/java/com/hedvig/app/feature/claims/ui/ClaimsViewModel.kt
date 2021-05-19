@@ -50,15 +50,4 @@ class ClaimsViewModel(
             return
         }
     }
-
-    fun triggerCallMeChat(done: () -> Unit) {
-        viewModelScope.launch {
-            val response = runCatching { claimsRepository.triggerCallMeChat() }
-            if (response.isFailure) {
-                response.exceptionOrNull()?.let { e(it) }
-                return@launch
-            }
-            done()
-        }
-    }
 }

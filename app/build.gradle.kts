@@ -20,6 +20,8 @@ android {
 
     buildFeatures {
         viewBinding = true
+        aidl = false
+        renderScript = false
     }
 
     defaultConfig {
@@ -53,17 +55,7 @@ android {
         named("release") {
             applicationIdSuffix = ".app"
 
-            buildConfigField("String", "APP_ID", "\"com.hedvig.app\"")
-            buildConfigField("String", "GRAPHQL_URL", "\"https://giraffe.hedvig.com/graphql\"")
-            buildConfigField(
-                "String",
-                "WS_GRAPHQL_URL",
-                "\"wss://giraffe.hedvig.com/subscriptions\""
-            )
-            buildConfigField("String", "BASE_URL", "\"https://giraffe.hedvig.com\"")
-            buildConfigField("String", "WEB_BASE_URL", "\"https://www.hedvig.com\"")
             manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
-            resValue("string", "file_provider_authority", "\"com.hedvig.android.file.provider\"")
 
             isMinifyEnabled = true
             setProguardFiles(
@@ -77,25 +69,7 @@ android {
         named("staging") {
             applicationIdSuffix = ".test.app"
 
-            buildConfigField("String", "APP_ID", "\"com.hedvig.test.app\"")
-            buildConfigField(
-                "String",
-                "GRAPHQL_URL",
-                "\"https://graphql.dev.hedvigit.com/graphql\""
-            )
-            buildConfigField(
-                "String",
-                "WS_GRAPHQL_URL",
-                "\"wss://graphql.dev.hedvigit.com/subscriptions\""
-            )
-            buildConfigField("String", "BASE_URL", "\"https://graphql.dev.hedvigit.com\"")
-            buildConfigField("String", "WEB_BASE_URL", "\"https://www.dev.hedvigit.com\"")
             manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
-            resValue(
-                "string",
-                "file_provider_authority",
-                "\"com.hedvig.android.test.file.provider\""
-            )
 
             isMinifyEnabled = true
             setProguardFiles(
@@ -109,26 +83,7 @@ android {
         named("debug") {
             applicationIdSuffix = ".dev.app"
 
-            buildConfigField("String", "APP_ID", "\"com.hedvig.dev.app\"")
-            buildConfigField(
-                "String",
-                "GRAPHQL_URL",
-                "\"https://graphql.dev.hedvigit.com/graphql\""
-            )
-            buildConfigField(
-                "String",
-                "WS_GRAPHQL_URL",
-                "\"wss://graphql.dev.hedvigit.com/subscriptions\""
-            )
-            buildConfigField("String", "BASE_URL", "\"https://graphql.dev.hedvigit.com\"")
-            buildConfigField("String", "WEB_BASE_URL", "\"https://www.dev.hedvigit.com\"")
             manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = false
-
-            resValue(
-                "string",
-                "file_provider_authority",
-                "\"com.hedvig.android.dev.file.provider\""
-            )
 
             isDebuggable = true
         }

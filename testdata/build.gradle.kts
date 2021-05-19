@@ -5,6 +5,17 @@ plugins {
 
 android {
     commonConfig()
+
+    buildFeatures {
+        buildConfig = false
+        viewBinding = false
+        dataBinding = false
+        aidl = false
+        renderScript = false
+        resValues = false
+        shaders = false
+    }
+    
     kotlinOptions {
         jvmTarget = "1.8"
     }
