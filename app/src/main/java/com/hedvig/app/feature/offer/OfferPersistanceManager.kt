@@ -29,5 +29,4 @@ class OfferPersistenceManagerImpl(
     override fun getPersistedQuoteIds(): Set<String> {
         return sharedPreferences.getStringSet(quoteIdKey, emptySet()) ?: emptySet()
     }
-
 }

@@ -1,7 +1,6 @@
 package com.hedvig.app.util
 
 import com.hedvig.app.feature.offer.OfferPersistenceManager
-import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.offerPersistenceManagerModule
 import io.mockk.every
 import io.mockk.mockk
