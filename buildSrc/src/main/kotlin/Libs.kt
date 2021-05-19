@@ -4,8 +4,8 @@ object Libs {
 
     object Coroutines {
         private const val version = "1.4.3"
-        const val core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:${version}"
-        const val android = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${version}"
+        const val core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version"
+        const val android = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$version"
     }
 
     object AndroidX {
@@ -25,23 +25,23 @@ object Libs {
 
         object Lifecycle {
             private const val version = "2.3.1"
-            const val common = "androidx.lifecycle:lifecycle-common-java8:${version}"
-            const val liveData = "androidx.lifecycle:lifecycle-livedata-ktx:${version}"
-            const val viewModel = "androidx.lifecycle:lifecycle-viewmodel-ktx:${version}"
+            const val common = "androidx.lifecycle:lifecycle-common-java8:$version"
+            const val liveData = "androidx.lifecycle:lifecycle-livedata-ktx:$version"
+            const val viewModel = "androidx.lifecycle:lifecycle-viewmodel-ktx:$version"
         }
 
         object Test {
             private const val version = "1.3.0"
-            const val runner = "androidx.test:runner:${version}"
-            const val rules = "androidx.test:rules:${version}"
+            const val runner = "androidx.test:runner:$version"
+            const val rules = "androidx.test:rules:$version"
             const val junit = "androidx.test.ext:junit:1.1.2"
         }
 
         object Espresso {
             private const val version = "3.3.0"
-            const val core = "androidx.test.espresso:espresso-core:${version}"
-            const val intents = "androidx.test.espresso:espresso-intents:${version}"
-            const val contrib = "androidx.test.espresso:espresso-contrib:${version}"
+            const val core = "androidx.test.espresso:espresso-core:$version"
+            const val intents = "androidx.test.espresso:espresso-intents:$version"
+            const val contrib = "androidx.test.espresso:espresso-contrib:$version"
         }
     }
 
@@ -52,8 +52,8 @@ object Libs {
 
     object OkHttp {
         private const val version = "4.9.1"
-        const val loggingInterceptor = "com.squareup.okhttp3:logging-interceptor:${version}"
-        const val mockWebServer = "com.squareup.okhttp3:mockwebserver:${version}"
+        const val loggingInterceptor = "com.squareup.okhttp3:logging-interceptor:$version"
+        const val mockWebServer = "com.squareup.okhttp3:mockwebserver:$version"
         const val coroutines = "ru.gildor.coroutines:kotlin-coroutines-okhttp:1.0"
     }
 
@@ -69,8 +69,8 @@ object Libs {
 
     object Koin {
         private const val version = "3.0.1"
-        const val android = "io.insert-koin:koin-android:${version}"
-        const val test = "io.insert-koin:koin-test:${version}"
+        const val android = "io.insert-koin:koin-android:$version"
+        const val test = "io.insert-koin:koin-test:$version"
     }
 
     const val timber = "com.jakewharton.timber:timber:4.7.1"
@@ -86,9 +86,9 @@ object Libs {
 
     object Glide {
         private const val version = "4.12.0"
-        const val base = "com.github.bumptech.glide:glide:${version}"
-        const val compiler = "com.github.bumptech.glide:compiler:${version}"
-        const val recyclerView = "com.github.bumptech.glide:recyclerview-integration:${version}"
+        const val base = "com.github.bumptech.glide:glide:$version"
+        const val compiler = "com.github.bumptech.glide:compiler:$version"
+        const val recyclerView = "com.github.bumptech.glide:recyclerview-integration:$version"
     }
 
     const val tooltip = "com.github.florent37:viewtooltip:1.2.2"
@@ -97,8 +97,8 @@ object Libs {
 
     object Markwon {
         private const val version = "4.6.2"
-        const val core = "io.noties.markwon:core:${version}"
-        const val linkify = "io.noties.markwon:linkify:${version}"
+        const val core = "io.noties.markwon:core:$version"
+        const val linkify = "io.noties.markwon:linkify:$version"
     }
 
     const val moneta = "org.javamoney:moneta:1.4.2"

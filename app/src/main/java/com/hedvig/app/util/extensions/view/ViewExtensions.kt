@@ -10,9 +10,7 @@ import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.view.WindowInsets
 import android.view.WindowInsetsAnimation
-import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.TextView
 import androidx.annotation.Dimension
 import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresApi

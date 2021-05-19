@@ -59,9 +59,11 @@ fun apolloMockServer(vararg mocks: Pair<String, ApolloResultProvider>) =
                     override fun onMessage(webSocket: WebSocket, text: String) {
                         val message = JSONObject(text)
                         if (message.getString("type") == "connection_init") {
-                            webSocket.send(jsonObjectOf(
-                                "type" to "connection_ack"
-                            ).toString())
+                            webSocket.send(
+                                jsonObjectOf(
+                                    "type" to "connection_ack"
+                                ).toString()
+                            )
                         }
                     }
                 })

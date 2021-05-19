@@ -31,7 +31,6 @@ import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.Insetter
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.time.format.DateTimeFormatter
 
 class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
 

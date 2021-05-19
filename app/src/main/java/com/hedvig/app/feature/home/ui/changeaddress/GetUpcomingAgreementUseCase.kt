@@ -8,8 +8,8 @@ import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
 import com.hedvig.app.util.apollo.toUpcomingAgreementResult
-import java.time.LocalDate
 import kotlinx.android.parcel.Parcelize
+import java.time.LocalDate
 
 class GetUpcomingAgreementUseCase(
     private val apolloClient: ApolloClient,

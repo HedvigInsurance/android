@@ -116,7 +116,8 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                             successData,
                             successData.insuranceCost?.fragments?.costFragment?.monetaryMonthlyNet?.format(
                                 requireContext(),
-                                marketManager.market)
+                                marketManager.market
+                            )
                                 ?: ""
                         ),
                         R.drawable.ic_payment

@@ -3,7 +3,6 @@ package com.hedvig.app.feature.insurance.ui.detail.documents
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import com.hedvig.android.owldroid.type.AgreementStatus
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ContractDetailDocumentsFragmentBinding
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel

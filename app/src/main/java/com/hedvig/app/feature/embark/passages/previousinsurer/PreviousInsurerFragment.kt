@@ -67,7 +67,7 @@ class PreviousInsurerFragment : Fragment(R.layout.previous_insurer_fragment) {
                 MaterialAlertDialogBuilder(requireContext())
                     .setTitle(getString(R.string.EXTERNAL_INSURANCE_PROVIDER_ALERT_TITLE))
                     .setMessage(getString(R.string.EXTERNAL_INSURANCE_PROVIDER_ALERT_MESSAGE))
-                    .setPositiveButton(getString(R.string.ALERT_OK)) { dialog, _,  -> dialog.dismiss() }
+                    .setPositiveButton(getString(R.string.ALERT_OK)) { dialog, _, -> dialog.dismiss() }
                     .show()
             } else {
                 model.putInStore(insurerData.storeKey, item.id)

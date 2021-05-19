@@ -10,7 +10,6 @@ import com.hedvig.android.owldroid.type.DanishHomeContentLineOfBusiness
 import com.hedvig.android.owldroid.type.NorwegianHomeContentLineOfBusiness
 import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
 import com.hedvig.android.owldroid.type.TypeOfContract
-import com.hedvig.app.testdata.feature.changeaddress.builders.UpcomingAgreementBuilder
 import java.time.LocalDate
 
 class InsuranceContractBuilder(

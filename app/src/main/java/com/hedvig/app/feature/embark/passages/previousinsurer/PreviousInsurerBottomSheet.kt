@@ -26,7 +26,8 @@ class PreviousInsurerBottomSheet : ExpandableBottomSheet() {
             context = requireContext(),
             previousInsurers = insurers,
             requestBuilder = requestBuilder,
-            onInsurerClicked = ::onInsurerSelected)
+            onInsurerClicked = ::onInsurerSelected
+        )
     }
 
     private fun onInsurerSelected(item: PreviousInsurerItem.Insurer) {

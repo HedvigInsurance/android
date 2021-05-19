@@ -118,7 +118,5 @@ class UpcomingAgreementAdapter(
             val area: Int,
             val waterConnected: Boolean
         ) : UpcomingAgreementItem()
-
     }
-
 }

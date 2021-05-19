@@ -64,6 +64,4 @@ class MarketManagerImpl(
             .remove(Market.MARKET_SHARED_PREF)
             .commit()
     }
-
-
 }
