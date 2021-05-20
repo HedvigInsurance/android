@@ -10,13 +10,6 @@ import coil.ImageLoader
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.decode.SvgDecoder
-import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.cache.normalized.NormalizedCacheFactory
-import com.apollographql.apollo.cache.normalized.lru.EvictionPolicy
-import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCache
-import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCacheFactory
-import com.apollographql.apollo.subscription.SubscriptionConnectionParams
-import com.apollographql.apollo.subscription.WebSocketSubscriptionTransport
 import com.google.firebase.messaging.FirebaseMessaging
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.authenticate.LoginStatusService
@@ -86,8 +79,6 @@ import com.hedvig.app.feature.loggedin.service.GetCrossSellsUseCase
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
 import com.hedvig.app.feature.loggedin.ui.LoggedInRepository
 import com.hedvig.app.feature.loggedin.ui.LoggedInTracker
-import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
-import com.hedvig.app.feature.loggedin.ui.LoggedInViewModelImpl
 import com.hedvig.app.feature.marketing.data.MarketingRepository
 import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.feature.marketing.ui.MarketingViewModel
@@ -169,19 +160,15 @@ import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.app.service.push.managers.PaymentNotificationManager
 import com.hedvig.app.terminated.TerminatedTracker
 import com.hedvig.app.util.LocaleManager
-import com.hedvig.app.util.apollo.ApolloTimberLogger
 import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.mixpanel.android.mpmetrics.MixpanelAPI
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
+import java.time.Clock
+import java.util.Locale
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import timber.log.Timber
-import java.time.Clock
-import java.util.Locale
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APPLICATION_ID == "com.hedvig.test.app"
 
@@ -206,71 +193,6 @@ val applicationModule = module {
             get(),
             get<Context>().getString(R.string.MIXPANEL_PROJECT_TOKEN)
         )
-    }
-    single<NormalizedCacheFactory<LruNormalizedCache>> {
-        LruNormalizedCacheFactory(
-            EvictionPolicy.builder().maxSizeBytes(
-                (1000 * 1024).toLong()
-            ).build()
-        )
-    }
-    single {
-        val marketManager = get<MarketManager>()
-        val context = get<Context>()
-        val builder = OkHttpClient.Builder()
-            .addInterceptor { chain ->
-                val original = chain.request()
-                val builder = original
-                    .newBuilder()
-                    .method(original.method, original.body)
-                get<AuthenticationTokenService>().authenticationToken?.let { token ->
-                    builder.header("Authorization", token)
-                }
-                chain.proceed(builder.build())
-            }
-            .addInterceptor { chain ->
-                chain.proceed(
-                    chain
-                        .request()
-                        .newBuilder()
-                        .header("User-Agent", makeUserAgent(context, marketManager.market))
-                        .header("Accept-Language", makeLocaleString(context, marketManager.market))
-                        .header("apollographql-client-name", BuildConfig.APPLICATION_ID)
-                        .header("apollographql-client-version", BuildConfig.VERSION_NAME)
-                        .build()
-                )
-            }
-        if (isDebug()) {
-            val logger = HttpLoggingInterceptor { message -> Timber.tag("OkHttp").i(message) }
-            logger.level = HttpLoggingInterceptor.Level.BODY
-            builder.addInterceptor(logger)
-        }
-        builder.build()
-    }
-    single {
-        val builder = ApolloClient
-            .builder()
-            .serverUrl(get<HedvigApplication>().graphqlUrl)
-            .okHttpClient(get())
-            .subscriptionConnectionParams {
-                SubscriptionConnectionParams(
-                    mapOf("Authorization" to get<AuthenticationTokenService>().authenticationToken)
-                )
-            }
-            .subscriptionTransportFactory(
-                WebSocketSubscriptionTransport.Factory(
-                    get<HedvigApplication>().graphqlSubscriptionUrl,
-                    get<OkHttpClient>()
-                )
-            )
-            .normalizedCache(get())
-
-        CUSTOM_TYPE_ADAPTERS.customAdapters.forEach { (t, a) -> builder.addCustomTypeAdapter(t, a) }
-
-        if (isDebug()) {
-            builder.logger(ApolloTimberLogger())
-        }
-        builder.build()
     }
 }
 
@@ -340,10 +262,6 @@ val onboardingModule = module {
 
 val marketPickerModule = module {
     viewModel<MarketPickerViewModel> { MarketPickerViewModelImpl(get(), get(), get(), get(), get()) }
-}
-
-val loggedInModule = module {
-    viewModel<LoggedInViewModel> { LoggedInViewModelImpl(get(), get(), get()) }
 }
 
 val whatsNewModule = module {
@@ -490,6 +408,7 @@ val trackerModule = module {
     single { MarketingTracker(get()) }
     single { HomeTracker(get()) }
     single { ScreenTracker(get()) }
+    single { EmbarkTracker(get()) }
     single {
         // Workaround for https://github.com/InsertKoinIO/koin/issues/1146
         TrackingFacade(getAll<TrackerSink>().distinct())

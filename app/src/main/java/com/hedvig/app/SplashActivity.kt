@@ -18,11 +18,19 @@ import com.hedvig.app.util.extensions.avdDoOnEnd
 import com.hedvig.app.util.extensions.avdStart
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.viewBinding
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
+@AndroidEntryPoint
 class SplashActivity : BaseActivity(R.layout.activity_splash) {
-    private val loggedInService: LoginStatusService by inject()
+
+    @Inject
+    lateinit var loggedInService: LoginStatusService
+
     private val marketManager: MarketManager by inject()
     private val binding by viewBinding(ActivitySplashBinding::bind)
 

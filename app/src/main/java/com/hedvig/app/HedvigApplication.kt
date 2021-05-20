@@ -7,6 +7,7 @@ import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.coroutines.await
 import com.hedvig.android.owldroid.graphql.NewSessionMutation
 import com.hedvig.app.authenticate.AuthenticationTokenService
+import com.hedvig.app.di.RepoInterface
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
@@ -19,19 +20,23 @@ import com.hedvig.app.util.extensions.storeBoolean
 import dagger.hilt.android.HiltAndroidApp
 import e
 import i
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import timber.log.Timber
-import javax.inject.Inject
 
 @HiltAndroidApp
 open class HedvigApplication : Application() {
     @Inject
     lateinit var apolloClient: ApolloClient
+
     @Inject
     lateinit var marketManager: MarketManager
+
+    @Inject
+    lateinit var repo: RepoInterface
 
     private val whatsNewRepository: WhatsNewRepository by inject()
 
@@ -82,6 +87,8 @@ open class HedvigApplication : Application() {
         }
 
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
+
+        i { repo.getString() }
     }
 
     private suspend fun acquireHedvigToken() {

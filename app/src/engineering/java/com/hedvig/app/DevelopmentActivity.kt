@@ -33,7 +33,6 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding.root.adapter = DevelopmentScreenAdapter(authenticationTokenService).also {
             it.submitList(
                 listOf(

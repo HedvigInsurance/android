@@ -17,11 +17,8 @@ import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContrac
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
-import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
-import com.hedvig.app.feature.referrals.MockLoggedInViewModel
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.insuranceModule
-import com.hedvig.app.loggedInModule
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_ACTIVE_AND_TERMINATED
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_DANISH_ACCIDENT
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_DANISH_HOME_CONTENTS
@@ -45,12 +42,10 @@ import org.koin.dsl.module
 class InsuranceMockActivity : MockActivity() {
     private val dataStore: DataStore<Preferences> by inject()
     override val original = listOf(
-        loggedInModule,
         insuranceModule
     )
     override val mocks = listOf(
         module {
-            viewModel<LoggedInViewModel> { MockLoggedInViewModel() }
             viewModel<InsuranceViewModel> { MockInsuranceViewModel() }
             viewModel<ContractDetailViewModel> { MockContractDetailViewModel() }
         }

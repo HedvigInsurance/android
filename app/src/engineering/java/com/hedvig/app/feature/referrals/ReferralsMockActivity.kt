@@ -8,14 +8,12 @@ import com.hedvig.app.MockActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
-import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedActivity
 import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedViewModel
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeActivity
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeViewModel
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModel
 import com.hedvig.app.genericDevelopmentAdapter
-import com.hedvig.app.loggedInModule
 import com.hedvig.app.referralsModule
 import com.hedvig.app.service.push.managers.ReferralsNotificationManager
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES
@@ -27,11 +25,10 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 class ReferralsMockActivity : MockActivity() {
-    override val original = listOf(loggedInModule, referralsModule)
+    override val original = listOf(referralsModule)
     override val mocks = listOf(
         module {
             viewModel<ReferralsViewModel> { MockReferralsViewModel() }
-            viewModel<LoggedInViewModel> { MockLoggedInViewModel() }
             viewModel<ReferralsActivatedViewModel> { MockReferralsActivatedViewModel() }
             viewModel<ReferralsEditCodeViewModel> { MockReferralsEditCodeViewModel() }
         }

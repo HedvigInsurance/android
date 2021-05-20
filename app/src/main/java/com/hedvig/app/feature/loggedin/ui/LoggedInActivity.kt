@@ -54,18 +54,21 @@ import javax.money.MonetaryAmount
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import java.time.LocalDate
+import javax.money.MonetaryAmount
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 @AndroidEntryPoint
 class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
+
     private val claimsViewModel: ClaimsViewModel by viewModels()
     private val whatsNewViewModel: WhatsNewViewModel by viewModel()
 
     private val memberIdViewModel: MemberIdViewModel by viewModel()
     private val welcomeViewModel: WelcomeViewModel by viewModel()
-    private val loggedInViewModel: LoggedInViewModel by viewModel()
+    private val loggedInViewModel: LoggedInViewModel by viewModels()
 
     private val loggedInTracker: LoggedInTracker by inject()
     private val ratingsTracker: RatingsTracker by inject()

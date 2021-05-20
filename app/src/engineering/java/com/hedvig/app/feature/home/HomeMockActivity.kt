@@ -4,12 +4,9 @@ import android.content.Context
 import com.hedvig.app.MockActivity
 import com.hedvig.app.feature.home.ui.HomeViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
-import com.hedvig.app.feature.referrals.MockLoggedInViewModel
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.homeModule
-import com.hedvig.app.loggedInModule
 import com.hedvig.app.marketManagerModule
 import com.hedvig.app.mocks.MockMarketManager
 import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE
@@ -28,10 +25,9 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 class HomeMockActivity : MockActivity() {
-    override val original = listOf(loggedInModule, homeModule, marketManagerModule)
+    override val original = listOf(homeModule, marketManagerModule)
     override val mocks = listOf(
         module {
-            viewModel<LoggedInViewModel> { MockLoggedInViewModel() }
             viewModel<HomeViewModel> { MockHomeViewModel() }
             single<MarketManager> { MockMarketManager() }
         }
