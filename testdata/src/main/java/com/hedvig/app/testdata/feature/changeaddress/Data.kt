@@ -1,6 +1,7 @@
 package com.hedvig.app.testdata.feature.changeaddress
 
 import com.hedvig.android.owldroid.fragment.UpcomingAgreementFragment
+import com.hedvig.android.owldroid.graphql.ActiveContractBundlesQuery
 import com.hedvig.android.owldroid.graphql.UpcomingAgreementQuery
 import com.hedvig.app.testdata.feature.changeaddress.builders.ActiveContractBundlesBuilder
 import com.hedvig.app.testdata.feature.changeaddress.builders.UpcomingAgreementBuilder

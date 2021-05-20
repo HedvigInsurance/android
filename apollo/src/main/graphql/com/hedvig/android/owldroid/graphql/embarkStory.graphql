@@ -151,9 +151,11 @@ query EmbarkStory($name: String!, $locale: String!) {
               ... EmbarkLinkFragment
             }
             components {
-              ... on EmbarkNumberAction {
+              ... on EmbarkMultiActionNumberAction {
                 numberActionData: data {
-                  ...EmbarkNumberActionFragment
+                  key
+                  placeholder
+                  unit
                 }
               }
               ... on EmbarkDropdownAction {
