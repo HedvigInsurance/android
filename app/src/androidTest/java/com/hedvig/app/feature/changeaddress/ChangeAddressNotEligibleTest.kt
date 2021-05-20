@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.changeaddress
 
-import com.hedvig.android.owldroid.graphql.SelfChangeEligibilityQuery
+import com.hedvig.android.owldroid.graphql.ActiveContractBundlesQuery
 import com.hedvig.android.owldroid.graphql.UpcomingAgreementQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
@@ -23,7 +23,7 @@ class ChangeAddressNotEligibleTest : TestCase() {
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
         UpcomingAgreementQuery.QUERY_DOCUMENT to apolloResponse { success(UPCOMING_AGREEMENT_NONE) },
-        SelfChangeEligibilityQuery.QUERY_DOCUMENT to apolloResponse { success(BLOCKED_SELF_CHANGE_ELIGIBILITY) }
+        ActiveContractBundlesQuery.QUERY_DOCUMENT to apolloResponse { success(BLOCKED_SELF_CHANGE_ELIGIBILITY) }
     )
 
     @get:Rule
