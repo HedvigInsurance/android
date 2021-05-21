@@ -320,6 +320,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                             numberActionData.key,
                             numberActionData.placeholder,
                             numberActionData.unit,
+                            numberActionData.label
                         )
                         else -> throw java.lang.IllegalArgumentException("Could not match ${it.asEmbarkDropdownAction} to a component")
                     }

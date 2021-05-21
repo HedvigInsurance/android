@@ -54,7 +54,8 @@ data class MultiActionBuilder(
                         asEmbarkMultiActionNumberAction = EmbarkStoryQuery.AsEmbarkMultiActionNumberAction(
                             numberActionData = EmbarkStoryQuery.NumberActionData1(
                                 key = "size",
-                                placeholder = "Size",
+                                placeholder = "52",
+                                label = "Size",
                                 unit = "sqm",
                             )
                         ),

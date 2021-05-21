@@ -40,5 +40,6 @@ sealed class MultiActionComponent : Parcelable {
         val key: String,
         val placeholder: String,
         val unit: String?,
+        val label: String?
     ) : MultiActionComponent()
 }
