@@ -1,7 +1,6 @@
 package com.hedvig.app.testdata.feature.embark.builders
 
 import com.hedvig.android.owldroid.fragment.EmbarkLinkFragment
-import com.hedvig.android.owldroid.fragment.EmbarkNumberActionFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 
 data class MultiActionBuilder(
@@ -49,26 +48,15 @@ data class MultiActionBuilder(
                             )
                         ),
                         asEmbarkSwitchAction = null,
-                        asEmbarkNumberAction1 = null
+                        asEmbarkMultiActionNumberAction = null
                     ),
                     EmbarkStoryQuery.Component(
-                        asEmbarkNumberAction1 = EmbarkStoryQuery.AsEmbarkNumberAction1(
+                        asEmbarkMultiActionNumberAction = EmbarkStoryQuery.AsEmbarkMultiActionNumberAction(
                             numberActionData = EmbarkStoryQuery.NumberActionData1(
-                                fragments = EmbarkStoryQuery.NumberActionData1.Fragments(
-                                    EmbarkNumberActionFragment(
-                                        label = "Size",
-                                        key = "size",
-                                        placeholder = "Size",
-                                        unit = "sqm",
-                                        minValue = 10,
-                                        maxValue = 10000,
-                                        link = EmbarkNumberActionFragment.Link(
-                                            fragments = EmbarkNumberActionFragment.Link.Fragments(
-                                                embarkLinkFragment = link
-                                            )
-                                        )
-                                    )
-                                )
+                                key = "size",
+                                placeholder = "52",
+                                label = "Size",
+                                unit = "sqm",
                             )
                         ),
                         asEmbarkDropdownAction = null,
@@ -83,7 +71,7 @@ data class MultiActionBuilder(
                             )
                         ),
                         asEmbarkDropdownAction = null,
-                        asEmbarkNumberAction1 = null
+                        asEmbarkMultiActionNumberAction = null
                     ),
                 )
             )

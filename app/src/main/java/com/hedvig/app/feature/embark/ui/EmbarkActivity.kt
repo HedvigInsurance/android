@@ -300,7 +300,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 components = multiAction.multiActionData.components.map {
                     val dropDownActionData = it.asEmbarkDropdownAction?.dropDownActionData
                     val switchActionData = it.asEmbarkSwitchAction?.switchActionData
-                    val numberActionData = it.asEmbarkNumberAction1?.numberActionData
+                    val numberActionData = it.asEmbarkMultiActionNumberAction?.numberActionData
 
                     when {
                         dropDownActionData != null -> MultiActionComponent.Dropdown(
@@ -317,11 +317,10 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                         )
 
                         numberActionData != null -> MultiActionComponent.Number(
-                            numberActionData.fragments.embarkNumberActionFragment.key,
-                            numberActionData.fragments.embarkNumberActionFragment.label,
-                            numberActionData.fragments.embarkNumberActionFragment.placeholder,
-                            numberActionData.fragments.embarkNumberActionFragment.unit,
-                            numberActionData.fragments.embarkNumberActionFragment.link.fragments.embarkLinkFragment.label
+                            numberActionData.key,
+                            numberActionData.placeholder,
+                            numberActionData.unit,
+                            numberActionData.label
                         )
                         else -> throw java.lang.IllegalArgumentException("Could not match ${it.asEmbarkDropdownAction} to a component")
                     }

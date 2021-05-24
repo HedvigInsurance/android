@@ -95,6 +95,8 @@ class AddComponentBottomSheet : BottomSheetDialogFragment() {
     private fun createNumberComponent(number: MultiActionComponent.Number): TextInputLayout {
         return LayoutComponentNumberBinding.inflate(LayoutInflater.from(requireContext()), binding.componentContainer, false).apply {
             numberLayout.hint = number.label
+            numberLayout.placeholderText = number.placeholder
+
             numberInput.onImeAction {
                 requireContext().hideKeyboard(numberInput)
             }

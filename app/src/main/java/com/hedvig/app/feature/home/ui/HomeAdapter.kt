@@ -431,7 +431,7 @@ class HomeAdapter(
                 if (data !is HomeModel.ChangeAddress) {
                     invalid(data)
                 } else {
-                    if (data.pendingAddress != null) {
+                    if (data.pendingAddress != null && data.pendingAddress.isNotBlank()) {
                         title.setHapticClickListener {
                             MaterialAlertDialogBuilder(root.context)
                                 .setTitle(R.string.home_tab_moving_info_card_title)

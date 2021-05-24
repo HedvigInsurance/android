@@ -38,9 +38,8 @@ sealed class MultiActionComponent : Parcelable {
     @Parcelize
     data class Number(
         val key: String,
-        val label: String?,
         val placeholder: String,
         val unit: String?,
-        val submitLabel: String,
+        val label: String?
     ) : MultiActionComponent()
 }
