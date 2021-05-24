@@ -476,7 +476,7 @@ val localeManagerModule = module {
 }
 
 val useCaseModule = module {
-    single { GetUpcomingAgreementUseCase(get()) }
+    single { GetUpcomingAgreementUseCase(get(), get()) }
     single { GetAddressChangeStoryIdUseCase(get()) }
     single { StartDanishAuthUseCase(get()) }
     single { StartNorwegianAuthUseCase(get()) }

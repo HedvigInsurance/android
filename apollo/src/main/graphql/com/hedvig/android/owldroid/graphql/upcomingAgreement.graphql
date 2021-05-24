@@ -1,4 +1,4 @@
-query UpcomingAgreement($showDetailsTable: Boolean! = false) {
+query UpcomingAgreement($locale: Locale!) {
   contracts {
     ... UpcomingAgreementFragment
   }
@@ -23,7 +23,7 @@ fragment UpcomingAgreementFragment on Contract {
     }
   }
 
-  upcomingAgreementDetailsTable @include(if: $showDetailsTable) {
+  upcomingAgreementDetailsTable(locale: $locale) {
     title
     sections {
       title
