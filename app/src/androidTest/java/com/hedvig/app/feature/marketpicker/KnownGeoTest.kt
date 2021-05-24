@@ -1,6 +1,9 @@
 package com.hedvig.app.feature.marketpicker
 
+import assertk.assertThat
+import assertk.assertions.isTrue
 import com.hedvig.android.owldroid.graphql.GeoQuery
+import com.hedvig.android.owldroid.graphql.UpdateLanguageMutation
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.marketpicker.screens.MarketPickerScreen
 import com.hedvig.app.feature.settings.Market
@@ -17,6 +20,7 @@ import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.koin.dsl.module
@@ -25,9 +29,22 @@ class KnownGeoTest : TestCase() {
     @get:Rule
     val activityRule = LazyActivityScenarioRule(MarketingActivity::class.java)
 
+    var updateLanguageMutationWasCalled = false
+
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        GeoQuery.QUERY_DOCUMENT to apolloResponse { success(GEO_DATA_SE) }
+        GeoQuery.QUERY_DOCUMENT to apolloResponse { success(GEO_DATA_SE) },
+        UpdateLanguageMutation.QUERY_DOCUMENT to apolloResponse {
+            updateLanguageMutationWasCalled = true
+            success(
+                UpdateLanguageMutation.Data(
+                    updateLanguage = true,
+                    updatePickedLocale = UpdateLanguageMutation.UpdatePickedLocale(
+                        acceptLanguage = "sv_SE"
+                    )
+                )
+            )
+        }
     )
 
     @get:Rule
@@ -43,6 +60,11 @@ class KnownGeoTest : TestCase() {
 
     @get:Rule
     val marketRule = MarketRule(Market.SE)
+
+    @Before
+    fun setup() {
+        updateLanguageMutationWasCalled = false
+    }
 
     @Test
     fun shouldPreselectMarketWhenUserIsInSupportedGeoArea() = run {
@@ -71,5 +93,6 @@ class KnownGeoTest : TestCase() {
         verify(exactly = 0) { tracker.selectMarket(any()) }
         verify(exactly = 0) { tracker.selectLocale(any()) }
         verify(exactly = 1) { tracker.submit() }
+        assertThat(updateLanguageMutationWasCalled).isTrue()
     }
 }
