@@ -54,8 +54,8 @@ class ContractDetailErrorTest : TestCase() {
             tabContent {
                 childAt<ContractDetailScreen.YourInfoTab>(0) {
                     recycler {
-                        childAt<ContractDetailScreen.YourInfoTab.Header>(0) {
-                            text { hasText(R.string.CONTRACT_DETAIL_HOME_TITLE) }
+                        childAt<ContractDetailScreen.YourInfoTab.Home>(0) {
+                            title { hasText(R.string.CONTRACT_DETAIL_HOME_TITLE) }
                         }
                     }
                 }

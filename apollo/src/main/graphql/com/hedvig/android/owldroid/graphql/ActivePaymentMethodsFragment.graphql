@@ -1,0 +1,8 @@
+fragment ActivePaymentMethodsFragment on ActivePaymentMethodsResponse {
+  storedPaymentMethodsDetails {
+    brand
+    lastFourDigits
+    expiryMonth
+    expiryYear
+  }
+}

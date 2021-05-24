@@ -1,5 +1,0 @@
-query SelfChangeEligibility {
-  selfChangeEligibility {
-    embarkStoryId
-  }
-}

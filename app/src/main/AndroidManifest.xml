@@ -21,14 +21,9 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/APP_NAME"
         android:largeHeap="true"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/Hedvig.Theme">
         <activity android:name=".feature.embark.ui.MoreOptionsActivity" />
-        <activity
-            android:name=".feature.onboarding.ui.MoreOptionsActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:theme="@style/Hedvig.Theme"
-            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".feature.onboarding.ui.ChoosePlanActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"

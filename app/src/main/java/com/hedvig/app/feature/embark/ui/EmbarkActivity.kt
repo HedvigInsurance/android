@@ -109,6 +109,13 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         if (offerKeys != null && offerKeys.isNotEmpty()) {
             val offerIds = offerKeys.mapNotNull { model.getFromStore(it) }
             showWebOffer(offerIds)
+        } else if (embarkData.passage?.name == "Offer") {
+            showWebOffer(
+                listOf(
+                    model.getFromStore("contractBundleId")
+                        ?: throw java.lang.IllegalArgumentException("No contractBundleId found")
+                )
+            )
         } else if (embarkData.passage?.externalRedirect?.data?.location == EmbarkExternalRedirectLocation.OFFER) {
             val key = model.getFromStore("quoteId")
                 ?: throw IllegalArgumentException("Could not find value with key quoteId from store")
@@ -293,7 +300,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 components = multiAction.multiActionData.components.map {
                     val dropDownActionData = it.asEmbarkDropdownAction?.dropDownActionData
                     val switchActionData = it.asEmbarkSwitchAction?.switchActionData
-                    val numberActionData = it.asEmbarkNumberAction1?.numberActionData
+                    val numberActionData = it.asEmbarkMultiActionNumberAction?.numberActionData
 
                     when {
                         dropDownActionData != null -> MultiActionComponent.Dropdown(
@@ -310,11 +317,10 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                         )
 
                         numberActionData != null -> MultiActionComponent.Number(
-                                numberActionData.fragments.embarkNumberActionFragment.key,
-                                numberActionData.fragments.embarkNumberActionFragment.label,
-                                numberActionData.fragments.embarkNumberActionFragment.placeholder,
-                                numberActionData.fragments.embarkNumberActionFragment.unit,
-                                numberActionData.fragments.embarkNumberActionFragment.link.fragments.embarkLinkFragment.label
+                            numberActionData.key,
+                            numberActionData.placeholder,
+                            numberActionData.unit,
+                            numberActionData.label
                         )
                         else -> throw java.lang.IllegalArgumentException("Could not match ${it.asEmbarkDropdownAction} to a component")
                     }

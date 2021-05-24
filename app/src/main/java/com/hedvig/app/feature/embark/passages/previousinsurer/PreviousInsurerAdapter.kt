@@ -68,7 +68,7 @@ class PreviousInsurerAdapter(
                 (item as? PreviousInsurerItem.Insurer)?.let {
                     item.icon?.let { iconUrl ->
                         requestBuilder
-                            .load(Uri.parse(com.hedvig.app.BuildConfig.BASE_URL + iconUrl))
+                            .load(Uri.parse(binding.icon.context.getString(R.string.BASE_URL) + iconUrl))
                             .into(binding.icon)
                     }
 

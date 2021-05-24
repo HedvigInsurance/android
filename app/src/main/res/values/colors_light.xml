@@ -30,7 +30,7 @@
     <item name="colorChatHedvigBackground" type="color">@color/white</item>
     <item name="colorChatInputButton" type="color">@color/hedvig_light_gray</item>
 
-    <item name="colorInfoCardSurface" type="color">@color/lavender_100</item>
+    <item name="colorInfoCardSurface" type="color">@color/lavender_200</item>
 
     <item name="colorTooltip" type="color">@color/lavender_300</item>
 

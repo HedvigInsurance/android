@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.app.feature.home.ui.changeaddress.GetSelfChangeEligibilityUseCase.SelfChangeEligibilityResult
+import com.hedvig.app.feature.home.ui.changeaddress.GetAddressChangeStoryIdUseCase.SelfChangeEligibilityResult
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult
 import com.hedvig.app.feature.home.ui.changeaddress.ViewState.ChangeAddressInProgress
 import com.hedvig.app.feature.home.ui.changeaddress.ViewState.Loading
@@ -22,7 +22,7 @@ abstract class ChangeAddressViewModel : ViewModel() {
 
 class ChangeAddressViewModelImpl(
     private val getUpcomingAgreement: GetUpcomingAgreementUseCase,
-    private val getSelfChangeEligibility: GetSelfChangeEligibilityUseCase,
+    private val addressChangeStoryId: GetAddressChangeStoryIdUseCase,
 ) : ChangeAddressViewModel() {
 
     override val viewState: LiveData<ViewState>
@@ -52,7 +52,7 @@ class ChangeAddressViewModelImpl(
             is UpcomingAgreementResult.Error -> UpcomingAgreementError(upcomingAgreement)
         }
 
-    private suspend fun getSelfChangeState() = when (val selfChangeEligibility = getSelfChangeEligibility()) {
+    private suspend fun getSelfChangeState() = when (val selfChangeEligibility = addressChangeStoryId()) {
         is SelfChangeEligibilityResult.Eligible -> SelfChangeAddress(selfChangeEligibility.embarkStoryId)
         is SelfChangeEligibilityResult.Blocked -> ManualChangeAddress
         is SelfChangeEligibilityResult.Error -> SelfChangeError(selfChangeEligibility)
@@ -69,7 +69,5 @@ sealed class ViewState {
     object ManualChangeAddress : ViewState()
     data class UpcomingAgreementError(val error: UpcomingAgreementResult.Error) : ViewState()
     data class SelfChangeError(val error: SelfChangeEligibilityResult.Error) : ViewState()
-    data class ChangeAddressInProgress(
-        val upcomingAgreementResult: UpcomingAgreementResult.UpcomingAgreement,
-    ) : ViewState()
+    data class ChangeAddressInProgress(val upcomingAgreementResult: UpcomingAgreementResult.UpcomingAgreement) : ViewState()
 }

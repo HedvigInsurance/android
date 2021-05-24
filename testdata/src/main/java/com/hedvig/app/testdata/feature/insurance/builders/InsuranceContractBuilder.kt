@@ -3,6 +3,7 @@ package com.hedvig.app.testdata.feature.insurance.builders
 import com.hedvig.android.owldroid.fragment.AddressFragment
 import com.hedvig.android.owldroid.fragment.ContractStatusFragment
 import com.hedvig.android.owldroid.fragment.InsurableLimitsFragment
+import com.hedvig.android.owldroid.fragment.UpcomingAgreementFragment
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.AgreementStatus
 import com.hedvig.android.owldroid.type.DanishHomeContentLineOfBusiness
@@ -20,6 +21,7 @@ class InsuranceContractBuilder(
             draftCertificateUrl = "https://www.example.com"
         ),
     private val agreementStatus: AgreementStatus = AgreementStatus.ACTIVE,
+    private val showUpcomingAgreement: Boolean = false
 ) {
 
     fun build() = InsuranceQuery.Contract(
@@ -30,7 +32,16 @@ class InsuranceContractBuilder(
                     asPendingStatus = null,
                     asActiveInFutureStatus = null,
                     asActiveStatus = ContractStatusFragment.AsActiveStatus(
-                        pastInception = LocalDate.of(2020, 2, 1)
+                        pastInception = LocalDate.of(2020, 2, 1),
+                        upcomingAgreementChange = if (showUpcomingAgreement) {
+                            ContractStatusFragment.UpcomingAgreementChange(
+                                newAgreement = ContractStatusFragment.NewAgreement(
+                                    asSwedishApartmentAgreement = ContractStatusFragment.AsSwedishApartmentAgreement(
+                                        activeFrom = LocalDate.of(2021, 4, 6)
+                                    )
+                                )
+                            )
+                        } else null
                     ),
                     asActiveInFutureAndTerminatedInFutureStatus = null,
                     asTerminatedInFutureStatus = null,
@@ -161,6 +172,16 @@ class InsuranceContractBuilder(
         termsAndConditions = InsuranceQuery.TermsAndConditions(
             displayName = "Terms and Conditions",
             url = "https://cdn.hedvig.com/info/insurance-terms-tenant-owners-2019-05.pdf"
+        ),
+        fragments = InsuranceQuery.Contract.Fragments(
+            upcomingAgreementFragment = UpcomingAgreementFragment(
+                status = UpcomingAgreementFragment.Status(
+                    asActiveStatus = null,
+                    asTerminatedTodayStatus = null,
+                    asTerminatedInFutureStatus = null
+                ),
+                upcomingAgreementDetailsTable = null
+            )
         )
     )
 }

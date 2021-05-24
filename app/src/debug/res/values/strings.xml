@@ -10,4 +10,10 @@
     <string name="alert_message" translatable="false">Message</string>
 
     <string name="fb_login_protocol_scheme" translatable="false">fb437830083826480</string>
+
+    <string name="GRAPHQL_URL" translatable="false">https://graphql.dev.hedvigit.com/graphql</string>
+    <string name="WS_GRAPHQL_URL" translatable="false">wss://graphql.dev.hedvigit.com/subscriptions</string>
+    <string name="BASE_URL" translatable="false">https://graphql.dev.hedvigit.com</string>
+    <string name="WEB_BASE_URL" translatable="false">https://www.dev.hedvigit.com</string>
+    <string name="file_provider_authority" translatable="false">com.hedvig.android.dev.file.provider</string>
 </resources>

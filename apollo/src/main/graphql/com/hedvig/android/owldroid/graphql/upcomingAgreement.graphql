@@ -1,57 +1,66 @@
-query UpcomingAgreement {
+query UpcomingAgreement($showDetailsTable: Boolean! = false) {
   contracts {
-    status {
-      ... on ActiveStatus {
-        upcomingAgreementChange {
-          ... UpcomingAgreementFragment
-        }
+    ... UpcomingAgreementFragment
+  }
+}
+
+fragment UpcomingAgreementFragment on Contract {
+  status {
+    ... on ActiveStatus {
+      upcomingAgreementChange {
+        ... UpcomingAgreementChangeFragment
       }
-      ... on TerminatedInFutureStatus {
-        upcomingAgreementChange {
-          ... UpcomingAgreementFragment
-        }
+    }
+    ... on TerminatedInFutureStatus {
+      upcomingAgreementChange {
+        ... UpcomingAgreementChangeFragment
       }
-      ... on TerminatedTodayStatus {
-        upcomingAgreementChange {
-          ... UpcomingAgreementFragment
-        }
+    }
+    ... on TerminatedTodayStatus {
+      upcomingAgreementChange {
+        ... UpcomingAgreementChangeFragment
+      }
+    }
+  }
+
+  upcomingAgreementDetailsTable @include(if: $showDetailsTable) {
+    title
+    sections {
+      title
+      rows {
+        title
+        subtitle
+        value
       }
     }
   }
 }
 
-fragment UpcomingAgreementFragment on UpcomingAgreementChange {
+fragment UpcomingAgreementChangeFragment on UpcomingAgreementChange {
   newAgreement {
     ... on SwedishApartmentAgreement {
       address {
         ...AddressFragment
       }
-      squareMeters
       activeFrom
-      saType: type
     }
     ... on SwedishHouseAgreement {
       address {
         ...AddressFragment
       }
-      squareMeters
       activeFrom
     }
     ... on NorwegianHomeContentAgreement {
       address {
         ...AddressFragment
       }
-      squareMeters
       activeFrom
-      nhcType: type
     }
     ... on DanishHomeContentAgreement {
       address {
         ...AddressFragment
       }
-      squareMeters
       activeFrom
-      dhcType: type
     }
   }
 }

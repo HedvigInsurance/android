@@ -98,7 +98,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             )
         }
 
-        model.data.observe(viewLifecycleOwner) { (homeData, payinStatusData) ->
+        model.data.observe(viewLifecycleOwner) { (homeData, payinStatusData, pendingAddress) ->
             if (homeData == null) {
                 return@observe
             }
@@ -154,9 +154,12 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     add(HomeModel.BodyText.Terminated)
                     add(HomeModel.StartClaimOutlined)
                     add(HomeModel.HowClaimsWork(successData.howClaimsWork))
+                    if (pendingAddress != null && pendingAddress.isNotBlank()) {
+                        add(HomeModel.PendingAddressChange(pendingAddress))
+                    }
                     if (FeatureFlag.MOVING_FLOW.enabled) {
                         add(HomeModel.Header(getString(R.string.home_tab_editing_section_title)))
-                        add(HomeModel.ChangeAddress)
+                        add(HomeModel.ChangeAddress(pendingAddress))
                     }
                 }
                 (binding.recycler.adapter as? HomeAdapter)?.submitList(items)
@@ -168,6 +171,9 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     add(HomeModel.BigText.Active(firstName))
                     add(HomeModel.StartClaimContained)
                     add(HomeModel.HowClaimsWork(successData.howClaimsWork))
+                    if (pendingAddress != null && pendingAddress.isNotBlank()) {
+                        add(HomeModel.PendingAddressChange(pendingAddress))
+                    }
                     addAll(listOfNotNull(*upcomingRenewals(successData.contracts).toTypedArray()))
                     if (payinStatusData?.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP) {
                         add(HomeModel.ConnectPayin)
@@ -183,7 +189,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     )
                     if (FeatureFlag.MOVING_FLOW.enabled) {
                         add(HomeModel.Header(getString(R.string.home_tab_editing_section_title)))
-                        add(HomeModel.ChangeAddress)
+                        add(HomeModel.ChangeAddress(pendingAddress))
                     }
                 }
                 (binding.recycler.adapter as? HomeAdapter)?.submitList(items)

@@ -40,12 +40,10 @@ class NorwegianTravelTest : TestCase() {
             tabContent {
                 childAt<ContractDetailScreen.YourInfoTab>(0) {
                     recycler {
-                        childAt<ContractDetailScreen.YourInfoTab.Header>(0) {
-                            text { hasText(R.string.CONTRACT_DETAIL_COINSURED_TITLE) }
-                        }
-                        childAt<ContractDetailScreen.YourInfoTab.Row>(1) {
-                            label { hasText(R.string.CONTRACT_DETAIL_COINSURED_TITLE) }
-                            content { hasText(R.string.CONTRACT_DETAIL_COINSURED_NUMBER_INPUT, 2) }
+                        childAt<ContractDetailScreen.YourInfoTab.CoInsured>(0) {
+                            title { hasText(R.string.CONTRACT_DETAIL_COINSURED_TITLE) }
+                            coInsuredLabel { hasText(R.string.CONTRACT_DETAIL_COINSURED_TITLE) }
+                            coInsured { hasText(R.string.CONTRACT_DETAIL_COINSURED_NUMBER_INPUT, 2) }
                         }
                     }
                 }

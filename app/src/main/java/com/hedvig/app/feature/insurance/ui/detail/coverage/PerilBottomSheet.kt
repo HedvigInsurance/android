@@ -8,7 +8,7 @@ import androidx.core.os.bundleOf
 import androidx.core.view.updatePadding
 import com.bumptech.glide.RequestBuilder
 import com.hedvig.android.owldroid.fragment.PerilFragment
-import com.hedvig.app.BuildConfig
+import com.hedvig.app.R
 import com.hedvig.app.ui.view.ExpandableBottomSheet
 import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.isDarkThemeActive
@@ -85,7 +85,7 @@ class PerilBottomSheet : ExpandableBottomSheet() {
                 PERIL to Peril(
                     title = peril.title,
                     description = peril.description,
-                    iconUrl = "${BuildConfig.BASE_URL}${
+                    iconUrl = "${context.getString(R.string.BASE_URL)}${
                         if (context.isDarkThemeActive) {
                             peril.icon.variants.dark.svgUrl
                         } else {

@@ -3,6 +3,8 @@ package com.hedvig.app.testdata.dashboard.builders
 import com.hedvig.android.owldroid.fragment.AddressFragment
 import com.hedvig.android.owldroid.fragment.ContractStatusFragment
 import com.hedvig.android.owldroid.fragment.InsurableLimitsFragment
+import com.hedvig.android.owldroid.fragment.UpcomingAgreementChangeFragment
+import com.hedvig.android.owldroid.fragment.UpcomingAgreementFragment
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.AgreementStatus
 import com.hedvig.android.owldroid.type.DanishHomeContentLineOfBusiness
@@ -21,6 +23,7 @@ class InsuranceDataBuilder(
             draftCertificateUrl = "https://www.example.com"
         ),
     private val displayName: String = "Hemförsäkring",
+    private val showUpcomingAgreement: Boolean = false
 ) {
 
     fun build() = InsuranceQuery.Data(
@@ -49,7 +52,14 @@ class InsuranceDataBuilder(
                             },
                             asActiveStatus = if (c == ContractStatus.ACTIVE) {
                                 ContractStatusFragment.AsActiveStatus(
-                                    pastInception = LocalDate.now()
+                                    pastInception = LocalDate.now(),
+                                    upcomingAgreementChange = ContractStatusFragment.UpcomingAgreementChange(
+                                        newAgreement = ContractStatusFragment.NewAgreement(
+                                            asSwedishApartmentAgreement = ContractStatusFragment.AsSwedishApartmentAgreement(
+                                                activeFrom = LocalDate.of(2021, 4, 6)
+                                            )
+                                        )
+                                    )
                                 )
                             } else {
                                 null
@@ -179,6 +189,42 @@ class InsuranceDataBuilder(
                 termsAndConditions = InsuranceQuery.TermsAndConditions(
                     displayName = "Terms and Conditions",
                     url = "https://cdn.hedvig.com/info/insurance-terms-tenant-owners-2019-05.pdf"
+                ),
+                fragments = InsuranceQuery.Contract.Fragments(
+                    upcomingAgreementFragment = UpcomingAgreementFragment(
+                        status = UpcomingAgreementFragment.Status(
+                            asActiveStatus = UpcomingAgreementFragment.AsActiveStatus(
+                                upcomingAgreementChange = if (showUpcomingAgreement) {
+                                    UpcomingAgreementFragment.UpcomingAgreementChange(
+                                        fragments = UpcomingAgreementFragment.UpcomingAgreementChange.Fragments(
+                                            upcomingAgreementChangeFragment = UpcomingAgreementChangeFragment(
+                                                newAgreement = UpcomingAgreementChangeFragment.NewAgreement(
+                                                    asSwedishApartmentAgreement = UpcomingAgreementChangeFragment.AsSwedishApartmentAgreement(
+                                                        address = UpcomingAgreementChangeFragment.Address(
+                                                            fragments = UpcomingAgreementChangeFragment.Address.Fragments(
+                                                                addressFragment = AddressFragment(
+                                                                    street = "Test street",
+                                                                    postalCode = "123",
+                                                                    city = "Test city"
+                                                                )
+                                                            )
+                                                        ),
+                                                        activeFrom = LocalDate.of(2021, 1, 13)
+                                                    ),
+                                                    asDanishHomeContentAgreement = null,
+                                                    asNorwegianHomeContentAgreement = null,
+                                                    asSwedishHouseAgreement = null
+                                                )
+                                            )
+                                        )
+                                    )
+                                } else null
+                            ),
+                            asTerminatedInFutureStatus = null,
+                            asTerminatedTodayStatus = null
+                        ),
+                        upcomingAgreementDetailsTable = null
+                    )
                 )
             )
         }

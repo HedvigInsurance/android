@@ -49,7 +49,7 @@ import com.hedvig.app.feature.home.ui.HomeViewModel
 import com.hedvig.app.feature.home.ui.HomeViewModelImpl
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressViewModel
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressViewModelImpl
-import com.hedvig.app.feature.home.ui.changeaddress.GetSelfChangeEligibilityUseCase
+import com.hedvig.app.feature.home.ui.changeaddress.GetAddressChangeStoryIdUseCase
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase
 import com.hedvig.app.feature.insurance.data.InsuranceRepository
 import com.hedvig.app.feature.insurance.service.InsuranceTracker
@@ -153,7 +153,7 @@ import timber.log.Timber
 import java.time.Clock
 import java.util.Locale
 
-fun isDebug() = BuildConfig.DEBUG || BuildConfig.APP_ID == "com.hedvig.test.app"
+fun isDebug() = BuildConfig.DEBUG || BuildConfig.APPLICATION_ID == "com.hedvig.test.app"
 
 fun shouldOverrideFeatureFlags(app: HedvigApplication): Boolean {
     if (app.isTestBuild) {
@@ -162,7 +162,7 @@ fun shouldOverrideFeatureFlags(app: HedvigApplication): Boolean {
     if (BuildConfig.DEBUG) {
         return true
     }
-    if (BuildConfig.APP_ID == "com.hedvig.test.app") {
+    if (BuildConfig.APPLICATION_ID == "com.hedvig.test.app") {
         return true
     }
 
@@ -477,7 +477,7 @@ val localeManagerModule = module {
 
 val useCaseModule = module {
     single { GetUpcomingAgreementUseCase(get()) }
-    single { GetSelfChangeEligibilityUseCase(get()) }
+    single { GetAddressChangeStoryIdUseCase(get()) }
     single { StartDanishAuthUseCase(get()) }
     single { StartNorwegianAuthUseCase(get()) }
     single { SubscribeToAuthStatusUseCase(get()) }

@@ -114,5 +114,4 @@
         <item name="colorOnSurface">@color/hedvig_white</item>
         <item name="android:textColor">@color/white</item>
     </style>
-
 </resources>

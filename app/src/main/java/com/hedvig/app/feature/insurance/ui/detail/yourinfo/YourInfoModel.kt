@@ -1,20 +1,22 @@
 package com.hedvig.app.feature.insurance.ui.detail.yourinfo
 
-sealed class YourInfoModel {
-    sealed class Header : YourInfoModel() {
-        object Details : Header()
-        object Coinsured : Header()
-        object Change : Header()
-    }
+import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase
 
-    data class Row(
-        val label: String,
-        val content: String
+sealed class YourInfoModel {
+    data class Home(
+        val street: String,
+        val postalCode: String,
+        val type: Int?,
+        val size: Int
     ) : YourInfoModel()
 
-    data class Paragraph(val text: String) : YourInfoModel()
+    data class Coinsured(val amount: Int) : YourInfoModel()
 
-    object ChangeParagraph : YourInfoModel()
+    object Change : YourInfoModel()
 
-    object OpenChatButton : YourInfoModel()
+    object ChangeAddressButton : YourInfoModel()
+
+    data class PendingAddressChange(
+        val upcomingAgreement: GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement
+    ) : YourInfoModel()
 }
