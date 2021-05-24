@@ -69,7 +69,11 @@ class MarketingActivity : BaseActivity(R.layout.activity_marketing) {
 
     private fun replaceFragment(fragment: Fragment, navigationState: NavigationState, tag: String) {
         supportFragmentManager.commit {
-            replace(R.id.container, fragment.also { it.sharedElementEnterTransition = MaterialContainerTransform() }, tag)
+            replace(
+                R.id.container,
+                fragment.also { it.sharedElementEnterTransition = MaterialContainerTransform() },
+                tag
+            )
 
             if (navigationState.addToBackStack) {
                 addToBackStack(null)
@@ -83,7 +87,6 @@ class MarketingActivity : BaseActivity(R.layout.activity_marketing) {
     }
 
     companion object {
-        const val HAS_SELECTED_MARKET = "SHOULD_MARKET_SELECTED"
         const val SHARED_ELEMENT_NAME = "marketButton"
 
         private const val MARKET_FRAGMENT_TAG = "market"

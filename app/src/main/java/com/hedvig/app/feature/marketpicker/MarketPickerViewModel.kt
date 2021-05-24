@@ -42,6 +42,7 @@ class MarketPickerViewModelImpl(
 
     override fun submit() {
         marketManager.hasSelectedMarket = true
+        pickerState.value?.language?.let { languageRepository.uploadLanguage(it) }
     }
 
     private fun updateState(market: Market, language: Language) {
