@@ -23,10 +23,19 @@ query EmbarkStory($name: String!, $locale: String!) {
       }
       response {
         ...MessageFragment
-        ... on EmbarkResponseExpression {
-          text
-          expressions {
-            ...ExpressionFragment
+        ...ResponseExpressionFragment
+        ... on EmbarkGroupedResponse {
+          title {
+            ...ResponseExpressionFragment
+          }
+          items {
+            ...MessageFragment
+          }
+          each {
+            key
+            content {
+              ...MessageFragment
+            }
           }
         }
       }
@@ -148,7 +157,7 @@ query EmbarkStory($name: String!, $locale: String!) {
             maxAmount
             addLabel
             link {
-              ... EmbarkLinkFragment
+              ...EmbarkLinkFragment
             }
             components {
               ... on EmbarkMultiActionNumberAction {
@@ -222,6 +231,13 @@ fragment MessageFragment on EmbarkMessage {
     ...ExpressionFragment
   }
   text
+}
+
+fragment ResponseExpressionFragment on EmbarkResponseExpression {
+  text
+  expressions {
+    ...ExpressionFragment
+  }
 }
 
 fragment BasicExpressionFragment on EmbarkExpression {

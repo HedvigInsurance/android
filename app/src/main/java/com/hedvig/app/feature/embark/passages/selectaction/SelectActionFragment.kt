@@ -3,12 +3,14 @@ package com.hedvig.app.feature.embark.passages.selectaction
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.widget.TextView
+import androidx.core.os.bundleOf
 import androidx.core.view.doOnNextLayout
 import androidx.fragment.app.Fragment
 import com.hedvig.app.R
+import com.hedvig.app.databinding.EmbarkResponseBinding
 import com.hedvig.app.databinding.FragmentEmbarkSelectActionBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
+import com.hedvig.app.feature.embark.Response
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.animateResponse
 import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_MILLIS
@@ -49,7 +51,7 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
             messages.adapter = MessageAdapter(data.messages)
             actions.adapter = SelectActionAdapter { selectAction: SelectActionParameter.SelectAction, view: View ->
                 view.hapticClicks()
-                    .mapLatest { onActionSelected(selectAction, data, response) }
+                    .mapLatest { onActionSelected(selectAction, data, responseContainer) }
                     .onEach { model.navigateToPassage(selectAction.link) }
                     .launchIn(viewLifecycleScope)
             }.apply {
@@ -66,14 +68,15 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
     private suspend fun onActionSelected(
         selectAction: SelectActionParameter.SelectAction,
         data: SelectActionParameter,
-        response: TextView,
+        responseBinding: EmbarkResponseBinding,
     ) {
         selectAction.keys.zip(selectAction.values).forEach { (key, value) ->
             model.putInStore(key, value)
         }
         model.putInStore("${data.passageName}Result", selectAction.label)
-        val responseText = model.preProcessResponse(data.passageName) ?: selectAction.label
-        animateResponse(response, responseText)
+        val response =
+            model.preProcessResponse(data.passageName) ?: Response.SingleResponse(selectAction.label)
+        animateResponse(responseBinding, response)
         delay(PASSAGE_ANIMATION_DELAY_MILLIS)
     }
 
@@ -81,9 +84,9 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
         private const val DATA = "DATA"
         fun newInstance(data: SelectActionParameter) =
             SelectActionFragment().apply {
-                arguments = Bundle().apply {
-                    putParcelable(DATA, data)
-                }
+                arguments = bundleOf(
+                    DATA to data
+                )
             }
     }
 }

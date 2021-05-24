@@ -9,11 +9,11 @@ import com.hedvig.app.util.LiveEvent
 import com.hedvig.app.util.extensions.replace
 
 class MultiActionViewModel(
-    private val multiActionParams: MultiActionParams
+    private val multiActionParams: MultiActionParams,
 ) : ViewModel() {
 
     private val _addedComponents = MutableLiveData<List<Component>>(listOf())
-    val components =_addedComponents.map { components ->
+    val components = _addedComponents.map { components ->
         if (components.size < multiActionParams.maxAmount) {
             val addButton = AddButton(::createNewComponent)
             listOf(addButton) + components
@@ -58,5 +58,6 @@ class MultiActionViewModel(
                 addToStore("${multiActionParams.key}[$index]${switch.key}", switch.value.toString())
             }
         }
+        _addedComponents.value?.size?.let { addToStore("${multiActionParams.key}Result", it.toString()) }
     }
 }
