@@ -223,7 +223,10 @@ class InsuranceDataBuilder(
                             asTerminatedInFutureStatus = null,
                             asTerminatedTodayStatus = null
                         ),
-                        upcomingAgreementDetailsTable = null
+                        upcomingAgreementDetailsTable = UpcomingAgreementFragment.UpcomingAgreementDetailsTable(
+                            title = "",
+                            sections = emptyList()
+                        )
                     )
                 )
             )

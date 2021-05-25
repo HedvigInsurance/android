@@ -180,7 +180,10 @@ class InsuranceContractBuilder(
                     asTerminatedTodayStatus = null,
                     asTerminatedInFutureStatus = null
                 ),
-                upcomingAgreementDetailsTable = null
+                upcomingAgreementDetailsTable = UpcomingAgreementFragment.UpcomingAgreementDetailsTable(
+                    title = "",
+                    sections = emptyList()
+                )
             )
         )
     )

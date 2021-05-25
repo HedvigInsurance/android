@@ -27,7 +27,7 @@ class UpcomingAgreementBuilder(
         asNorwegianHomeContentAgreement = null,
         asSwedishHouseAgreement = null
     ),
-    private val table: UpcomingAgreementFragment.UpcomingAgreementDetailsTable? = UpcomingAgreementFragment.UpcomingAgreementDetailsTable(
+    private val table: UpcomingAgreementFragment.UpcomingAgreementDetailsTable = UpcomingAgreementFragment.UpcomingAgreementDetailsTable(
         title = "Upcoming Agreement",
         sections = listOf(
             UpcomingAgreementFragment.Section(
