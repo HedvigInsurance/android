@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.home.ui.changeaddress
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,7 +23,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.android.material.composethemeadapter.MdcTheme
-import com.hedvig.app.R
 
 @Composable
 fun ITPB(
@@ -39,6 +39,7 @@ fun ITPB(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .weight(1f, true)
+                .padding(horizontal = 16.dp)
                 .fillMaxWidth()
                 .verticalScroll(scrollState)
         ) {
@@ -50,6 +51,7 @@ fun ITPB(
             Text(
                 text = title,
                 style = MaterialTheme.typography.h5,
+                textAlign = TextAlign.Center,
                 modifier = Modifier
                     .padding(top = 40.dp),
             )
@@ -79,9 +81,25 @@ fun ITPB(
 fun ITPBPreview() {
     MdcTheme {
         ITPB(
-            illustration = painterResource(R.drawable.illustration_move_success),
+            illustration = painterResource(android.R.drawable.star_big_on),
             title = "Preview Title",
-            paragraph = "Example paragraph that takes a up a little bit of space. Lorem ipsum yada yada."
+            paragraph = "Example paragraph that takes a up a little bit of space. Lorem ipsum yada yada.",
+            onClick = {},
+            buttonContent = { Text("Example button text") }
+        )
+    }
+}
+
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun TPBPreviewDark() {
+    MdcTheme {
+        ITPB(
+            illustration = painterResource(android.R.drawable.star_big_on),
+            title = "Preview Title",
+            paragraph = "Example paragraph that takes a up a little bit of space. Lorem ipsum yada yada.",
+            onClick = {},
+            buttonContent = { Text("Example button text") }
         )
     }
 }
