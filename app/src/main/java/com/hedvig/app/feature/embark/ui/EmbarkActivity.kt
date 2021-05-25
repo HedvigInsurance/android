@@ -7,7 +7,6 @@ import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.observe
 import androidx.transition.Transition
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialFadeThrough
@@ -251,7 +250,8 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                         )
                     ),
                     link = numberAction.fragments.embarkNumberActionFragment.link.fragments.embarkLinkFragment.name,
-                    submitLabel = numberAction.fragments.embarkNumberActionFragment.link.fragments.embarkLinkFragment.label,
+                    submitLabel = numberAction.fragments.embarkNumberActionFragment
+                        .link.fragments.embarkLinkFragment.label,
                 )
             )
         }
@@ -322,7 +322,9 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                             numberActionData.unit,
                             numberActionData.label
                         )
-                        else -> throw java.lang.IllegalArgumentException("Could not match ${it.asEmbarkDropdownAction} to a component")
+                        else -> throw IllegalArgumentException(
+                            "Could not match $it to a component"
+                        )
                     }
                 }
             )

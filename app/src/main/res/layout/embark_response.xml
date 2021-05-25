@@ -6,7 +6,6 @@
     android:layout_height="wrap_content"
     android:alpha="0"
     android:background="@drawable/embark_chat_bubble_self_background"
-    android:maxWidth="@dimen/embark_chat_bubble_max_width"
     android:orientation="vertical"
     android:paddingHorizontal="@dimen/base_margin_and_a_half"
     android:paddingVertical="@dimen/base_margin_double"
