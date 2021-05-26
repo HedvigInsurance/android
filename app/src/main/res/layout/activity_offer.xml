@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/offerRoot"
@@ -14,27 +14,38 @@
         android:layout_height="match_parent"
         android:clipToPadding="false"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:itemCount="1"
         tools:listitem="@layout/offer_header"
         tools:paddingTop="?attr/actionBarSize" />
 
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/offerToolbar"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:menu="@menu/offer_menu"
-        app:navigationIcon="@drawable/ic_back"
-        tools:layout_height="?attr/actionBarSize">
+        android:background="@null"
+        app:liftOnScroll="true">
 
-        <ImageView
-            android:id="@+id/toolbar_title"
-            android:layout_width="wrap_content"
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/offerToolbar"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:src="@drawable/ic_hedvig_wordmark"
-            android:contentDescription="@null" />
+            app:menu="@menu/offer_menu"
+            app:navigationIcon="@drawable/ic_back"
+            android:background="@color/white"
+            tools:layout_height="?attr/actionBarSize">
 
-    </com.google.android.material.appbar.MaterialToolbar>
+            <ImageView
+                android:id="@+id/toolbar_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_hedvig_wordmark" />
 
-</FrameLayout>
+        </com.google.android.material.appbar.MaterialToolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
 
