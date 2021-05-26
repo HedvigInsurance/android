@@ -25,6 +25,7 @@ import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.view.hide
+import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
@@ -102,7 +103,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 }
             }
 
-            signButton.setOnClickListener {
+            signButton.setHapticClickListener {
                 tracker.floatingSign()
                 OfferSignDialog.newInstance().show(
                     supportFragmentManager,
