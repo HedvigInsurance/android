@@ -13,6 +13,7 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.EmbarkInputItemBinding
 import com.hedvig.app.databinding.NumberActionSetFragmentBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
+import com.hedvig.app.feature.embark.Response
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.animateResponse
 import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.KEY_BOARD_DELAY_MILLIS
@@ -121,9 +122,11 @@ class NumberActionFragment : Fragment(R.layout.number_action_set_fragment) {
             delayMillis = KEY_BOARD_DELAY_MILLIS
         )
         numberActionViewModel.onContinue(model::putInStore)
-        val responseText = model.preProcessResponse(data.passageName)
         val allInput = numberActionViewModel.getAllInput()
-        animateResponse(binding.response, responseText ?: allInput ?: "")
+        val response =
+            model.preProcessResponse(data.passageName)
+                ?: Response.SingleResponse(allInput ?: "")
+        animateResponse(binding.responseContainer, response)
         delay(PASSAGE_ANIMATION_DELAY_MILLIS)
     }
 

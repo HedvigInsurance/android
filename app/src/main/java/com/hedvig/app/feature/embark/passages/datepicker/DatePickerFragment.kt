@@ -7,6 +7,7 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentEmbarkDatePickerBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
+import com.hedvig.app.feature.embark.Response
 import com.hedvig.app.feature.embark.masking.SHORT_DATE
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.animateResponse
@@ -68,8 +69,8 @@ class DatePickerFragment : Fragment(R.layout.fragment_embark_date_picker) {
         val inputText = binding.dateLabel.text.toString()
         model.putInStore("${data.passageName}Result", inputText)
         model.putInStore(data.storeKey, inputText)
-        val responseText = model.preProcessResponse(data.passageName) ?: inputText
-        animateResponse(binding.response, responseText)
+        val response = model.preProcessResponse(data.passageName) ?: Response.SingleResponse(inputText)
+        animateResponse(binding.responseContainer, response)
     }
 
     companion object {

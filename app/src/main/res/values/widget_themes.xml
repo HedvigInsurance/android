@@ -137,12 +137,8 @@
     </style>
 
     <style name="ThemeOverlay.Hedvig.Embark.Chat.Self" parent="">
-        <item name="android:textColor">@color/hedvig_black</item>
-        <item name="android:background">@drawable/embark_chat_bubble_self_background</item>
-        <item name="android:paddingStart">@dimen/base_margin_double</item>
-        <item name="android:paddingEnd">@dimen/base_margin_double</item>
-        <item name="android:paddingTop">@dimen/base_margin_and_a_half</item>
-        <item name="android:paddingBottom">@dimen/base_margin_and_a_half</item>
+        <item name="android:textColorPrimary">@color/hedvig_black</item>
+        <item name="colorSurface">@color/separator_light</item>
     </style>
 
     <style name="Hedvig.DatePicker" parent="ThemeOverlay.MaterialComponents.MaterialCalendar">

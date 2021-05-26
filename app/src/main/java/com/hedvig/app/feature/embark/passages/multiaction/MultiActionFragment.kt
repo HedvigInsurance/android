@@ -8,14 +8,14 @@ import androidx.fragment.app.setFragmentResultListener
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentEmbarkMultiActionBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
+import com.hedvig.app.feature.embark.Response
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.animateResponse
 import com.hedvig.app.feature.embark.passages.multiaction.add.AddComponentBottomSheet
 import com.hedvig.app.feature.embark.passages.multiaction.add.AddComponentBottomSheet.Companion.ADD_COMPONENT_REQUEST_KEY
-import com.hedvig.app.feature.embark.ui.EmbarkActivity
+import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_MILLIS
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.view.updateMargin
-import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import dev.chrisbanes.insetter.Insetter
@@ -81,9 +81,10 @@ class MultiActionFragment : Fragment(R.layout.fragment_embark_multi_action) {
 
     private suspend fun saveAndAnimate() {
         multiActionViewModel.onContinue(model::putInStore)
-        val responseText = model.preProcessResponse(multiActionParams.passageName) ?: ""
-        animateResponse(binding.response, responseText)
-        delay(EmbarkActivity.PASSAGE_ANIMATION_DELAY_MILLIS)
+        val response =
+            model.preProcessResponse(multiActionParams.passageName) ?: Response.SingleResponse("")
+        animateResponse(binding.responseContainer, response)
+        delay(PASSAGE_ANIMATION_DELAY_MILLIS)
     }
 
     private fun showAddBuildingSheet(componentState: MultiActionItem.Component?) {

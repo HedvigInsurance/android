@@ -4,12 +4,14 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import androidx.core.os.bundleOf
 import androidx.core.view.doOnNextLayout
 import androidx.fragment.app.Fragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.EmbarkInputItemBinding
 import com.hedvig.app.databinding.FragmentTextActionSetBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
+import com.hedvig.app.feature.embark.Response
 import com.hedvig.app.feature.embark.masking.derivedValues
 import com.hedvig.app.feature.embark.masking.remask
 import com.hedvig.app.feature.embark.masking.unmask
@@ -103,8 +105,9 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
             }
             val allInput = inputs.values.joinToString(" ")
             model.putInStore("${data.passageName}Result", allInput)
-            val responseText = model.preProcessResponse(data.passageName) ?: allInput
-            animateResponse(binding.response, responseText)
+            val response =
+                model.preProcessResponse(data.passageName) ?: Response.SingleResponse(allInput)
+            animateResponse(binding.responseContainer, response)
         }
         delay(PASSAGE_ANIMATION_DELAY_MILLIS)
     }
@@ -167,9 +170,9 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
     companion object {
         private const val DATA = "DATA"
         fun newInstance(data: TextActionParameter) = TextActionFragment().apply {
-            arguments = Bundle().apply {
-                putParcelable(DATA, data)
-            }
+            arguments = bundleOf(
+                DATA to data
+            )
         }
     }
 }

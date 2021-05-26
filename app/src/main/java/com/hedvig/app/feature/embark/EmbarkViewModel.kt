@@ -72,7 +72,7 @@ abstract class EmbarkViewModel(
         valueStore.put(key, value)
     }
 
-    fun getPrefillFromStore(key: String) = valueStore.getPrefill(key)
+    fun getPrefillFromStore(key: String) = valueStore.prefill.get(key)
 
     fun getFromStore(key: String) = valueStore.get(key)
 
@@ -270,7 +270,7 @@ abstract class EmbarkViewModel(
         return false
     }
 
-    fun preProcessResponse(passageName: String): String? {
+    fun preProcessResponse(passageName: String): Response? {
         val response = storyData
             .embarkStory
             ?.passages
@@ -279,10 +279,10 @@ abstract class EmbarkViewModel(
             ?: return null
 
         response.fragments.messageFragment?.let { message ->
-            preProcessMessage(message)?.let { return it.text }
+            preProcessMessage(message)?.let { return Response.SingleResponse(it.text) }
         }
 
-        response.asEmbarkResponseExpression?.let { exp ->
+        response.fragments.responseExpressionFragment?.let { exp ->
             preProcessMessage(
                 MessageFragment(
                     text = exp.text,
@@ -292,7 +292,40 @@ abstract class EmbarkViewModel(
                         )
                     }
                 )
-            )?.let { return it.text }
+            )?.let { return Response.SingleResponse(it.text) }
+        }
+
+        response.asEmbarkGroupedResponse?.let { groupedResponse ->
+            val titleExpression = groupedResponse.title.fragments.responseExpressionFragment
+            val title = preProcessMessage(
+                MessageFragment(
+                    text = titleExpression.text,
+                    expressions = titleExpression.expressions.map {
+                        MessageFragment.Expression(
+                            fragments = MessageFragment.Expression.Fragments(it.fragments.expressionFragment)
+                        )
+                    }
+                )
+            )?.text
+
+            val items = groupedResponse.items.mapNotNull { item ->
+                preProcessMessage(item.fragments.messageFragment)?.text
+            }.toMutableList()
+
+            groupedResponse.each?.let { each ->
+                val multiActionItems = valueStore.getMultiActionItems(each.key)
+                items += multiActionItems.mapNotNull { mai ->
+                    val maiView = object : ValueStoreView {
+                        override fun get(key: String) = mai[key]
+                    }
+                    preProcessMessage(each.content.fragments.messageFragment, maiView)?.text
+                }
+            }
+
+            return Response.GroupedResponse(
+                title = title,
+                groups = items
+            )
         }
         return null
     }
@@ -330,10 +363,13 @@ abstract class EmbarkViewModel(
             .fold(0) { acc, i -> max(acc, i) }
     }
 
-    private fun preProcessMessage(message: MessageFragment): MessageFragment? {
+    private fun preProcessMessage(
+        message: MessageFragment,
+        valueStoreView: ValueStoreView = valueStore,
+    ): MessageFragment? {
         if (message.expressions.isEmpty()) {
             return message.copy(
-                text = interpolateMessage(message.text)
+                text = interpolateMessage(message.text, valueStoreView)
             )
         }
 
@@ -411,19 +447,24 @@ abstract class EmbarkViewModel(
                                     text = asMulti.text,
                                     subExpressions = asMulti.subExpressions.map { se ->
                                         ExpressionFragment.SubExpression2(
-                                            fragments = ExpressionFragment.SubExpression2.Fragments(se.fragments.basicExpressionFragment),
-                                            asEmbarkExpressionMultiple1 = se.asEmbarkExpressionMultiple2?.let { asMulti2 ->
-                                                ExpressionFragment.AsEmbarkExpressionMultiple1(
-                                                    multipleType = asMulti2.multipleType,
-                                                    text = asMulti2.text,
-                                                    subExpressions = asMulti2.subExpressions.map { se2 ->
-                                                        ExpressionFragment.SubExpression1(
-                                                            fragments = ExpressionFragment.SubExpression1.Fragments(se2.fragments.basicExpressionFragment),
-                                                            asEmbarkExpressionMultiple2 = null,
-                                                        )
-                                                    }
-                                                )
-                                            }
+                                            fragments = ExpressionFragment.SubExpression2.Fragments(
+                                                se.fragments.basicExpressionFragment
+                                            ),
+                                            asEmbarkExpressionMultiple1 = se
+                                                .asEmbarkExpressionMultiple2?.let { asMulti2 ->
+                                                    ExpressionFragment.AsEmbarkExpressionMultiple1(
+                                                        multipleType = asMulti2.multipleType,
+                                                        text = asMulti2.text,
+                                                        subExpressions = asMulti2.subExpressions.map { se2 ->
+                                                            ExpressionFragment.SubExpression1(
+                                                                fragments = ExpressionFragment.SubExpression1.Fragments(
+                                                                    se2.fragments.basicExpressionFragment
+                                                                ),
+                                                                asEmbarkExpressionMultiple2 = null,
+                                                            )
+                                                        }
+                                                    )
+                                                }
                                         )
                                     }
                                 )
@@ -449,12 +490,12 @@ abstract class EmbarkViewModel(
         return ExpressionResult.False
     }
 
-    private fun interpolateMessage(message: String) =
+    private fun interpolateMessage(message: String, store: ValueStoreView = valueStore) =
         REPLACEMENT_FINDER
             .findAll(message)
             .fold(message) { acc, curr ->
                 val key = curr.value.removeSurrounding("{", "}")
-                val fromStore = valueStore.get(key) ?: return acc
+                val fromStore = store.get(key) ?: return acc
                 acc.replace(curr.value, fromStore)
             }
 
@@ -489,31 +530,39 @@ abstract class EmbarkViewModel(
                         text = null,
                         subExpressions = it.subExpressions.map { se ->
                             ExpressionFragment.SubExpression2(
-                                fragments = ExpressionFragment.SubExpression2.Fragments(se.fragments.expressionFragment.fragments.basicExpressionFragment),
-                                asEmbarkExpressionMultiple1 = se.fragments.expressionFragment.asEmbarkExpressionMultiple?.let { asMulti ->
-                                    ExpressionFragment.AsEmbarkExpressionMultiple1(
-                                        multipleType = asMulti.multipleType,
-                                        text = asMulti.text,
-                                        subExpressions = asMulti.subExpressions.map { se2 ->
-                                            ExpressionFragment.SubExpression1(
-                                                fragments = ExpressionFragment.SubExpression1.Fragments(se2.fragments.basicExpressionFragment),
-                                                asEmbarkExpressionMultiple2 = se2.asEmbarkExpressionMultiple1?.let { asMulti2 ->
-                                                    ExpressionFragment.AsEmbarkExpressionMultiple2(
-                                                        multipleType = asMulti2.multipleType,
-                                                        text = asMulti2.text,
-                                                        subExpressions = asMulti2.subExpressions.map { se3 ->
-                                                            ExpressionFragment.SubExpression(
-                                                                fragments = ExpressionFragment.SubExpression.Fragments(
-                                                                    se3.fragments.basicExpressionFragment
-                                                                )
+                                fragments = ExpressionFragment.SubExpression2.Fragments(
+                                    se.fragments.expressionFragment.fragments.basicExpressionFragment
+                                ),
+                                asEmbarkExpressionMultiple1 = se
+                                    .fragments.expressionFragment.asEmbarkExpressionMultiple?.let { asMulti ->
+                                        ExpressionFragment.AsEmbarkExpressionMultiple1(
+                                            multipleType = asMulti.multipleType,
+                                            text = asMulti.text,
+                                            subExpressions = asMulti.subExpressions.map { se2 ->
+                                                ExpressionFragment.SubExpression1(
+                                                    fragments = ExpressionFragment.SubExpression1.Fragments(
+                                                        se2.fragments.basicExpressionFragment
+                                                    ),
+                                                    asEmbarkExpressionMultiple2 = se2
+                                                        .asEmbarkExpressionMultiple1?.let { asMulti2 ->
+                                                            ExpressionFragment.AsEmbarkExpressionMultiple2(
+                                                                multipleType = asMulti2.multipleType,
+                                                                text = asMulti2.text,
+                                                                subExpressions = asMulti2.subExpressions.map { se3 ->
+                                                                    ExpressionFragment.SubExpression(
+                                                                        fragments = ExpressionFragment
+                                                                            .SubExpression
+                                                                            .Fragments(
+                                                                                se3.fragments.basicExpressionFragment
+                                                                            )
+                                                                    )
+                                                                }
                                                             )
                                                         }
-                                                    )
-                                                }
-                                            )
-                                        }
-                                    )
-                                }
+                                                )
+                                            }
+                                        )
+                                    }
                             )
                         }
                     )

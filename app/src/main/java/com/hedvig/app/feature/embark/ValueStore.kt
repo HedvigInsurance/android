@@ -3,14 +3,18 @@ package com.hedvig.app.feature.embark
 import com.hedvig.app.feature.embark.computedvalues.TemplateExpressionCalculator
 import java.util.Stack
 
-interface ValueStore {
+interface ValueStore : ValueStoreView {
     var computedValues: Map<String, String>?
     fun commitVersion()
     fun rollbackVersion()
     fun put(key: String, value: String)
-    fun get(key: String): String?
-    fun getPrefill(key: String): String?
+    val prefill: ValueStoreView
     fun toMap(): Map<String, String>
+    fun getMultiActionItems(key: String): List<Map<String, String>>
+}
+
+interface ValueStoreView {
+    fun get(key: String): String?
 }
 
 class ValueStoreImpl : ValueStore {
@@ -40,9 +44,40 @@ class ValueStoreImpl : ValueStore {
         } ?: storedValues.peek()[key] ?: stage[key]
     }
 
-    override fun getPrefill(key: String) = get(key) ?: prefillValues[key]
+    override val prefill = object : ValueStoreView {
+        override fun get(key: String) = this@ValueStoreImpl.get(key) ?: prefillValues[key]
+    }
 
     override fun toMap(): Map<String, String> {
         return storedValues.peek().toMap() + stage
+    }
+
+    override fun getMultiActionItems(key: String): List<Map<String, String>> {
+        val source = storedValues.peek() + stage
+        return source
+            .keys
+            .filter { it.contains(key) }
+            .fold(hashMapOf<String, MutableMap<String, String>>()) { acc, curr ->
+                val withoutKey = curr.replace(key, "")
+                if (!(withoutKey matches MULTI_ACTION_KEY)) {
+                    return@fold acc
+                }
+                val groupValues = MULTI_ACTION_KEY.find(withoutKey)?.groupValues ?: return@fold acc
+                val entry = groupValues.getOrNull(1) ?: return@fold acc
+                val subKey = groupValues.getOrNull(2) ?: return@fold acc
+
+                val obj = acc[entry] ?: hashMapOf()
+                obj[subKey] = source[curr] ?: return@fold acc
+                acc[entry] = obj
+
+                acc
+            }
+            .entries
+            .sortedBy { (k, _) -> k.toInt() }
+            .map { (_, v) -> v }
+    }
+
+    companion object {
+        private val MULTI_ACTION_KEY = Regex("\\[([0-9]+)\\]([a-zA-Z]+)\$")
     }
 }
