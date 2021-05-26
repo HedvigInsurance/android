@@ -2,39 +2,30 @@ package com.hedvig.app.feature.offer.ui
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
-import androidx.core.graphics.ColorUtils
 import androidx.core.view.doOnLayout
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityOfferBinding
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
-import com.hedvig.app.feature.embark.ui.TooltipBottomSheet
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
-import com.hedvig.app.util.boundedColorLerp
-import com.hedvig.app.util.extensions.colorAttr
-import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.storeBoolean
-import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.lang.Float.min
 
 class OfferActivity : BaseActivity(R.layout.activity_offer) {
     private val model: OfferViewModel by viewModel()
@@ -51,7 +42,8 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             offerRoot.setEdgeToEdgeSystemUiFlags(true)
             scrollInitialPaddingTop = offerScroll.paddingTop
             offerToolbar.doOnLayout { applyInsets(it.height) }
-
+            offerToolbar.background.alpha = 0
+            
             offerToolbar.doOnApplyWindowInsets { view, insets, initialState ->
                 view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
                 applyInsets(view.height)
@@ -65,16 +57,8 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 private var scrollY = 0
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     scrollY += dy
-
                     val percentage = scrollY.toFloat() / offerToolbar.height
-
-                    offerToolbar.setBackgroundColor(
-                        boundedColorLerp(
-                            Color.TRANSPARENT,
-                            colorAttr(android.R.attr.colorBackground),
-                            percentage
-                        )
-                    )
+                    offerToolbar.background.alpha = (percentage * 255).toInt()
                 }
             })
 
@@ -93,7 +77,9 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 when (viewState) {
                     OfferViewModel.ViewState.HasContracts -> startLoggedInActivity()
                     is OfferViewModel.ViewState.OfferItems -> adapter.submitList(viewState.items)
-                    is OfferViewModel.ViewState.Error.GeneralError -> showErrorDialog(viewState.message ?: getString(R.string.home_tab_error_body))
+                    is OfferViewModel.ViewState.Error.GeneralError -> showErrorDialog(
+                        viewState.message ?: getString(R.string.home_tab_error_body)
+                    )
                     is OfferViewModel.ViewState.Error -> showErrorDialog(getString(R.string.home_tab_error_body))
                 }
             }
