@@ -54,7 +54,6 @@ class OfferAdapter(
         R.layout.offer_peril_area -> ViewHolder.Perils(parent)
         R.layout.offer_terms_area -> ViewHolder.Terms(parent)
         R.layout.offer_switch -> ViewHolder.Switch(parent)
-        R.layout.offer_footer -> ViewHolder.Footer(parent)
         else -> throw Error("Invalid viewType: $viewType")
     }
 
@@ -65,7 +64,6 @@ class OfferAdapter(
         is OfferModel.Perils -> R.layout.offer_peril_area
         is OfferModel.Terms -> R.layout.offer_terms_area
         is OfferModel.Switcher -> R.layout.offer_switch
-        OfferModel.Footer -> R.layout.offer_footer
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -524,24 +522,6 @@ class OfferAdapter(
                 e { "Invariant detected: ${data.javaClass.name} passed to ${this.javaClass.name}::bind" }
             }
         }
-
-        class Footer(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_footer)) {
-            override fun bind(
-                data: OfferModel,
-                fragmentManager: FragmentManager,
-                tracker: OfferTracker,
-                removeDiscount: () -> Unit,
-                marketManager: MarketManager
-            ) {
-                itemView.setHapticClickListener {
-                    tracker.floatingSign()
-                    OfferSignDialog.newInstance().show(
-                        fragmentManager,
-                        OfferSignDialog.TAG
-                    )
-                }
-            }
-        }
     }
 }
 
@@ -567,6 +547,4 @@ sealed class OfferModel {
     data class Switcher(
         val displayName: String?,
     ) : OfferModel()
-
-    object Footer : OfferModel()
 }

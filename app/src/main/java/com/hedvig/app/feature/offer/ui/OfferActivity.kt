@@ -3,9 +3,11 @@ package com.hedvig.app.feature.offer.ui
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.transition.TransitionManager
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.core.view.doOnLayout
+import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -14,6 +16,7 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityOfferBinding
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.app.feature.offer.OfferSignDialog
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.settings.MarketManager
@@ -21,6 +24,9 @@ import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.storeBoolean
+import com.hedvig.app.util.extensions.view.hide
+import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
@@ -53,12 +59,24 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
             }
 
+            signButton.doOnApplyWindowInsets { view, insets, initialState ->
+                view.updateMargin(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
+            }
+
             offerScroll.addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 private var scrollY = 0
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     scrollY += dy
                     val percentage = scrollY.toFloat() / offerToolbar.height
                     offerToolbar.background.alpha = (percentage * 255).toInt()
+
+                    if (percentage > 4 && !signButton.isVisible) {
+                        TransitionManager.beginDelayedTransition(offerRoot)
+                        signButton.show()
+                    } else if (percentage < 4 && signButton.isVisible) {
+                        TransitionManager.beginDelayedTransition(offerRoot)
+                        signButton.hide()
+                    }
                 }
             })
 
@@ -82,6 +100,14 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     )
                     is OfferViewModel.ViewState.Error -> showErrorDialog(getString(R.string.home_tab_error_body))
                 }
+            }
+
+            signButton.setOnClickListener {
+                tracker.floatingSign()
+                OfferSignDialog.newInstance().show(
+                    supportFragmentManager,
+                    OfferSignDialog.TAG
+                )
             }
         }
     }
