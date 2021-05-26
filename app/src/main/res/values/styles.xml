@@ -30,7 +30,6 @@
     <style name="Hedvig.Theme.Offer.V23" parent="Hedvig.Theme">
         <item name="android:windowBackground">@color/hedvig_black</item>
         <item name="android:statusBarColor">@color/hedvig_black</item>
-        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="Hedvig.Theme.Offer" parent="Hedvig.Theme.Offer.V23" />
