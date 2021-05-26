@@ -5,7 +5,7 @@ import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 
 data class MultiActionBuilder(
     private val key: String,
-    private val link: EmbarkLinkFragment
+    private val link: EmbarkLinkFragment,
 ) {
     fun build() = EmbarkStoryQuery.Action(
         asEmbarkSelectAction = null,
@@ -17,7 +17,7 @@ data class MultiActionBuilder(
         asEmbarkNumberActionSet = null,
         asEmbarkMultiAction = EmbarkStoryQuery.AsEmbarkMultiAction(
             multiActionData = EmbarkStoryQuery.MultiActionData(
-                key = "testkey",
+                key = key,
                 addLabel = "Continue",
                 maxAmount = "2",
                 link = EmbarkStoryQuery.Link4(

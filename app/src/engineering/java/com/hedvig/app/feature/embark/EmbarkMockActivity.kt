@@ -19,6 +19,7 @@ import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_FOUR_TOOLTIP
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GRAPHQL_QUERY_API
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GREATER_THAN_EXPRESSION
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GREATER_THAN_OR_EQUALS_EXPRESSION
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GROUPED_RESPONSE
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_INCOMPATIBLE_ACTION
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_LESS_THAN_EXPRESSION
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_LESS_THAN_OR_EQUALS_EXPRESSION
@@ -60,6 +61,11 @@ class EmbarkMockActivity : MockActivity() {
     )
 
     override fun adapter() = genericDevelopmentAdapter {
+        header("Grouped Response")
+        clickableItem("Regular items") {
+            MockEmbarkViewModel.mockedData = STORY_WITH_GROUPED_RESPONSE
+            startActivity(EmbarkActivity.newInstance(context, this.javaClass.name, ""))
+        }
         header("Markdown message")
         clickableItem("Kitchen sink") {
             MockEmbarkViewModel.mockedData = STORY_WITH_MARKDOWN_MESSAGE

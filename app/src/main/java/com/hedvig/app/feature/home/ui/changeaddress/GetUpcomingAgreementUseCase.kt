@@ -5,6 +5,7 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.UpcomingAgreementQuery
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.Error
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.NoUpcomingAgreementChange
+import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
 import com.hedvig.app.util.apollo.toUpcomingAgreementResult
@@ -13,10 +14,15 @@ import kotlinx.android.parcel.Parcelize
 
 class GetUpcomingAgreementUseCase(
     private val apolloClient: ApolloClient,
+    localeManager: LocaleManager
 ) {
 
+    private val upcomingAgreementQuery = UpcomingAgreementQuery(
+        locale = localeManager.defaultLocale()
+    )
+
     suspend operator fun invoke(): UpcomingAgreementResult {
-        return when (val response = apolloClient.query(UpcomingAgreementQuery(showDetailsTable = true)).safeQuery()) {
+        return when (val response = apolloClient.query(upcomingAgreementQuery).safeQuery()) {
             is QueryResult.Success -> {
                 val contracts = response.data?.contracts
                 if (contracts.isNullOrEmpty()) {

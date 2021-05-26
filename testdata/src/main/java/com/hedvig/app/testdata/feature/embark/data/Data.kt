@@ -13,6 +13,7 @@ import com.hedvig.app.testdata.feature.embark.builders.EmbarkStoryDataBuilder
 import com.hedvig.app.testdata.feature.embark.builders.ExpressionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.GraphQLApiBuilder
 import com.hedvig.app.testdata.feature.embark.builders.GraphQLVariableBuilder
+import com.hedvig.app.testdata.feature.embark.builders.GroupedResponseBuilder
 import com.hedvig.app.testdata.feature.embark.builders.MessageBuilder
 import com.hedvig.app.testdata.feature.embark.builders.MultiActionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.NumberActionBuilder
@@ -140,7 +141,8 @@ val STORY_WITH_SINGLE_TOOLTIP = EmbarkStoryDataBuilder(
             tooltip = listOf(
                 EmbarkStoryQuery.Tooltip(
                     title = "Number of co-insured",
-                    description = "E.g. partner, children or roomies that should be covered. Co-insured must live together with you to be covered by your insurance"
+                    description = "E.g. partner, children or roomies that should be covered." +
+                        " Co-insured must live together with you to be covered by your insurance"
                 )
             )
         ).build(),
@@ -158,7 +160,8 @@ val STORY_WITH_FOUR_TOOLTIP = EmbarkStoryDataBuilder(
                 ),
                 EmbarkStoryQuery.Tooltip(
                     title = "House",
-                    description = "For those of you who live in a detached or terraced house. We don't insure holiday homes"
+                    description = "For those of you who live in a detached" +
+                        " or terraced house. We don't insure holiday homes"
                 ),
                 EmbarkStoryQuery.Tooltip(
                     title = "Student housing",
@@ -184,7 +187,8 @@ val STORY_WITH_MANY_TOOLTIP = EmbarkStoryDataBuilder(
                 ),
                 EmbarkStoryQuery.Tooltip(
                     title = "House",
-                    description = "For those of you who live in a detached or terraced house. We don't insure holiday homes"
+                    description = "For those of you who live in a detached" +
+                        " or terraced house. We don't insure holiday homes"
                 ),
                 EmbarkStoryQuery.Tooltip(
                     title = "Student housing",
@@ -200,7 +204,8 @@ val STORY_WITH_MANY_TOOLTIP = EmbarkStoryDataBuilder(
                 ),
                 EmbarkStoryQuery.Tooltip(
                     title = "House",
-                    description = "For those of you who live in a detached or terraced house. We don't insure holiday homes"
+                    description = "For those of you who live in a" +
+                        " detached or terraced house. We don't insure holiday homes"
                 ),
                 EmbarkStoryQuery.Tooltip(
                     title = "Student housing",
@@ -216,7 +221,8 @@ val STORY_WITH_MANY_TOOLTIP = EmbarkStoryDataBuilder(
                 ),
                 EmbarkStoryQuery.Tooltip(
                     title = "House",
-                    description = "For those of you who live in a detached or terraced house. We don't insure holiday homes"
+                    description = "For those of you who live in a" +
+                        " detached or terraced house. We don't insure holiday homes"
                 ),
                 EmbarkStoryQuery.Tooltip(
                     title = "Student housing",
@@ -1518,12 +1524,16 @@ val STORY_WITH_MULTI_ACTION = EmbarkStoryDataBuilder(
         PassageBuilder(
             name = "TestPassage",
             id = "1",
-            response = MessageBuilder(
-                text = "{TestPassageResult}"
-            ).buildMessageResponse(),
+            response = GroupedResponseBuilder(
+                title = "Test title",
+                each = "FOO" to MessageBuilder(
+                    text = "Building: {Building}, size: {size}, water connected: {water}"
+                ).build()
+            ).build(),
             messages = listOf(
                 MessageFragment(
-                    text = "OK. We need some information about any extra buildings on the site, if you want them to be covered by the insurance",
+                    text = "OK. We need some information about any extra buildings on the site," +
+                        "if you want them to be covered by the insurance",
                     expressions = emptyList()
                 ),
                 MessageFragment(
@@ -1560,13 +1570,13 @@ val STORY_WITH_MARKDOWN_MESSAGE = EmbarkStoryDataBuilder(
         STANDARD_FIRST_PASSAGE_BUILDER
             .copy(
                 messages = listOf(
-                    MessageBuilder(text="*Hello* **world** ~strikethrough~").build(),
-                    MessageBuilder(text="[link](https://www.example.com)").build(),
-                    MessageBuilder(text="# heading").build(),
-                    MessageBuilder(text=">quote").build(),
-                    MessageBuilder(text="`code`").build(),
-                    MessageBuilder(text="1. one\n2. two").build(),
-                    MessageBuilder(text="- one\n- two").build(),
+                    MessageBuilder(text = "*Hello* **world** ~strikethrough~").build(),
+                    MessageBuilder(text = "[link](https://www.example.com)").build(),
+                    MessageBuilder(text = "# heading").build(),
+                    MessageBuilder(text = ">quote").build(),
+                    MessageBuilder(text = "`code`").build(),
+                    MessageBuilder(text = "1. one\n2. two").build(),
+                    MessageBuilder(text = "- one\n- two").build(),
                 )
             )
             .build()
