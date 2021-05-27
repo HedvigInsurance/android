@@ -40,6 +40,7 @@ android {
 
     kotlinOptions {
         jvmTarget = "1.8"
+        freeCompilerArgs += "-Xallow-jvm-ir-dependencies"
     }
     composeOptions {
         kotlinCompilerVersion = CommonVersions.kotlin
