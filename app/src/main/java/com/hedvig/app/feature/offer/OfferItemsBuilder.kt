@@ -17,8 +17,7 @@ object OfferItemsBuilder {
                 } else {
                     null
                 }
-            },
-            OfferModel.Footer
+            }
         )
     }
 }
