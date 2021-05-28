@@ -40,7 +40,7 @@ class InsuranceActiveAndTerminatedInFutureCardTest : TestCase() {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun showsCorrectContentOnSActivatedAndTerminatedInFeatureContract() = run {
+    fun showsCorrectContentOnActivatedAndTerminatedInFeatureContract() = run {
         val intent = LoggedInActivity.newInstance(
             context(),
             initialTab = LoggedInTabs.INSURANCE

@@ -23,7 +23,7 @@ class InsuranceDataBuilder(
             draftCertificateUrl = "https://www.example.com"
         ),
     private val displayName: String = "Hemförsäkring",
-    private val showUpcomingAgreement: Boolean = false
+    private val showUpcomingAgreement: Boolean = false,
 ) {
 
     fun build() = InsuranceQuery.Data(
@@ -31,8 +31,10 @@ class InsuranceDataBuilder(
             InsuranceQuery.Contract(
                 id = "120e9ac9-84b1-4e5d-add1-70a9bad340be",
                 status = InsuranceQuery.Status(
+                    __typename = c.toTypename(),
                     fragments = InsuranceQuery.Status.Fragments(
                         contractStatusFragment = ContractStatusFragment(
+                            __typename = c.toTypename(),
                             asPendingStatus = if (c == ContractStatus.PENDING) {
                                 ContractStatusFragment.AsPendingStatus(
                                     pendingSince = null
@@ -55,9 +57,10 @@ class InsuranceDataBuilder(
                                     pastInception = LocalDate.now(),
                                     upcomingAgreementChange = ContractStatusFragment.UpcomingAgreementChange(
                                         newAgreement = ContractStatusFragment.NewAgreement(
-                                            asSwedishApartmentAgreement = ContractStatusFragment.AsSwedishApartmentAgreement(
-                                                activeFrom = LocalDate.of(2021, 4, 6)
-                                            )
+                                            asSwedishApartmentAgreement = ContractStatusFragment
+                                                .AsSwedishApartmentAgreement(
+                                                    activeFrom = LocalDate.of(2021, 4, 6)
+                                                )
                                         )
                                     )
                                 )
@@ -193,33 +196,42 @@ class InsuranceDataBuilder(
                 fragments = InsuranceQuery.Contract.Fragments(
                     upcomingAgreementFragment = UpcomingAgreementFragment(
                         status = UpcomingAgreementFragment.Status(
-                            asActiveStatus = UpcomingAgreementFragment.AsActiveStatus(
-                                upcomingAgreementChange = if (showUpcomingAgreement) {
-                                    UpcomingAgreementFragment.UpcomingAgreementChange(
-                                        fragments = UpcomingAgreementFragment.UpcomingAgreementChange.Fragments(
-                                            upcomingAgreementChangeFragment = UpcomingAgreementChangeFragment(
-                                                newAgreement = UpcomingAgreementChangeFragment.NewAgreement(
-                                                    asSwedishApartmentAgreement = UpcomingAgreementChangeFragment.AsSwedishApartmentAgreement(
-                                                        address = UpcomingAgreementChangeFragment.Address(
-                                                            fragments = UpcomingAgreementChangeFragment.Address.Fragments(
-                                                                addressFragment = AddressFragment(
-                                                                    street = "Test street",
-                                                                    postalCode = "123",
-                                                                    city = "Test city"
-                                                                )
-                                                            )
-                                                        ),
-                                                        activeFrom = LocalDate.of(2021, 1, 13)
-                                                    ),
-                                                    asDanishHomeContentAgreement = null,
-                                                    asNorwegianHomeContentAgreement = null,
-                                                    asSwedishHouseAgreement = null
+                            __typename = c.toTypename(),
+                            asActiveStatus = if (c == ContractStatus.ACTIVE) {
+                                UpcomingAgreementFragment.AsActiveStatus(
+                                    upcomingAgreementChange = if (showUpcomingAgreement) {
+                                        UpcomingAgreementFragment.UpcomingAgreementChange(
+                                            fragments = UpcomingAgreementFragment.UpcomingAgreementChange.Fragments(
+                                                upcomingAgreementChangeFragment = UpcomingAgreementChangeFragment(
+                                                    newAgreement = UpcomingAgreementChangeFragment.NewAgreement(
+                                                        asSwedishApartmentAgreement = UpcomingAgreementChangeFragment
+                                                            .AsSwedishApartmentAgreement(
+                                                                address = UpcomingAgreementChangeFragment.Address(
+                                                                    fragments = UpcomingAgreementChangeFragment.Address
+                                                                        .Fragments(
+                                                                            addressFragment = AddressFragment(
+                                                                                street = "Test street",
+                                                                                postalCode = "123",
+                                                                                city = "Test city"
+                                                                            )
+                                                                        )
+                                                                ),
+                                                                activeFrom = LocalDate.of(2021, 1, 13)
+                                                            ),
+                                                        asDanishHomeContentAgreement = null,
+                                                        asNorwegianHomeContentAgreement = null,
+                                                        asSwedishHouseAgreement = null
+                                                    )
                                                 )
                                             )
                                         )
-                                    )
-                                } else null
-                            ),
+                                    } else {
+                                        null
+                                    }
+                                )
+                            } else {
+                                null
+                            },
                             asTerminatedInFutureStatus = null,
                             asTerminatedTodayStatus = null
                         ),
