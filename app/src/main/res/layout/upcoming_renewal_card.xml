@@ -6,13 +6,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="@dimen/base_margin_double"
-    app:strokeWidth="1dp"
-    android:layout_marginBottom="@dimen/base_margin_double"
-    app:strokeColor="@color/color_divider"
-    app:cardElevation="0dp"
     android:layout_marginEnd="@dimen/base_margin_double"
+    android:layout_marginBottom="@dimen/base_margin_double"
     android:padding="@dimen/base_margin_double"
-    android:theme="@style/ThemeOverlay.Hedvig.RenewalCard">
+    android:theme="@style/ThemeOverlay.Hedvig.RenewalCard"
+    app:cardElevation="0dp"
+    app:strokeColor="@color/color_divider"
+    app:strokeWidth="1dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -40,7 +40,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/icon"
             app:layout_constraintTop_toTopOf="@id/icon"
-            android:text="@string/DASHBOARD_RENEWAL_PROMPTER_TITLE" />
+            tools:text="@string/DASHBOARD_RENEWAL_PROMPTER_TITLE" />
 
         <TextView
             android:id="@+id/body"
@@ -75,8 +75,8 @@
             android:layout_marginEnd="@dimen/base_margin"
             android:layout_marginBottom="@dimen/upcoming_renewal_card_button_margin_bottom"
             android:text="@string/DASHBOARD_RENEWAL_PROMPTER_CTA"
-            app:layout_constraintBottom_toBottomOf="parent"
             android:textColor="@color/colorPrimary"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/separator" />
 
