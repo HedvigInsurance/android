@@ -149,6 +149,7 @@ dependencies {
     androidTestImplementation(Libs.AndroidX.Test.runner)
     androidTestImplementation(Libs.AndroidX.Test.rules)
     androidTestImplementation(Libs.AndroidX.Test.junit)
+    testImplementation("org.json:json:20210307")
 
     implementation(Libs.materialComponents)
     implementation(Libs.flexbox)
