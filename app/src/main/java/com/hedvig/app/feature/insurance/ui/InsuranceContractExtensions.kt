@@ -54,11 +54,15 @@ fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding, market
                 firstStatusPill.setText(R.string.DASHBOARD_INSURANCE_STATUS_TERMINATED)
             }
             contractStatus.asActiveStatus?.let {
-
-                it.upcomingAgreementChange?.newAgreement?.asSwedishApartmentAgreement?.activeFrom?.let { upcomingChangeDate ->
-                    firstStatusPill.show()
-                    firstStatusPill.text = root.context.getString(R.string.DASHBOARD_INSURANCE_STATUS_ACTIVE_UPDATE_DATE, upcomingChangeDate)
-                }
+                it.upcomingAgreementChange?.newAgreement
+                    ?.asSwedishApartmentAgreement?.activeFrom?.let { upcomingChangeDate ->
+                        firstStatusPill.show()
+                        firstStatusPill.text =
+                            root.context.getString(
+                                R.string.DASHBOARD_INSURANCE_STATUS_ACTIVE_UPDATE_DATE,
+                                upcomingChangeDate
+                            )
+                    }
 
                 when (typeOfContract) {
                     TypeOfContract.SE_APARTMENT_BRF,
@@ -80,13 +84,15 @@ fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding, market
                     TypeOfContract.NO_TRAVEL,
                     TypeOfContract.NO_TRAVEL_YOUTH,
                     TypeOfContract.DK_TRAVEL,
-                    TypeOfContract.DK_TRAVEL_STUDENT -> {
+                    TypeOfContract.DK_TRAVEL_STUDENT,
+                    -> {
                         container.setBackgroundResource(R.drawable.gradient_fall_sunset)
                         blur.setColorFilter(blur.context.compatColor(R.color.blur_fall_sunset))
                     }
                     TypeOfContract.SE_HOUSE,
                     TypeOfContract.DK_ACCIDENT,
-                    TypeOfContract.DK_ACCIDENT_STUDENT -> {
+                    TypeOfContract.DK_ACCIDENT_STUDENT,
+                    -> {
                         container.setBackgroundResource(R.drawable.gradient_spring_fog)
                         blur.setColorFilter(blur.context.compatColor(R.color.blur_spring_fog))
                     }
@@ -114,7 +120,8 @@ fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding, market
                 TypeOfContract.NO_HOME_CONTENT_YOUTH_OWN,
                 TypeOfContract.NO_HOME_CONTENT_YOUTH_RENT,
                 TypeOfContract.SE_APARTMENT_STUDENT_BRF,
-                TypeOfContract.SE_APARTMENT_STUDENT_RENT -> {
+                TypeOfContract.SE_APARTMENT_STUDENT_RENT,
+                -> {
                     adapter.submitList(
                         listOf(
                             ContractModel.Address(currentAgreement),
@@ -127,7 +134,8 @@ fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding, market
                 TypeOfContract.DK_TRAVEL,
                 TypeOfContract.DK_TRAVEL_STUDENT,
                 TypeOfContract.DK_ACCIDENT,
-                TypeOfContract.DK_ACCIDENT_STUDENT -> {
+                TypeOfContract.DK_ACCIDENT_STUDENT,
+                -> {
                     adapter.submitList(listOf(ContractModel.NoOfCoInsured(currentAgreement.numberCoInsured)))
                 }
                 TypeOfContract.UNKNOWN__ -> {

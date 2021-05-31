@@ -1,7 +1,7 @@
 package com.hedvig.app.util
 
 import com.apollographql.apollo.api.Operation
-import com.apollographql.apollo.api.toJson
+import com.apollographql.apollo.api.ScalarTypeAdapters
 import com.hedvig.app.CUSTOM_TYPE_ADAPTERS
 import com.hedvig.app.TestApplication
 import okhttp3.WebSocket
@@ -10,6 +10,7 @@ import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
+import okio.IOException
 import org.json.JSONObject
 import org.junit.rules.ExternalResource
 
@@ -116,5 +117,19 @@ class ApolloMockServerRule(
 
     override fun after() {
         webServer.close()
+    }
+}
+
+fun Operation.Data.toJson(
+    indent: String = "",
+    scalarTypeAdapters: ScalarTypeAdapters = ScalarTypeAdapters.DEFAULT,
+): String {
+    return try {
+        MergingResponseWriter(scalarTypeAdapters).let { writer ->
+            marshaller().marshal(writer)
+            writer.toJson(indent)
+        }
+    } catch (e: IOException) {
+        throw IllegalStateException(e)
     }
 }
