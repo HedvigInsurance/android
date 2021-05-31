@@ -11,7 +11,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import com.google.firebase.iid.FirebaseInstanceId
+import com.google.firebase.messaging.FirebaseMessaging
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivitySettingsBinding
@@ -98,7 +98,7 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
                                 )
                                 requireContext().setAuthenticationToken(null)
                                 requireContext().setIsLoggedIn(false)
-                                runCatching { FirebaseInstanceId.getInstance().deleteInstanceId() }
+                                runCatching { FirebaseMessaging.getInstance().deleteToken() }
                                 mixpanel.reset()
                                 requireActivity().triggerRestartActivity(MarketingActivity::class.java)
                             }

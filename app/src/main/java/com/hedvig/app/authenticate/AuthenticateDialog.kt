@@ -9,7 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
-import com.google.firebase.iid.FirebaseInstanceId
+import com.google.firebase.messaging.FirebaseMessaging
 import com.hedvig.android.owldroid.type.AuthState
 import com.hedvig.app.R
 import com.hedvig.app.databinding.DialogAuthenticateBinding
@@ -81,7 +81,7 @@ class AuthenticateDialog : DialogFragment() {
             binding.authTitle.text = getString(R.string.BANK_ID_LOG_IN_TITLE_SUCCESS)
             requireContext().setIsLoggedIn(true)
             GlobalScope.launch(Dispatchers.IO) {
-                runCatching { FirebaseInstanceId.getInstance().deleteInstanceId() }
+                runCatching { FirebaseMessaging.getInstance().deleteToken() }
             }
             dismiss()
             startActivity(
