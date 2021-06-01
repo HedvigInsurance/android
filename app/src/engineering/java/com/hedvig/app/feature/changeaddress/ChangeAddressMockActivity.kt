@@ -6,10 +6,10 @@ import com.hedvig.app.changeAddressModule
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressViewModel
 import com.hedvig.app.feature.home.ui.changeaddress.GetAddressChangeStoryIdUseCase
-import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement
-import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement.*
+import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement.UpcomingAgreementTable
 import com.hedvig.app.feature.home.ui.changeaddress.ViewState
+import com.hedvig.app.feature.home.ui.changeaddress.result.ChangeAddressResultActivity
 import com.hedvig.app.genericDevelopmentAdapter
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -95,6 +95,15 @@ class ChangeAddressMockActivity : MockActivity() {
         clickableItem("Loading") {
             MockChangeAddressViewModel.mockedState = MutableLiveData(ViewState.Loading)
             startActivity(ChangeAddressActivity.newInstance(context))
+        }
+        header("Result Screen")
+        clickableItem("Success") {
+            startActivity(
+                ChangeAddressResultActivity.newInstance(
+                    context,
+                    ChangeAddressResultActivity.Result.Success(LocalDate.of(2021, 2, 21))
+                )
+            )
         }
     }
 }
