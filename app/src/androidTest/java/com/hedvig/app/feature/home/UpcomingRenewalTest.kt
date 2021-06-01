@@ -38,7 +38,7 @@ class UpcomingRenewalTest : TestCase() {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldOpenPSALinksAndConnectPayment() = run {
+    fun shouldShowRenewalWhenUserHasRenewal() = run {
         activityRule.launch(LoggedInActivity.newInstance(context()))
         stubExternalIntents()
         Screen.onScreen<HomeTabScreen> {
