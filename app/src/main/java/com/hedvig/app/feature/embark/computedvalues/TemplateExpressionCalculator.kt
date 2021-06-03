@@ -126,7 +126,7 @@ object TemplateExpressionCalculator {
     private fun evaluateAbstractExpression(expression: Expression, store: HashMap<String, String>): String = when (expression) {
         is Expression.StoreKeyExpression -> store[expression.key] ?: ""
         is Expression.NumberConstantExpression -> expression.constant.toBigDecimal().stripTrailingZeros().toString()
-        is Expression.StringConstantExpression -> expression.constant
+        is Expression.StringConstantExpression -> expression.constant.replace("'", "")
         is Expression.BinaryOperatorExpression -> {
             if (expression.left == null || expression.right == null) {
                 throw InvalidOperator("Invalid use of operator \"${expression.operatorField}\", must have expressions on both sides")
