@@ -47,6 +47,7 @@ class HomeTabScreen : Screen<HomeTabScreen>() {
     }
 
     class UpcomingRenewal(parent: Matcher<View>) : KRecyclerItem<UpcomingRenewal>(parent) {
+        val title = KTextView(parent) { withId(R.id.title) }
         val button = KButton(parent) { withId(R.id.action) }
         val link = KIntent {
             hasAction(Intent.ACTION_VIEW)

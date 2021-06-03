@@ -125,7 +125,7 @@ class HomeAdapter(
                 requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
-            ): Any? = with(binding) {
+            ) = with(binding) {
                 if (data !is HomeModel.BigText) {
                     return invalid(data)
                 }
@@ -169,7 +169,7 @@ class HomeAdapter(
                 requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
-            ): Any? = with(binding) {
+            ) = with(binding) {
                 if (data !is HomeModel.BodyText) {
                     return invalid(data)
                 }
@@ -220,7 +220,7 @@ class HomeAdapter(
                 requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
-            ): Any? = with(binding) {
+            ) = with(binding) {
                 if (data != HomeModel.StartClaimContained) {
                     return invalid(data)
                 }
@@ -242,11 +242,15 @@ class HomeAdapter(
                 requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
-            ): Any? = with(binding) {
+            ) = with(binding) {
                 if (data !is HomeModel.UpcomingRenewal) {
                     return invalid(data)
                 }
                 val upcomingRenewal = data.upcomingRenewal
+                title.text = title.context.getString(
+                    R.string.DASHBOARD_RENEWAL_PROMPTER_TITLE,
+                    data.contractDisplayName
+                )
                 body.text = body.context.getString(
                     R.string.DASHBOARD_RENEWAL_PROMPTER_BODY,
                     daysLeft(upcomingRenewal.renewalDate)
@@ -325,7 +329,7 @@ class HomeAdapter(
                 requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
-            ): Any? = with(binding) {
+            ) = with(binding) {
                 if (data !is HomeModel.CommonClaim) {
                     return invalid(data)
                 }
@@ -377,7 +381,7 @@ class HomeAdapter(
                 requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
-            ): Any? = with(binding) {
+            ) = with(binding) {
                 if (data !is HomeModel.HowClaimsWork) {
                     return invalid(data)
                 }
@@ -410,7 +414,7 @@ class HomeAdapter(
                 requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
-            ): Any? = with(binding) {
+            ) = with(binding) {
                 this.retry.setHapticClickListener {
                     tracker.retry()
                     retry()
@@ -427,7 +431,7 @@ class HomeAdapter(
                 requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
-            ): Any? = with(binding) {
+            ) = with(binding) {
                 if (data !is HomeModel.ChangeAddress) {
                     invalid(data)
                 } else {
@@ -435,11 +439,22 @@ class HomeAdapter(
                         title.setHapticClickListener {
                             MaterialAlertDialogBuilder(root.context)
                                 .setTitle(R.string.home_tab_moving_info_card_title)
-                                .setMessage(root.context.getString(R.string.home_tab_moving_action_sheet_description, data.pendingAddress))
+                                .setMessage(
+                                    root.context.getString(
+                                        R.string.home_tab_moving_action_sheet_description,
+                                        data.pendingAddress
+                                    )
+                                )
                                 .setPositiveButton(R.string.home_tab_moving_info_card_button_text) { _, _ ->
-                                    Toast.makeText(root.context, "Go to pending offer not implemented", Toast.LENGTH_LONG).show()
+                                    Toast.makeText(
+                                        root.context,
+                                        "Go to pending offer not implemented",
+                                        Toast.LENGTH_LONG
+                                    ).show()
                                 }
-                                .setNegativeButton(R.string.home_tab_moving_action_sheet_start_new_offer_button) { _, _ ->
+                                .setNegativeButton(
+                                    R.string.home_tab_moving_action_sheet_start_new_offer_button
+                                ) { _, _ ->
                                     root.context.startActivity(ChangeAddressActivity.newInstance(root.context))
                                 }
                                 .setNeutralButton(R.string.general_cancel_button) { dialog, _ -> dialog.dismiss() }
@@ -464,7 +479,7 @@ class HomeAdapter(
                 requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
-            ): Any? = with(binding) {
+            ) = with(binding) {
                 if (data !is HomeModel.PendingAddressChange) {
                     return invalid(data)
                 }
@@ -487,7 +502,7 @@ class HomeAdapter(
                 requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
-            ): Any? = with(binding) {
+            ) = with(binding) {
                 if (data !is HomeModel.Header) {
                     return invalid(data)
                 }
