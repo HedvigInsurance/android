@@ -24,14 +24,4 @@ val OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_NON_SWITCHABLE = OfferData
 
 val OFFER_DATA_SWEDISH_HOUSE = OfferDataBuilder(
     typeOfContract = TypeOfContract.SE_HOUSE,
-    variant = OfferDataBuilder.Variant.SWEDISH_HOUSE,
-    extraBuildings = listOf(
-        OfferQuery.ExtraBuilding(
-            asExtraBuildingCore = OfferQuery.AsExtraBuildingCore(
-                displayName = "Extrabyggnad",
-                area = 10,
-                hasWaterConnected = false
-            )
-        )
-    )
 ).build()

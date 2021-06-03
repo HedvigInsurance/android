@@ -9,20 +9,20 @@ import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
 import com.hedvig.app.util.apollo.toUpcomingAgreementResult
+import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
-import kotlinx.android.parcel.Parcelize
 
 class GetUpcomingAgreementUseCase(
     private val apolloClient: ApolloClient,
-    localeManager: LocaleManager
+    private val localeManager: LocaleManager,
 ) {
 
-    private val upcomingAgreementQuery = UpcomingAgreementQuery(
+    private fun upcomingAgreementQuery() = UpcomingAgreementQuery(
         locale = localeManager.defaultLocale()
     )
 
     suspend operator fun invoke(): UpcomingAgreementResult {
-        return when (val response = apolloClient.query(upcomingAgreementQuery).safeQuery()) {
+        return when (val response = apolloClient.query(upcomingAgreementQuery()).safeQuery()) {
             is QueryResult.Success -> {
                 val contracts = response.data?.contracts
                 if (contracts.isNullOrEmpty()) {
@@ -47,24 +47,24 @@ class GetUpcomingAgreementUseCase(
         data class UpcomingAgreement(
             val activeFrom: LocalDate?,
             val address: String?,
-            val table: UpcomingAgreementTable?
+            val table: Table?,
         ) : UpcomingAgreementResult(), Parcelable {
             @Parcelize
-            data class UpcomingAgreementTable(
+            data class Table(
                 val title: String,
-                val sections: List<Section>
+                val sections: List<Section>,
             ) : Parcelable {
                 @Parcelize
                 data class Section(
                     val title: String,
-                    val rows: List<Row>
+                    val rows: List<Row>,
                 ) : Parcelable
 
                 @Parcelize
                 data class Row(
                     val title: String,
-                    val subTitle: String?,
-                    val value: String
+                    val subtitle: String?,
+                    val value: String,
                 ) : Parcelable
             }
         }

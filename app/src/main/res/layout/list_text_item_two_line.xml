@@ -8,23 +8,42 @@
     android:layout_marginVertical="@dimen/base_margin_and_a_half">
 
     <TextView
-        android:id="@+id/label"
+        android:id="@+id/title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textAppearance="?textAppearanceSubtitle1"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/barrier"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Address" />
+        tools:text="Attefalls house" />
+
+    <TextView
+        android:id="@+id/subtitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?textAppearanceBody1"
+        app:layout_constraintStart_toEndOf="@id/barrier"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title"
+        tools:text="Has water connected" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier"
+        android:layout_width="1dp"
+        android:layout_height="wrap_content"
+        app:barrierDirection="end"
+        app:constraint_referenced_ids="title,subtitle" />
 
     <TextView
         android:id="@+id/value"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:textAlignment="textEnd"
         android:textAppearance="?textAppearanceBody1"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/label"
-        tools:text="Askergatan 112 B" />
+        app:layout_constraintStart_toEndOf="@id/barrier"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="23 m2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,7 +1,7 @@
 package com.hedvig.app
 
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase
-import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement.UpcomingAgreementTable
+import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement.Table
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
 import com.hedvig.app.feature.insurance.ui.detail.coverage.CoverageModel
 import com.hedvig.app.feature.insurance.ui.detail.documents.DocumentsModel
@@ -25,41 +25,41 @@ class MockContractDetailViewModel : ContractDetailViewModel() {
                     upcomingAgreement = GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement(
                         activeFrom = LocalDate.of(2021, 1, 30),
                         address = "Test Address 12",
-                        table = UpcomingAgreementTable(
+                        table = Table(
                             title = "Mock Upcoming Agreement",
                             sections = listOf(
-                                UpcomingAgreementTable.Section(
+                                Table.Section(
                                     title = "Details",
                                     rows = listOf(
-                                        UpcomingAgreementTable.Row(
+                                        Table.Row(
                                             title = "Address",
                                             value = "Test Address 12",
-                                            subTitle = null
+                                            subtitle = null
                                         ),
-                                        UpcomingAgreementTable.Row(
+                                        Table.Row(
                                             title = "Postal code",
                                             value = "11234",
-                                            subTitle = null
+                                            subtitle = null
                                         ),
-                                        UpcomingAgreementTable.Row(
+                                        Table.Row(
                                             title = "City",
                                             value = "Test city",
-                                            subTitle = null
+                                            subtitle = null
                                         )
                                     )
                                 ),
-                                UpcomingAgreementTable.Section(
+                                Table.Section(
                                     title = "Extra buildings",
                                     rows = listOf(
-                                        UpcomingAgreementTable.Row(
+                                        Table.Row(
                                             title = "Garage",
                                             value = "22 sqm",
-                                            subTitle = null
+                                            subtitle = null
                                         ),
-                                        UpcomingAgreementTable.Row(
+                                        Table.Row(
                                             title = "Attefall",
                                             value = "15 sqm",
-                                            subTitle = null
+                                            subtitle = null
                                         )
                                     )
                                 )

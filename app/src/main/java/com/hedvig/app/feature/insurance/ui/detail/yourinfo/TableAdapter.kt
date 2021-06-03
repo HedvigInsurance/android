@@ -14,21 +14,26 @@ import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.viewBinding
 
-class UpcomingAgreementAdapter(
-    upcomingAgreement: UpcomingAgreementResult.UpcomingAgreement.UpcomingAgreementTable
-) : ListAdapter<UpcomingAgreementAdapter.UpcomingAgreementItem, UpcomingAgreementAdapter.UpcomingAgreementViewHolder>(GenericDiffUtilItemCallback()) {
+class TableAdapter(
+    data: UpcomingAgreementResult.UpcomingAgreement.Table,
+) : ListAdapter<TableAdapter.UpcomingAgreementItem, TableAdapter.UpcomingAgreementViewHolder>(
+    GenericDiffUtilItemCallback()
+) {
 
     init {
-        val list = mutableListOf<UpcomingAgreementItem>()
-
-        UpcomingAgreementItem.CenteredHeader(upcomingAgreement.title).let(list::add)
-        upcomingAgreement.sections.forEach { section ->
-            UpcomingAgreementItem.Header(section.title).let(list::add)
-            section.rows.forEach { row ->
-                UpcomingAgreementItem.ListItem(row.title, row.value).let(list::add)
+        submitList(
+            listOf(
+                UpcomingAgreementItem.CenteredHeader(data.title),
+            ) + data.sections.flatMap { section ->
+                listOf(
+                    UpcomingAgreementItem.Header(section.title),
+                ) + section.rows.map { row ->
+                    row.subtitle?.let { subtitle ->
+                        UpcomingAgreementItem.BuildingItem(row.title, subtitle, row.value)
+                    } ?: UpcomingAgreementItem.ListItem(row.title, row.value)
+                }
             }
-        }
-        submitList(list)
+        )
     }
 
     override fun getItemViewType(position: Int) = when (currentList[position]) {
@@ -59,45 +64,51 @@ class UpcomingAgreementAdapter(
         private val binding by viewBinding(ListTextItemBinding::bind)
 
         override fun bind(item: UpcomingAgreementItem) {
-            if (item !is UpcomingAgreementItem.ListItem) throw IllegalArgumentException("Wrong item ($item) in ListViewHolder")
+            if (item !is UpcomingAgreementItem.ListItem) {
+                throw IllegalArgumentException("Wrong item ($item) in ListViewHolder")
+            }
 
             binding.label.text = item.label
             binding.value.text = item.value
         }
     }
 
-    class TwoLineListItemViewHolder(parent: ViewGroup) : UpcomingAgreementViewHolder(parent.inflate(R.layout.list_text_item_two_line)) {
+    class TwoLineListItemViewHolder(parent: ViewGroup) :
+        UpcomingAgreementViewHolder(parent.inflate(R.layout.list_text_item_two_line)) {
 
         private val binding by viewBinding(ListTextItemTwoLineBinding::bind)
 
         override fun bind(item: UpcomingAgreementItem) {
-            if (item !is UpcomingAgreementItem.BuildingItem) throw IllegalArgumentException("Wrong item ($item) in TwoLineListItemViewHolder")
+            if (item !is UpcomingAgreementItem.BuildingItem) {
+                throw IllegalArgumentException("Wrong item ($item) in TwoLineListItemViewHolder")
+            }
 
-            val areaString = binding.root.context.getString(R.string.HOUSE_INFO_BOYTA_SQUAREMETERS, item.area)
-            val waterConnectedString = if (item.waterConnected) ", water connected" else ""
-
-            binding.label.text = item.name
-            binding.value.text = "$areaString$waterConnectedString"
         }
     }
 
-    class HeaderViewHolder(parent: ViewGroup) : UpcomingAgreementViewHolder(parent.inflate(R.layout.bottom_sheet_header_item_layout)) {
+    class HeaderViewHolder(parent: ViewGroup) :
+        UpcomingAgreementViewHolder(parent.inflate(R.layout.bottom_sheet_header_item_layout)) {
 
         private val binding by viewBinding(BottomSheetHeaderItemLayoutBinding::bind)
 
         override fun bind(item: UpcomingAgreementItem) {
-            if (item !is UpcomingAgreementItem.Header) throw IllegalArgumentException("Wrong item ($item) in HeaderViewHolder")
+            if (item !is UpcomingAgreementItem.Header) {
+                throw IllegalArgumentException("Wrong item ($item) in HeaderViewHolder")
+            }
 
             binding.headerItem.text = item.text
         }
     }
 
-    class CenteredHeaderViewHolder(parent: ViewGroup) : UpcomingAgreementViewHolder(parent.inflate(R.layout.header_centered_item_layout)) {
+    class CenteredHeaderViewHolder(parent: ViewGroup) :
+        UpcomingAgreementViewHolder(parent.inflate(R.layout.header_centered_item_layout)) {
 
         private val binding by viewBinding(HeaderCenteredItemLayoutBinding::bind)
 
         override fun bind(item: UpcomingAgreementItem) {
-            if (item !is UpcomingAgreementItem.CenteredHeader) throw IllegalArgumentException("Wrong item ($item) in CenteredHeaderViewHolder")
+            if (item !is UpcomingAgreementItem.CenteredHeader) {
+                throw IllegalArgumentException("Wrong item ($item) in CenteredHeaderViewHolder")
+            }
 
             binding.headerItem.text = item.text
         }
@@ -110,15 +121,13 @@ class UpcomingAgreementAdapter(
 
         data class ListItem(
             val label: String,
-            val value: String
+            val value: String,
         ) : UpcomingAgreementItem()
 
         data class BuildingItem(
-            val name: String,
-            val area: Int,
-            val waterConnected: Boolean
+            val title: String,
+            val subtitle: String,
+            val value: String,
         ) : UpcomingAgreementItem()
-
     }
-
 }

@@ -18,16 +18,16 @@ fun UpcomingAgreementFragment.toUpcomingAgreementResult(): GetUpcomingAgreementU
 }
 
 private fun UpcomingAgreementFragment.UpcomingAgreementDetailsTable.createTable() =
-    GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement.UpcomingAgreementTable(
+    GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement.Table(
         title = title,
         sections = sections.map { section ->
-            GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement.UpcomingAgreementTable.Section(
+            GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement.Table.Section(
                 title = section.title,
                 rows = section.rows.map { row ->
-                    GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement.UpcomingAgreementTable.Row(
+                    GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement.Table.Row(
                         title = row.title,
                         value = row.value,
-                        subTitle = row.subtitle
+                        subtitle = row.subtitle
                     )
                 }
             )
