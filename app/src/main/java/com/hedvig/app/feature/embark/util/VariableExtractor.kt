@@ -10,14 +10,20 @@ object VariableExtractor {
 
     fun extractVariables(variables: List<GraphQLVariablesFragment>, valueStore: ValueStore): JSONObject {
         var regularVariables = variables.mapNotNull {
-            it.asEmbarkAPIGraphQLSingleVariable?.let {
-                val storeValue = valueStore.get(it.from)
+            it.asEmbarkAPIGraphQLSingleVariable?.let { singleVariable ->
+                val storeValue = valueStore.get(singleVariable.from)
                 if (storeValue != null) {
-                    it.createSingleVariable(storeValue)
+                    singleVariable.createSingleVariable(storeValue)
                 } else {
                     null
                 }
-            } ?: it.asEmbarkAPIGraphQLGeneratedVariable?.createGeneratedVariable()
+            } ?: it.asEmbarkAPIGraphQLGeneratedVariable?.let { generatedVariable ->
+                val variable = generatedVariable.createGeneratedVariable()
+                if (variable?.second != null) {
+                    valueStore.put(generatedVariable.storeAs, variable.second)
+                }
+                variable
+            }
         }.toJsonObject()
 
         val multiActionVariables = variables.mapNotNull {
