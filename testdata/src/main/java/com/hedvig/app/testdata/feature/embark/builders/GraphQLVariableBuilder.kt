@@ -39,6 +39,27 @@ data class GraphQLVariableBuilder(
             )
         } else {
             null
+        },
+        asEmbarkAPIGraphQLMultiActionVariable = if (kind == VariableKind.MULTI_ACTION) {
+            GraphQLVariablesFragment.AsEmbarkAPIGraphQLMultiActionVariable(
+                key = key,
+                variables = listOf(
+                    GraphQLVariablesFragment.Variable(
+                        asEmbarkAPIGraphQLGeneratedVariable1 = GraphQLVariablesFragment.AsEmbarkAPIGraphQLGeneratedVariable1(
+                            key = key,
+                            storeAs = if (storeAs.isEmpty()) {
+                                throw Error("Programmer error: attempted to build GeneratedVariable without providing `storeAs`")
+                            } else {
+                                storeAs
+                            },
+                            type = generatedType
+                        ),
+                        asEmbarkAPIGraphQLSingleVariable1 = null
+                    )
+                )
+            )
+        } else {
+            null
         }
     )
 

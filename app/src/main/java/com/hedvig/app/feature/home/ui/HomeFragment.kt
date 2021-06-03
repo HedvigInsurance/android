@@ -206,7 +206,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     private fun upcomingRenewals(contracts: List<HomeQuery.Contract>) =
         contracts.mapNotNull { c ->
             c.upcomingRenewal?.let {
-                HomeModel.UpcomingRenewal(it)
+                HomeModel.UpcomingRenewal(c.displayName, it)
             }
         }
 

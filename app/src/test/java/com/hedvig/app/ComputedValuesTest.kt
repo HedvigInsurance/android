@@ -63,6 +63,13 @@ class ComputedValuesTest {
     }
 
     @Test
+    fun `should evaluate string constants correctly`() {
+        val expression = "\'bundle-1a036637-b249-4d1e-8e5f-c87daafd36e1\'"
+        val result = TemplateExpressionCalculator.evaluateTemplateExpression(expression, emptyStore)
+        assertThat(result).isEqualTo("bundle-1a036637-b249-4d1e-8e5f-c87daafd36e1")
+    }
+
+    @Test
     fun testConcatenateSingleQuoteStrings() {
         val expression = "\'133\' ++ \'7\'"
         val result = TemplateExpressionCalculator.evaluateTemplateExpression(expression, emptyStore)

@@ -3,6 +3,7 @@ query HomeQuery($locale: Locale!, $languageCode: String!) {
     firstName
   }
   contracts {
+    displayName
     upcomingRenewal {
       renewalDate
       draftCertificateUrl

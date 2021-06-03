@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.embark
 
 import com.agoda.kakao.screen.Screen.Companion.onScreen
+import com.hedvig.app.R
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.util.ApolloCacheClearRule
@@ -27,7 +28,7 @@ class EmbarkActivityTest : TestCase() {
             )
         )
         onScreen<EmbarkScreen> {
-            errorDialog { title { hasText("Error") } }
+            errorDialog { title { hasText(R.string.error_dialog_title) } }
         }
     }
 }

@@ -25,6 +25,7 @@ data class HomeDataBuilder(
         ),
         contracts = contracts.map { c ->
             HomeQuery.Contract(
+                displayName = CONTRACT_DISPLAY_NAME,
                 switchedFromInsuranceProvider = null,
                 status = HomeQuery.Status(
                     asPendingStatus = if (c == ContractStatus.PENDING) {
@@ -146,6 +147,10 @@ data class HomeDataBuilder(
             )
         )
     )
+
+    companion object {
+        const val CONTRACT_DISPLAY_NAME = "Home Insurance"
+    }
 }
 
 data class ImportantMessageBuilder(

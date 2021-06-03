@@ -8,24 +8,27 @@ import java.time.LocalDate
 sealed class HomeModel {
     sealed class BigText : HomeModel() {
         data class Pending(
-            val name: String
+            val name: String,
         ) : BigText()
 
         data class ActiveInFuture(
             val name: String,
-            val inception: LocalDate
+            val inception: LocalDate,
         ) : BigText()
 
         data class Active(
-            val name: String
+            val name: String,
         ) : BigText()
 
         data class Terminated(
-            val name: String
+            val name: String,
         ) : BigText()
     }
 
-    data class UpcomingRenewal(val upcomingRenewal: HomeQuery.UpcomingRenewal) : HomeModel()
+    data class UpcomingRenewal(
+        val contractDisplayName: String,
+        val upcomingRenewal: HomeQuery.UpcomingRenewal,
+    ) : HomeModel()
 
     sealed class BodyText : HomeModel() {
         object Pending : BodyText()
@@ -47,11 +50,11 @@ sealed class HomeModel {
 
     sealed class CommonClaim : HomeModel() {
         data class Emergency(
-            val inner: EmergencyData
+            val inner: EmergencyData,
         ) : CommonClaim()
 
         data class TitleAndBulletPoints(
-            val inner: CommonClaimsData
+            val inner: CommonClaimsData,
         ) : CommonClaim()
     }
 
