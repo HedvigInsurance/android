@@ -330,6 +330,21 @@ fragment GraphQLVariablesFragment on EmbarkAPIGraphQLVariable {
     storeAs
     type
   }
+  ... on EmbarkAPIGraphQLMultiActionVariable {
+    key
+    variables {
+      ... on EmbarkAPIGraphQLSingleVariable {
+        key
+        from
+        as
+      }
+      ... on EmbarkAPIGraphQLGeneratedVariable {
+        key
+        storeAs
+        type
+      }
+    }
+  }
 }
 
 fragment GraphQLErrorsFragment on EmbarkAPIGraphQLError {

@@ -7,25 +7,21 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.fragment.ApiFragment
 import com.hedvig.android.owldroid.fragment.BasicExpressionFragment
 import com.hedvig.android.owldroid.fragment.ExpressionFragment
-import com.hedvig.android.owldroid.fragment.GraphQLVariablesFragment
 import com.hedvig.android.owldroid.fragment.MessageFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
-import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLSingleVariableCasting
-import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLVariableGeneratedType
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeBinary
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeMultiple
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeUnary
+import com.hedvig.app.feature.embark.util.VariableExtractor
 import com.hedvig.app.util.Percent
 import com.hedvig.app.util.getWithDotNotation
 import com.hedvig.app.util.plus
 import com.hedvig.app.util.safeLet
-import com.hedvig.app.util.toJsonObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.util.Stack
-import java.util.UUID
 import kotlin.math.max
 
 abstract class EmbarkViewModel(
@@ -139,7 +135,8 @@ abstract class EmbarkViewModel(
     private fun handleGraphQLQuery(graphQLQuery: ApiFragment.AsEmbarkApiGraphQLQuery) {
         viewModelScope.launch {
             val variables = if (graphQLQuery.queryData.variables.isNotEmpty()) {
-                extractVariables(graphQLQuery.queryData.variables.map { it.fragments.graphQLVariablesFragment })
+                val variables = graphQLQuery.queryData.variables.map { it.fragments.graphQLVariablesFragment }
+                VariableExtractor.extractVariables(variables, valueStore)
             } else {
                 null
             }
@@ -175,7 +172,8 @@ abstract class EmbarkViewModel(
     private fun handleGraphQLMutation(graphQLMutation: ApiFragment.AsEmbarkApiGraphQLMutation) {
         viewModelScope.launch {
             val variables = if (graphQLMutation.mutationData.variables.isNotEmpty()) {
-                extractVariables(graphQLMutation.mutationData.variables.map { it.fragments.graphQLVariablesFragment })
+                val variables = graphQLMutation.mutationData.variables.map { it.fragments.graphQLVariablesFragment }
+                VariableExtractor.extractVariables(variables, valueStore)
             } else {
                 null
             }
@@ -214,37 +212,6 @@ abstract class EmbarkViewModel(
             }
         }
     }
-
-    private fun extractVariables(variables: List<GraphQLVariablesFragment>) =
-        variables.mapNotNull { v ->
-            v.asEmbarkAPIGraphQLSingleVariable?.let { singleVariable ->
-                val inStore = valueStore.get(singleVariable.from)
-                    ?: return@mapNotNull null // TODO: What do we do if the variable is not set? Show an error, right?
-                val casted = when (singleVariable.as_) {
-                    EmbarkAPIGraphQLSingleVariableCasting.STRING -> inStore
-                    EmbarkAPIGraphQLSingleVariableCasting.INT -> inStore.toInt()
-                    EmbarkAPIGraphQLSingleVariableCasting.BOOLEAN -> inStore.toBoolean()
-                    // Unsupported type casts are ignored for now.
-                    EmbarkAPIGraphQLSingleVariableCasting.UNKNOWN__ -> null
-                } ?: return@mapNotNull null
-
-                return@mapNotNull Pair(singleVariable.key, casted)
-            }
-            v.asEmbarkAPIGraphQLGeneratedVariable?.let { generatedVariable ->
-                when (generatedVariable.type) {
-                    EmbarkAPIGraphQLVariableGeneratedType.UUID -> {
-                        val generated = UUID.randomUUID()
-                        putInStore(generatedVariable.storeAs, generated.toString())
-                        return@mapNotNull Pair(generatedVariable.key, generated.toString())
-                    }
-                    // Unsupported generated types are ignored for now.
-                    EmbarkAPIGraphQLVariableGeneratedType.UNKNOWN__ -> return@mapNotNull null
-                }
-            }
-
-            // Unsupported variable types are ignored for now.
-            null
-        }.toJsonObject()
 
     fun navigateBack(): Boolean {
         if (backStack.isEmpty()) {

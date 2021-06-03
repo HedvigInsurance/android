@@ -146,6 +146,7 @@ dependencies {
     androidTestImplementation(Libs.AndroidX.Espresso.intents)
     androidTestImplementation(Libs.AndroidX.Espresso.contrib)
     testImplementation(Libs.AndroidX.Test.junit)
+    testImplementation(Libs.jsonTest)
     androidTestImplementation(Libs.AndroidX.Test.runner)
     androidTestImplementation(Libs.AndroidX.Test.rules)
     androidTestImplementation(Libs.AndroidX.Test.junit)
