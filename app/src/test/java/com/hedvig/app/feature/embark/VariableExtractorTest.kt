@@ -5,6 +5,7 @@ import assertk.assertions.isEqualTo
 import com.hedvig.android.owldroid.fragment.GraphQLVariablesFragment
 import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLSingleVariableCasting
 import com.hedvig.app.feature.embark.util.VariableExtractor
+import org.json.JSONArray
 import org.json.JSONObject
 import org.junit.Test
 
@@ -16,13 +17,12 @@ class VariableExtractorTest {
         val valueStore = createTestValueStore()
         val json = VariableExtractor.extractVariables(variables, valueStore)
 
-
         assertThat(json.getString("street")).isEqualTo("Est")
         assertThat(json.getInt("yearOfConstruction")).isEqualTo(1991)
         assertThat(json.getBoolean("isSubleted")).isEqualTo(false)
 
-        val firstExtraBuilding = (json.get("extraBuildings") as ArrayList<*>)[0] as JSONObject
-        val secondExtraBuilding = (json.get("extraBuildings") as ArrayList<*>)[1] as JSONObject
+        val firstExtraBuilding = (json.get("extraBuildings") as JSONArray)[0] as JSONObject
+        val secondExtraBuilding = (json.get("extraBuildings") as JSONArray)[1] as JSONObject
 
         assertThat(firstExtraBuilding.getString("type")).isEqualTo("Carport")
         assertThat(firstExtraBuilding.getBoolean("hasWaterConnected")).isEqualTo(true)
