@@ -12,6 +12,7 @@ import com.hedvig.app.databinding.GenericErrorBinding
 import com.hedvig.app.databinding.ProfileLogoutBinding
 import com.hedvig.app.databinding.ProfileRowBinding
 import com.hedvig.app.util.GenericDiffUtilItemCallback
+import com.hedvig.app.util.extensions.await
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.setIsLoggedIn
@@ -89,7 +90,7 @@ class ProfileAdapter(
                         setIsLoggedIn(false)
                         lifecycleOwner.lifecycleScope.launch {
                             withContext(Dispatchers.IO) {
-                                runCatching { FirebaseMessaging.getInstance().deleteToken() }
+                                runCatching { FirebaseMessaging.getInstance().deleteToken().await() }
                                 withContext(Dispatchers.Main) {
                                     triggerRestartActivity()
                                 }
