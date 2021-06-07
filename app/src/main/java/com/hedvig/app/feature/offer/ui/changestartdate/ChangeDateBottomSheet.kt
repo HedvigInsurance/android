@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.offer.ui.changestartdate
 
-import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,28 +7,27 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.hedvig.app.R
 import com.hedvig.app.databinding.DialogChangeStartDateBinding
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
+import com.hedvig.app.util.extensions.epochMillisToLocalDate
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import e
-import java.text.DateFormatSymbols
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.util.Calendar
-import java.util.Locale
+import java.time.LocalDateTime
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import java.time.format.DateTimeFormatter
 
 class ChangeDateBottomSheet : BottomSheetDialogFragment() {
     private val binding by viewBinding(DialogChangeStartDateBinding::bind)
     private val offerViewModel: OfferViewModel by sharedViewModel()
     private val tracker: OfferTracker by inject()
 
-    private var localDate = LocalDate.now()
+    private var localDateTime = LocalDateTime.now()
     private var formattedDate: String? = null
 
     override fun onCreateView(
@@ -56,7 +54,7 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
             }
 
             chooseDateButton.setOnClickListener {
-                if (!localDate.isEqual(LocalDate.now())) {
+                if (!localDateTime.isEqual(LocalDateTime.now())) {
                     requireContext().showAlert(
                         R.string.ALERT_TITLE_STARTDATE,
                         R.string.ALERT_DESCRIPTION_STARTDATE,
@@ -95,32 +93,24 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
 
     private fun setDateAndFinish(data: ChangeDateBottomSheetData) {
         tracker.changeDateContinue()
-        offerViewModel.chooseStartDate(data.id, localDate)
+        offerViewModel.chooseStartDate(data.id, localDateTime.toLocalDate())
         dismiss()
     }
 
     private fun showDatePickerDialog() {
-        val c = Calendar.getInstance()
-        val defaultYear = c.get(Calendar.YEAR)
-        val defaultMonth = c.get(Calendar.MONTH)
-        val defaultDay = c.get(Calendar.DAY_OF_MONTH)
-
-        val dpd = DatePickerDialog(
-            requireContext(),
-            { _, year, monthOfYear, dayOfMonth ->
-                val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d/M/yyyy")
-                localDate = LocalDate.parse("$dayOfMonth/${monthOfYear + 1}/$year", formatter)
-                val monthFormatted = DateFormatSymbols().months[monthOfYear].capitalize(Locale.getDefault())
-                formattedDate = "$dayOfMonth $monthFormatted $year"
-                binding.datePickText.setText(formattedDate)
-            },
-            defaultYear,
-            defaultMonth,
-            defaultDay
-        )
-
-        dpd.datePicker.minDate = System.currentTimeMillis() - 1000
-        dpd.show()
+        MaterialDatePicker.Builder
+            .datePicker()
+            .setTitleText("")
+            .build()
+            .apply {
+                addOnPositiveButtonClickListener {
+                    localDateTime = it.epochMillisToLocalDate()
+                    val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d/M/yyyy")
+                    formattedDate = localDateTime.format(formatter)
+                    binding.datePickText.setText(formattedDate)
+                }
+            }
+            .show(childFragmentManager, "DATE_PICKER_TAG")
     }
 
     companion object {
