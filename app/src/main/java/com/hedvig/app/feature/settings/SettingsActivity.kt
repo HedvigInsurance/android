@@ -20,7 +20,6 @@ import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.makeLocaleString
 import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.util.LocaleManager
-import com.hedvig.app.util.extensions.await
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.setIsLoggedIn
@@ -28,11 +27,7 @@ import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.triggerRestartActivity
 import com.hedvig.app.util.extensions.viewBinding
-import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.mixpanel.android.mpmetrics.MixpanelAPI
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -103,15 +98,9 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
                                 )
                                 requireContext().setAuthenticationToken(null)
                                 requireContext().setIsLoggedIn(false)
-                                viewLifecycleScope.launch {
-                                    withContext(Dispatchers.IO) {
-                                        runCatching { FirebaseMessaging.getInstance().deleteToken().await() }
-                                        mixpanel.reset()
-                                        withContext(Dispatchers.Main) {
-                                            requireActivity().triggerRestartActivity(MarketingActivity::class.java)
-                                        }
-                                    }
-                                }
+                                runCatching { FirebaseMessaging.getInstance().deleteToken() }
+                                mixpanel.reset()
+                                requireActivity().triggerRestartActivity(MarketingActivity::class.java)
                             }
                         }
                     )
