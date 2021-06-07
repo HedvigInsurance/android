@@ -168,6 +168,7 @@ abstract class EmbarkViewModel(
                         when (val value = response.getWithDotNotation(r.fragments.graphQLResultsFragment.key)) {
                             is JSONArray -> putInStore(key, value.toStringArray())
                             is JSONObject -> putInStore(key, value.toString())
+                            else -> putInStore(key, value.toString())
                         }
                     }
 
@@ -214,6 +215,7 @@ abstract class EmbarkViewModel(
                         when (val value = response.getWithDotNotation(r.fragments.graphQLResultsFragment.key)) {
                             is JSONArray -> putInStore(key, value.toStringArray())
                             is JSONObject -> putInStore(key, value.toString())
+                            else -> putInStore(key, value.toString())
                         }
                     }
                     graphQLMutation.mutationData.next?.fragments?.embarkLinkFragment?.name?.let {
