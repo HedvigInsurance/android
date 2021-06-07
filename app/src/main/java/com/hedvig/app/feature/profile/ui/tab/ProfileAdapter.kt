@@ -6,13 +6,12 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.messaging.FirebaseMessaging
 import com.hedvig.app.R
 import com.hedvig.app.databinding.GenericErrorBinding
 import com.hedvig.app.databinding.ProfileLogoutBinding
 import com.hedvig.app.databinding.ProfileRowBinding
+import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.app.util.GenericDiffUtilItemCallback
-import com.hedvig.app.util.extensions.await
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.setIsLoggedIn
@@ -28,13 +27,14 @@ import kotlinx.coroutines.withContext
 class ProfileAdapter(
     private val lifecycleOwner: LifecycleOwner,
     private val retry: () -> Unit,
+    private val pushTokenManager: PushTokenManager,
 ) : ListAdapter<ProfileModel, ProfileAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.profile_title -> ViewHolder.Title(parent)
         R.layout.profile_row -> ViewHolder.Row(parent)
         R.layout.profile_subtitle -> ViewHolder.Subtitle(parent)
-        R.layout.profile_logout -> ViewHolder.Logout(parent)
+        R.layout.profile_logout -> ViewHolder.Logout(parent, pushTokenManager)
         R.layout.generic_error -> ViewHolder.Error(parent)
         else -> throw Error("Invalid viewType")
     }
@@ -81,7 +81,10 @@ class ProfileAdapter(
             override fun bind(data: ProfileModel, lifecycleOwner: LifecycleOwner, retry: () -> Unit) = Unit
         }
 
-        class Logout(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.profile_logout)) {
+        class Logout(
+            parent: ViewGroup,
+            private val pushTokenManager: PushTokenManager,
+        ) : ViewHolder(parent.inflate(R.layout.profile_logout)) {
             private val binding by viewBinding(ProfileLogoutBinding::bind)
             override fun bind(data: ProfileModel, lifecycleOwner: LifecycleOwner, retry: () -> Unit) = with(binding) {
                 root.setHapticClickListener {
@@ -90,7 +93,7 @@ class ProfileAdapter(
                         setIsLoggedIn(false)
                         lifecycleOwner.lifecycleScope.launch {
                             withContext(Dispatchers.IO) {
-                                runCatching { FirebaseMessaging.getInstance().deleteToken().await() }
+                                runCatching { pushTokenManager.refreshToken() }
                                 withContext(Dispatchers.Main) {
                                     triggerRestartActivity()
                                 }

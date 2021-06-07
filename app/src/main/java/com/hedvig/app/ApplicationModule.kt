@@ -11,6 +11,7 @@ import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCacheFactory
 import com.apollographql.apollo.subscription.SubscriptionConnectionParams
 import com.apollographql.apollo.subscription.WebSocketSubscriptionTransport
 import com.bumptech.glide.RequestBuilder
+import com.google.firebase.messaging.FirebaseMessaging
 import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModel
@@ -136,6 +137,7 @@ import com.hedvig.app.feature.zignsec.usecase.StartNorwegianAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthStatusUseCase
 import com.hedvig.app.service.FileService
 import com.hedvig.app.service.LoginStatusService
+import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.app.service.push.managers.PaymentNotificationManager
 import com.hedvig.app.terminated.TerminatedTracker
 import com.hedvig.app.util.LocaleManager
@@ -292,7 +294,12 @@ val viewModelModule = module {
     viewModel { DatePickerViewModel() }
     viewModel { params -> SimpleSignAuthenticationViewModel(params.get(), get(), get(), get()) }
     viewModel { (data: MultiActionParams) -> MultiActionViewModel(data) }
-    viewModel { (componentState: MultiActionItem.Component?, multiActionParams: MultiActionParams) -> AddComponentViewModel(componentState, multiActionParams) }
+    viewModel { (componentState: MultiActionItem.Component?, multiActionParams: MultiActionParams) ->
+        AddComponentViewModel(
+            componentState,
+            multiActionParams
+        )
+    }
 }
 
 val choosePlanModule = module {
@@ -481,4 +488,8 @@ val useCaseModule = module {
     single { StartDanishAuthUseCase(get()) }
     single { StartNorwegianAuthUseCase(get()) }
     single { SubscribeToAuthStatusUseCase(get()) }
+}
+
+val pushTokenManagerModule = module {
+    single { PushTokenManager(FirebaseMessaging.getInstance()) }
 }

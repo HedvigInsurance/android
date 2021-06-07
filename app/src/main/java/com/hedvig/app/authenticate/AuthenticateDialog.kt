@@ -9,25 +9,27 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
-import com.google.firebase.messaging.FirebaseMessaging
 import com.hedvig.android.owldroid.type.AuthState
 import com.hedvig.app.R
 import com.hedvig.app.databinding.DialogAuthenticateBinding
 import com.hedvig.app.feature.chat.viewmodel.UserViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.app.util.QR
-import com.hedvig.app.util.extensions.await
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.setIsLoggedIn
+import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AuthenticateDialog : DialogFragment() {
     private val model: UserViewModel by viewModel()
     private val binding by viewBinding(DialogAuthenticateBinding::bind)
+    private val pushTokenManager: PushTokenManager by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -66,32 +68,35 @@ class AuthenticateDialog : DialogFragment() {
             setCanceledOnTouchOutside(false)
         }
 
-    private fun bindNewStatus(state: AuthState) = when (state) {
+    private fun bindNewStatus(state: AuthState): Any? = when (state) {
         AuthState.INITIATED -> {
-            binding.authTitle.text = getString(R.string.BANK_ID_AUTH_TITLE_INITIATED)
+            binding.authTitle.setText(R.string.BANK_ID_AUTH_TITLE_INITIATED)
         }
         AuthState.IN_PROGRESS -> {
-            binding.authTitle.text = getString(R.string.BANK_ID_LOG_IN_TITLE_IN_PROGRESS)
+            binding.authTitle.setText(R.string.BANK_ID_LOG_IN_TITLE_IN_PROGRESS)
         }
         AuthState.UNKNOWN__,
         AuthState.FAILED,
         -> {
-            binding.authTitle.text = getString(R.string.BANK_ID_LOG_IN_TITLE_FAILED)
+            binding.authTitle.setText(R.string.BANK_ID_LOG_IN_TITLE_FAILED)
             dialog?.setCanceledOnTouchOutside(true)
         }
         AuthState.SUCCESS -> {
-            binding.authTitle.text = getString(R.string.BANK_ID_LOG_IN_TITLE_SUCCESS)
+            binding.authTitle.setText(R.string.BANK_ID_LOG_IN_TITLE_SUCCESS)
             requireContext().setIsLoggedIn(true)
-            GlobalScope.launch(Dispatchers.IO) {
-                runCatching { FirebaseMessaging.getInstance().deleteToken().await() }
-            }
-            dismiss()
-            startActivity(
-                Intent(this.context, LoggedInActivity::class.java).apply {
-                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            viewLifecycleScope.launch {
+                withContext(Dispatchers.IO) {
+                    runCatching {
+                        pushTokenManager.refreshToken()
+                    }
+                    withContext(Dispatchers.Main) {
+                        dismiss()
+                        startActivity(
+                            LoggedInActivity.newInstance(requireContext(), withoutHistory = true)
+                        )
+                    }
                 }
-            )
+            }
         }
     }
 
