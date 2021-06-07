@@ -1,7 +1,7 @@
 package com.hedvig.app
 
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase
-import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement.Table
+import com.hedvig.app.feature.table.Table
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
 import com.hedvig.app.feature.insurance.ui.detail.coverage.CoverageModel
 import com.hedvig.app.feature.insurance.ui.detail.documents.DocumentsModel

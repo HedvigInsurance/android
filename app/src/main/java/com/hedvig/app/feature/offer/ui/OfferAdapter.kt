@@ -22,12 +22,15 @@ import com.hedvig.app.feature.offer.TermsAdapter
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheet
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.feature.table.TableAdapter
+import com.hedvig.app.feature.table.intoTable
 import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.extensions.getStringId
 import com.hedvig.app.util.extensions.inflate
+import com.hedvig.app.util.extensions.invalid
 import com.hedvig.app.util.extensions.setStrikethrough
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.remove
@@ -269,7 +272,14 @@ class OfferAdapter(
                 removeDiscount: () -> Unit,
                 marketManager: MarketManager,
             ) {
-                // TODO: Update this to work with the generic table renderer
+                if (data !is OfferModel.Facts) {
+                    return invalid(data)
+                }
+                data.inner.lastQuoteOfMember.asCompleteQuote?.detailsTable?.fragments?.tableFragment?.intoTable()
+                    ?.let { table ->
+                        binding.expandableContent.adapter = TableAdapter(table)
+                        binding.expandableContentView.contentSizeChanged()
+                    }
             }
         }
 

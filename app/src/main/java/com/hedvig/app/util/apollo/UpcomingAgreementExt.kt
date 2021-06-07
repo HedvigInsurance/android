@@ -1,9 +1,9 @@
 package com.hedvig.app.util.apollo
 
-import com.hedvig.android.owldroid.fragment.TableFragment
 import com.hedvig.android.owldroid.fragment.UpcomingAgreementChangeFragment
 import com.hedvig.android.owldroid.fragment.UpcomingAgreementFragment
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase
+import com.hedvig.app.feature.table.intoTable
 import java.time.LocalDate
 
 fun UpcomingAgreementFragment.toUpcomingAgreementResult(): GetUpcomingAgreementUseCase
@@ -15,26 +15,9 @@ fun UpcomingAgreementFragment.toUpcomingAgreementResult(): GetUpcomingAgreementU
     return GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement(
         activeFrom = activeFrom(),
         address = address(),
-        table = upcomingAgreementDetailsTable.fragments.tableFragment.createTable()
+        table = upcomingAgreementDetailsTable.fragments.tableFragment.intoTable()
     )
 }
-
-private fun TableFragment.createTable() =
-    GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement.Table(
-        title = title,
-        sections = sections.map { section ->
-            GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement.Table.Section(
-                title = section.title,
-                rows = section.rows.map { row ->
-                    GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement.Table.Row(
-                        title = row.title,
-                        value = row.value,
-                        subtitle = row.subtitle
-                    )
-                }
-            )
-        }
-    )
 
 private fun UpcomingAgreementFragment.activeFrom(): LocalDate? {
     val newAgreement = status.newAgreement()

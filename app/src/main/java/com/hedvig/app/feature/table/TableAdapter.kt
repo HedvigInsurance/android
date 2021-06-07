@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.insurance.ui.detail.yourinfo
+package com.hedvig.app.feature.table
 
 import android.view.View
 import android.view.ViewGroup
@@ -9,13 +9,12 @@ import com.hedvig.app.databinding.BottomSheetHeaderItemLayoutBinding
 import com.hedvig.app.databinding.HeaderCenteredItemLayoutBinding
 import com.hedvig.app.databinding.ListTextItemBinding
 import com.hedvig.app.databinding.ListTextItemTwoLineBinding
-import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.viewBinding
 
 class TableAdapter(
-    data: UpcomingAgreementResult.UpcomingAgreement.Table,
+    data: Table,
 ) : ListAdapter<TableAdapter.UpcomingAgreementItem, TableAdapter.UpcomingAgreementViewHolder>(
     GenericDiffUtilItemCallback()
 ) {
@@ -82,7 +81,11 @@ class TableAdapter(
             if (item !is UpcomingAgreementItem.BuildingItem) {
                 throw IllegalArgumentException("Wrong item ($item) in TwoLineListItemViewHolder")
             }
-
+            with(binding) {
+                title.text = item.title
+                subtitle.text = item.subtitle
+                value.text = item.value
+            }
         }
     }
 

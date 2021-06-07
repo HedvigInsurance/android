@@ -7,8 +7,8 @@ import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressViewModel
 import com.hedvig.app.feature.home.ui.changeaddress.GetAddressChangeStoryIdUseCase
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement
-import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement.*
 import com.hedvig.app.feature.home.ui.changeaddress.ViewState
+import com.hedvig.app.feature.table.Table
 import com.hedvig.app.genericDevelopmentAdapter
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module

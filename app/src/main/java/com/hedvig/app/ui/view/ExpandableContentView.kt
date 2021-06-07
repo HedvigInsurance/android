@@ -98,8 +98,8 @@ class ExpandableContentView : ConstraintLayout {
     fun contentSizeChanged() {
         binding.apply {
             expandableContentContainer.measure(
-                LayoutParams.MATCH_PARENT,
-                LayoutParams.WRAP_CONTENT
+                MeasureSpec.makeMeasureSpec(root.width, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(root.height, MeasureSpec.UNSPECIFIED)
             )
             expandedContentHeight = expandableContentContainer.measuredHeight
         }
@@ -107,7 +107,7 @@ class ExpandableContentView : ConstraintLayout {
 
     companion object {
         const val ANIMATION_DURATION_MILLIS = 300L
-        fun View.updateHeight(newHeight: Int) {
+        private fun View.updateHeight(newHeight: Int) {
             layoutParams = LayoutParams(
                 layoutParams
             ).apply {

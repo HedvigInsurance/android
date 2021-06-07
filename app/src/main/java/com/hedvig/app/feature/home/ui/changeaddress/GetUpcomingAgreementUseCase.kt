@@ -5,6 +5,7 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.UpcomingAgreementQuery
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.Error
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.NoUpcomingAgreementChange
+import com.hedvig.app.feature.table.Table
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
@@ -48,26 +49,7 @@ class GetUpcomingAgreementUseCase(
             val activeFrom: LocalDate?,
             val address: String?,
             val table: Table?,
-        ) : UpcomingAgreementResult(), Parcelable {
-            @Parcelize
-            data class Table(
-                val title: String,
-                val sections: List<Section>,
-            ) : Parcelable {
-                @Parcelize
-                data class Section(
-                    val title: String,
-                    val rows: List<Row>,
-                ) : Parcelable
-
-                @Parcelize
-                data class Row(
-                    val title: String,
-                    val subtitle: String?,
-                    val value: String,
-                ) : Parcelable
-            }
-        }
+        ) : UpcomingAgreementResult(), Parcelable
 
         object NoUpcomingAgreementChange : UpcomingAgreementResult()
 
