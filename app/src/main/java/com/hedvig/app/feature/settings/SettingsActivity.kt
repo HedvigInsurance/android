@@ -11,7 +11,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import com.google.firebase.messaging.FirebaseMessaging
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivitySettingsBinding
@@ -19,8 +18,8 @@ import com.hedvig.app.feature.chat.viewmodel.UserViewModel
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.makeLocaleString
 import com.hedvig.app.service.LoginStatusService
+import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.app.util.LocaleManager
-import com.hedvig.app.util.extensions.await
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.setIsLoggedIn
@@ -59,6 +58,7 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
         private val userViewModel: UserViewModel by sharedViewModel()
         private val model: SettingsViewModel by viewModel()
         private val localeManager: LocaleManager by inject()
+        private val pushTokenManager: PushTokenManager by inject()
 
         @SuppressLint("ApplySharedPref")
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -105,7 +105,7 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
                                 requireContext().setIsLoggedIn(false)
                                 viewLifecycleScope.launch {
                                     withContext(Dispatchers.IO) {
-                                        runCatching { FirebaseMessaging.getInstance().deleteToken().await() }
+                                        runCatching { pushTokenManager.refreshToken() }
                                         mixpanel.reset()
                                         withContext(Dispatchers.Main) {
                                             requireActivity().triggerRestartActivity(MarketingActivity::class.java)
