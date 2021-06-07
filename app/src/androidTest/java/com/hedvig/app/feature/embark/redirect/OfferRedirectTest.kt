@@ -36,9 +36,9 @@ class OfferRedirectTest : TestCase() {
         activityRule.launch(EmbarkActivity.newInstance(context(), this::class.java.name, "storyTitle"))
 
         onScreen<EmbarkScreen> {
-            offer { stub() }
+            webOfferIntent { stub() }
             selectActions { childAt<EmbarkScreen.SelectAction>(0) { click() } }
-            flakySafely { offer { intended() } }
+            flakySafely { webOfferIntent { intended() } }
         }
     }
 }
