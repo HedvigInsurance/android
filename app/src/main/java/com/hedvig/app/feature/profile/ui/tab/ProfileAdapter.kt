@@ -6,13 +6,12 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.iid.FirebaseInstanceId
 import com.hedvig.app.R
 import com.hedvig.app.databinding.GenericErrorBinding
 import com.hedvig.app.databinding.ProfileLogoutBinding
 import com.hedvig.app.databinding.ProfileRowBinding
 import com.hedvig.app.util.GenericDiffUtilItemCallback
-import com.hedvig.app.util.extensions.await
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.setIsLoggedIn
@@ -27,7 +26,7 @@ import kotlinx.coroutines.withContext
 
 class ProfileAdapter(
     private val lifecycleOwner: LifecycleOwner,
-    private val retry: () -> Unit,
+    private val retry: () -> Unit
 ) : ListAdapter<ProfileModel, ProfileAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
@@ -90,7 +89,7 @@ class ProfileAdapter(
                         setIsLoggedIn(false)
                         lifecycleOwner.lifecycleScope.launch {
                             withContext(Dispatchers.IO) {
-                                runCatching { FirebaseMessaging.getInstance().deleteToken().await() }
+                                runCatching { FirebaseInstanceId.getInstance().deleteInstanceId() }
                                 withContext(Dispatchers.Main) {
                                     triggerRestartActivity()
                                 }

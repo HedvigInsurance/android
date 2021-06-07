@@ -3,22 +3,22 @@ object Libs {
     const val coreLibraryDesugaring = "com.android.tools:desugar_jdk_libs:1.1.5"
 
     object Coroutines {
-        private const val version = "1.5.0"
+        private const val version = "1.4.3"
         const val core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version"
         const val android = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$version"
     }
 
     object AndroidX {
         const val constraintLayout = "androidx.constraintlayout:constraintlayout:2.0.4"
-        const val appCompat = "androidx.appcompat:appcompat:1.3.0"
-        const val media = "androidx.media:media:1.3.1"
+        const val appCompat = "androidx.appcompat:appcompat:1.2.0"
+        const val media = "androidx.media:media:1.3.0"
         const val dynamicAnimation = "androidx.dynamicanimation:dynamicanimation:1.0.0"
         const val preference = "androidx.preference:preference-ktx:1.1.1"
-        const val core = "androidx.core:core-ktx:1.5.0"
+        const val core = "androidx.core:core-ktx:1.5.0-beta03"
         const val viewPager2 = "androidx.viewpager2:viewpager2:1.0.0"
         const val swipeRefreshLayout = "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
         const val recyclerView = "androidx.recyclerview:recyclerview:1.2.0"
-        const val fragment = "androidx.fragment:fragment-ktx:1.3.4"
+        const val fragment = "androidx.fragment:fragment-ktx:1.3.3"
         const val browser = "androidx.browser:browser:1.3.0"
         const val workManager = "androidx.work:work-runtime-ktx:2.5.0"
         const val startup = "androidx.startup:startup-runtime:1.0.0"
@@ -59,16 +59,16 @@ object Libs {
 
     object Firebase {
         const val playServicesBase = "com.google.android.gms:play-services-base:17.6.0"
-        const val crashlytics = "com.google.firebase:firebase-crashlytics:18.0.0"
-        const val dynamicLinks = "com.google.firebase:firebase-dynamic-links:20.0.0"
-        const val config = "com.google.firebase:firebase-config:21.0.0"
-        const val messaging = "com.google.firebase:firebase-messaging:22.0.0"
+        const val crashlytics = "com.google.firebase:firebase-crashlytics:17.4.1"
+        const val dynamicLinks = "com.google.firebase:firebase-dynamic-links:19.1.1"
+        const val config = "com.google.firebase:firebase-config:20.0.4"
+        const val messaging = "com.google.firebase:firebase-messaging:21.1.0"
     }
 
-    const val mixpanel = "com.mixpanel.android:mixpanel-android:5.9.1"
+    const val mixpanel = "com.mixpanel.android:mixpanel-android:5.9.0"
 
     object Koin {
-        private const val version = "3.0.2"
+        private const val version = "3.0.1"
         const val android = "io.insert-koin:koin-android:$version"
         const val test = "io.insert-koin:koin-test:$version"
     }
@@ -97,8 +97,8 @@ object Libs {
 
     object Markwon {
         private const val version = "4.6.2"
-        const val core = "io.noties.markwon:core:$version"
-        const val linkify = "io.noties.markwon:linkify:$version"
+        const val core = "io.noties.markwon:core:${version}"
+        const val linkify = "io.noties.markwon:linkify:${version}"
     }
 
     const val moneta = "org.javamoney:moneta:1.4.2"

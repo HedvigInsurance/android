@@ -9,14 +9,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
-import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.iid.FirebaseInstanceId
 import com.hedvig.android.owldroid.type.AuthState
 import com.hedvig.app.R
 import com.hedvig.app.databinding.DialogAuthenticateBinding
 import com.hedvig.app.feature.chat.viewmodel.UserViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.util.QR
-import com.hedvig.app.util.extensions.await
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.setIsLoggedIn
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
@@ -32,7 +31,7 @@ class AuthenticateDialog : DialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?,
+        savedInstanceState: Bundle?
     ): View? = inflater.inflate(R.layout.dialog_authenticate, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -74,8 +73,7 @@ class AuthenticateDialog : DialogFragment() {
             binding.authTitle.text = getString(R.string.BANK_ID_LOG_IN_TITLE_IN_PROGRESS)
         }
         AuthState.UNKNOWN__,
-        AuthState.FAILED,
-        -> {
+        AuthState.FAILED -> {
             binding.authTitle.text = getString(R.string.BANK_ID_LOG_IN_TITLE_FAILED)
             dialog?.setCanceledOnTouchOutside(true)
         }
@@ -83,7 +81,7 @@ class AuthenticateDialog : DialogFragment() {
             binding.authTitle.text = getString(R.string.BANK_ID_LOG_IN_TITLE_SUCCESS)
             requireContext().setIsLoggedIn(true)
             GlobalScope.launch(Dispatchers.IO) {
-                runCatching { FirebaseMessaging.getInstance().deleteToken().await() }
+                runCatching { FirebaseInstanceId.getInstance().deleteInstanceId() }
             }
             dismiss()
             startActivity(
