@@ -134,7 +134,7 @@ fun AppCompatActivity.handleSingleSelectLink(value: String) = when (value) {
             }
         )
     }
-    "message.bankid.start", "message.bankid.autostart.respond" -> {
+    "message.bankid.start", "message.bankid.autostart.respond", "message.bankid.autostart.respond.two" -> {
         AuthenticateDialog().show(supportFragmentManager, AuthenticateDialog.TAG)
     }
     // bot-service is weird. it sends this when the user gets the option to go to `Hem`.
