@@ -33,6 +33,7 @@ import com.hedvig.app.feature.embark.passages.selectaction.SelectActionFragment
 import com.hedvig.app.feature.embark.passages.selectaction.SelectActionParameter
 import com.hedvig.app.feature.embark.passages.textaction.TextActionFragment
 import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
+import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
@@ -116,9 +117,9 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 )
             )
         } else if (embarkData.passage?.externalRedirect?.data?.location == EmbarkExternalRedirectLocation.OFFER) {
-            val key = model.getFromStore("quoteId")
-                ?: throw IllegalArgumentException("Could not find value with key quoteId from store")
-            showWebOffer(listOf(key))
+            val quoteIds = model.getQuoteIds()
+            // Start offer activity with keys
+            startActivity(OfferActivity.newInstance(this))
         } else {
             transitionToNextPassage(embarkData.navigationDirection, passage)
         }

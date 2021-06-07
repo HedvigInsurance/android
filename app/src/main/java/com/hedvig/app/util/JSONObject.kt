@@ -1,6 +1,7 @@
 package com.hedvig.app.util
 
 import org.json.JSONArray
+import org.json.JSONException
 import org.json.JSONObject
 
 fun jsonObjectOf(vararg properties: Pair<String, Any?>) = JSONObject().apply {
@@ -14,15 +15,19 @@ fun List<Pair<String, Any>>.toJsonObject() = JSONObject().apply {
     forEach { put(it.first, it.second) }
 }
 
-fun JSONObject.getWithDotNotation(accessor: String): Any {
-    if (accessor.contains('.')) {
-        val firstAccessor = accessor.substringBefore('.')
-        val nextAccessor = accessor.substringAfter('.')
+fun JSONObject.getWithDotNotation(accessor: String): Any? {
+    return try {
+        if (accessor.contains('.')) {
+            val firstAccessor = accessor.substringBefore('.')
+            val nextAccessor = accessor.substringAfter('.')
 
-        return getJSONObject(firstAccessor).getWithDotNotation(nextAccessor)
+            getJSONObject(firstAccessor).getWithDotNotation(nextAccessor)
+        } else {
+            get(accessor)
+        }
+    } catch (e: JSONException) {
+        null
     }
-
-    return get(accessor)
 }
 
 fun Collection<Any>.toJsonArray() = JSONArray(this)
@@ -47,4 +52,12 @@ operator fun JSONObject.plus(other: JSONObject): JSONObject {
         clone.put(key, value)
     }
     return clone
+}
+
+fun JSONArray.toStringArray(): List<String> {
+    val list: MutableList<String> = ArrayList()
+    for (i in 0 until length()) {
+        list.add(get(i).toString())
+    }
+    return list
 }

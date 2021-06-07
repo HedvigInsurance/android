@@ -17,12 +17,14 @@ import com.hedvig.app.util.Percent
 import com.hedvig.app.util.getWithDotNotation
 import com.hedvig.app.util.plus
 import com.hedvig.app.util.safeLet
+import com.hedvig.app.util.toStringArray
+import java.util.Stack
+import kotlin.math.max
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONArray
 import org.json.JSONObject
-import java.util.Stack
-import kotlin.math.max
 
 abstract class EmbarkViewModel(
     private val tracker: EmbarkTracker,
@@ -68,9 +70,17 @@ abstract class EmbarkViewModel(
         valueStore.put(key, value)
     }
 
+    fun putInStore(key: String, value: List<String>) {
+        valueStore.put(key, value)
+    }
+
     fun getPrefillFromStore(key: String) = valueStore.prefill.get(key)
 
     fun getFromStore(key: String) = valueStore.get(key)
+
+    fun getQuoteIds(): List<String> = valueStore.getList("quoteIds")
+        ?: valueStore.get("quoteId")?.let { listOf(it) }
+        ?: throw IllegalArgumentException("Could not find quoteId(s) from store")
 
     fun navigateToPassage(passageName: String) {
         storyData.embarkStory?.let { story ->
@@ -154,11 +164,13 @@ abstract class EmbarkViewModel(
                     val response = result.getOrNull()?.getJSONObject("data") ?: return@launch
 
                     graphQLQuery.queryData.results.forEach { r ->
-                        putInStore(
-                            r.fragments.graphQLResultsFragment.as_,
-                            response.getWithDotNotation(r.fragments.graphQLResultsFragment.key).toString()
-                        )
+                        val key = r.fragments.graphQLResultsFragment.as_
+                        when (val value = response.getWithDotNotation(r.fragments.graphQLResultsFragment.key)) {
+                            is JSONArray -> putInStore(key, value.toStringArray())
+                            is JSONObject -> putInStore(key, value.toString())
+                        }
                     }
+
                     graphQLQuery.queryData.next?.fragments?.embarkLinkFragment?.name?.let {
                         navigateToPassage(
                             it
@@ -198,15 +210,14 @@ abstract class EmbarkViewModel(
                     val response = result.getOrNull()?.getJSONObject("data") ?: return@launch
 
                     graphQLMutation.mutationData.results.filterNotNull().forEach { r ->
-                        putInStore(
-                            r.fragments.graphQLResultsFragment.as_,
-                            response.getWithDotNotation(r.fragments.graphQLResultsFragment.key).toString()
-                        )
+                        val key = r.fragments.graphQLResultsFragment.as_
+                        when (val value = response.getWithDotNotation(r.fragments.graphQLResultsFragment.key)) {
+                            is JSONArray -> putInStore(key, value.toStringArray())
+                            is JSONObject -> putInStore(key, value.toString())
+                        }
                     }
                     graphQLMutation.mutationData.next?.fragments?.embarkLinkFragment?.name?.let {
-                        navigateToPassage(
-                            it
-                        )
+                        navigateToPassage(it)
                     }
                 }
             }
@@ -284,6 +295,7 @@ abstract class EmbarkViewModel(
                 items += multiActionItems.mapNotNull { mai ->
                     val maiView = object : ValueStoreView {
                         override fun get(key: String) = mai[key]
+                        override fun getList(key: String): List<String>? = null
                     }
                     preProcessMessage(each.content.fragments.messageFragment, maiView)?.text
                 }
