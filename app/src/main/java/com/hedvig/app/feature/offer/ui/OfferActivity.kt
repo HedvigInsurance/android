@@ -69,7 +69,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     scrollY += dy
                     val percentage = scrollY.toFloat() / offerToolbar.height
-                    offerToolbar.background.alpha = (percentage * 255).toInt()
+                    offerToolbar.background.alpha = (percentage * 255).toInt().coerceAtMost(255)
 
                     if (percentage > 4 && !signButton.isVisible) {
                         TransitionManager.beginDelayedTransition(offerRoot)
