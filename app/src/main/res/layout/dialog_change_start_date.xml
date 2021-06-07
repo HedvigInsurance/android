@@ -6,10 +6,9 @@
     android:layout_height="match_parent"
     android:background="@drawable/bottom_sheet_dialog_no_title_fragment_background"
     android:orientation="vertical"
-    android:paddingStart="@dimen/base_margin_triple"
+    android:paddingHorizontal="@dimen/base_margin_double"
     android:paddingTop="@dimen/base_margin"
-    android:paddingEnd="@dimen/base_margin_triple"
-    android:paddingBottom="@dimen/peril_bottom_extra_spacing"
+    android:paddingBottom="@dimen/base_margin_triple"
     tools:context=".feature.offer.ui.changestartdate.ChangeDateBottomSheet">
 
     <ImageView
@@ -20,44 +19,60 @@
         app:srcCompat="@drawable/bottom_sheet_handle" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_double"
-        android:text="@string/DRAGGABLE_STARTDATE_TITLE"
-        android:textAppearance="?textAppearanceHeadline4" />
+        android:gravity="center"
+        android:text="@string/OFFER_SET_START_DATE"
+        android:textAppearance="?textAppearanceHeadline5" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/date_pick_layout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:hint="@string/OFFER_START_DATE"
+        app:boxCornerRadiusBottomEnd="@dimen/base_margin"
+        app:boxCornerRadiusBottomStart="@dimen/base_margin"
+        app:boxCornerRadiusTopEnd="@dimen/base_margin"
+        app:boxCornerRadiusTopStart="@dimen/base_margin">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/datePickText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:editable="false"
+            android:focusable="false"
+            android:textAppearance="?textAppearanceBody1"
+            android:textColor="@color/textColorSecondary" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
-        android:id="@+id/info"
+        android:id="@+id/autoSetDateTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:text="@string/OFFER_PLAN_EXPIRE_TITLE"
+        android:textAppearance="?textAppearanceSubtitle1" />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/auto_set_date_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin"
-        android:text="@string/DRAGGABLE_STARTDATE_DESCRIPTION"
-        android:textAppearance="?textAppearanceBody1" />
-
-
-    <com.hedvig.app.ui.view.DateInputView
-        android:id="@+id/datePickButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/base_margin_sextuple"
-        app:dateHintBackground="?colorSurface" />
+        android:text="@string/OFFER_PLAN_EXIRES_TEXT"
+        app:switchPadding="@dimen/base_margin_triple"
+        app:switchTextAppearance="@style/SwitchTextAppearance" />
 
     <Button
         android:id="@+id/chooseDateButton"
-        android:layout_width="wrap_content"
+        style="@style/Hedvig.Button.Large"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/base_margin_quintuple"
-        android:text="@string/CHOOSE_DATE_BTN" />
-
-    <Button
-        android:id="@+id/autoSetDateText"
-        style="?attr/materialButtonTextStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/auto_set_date_text_size"
-        android:textAlignment="center"
-        tools:text="@string/ACTIVATE_INSURANCE_END_BTN" />
+        android:text="@string/general_save_button" />
 
 </LinearLayout>

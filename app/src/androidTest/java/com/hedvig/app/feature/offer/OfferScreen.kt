@@ -38,8 +38,8 @@ class OfferScreen : Screen<OfferScreen>() {
 }
 
 class ChangeDateSheet : Screen<ChangeDateSheet>() {
-    val autoSetDate = KButton { withId(R.id.autoSetDateText) }
-    val pickDate = KView { withId(R.id.datePickButton) }
+    val autoSetDate = KButton { withId(R.id.`@+id/auto_set_date_switch`) }
+    val pickDate = KView { withId(R.id.`@+id/date_pick_layout`) }
     val datePicker = KDatePickerDialog()
     val submit = KButton { withId(R.id.chooseDateButton) }
     val confirm = KAlertDialog()

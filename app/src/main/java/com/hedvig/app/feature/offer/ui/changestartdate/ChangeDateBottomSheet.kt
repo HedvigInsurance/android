@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.DialogChangeStartDateBinding
@@ -15,19 +16,21 @@ import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import e
-import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import java.text.DateFormatSymbols
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
+import java.util.Locale
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class ChangeDateBottomSheet : BottomSheetDialogFragment() {
     private val binding by viewBinding(DialogChangeStartDateBinding::bind)
     private val offerViewModel: OfferViewModel by sharedViewModel()
     private val tracker: OfferTracker by inject()
 
-    private lateinit var localDate: LocalDate
+    private var localDate = LocalDate.now()
+    private var formattedDate: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,11 +42,9 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.apply {
-            datePickButton.setHapticClickListener {
+            datePickText.setHapticClickListener {
                 showDatePickerDialog()
             }
-
-            chooseDateButton.isEnabled = false
 
             val data = arguments?.getParcelable<ChangeDateBottomSheetData>(
                 DATA
@@ -55,36 +56,47 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
             }
 
             chooseDateButton.setOnClickListener {
-                requireContext().showAlert(
-                    R.string.ALERT_TITLE_STARTDATE,
-                    R.string.ALERT_DESCRIPTION_STARTDATE,
-                    R.string.ALERT_CONTINUE,
-                    R.string.ALERT_CANCEL,
-                    {
-                        tracker.changeDateContinue()
-                        offerViewModel.chooseStartDate(data.id, localDate)
-                        dismiss()
+                if (!localDate.isEqual(LocalDate.now())) {
+                    requireContext().showAlert(
+                        R.string.ALERT_TITLE_STARTDATE,
+                        R.string.ALERT_DESCRIPTION_STARTDATE,
+                        R.string.ALERT_CONTINUE,
+                        R.string.ALERT_CANCEL,
+                        {
+                            setDateAndFinish(data)
+                        }
+                    )
+                } else {
+                    setDateAndFinish(data)
+                }
+            }
+
+            autoSetDateSwitch.isVisible = data.hasSwitchableInsurer || true
+            autoSetDateTitle.isVisible = data.hasSwitchableInsurer || true
+
+            if (data.hasSwitchableInsurer || true) {
+                autoSetDateSwitch.setOnCheckedChangeListener { _, isChecked ->
+                    if (isChecked) {
+                        tracker.activateOnInsuranceEnd()
+                        offerViewModel.removeStartDate(data.id)
+                        datePickText.text = null
+                    } else {
+                        datePickText.setText(formattedDate)
                     }
-                )
-            }
-            if (data.hasSwitchableInsurer) {
-                autoSetDateText.text = getString(R.string.ACTIVATE_INSURANCE_END_BTN)
 
-                autoSetDateText.setHapticClickListener {
-                    tracker.activateOnInsuranceEnd()
-                    offerViewModel.removeStartDate(data.id)
-                    dismiss()
-                }
-            } else {
-                autoSetDateText.text = getString(R.string.ACTIVATE_TODAY_BTN)
-
-                autoSetDateText.setHapticClickListener {
-                    tracker.activateToday()
-                    offerViewModel.chooseStartDate(data.id, LocalDate.now())
-                    dismiss()
+                    datePickText.isEnabled = !isChecked
+                    datePickLayout.isEnabled = !isChecked
                 }
             }
+
+            datePickText.setText(R.string.START_DATE_TODAY)
         }
+    }
+
+    private fun setDateAndFinish(data: ChangeDateBottomSheetData) {
+        tracker.changeDateContinue()
+        offerViewModel.chooseStartDate(data.id, localDate)
+        dismiss()
     }
 
     private fun showDatePickerDialog() {
@@ -95,15 +107,12 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
 
         val dpd = DatePickerDialog(
             requireContext(),
-            DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
-
+            { _, year, monthOfYear, dayOfMonth ->
                 val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d/M/yyyy")
                 localDate = LocalDate.parse("$dayOfMonth/${monthOfYear + 1}/$year", formatter)
-                val monthFormatted = DateFormatSymbols().months[monthOfYear].capitalize()
-
-                binding.datePickButton.text = "$dayOfMonth $monthFormatted $year"
-
-                binding.chooseDateButton.isEnabled = true
+                val monthFormatted = DateFormatSymbols().months[monthOfYear].capitalize(Locale.getDefault())
+                formattedDate = "$dayOfMonth $monthFormatted $year"
+                binding.datePickText.setText(formattedDate)
             },
             defaultYear,
             defaultMonth,
