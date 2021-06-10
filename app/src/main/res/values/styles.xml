@@ -155,7 +155,4 @@
         <item name="android:paddingTop">12dp</item>
     </style>
 
-    <style name="SwitchTextAppearance" parent="Hedvig.TextAppearance.Body2">
-        <item name="android:textColor">@color/textColorThird</item>
-    </style>
 </resources>
