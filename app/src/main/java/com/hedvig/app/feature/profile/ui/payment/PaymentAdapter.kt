@@ -21,7 +21,7 @@ import com.hedvig.app.databinding.PaymentRedeemCodeBinding
 import com.hedvig.app.databinding.PayoutConnectionStatusBinding
 import com.hedvig.app.databinding.PayoutDetailsParagraphBinding
 import com.hedvig.app.databinding.TrustlyPayinDetailsBinding
-import com.hedvig.app.feature.referrals.ui.redeemcode.RefetchingRedeemCodeDialog
+import com.hedvig.app.feature.referrals.ui.redeemcode.RefetchingRedeemCodeBottomSheet
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.apollo.format
@@ -480,10 +480,10 @@ class PaymentAdapter(
                         }
                         PaymentModel.Link.RedeemDiscountCode -> { _ ->
                             tracker.clickRedeemCode()
-                            RefetchingRedeemCodeDialog.newInstance()
+                            RefetchingRedeemCodeBottomSheet.newInstance()
                                 .show(
                                     fragmentManager,
-                                    RefetchingRedeemCodeDialog.TAG
+                                    RefetchingRedeemCodeBottomSheet.TAG
                                 )
                         }
                         PaymentModel.Link.AdyenAddPayout,

@@ -1,28 +1,25 @@
 package com.hedvig.app.feature.referrals.ui.redeemcode
 
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import androidx.fragment.app.DialogFragment
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.app.R
 import com.hedvig.app.databinding.PromotionCodeDialogBinding
 import com.hedvig.app.feature.referrals.service.ReferralsTracker
+import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.hideKeyboard
-import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.view.show
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-abstract class RedeemCodeDialog : DialogFragment() {
+abstract class RedeemCodeBottomSheet : BottomSheetDialogFragment() {
     private val model: RedeemCodeViewModel by viewModel()
     private val binding by viewBinding(PromotionCodeDialogBinding::bind)
     private val tracker: ReferralsTracker by inject()
@@ -62,35 +59,13 @@ abstract class RedeemCodeDialog : DialogFragment() {
         }
     }
 
-    override fun onCreateDialog(savedInstanceState: Bundle?) =
-        super.onCreateDialog(savedInstanceState).apply {
-            window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        }
-
-    override fun onResume() {
-        super.onResume()
-        resetErrorState()
-    }
-
     private fun redeemPromotionCode(code: String) {
         tracker.redeemReferralCodeOverlay()
-        resetErrorState()
         model.redeemReferralCode(code)
     }
 
-    private fun resetErrorState() {
-        binding.apply {
-            bottomSheetAddPromotionCodeEditText.setBackgroundResource(R.drawable.background_edit_text_rounded_corners)
-            bottomSheetPromotionCodeMissingCode.remove()
-        }
-    }
-
     private fun wrongPromotionCode() {
-        binding.apply {
-            bottomSheetAddPromotionCodeEditText.setBackgroundResource(
-                R.drawable.background_edit_text_rounded_corners_failed
-            )
-            bottomSheetPromotionCodeMissingCode.show()
-        }
+        binding.textField.errorIconDrawable = requireContext().compatDrawable(R.drawable.ic_warning_triangle)
+        binding.textField.error = getString(R.string.REFERRAL_ERROR_MISSINGCODE_BODY)
     }
 }
