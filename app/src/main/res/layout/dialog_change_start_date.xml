@@ -57,13 +57,13 @@
         android:text="@string/OFFER_PLAN_EXPIRE_TITLE"
         android:textAppearance="?textAppearanceSubtitle1" />
 
-    <androidx.appcompat.widget.SwitchCompat
+    <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/auto_set_date_switch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_half"
         android:text="@string/OFFER_PLAN_EXIRES_TEXT"
-        android:textColor="@color/textColorSecondary"
+        android:textColor="@color/textColorPrimary"
         app:switchPadding="@dimen/base_margin_triple"
         app:switchTextAppearance="?textAppearanceBody2" />
 
