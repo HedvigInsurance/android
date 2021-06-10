@@ -62,20 +62,23 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
                 if (viewState.hasSwitchableInsurer) {
                     setupDateSwitch(viewState, dateText)
                 }
-
-                binding.chooseDateButton.setOnClickListener {
-                    val localDate = viewState.selectedDateTime.toLocalDate()
-                    if (viewState.selectedDateTime.isToday()) {
-                        setDateAndFinish(viewState.id, localDate)
-                    } else {
-                        showChooseOwnStartDateDialog(viewState.id, localDate)
-                    }
-                }
+                setupChooseDateButton(viewState)
             }
         }
 
         binding.datePickText.setHapticClickListener {
             showDatePickerDialog()
+        }
+    }
+
+    private fun setupChooseDateButton(viewState: ChangeDateBottomSheetViewModel.ViewState) {
+        binding.chooseDateButton.setOnClickListener {
+            val localDate = viewState.selectedDateTime.toLocalDate()
+            if (viewState.selectedDateTime.isToday()) {
+                setDateAndFinish(viewState.id, localDate)
+            } else {
+                showChooseOwnStartDateDialog(viewState.id, localDate)
+            }
         }
     }
 
