@@ -6,29 +6,41 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.hedvig.app.R
 import com.hedvig.app.databinding.DialogChangeStartDateBinding
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
-import com.hedvig.app.util.extensions.epochMillisToLocalDate
+import com.hedvig.app.util.extensions.isToday
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
-import e
-import java.time.LocalDateTime
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
-import java.time.format.DateTimeFormatter
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class ChangeDateBottomSheet : BottomSheetDialogFragment() {
     private val binding by viewBinding(DialogChangeStartDateBinding::bind)
     private val offerViewModel: OfferViewModel by sharedViewModel()
+    private val changeDateBottomSheetViewModel: ChangeDateBottomSheetViewModel by viewModel {
+        val data = requireArguments().getParcelable<ChangeDateBottomSheetData>(DATA)
+        parametersOf(data)
+    }
     private val tracker: OfferTracker by inject()
 
-    private var localDateTime = LocalDateTime.now()
-    private var formattedDate: String? = null
+    private val dateFormat = DateTimeFormatter.ofPattern("d/M/yyyy")
+    private val datePickerDialog = MaterialDatePicker.Builder
+        .datePicker()
+        .setTitleText("")
+        .build()
+        .apply { addClickListener() }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,92 +50,93 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        lifecycleScope.launch {
+            changeDateBottomSheetViewModel.viewState.collect { viewState ->
+                val dateText = viewState.getFormattedDateText()
+                binding.datePickText.setText(dateText)
 
-        binding.apply {
-            datePickText.setHapticClickListener {
-                showDatePickerDialog()
-            }
-
-            val data = arguments?.getParcelable<ChangeDateBottomSheetData>(
-                DATA
-            )
-
-            if (data == null) {
-                e { "Programmer error: DATA not passed to ${this.javaClass.name}" }
-                return
-            }
-
-            chooseDateButton.setOnClickListener {
-                if (!localDateTime.isEqual(LocalDateTime.now())) {
-                    requireContext().showAlert(
-                        R.string.ALERT_TITLE_STARTDATE,
-                        R.string.ALERT_DESCRIPTION_STARTDATE,
-                        R.string.ALERT_CONTINUE,
-                        R.string.ALERT_CANCEL,
-                        {
-                            setDateAndFinish(data)
-                        }
-                    )
-                } else {
-                    setDateAndFinish(data)
+                binding.autoSetDateSwitch.isVisible = viewState.hasSwitchableInsurer
+                binding.autoSetDateTitle.isVisible = viewState.hasSwitchableInsurer
+                if (viewState.hasSwitchableInsurer) {
+                    setupDateSwitch(viewState, dateText)
                 }
-            }
 
-            autoSetDateSwitch.isVisible = data.hasSwitchableInsurer || true
-            autoSetDateTitle.isVisible = data.hasSwitchableInsurer || true
-
-            if (data.hasSwitchableInsurer || true) {
-                autoSetDateSwitch.setOnCheckedChangeListener { _, isChecked ->
-                    if (isChecked) {
-                        tracker.activateOnInsuranceEnd()
-                        offerViewModel.removeStartDate(data.id)
-                        datePickText.text = null
+                binding.chooseDateButton.setOnClickListener {
+                    val localDate = viewState.selectedDateTime.toLocalDate()
+                    if (viewState.selectedDateTime.isToday()) {
+                        setDateAndFinish(viewState.id, localDate)
                     } else {
-                        datePickText.setText(formattedDate)
+                        showChooseOwnStartDateDialog(viewState.id, localDate)
                     }
-
-                    datePickText.isEnabled = !isChecked
-                    datePickLayout.isEnabled = !isChecked
                 }
             }
+        }
 
-            datePickText.setText(R.string.START_DATE_TODAY)
+        binding.datePickText.setHapticClickListener {
+            showDatePickerDialog()
         }
     }
 
-    private fun setDateAndFinish(data: ChangeDateBottomSheetData) {
+    private fun setupDateSwitch(
+        viewState: ChangeDateBottomSheetViewModel.ViewState,
+        dateText: String?
+    ) {
+        binding.autoSetDateSwitch.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                tracker.activateOnInsuranceEnd()
+                offerViewModel.removeStartDate(viewState.id)
+                binding.datePickText.text = null
+            } else {
+                binding.datePickText.setText(dateText)
+            }
+
+            binding.datePickText.isEnabled = !isChecked
+            binding.datePickLayout.isEnabled = !isChecked
+        }
+    }
+
+    private fun ChangeDateBottomSheetViewModel.ViewState.getFormattedDateText() =
+        if (selectedDateTime.isToday()) {
+            getString(R.string.START_DATE_TODAY)
+        } else {
+            selectedDateTime.format(dateFormat)
+        }
+
+    private fun showChooseOwnStartDateDialog(id: String, date: LocalDate) {
+        requireContext().showAlert(
+            R.string.ALERT_TITLE_STARTDATE,
+            R.string.ALERT_DESCRIPTION_STARTDATE,
+            R.string.ALERT_CONTINUE,
+            R.string.ALERT_CANCEL,
+            { setDateAndFinish(id, date) }
+        )
+    }
+
+    private fun setDateAndFinish(id: String, date: LocalDate) {
         tracker.changeDateContinue()
-        offerViewModel.chooseStartDate(data.id, localDateTime.toLocalDate())
+        offerViewModel.chooseStartDate(id, date)
         dismiss()
     }
 
     private fun showDatePickerDialog() {
-        MaterialDatePicker.Builder
-            .datePicker()
-            .setTitleText("")
-            .build()
-            .apply {
-                addOnPositiveButtonClickListener {
-                    localDateTime = it.epochMillisToLocalDate()
-                    val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d/M/yyyy")
-                    formattedDate = localDateTime.format(formatter)
-                    binding.datePickText.setText(formattedDate)
-                }
-            }
-            .show(childFragmentManager, "DATE_PICKER_TAG")
+        datePickerDialog.show(childFragmentManager, DATE_PICKER_TAG)
+    }
+
+    private fun MaterialDatePicker<Long>.addClickListener() {
+        addOnPositiveButtonClickListener { epochMillis ->
+            changeDateBottomSheetViewModel.onDateSelected(epochMillis)
+        }
     }
 
     companion object {
         private const val DATA = "DATA"
-
+        private const val DATE_PICKER_TAG = "DATE_PICKER_TAG"
         const val TAG = "changeDateBottomSheet"
 
         fun newInstance(data: ChangeDateBottomSheetData): ChangeDateBottomSheet {
             return ChangeDateBottomSheet()
                 .apply {
-                    arguments = bundleOf(
-                        DATA to data
-                    )
+                    arguments = bundleOf(DATA to data)
                 }
         }
     }
