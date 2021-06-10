@@ -5,11 +5,11 @@ import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.type.Locale
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.getLocale
-import org.javamoney.moneta.Money
 import java.math.BigDecimal
 import java.text.NumberFormat
 import java.util.Currency
 import javax.money.MonetaryAmount
+import org.javamoney.moneta.Money
 
 fun Locale.toLocaleString() = when (this) {
     Locale.EN_SE -> "en_SE"
@@ -39,3 +39,8 @@ fun MonetaryAmount.format(context: Context, market: Market?, minimumDecimals: In
         it.currency = Currency.getInstance(currency.currencyCode)
         it.minimumFractionDigits = minimumDecimals
     }.format(this.number.numberValueExact(BigDecimal::class.java))
+
+fun MonetaryAmount.getCurrencyString(context: Context, market: Market?): String? =
+    NumberFormat.getCurrencyInstance(getLocale(context, market)).also {
+        it.currency = Currency.getInstance(currency.currencyCode)
+    }.currency?.currencyCode

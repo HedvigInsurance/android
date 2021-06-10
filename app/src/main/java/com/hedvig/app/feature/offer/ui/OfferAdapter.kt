@@ -27,6 +27,7 @@ import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.apollo.format
+import com.hedvig.app.util.apollo.getCurrencyString
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.extensions.getStringId
 import com.hedvig.app.util.extensions.inflate
@@ -92,27 +93,29 @@ class OfferAdapter(
                 if (data is OfferModel.Header) {
                     binding.apply {
                         data.inner.lastQuoteOfMember.asCompleteQuote?.let { quote ->
-                            title.text =
-                                title.resources.getString(quote.typeOfContract.getStringId())
-                            premium.text =
-                                quote
-                                    .insuranceCost
-                                    .fragments
-                                    .costFragment
-                                    .monthlyNet
-                                    .fragments
-                                    .monetaryAmountFragment
-                                    .toMonetaryAmount()
-                                    .format(premium.context, marketManager.market)
-                            val gross =
-                                quote
-                                    .insuranceCost
-                                    .fragments
-                                    .costFragment
-                                    .monthlyGross
-                                    .fragments
-                                    .monetaryAmountFragment
-                                    .toMonetaryAmount()
+                            title.text = title.resources.getString(quote.typeOfContract.getStringId())
+                            val monetaryAmount = quote
+                                .insuranceCost
+                                .fragments
+                                .costFragment
+                                .monthlyNet
+                                .fragments
+                                .monetaryAmountFragment
+                                .toMonetaryAmount()
+
+                            premium.text = monetaryAmount.number.toString()
+                            val currencyString = monetaryAmount.getCurrencyString(premium.context, marketManager.market)
+                            premiumPeriod.text = premiumPeriod.context.getString(R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, currencyString)
+
+                            val gross = quote
+                                .insuranceCost
+                                .fragments
+                                .costFragment
+                                .monthlyGross
+                                .fragments
+                                .monetaryAmountFragment
+                                .toMonetaryAmount()
+
                             if (gross.isZero) {
                                 grossPremium.setStrikethrough(true)
                                 grossPremium.text = gross.format(grossPremium.context, marketManager.market)
