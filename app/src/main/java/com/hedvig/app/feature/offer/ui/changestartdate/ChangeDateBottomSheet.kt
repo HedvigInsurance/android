@@ -8,6 +8,7 @@ import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.hedvig.app.R
 import com.hedvig.app.databinding.DialogChangeStartDateBinding
@@ -31,6 +32,7 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
     private val offerViewModel: OfferViewModel by sharedViewModel()
     private val changeDateBottomSheetViewModel: ChangeDateBottomSheetViewModel by viewModel {
         val data = requireArguments().getParcelable<ChangeDateBottomSheetData>(DATA)
+            ?: throw IllegalArgumentException("No data provided to ChangeDateBottomSheet")
         parametersOf(data)
     }
     private val tracker: OfferTracker by inject()
