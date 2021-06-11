@@ -32,7 +32,7 @@ class NoExistingInsuranceTest : TestCase() {
 
         onScreen<OfferScreen> {
             scroll {
-                hasSize(6)
+                hasSize(5)
                 childAt<OfferScreen.HeaderItem>(0) {
                     startDate {
                         hasText(R.string.START_DATE_TODAY)
