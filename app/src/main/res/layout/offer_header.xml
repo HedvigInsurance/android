@@ -73,18 +73,23 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/startDateContainer"
+                style="?materialButtonTextStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/base_margin_double"
-                android:background="@drawable/background_pick_date"
+                android:background="@drawable/background_rounded_corners_ripple"
                 android:padding="@dimen/base_margin">
 
                 <TextView
                     android:id="@+id/startDateLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/START_DATE_BTN"
+                    android:drawablePadding="@dimen/base_margin"
+                    android:gravity="center_vertical"
+                    android:text="@string/OFFER_ACCESS_DATE"
                     android:textAppearance="?textAppearanceBody1"
+                    android:textColor="@color/textColorSecondary"
+                    app:drawableStartCompat="@drawable/ic_calendar"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -95,23 +100,14 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/base_margin_double"
                     android:layout_marginEnd="@dimen/base_margin_double"
+                    android:gravity="center_vertical|end"
                     android:textAlignment="textEnd"
                     android:textAppearance="?textAppearanceBody1"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/startDateExpandIcon"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/startDateLabel"
                     app:layout_constraintTop_toTopOf="parent"
-                    tools:text="@string/ACTIVATE_INSURANCE_END_BTN" />
-
-                <ImageView
-                    android:id="@+id/startDateExpandIcon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:contentDescription="@null"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_expand" />
+                    tools:text="@string/START_DATE_TODAY" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
