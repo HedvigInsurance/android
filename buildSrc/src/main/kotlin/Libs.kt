@@ -25,8 +25,10 @@ object Libs {
 
         object Lifecycle {
             private const val version = "2.3.1"
+            private const val runtimeVersion = "2.4.0-alpha01"
             const val common = "androidx.lifecycle:lifecycle-common-java8:$version"
             const val liveData = "androidx.lifecycle:lifecycle-livedata-ktx:$version"
+            const val runtime = "androidx.lifecycle:lifecycle-runtime-ktx:$runtimeVersion"
             const val viewModel = "androidx.lifecycle:lifecycle-viewmodel-ktx:$version"
         }
 
