@@ -37,7 +37,6 @@ import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
-import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.whenApiVersion
@@ -107,8 +106,9 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
     private fun showNextView(embarkData: EmbarkModel, passage: EmbarkStoryQuery.Passage?) {
         val offerKeys = embarkData.passage?.offerRedirect?.data?.keys
         if (offerKeys != null && offerKeys.isNotEmpty()) {
-            val offerIds = offerKeys.mapNotNull { model.getFromStore(it) }
-            showWebOffer(offerIds)
+            val offerIds = model.getListFromStore(offerKeys)
+            // TODO: Pass offerIds to OfferActivity
+            startActivity(OfferActivity.newInstance(this))
         } else if (embarkData.passage?.name == "Offer") {
             showWebOffer(
                 listOf(
@@ -117,9 +117,9 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 )
             )
         } else if (embarkData.passage?.externalRedirect?.data?.location == EmbarkExternalRedirectLocation.OFFER) {
-            val quoteIds = model.getQuoteIds()
-            // Start offer activity with keys
-            startActivity(OfferActivity.newInstance(this))
+            val key = model.getFromStore("quoteId")
+                ?: throw IllegalArgumentException("Could not find value with key quoteId from store")
+            showWebOffer(listOf(key))
         } else {
             transitionToNextPassage(embarkData.navigationDirection, passage)
         }

@@ -78,9 +78,11 @@ abstract class EmbarkViewModel(
 
     fun getFromStore(key: String) = valueStore.get(key)
 
-    fun getQuoteIds(): List<String> = valueStore.getList("quoteIds")
-        ?: valueStore.get("quoteId")?.let { listOf(it) }
-        ?: throw IllegalArgumentException("Could not find quoteId(s) from store")
+    fun getListFromStore(keys: List<String>): List<String> {
+        return keys.map {
+            valueStore.getList(it) ?: listOfNotNull(valueStore.get(it))
+        }.flatten()
+    }
 
     fun navigateToPassage(passageName: String) {
         storyData.embarkStory?.let { story ->
