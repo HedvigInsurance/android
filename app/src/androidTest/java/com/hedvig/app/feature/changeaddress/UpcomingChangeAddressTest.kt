@@ -7,9 +7,9 @@ import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
 import com.hedvig.app.testdata.feature.changeaddress.SELF_CHANGE_ELIGIBILITY
 import com.hedvig.app.testdata.feature.changeaddress.UPCOMING_AGREEMENT_SWEDISH_APARTMENT
 import com.hedvig.app.util.ApolloCacheClearRule
-import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
-import com.hedvig.app.util.apolloResponse
+import com.hedvig.app.apolloResponse
 import com.hedvig.app.util.context
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule

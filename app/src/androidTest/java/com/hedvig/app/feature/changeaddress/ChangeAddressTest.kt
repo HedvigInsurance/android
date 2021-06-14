@@ -6,15 +6,17 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
 import com.hedvig.app.testdata.feature.changeaddress.SELF_CHANGE_ELIGIBILITY
 import com.hedvig.app.testdata.feature.changeaddress.UPCOMING_AGREEMENT_NONE
-import com.hedvig.app.util.ApolloCacheClearRule
-import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
-import com.hedvig.app.util.apolloResponse
+import com.hedvig.app.apolloResponse
 import com.hedvig.app.util.context
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Rule
 import org.junit.Test
 
+@HiltAndroidTest
 class ChangeAddressTest : TestCase() {
 
     @get:Rule
@@ -27,7 +29,7 @@ class ChangeAddressTest : TestCase() {
     )
 
     @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+    var hiltRule = HiltAndroidRule(this)
 
     @Test
     fun shouldShowChangeAddressWhenNoUpcomingAgreementAndSelfChangePossible() = run {

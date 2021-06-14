@@ -77,7 +77,7 @@ import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModel
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModelImpl
 import com.hedvig.app.feature.loggedin.service.GetCrossSellsUseCase
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
-import com.hedvig.app.feature.loggedin.ui.LoggedInRepository
+import com.hedvig.app.feature.loggedin.ui.LoggedInRepositoryImpl
 import com.hedvig.app.feature.loggedin.ui.LoggedInTracker
 import com.hedvig.app.feature.marketing.data.MarketingRepository
 import com.hedvig.app.feature.marketing.service.MarketingTracker
@@ -146,8 +146,6 @@ import com.hedvig.app.feature.trustly.TrustlyViewModel
 import com.hedvig.app.feature.trustly.TrustlyViewModelImpl
 import com.hedvig.app.feature.welcome.WelcomeRepository
 import com.hedvig.app.feature.welcome.WelcomeTracker
-import com.hedvig.app.feature.welcome.WelcomeViewModel
-import com.hedvig.app.feature.whatsnew.WhatsNewRepository
 import com.hedvig.app.feature.whatsnew.WhatsNewTracker
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModelImpl
@@ -235,7 +233,6 @@ val viewModelModule = module {
     viewModel { ChatViewModel(get(), get(), get(), get(), get()) }
     viewModel { UserViewModel(get(), get(), get()) }
     viewModel { RedeemCodeViewModel(get()) }
-    viewModel { WelcomeViewModel(get()) }
     viewModel { SettingsViewModel(get()) }
     viewModel { DatePickerViewModel() }
     viewModel { params -> SimpleSignAuthenticationViewModel(params.get(), get(), get(), get()) }
@@ -372,7 +369,6 @@ val repositoriesModule = module {
     single { ProfileRepository(get()) }
     single { RedeemReferralCodeRepository(get(), get()) }
     single { UserRepository(get()) }
-    single { WhatsNewRepository(get(), get(), get()) }
     single { WelcomeRepository(get(), get()) }
     single { OfferRepository(get(), get()) }
     single { LanguageRepository(get(), get(), get(), get()) }
@@ -382,7 +378,7 @@ val repositoriesModule = module {
     single { AdyenRepository(get(), get()) }
     single { EmbarkRepository(get(), get(), get(), get()) }
     single { ReferralsRepository(get()) }
-    single { LoggedInRepository(get(), get()) }
+    single { LoggedInRepositoryImpl(get(), get()) }
     single { HomeRepository(get(), get()) }
     single { TrustlyRepository(get()) }
     single { MemberIdRepository(get()) }

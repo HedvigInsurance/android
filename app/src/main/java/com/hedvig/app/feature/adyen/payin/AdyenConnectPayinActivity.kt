@@ -30,7 +30,6 @@ class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activ
     private val connectPaymentViewModel: ConnectPaymentViewModel by viewModel()
     private val adyenConnectPayinViewModel: AdyenConnectPayinViewModel by viewModel()
 
-    private val marketManager: MarketManager by inject()
     private lateinit var paymentMethods: PaymentMethodsApiResponse
     private lateinit var currency: AdyenCurrency
 

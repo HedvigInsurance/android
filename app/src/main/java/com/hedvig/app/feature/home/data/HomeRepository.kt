@@ -7,8 +7,9 @@ import com.apollographql.apollo.coroutines.toFlow
 import com.apollographql.apollo.fetcher.ApolloResponseFetchers
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.app.util.LocaleManager
+import javax.inject.Inject
 
-class HomeRepository(
+class HomeRepository @Inject constructor(
     private val apolloClient: ApolloClient,
     private val localeManager: LocaleManager,
 ) {

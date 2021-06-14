@@ -4,8 +4,9 @@ import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.coroutines.await
 import com.hedvig.android.owldroid.graphql.WelcomeQuery
 import com.hedvig.app.util.LocaleManager
+import javax.inject.Inject
 
-class WelcomeRepository(
+class WelcomeRepository @Inject constructor(
     private val apolloClient: ApolloClient,
     private val localeManager: LocaleManager
 ) {

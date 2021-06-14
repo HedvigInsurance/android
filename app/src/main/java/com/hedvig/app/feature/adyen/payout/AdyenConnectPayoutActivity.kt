@@ -20,7 +20,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AdyenConnectPayoutActivity : BaseActivity(R.layout.fragment_container_activity) {
     private val model: AdyenConnectPayoutViewModel by viewModel()
-    private val marketManager: MarketManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

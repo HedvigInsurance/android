@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.app.feature.home.ui.changeaddress.GetAddressChangeStoryIdUseCase.SelfChangeEligibilityResult
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.launch
 
 abstract class ChangeAddressViewModel : ViewModel() {
@@ -14,7 +16,8 @@ abstract class ChangeAddressViewModel : ViewModel() {
     abstract fun reload()
 }
 
-class ChangeAddressViewModelImpl(
+@HiltViewModel
+class ChangeAddressViewModelImpl @Inject constructor(
     private val getUpcomingAgreement: GetUpcomingAgreementUseCase,
     private val addressChangeStoryId: GetAddressChangeStoryIdUseCase,
 ) : ChangeAddressViewModel() {

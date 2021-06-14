@@ -10,9 +10,9 @@ import com.hedvig.app.testdata.feature.home.HOME_DATA_PENDING
 import com.hedvig.app.testdata.feature.home.HOME_DATA_PENDING_NO_FIRST_NAME
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_ENABLED
 import com.hedvig.app.util.ApolloCacheClearRule
-import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
-import com.hedvig.app.util.apolloResponse
+import com.hedvig.app.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.hasText
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase

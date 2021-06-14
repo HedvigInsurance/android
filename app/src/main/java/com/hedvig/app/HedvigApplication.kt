@@ -7,7 +7,6 @@ import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.coroutines.await
 import com.hedvig.android.owldroid.graphql.NewSessionMutation
 import com.hedvig.app.authenticate.AuthenticationTokenService
-import com.hedvig.app.di.RepoInterface
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
@@ -25,6 +24,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
+import org.koin.core.context.startKoin
 import timber.log.Timber
 
 @HiltAndroidApp
@@ -36,9 +38,7 @@ open class HedvigApplication : Application() {
     lateinit var marketManager: MarketManager
 
     @Inject
-    lateinit var repo: RepoInterface
-
-    private val whatsNewRepository: WhatsNewRepository by inject()
+    lateinit var whatsNewRepository: WhatsNewRepository
 
     private val authenticationTokenService: AuthenticationTokenService by inject()
 
@@ -48,6 +48,48 @@ open class HedvigApplication : Application() {
         Theme
             .fromSettings(this)
             ?.apply()
+
+        startKoin {
+            androidLogger()
+            androidContext(this@HedvigApplication)
+            modules(
+                listOf(
+                    applicationModule,
+                    viewModelModule,
+                    insuranceModule,
+                    marketingModule,
+                    offerModule,
+                    profileModule,
+                    paymentModule,
+                    keyGearModule,
+                    adyenModule,
+                    referralsModule,
+                    homeModule,
+                    serviceModule,
+                    repositoriesModule,
+                    localeBroadcastManagerModule,
+                    trackerModule,
+                    embarkModule,
+                    previousInsViewModel,
+                    marketPickerTrackerModule,
+                    whatsNewModule,
+                    marketManagerModule,
+                    connectPaymentModule,
+                    trustlyModule,
+                    notificationModule,
+                    marketPickerModule,
+                    textActionSetModule,
+                    numberActionSetModule,
+                    choosePlanModule,
+                    clockModule,
+                    embarkTrackerModule,
+                    localeManagerModule,
+                    useCaseModule,
+                    valueStoreModule,
+                    onboardingModule,
+                )
+            )
+        }
 
         val previousLanguage = PreferenceManager
             .getDefaultSharedPreferences(this)
@@ -87,8 +129,6 @@ open class HedvigApplication : Application() {
         }
 
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
-
-        i { repo.getString() }
     }
 
     private suspend fun acquireHedvigToken() {

@@ -6,10 +6,11 @@ import com.hedvig.app.feature.offer.screen.OfferScreen
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_HOUSE
 import com.hedvig.app.util.ApolloCacheClearRule
-import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
+import com.hedvig.app.apolloResponse
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test

@@ -7,10 +7,10 @@ import com.hedvig.app.feature.marketpicker.screens.MarketSelectedScreen
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.testdata.feature.marketpicker.GEO_DATA_SE
 import com.hedvig.app.util.ApolloCacheClearRule
-import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.MarketRule
-import com.hedvig.app.util.apolloResponse
+import com.hedvig.app.apolloResponse
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.mockk.every
 import org.junit.Rule

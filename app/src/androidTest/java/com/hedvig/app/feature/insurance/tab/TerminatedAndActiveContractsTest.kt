@@ -9,9 +9,9 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_ONE_ACTIVE_ONE_TERMINATED
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_KEY_GEAR_AND_REFERRAL_FEATURE_ENABLED
 import com.hedvig.app.util.ApolloCacheClearRule
-import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.ApolloMockServerRule
 import com.hedvig.app.util.LazyIntentsActivityScenarioRule
-import com.hedvig.app.util.apolloResponse
+import com.hedvig.app.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.hasPluralText
 import com.hedvig.app.util.stub

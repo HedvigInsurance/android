@@ -1,8 +1,9 @@
 package com.hedvig.app.feature.home.service
 
 import com.hedvig.app.feature.tracking.TrackingFacade
+import javax.inject.Inject
 
-class HomeTracker(
+class HomeTracker @Inject constructor(
     private val trackingFacade: TrackingFacade
 ) {
     fun startClaimOutlined() = trackingFacade.track("home_tab.claim_button_text")

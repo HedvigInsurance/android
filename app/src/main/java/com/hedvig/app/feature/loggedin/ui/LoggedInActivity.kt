@@ -24,11 +24,12 @@ import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.onboarding.MemberIdViewModel
 import com.hedvig.app.feature.ratings.RatingsTracker
+import com.hedvig.app.feature.onboarding.MemberIdViewModelImpl
 import com.hedvig.app.feature.referrals.ui.ReferralsInformationActivity
 import com.hedvig.app.feature.welcome.WelcomeDialog
 import com.hedvig.app.feature.welcome.WelcomeViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewDialog
-import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
+import com.hedvig.app.feature.whatsnew.WhatsNewViewModelImpl
 import com.hedvig.app.shouldOverrideFeatureFlags
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.apollo.toMonetaryAmount
@@ -57,21 +58,21 @@ import kotlinx.coroutines.flow.onEach
 import java.time.LocalDate
 import javax.money.MonetaryAmount
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
     private val claimsViewModel: ClaimsViewModel by viewModels()
-    private val whatsNewViewModel: WhatsNewViewModel by viewModel()
+    private val whatsNewViewModel: WhatsNewViewModelImpl by viewModels()
 
-    private val memberIdViewModel: MemberIdViewModel by viewModel()
-    private val welcomeViewModel: WelcomeViewModel by viewModel()
+    private val memberIdViewModel: MemberIdViewModelImpl by viewModels()
+    private val welcomeViewModel: WelcomeViewModel by viewModels()
     private val loggedInViewModel: LoggedInViewModel by viewModels()
 
-    private val loggedInTracker: LoggedInTracker by inject()
     private val ratingsTracker: RatingsTracker by inject()
+    @Inject
+    lateinit var loggedInTracker: LoggedInTracker
 
     private val binding by viewBinding(ActivityLoggedInBinding::bind)
 

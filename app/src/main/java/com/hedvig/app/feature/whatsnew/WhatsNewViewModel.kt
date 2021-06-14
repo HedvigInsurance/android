@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.WhatsNewQuery
 import com.hedvig.app.util.LiveEvent
+import dagger.hilt.android.lifecycle.HiltViewModel
 import e
+import javax.inject.Inject
 import kotlinx.coroutines.launch
 
 abstract class WhatsNewViewModel : ViewModel() {
@@ -15,7 +17,8 @@ abstract class WhatsNewViewModel : ViewModel() {
     abstract fun hasSeenNews(version: String)
 }
 
-class WhatsNewViewModelImpl(
+@HiltViewModel
+class WhatsNewViewModelImpl @Inject constructor(
     private val whatsNewRepository: WhatsNewRepository
 ) : WhatsNewViewModel() {
 

@@ -1,15 +1,18 @@
 package com.hedvig.app.feature.whatsnew
 
 import android.os.Bundle
+import androidx.fragment.app.viewModels
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.feature.dismissiblepager.DismissiblePager
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
+import dagger.hilt.android.AndroidEntryPoint
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+@AndroidEntryPoint
 class WhatsNewDialog : DismissiblePager() {
-    private val whatsNewViewModel: WhatsNewViewModel by viewModel()
+    private val whatsNewViewModel: WhatsNewViewModelImpl by viewModels()
 
     override val proceedLabel = R.string.NEWS_PROCEED
     override val lastButtonText = R.string.NEWS_DISMISS

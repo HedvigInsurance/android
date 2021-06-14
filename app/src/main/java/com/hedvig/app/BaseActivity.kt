@@ -9,20 +9,26 @@ import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.hedvig.app.feature.settings.Language
+import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
-import org.koin.android.ext.android.inject
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 abstract class BaseActivity : AppCompatActivity {
     constructor() : super()
     constructor(@LayoutRes layout: Int) : super(layout)
 
     open val preventRecreation = false
 
-    private val tracker: ScreenTracker by inject()
-    private val marketManager: MarketManager by inject()
+    @Inject
+    lateinit var screenTracker: ScreenTracker
+
+    @Inject
+    lateinit var marketManager: MarketManager
 
     override fun onResume() {
-        tracker.screenView(javaClass.simpleName)
+        screenTracker.screenView(javaClass.simpleName)
         super.onResume()
     }
 
@@ -37,7 +43,7 @@ abstract class BaseActivity : AppCompatActivity {
 
     override fun attachBaseContext(newBase: Context?) {
         if (newBase != null) {
-            super.attachBaseContext(Language.fromSettings(newBase, marketManager.market).apply(newBase))
+            super.attachBaseContext(Language.fromSettings(newBase, Market.SE).apply(newBase))
         }
     }
 

@@ -1,9 +1,10 @@
-package com.hedvig.app.util
+package com.hedvig.app
 
 import com.apollographql.apollo.api.Operation
 import com.apollographql.apollo.api.ScalarTypeAdapters
-import com.hedvig.app.CUSTOM_TYPE_ADAPTERS
-import com.hedvig.app.TestApplication
+import com.apollographql.apollo.api.toJson
+import com.hedvig.app.util.jsonObjectOf
+import com.hedvig.app.util.toJsonArray
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import okhttp3.mockwebserver.Dispatcher
@@ -112,7 +113,7 @@ class ApolloMockServerRule(
     val webServer = apolloMockServer(*mocks)
 
     override fun before() {
-        webServer.start(TestApplication.PORT)
+        webServer.start(8080)
     }
 
     override fun after() {

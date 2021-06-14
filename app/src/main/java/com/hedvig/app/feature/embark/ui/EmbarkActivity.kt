@@ -61,7 +61,6 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
 
     private val model: EmbarkViewModel by viewModel { parametersOf(storyName) }
     private val binding by viewBinding(ActivityEmbarkBinding::bind)
-    private val marketManager: MarketManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

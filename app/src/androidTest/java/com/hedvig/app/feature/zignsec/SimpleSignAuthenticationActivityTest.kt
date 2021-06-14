@@ -2,7 +2,7 @@ package com.hedvig.app.feature.zignsec
 
 import com.hedvig.app.R
 import com.hedvig.app.feature.settings.Market
-import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.context
 import com.hedvig.app.util.hasHelperText

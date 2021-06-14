@@ -27,7 +27,6 @@ import javax.money.MonetaryAmount
 class ReferralsInformationActivity : BaseActivity(R.layout.activity_referrals_information) {
     private val binding by viewBinding(ActivityReferralsInformationBinding::bind)
     private val tracker: ReferralsTracker by inject()
-    private val marketManager: MarketManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

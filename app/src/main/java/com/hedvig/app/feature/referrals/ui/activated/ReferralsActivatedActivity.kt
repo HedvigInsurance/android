@@ -26,7 +26,6 @@ class ReferralsActivatedActivity : BaseActivity(R.layout.activity_referrals_acti
     private val binding by viewBinding(ActivityReferralsActivatedBinding::bind)
     private val model: ReferralsActivatedViewModel by viewModel()
     private val tracker: ReferralsTracker by inject()
-    private val marketManager: MarketManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

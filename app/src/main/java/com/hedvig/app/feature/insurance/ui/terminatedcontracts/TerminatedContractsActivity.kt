@@ -34,7 +34,6 @@ class TerminatedContractsActivity : BaseActivity(R.layout.terminated_contracts_a
     private val binding by viewBinding(TerminatedContractsActivityBinding::bind)
     private val model: TerminatedContractsViewModel by viewModel()
     private val tracker: InsuranceTracker by inject()
-    private val marketManager: MarketManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         window.requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)

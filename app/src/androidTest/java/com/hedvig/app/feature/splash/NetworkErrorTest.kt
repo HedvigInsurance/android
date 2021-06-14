@@ -1,12 +1,12 @@
 package com.hedvig.app.feature.splash
 
 import com.hedvig.android.owldroid.graphql.ContractStatusQuery
+import com.hedvig.app.ApolloMockServerRule
 import com.hedvig.app.SplashActivity
+import com.hedvig.app.apolloResponse
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.util.ApolloCacheClearRule
-import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyIntentsActivityScenarioRule
-import com.hedvig.app.util.apolloResponse
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.mockk.every
 import io.mockk.mockk

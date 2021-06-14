@@ -96,8 +96,9 @@ object Libs {
     }
 
     object Hilt {
-        const val hiltAndroid = "com.google.dagger:hilt-android:${CommonVersions.hilt}"
-        const val hiltCompiler = "com.google.dagger:hilt-compiler:${CommonVersions.hilt}"
+        const val android = "com.google.dagger:hilt-android:${CommonVersions.hilt}"
+        const val compiler = "com.google.dagger:hilt-compiler:${CommonVersions.hilt}"
+        const val test = "com.google.dagger:hilt-android-testing:${CommonVersions.hilt}"
     }
 
     const val timber = "com.jakewharton.timber:timber:4.7.1"

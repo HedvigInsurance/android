@@ -54,8 +54,10 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
     private val chatViewModel: ChatViewModel by viewModel()
     private val binding by viewBinding(ActivityChatBinding::bind)
 
-    private val tracker: ChatTracker by inject()
+
     private val imageLoader: ImageLoader by inject()
+
+    private val chatTracker: ChatTracker by inject()
 
     private var keyboardHeight = 0
     private var systemNavHeight = 0
@@ -171,7 +173,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
                 scrollToBottom(true)
                 chatViewModel.uploadClaim(path)
             },
-            tracker = tracker,
+            tracker = chatTracker,
             chatRecyclerView = binding.messages,
         )
     }
@@ -189,21 +191,21 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
                     }
                 )
             },
-            tracker = tracker,
-            imageLoader = imageLoader
+            imageLoader = imageLoader,
+            tracker = chatTracker
         )
         binding.messages.adapter = adapter
     }
 
     private fun initializeToolbarButtons() {
         binding.settings.setHapticClickListener {
-            tracker.settings()
+            chatTracker.settings()
             startActivity(SettingsActivity.newInstance(this))
         }
 
         if (intent?.extras?.getBoolean(EXTRA_SHOW_RESTART, false) == true) {
             binding.restart.setOnClickListener {
-                tracker.restartChat()
+                chatTracker.restartChat()
                 showAlert(
                     R.string.CHAT_RESET_DIALOG_TITLE,
                     R.string.CHAT_RESET_DIALOG_MESSAGE,
@@ -221,7 +223,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
 
         if (intent?.extras?.getBoolean(EXTRA_SHOW_CLOSE, false) == true) {
             binding.close.setOnClickListener {
-                tracker.closeChat()
+                chatTracker.closeChat()
                 onBackPressed()
             }
             binding.close.contentDescription = getString(R.string.CHAT_CLOSE_DESCRIPTION)

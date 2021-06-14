@@ -34,7 +34,6 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
     private val binding by viewBinding(ActivityChoosePlanBinding::bind)
     private val marketProvider: MarketManager by inject()
     private val model: ChoosePlanViewModel by viewModel()
-    private val marketManager: MarketManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

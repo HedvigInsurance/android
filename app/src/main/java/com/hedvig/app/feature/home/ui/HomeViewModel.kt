@@ -9,7 +9,9 @@ import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.home.data.HomeRepository
 import com.zhuinden.livedatacombinetuplekt.combineTuple
+import dagger.hilt.android.lifecycle.HiltViewModel
 import e
+import javax.inject.Inject
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -38,7 +40,8 @@ abstract class HomeViewModel : ViewModel() {
     abstract fun load()
 }
 
-class HomeViewModelImpl(
+@HiltViewModel
+class HomeViewModelImpl @Inject constructor(
     private val homeRepository: HomeRepository,
     private val payinStatusRepository: PayinStatusRepository
 ) : HomeViewModel() {

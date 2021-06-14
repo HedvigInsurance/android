@@ -32,7 +32,6 @@ import java.net.URLEncoder
 
 class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
     private val binding by viewBinding(ActivityWebOnboardingBinding::bind)
-    private val marketManager: MarketManager by inject()
     private val localeManager: LocaleManager by inject()
     private val loginStatusService: LoginStatusService by inject()
     private val authenticationTokenService: AuthenticationTokenService by inject()

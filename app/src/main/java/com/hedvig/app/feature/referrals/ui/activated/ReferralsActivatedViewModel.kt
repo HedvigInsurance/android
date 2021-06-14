@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
-import com.hedvig.app.feature.loggedin.ui.LoggedInRepository
+import com.hedvig.app.feature.loggedin.ui.LoggedInRepositoryImpl
 import e
 import kotlinx.coroutines.launch
 
@@ -14,7 +14,7 @@ abstract class ReferralsActivatedViewModel : ViewModel() {
 }
 
 class ReferralsActivatedViewModelImpl(
-    private val loggedInRepository: LoggedInRepository
+    private val loggedInRepository: LoggedInRepositoryImpl
 ) : ReferralsActivatedViewModel() {
     override val data = MutableLiveData<LoggedInQuery.Data>()
 

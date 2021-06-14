@@ -66,7 +66,6 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     private val binding by viewBinding(ActivityOfferBinding::bind)
     private val imageLoader: ImageLoader by inject()
     private val tracker: OfferTracker by inject()
-    private val marketManager: MarketManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

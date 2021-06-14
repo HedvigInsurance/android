@@ -12,8 +12,9 @@ import com.hedvig.app.util.apollo.safeQuery
 import com.hedvig.app.util.apollo.toUpcomingAgreementResult
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
+import javax.inject.Inject
 
-class GetUpcomingAgreementUseCase(
+class GetUpcomingAgreementUseCase @Inject constructor(
     private val apolloClient: ApolloClient,
     private val localeManager: LocaleManager,
 ) {

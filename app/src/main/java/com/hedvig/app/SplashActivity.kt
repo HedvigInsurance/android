@@ -31,7 +31,6 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
     @Inject
     lateinit var loggedInService: LoginStatusService
 
-    private val marketManager: MarketManager by inject()
     private val binding by viewBinding(ActivitySplashBinding::bind)
 
     override fun onCreate(savedInstanceState: Bundle?) {

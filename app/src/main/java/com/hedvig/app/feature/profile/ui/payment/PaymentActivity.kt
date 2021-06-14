@@ -26,7 +26,6 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
     private val model: PaymentViewModel by viewModel()
 
     private val tracker: PaymentTracker by inject()
-    private val marketManager: MarketManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

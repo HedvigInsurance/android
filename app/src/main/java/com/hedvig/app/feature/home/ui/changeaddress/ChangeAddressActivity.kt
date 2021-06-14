@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.transition.TransitionManager
+import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.core.view.isVisible
 import com.hedvig.app.BaseActivity
@@ -29,11 +30,13 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
 
     private val binding by viewBinding(ChangeAddressActivityBinding::bind)
-    private val model: ChangeAddressViewModel by viewModel()
+    private val model: ChangeAddressViewModelImpl by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -10,8 +10,8 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.testdata.feature.keygear.KEY_GEAR_DATA
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_KEY_GEAR_AND_REFERRAL_FEATURE_ENABLED
 import com.hedvig.app.util.ApolloCacheClearRule
-import com.hedvig.app.util.ApolloMockServerRule
-import com.hedvig.app.util.apolloResponse
+import com.hedvig.app.ApolloMockServerRule
+import com.hedvig.app.apolloResponse
 import com.hedvig.app.util.context
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule

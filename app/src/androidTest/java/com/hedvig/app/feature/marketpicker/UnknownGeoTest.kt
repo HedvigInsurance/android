@@ -11,11 +11,11 @@ import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.marketPickerTrackerModule
 import com.hedvig.app.testdata.feature.marketpicker.GEO_DATA_FI
 import com.hedvig.app.util.ApolloCacheClearRule
-import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.ApolloMockServerRule
 import com.hedvig.app.util.KoinMockModuleRule
 import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.MarketRule
-import com.hedvig.app.util.apolloResponse
+import com.hedvig.app.apolloResponse
 import com.hedvig.app.util.context
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.mockk.every

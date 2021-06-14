@@ -5,8 +5,9 @@ import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.coroutines.toFlow
 import com.apollographql.apollo.fetcher.ApolloResponseFetchers
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
+import javax.inject.Inject
 
-class PayinStatusRepository(
+class PayinStatusRepository @Inject constructor(
     private val apolloClient: ApolloClient,
 ) {
     private val payinStatusQuery = PayinStatusQuery()

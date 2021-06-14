@@ -2,24 +2,19 @@ package com.hedvig.app.feature.changeaddress
 
 import androidx.lifecycle.MutableLiveData
 import com.hedvig.app.MockActivity
-import com.hedvig.app.changeAddressModule
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
-import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressViewModel
 import com.hedvig.app.feature.home.ui.changeaddress.GetAddressChangeStoryIdUseCase
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement
 import com.hedvig.app.feature.home.ui.changeaddress.ViewState
 import com.hedvig.app.feature.home.ui.changeaddress.result.ChangeAddressResultActivity
 import com.hedvig.app.feature.table.Table
 import com.hedvig.app.genericDevelopmentAdapter
-import org.koin.androidx.viewmodel.dsl.viewModel
-import org.koin.dsl.module
 import java.time.LocalDate
+import org.koin.core.module.Module
 
 class ChangeAddressMockActivity : MockActivity() {
-    override val original = listOf(changeAddressModule)
-    override val mocks = listOf(
-        module { viewModel<ChangeAddressViewModel> { MockChangeAddressViewModel() } }
-    )
+    override val original = emptyList<Module>()
+    override val mocks = emptyList<Module>()
 
     override fun adapter() = genericDevelopmentAdapter {
         header("Change address")

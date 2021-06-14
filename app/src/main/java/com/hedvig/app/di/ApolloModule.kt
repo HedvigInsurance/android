@@ -30,7 +30,7 @@ object ApolloModule {
     ): ApolloClient {
         val builder = ApolloClient
             .builder()
-            .serverUrl(BuildConfig.GRAPHQL_URL)
+            .serverUrl("http://localhost:8080/")
             .okHttpClient(okHttpClient)
             .subscriptionConnectionParams {
                 SubscriptionConnectionParams(mapOf("Authorization" to context.getAuthenticationToken()))
@@ -48,6 +48,7 @@ object ApolloModule {
         if (isDebug()) {
             builder.logger(ApolloTimberLogger())
         }
+
         return builder.build()
     }
 }

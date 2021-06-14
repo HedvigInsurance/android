@@ -1,39 +1,64 @@
 package com.hedvig.app.feature.loggedin
 
+import androidx.test.espresso.IdlingRegistry
+import com.agoda.kakao.screen.Screen.Companion.onScreen
+import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.test.espresso.ApolloIdlingResource
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.android.owldroid.graphql.WhatsNewQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.testdata.feature.loggedin.WHATS_NEW
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_ENABLED
-import com.hedvig.app.util.ApolloCacheClearRule
-import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
-import com.hedvig.app.util.apolloResponse
+import com.hedvig.app.apolloResponse
 import com.hedvig.app.util.context
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.kakao.screen.Screen.Companion.onScreen
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import javax.inject.Inject
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.RuleChain
 
+@HiltAndroidTest
 class WhatsNewTest : TestCase() {
-    @get:Rule
+
+    val hiltRule = HiltAndroidRule(this)
     val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.QUERY_DOCUMENT to apolloResponse {
-            success(
-                LOGGED_IN_DATA_WITH_REFERRALS_ENABLED
-            )
-        },
-        WhatsNewQuery.QUERY_DOCUMENT to apolloResponse {
-            success(WHATS_NEW)
-        }
-    )
+    @Inject
+    lateinit var apolloClient: ApolloClient
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+    @Rule
+    fun chain(): RuleChain = RuleChain
+        .outerRule(hiltRule)
+        .around(activityRule)
+        // .around(ApolloCacheClearRule())
+        .around(
+            ApolloMockServerRule(
+                LoggedInQuery.QUERY_DOCUMENT to apolloResponse {
+                    success(LOGGED_IN_DATA_WITH_REFERRALS_ENABLED)
+                },
+                WhatsNewQuery.QUERY_DOCUMENT to apolloResponse {
+                    success(WHATS_NEW)
+                }
+            )
+        )
+
+    @Before
+    fun init() {
+        hiltRule.inject()
+
+        val idlingResource =
+            ApolloIdlingResource.create("ApolloIdlingResource", apolloClient)
+        IdlingRegistry
+            .getInstance()
+            .register(idlingResource)
+    }
 
     @Test
     fun shouldOpenWhatsNew() = run {

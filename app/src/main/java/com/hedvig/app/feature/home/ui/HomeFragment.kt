@@ -3,6 +3,7 @@ package com.hedvig.app.feature.home.ui
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import coil.ImageLoader
 import com.hedvig.android.owldroid.graphql.HomeQuery
@@ -20,19 +21,27 @@ import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
-import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class HomeFragment : Fragment(R.layout.home_fragment) {
-    private val model: HomeViewModel by viewModel()
-    private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
+    private val model: HomeViewModelImpl by viewModels()
+    private val loggedInViewModel: LoggedInViewModel by viewModels()
     private val binding by viewBinding(HomeFragmentBinding::bind)
     private var scroll = 0
-    private val tracker: HomeTracker by inject()
-    private val imageLoader: ImageLoader by inject()
-    private val marketManager: MarketManager by inject()
-    private val featureRuntimeBehavior: FeatureManager by inject()
+
+    @Inject
+    lateinit var imageLoader: ImageLoader
+
+    @Inject
+    lateinit var featureRuntimeBehavior: FeatureManager
+
+    @Inject
+    lateinit var tracker: HomeTracker
+
+    @Inject
+    lateinit var marketManager: MarketManager
 
     override fun onResume() {
         super.onResume()

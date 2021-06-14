@@ -101,6 +101,22 @@ android {
         }
     }
 
+    productFlavors {
+        flavorDimensions("environment")
+        register("mock") {
+            dimension = "environment"
+        }
+
+        register("live") {
+            dimension = "environment"
+        }
+
+        sourceSets {
+            getByName("mock").java.srcDir("src/mock/kotlin")
+            getByName("live").java.srcDir("src/live/kotlin")
+        }
+    }
+
     sourceSets {
         named("debug") {
             java.srcDir("src/engineering/java")
@@ -177,6 +193,7 @@ dependencies {
     implementation(Libs.OkHttp.loggingInterceptor)
     implementation(Libs.OkHttp.coroutines)
     androidTestImplementation(Libs.OkHttp.mockWebServer)
+    debugImplementation(Libs.OkHttp.mockWebServer)
 
     implementation(Libs.Firebase.playServicesBase)
     implementation(Libs.Firebase.crashlytics)
@@ -189,8 +206,10 @@ dependencies {
     implementation(Libs.Koin.android)
     androidTestImplementation(Libs.Koin.test)
 
-    implementation(Libs.Hilt.hiltAndroid)
-    kapt(Libs.Hilt.hiltCompiler)
+    implementation(Libs.Hilt.android)
+    kapt(Libs.Hilt.compiler)
+    kaptAndroidTest(Libs.Hilt.compiler)
+    androidTestImplementation(Libs.Hilt.test)
 
     implementation(Libs.timber)
     implementation(Libs.slimber)

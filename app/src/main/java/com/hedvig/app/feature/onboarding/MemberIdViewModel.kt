@@ -2,7 +2,9 @@ package com.hedvig.app.feature.onboarding
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import e
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -23,7 +25,8 @@ abstract class MemberIdViewModel : ViewModel() {
     abstract fun load()
 }
 
-class MemberIdViewModelImpl(
+@HiltViewModel
+class MemberIdViewModelImpl @Inject constructor(
     private val memberIdRepository: MemberIdRepository
 ) : MemberIdViewModel() {
 

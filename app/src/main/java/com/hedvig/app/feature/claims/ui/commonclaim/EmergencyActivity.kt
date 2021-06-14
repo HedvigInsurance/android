@@ -30,7 +30,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class EmergencyActivity : BaseActivity(R.layout.activity_emergency) {
     private val claimsViewModel: ClaimsViewModel by viewModel()
-    private val tracker: ClaimsTracker by inject()
+    private val claimsTracker: ClaimsTracker by inject()
     private val binding by viewBinding(ActivityEmergencyBinding::bind)
     private val imageLoader: ImageLoader by inject()
 
@@ -72,7 +72,7 @@ class EmergencyActivity : BaseActivity(R.layout.activity_emergency) {
             }
 
             thirdEmergencyButton.setHapticClickListener {
-                tracker.emergencyChat()
+                claimsTracker.emergencyChat()
                 lifecycleScope.launch {
                     claimsViewModel.triggerFreeTextChat()
                     startClosableChat()
@@ -85,8 +85,8 @@ class EmergencyActivity : BaseActivity(R.layout.activity_emergency) {
         binding.apply {
             secondEmergencyButton.enable()
             secondEmergencyButton.setHapticClickListener {
-                tracker.callGlobalAssistance()
                 makeACall(Uri.parse("tel:$emergencyNumber"))
+                claimsTracker.callGlobalAssistance()
             }
         }
     }
