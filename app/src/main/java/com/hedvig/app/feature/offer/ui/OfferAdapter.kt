@@ -2,6 +2,7 @@ package com.hedvig.app.feature.offer.ui
 
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.doOnNextLayout
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -22,7 +23,7 @@ import com.hedvig.app.feature.offer.TermsAdapter
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheet
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
 import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.feature.table.TableAdapter
+import com.hedvig.app.feature.table.generateTable
 import com.hedvig.app.feature.table.intoTable
 import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
 import com.hedvig.app.util.GenericDiffUtilItemCallback
@@ -277,8 +278,10 @@ class OfferAdapter(
                 }
                 data.inner.lastQuoteOfMember.asCompleteQuote?.detailsTable?.fragments?.tableFragment?.intoTable()
                     ?.let { table ->
-                        binding.expandableContent.adapter = TableAdapter(table)
-                        binding.expandableContentView.contentSizeChanged()
+                        generateTable(binding.expandableContent, table)
+                        binding.expandableContentView.doOnNextLayout {
+                            binding.expandableContentView.contentSizeChanged()
+                        }
                     }
             }
         }

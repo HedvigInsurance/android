@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.children
+import androidx.core.view.updateLayoutParams
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ExpandableContentViewBinding
 import com.hedvig.app.util.extensions.view.performOnTapHapticFeedback
@@ -96,23 +98,31 @@ class ExpandableContentView : ConstraintLayout {
     }
 
     fun contentSizeChanged() {
-        binding.apply {
-            expandableContentContainer.measure(
-                MeasureSpec.makeMeasureSpec(root.width, MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(root.height, MeasureSpec.UNSPECIFIED)
-            )
-            expandedContentHeight = expandableContentContainer.measuredHeight
-        }
+        expandedContentHeight = measureAsIfViewWasFullHeight(binding.expandableContentContainer)
+    }
+
+    private fun measureAsIfViewWasFullHeight(container: ViewGroup): Int {
+        container.measure(
+            MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
+            MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
+        )
+        return container.children.map { childView ->
+            if (childView is ViewGroup) {
+                measureAsIfViewWasFullHeight(childView)
+            } else {
+                childView.measure(
+                    MeasureSpec.makeMeasureSpec(container.width, MeasureSpec.EXACTLY),
+                    MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
+                )
+                childView.measuredHeight
+            }
+        }.sum()
     }
 
     companion object {
         const val ANIMATION_DURATION_MILLIS = 300L
         private fun View.updateHeight(newHeight: Int) {
-            layoutParams = LayoutParams(
-                layoutParams
-            ).apply {
-                height = newHeight
-            }
+            updateLayoutParams { height = newHeight }
         }
     }
 }
