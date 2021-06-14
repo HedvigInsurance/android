@@ -1,11 +1,13 @@
 package com.hedvig.app.util.apollo
 
+import com.hedvig.android.owldroid.fragment.TableFragment
 import com.hedvig.android.owldroid.fragment.UpcomingAgreementChangeFragment
 import com.hedvig.android.owldroid.fragment.UpcomingAgreementFragment
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase
 import java.time.LocalDate
 
-fun UpcomingAgreementFragment.toUpcomingAgreementResult(): GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement? {
+fun UpcomingAgreementFragment.toUpcomingAgreementResult(): GetUpcomingAgreementUseCase
+.UpcomingAgreementResult.UpcomingAgreement? {
     if (status.newAgreement() == null) {
         return null
     }
@@ -13,11 +15,11 @@ fun UpcomingAgreementFragment.toUpcomingAgreementResult(): GetUpcomingAgreementU
     return GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement(
         activeFrom = activeFrom(),
         address = address(),
-        table = upcomingAgreementDetailsTable?.createTable()
+        table = upcomingAgreementDetailsTable.fragments.tableFragment.createTable()
     )
 }
 
-private fun UpcomingAgreementFragment.UpcomingAgreementDetailsTable.createTable() =
+private fun TableFragment.createTable() =
     GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement.Table(
         title = title,
         sections = sections.map { section ->
