@@ -20,6 +20,7 @@ import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.stub
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -70,6 +71,7 @@ class EmbarkMenuTest : TestCase() {
     }
 
     @Test
+    @Ignore("Flaky")
     fun restartButtonShouldReloadEmbark() = run {
         val intent = EmbarkActivity.newInstance(context(), this.javaClass.name, "")
         activityRule.launch(intent)
