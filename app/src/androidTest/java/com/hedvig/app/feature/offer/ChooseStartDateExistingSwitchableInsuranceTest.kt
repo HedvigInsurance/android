@@ -43,11 +43,8 @@ class ChooseStartDateExistingSwitchableInsuranceTest : TestCase() {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldUpdateStartDateWhenChoosingStartDate() = run {
+    fun shouldShowDatePickerDialogWhenPressingDate() = run {
         activityRule.launch()
-
-        val tomorrow = LocalDate.now().plusDays(1)
-
         onScreen<OfferScreen> {
             scroll {
                 childAt<OfferScreen.HeaderItem>(0) {
@@ -59,18 +56,9 @@ class ChooseStartDateExistingSwitchableInsuranceTest : TestCase() {
         }
         onScreen<ChangeDateSheet> {
             pickDate { click() }
-            datePicker {
-                datePicker { setDate(tomorrow) }
-                okButton { click() }
-            }
-            submit { click() }
-            confirm { positiveButton { click() } }
-        }
-        onScreen<OfferScreen> {
-            scroll {
-                childAt<OfferScreen.HeaderItem>(0) {
-                    startDate { containsText(tomorrow.toString()) }
-                }
+            materialDatePicker {
+                isVisible()
+                negativeButton { click() }
             }
         }
     }
