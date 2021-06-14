@@ -55,9 +55,28 @@ operator fun JSONObject.plus(other: JSONObject): JSONObject {
 }
 
 fun JSONArray.toStringArray(): List<String> {
-    val list: MutableList<String> = ArrayList()
-    for (i in 0 until length()) {
-        list.add(get(i).toString())
+    return this.values().map(Any::toString)
+}
+
+fun JSONArray.values() = object : Iterable<Any> {
+    override fun iterator() = JSONArrayEntryIterator(this@values)
+}
+
+class JSONArrayEntryIterator(
+    private val jsonArray: JSONArray
+) : Iterator<Any> {
+
+    private var current = 0
+    private var size = jsonArray.length()
+
+    override fun hasNext() = current < size
+
+    override fun next(): Any {
+        if (current >= size) {
+            throw NoSuchElementException("")
+        }
+        val json = jsonArray[current]
+        current += 1
+        return json
     }
-    return list
 }

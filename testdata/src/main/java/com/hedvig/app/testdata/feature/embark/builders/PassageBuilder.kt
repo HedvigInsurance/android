@@ -17,7 +17,7 @@ data class PassageBuilder(
     private val links: List<EmbarkLinkFragment> = emptyList(),
     private val tracks: List<EmbarkStoryQuery.Track> = emptyList(),
     private val externalRedirect: EmbarkExternalRedirectLocation? = null,
-    private val offerRedirectKeys: List<String> = emptyList(),
+    private val offerRedirectKeys: List<String>? = null,
 ) {
     fun build() = EmbarkStoryQuery.Passage(
         name = name,
@@ -39,10 +39,12 @@ data class PassageBuilder(
         externalRedirect = externalRedirect?.let {
             EmbarkStoryQuery.ExternalRedirect(data = EmbarkStoryQuery.Data1(location = it))
         },
-        offerRedirect = EmbarkStoryQuery.OfferRedirect(
-            data = EmbarkStoryQuery.Data2(
-                keys = offerRedirectKeys
+        offerRedirect = offerRedirectKeys?.let { ork ->
+            EmbarkStoryQuery.OfferRedirect(
+                data = EmbarkStoryQuery.Data2(
+                    keys = ork
+                )
             )
-        )
+        }
     )
 }
