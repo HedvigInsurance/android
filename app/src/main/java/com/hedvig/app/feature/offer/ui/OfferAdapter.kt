@@ -93,7 +93,7 @@ class OfferAdapter(
                 if (data is OfferModel.Header) {
                     binding.apply {
                         data.inner.lastQuoteOfMember.asCompleteQuote?.let { quote ->
-                            title.text = title.resources.getString(quote.typeOfContract.getStringId())
+                            title.setText(quote.typeOfContract.getStringId())
                             val monetaryAmount = quote
                                 .insuranceCost
                                 .fragments
