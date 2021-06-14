@@ -15,6 +15,7 @@ import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.type.EmbarkExternalRedirectLocation
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.databinding.ActivityEmbarkBinding
 import com.hedvig.app.feature.embark.EmbarkModel
 import com.hedvig.app.feature.embark.EmbarkViewModel
