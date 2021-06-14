@@ -43,4 +43,4 @@ fun MonetaryAmount.format(context: Context, market: Market?, minimumDecimals: In
 fun MonetaryAmount.getCurrencyString(context: Context, market: Market?): String? =
     NumberFormat.getCurrencyInstance(getLocale(context, market)).also {
         it.currency = Currency.getInstance(currency.currencyCode)
-    }.currency?.currencyCode
+    }.currency?.symbol
