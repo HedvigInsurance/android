@@ -8,6 +8,10 @@ fun jsonObjectOf(vararg properties: Pair<String, Any?>) = JSONObject().apply {
     properties.forEach { put(it.first, it.second) }
 }
 
+fun jsonArrayOf(vararg items: Any) = JSONArray().apply {
+    items.forEach { put(it) }
+}
+
 fun jsonObjectOfNotNull(vararg properties: Pair<String, Any>?) =
     jsonObjectOf(*(properties.filterNotNull().toTypedArray()))
 

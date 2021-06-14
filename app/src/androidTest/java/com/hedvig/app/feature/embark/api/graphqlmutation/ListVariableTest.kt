@@ -11,10 +11,10 @@ import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyIntentsActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
+import com.hedvig.app.util.jsonArrayOf
 import com.hedvig.app.util.jsonObjectOf
 import com.hedvig.app.util.stub
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
-import org.json.JSONArray
 import org.junit.Rule
 import org.junit.Test
 
@@ -29,10 +29,6 @@ class ListVariableTest : TestCase() {
             success(jsonObjectOf("hello" to jsonArrayOf("1", "2", "3")))
         }
     )
-
-    private fun jsonArrayOf(vararg items: Any) = JSONArray().apply {
-        items.forEach { put(it) }
-    }
 
     @get:Rule
     val apolloCacheClearRule = ApolloCacheClearRule()
