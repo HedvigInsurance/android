@@ -7,11 +7,10 @@
     android:paddingBottom="@dimen/base_margin_quadruple"
     tools:context=".feature.offer.ui.OfferActivity">
 
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/base_margin_double"
-        app:cardCornerRadius="@dimen/hedvig_card_view_radius">
+        android:layout_margin="@dimen/base_margin_double">
 
         <LinearLayout
             android:id="@+id/premiumContainer"
@@ -28,9 +27,8 @@
                 android:background="@drawable/background_premium_box_with_campaign"
                 android:gravity="center"
                 android:paddingBottom="@dimen/base_margin_half"
-                android:textAppearance="?textAppearanceSubtitle2"
-                android:textSize="12sp"
-                tools:text="Discount" />
+                style="@style/Hedvig.TextAppearance.Discount"
+                tools:text="25 % BUNDLE DISCOUNT・10 SEK DISCOUNT/MO.・15 % DISCOUNT FROM SEB" />
 
             <TextView
                 android:id="@+id/title"
@@ -161,5 +159,5 @@
                 tools:text="@string/REFERRAL_ADDCOUPON_HEADLINE" />
 
         </LinearLayout>
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 </FrameLayout>

@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.offer.ui
 
-import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,6 +31,7 @@ import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
+import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.getStringId
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.invalid
@@ -165,7 +165,7 @@ class OfferAdapter(
                                     campaign.text = discountText
                                     campaign.show()
                                     originalPremium.apply {
-                                        paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+                                        setStrikethrough(true)
                                         // TODO Use monthlyGross from bundleCost
                                         text = monetaryAmount
                                     }
@@ -174,9 +174,8 @@ class OfferAdapter(
                                         R.drawable.background_premium_box_with_campaign
                                     )
 
-                                    val errorColor = ContextCompat.getColor(discountButton.context, R.color.colorError)
                                     discountButton.setText(R.string.OFFER_REMOVE_DISCOUNT_BUTTON)
-                                    discountButton.setTextColor(errorColor)
+                                    discountButton.context.colorAttr(R.attr.colorError)
                                     discountButton.setHapticClickListener {
                                         tracker.removeDiscount()
                                         discountButton.context.showAlert(
@@ -191,9 +190,7 @@ class OfferAdapter(
                                     }
                                 } ?: run {
                                 discountButton.setText(R.string.OFFER_ADD_DISCOUNT_BUTTON)
-                                val buttonTextColor =
-                                    ContextCompat.getColor(discountButton.context, R.color.textColorLink)
-                                discountButton.setTextColor(buttonTextColor)
+                                discountButton.context.colorAttr(R.attr.textColorLink)
                                 premiumContainer.background = null
                                 campaign.remove()
                                 discountButton.setHapticClickListener {
