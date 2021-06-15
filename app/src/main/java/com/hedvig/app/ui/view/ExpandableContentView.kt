@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.children
 import androidx.core.view.updateLayoutParams
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ExpandableContentViewBinding
@@ -98,25 +97,11 @@ class ExpandableContentView : ConstraintLayout {
     }
 
     fun contentSizeChanged() {
-        expandedContentHeight = measureAsIfViewWasFullHeight(binding.expandableContentContainer)
-    }
-
-    private fun measureAsIfViewWasFullHeight(container: ViewGroup): Int {
-        container.measure(
-            MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
+        binding.expandableContentContainer.measure(
+            MeasureSpec.makeMeasureSpec(binding.root.width, MeasureSpec.EXACTLY),
             MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
         )
-        return container.children.map { childView ->
-            if (childView is ViewGroup) {
-                measureAsIfViewWasFullHeight(childView)
-            } else {
-                childView.measure(
-                    MeasureSpec.makeMeasureSpec(container.width, MeasureSpec.EXACTLY),
-                    MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
-                )
-                childView.measuredHeight
-            }
-        }.sum()
+        expandedContentHeight = binding.expandableContentContainer.measuredHeight
     }
 
     companion object {

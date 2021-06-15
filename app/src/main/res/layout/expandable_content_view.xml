@@ -4,12 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
-    <com.hedvig.app.ui.view.HedvigCardView
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/expandableContentContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/purple"
-        android:elevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
