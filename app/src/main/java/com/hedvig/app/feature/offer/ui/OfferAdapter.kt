@@ -1,5 +1,7 @@
 package com.hedvig.app.feature.offer.ui
 
+import android.graphics.Paint
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.doOnNextLayout
@@ -159,8 +161,14 @@ class OfferAdapter(
                                 ?.incentiveFragment
                                 ?.displayValue
                                 ?.let { discountText ->
+                                    // TODO Add displayValues from all bundles when quering from QuoteBundle
                                     campaign.text = discountText
                                     campaign.show()
+                                    originalPremium.apply {
+                                        paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+                                        // TODO Use monthlyGross from bundleCost
+                                        text = monetaryAmount
+                                    }
 
                                     premiumContainer.setBackgroundResource(
                                         R.drawable.background_premium_box_with_campaign

@@ -59,28 +59,28 @@
                 android:orientation="vertical">
 
                 <LinearLayout
-                    android:layout_gravity="center"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_gravity="bottom"
                         android:id="@+id/original_premium"
-                        android:layout_marginEnd="@dimen/base_margin_double"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
+                        android:layout_marginEnd="@dimen/base_margin"
                         android:textAppearance="?textAppearanceHeadline6"
-                        android:textColor="@color/grey_inactive"
+                        android:textColor="@color/gray"
                         tools:text="179 SEK" />
 
                     <TextView
                         android:id="@+id/premium"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
                         android:textAppearance="?textAppearanceHeadline4"
                         tools:text="179 SEK" />
-
 
                 </LinearLayout>
 
@@ -91,7 +91,7 @@
                     android:layout_gravity="center"
                     android:text="@string/OFFER_PRICE_PER_MONTH"
                     android:textAppearance="?textAppearanceSubtitle1"
-                    android:textColor="@color/gray" />
+                    android:textColor="@color/grey_inactive" />
 
             </LinearLayout>
 
