@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.updateLayoutParams
+import com.google.android.material.button.MaterialButton
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ExpandableContentViewBinding
 import com.hedvig.app.util.extensions.view.performOnTapHapticFeedback
@@ -56,8 +57,12 @@ class ExpandableContentView : ConstraintLayout {
                         expandableContentContainer.updateHeight(va.animatedValue as Int)
                         if (field) {
                             bottomFadeOut.alpha = 1.0f - animatedFraction
+                            (expandableContentToggle as? MaterialButton)?.icon?.level =
+                                (animatedFraction * 10000).toInt()
                         } else {
                             bottomFadeOut.alpha = animatedFraction
+                            (expandableContentToggle as? MaterialButton)?.icon?.level =
+                                ((1.0f - animatedFraction) * 10000).toInt()
                         }
                     }
                     start()

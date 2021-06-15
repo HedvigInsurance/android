@@ -27,9 +27,7 @@
         android:id="@+id/expandableContentView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/base_margin_triple"
-        android:paddingStart="@dimen/base_margin_double"
-        android:paddingEnd="@dimen/base_margin_double">
+        android:layout_marginTop="@dimen/base_margin_triple">
 
         <LinearLayout
             android:id="@+id/expandableContent"
