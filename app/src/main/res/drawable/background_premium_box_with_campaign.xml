@@ -16,4 +16,10 @@
                 android:bottomRightRadius="@dimen/background_rounded_corner_radius" />
         </shape>
     </item>
+    <item android:height="1dp" android:gravity="bottom">
+        <shape android:shape="rectangle">
+            <size android:height="2dp" />
+            <solid android:color="@color/color_divider" />
+        </shape>
+    </item>
 </layer-list>
