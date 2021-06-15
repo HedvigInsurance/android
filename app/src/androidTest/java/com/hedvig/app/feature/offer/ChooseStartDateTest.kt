@@ -10,7 +10,6 @@ import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
-import com.hedvig.app.util.setDate
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import java.time.LocalDate
 import org.junit.Rule

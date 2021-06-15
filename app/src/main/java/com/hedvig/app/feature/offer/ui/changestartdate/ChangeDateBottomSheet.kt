@@ -13,7 +13,7 @@ import com.hedvig.app.databinding.DialogChangeStartDateBinding
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.util.extensions.isToday
-import com.hedvig.app.util.extensions.repeatOnLifeCycleLaunch
+import com.hedvig.app.util.extensions.repeatOnViewLifeCycleLaunch
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
@@ -50,7 +50,7 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        repeatOnLifeCycleLaunch {
+        repeatOnViewLifeCycleLaunch {
             changeDateBottomSheetViewModel.viewState.collect { viewState ->
                 val dateText = viewState.getFormattedDateText()
                 binding.datePickText.setText(dateText)

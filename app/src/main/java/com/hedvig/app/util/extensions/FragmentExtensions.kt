@@ -13,7 +13,7 @@ val Fragment.screenWidth: Int
 val Fragment.viewLifecycleScope
     get() = viewLifecycleOwner.lifecycleScope
 
-fun Fragment.repeatOnLifeCycleLaunch(
+fun Fragment.repeatOnViewLifeCycleLaunch(
     repeatOnLifeCycleState: Lifecycle.State = Lifecycle.State.STARTED,
     block: suspend () -> Unit
 ) {

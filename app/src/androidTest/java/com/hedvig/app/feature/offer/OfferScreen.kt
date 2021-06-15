@@ -3,7 +3,6 @@ package com.hedvig.app.feature.offer
 import android.view.View
 import com.agoda.kakao.common.views.KView
 import com.agoda.kakao.dialog.KAlertDialog
-import com.agoda.kakao.picker.date.KDatePickerDialog
 import com.agoda.kakao.recycler.KRecyclerItem
 import com.agoda.kakao.recycler.KRecyclerView
 import com.agoda.kakao.screen.Screen
