@@ -27,7 +27,6 @@ import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.apollo.format
-import com.hedvig.app.util.apollo.getCurrencyString
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.extensions.getStringId
 import com.hedvig.app.util.extensions.inflate
@@ -102,10 +101,10 @@ class OfferAdapter(
                                 .fragments
                                 .monetaryAmountFragment
                                 .toMonetaryAmount()
+                                .format(premium.context, marketManager.market)
 
-                            premium.text = monetaryAmount.number.toString()
-                            val currencyString = monetaryAmount.getCurrencyString(premium.context, marketManager.market)
-                            premiumPeriod.text = premiumPeriod.context.getString(R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, currencyString)
+                            premium.text = monetaryAmount
+                            premiumPeriod.text = premiumPeriod.context.getString(R.string.OFFER_PRICE_PER_MONTH)
 
                             val gross = quote
                                 .insuranceCost

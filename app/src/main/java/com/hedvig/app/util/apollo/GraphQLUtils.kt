@@ -39,8 +39,3 @@ fun MonetaryAmount.format(context: Context, market: Market?, minimumDecimals: In
         it.currency = Currency.getInstance(currency.currencyCode)
         it.minimumFractionDigits = minimumDecimals
     }.format(this.number.numberValueExact(BigDecimal::class.java))
-
-fun MonetaryAmount.getCurrencyString(context: Context, market: Market?): String? =
-    NumberFormat.getCurrencyInstance(getLocale(context, market)).also {
-        it.currency = Currency.getInstance(currency.currencyCode)
-    }.currency?.symbol

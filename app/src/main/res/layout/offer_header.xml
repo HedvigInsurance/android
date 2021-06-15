@@ -66,7 +66,7 @@
                     android:id="@+id/premiumPeriod"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION"
+                    android:text="@string/OFFER_PRICE_PER_MONTH"
                     android:textAppearance="?textAppearanceSubtitle1"
                     android:textColor="@color/gray" />
 
