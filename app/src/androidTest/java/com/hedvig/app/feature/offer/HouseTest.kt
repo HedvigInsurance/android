@@ -34,9 +34,6 @@ class HouseTest : TestCase() {
                 flakySafely {
                     childAt<OfferScreen.Facts>(2) {
                         expandableContent { click() }
-                        additionalBuildings {
-                            isVisible()
-                        }
                     }
                 }
             }
