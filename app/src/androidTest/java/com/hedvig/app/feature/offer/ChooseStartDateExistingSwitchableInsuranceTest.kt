@@ -10,11 +10,10 @@ import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
-import com.hedvig.app.util.setDate
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import java.time.LocalDate
 import org.junit.Rule
 import org.junit.Test
-import java.time.LocalDate
 
 class ChooseStartDateExistingSwitchableInsuranceTest : TestCase() {
 
@@ -43,11 +42,8 @@ class ChooseStartDateExistingSwitchableInsuranceTest : TestCase() {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldUpdateStartDateWhenChoosingStartDate() = run {
+    fun shouldShowDatePickerDialogWhenPressingDate() = run {
         activityRule.launch()
-
-        val tomorrow = LocalDate.now().plusDays(1)
-
         onScreen<OfferScreen> {
             scroll {
                 childAt<OfferScreen.HeaderItem>(0) {
@@ -59,18 +55,9 @@ class ChooseStartDateExistingSwitchableInsuranceTest : TestCase() {
         }
         onScreen<ChangeDateSheet> {
             pickDate { click() }
-            datePicker {
-                datePicker { setDate(tomorrow) }
-                okButton { click() }
-            }
-            submit { click() }
-            confirm { positiveButton { click() } }
-        }
-        onScreen<OfferScreen> {
-            scroll {
-                childAt<OfferScreen.HeaderItem>(0) {
-                    startDate { containsText(tomorrow.toString()) }
-                }
+            materialDatePicker {
+                isVisible()
+                negativeButton { click() }
             }
         }
     }

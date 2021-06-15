@@ -138,6 +138,7 @@ dependencies {
     implementation(Libs.AndroidX.browser)
     implementation(Libs.AndroidX.Lifecycle.common)
     implementation(Libs.AndroidX.Lifecycle.liveData)
+    implementation(Libs.AndroidX.Lifecycle.runtime)
     implementation(Libs.AndroidX.Lifecycle.viewModel)
     implementation(Libs.AndroidX.workManager)
     debugImplementation(Libs.AndroidX.startup)

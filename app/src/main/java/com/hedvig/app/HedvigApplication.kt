@@ -77,6 +77,7 @@ open class HedvigApplication : Application() {
                     embarkTrackerModule,
                     localeManagerModule,
                     changeAddressModule,
+                    changeDateBottomSheetModule,
                     useCaseModule,
                     valueStoreModule,
                     onboardingModule,

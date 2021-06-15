@@ -90,6 +90,8 @@ import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.offer.OfferViewModelImpl
+import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
+import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetViewModel
 import com.hedvig.app.feature.onboarding.ChoosePlanRepository
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModelImpl
@@ -399,6 +401,10 @@ val trustlyModule = module {
 
 val changeAddressModule = module {
     viewModel<ChangeAddressViewModel> { ChangeAddressViewModelImpl(get(), get()) }
+}
+
+val changeDateBottomSheetModule = module {
+    viewModel { (data: ChangeDateBottomSheetData) -> ChangeDateBottomSheetViewModel(data) }
 }
 
 val serviceModule = module {
