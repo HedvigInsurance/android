@@ -32,7 +32,7 @@ class HouseTest : TestCase() {
         onScreen<OfferScreen> {
             scroll {
                 flakySafely {
-                    childAt<OfferScreen.Facts>(2) {
+                    childAt<OfferScreen.Facts>(1) {
                         expandableContent { click() }
                         additionalBuildings {
                             isVisible()
