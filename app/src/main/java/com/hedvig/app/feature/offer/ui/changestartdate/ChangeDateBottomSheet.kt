@@ -1,33 +1,46 @@
 package com.hedvig.app.feature.offer.ui.changestartdate
 
-import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.hedvig.app.R
 import com.hedvig.app.databinding.DialogChangeStartDateBinding
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
+import com.hedvig.app.util.extensions.isToday
+import com.hedvig.app.util.extensions.repeatOnViewLifeCycleLaunch
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
-import e
-import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
-import java.text.DateFormatSymbols
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.Calendar
+import kotlinx.coroutines.flow.collect
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class ChangeDateBottomSheet : BottomSheetDialogFragment() {
     private val binding by viewBinding(DialogChangeStartDateBinding::bind)
     private val offerViewModel: OfferViewModel by sharedViewModel()
+    private val changeDateBottomSheetViewModel: ChangeDateBottomSheetViewModel by viewModel {
+        val data = requireArguments().getParcelable<ChangeDateBottomSheetData>(DATA)
+            ?: throw IllegalArgumentException("No data provided to ChangeDateBottomSheet")
+        parametersOf(data)
+    }
     private val tracker: OfferTracker by inject()
 
-    private lateinit var localDate: LocalDate
+    private val dateFormat = DateTimeFormatter.ofPattern("d/M/yyyy")
+    private val datePickerDialog = MaterialDatePicker.Builder
+        .datePicker()
+        .setTitleText("")
+        .build()
+        .apply { addClickListener() }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,94 +50,96 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        repeatOnViewLifeCycleLaunch {
+            changeDateBottomSheetViewModel.viewState.collect { viewState ->
+                val dateText = viewState.getFormattedDateText()
+                binding.datePickText.setText(dateText)
 
-        binding.apply {
-            datePickButton.setHapticClickListener {
-                showDatePickerDialog()
-            }
-
-            chooseDateButton.isEnabled = false
-
-            val data = arguments?.getParcelable<ChangeDateBottomSheetData>(
-                DATA
-            )
-
-            if (data == null) {
-                e { "Programmer error: DATA not passed to ${this.javaClass.name}" }
-                return
-            }
-
-            chooseDateButton.setOnClickListener {
-                requireContext().showAlert(
-                    R.string.ALERT_TITLE_STARTDATE,
-                    R.string.ALERT_DESCRIPTION_STARTDATE,
-                    R.string.ALERT_CONTINUE,
-                    R.string.ALERT_CANCEL,
-                    {
-                        tracker.changeDateContinue()
-                        offerViewModel.chooseStartDate(data.id, localDate)
-                        dismiss()
-                    }
-                )
-            }
-            if (data.hasSwitchableInsurer) {
-                autoSetDateText.text = getString(R.string.ACTIVATE_INSURANCE_END_BTN)
-
-                autoSetDateText.setHapticClickListener {
-                    tracker.activateOnInsuranceEnd()
-                    offerViewModel.removeStartDate(data.id)
-                    dismiss()
+                binding.autoSetDateSwitch.isVisible = viewState.hasSwitchableInsurer
+                binding.autoSetDateTitle.isVisible = viewState.hasSwitchableInsurer
+                if (viewState.hasSwitchableInsurer) {
+                    bindDateSwitch(viewState, dateText)
                 }
+                bindChooseDateButton(viewState)
+            }
+        }
+
+        binding.datePickText.setHapticClickListener {
+            showDatePickerDialog()
+        }
+    }
+
+    private fun bindChooseDateButton(viewState: ChangeDateBottomSheetViewModel.ViewState) {
+        binding.chooseDateButton.setOnClickListener {
+            val localDate = viewState.selectedDateTime.toLocalDate()
+            if (viewState.selectedDateTime.isToday()) {
+                setDateAndFinish(viewState.id, localDate)
             } else {
-                autoSetDateText.text = getString(R.string.ACTIVATE_TODAY_BTN)
-
-                autoSetDateText.setHapticClickListener {
-                    tracker.activateToday()
-                    offerViewModel.chooseStartDate(data.id, LocalDate.now())
-                    dismiss()
-                }
+                showChooseOwnStartDateDialog(viewState.id, localDate)
             }
         }
     }
 
-    private fun showDatePickerDialog() {
-        val c = Calendar.getInstance()
-        val defaultYear = c.get(Calendar.YEAR)
-        val defaultMonth = c.get(Calendar.MONTH)
-        val defaultDay = c.get(Calendar.DAY_OF_MONTH)
+    private fun bindDateSwitch(
+        viewState: ChangeDateBottomSheetViewModel.ViewState,
+        dateText: String?
+    ) {
+        binding.autoSetDateSwitch.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                tracker.activateOnInsuranceEnd()
+                offerViewModel.removeStartDate(viewState.id)
+                binding.datePickText.text = null
+            } else {
+                binding.datePickText.setText(dateText)
+            }
 
-        val dpd = DatePickerDialog(
-            requireContext(),
-            DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
+            binding.datePickText.isEnabled = !isChecked
+            binding.datePickLayout.isEnabled = !isChecked
+        }
+    }
 
-                val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d/M/yyyy")
-                localDate = LocalDate.parse("$dayOfMonth/${monthOfYear + 1}/$year", formatter)
-                val monthFormatted = DateFormatSymbols().months[monthOfYear].capitalize()
+    private fun ChangeDateBottomSheetViewModel.ViewState.getFormattedDateText() =
+        if (selectedDateTime.isToday()) {
+            getString(R.string.START_DATE_TODAY)
+        } else {
+            selectedDateTime.format(dateFormat)
+        }
 
-                binding.datePickButton.text = "$dayOfMonth $monthFormatted $year"
-
-                binding.chooseDateButton.isEnabled = true
-            },
-            defaultYear,
-            defaultMonth,
-            defaultDay
+    private fun showChooseOwnStartDateDialog(id: String, date: LocalDate) {
+        requireContext().showAlert(
+            R.string.ALERT_TITLE_STARTDATE,
+            R.string.ALERT_DESCRIPTION_STARTDATE,
+            R.string.ALERT_CONTINUE,
+            R.string.ALERT_CANCEL,
+            { setDateAndFinish(id, date) }
         )
+    }
 
-        dpd.datePicker.minDate = System.currentTimeMillis() - 1000
-        dpd.show()
+    private fun setDateAndFinish(id: String, date: LocalDate) {
+        tracker.changeDateContinue()
+        offerViewModel.chooseStartDate(id, date)
+        dismiss()
+    }
+
+    private fun showDatePickerDialog() {
+        datePickerDialog.show(childFragmentManager, DATE_PICKER_TAG)
+    }
+
+    private fun MaterialDatePicker<Long>.addClickListener() {
+        addOnPositiveButtonClickListener { epochMillis ->
+            changeDateBottomSheetViewModel.onDateSelected(epochMillis)
+        }
     }
 
     companion object {
         private const val DATA = "DATA"
-
+        private const val DATE_PICKER_TAG = "DATE_PICKER_TAG"
         const val TAG = "changeDateBottomSheet"
 
         fun newInstance(data: ChangeDateBottomSheetData): ChangeDateBottomSheet {
             return ChangeDateBottomSheet()
                 .apply {
-                    arguments = bundleOf(
-                        DATA to data
-                    )
+                    arguments = bundleOf(DATA to data)
                 }
         }
     }

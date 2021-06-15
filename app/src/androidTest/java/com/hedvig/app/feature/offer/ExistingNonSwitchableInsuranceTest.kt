@@ -47,7 +47,7 @@ class ExistingNonSwitchableInsuranceTest : TestCase() {
         }
 
         onScreen<ChangeDateSheet> {
-            autoSetDate { hasText(R.string.ACTIVATE_TODAY_BTN) }
+            autoSetDate { hasText(R.string.OFFER_PLAN_EXIRES_TEXT) }
         }
     }
 }

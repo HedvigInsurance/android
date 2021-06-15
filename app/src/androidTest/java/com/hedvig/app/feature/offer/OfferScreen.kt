@@ -3,13 +3,13 @@ package com.hedvig.app.feature.offer
 import android.view.View
 import com.agoda.kakao.common.views.KView
 import com.agoda.kakao.dialog.KAlertDialog
-import com.agoda.kakao.picker.date.KDatePickerDialog
 import com.agoda.kakao.recycler.KRecyclerItem
 import com.agoda.kakao.recycler.KRecyclerView
 import com.agoda.kakao.screen.Screen
 import com.agoda.kakao.text.KButton
 import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
+import com.hedvig.app.util.KMaterialDatePicker
 import org.hamcrest.Matcher
 
 class OfferScreen : Screen<OfferScreen>() {
@@ -38,9 +38,9 @@ class OfferScreen : Screen<OfferScreen>() {
 }
 
 class ChangeDateSheet : Screen<ChangeDateSheet>() {
-    val autoSetDate = KButton { withId(R.id.autoSetDateText) }
-    val pickDate = KView { withId(R.id.datePickButton) }
-    val datePicker = KDatePickerDialog()
+    val autoSetDate = KButton { withId(R.id.auto_set_date_switch) }
+    val pickDate = KView { withId(R.id.date_pick_layout) }
+    val materialDatePicker = KMaterialDatePicker()
     val submit = KButton { withId(R.id.chooseDateButton) }
     val confirm = KAlertDialog()
 }

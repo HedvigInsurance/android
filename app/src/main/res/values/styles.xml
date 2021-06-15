@@ -154,4 +154,5 @@
         <item name="android:clipToPadding">false</item>
         <item name="android:paddingTop">12dp</item>
     </style>
+
 </resources>
