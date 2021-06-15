@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="@dimen/base_margin_triple"
-        android:layout_marginBottom="@dimen/base_margin"
+        android:layout_marginBottom="@dimen/base_margin_triple"
         android:paddingStart="@dimen/base_margin_quadruple"
         android:paddingEnd="@dimen/base_margin_quadruple"
         android:text="@string/REFERRAL_ADDCOUPON_HEADLINE"
