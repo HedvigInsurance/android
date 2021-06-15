@@ -15,6 +15,7 @@ import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.type.EmbarkExternalRedirectLocation
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.databinding.ActivityEmbarkBinding
 import com.hedvig.app.feature.embark.EmbarkModel
 import com.hedvig.app.feature.embark.EmbarkViewModel
@@ -33,10 +34,10 @@ import com.hedvig.app.feature.embark.passages.selectaction.SelectActionFragment
 import com.hedvig.app.feature.embark.passages.selectaction.SelectActionParameter
 import com.hedvig.app.feature.embark.passages.textaction.TextActionFragment
 import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
+import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
-import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.whenApiVersion
@@ -106,8 +107,9 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
     private fun showNextView(embarkData: EmbarkModel, passage: EmbarkStoryQuery.Passage?) {
         val offerKeys = embarkData.passage?.offerRedirect?.data?.keys
         if (offerKeys != null && offerKeys.isNotEmpty()) {
-            val offerIds = offerKeys.mapNotNull { model.getFromStore(it) }
-            showWebOffer(offerIds)
+            val offerIds = model.getListFromStore(offerKeys)
+            // TODO: Pass offerIds to OfferActivity
+            startActivity(OfferActivity.newInstance(this))
         } else if (embarkData.passage?.name == "Offer") {
             showWebOffer(
                 listOf(

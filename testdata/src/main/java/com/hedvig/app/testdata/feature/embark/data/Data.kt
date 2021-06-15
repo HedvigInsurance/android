@@ -1582,3 +1582,58 @@ val STORY_WITH_MARKDOWN_MESSAGE = EmbarkStoryDataBuilder(
             .build()
     )
 ).build()
+
+val STORY_WITH_GRAPHQL_MUTATION_AND_OFFER_REDIRECT = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER
+            .copy(
+                action = TextActionBuilder(
+                    key = "input",
+                    link = STANDARD_FIRST_LINK
+                ).build()
+            )
+            .build(),
+        STANDARD_SECOND_PASSAGE_BUILDER
+            .copy(
+                api = GraphQLApiBuilder(
+                    type = GraphQLApiBuilder.Type.MUTATION,
+                    query = VARIABLE_MUTATION,
+                    results = listOf(
+                        GraphQLResultsFragment(
+                            key = "hello", as_ = "VARIABLE"
+                        )
+                    ),
+                    errors = listOf(
+                        GraphQLErrorsFragment(
+                            contains = null,
+                            next = GraphQLErrorsFragment.Next(
+                                fragments = GraphQLErrorsFragment.Next.Fragments(
+                                    LINK_TO_FOURTH_PASSAGE
+                                )
+                            )
+                        )
+                    ),
+                    variables = listOf(
+                        GraphQLVariableBuilder(
+                            kind = GraphQLVariableBuilder.VariableKind.SINGLE,
+                            key = "variable",
+                            from = "input",
+                            singleType = EmbarkAPIGraphQLSingleVariableCasting.STRING
+                        ).build()
+                    ),
+                    next = LINK_TO_THIRD_PASSAGE
+                ).build()
+            )
+            .build(),
+        STANDARD_THIRD_PASSAGE_BUILDER
+            .copy(
+                offerRedirectKeys = listOf("VARIABLE"),
+                messages = listOf(
+                    MessageBuilder("api result: {VARIABLE}").build()
+                )
+            )
+            .build(),
+        STANDARD_FOURTH_PASSAGE_BUILDER
+            .build()
+    )
+).build()
