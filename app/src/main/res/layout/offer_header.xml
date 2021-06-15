@@ -7,10 +7,11 @@
     android:paddingBottom="@dimen/base_margin_quadruple"
     tools:context=".feature.offer.ui.OfferActivity">
 
-    <com.hedvig.app.ui.view.HedvigCardView
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/base_margin_double">
+        android:layout_margin="@dimen/base_margin_double"
+        app:cardCornerRadius="@dimen/hedvig_card_view_radius">
 
         <LinearLayout
             android:id="@+id/premiumContainer"
@@ -21,10 +22,12 @@
 
             <TextView
                 android:id="@+id/campaign"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/base_margin_half"
                 android:background="@drawable/background_premium_box_with_campaign"
+                android:gravity="center"
+                android:paddingBottom="@dimen/base_margin_half"
                 android:textAppearance="?textAppearanceSubtitle1"
                 tools:text="Discount" />
 
@@ -62,10 +65,10 @@
                     tools:text="179" />
 
                 <TextView
-                    android:layout_gravity="center"
                     android:id="@+id/premiumPeriod"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:text="@string/OFFER_PRICE_PER_MONTH"
                     android:textAppearance="?textAppearanceSubtitle1"
                     android:textColor="@color/gray" />
@@ -138,5 +141,5 @@
                 tools:text="@string/REFERRAL_ADDCOUPON_HEADLINE" />
 
         </LinearLayout>
-    </com.hedvig.app.ui.view.HedvigCardView>
+    </androidx.cardview.widget.CardView>
 </FrameLayout>
