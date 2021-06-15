@@ -28,7 +28,8 @@
                 android:background="@drawable/background_premium_box_with_campaign"
                 android:gravity="center"
                 android:paddingBottom="@dimen/base_margin_half"
-                android:textAppearance="?textAppearanceSubtitle1"
+                android:textAppearance="?textAppearanceSubtitle2"
+                android:textSize="12sp"
                 tools:text="Discount" />
 
             <TextView
@@ -52,17 +53,36 @@
                 tools:visibility="visible" />
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/base_margin_double"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/premium"
+                <LinearLayout
+                    android:layout_gravity="center"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?textAppearanceHeadline3"
-                    tools:text="179" />
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_gravity="bottom"
+                        android:id="@+id/original_premium"
+                        android:layout_marginEnd="@dimen/base_margin_double"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?textAppearanceHeadline6"
+                        android:textColor="@color/grey_inactive"
+                        tools:text="179 SEK" />
+
+                    <TextView
+                        android:id="@+id/premium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?textAppearanceHeadline4"
+                        tools:text="179 SEK" />
+
+
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/premiumPeriod"

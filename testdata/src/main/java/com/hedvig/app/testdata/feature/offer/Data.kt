@@ -63,16 +63,8 @@ val OFFER_DATA_SWEDISH_HOUSE_WITH_DISCOUNT = OfferDataBuilder(
         OfferQuery.RedeemedCampaign(
             fragments = OfferQuery.RedeemedCampaign.Fragments(
                 incentiveFragment = IncentiveFragment(
-                    incentive = IncentiveFragment.Incentive(
-                        asMonthlyCostDeduction = IncentiveFragment.AsMonthlyCostDeduction(
-                            amount = IncentiveFragment.Amount(
-                                amount = "40"
-                            )
-                        ),
-                        asFreeMonths = null,
-                        asPercentageDiscountMonths = null,
-                        asNoDiscount = null
-                    )
+                    incentive = null,
+                    displayValue = "10 SEK DISCOUNT/MO."
                 )
             )
         )

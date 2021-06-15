@@ -157,50 +157,18 @@ class OfferAdapter(
                                 .firstOrNull()
                                 ?.fragments
                                 ?.incentiveFragment
-                                ?.incentive
-                                ?.let { incentive ->
-                                    discountButton.setText(R.string.OFFER_REMOVE_DISCOUNT_BUTTON)
+                                ?.displayValue
+                                ?.let { discountText ->
+                                    campaign.text = discountText
+                                    campaign.show()
+
+                                    premiumContainer.setBackgroundResource(
+                                        R.drawable.background_premium_box_with_campaign
+                                    )
+
                                     val errorColor = ContextCompat.getColor(discountButton.context, R.color.colorError)
+                                    discountButton.setText(R.string.OFFER_REMOVE_DISCOUNT_BUTTON)
                                     discountButton.setTextColor(errorColor)
-
-                                    incentive.asFreeMonths?.let { freeMonths ->
-                                        campaign.text = campaign.resources.getString(
-                                            R.string.OFFER_SCREEN_FREE_MONTHS_DESCRIPTION,
-                                            freeMonths.quantity
-                                        )
-                                        campaign.show()
-                                        premiumContainer.setBackgroundResource(
-                                            R.drawable.background_premium_box_with_campaign
-                                        )
-                                    }
-
-                                    incentive.asMonthlyCostDeduction?.let {
-                                        campaign.setText(R.string.OFFER_SCREEN_INVITED_BUBBLE)
-                                        campaign.show()
-                                        premiumContainer.setBackgroundResource(
-                                            R.drawable.background_premium_box_with_campaign
-                                        )
-                                    }
-
-                                    incentive.asPercentageDiscountMonths?.let { pdm ->
-                                        campaign.text = if (pdm.pdmQuantity == 1) {
-                                            campaign.resources.getString(
-                                                R.string.OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE_SINGULAR,
-                                                pdm.percentageDiscount.toInt()
-                                            )
-                                        } else {
-                                            campaign.resources.getString(
-                                                R.string.OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE_PLURAL,
-                                                pdm.percentageDiscount.toInt(),
-                                                pdm.pdmQuantity
-                                            )
-                                        }
-                                        campaign.show()
-                                        premiumContainer.setBackgroundResource(
-                                            R.drawable.background_premium_box_with_campaign
-                                        )
-                                    }
-
                                     discountButton.setHapticClickListener {
                                         tracker.removeDiscount()
                                         discountButton.context.showAlert(
@@ -213,20 +181,10 @@ class OfferAdapter(
                                             }
                                         )
                                     }
-
-                                    // Remove campaign views if campaign type is unknown
-                                    if (
-                                        incentive.asFreeMonths == null &&
-                                        incentive.asMonthlyCostDeduction == null &&
-                                        incentive.asNoDiscount == null &&
-                                        incentive.asPercentageDiscountMonths == null
-                                    ) {
-                                        premiumContainer.background = null
-                                        campaign.remove()
-                                    }
                                 } ?: run {
                                 discountButton.setText(R.string.OFFER_ADD_DISCOUNT_BUTTON)
-                                val buttonTextColor = ContextCompat.getColor(discountButton.context, R.color.textColorLink)
+                                val buttonTextColor =
+                                    ContextCompat.getColor(discountButton.context, R.color.textColorLink)
                                 discountButton.setTextColor(buttonTextColor)
                                 premiumContainer.background = null
                                 campaign.remove()
