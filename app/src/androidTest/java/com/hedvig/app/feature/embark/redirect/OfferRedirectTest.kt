@@ -32,13 +32,13 @@ class OfferRedirectTest : TestCase() {
     val valueStoreRule = ValueStoreRule("quoteId", "testId")
 
     @Test
-    fun shouldOpenWebOfferWhenEncounteringExternalRedirect() = run {
+    fun shouldOpenOfferWhenEncounteringRedirectKeys() = run {
         activityRule.launch(EmbarkActivity.newInstance(context(), this::class.java.name, "storyTitle"))
 
         onScreen<EmbarkScreen> {
-            webOfferIntent { stub() }
+            offerActivityIntent { stub() }
             selectActions { childAt<EmbarkScreen.SelectAction>(0) { click() } }
-            flakySafely { webOfferIntent { intended() } }
+            flakySafely { offerActivityIntent { intended() } }
         }
     }
 }
