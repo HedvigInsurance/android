@@ -1,69 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/background_rounded_corners"
+    android:background="@drawable/bottom_sheet_dialog_no_title_fragment_background"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/base_margin_triple">
+    android:padding="@dimen/base_margin_double">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:contentDescription="@null"
+        app:srcCompat="@drawable/bottom_sheet_handle" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="@dimen/base_margin_triple"
-        android:layout_marginBottom="@dimen/base_margin"
+        android:layout_marginBottom="@dimen/base_margin_triple"
         android:paddingStart="@dimen/base_margin_quadruple"
         android:paddingEnd="@dimen/base_margin_quadruple"
         android:text="@string/REFERRAL_ADDCOUPON_HEADLINE"
         android:textAppearance="?textAppearanceHeadline5" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="@dimen/base_margin"
-        android:gravity="center"
-        android:text="@string/REFERRAL_ADDCOUPON_BODY"
-        android:textAppearance="?textAppearanceBody2" />
-
-    <EditText
-        android:id="@+id/bottomSheetAddPromotionCodeEditText"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textField"
+        style="@style/Hedvig.Theme.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_quadruple"
-        android:layout_marginTop="@dimen/base_margin_triple"
-        android:layout_marginEnd="@dimen/base_margin_quadruple"
-        android:background="@drawable/background_edit_text_rounded_corners"
-        android:hint="@string/REFERRAL_ADDCOUPON_INPUTPLACEHOLDER"
-        android:imeOptions="actionDone"
-        android:importantForAutofill="no"
-        android:inputType="textNoSuggestions"
-        android:lines="1"
-        android:padding="@dimen/base_margin_double"
-        android:singleLine="true" />
+        android:hint="@string/REFERRAL_ADDCOUPON_INPUTPLACEHOLDER">
 
-    <TextView
-        android:id="@+id/bottomSheetPromotionCodeMissingCode"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/base_margin_double"
-        android:gravity="center"
-        android:text="@string/REFERRAL_ERROR_MISSINGCODE_BODY"
-        android:textAppearance="?textAppearanceBody2"
-        android:textColor="?colorError"
-        android:visibility="gone"
-        tools:visibility="visible" />
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/bottomSheetAddPromotionCodeEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:imeOptions="actionDone"
+            android:importantForAutofill="no"
+            android:inputType="textNoSuggestions"
+            android:lines="1" />
 
-    <Button
-        android:id="@+id/bottomSheetAddPromotionCodeButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginStart="@dimen/base_margin_quadruple"
-        android:layout_marginTop="@dimen/base_margin_quadruple"
-        android:layout_marginEnd="@dimen/base_margin_quadruple"
-        android:text="@string/REFERRAL_ADDCOUPON_BTN_SUBMIT" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
         android:id="@+id/bottomSheetPromotionCodeTermsAndCondition"
@@ -85,5 +64,14 @@
         android:gravity="center"
         android:text="@string/REFERRAL_ADDCOUPON_TC_LINK"
         android:textColor="?textColorLink" />
+
+    <Button
+        android:id="@+id/bottomSheetAddPromotionCodeButton"
+        style="?materialButtonContainedLargeStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/base_margin_quadruple"
+        android:text="@string/REFERRAL_ADDCOUPON_BTN_SUBMIT" />
 
 </LinearLayout>
