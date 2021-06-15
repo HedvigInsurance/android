@@ -41,5 +41,4 @@ class ChangeDateSheet : Screen<ChangeDateSheet>() {
     val pickDate = KView { withId(R.id.date_pick_layout) }
     val materialDatePicker = KMaterialDatePicker()
     val submit = KButton { withId(R.id.chooseDateButton) }
-    val confirm = KAlertDialog()
 }

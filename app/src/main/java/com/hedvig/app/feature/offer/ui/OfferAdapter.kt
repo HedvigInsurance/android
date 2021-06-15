@@ -51,7 +51,6 @@ class OfferAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.offer_header -> ViewHolder.Header(parent)
-        R.layout.offer_info_area -> ViewHolder.Info(parent)
         R.layout.offer_fact_area -> ViewHolder.Facts(parent)
         R.layout.offer_peril_area -> ViewHolder.Perils(parent)
         R.layout.offer_terms_area -> ViewHolder.Terms(parent)
@@ -61,7 +60,6 @@ class OfferAdapter(
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
         is OfferModel.Header -> R.layout.offer_header
-        OfferModel.Info -> R.layout.offer_info_area
         is OfferModel.Facts -> R.layout.offer_fact_area
         is OfferModel.Perils -> R.layout.offer_peril_area
         is OfferModel.Terms -> R.layout.offer_terms_area
@@ -251,16 +249,6 @@ class OfferAdapter(
             }
         }
 
-        class Info(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_info_area)) {
-            override fun bind(
-                data: OfferModel,
-                fragmentManager: FragmentManager,
-                tracker: OfferTracker,
-                removeDiscount: () -> Unit,
-                marketManager: MarketManager,
-            ) = Unit
-        }
-
         class Facts(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_fact_area)) {
             private val binding by viewBinding(OfferFactAreaBinding::bind)
 
@@ -415,8 +403,6 @@ sealed class OfferModel {
     data class Header(
         val inner: OfferQuery.Data,
     ) : OfferModel()
-
-    object Info : OfferModel()
 
     data class Facts(
         val inner: OfferQuery.Data,
