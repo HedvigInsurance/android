@@ -17,7 +17,7 @@ import com.hedvig.app.databinding.OfferHeaderBinding
 import com.hedvig.app.databinding.OfferPerilAreaBinding
 import com.hedvig.app.databinding.OfferSwitchBinding
 import com.hedvig.app.databinding.OfferTermsAreaBinding
-import com.hedvig.app.feature.offer.OfferRedeemCodeDialog
+import com.hedvig.app.feature.offer.OfferRedeemCodeBottomSheet
 import com.hedvig.app.feature.offer.OfferSignDialog
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.TermsAdapter
@@ -227,10 +227,10 @@ class OfferAdapter(
                                 campaign.remove()
                                 discountButton.setHapticClickListener {
                                     tracker.addDiscount()
-                                    OfferRedeemCodeDialog.newInstance()
+                                    OfferRedeemCodeBottomSheet.newInstance()
                                         .show(
                                             fragmentManager,
-                                            OfferRedeemCodeDialog.TAG
+                                            OfferRedeemCodeBottomSheet.TAG
                                         )
                                 }
                             }

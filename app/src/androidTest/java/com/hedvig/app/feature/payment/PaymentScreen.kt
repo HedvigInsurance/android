@@ -11,7 +11,7 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinActivity
 import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutActivity
 import com.hedvig.app.feature.profile.ui.payment.PaymentHistoryActivity
-import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeDialog
+import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeBottomSheet
 import com.hedvig.app.feature.trustly.TrustlyConnectPayinActivity
 import com.kaspersky.kaspresso.screens.KScreen
 import org.hamcrest.Matcher
@@ -93,7 +93,7 @@ class PaymentScreen : Screen<PaymentScreen>() {
 
 object RedeemCode : KScreen<RedeemCode>() {
     override val layoutId = R.layout.promotion_code_dialog
-    override val viewClass = RedeemCodeDialog::class.java
+    override val viewClass = RedeemCodeBottomSheet::class.java
 
     val redeem = KButton { withId(R.id.bottomSheetAddPromotionCodeButton) }
 }

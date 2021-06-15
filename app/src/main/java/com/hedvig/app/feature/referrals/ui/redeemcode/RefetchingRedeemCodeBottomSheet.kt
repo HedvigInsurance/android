@@ -4,7 +4,7 @@ import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
-class RefetchingRedeemCodeDialog : RedeemCodeDialog() {
+class RefetchingRedeemCodeBottomSheet : RedeemCodeBottomSheet() {
     private val model: PaymentViewModel by sharedViewModel()
 
     override fun onRedeemSuccess(data: RedeemReferralCodeMutation.Data) {
@@ -16,6 +16,6 @@ class RefetchingRedeemCodeDialog : RedeemCodeDialog() {
         const val TAG = "RefetchingRedeemCodeDialog"
 
         fun newInstance() =
-            RefetchingRedeemCodeDialog()
+            RefetchingRedeemCodeBottomSheet()
     }
 }

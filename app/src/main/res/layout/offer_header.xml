@@ -132,7 +132,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/base_margin"
                 android:layout_marginBottom="@dimen/base_margin_double"
-                tools:text="@string/OFFER_ADD_DISCOUNT_BUTTON" />
+                android:textColor="@color/textColorSecondary"
+                app:icon="@drawable/ic_add_circle"
+                app:iconPadding="@dimen/base_margin"
+                tools:text="@string/REFERRAL_ADDCOUPON_HEADLINE" />
 
         </LinearLayout>
     </com.hedvig.app.ui.view.HedvigCardView>
