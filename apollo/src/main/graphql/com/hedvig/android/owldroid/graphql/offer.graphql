@@ -14,31 +14,8 @@ query Offer($locale: Locale!) {
         displayName
         switchable
       }
-      quoteDetails {
-        ... on SwedishApartmentQuoteDetails {
-          type
-          street
-          zipCode
-          householdSize
-          livingSpace
-        }
-        ... on SwedishHouseQuoteDetails {
-          ancillarySpace
-          street
-          zipCode
-          householdSize
-          livingSpace
-          yearOfConstruction
-          isSubleted
-          numberOfBathrooms
-          extraBuildings {
-            ... on ExtraBuildingCore {
-              displayName
-              area
-              hasWaterConnected
-            }
-          }
-        }
+      detailsTable(locale: $locale) {
+        ... TableFragment
       }
       insuranceCost {
         ...CostFragment
