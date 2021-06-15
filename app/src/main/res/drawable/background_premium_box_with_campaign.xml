@@ -5,7 +5,7 @@
             <corners
                 android:topLeftRadius="@dimen/background_rounded_corner_radius"
                 android:topRightRadius="@dimen/background_rounded_corner_radius" />
-            <solid android:color="@color/hedvig_dark_gray" />
+            <solid android:color="?colorSurface" />
         </shape>
     </item>
     <item android:top="@dimen/premium_box_campaign_header_height">
