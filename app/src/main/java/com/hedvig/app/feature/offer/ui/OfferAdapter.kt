@@ -3,6 +3,7 @@ package com.hedvig.app.feature.offer.ui
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.doOnNextLayout
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -159,6 +160,8 @@ class OfferAdapter(
                                 ?.incentive
                                 ?.let { incentive ->
                                     discountButton.setText(R.string.OFFER_REMOVE_DISCOUNT_BUTTON)
+                                    val errorColor = ContextCompat.getColor(discountButton.context, R.color.colorError)
+                                    discountButton.setTextColor(errorColor)
 
                                     incentive.asFreeMonths?.let { freeMonths ->
                                         campaign.text = campaign.resources.getString(
@@ -223,6 +226,8 @@ class OfferAdapter(
                                     }
                                 } ?: run {
                                 discountButton.setText(R.string.OFFER_ADD_DISCOUNT_BUTTON)
+                                val buttonTextColor = ContextCompat.getColor(discountButton.context, R.color.textColorLink)
+                                discountButton.setTextColor(buttonTextColor)
                                 premiumContainer.background = null
                                 campaign.remove()
                                 discountButton.setHapticClickListener {
