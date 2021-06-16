@@ -7,16 +7,13 @@
     android:background="?android:colorBackground"
     android:orientation="vertical"
     android:paddingHorizontal="@dimen/base_margin_double"
-    android:paddingTop="@dimen/base_margin_octuple">
+    android:paddingVertical="@dimen/base_margin_octuple">
 
     <TextView
-        style="?textAppearanceBody1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/base_margin_double"
-        android:drawablePadding="@dimen/base_margin_double"
-        android:text="@string/OFFER_SCREEN_INSURED_AMOUNTS_TITLE"
-        app:drawableStartCompat="@drawable/ic_my_documents" />
+        android:text="Details"
+        android:textAppearance="?textAppearanceHeadline6" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/insurableLimits"
@@ -39,13 +36,20 @@
         android:layout_marginTop="@dimen/base_margin_double"
         android:orientation="vertical" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_quintuple"
+        android:layout_marginBottom="@dimen/base_margin_double"
+        android:text="Important documents"
+        android:textAppearance="?textAppearanceHeadline6" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/termsDocuments"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:nestedScrollingEnabled="false"
         android:overScrollMode="never"
-        android:paddingTop="@dimen/base_margin_octuple"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:itemCount="2"
         tools:listitem="@layout/offer_terms_area_button" />

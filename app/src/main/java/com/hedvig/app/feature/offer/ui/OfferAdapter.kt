@@ -325,9 +325,7 @@ class OfferAdapter(
                             ?.insurableLimits
                             ?.map { it.fragments.insurableLimitsFragment }
                             ?.let {
-                                (insurableLimits.adapter as? InsurableLimitsAdapter)?.submitList(
-                                    it
-                                )
+                                (insurableLimits.adapter as? InsurableLimitsAdapter)?.submitList(it)
                             }
                         data.inner.lastQuoteOfMember.asCompleteQuote?.insuranceTerms?.let {
                             (termsDocuments.adapter as? TermsAdapter)?.submitList(it)

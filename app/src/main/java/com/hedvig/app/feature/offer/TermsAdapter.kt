@@ -29,7 +29,9 @@ class TermsAdapter(
         private val binding by viewBinding(OfferTermsAreaButtonBinding::bind)
         fun bind(terms: OfferQuery.InsuranceTerm, tracker: OfferTracker, marketManager: MarketManager) {
             val button = binding.button
-            button.text = terms.displayName + " ↗"
+            binding.text.text = terms.displayName
+            // TODO: Parse subtitle from bundledquote api
+            binding.subtitle.text = "Test subtitle"
             button.setHapticClickListener {
                 tracker.openOfferLink(terms.displayName)
                 // TODO Quick fix for getting new terms and conditions
