@@ -18,8 +18,9 @@ class MockOfferViewModel : OfferViewModel() {
     init {
         Handler(getMainLooper()).postDelayed(
             {
-                val items = OfferItemsBuilder.createItems(mockData)
-                _viewState.postValue(ViewState.OfferItems(items))
+                val offerItems = OfferItemsBuilder.createOfferItems(mockData)
+                val documentItems = OfferItemsBuilder.createDocumentItems(mockData)
+                _viewState.postValue(ViewState.OfferItems(offerItems, documentItems))
             },
             500
         )
@@ -34,7 +35,7 @@ class MockOfferViewModel : OfferViewModel() {
     override fun chooseStartDate(id: String, date: LocalDate) {
         _viewState.postValue(
             ViewState.OfferItems(
-                OfferItemsBuilder.createItems(
+                OfferItemsBuilder.createOfferItems(
                     mockData.copy(
                         lastQuoteOfMember = mockData.lastQuoteOfMember.copy(
                             asCompleteQuote = mockData.lastQuoteOfMember.asCompleteQuote!!.copy(
@@ -42,7 +43,8 @@ class MockOfferViewModel : OfferViewModel() {
                             )
                         )
                     )
-                )
+                ),
+                listOf()
             )
         )
     }
@@ -50,7 +52,7 @@ class MockOfferViewModel : OfferViewModel() {
     override fun removeStartDate(id: String) {
         _viewState.postValue(
             ViewState.OfferItems(
-                OfferItemsBuilder.createItems(
+                OfferItemsBuilder.createOfferItems(
                     mockData.copy(
                         lastQuoteOfMember = mockData.lastQuoteOfMember.copy(
                             asCompleteQuote = mockData.lastQuoteOfMember.asCompleteQuote!!.copy(
@@ -58,7 +60,8 @@ class MockOfferViewModel : OfferViewModel() {
                             )
                         )
                     )
-                )
+                ),
+                listOf()
             )
         )
     }

@@ -16,7 +16,9 @@ class UpcomingChangeBottomSheet : ExpandableBottomSheet() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.recycler.adapter = TableAdapter(upcomingAgreement)
+        val adapter = TableAdapter()
+        binding.recycler.adapter = adapter
+        adapter.setTable(upcomingAgreement)
     }
 
     companion object {

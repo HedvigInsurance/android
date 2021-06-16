@@ -5,6 +5,8 @@
     android:id="@+id/button"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/base_margin_double"
+    android:layout_marginTop="@dimen/base_margin_half"
     android:layout_marginBottom="@dimen/base_margin"
     android:minHeight="@dimen/contract_document_card">
 

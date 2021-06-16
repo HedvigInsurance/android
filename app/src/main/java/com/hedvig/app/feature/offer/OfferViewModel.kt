@@ -9,15 +9,15 @@ import com.hedvig.android.owldroid.fragment.SignStatusFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
+import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.offer.ui.OfferModel
 import e
+import java.time.LocalDate
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 
 abstract class OfferViewModel : ViewModel() {
     protected val _viewState = MutableLiveData<ViewState>()
@@ -35,7 +35,11 @@ abstract class OfferViewModel : ViewModel() {
     abstract fun removeStartDate(id: String)
 
     sealed class ViewState {
-        data class OfferItems(val items: List<OfferModel>) : ViewState()
+        data class OfferItems(
+            val offerItems: List<OfferModel>,
+            val documents: List<DocumentItems>
+        ) : ViewState()
+
         sealed class Error : ViewState() {
             data class GeneralError(val message: String?) : Error()
             object EmptyResponse : Error()
@@ -72,8 +76,9 @@ class OfferViewModelImpl(
             if (data.contracts.isNotEmpty()) {
                 ViewState.HasContracts
             } else {
-                val items = OfferItemsBuilder.createItems(data)
-                ViewState.OfferItems(items)
+                val offerItems = OfferItemsBuilder.createOfferItems(data)
+                val documentItems = OfferItemsBuilder.createDocumentItems(data)
+                ViewState.OfferItems(offerItems, documentItems)
             }
         } ?: ViewState.Error.EmptyResponse
     }

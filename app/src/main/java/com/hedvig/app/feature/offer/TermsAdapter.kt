@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.type.InsuranceTermType
 import com.hedvig.app.R
-import com.hedvig.app.databinding.OfferTermsAreaButtonBinding
+import com.hedvig.app.databinding.DocumentBinding
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.GenericDiffUtilItemCallback
@@ -24,9 +24,9 @@ class TermsAdapter(
     class ViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
         LayoutInflater
             .from(parent.context)
-            .inflate(R.layout.offer_terms_area_button, parent, false)
+            .inflate(R.layout.document, parent, false)
     ) {
-        private val binding by viewBinding(OfferTermsAreaButtonBinding::bind)
+        private val binding by viewBinding(DocumentBinding::bind)
         fun bind(terms: OfferQuery.InsuranceTerm, tracker: OfferTracker, marketManager: MarketManager) {
             val button = binding.button
             binding.text.text = terms.displayName
