@@ -12,6 +12,8 @@ object OfferItemsBuilder {
             OfferModel.Header(data),
             OfferModel.Facts(data),
             OfferModel.Perils(data),
+            // TODO Add extension to BundledQuote and fetch this from BE
+            OfferModel.Footer("https://www.hedvig.com/se/personuppgifter"),
             data.lastQuoteOfMember.asCompleteQuote?.currentInsurer?.let { currentInsurer ->
                 if (currentInsurer.switchable == true) {
                     OfferModel.Switcher(currentInsurer.displayName)

@@ -1,5 +1,7 @@
 package com.hedvig.app.feature.offer.ui
 
+import android.content.Intent
+import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.doOnNextLayout
@@ -11,9 +13,11 @@ import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.BASE_MARGIN_HALF
 import com.hedvig.app.R
 import com.hedvig.app.databinding.OfferFactAreaBinding
+import com.hedvig.app.databinding.OfferFooterBinding
 import com.hedvig.app.databinding.OfferHeaderBinding
 import com.hedvig.app.databinding.OfferPerilAreaBinding
 import com.hedvig.app.databinding.OfferSwitchBinding
+import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.offer.OfferRedeemCodeBottomSheet
 import com.hedvig.app.feature.offer.OfferSignDialog
 import com.hedvig.app.feature.offer.OfferTracker
@@ -52,6 +56,7 @@ class OfferAdapter(
         R.layout.offer_fact_area -> ViewHolder.Facts(parent)
         R.layout.offer_peril_area -> ViewHolder.Perils(parent)
         R.layout.offer_switch -> ViewHolder.Switch(parent)
+        R.layout.offer_footer -> ViewHolder.Footer(parent)
         else -> throw Error("Invalid viewType: $viewType")
     }
 
@@ -60,6 +65,7 @@ class OfferAdapter(
         is OfferModel.Facts -> R.layout.offer_fact_area
         is OfferModel.Perils -> R.layout.offer_peril_area
         is OfferModel.Switcher -> R.layout.offer_switch
+        is OfferModel.Footer -> R.layout.offer_footer
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -313,6 +319,28 @@ class OfferAdapter(
                 e { "Invariant detected: ${data.javaClass.name} passed to ${this.javaClass.name}::bind" }
             }
         }
+
+        class Footer(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_footer)) {
+            private val binding by viewBinding(OfferFooterBinding::bind)
+            override fun bind(
+                data: OfferModel,
+                fragmentManager: FragmentManager,
+                tracker: OfferTracker,
+                removeDiscount: () -> Unit,
+                marketManager: MarketManager
+            ) {
+                if (data is OfferModel.Footer) {
+                    binding.chatButton.setHapticClickListener {
+                        it.context.startActivity(ChatActivity.newInstance(it.context, true))
+                    }
+
+                    binding.text.setHapticClickListener {
+                        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(data.url))
+                        it.context.startActivity(browserIntent)
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -331,5 +359,9 @@ sealed class OfferModel {
 
     data class Switcher(
         val displayName: String?,
+    ) : OfferModel()
+
+    data class Footer(
+        val url: String
     ) : OfferModel()
 }
