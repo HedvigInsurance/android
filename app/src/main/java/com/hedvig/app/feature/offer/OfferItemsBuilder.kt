@@ -7,7 +7,6 @@ object OfferItemsBuilder {
     fun createItems(data: OfferQuery.Data): List<OfferModel> {
         return listOfNotNull(
             OfferModel.Header(data),
-            OfferModel.Info,
             OfferModel.Facts(data),
             OfferModel.Perils(data),
             OfferModel.Terms(data),
