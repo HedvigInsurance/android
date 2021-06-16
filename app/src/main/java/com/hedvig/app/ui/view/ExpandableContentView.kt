@@ -110,7 +110,7 @@ class ExpandableContentView : ConstraintLayout {
     }
 
     companion object {
-        const val ANIMATION_DURATION_MILLIS = 300L
+        const val ANIMATION_DURATION_MILLIS = 500L
         private fun View.updateHeight(newHeight: Int) {
             updateLayoutParams { height = newHeight }
         }
