@@ -86,7 +86,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 removeDiscount = model::removeDiscount
             )
             val documentAdapter = DocumentAdapter(
-                tracker = tracker,
+                trackClick = tracker::openOfferLink,
                 marketManager = marketManager
             )
             val concatAdapter = ConcatAdapter(offerAdapter, documentAdapter)

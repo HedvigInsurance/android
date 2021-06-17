@@ -71,12 +71,12 @@ val OFFER_DATA_SWEDISH_HOUSE = OfferDataBuilder(
         OfferQuery.InsuranceTerm(
             type = InsuranceTermType.GENERAL_TERMS,
             displayName = "General term",
-            url = "test"
+            url = "invalid url"
         ),
         OfferQuery.InsuranceTerm(
             type = InsuranceTermType.TERMS_AND_CONDITIONS,
             displayName = "Terms and conditions",
-            url = "test"
+            url = "invalid url"
         )
     )
 ).build()

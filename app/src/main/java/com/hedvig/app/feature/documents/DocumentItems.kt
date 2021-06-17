@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.documents
 
+import android.content.Context
 import androidx.annotation.StringRes
 
 sealed class DocumentItems {
@@ -7,10 +8,12 @@ sealed class DocumentItems {
     data class Header(@StringRes val stringRes: Int) : DocumentItems()
 
     data class Document(
-        val title: String,
-        val subtitle: String?,
+        private val title: String? = null,
+        @StringRes private val titleRes: Int? = null,
+        private val subtitle: String? = null,
+        @StringRes private val subTitleRes: Int? = null,
         val url: String,
-        val type: Type
+        val type: Type = Type.GENERAL_TERMS
     ) : DocumentItems() {
         enum class Type {
             TERMS_AND_CONDITIONS,
@@ -18,5 +21,8 @@ sealed class DocumentItems {
             GENERAL_TERMS,
             PRIVACY_POLICY
         }
+
+        fun getTitle(context: Context) = title ?: titleRes?.let(context::getString)
+        fun getSubTitle(context: Context) = title ?: titleRes?.let(context::getString)
     }
 }

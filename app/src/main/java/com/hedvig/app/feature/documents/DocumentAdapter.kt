@@ -3,22 +3,23 @@ package com.hedvig.app.feature.documents
 import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
 import com.hedvig.app.databinding.DocumentBinding
 import com.hedvig.app.databinding.ListSubtitleItemBinding
-import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.openUri
+import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 
 class DocumentAdapter(
-    private val tracker: OfferTracker,
+    private val trackClick: (String) -> Unit,
     private val marketManager: MarketManager,
 ) : ListAdapter<DocumentItems, DocumentAdapter.DocumentsViewHolder>(GenericDiffUtilItemCallback()) {
 
@@ -56,11 +57,17 @@ class DocumentAdapter(
 
         fun bind(document: DocumentItems.Document) {
             val button = binding.button
-            binding.text.text = document.title
-            // TODO: Parse subtitle from bundledquote api
-            binding.subtitle.text = "Test subtitle"
+            val title = document.getTitle(itemView.context)
+            val subTitle = document.getSubTitle(itemView.context)
+
+            binding.text.text = title
+            binding.subtitle.text = subTitle
+            binding.subtitle.isVisible = subTitle != null
+
             button.setHapticClickListener {
-                tracker.openOfferLink(document.title)
+                if (title != null) {
+                    trackClick(title)
+                }
                 // TODO Quick fix for getting new terms and conditions
                 val uri = Uri.parse(
                     if (marketManager.market == Market.SE &&
@@ -71,7 +78,15 @@ class DocumentAdapter(
                         document.url
                     }
                 )
-                it.context.openUri(uri)
+                try {
+                    it.context.openUri(uri)
+                } catch (throwable: Throwable) {
+                    itemView.context.showAlert(
+                        title = R.string.error_dialog_title,
+                        message = R.string.component_error,
+                        positiveAction = {}
+                    )
+                }
             }
         }
     }
