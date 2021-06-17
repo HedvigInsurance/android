@@ -1,5 +1,6 @@
 package com.hedvig.app.testdata.feature.offer
 
+import com.hedvig.android.owldroid.fragment.IncentiveFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.testdata.common.builders.TableFragmentBuilder
@@ -44,4 +45,18 @@ val OFFER_DATA_SWEDISH_HOUSE = OfferDataBuilder(
             )
         )
     ).build()
+).build()
+
+val OFFER_DATA_SWEDISH_HOUSE_WITH_DISCOUNT = OfferDataBuilder(
+    typeOfContract = TypeOfContract.SE_HOUSE,
+    redeemedCampaigns = listOf(
+        OfferQuery.RedeemedCampaign(
+            fragments = OfferQuery.RedeemedCampaign.Fragments(
+                incentiveFragment = IncentiveFragment(
+                    incentive = null,
+                    displayValue = "10 SEK DISCOUNT/MO."
+                )
+            )
+        )
+    )
 ).build()

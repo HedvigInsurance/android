@@ -54,7 +54,8 @@ val PAYMENT_DATA_FREE_MONTHS = PaymentDataBuilder(
                         asMonthlyCostDeduction = null,
                         asNoDiscount = null,
                         asPercentageDiscountMonths = null,
-                    )
+                    ),
+                    displayValue = "3 FREE MONTHS"
                 )
             )
         )
@@ -82,7 +83,8 @@ val PAYMENT_DATA_REFERRAL = PaymentDataBuilder(
                         ),
                         asNoDiscount = null,
                         asPercentageDiscountMonths = null,
-                    )
+                    ),
+                    displayValue = "20% DISCOUNT PER MONTH"
                 )
             )
         )
@@ -102,7 +104,8 @@ val PAYMENT_DATA_PERCENTAGE_CAMPAIGN = PaymentDataBuilder(
                             pdmQuantity = 2
                         ),
                         asNoDiscount = null,
-                    )
+                    ),
+                    displayValue = "20% DISCOUNT FOR 2 MONTHS"
                 )
             )
         )
