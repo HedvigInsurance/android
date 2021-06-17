@@ -29,6 +29,7 @@ import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
+import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.getStringId
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.invalid
@@ -156,48 +157,23 @@ class OfferAdapter(
                                 .firstOrNull()
                                 ?.fragments
                                 ?.incentiveFragment
-                                ?.incentive
-                                ?.let { incentive ->
+                                ?.displayValue
+                                ?.let { discountText ->
+                                    // TODO Add displayValues from all bundles when quering from QuoteBundle
+                                    campaign.text = discountText
+                                    campaign.show()
+                                    originalPremium.apply {
+                                        setStrikethrough(true)
+                                        // TODO Use monthlyGross from bundleCost
+                                        text = monetaryAmount
+                                    }
+
+                                    premiumContainer.setBackgroundResource(
+                                        R.drawable.background_premium_box_with_campaign
+                                    )
+
                                     discountButton.setText(R.string.OFFER_REMOVE_DISCOUNT_BUTTON)
-
-                                    incentive.asFreeMonths?.let { freeMonths ->
-                                        campaign.text = campaign.resources.getString(
-                                            R.string.OFFER_SCREEN_FREE_MONTHS_DESCRIPTION,
-                                            freeMonths.quantity
-                                        )
-                                        campaign.show()
-                                        premiumContainer.setBackgroundResource(
-                                            R.drawable.background_premium_box_with_campaign
-                                        )
-                                    }
-
-                                    incentive.asMonthlyCostDeduction?.let {
-                                        campaign.setText(R.string.OFFER_SCREEN_INVITED_BUBBLE)
-                                        campaign.show()
-                                        premiumContainer.setBackgroundResource(
-                                            R.drawable.background_premium_box_with_campaign
-                                        )
-                                    }
-
-                                    incentive.asPercentageDiscountMonths?.let { pdm ->
-                                        campaign.text = if (pdm.pdmQuantity == 1) {
-                                            campaign.resources.getString(
-                                                R.string.OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE_SINGULAR,
-                                                pdm.percentageDiscount.toInt()
-                                            )
-                                        } else {
-                                            campaign.resources.getString(
-                                                R.string.OFFER_SCREEN_PERCENTAGE_DISCOUNT_BUBBLE_TITLE_PLURAL,
-                                                pdm.percentageDiscount.toInt(),
-                                                pdm.pdmQuantity
-                                            )
-                                        }
-                                        campaign.show()
-                                        premiumContainer.setBackgroundResource(
-                                            R.drawable.background_premium_box_with_campaign
-                                        )
-                                    }
-
+                                    discountButton.context.colorAttr(R.attr.colorError)
                                     discountButton.setHapticClickListener {
                                         tracker.removeDiscount()
                                         discountButton.context.showAlert(
@@ -210,19 +186,9 @@ class OfferAdapter(
                                             }
                                         )
                                     }
-
-                                    // Remove campaign views if campaign type is unknown
-                                    if (
-                                        incentive.asFreeMonths == null &&
-                                        incentive.asMonthlyCostDeduction == null &&
-                                        incentive.asNoDiscount == null &&
-                                        incentive.asPercentageDiscountMonths == null
-                                    ) {
-                                        premiumContainer.background = null
-                                        campaign.remove()
-                                    }
                                 } ?: run {
                                 discountButton.setText(R.string.OFFER_ADD_DISCOUNT_BUTTON)
+                                discountButton.context.colorAttr(R.attr.textColorLink)
                                 premiumContainer.background = null
                                 campaign.remove()
                                 discountButton.setHapticClickListener {
