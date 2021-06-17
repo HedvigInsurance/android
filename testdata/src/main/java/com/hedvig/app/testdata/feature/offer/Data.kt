@@ -49,16 +49,6 @@ val OFFER_DATA_SWEDISH_HOUSE = OfferDataBuilder(
 
 val OFFER_DATA_SWEDISH_HOUSE_WITH_DISCOUNT = OfferDataBuilder(
     typeOfContract = TypeOfContract.SE_HOUSE,
-    variant = OfferDataBuilder.Variant.SWEDISH_HOUSE,
-    extraBuildings = listOf(
-        OfferQuery.ExtraBuilding(
-            asExtraBuildingCore = OfferQuery.AsExtraBuildingCore(
-                displayName = "Extrabyggnad",
-                area = 10,
-                hasWaterConnected = false
-            )
-        )
-    ),
     redeemedCampaigns = listOf(
         OfferQuery.RedeemedCampaign(
             fragments = OfferQuery.RedeemedCampaign.Fragments(
