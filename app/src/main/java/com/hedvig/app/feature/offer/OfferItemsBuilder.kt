@@ -36,7 +36,6 @@ object OfferItemsBuilder {
                     .toMonetaryAmount(),
                 null
             ),
-            OfferModel.Info,
             OfferModel.Facts(data.quoteBundle.quotes[0].detailsTable.fragments.tableFragment.intoTable()),
             OfferModel.Perils(data.quoteBundle.quotes[0].perils.map { it.fragments.perilFragment }),
             OfferModel.Footer(GDPR_LINK),
