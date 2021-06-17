@@ -5,8 +5,8 @@
     android:background="?android:colorBackground"
     android:orientation="vertical"
     android:paddingHorizontal="@dimen/base_margin_double"
-    android:paddingBottom="150dp"
-    android:paddingTop="@dimen/base_margin_sextuple">
+    android:paddingTop="@dimen/base_margin_sextuple"
+    android:paddingBottom="150dp">
 
     <TextView
         android:layout_width="match_parent"
@@ -24,14 +24,13 @@
         android:text="@string/OFFER_FOOTER_BUTTON_TEXT" />
 
     <TextView
-        android:clickable="true"
-        android:focusable="true"
-        android:foreground="?selectableItemBackground"
         android:id="@+id/text"
-        android:autoLink="web"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_sextuple"
+        android:clickable="true"
+        android:focusable="true"
+        android:linksClickable="true"
         android:text="@string/OFFER_FOOTER_GDPR_INFO" />
 
 </LinearLayout>

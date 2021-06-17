@@ -6,14 +6,16 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.offer.ui.OfferModel
 
+// TODO Add extension to BundledQuote and fetch this from BE
+private const val GDPR_LINK = "https://www.hedvig.com/se/personuppgifter"
+
 object OfferItemsBuilder {
     fun createOfferItems(data: OfferQuery.Data): List<OfferModel> {
         return listOfNotNull(
             OfferModel.Header(data),
             OfferModel.Facts(data),
             OfferModel.Perils(data),
-            // TODO Add extension to BundledQuote and fetch this from BE
-            OfferModel.Footer("https://www.hedvig.com/se/personuppgifter"),
+            OfferModel.Footer(GDPR_LINK),
             data.lastQuoteOfMember.asCompleteQuote?.currentInsurer?.let { currentInsurer ->
                 if (currentInsurer.switchable == true) {
                     OfferModel.Switcher(currentInsurer.displayName)

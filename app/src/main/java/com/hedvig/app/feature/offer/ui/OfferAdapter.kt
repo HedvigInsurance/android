@@ -1,7 +1,5 @@
 package com.hedvig.app.feature.offer.ui
 
-import android.content.Intent
-import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.doOnNextLayout
@@ -31,6 +29,7 @@ import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.extensions.colorAttr
+import com.hedvig.app.util.extensions.createWebLink
 import com.hedvig.app.util.extensions.getStringId
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.invalid
@@ -333,11 +332,8 @@ class OfferAdapter(
                     binding.chatButton.setHapticClickListener {
                         it.context.startActivity(ChatActivity.newInstance(it.context, true))
                     }
-
-                    binding.text.setHapticClickListener {
-                        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(data.url))
-                        it.context.startActivity(browserIntent)
-                    }
+                    val link = itemView.context.getString(R.string.OFFER_FOOTER_GDPR_INFO, data.url)
+                    binding.text.createWebLink(link)
                 }
             }
         }

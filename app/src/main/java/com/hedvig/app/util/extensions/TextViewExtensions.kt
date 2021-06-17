@@ -2,11 +2,14 @@ package com.hedvig.app.util.extensions
 
 import android.graphics.Paint
 import android.net.Uri
+import android.os.Build
+import android.text.Html
 import android.text.method.LinkMovementMethod
 import android.view.KeyEvent
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import androidx.annotation.DrawableRes
+import com.hedvig.app.R
 import io.noties.markwon.AbstractMarkwonPlugin
 import io.noties.markwon.Markwon
 import io.noties.markwon.MarkwonConfiguration
@@ -44,6 +47,16 @@ fun TextView.setMarkdownText(text: String) {
         )
         .build()
         .setMarkdown(this, text)
+}
+
+fun TextView.createWebLink(link: String) {
+    movementMethod = LinkMovementMethod.getInstance()
+    text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        Html.fromHtml(link, Html.FROM_HTML_MODE_COMPACT)
+    } else {
+        Html.fromHtml(link)
+    }
+    setLinkTextColor(context.getColor(R.color.textColorLink))
 }
 
 fun TextView.putCompoundDrawablesRelativeWithIntrinsicBounds(
