@@ -1,5 +1,6 @@
 package com.hedvig.app
 
+import android.net.Uri
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
@@ -75,14 +76,14 @@ class MockContractDetailViewModel : ContractDetailViewModel() {
                         DocumentItems.Document(
                             titleRes = R.string.MY_DOCUMENTS_INSURANCE_CERTIFICATE,
                             subTitleRes = R.string.insurance_details_view_documents_full_terms_subtitle,
-                            url = it
+                            uri = Uri.parse(it)
                         )
                     },
                     it.termsAndConditions.url.let {
                         DocumentItems.Document(
                             titleRes = R.string.MY_DOCUMENTS_INSURANCE_TERMS,
                             subTitleRes = R.string.insurance_details_view_documents_insurance_letter_subtitle,
-                            url = it
+                            uri = Uri.parse(it)
                         )
                     }
                 )

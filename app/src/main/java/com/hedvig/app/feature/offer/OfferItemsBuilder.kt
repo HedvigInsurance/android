@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.offer
 
+import android.net.Uri
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.documents.DocumentItems
@@ -26,7 +27,7 @@ object OfferItemsBuilder {
             DocumentItems.Document(
                 title = it.displayName,
                 subtitle = null,
-                url = it.url,
+                uri = Uri.parse(it.url),
                 type = DocumentItems.Document.Type.GENERAL_TERMS
             )
         } ?: listOf()

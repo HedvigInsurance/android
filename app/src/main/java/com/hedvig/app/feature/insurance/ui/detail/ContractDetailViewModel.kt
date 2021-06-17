@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.insurance.ui.detail
 
-import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,6 +13,8 @@ import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurance.data.InsuranceRepository
 import com.hedvig.app.feature.insurance.ui.detail.coverage.CoverageModel
 import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoModel
+import com.hedvig.app.feature.settings.Market
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.apollo.toUpcomingAgreementResult
 import e
 import kotlinx.coroutines.launch
@@ -37,7 +39,8 @@ abstract class ContractDetailViewModel : ViewModel() {
 
 class ContractDetailViewModelImpl(
     private val insuranceRepository: InsuranceRepository,
-    private val chatRepository: ChatRepository
+    private val chatRepository: ChatRepository,
+    private val marketManager: MarketManager
 ) : ContractDetailViewModel() {
 
     override fun loadContract(id: String) {
@@ -78,14 +81,21 @@ class ContractDetailViewModelImpl(
                     DocumentItems.Document(
                         titleRes = R.string.MY_DOCUMENTS_INSURANCE_CERTIFICATE,
                         subTitleRes = R.string.insurance_details_view_documents_full_terms_subtitle,
-                        url = it,
+                        uri = Uri.parse(it),
                     )
                 },
                 contract.termsAndConditions.url.let {
                     DocumentItems.Document(
                         titleRes = R.string.MY_DOCUMENTS_INSURANCE_TERMS,
                         subTitleRes = R.string.insurance_details_view_documents_insurance_letter_subtitle,
-                        url = it,
+                        // TODO Quick fix for getting new terms and conditions
+                        uri = Uri.parse(
+                            if (marketManager.market == Market.SE) {
+                                "https://www.hedvig.com/se/villkor"
+                            } else {
+                                it
+                            }
+                        ),
                         type = DocumentItems.Document.Type.TERMS_AND_CONDITIONS
                     )
                 }

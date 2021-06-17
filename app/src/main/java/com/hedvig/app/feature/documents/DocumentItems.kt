@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.documents
 
 import android.content.Context
+import android.net.Uri
 import androidx.annotation.StringRes
 
 sealed class DocumentItems {
@@ -12,7 +13,7 @@ sealed class DocumentItems {
         @StringRes private val titleRes: Int? = null,
         private val subtitle: String? = null,
         @StringRes private val subTitleRes: Int? = null,
-        val url: String,
+        val uri: Uri,
         val type: Type = Type.GENERAL_TERMS
     ) : DocumentItems() {
         enum class Type {

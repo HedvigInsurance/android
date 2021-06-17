@@ -26,7 +26,7 @@ class DocumentsFragment : Fragment(R.layout.contract_detail_documents_fragment) 
                 view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
             }
 
-            val documentsAdapter = DocumentAdapter({}, marketManager)
+            val documentsAdapter = DocumentAdapter {}
             adapter = documentsAdapter
             model.documentsList.observe(viewLifecycleOwner, documentsAdapter::submitList)
         }
