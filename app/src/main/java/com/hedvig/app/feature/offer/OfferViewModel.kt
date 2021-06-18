@@ -11,8 +11,7 @@ import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.offer.ui.OfferModel
-import com.hedvig.app.util.apollo.QueryResult
-import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.feature.offer.usecase.GetQuoteIdsUseCase
 import e
 import java.time.LocalDate
 import kotlinx.coroutines.flow.catch
@@ -54,6 +53,7 @@ abstract class OfferViewModel : ViewModel() {
 class OfferViewModelImpl(
     _quoteIds: List<String>,
     private val offerRepository: OfferRepository,
+    private val getQuoteIdsUseCase: GetQuoteIdsUseCase,
 ) : OfferViewModel() {
 
     private lateinit var quoteIds: List<String>
@@ -63,24 +63,15 @@ class OfferViewModelImpl(
     override val signError = MutableLiveData<Boolean>()
 
     init {
-        if (_quoteIds.isEmpty()) {
-            viewModelScope.launch {
-                val idResult = offerRepository.quoteIdOfLastQuoteOfMember().safeQuery()
-                if (idResult !is QueryResult.Success) {
-                    // TODO: Error UI
-                    return@launch
+        viewModelScope.launch {
+            when (val idsResult = getQuoteIdsUseCase(_quoteIds)) {
+                is GetQuoteIdsUseCase.Result.Success -> {
+                    quoteIds = idsResult.ids
                 }
-                val id = idResult.data.lastQuoteOfMember.asCompleteQuote?.id
-                if (id == null) {
+                GetQuoteIdsUseCase.Result.Error -> {
                     // TODO: Error UI
-                    return@launch
                 }
-                quoteIds = listOf(id)
-                load()
             }
-        } else {
-            quoteIds = _quoteIds
-            load()
         }
     }
 
