@@ -30,11 +30,12 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.hedvig.app.R
 import com.hedvig.app.SplashActivity
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.SettingsActivity
-import kotlinx.coroutines.delay
 import kotlin.system.exitProcess
+import kotlinx.coroutines.delay
 
 private const val SHARED_PREFERENCE_NAME = "hedvig_shared_preference"
 private const val SHARED_PREFERENCE_IS_LOGGED_IN = "shared_preference_is_logged_in"
@@ -215,4 +216,24 @@ val Context.isDarkThemeActive: Boolean
 tailrec fun Context?.getActivity(): Activity? = when (this) {
     is Activity -> this
     else -> (this as? ContextWrapper)?.baseContext?.getActivity()
+}
+
+fun Context.tryOpenUri(uri: Uri) {
+    fun showError() {
+        showAlert(
+            title = R.string.error_dialog_title,
+            message = R.string.component_error,
+            positiveAction = {}
+        )
+    }
+
+    if (canOpenUri(uri)) {
+        try {
+            openUri(uri)
+        } catch (throwable: Throwable) {
+            showError()
+        }
+    } else {
+        showError()
+    }
 }

@@ -6,14 +6,15 @@ import android.os.Bundle
 import android.transition.TransitionManager
 import android.view.MenuItem
 import android.widget.Toast
-import androidx.core.view.doOnLayout
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
+import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityOfferBinding
+import com.hedvig.app.feature.documents.DocumentAdapter
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.offer.OfferSignDialog
@@ -48,18 +49,12 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         binding.apply {
             offerRoot.setEdgeToEdgeSystemUiFlags(true)
             scrollInitialPaddingTop = offerScroll.paddingTop
-            offerToolbar.doOnLayout { applyInsets(it.height) }
             offerToolbar.background.alpha = 0
-            
+
             offerToolbar.doOnApplyWindowInsets { view, insets, initialState ->
                 view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
                 applyInsets(view.height)
             }
-
-            offerScroll.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
-            }
-
             signButton.doOnApplyWindowInsets { view, insets, initialState ->
                 view.updateMargin(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
             }
@@ -84,18 +79,26 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             offerToolbar.setNavigationOnClickListener { onBackPressed() }
             offerToolbar.setOnMenuItemClickListener(::handleMenuItem)
 
-            val adapter = OfferAdapter(
+            val offerAdapter = OfferAdapter(
                 fragmentManager = supportFragmentManager,
                 tracker = tracker,
                 marketManager = marketManager,
                 removeDiscount = model::removeDiscount
             )
-            offerScroll.adapter = adapter
+            val documentAdapter = DocumentAdapter(
+                trackClick = tracker::openOfferLink
+            )
+            val concatAdapter = ConcatAdapter(offerAdapter, documentAdapter)
+
+            binding.offerScroll.adapter = concatAdapter
 
             model.viewState.observe(this@OfferActivity) { viewState ->
                 when (viewState) {
                     OfferViewModel.ViewState.HasContracts -> startLoggedInActivity()
-                    is OfferViewModel.ViewState.OfferItems -> adapter.submitList(viewState.items)
+                    is OfferViewModel.ViewState.OfferItems -> {
+                        offerAdapter.submitList(viewState.offerItems)
+                        documentAdapter.submitList(viewState.documents)
+                    }
                     is OfferViewModel.ViewState.Error.GeneralError -> showErrorDialog(
                         viewState.message ?: getString(R.string.home_tab_error_body)
                     )
