@@ -328,13 +328,14 @@ class OfferAdapter(
                 removeDiscount: () -> Unit,
                 marketManager: MarketManager
             ) {
-                if (data is OfferModel.Footer) {
-                    binding.chatButton.setHapticClickListener {
-                        it.context.startActivity(ChatActivity.newInstance(it.context, true))
-                    }
-                    val link = itemView.context.getString(R.string.OFFER_FOOTER_GDPR_INFO, data.url)
-                    binding.text.createWebLink(link)
+                if (data !is OfferModel.Footer) {
+                	return invalid(data)
                 }
+                binding.chatButton.setHapticClickListener {
+                    it.context.startActivity(ChatActivity.newInstance(it.context, true))
+                }
+                val link = itemView.context.getString(R.string.OFFER_FOOTER_GDPR_INFO, data.url)
+                binding.text.createWebLink(link)
             }
         }
     }
