@@ -11,7 +11,7 @@ import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.offer.ui.OfferModel
-import com.hedvig.app.feature.offer.usecase.GetQuoteIdsUseCase
+import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import e
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
@@ -53,7 +53,7 @@ abstract class OfferViewModel : ViewModel() {
 class OfferViewModelImpl(
     _quoteIds: List<String>,
     private val offerRepository: OfferRepository,
-    private val getQuoteIdsUseCase: GetQuoteIdsUseCase,
+    private val getQuotesUseCase: GetQuotesUseCase,
 ) : OfferViewModel() {
 
     private lateinit var quoteIds: List<String>
@@ -64,23 +64,21 @@ class OfferViewModelImpl(
 
     init {
         viewModelScope.launch {
-            when (val idsResult = getQuoteIdsUseCase(_quoteIds)) {
-                is GetQuoteIdsUseCase.Result.Success -> {
+            when (val idsResult = getQuotesUseCase(_quoteIds)) {
+                is GetQuotesUseCase.Result.Success -> {
                     quoteIds = idsResult.ids
+                    idsResult
+                        .data
+                        .map(::toViewState)
+                        .onEach(_viewState::postValue)
+                        .catch { _viewState.postValue(ViewState.Error.GeneralError(it.message)) }
+                        .launchIn(this)
                 }
-                GetQuoteIdsUseCase.Result.Error -> {
-                    // TODO: Error UI
+                GetQuotesUseCase.Result.Error -> {
+                    _viewState.postValue(ViewState.Error.GeneralError(""))
                 }
             }
         }
-    }
-
-    fun load() {
-        offerRepository.offer(quoteIds)
-            .map(::toViewState)
-            .onEach(_viewState::postValue)
-            .catch { _viewState.postValue(ViewState.Error.GeneralError(it.message)) }
-            .launchIn(viewModelScope)
     }
 
     private fun toViewState(response: Response<OfferQuery.Data>): ViewState {

@@ -9,7 +9,7 @@ import io.mockk.verify
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 
-class GetQuoteIdsUseCaseTest {
+class GetQuotesUseCaseTest {
 
     @Test
     fun `should find quote ID using lastQuoteOfMember when provided without ID`() {
@@ -23,7 +23,7 @@ class GetQuoteIdsUseCaseTest {
         )
 
         runBlocking {
-            GetQuoteIdsUseCase(mock)(emptyList())
+            GetQuotesUseCase(mock)(emptyList())
             verify(exactly = 1) { mock.quoteIdOfLastQuoteOfMember() }
         }
     }
@@ -41,7 +41,7 @@ class GetQuoteIdsUseCaseTest {
         )
 
         runBlocking {
-            GetQuoteIdsUseCase(mock)(listOf("123"))
+            GetQuotesUseCase(mock)(listOf("123"))
             verify(exactly = 0) { mock.quoteIdOfLastQuoteOfMember() }
         }
     }
