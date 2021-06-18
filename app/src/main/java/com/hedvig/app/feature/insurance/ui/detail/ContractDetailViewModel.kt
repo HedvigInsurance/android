@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.insurance.ui.detail
 
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,10 +9,12 @@ import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.AgreementStatus
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.data.ChatRepository
+import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurance.data.InsuranceRepository
 import com.hedvig.app.feature.insurance.ui.detail.coverage.CoverageModel
-import com.hedvig.app.feature.insurance.ui.detail.documents.DocumentsModel
 import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoModel
+import com.hedvig.app.feature.settings.Market
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.apollo.toUpcomingAgreementResult
 import e
 import kotlinx.coroutines.launch
@@ -24,8 +27,8 @@ abstract class ContractDetailViewModel : ViewModel() {
     protected val _yourInfoList = MutableLiveData<List<YourInfoModel>>()
     val yourInfoList: LiveData<List<YourInfoModel>> = _yourInfoList
 
-    protected val _documentsList = MutableLiveData<List<DocumentsModel>>()
-    val documentsList: LiveData<List<DocumentsModel>> = _documentsList
+    protected val _documentsList = MutableLiveData<List<DocumentItems.Document>>()
+    val documentsList: LiveData<List<DocumentItems.Document>> = _documentsList
 
     protected val _coverageList = MutableLiveData<List<CoverageModel>>()
     val coverageList: LiveData<List<CoverageModel>> = _coverageList
@@ -36,7 +39,8 @@ abstract class ContractDetailViewModel : ViewModel() {
 
 class ContractDetailViewModelImpl(
     private val insuranceRepository: InsuranceRepository,
-    private val chatRepository: ChatRepository
+    private val chatRepository: ChatRepository,
+    private val marketManager: MarketManager
 ) : ContractDetailViewModel() {
 
     override fun loadContract(id: String) {
@@ -66,7 +70,7 @@ class ContractDetailViewModelImpl(
         return listOfNotNull(upcomingAgreementItem) + contractItems + listOf(YourInfoModel.Change)
     }
 
-    private fun createDocumentItems(contract: InsuranceQuery.Contract): List<DocumentsModel> {
+    private fun createDocumentItems(contract: InsuranceQuery.Contract): List<DocumentItems.Document> {
         return if (contract.currentAgreement.asAgreementCore?.status == AgreementStatus.PENDING) {
             // Do not show anything if status is pending
             // TODO: Show error state
@@ -74,17 +78,25 @@ class ContractDetailViewModelImpl(
         } else {
             listOfNotNull(
                 contract.currentAgreement.asAgreementCore?.certificateUrl?.let {
-                    DocumentsModel(
-                        R.string.MY_DOCUMENTS_INSURANCE_CERTIFICATE,
-                        R.string.insurance_details_view_documents_full_terms_subtitle,
-                        it
+                    DocumentItems.Document(
+                        titleRes = R.string.MY_DOCUMENTS_INSURANCE_CERTIFICATE,
+                        subTitleRes = R.string.insurance_details_view_documents_full_terms_subtitle,
+                        uri = Uri.parse(it),
                     )
                 },
                 contract.termsAndConditions.url.let {
-                    DocumentsModel(
-                        R.string.MY_DOCUMENTS_INSURANCE_TERMS,
-                        R.string.insurance_details_view_documents_insurance_letter_subtitle,
-                        it
+                    DocumentItems.Document(
+                        titleRes = R.string.MY_DOCUMENTS_INSURANCE_TERMS,
+                        subTitleRes = R.string.insurance_details_view_documents_insurance_letter_subtitle,
+                        // TODO Quick fix for getting new terms and conditions
+                        uri = Uri.parse(
+                            if (marketManager.market == Market.SE) {
+                                "https://www.hedvig.com/se/villkor"
+                            } else {
+                                it
+                            }
+                        ),
+                        type = DocumentItems.Document.Type.TERMS_AND_CONDITIONS
                     )
                 }
             )

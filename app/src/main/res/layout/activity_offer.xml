@@ -5,7 +5,7 @@
     android:id="@+id/offerRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient_summer_sky"
+    android:background="?android:colorBackground"
     tools:context=".feature.offer.ui.OfferActivity">
 
     <androidx.recyclerview.widget.RecyclerView
@@ -13,11 +13,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
+        android:paddingBottom="120dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:itemCount="1"
-        tools:listitem="@layout/offer_header"
-        tools:paddingTop="?attr/actionBarSize" />
+        tools:listitem="@layout/offer_header" />
 
     <Button
         android:id="@+id/signButton"

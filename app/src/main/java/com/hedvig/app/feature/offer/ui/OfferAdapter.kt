@@ -8,18 +8,15 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.type.TypeOfContract
-import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.BASE_MARGIN_HALF
 import com.hedvig.app.R
 import com.hedvig.app.databinding.OfferFactAreaBinding
 import com.hedvig.app.databinding.OfferHeaderBinding
 import com.hedvig.app.databinding.OfferPerilAreaBinding
 import com.hedvig.app.databinding.OfferSwitchBinding
-import com.hedvig.app.databinding.OfferTermsAreaBinding
 import com.hedvig.app.feature.offer.OfferRedeemCodeBottomSheet
 import com.hedvig.app.feature.offer.OfferSignDialog
 import com.hedvig.app.feature.offer.OfferTracker
-import com.hedvig.app.feature.offer.TermsAdapter
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheet
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
 import com.hedvig.app.feature.settings.MarketManager
@@ -54,7 +51,6 @@ class OfferAdapter(
         R.layout.offer_header -> ViewHolder.Header(parent)
         R.layout.offer_fact_area -> ViewHolder.Facts(parent)
         R.layout.offer_peril_area -> ViewHolder.Perils(parent)
-        R.layout.offer_terms_area -> ViewHolder.Terms(parent)
         R.layout.offer_switch -> ViewHolder.Switch(parent)
         else -> throw Error("Invalid viewType: $viewType")
     }
@@ -63,7 +59,6 @@ class OfferAdapter(
         is OfferModel.Header -> R.layout.offer_header
         is OfferModel.Facts -> R.layout.offer_fact_area
         is OfferModel.Perils -> R.layout.offer_peril_area
-        is OfferModel.Terms -> R.layout.offer_terms_area
         is OfferModel.Switcher -> R.layout.offer_switch
     }
 
@@ -296,50 +291,6 @@ class OfferAdapter(
             }
         }
 
-        class Terms(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_terms_area)) {
-            private val binding by viewBinding(OfferTermsAreaBinding::bind)
-
-            init {
-                binding.apply {
-                    insurableLimits.adapter = InsurableLimitsAdapter()
-                    insurableLimits.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN_DOUBLE))
-                }
-            }
-
-            override fun bind(
-                data: OfferModel,
-                fragmentManager: FragmentManager,
-                tracker: OfferTracker,
-                removeDiscount: () -> Unit,
-                marketManager: MarketManager,
-            ) {
-                binding.apply {
-                    if (termsDocuments.adapter == null) {
-                        termsDocuments.adapter = TermsAdapter(tracker, marketManager)
-                    }
-                    if (data is OfferModel.Terms) {
-                        data
-                            .inner
-                            .lastQuoteOfMember
-                            .asCompleteQuote
-                            ?.insurableLimits
-                            ?.map { it.fragments.insurableLimitsFragment }
-                            ?.let {
-                                (insurableLimits.adapter as? InsurableLimitsAdapter)?.submitList(
-                                    it
-                                )
-                            }
-                        data.inner.lastQuoteOfMember.asCompleteQuote?.insuranceTerms?.let {
-                            (termsDocuments.adapter as? TermsAdapter)?.submitList(it)
-                        }
-                        return
-                    }
-                }
-
-                e { "Invariant detected: ${data.javaClass.name} passed to ${this.javaClass.name}::bind" }
-            }
-        }
-
         class Switch(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_switch)) {
             private val binding by viewBinding(OfferSwitchBinding::bind)
             override fun bind(
@@ -375,10 +326,6 @@ sealed class OfferModel {
     ) : OfferModel()
 
     data class Perils(
-        val inner: OfferQuery.Data,
-    ) : OfferModel()
-
-    data class Terms(
         val inner: OfferQuery.Data,
     ) : OfferModel()
 

@@ -38,7 +38,7 @@ class ExistingSwitchableInsuranceTest : TestCase() {
 
         onScreen<OfferScreen> {
             scroll {
-                childAt<OfferScreen.SwitcherItem>(4) { title { containsText("Annat Försäkringsbolag") } }
+                childAt<OfferScreen.SwitcherItem>(5) { title { containsText("Annat Försäkringsbolag") } }
                 childAt<OfferScreen.HeaderItem>(0) {
                     startDate {
                         hasText(R.string.ACTIVATE_INSURANCE_END_BTN)

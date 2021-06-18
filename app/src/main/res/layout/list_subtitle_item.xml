@@ -1,0 +1,10 @@
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/text"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/base_margin_quintuple"
+    android:layout_marginBottom="@dimen/base_margin_double"
+    android:layout_marginHorizontal="@dimen/base_margin_double"
+    tools:text="List subtitle item"
+    android:textAppearance="?textAppearanceHeadline6" />

@@ -1,7 +1,9 @@
 package com.hedvig.app.testdata.feature.offer
 
 import com.hedvig.android.owldroid.fragment.IncentiveFragment
+import com.hedvig.android.owldroid.fragment.InsurableLimitsFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
+import com.hedvig.android.owldroid.type.InsuranceTermType
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.testdata.common.builders.TableFragmentBuilder
 import com.hedvig.app.testdata.feature.offer.builders.OfferDataBuilder
@@ -44,7 +46,39 @@ val OFFER_DATA_SWEDISH_HOUSE = OfferDataBuilder(
                 Triple("Attefalls house", "Has water connected", "23 m2"),
             )
         )
-    ).build()
+    ).build(),
+    insurableLimits = listOf(
+        OfferQuery.InsurableLimit(
+            fragments = OfferQuery.InsurableLimit.Fragments(
+                InsurableLimitsFragment(
+                    label = "Test insurable limit",
+                    limit = "Limit",
+                    description = "Description"
+                )
+            )
+        ),
+        OfferQuery.InsurableLimit(
+            fragments = OfferQuery.InsurableLimit.Fragments(
+                InsurableLimitsFragment(
+                    label = "Test insurable limit 2",
+                    limit = "Limit 2",
+                    description = "Description 2"
+                )
+            )
+        ),
+    ),
+    insuranceTerms = listOf(
+        OfferQuery.InsuranceTerm(
+            type = InsuranceTermType.GENERAL_TERMS,
+            displayName = "General term",
+            url = "invalid url"
+        ),
+        OfferQuery.InsuranceTerm(
+            type = InsuranceTermType.TERMS_AND_CONDITIONS,
+            displayName = "Terms and conditions",
+            url = "invalid url"
+        )
+    )
 ).build()
 
 val OFFER_DATA_SWEDISH_HOUSE_WITH_DISCOUNT = OfferDataBuilder(

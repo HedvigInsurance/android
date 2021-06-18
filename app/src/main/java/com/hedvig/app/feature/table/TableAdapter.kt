@@ -13,17 +13,15 @@ import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.viewBinding
 
-class TableAdapter(
-    data: Table,
-) : ListAdapter<TableAdapter.UpcomingAgreementItem, TableAdapter.UpcomingAgreementViewHolder>(
+class TableAdapter : ListAdapter<TableAdapter.UpcomingAgreementItem, TableAdapter.UpcomingAgreementViewHolder>(
     GenericDiffUtilItemCallback()
 ) {
 
-    init {
+    fun setTable(table: Table) {
         submitList(
             listOf(
-                UpcomingAgreementItem.CenteredHeader(data.title),
-            ) + data.sections.flatMap { section ->
+                UpcomingAgreementItem.CenteredHeader(table.title),
+            ) + table.sections.flatMap { section ->
                 listOf(
                     UpcomingAgreementItem.Header(section.title),
                 ) + section.rows.map { row ->

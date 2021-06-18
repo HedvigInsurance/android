@@ -2,64 +2,57 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/button"
     android:layout_width="match_parent"
-    android:layout_marginBottom="@dimen/base_margin"
     android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/base_margin_double"
+    android:layout_marginTop="@dimen/base_margin_half"
+    android:layout_marginBottom="@dimen/base_margin"
     android:minHeight="@dimen/contract_document_card">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center_vertical"
         android:layout_gravity="center_vertical"
+        android:gravity="center_vertical"
         android:padding="@dimen/base_margin_double">
 
         <ImageView
             android:id="@+id/icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_document"
+            android:contentDescription="@null"
+            android:paddingEnd="@dimen/base_margin_double"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:paddingEnd="@dimen/base_margin_double"
-            android:contentDescription="@null" />
+            app:srcCompat="@drawable/ic_document" />
 
         <TextView
             android:id="@+id/text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textAppearance="?textAppearanceSubtitle1"
-            android:maxLines="1"
             android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="?textAppearanceSubtitle1"
+            app:layout_constraintBottom_toTopOf="@id/subtitle"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/icon"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/subtitle"
-            tools:text="Insurance letter"
-            app:layout_constraintEnd_toStartOf="@+id/arrow" />
+            tools:text="Insurance letter" />
 
         <TextView
             android:id="@+id/subtitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textAppearance="?textAppearanceBody2"
-            android:maxLines="1"
             android:ellipsize="end"
-            app:layout_constraintTop_toBottomOf="@id/text"
+            android:maxLines="1"
+            android:textAppearance="?textAppearanceBody2"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/icon"
-            app:layout_constraintEnd_toStartOf="@id/arrow"
-            tools:text="Insurance letter" />
-
-        <ImageView
-            android:id="@+id/arrow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_arrow_forward"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:contentDescription="@null" />
+            app:layout_constraintStart_toEndOf="@id/icon"
+            app:layout_constraintTop_toBottomOf="@id/text"
+            tools:text="Insurance letter" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
