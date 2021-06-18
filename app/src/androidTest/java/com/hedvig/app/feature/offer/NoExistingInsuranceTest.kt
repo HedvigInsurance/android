@@ -40,5 +40,9 @@ class NoExistingInsuranceTest : TestCase() {
                 }
             }
         }
+
+        onScreen<ChangeDateSheet> {
+            autoSetDate { isGone() }
+        }
     }
 }

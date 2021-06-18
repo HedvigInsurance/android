@@ -14,7 +14,6 @@ import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
-@Ignore("Flaky")
 class ExistingSwitchableInsuranceTest : TestCase() {
 
     @get:Rule
@@ -48,7 +47,7 @@ class ExistingSwitchableInsuranceTest : TestCase() {
             }
         }
         onScreen<ChangeDateSheet> {
-            autoSetDate { hasText(R.string.ACTIVATE_INSURANCE_END_BTN) }
+            autoSetDate { hasText(R.string.OFFER_PLAN_EXIRES_TEXT) }
         }
     }
 }
