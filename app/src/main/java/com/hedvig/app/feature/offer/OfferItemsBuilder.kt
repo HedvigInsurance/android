@@ -42,25 +42,23 @@ object OfferItemsBuilder {
         )
     }
 
-    fun createDocumentItems(data: OfferQuery.Data): List<DocumentItems> {
-        val documents = data.lastQuoteOfMember.asCompleteQuote?.insuranceTerms?.map {
+    fun createDocumentItems(data: OfferQuery.Quote): List<DocumentItems> {
+        val documents = data.insuranceTerms.map {
             DocumentItems.Document(
                 title = it.displayName,
                 subtitle = null,
                 uri = Uri.parse(it.url),
                 type = DocumentItems.Document.Type.GENERAL_TERMS
             )
-        } ?: listOf()
+        }
         return listOf(DocumentItems.Header(R.string.OFFER_DOCUMENTS_SECTION_TITLE)) + documents
     }
 
-    fun createInsurableLimits(data: OfferQuery.Data) {
+    fun createInsurableLimits(data: OfferQuery.Quote) {
         data
-            .lastQuoteOfMember
-            .asCompleteQuote
-            ?.insurableLimits
-            ?.map { it.fragments.insurableLimitsFragment }
-            ?.let {
+            .insurableLimits
+            .map { it.fragments.insurableLimitsFragment }
+            .let {
                 // TODO Create items
             }
     }

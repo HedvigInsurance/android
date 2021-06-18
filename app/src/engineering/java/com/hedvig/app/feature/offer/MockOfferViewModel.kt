@@ -19,7 +19,7 @@ class MockOfferViewModel : OfferViewModel() {
         Handler(getMainLooper()).postDelayed(
             {
                 val offerItems = OfferItemsBuilder.createOfferItems(mockData)
-                val documentItems = OfferItemsBuilder.createDocumentItems(mockData)
+                val documentItems = OfferItemsBuilder.createDocumentItems(mockData.quoteBundle.quotes[0])
                 _viewState.postValue(ViewState.OfferItems(offerItems, documentItems))
             },
             500

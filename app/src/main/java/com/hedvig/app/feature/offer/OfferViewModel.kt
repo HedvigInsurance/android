@@ -13,12 +13,12 @@ import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.offer.ui.OfferModel
 import com.hedvig.app.feature.offer.usecase.GetQuoteIdsUseCase
 import e
-import java.time.LocalDate
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 abstract class OfferViewModel : ViewModel() {
     protected val _viewState = MutableLiveData<ViewState>()
@@ -38,7 +38,7 @@ abstract class OfferViewModel : ViewModel() {
     sealed class ViewState {
         data class OfferItems(
             val offerItems: List<OfferModel>,
-            val documents: List<DocumentItems>
+            val documents: List<DocumentItems>,
         ) : ViewState()
 
         sealed class Error : ViewState() {
@@ -91,7 +91,7 @@ class OfferViewModelImpl(
                 ViewState.HasContracts
             } else {
                 val offerItems = OfferItemsBuilder.createOfferItems(data)
-                val documentItems = OfferItemsBuilder.createDocumentItems(data)
+                val documentItems = OfferItemsBuilder.createDocumentItems(data.quoteBundle.quotes[0])
                 ViewState.OfferItems(offerItems, documentItems)
             }
         } ?: ViewState.Error.EmptyResponse
