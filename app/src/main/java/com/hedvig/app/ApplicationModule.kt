@@ -91,6 +91,7 @@ import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.offer.OfferViewModelImpl
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetViewModel
+import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.onboarding.ChoosePlanRepository
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModelImpl
@@ -294,7 +295,12 @@ val viewModelModule = module {
     viewModel { DatePickerViewModel() }
     viewModel { params -> SimpleSignAuthenticationViewModel(params.get(), get(), get(), get()) }
     viewModel { (data: MultiActionParams) -> MultiActionViewModel(data) }
-    viewModel { (componentState: MultiActionItem.Component?, multiActionParams: MultiActionParams) -> AddComponentViewModel(componentState, multiActionParams) }
+    viewModel { (componentState: MultiActionItem.Component?, multiActionParams: MultiActionParams) ->
+        AddComponentViewModel(
+            componentState,
+            multiActionParams
+        )
+    }
 }
 
 val choosePlanModule = module {
@@ -327,7 +333,7 @@ val marketingModule = module {
 }
 
 val offerModule = module {
-    viewModel<OfferViewModel> { OfferViewModelImpl(get()) }
+    viewModel<OfferViewModel> { (ids: List<String>) -> OfferViewModelImpl(ids, get(), get()) }
 }
 
 val profileModule = module {
@@ -487,4 +493,5 @@ val useCaseModule = module {
     single { StartDanishAuthUseCase(get()) }
     single { StartNorwegianAuthUseCase(get()) }
     single { SubscribeToAuthStatusUseCase(get()) }
+    single { GetQuotesUseCase(get()) }
 }

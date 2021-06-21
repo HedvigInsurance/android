@@ -25,27 +25,27 @@ data class OfferDataBuilder(
     private val detailsTable: TableFragment = TableFragmentBuilder().build(),
 ) {
     fun build() = OfferQuery.Data(
-        lastQuoteOfMember = OfferQuery.LastQuoteOfMember(
-            asCompleteQuote = OfferQuery.AsCompleteQuote(
-                startDate = startDate,
-                id = id,
-                typeOfContract = typeOfContract,
-                currentInsurer = currentInsurer,
-                detailsTable = OfferQuery.DetailsTable(
-                    fragments = OfferQuery.DetailsTable.Fragments(detailsTable),
-                ),
-                insuranceCost = OfferQuery.InsuranceCost(
-                    fragments = OfferQuery.InsuranceCost.Fragments(
-                        insuranceCost
-                    )
-                ),
-                perils = perils,
-                termsAndConditions = OfferQuery.TermsAndConditions(
-                    displayName = "Villkor",
-                    url = termsAndConditionsUrl
-                ),
-                insurableLimits = insurableLimits,
-                insuranceTerms = insuranceTerms
+        quoteBundle = OfferQuery.QuoteBundle(
+            quotes = listOf(
+                OfferQuery.Quote(
+                    startDate = startDate,
+                    id = id,
+                    typeOfContract = typeOfContract,
+                    currentInsurer = currentInsurer,
+                    detailsTable = OfferQuery.DetailsTable(
+                        fragments = OfferQuery.DetailsTable.Fragments(detailsTable),
+                    ),
+                    perils = perils,
+                    termsAndConditions = OfferQuery.TermsAndConditions(
+                        displayName = "Villkor",
+                        url = termsAndConditionsUrl
+                    ),
+                    insurableLimits = insurableLimits,
+                    insuranceTerms = insuranceTerms
+                )
+            ),
+            bundleCost = OfferQuery.BundleCost(
+                fragments = OfferQuery.BundleCost.Fragments(insuranceCost)
             )
         ),
         redeemedCampaigns = redeemedCampaigns,

@@ -34,9 +34,12 @@ import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class OfferActivity : BaseActivity(R.layout.activity_offer) {
-    private val model: OfferViewModel by viewModel()
+    private val quoteIds: List<String>
+        get() = intent.getStringArrayExtra(QUOTE_IDS)?.toList() ?: emptyList()
+    private val model: OfferViewModel by viewModel { parametersOf(quoteIds) }
     private val binding by viewBinding(ActivityOfferBinding::bind)
     private val tracker: OfferTracker by inject()
     private val marketManager: MarketManager by inject()
@@ -178,6 +181,10 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     }
 
     companion object {
-        fun newInstance(context: Context) = Intent(context, OfferActivity::class.java)
+        private const val QUOTE_IDS = "QUOTE_IDS"
+        fun newInstance(context: Context, quoteIds: List<String> = emptyList()) =
+            Intent(context, OfferActivity::class.java).apply {
+                putExtra(QUOTE_IDS, quoteIds.toTypedArray())
+            }
     }
 }
