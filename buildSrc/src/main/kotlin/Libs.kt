@@ -6,6 +6,7 @@ object Libs {
         private const val version = "1.4.3"
         const val core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version"
         const val android = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$version"
+        const val test = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$version"
     }
 
     object AndroidX {
@@ -107,9 +108,14 @@ object Libs {
     const val shimmer = "com.facebook.shimmer:shimmer:0.5.0"
     const val kaspresso = "com.kaspersky.android-components:kaspresso:1.2.0"
     const val assertK = "com.willowtreeapps.assertk:assertk-jvm:0.24"
-    const val mockK = "io.mockk:mockk-android:1.11.0"
     const val leakCanary = "com.squareup.leakcanary:leakcanary-android:2.7"
     const val shake = "com.shakebugs:shake:14.2.0"
+
+    object MockK {
+        private const val version = "1.10.6"
+        const val android = "io.mockk:mockk-android:$version"
+        const val jvm = "io.mockk:mockk:$version"
+    }
 
     object Apollo {
         const val runtime = "com.apollographql.apollo:apollo-runtime:${CommonVersions.apollo}"

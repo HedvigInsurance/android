@@ -294,7 +294,12 @@ val viewModelModule = module {
     viewModel { DatePickerViewModel() }
     viewModel { params -> SimpleSignAuthenticationViewModel(params.get(), get(), get(), get()) }
     viewModel { (data: MultiActionParams) -> MultiActionViewModel(data) }
-    viewModel { (componentState: MultiActionItem.Component?, multiActionParams: MultiActionParams) -> AddComponentViewModel(componentState, multiActionParams) }
+    viewModel { (componentState: MultiActionItem.Component?, multiActionParams: MultiActionParams) ->
+        AddComponentViewModel(
+            componentState,
+            multiActionParams
+        )
+    }
 }
 
 val choosePlanModule = module {
@@ -327,7 +332,7 @@ val marketingModule = module {
 }
 
 val offerModule = module {
-    viewModel<OfferViewModel> { OfferViewModelImpl(get()) }
+    viewModel<OfferViewModel> { (ids: List<String>) -> OfferViewModelImpl(ids, get()) }
 }
 
 val profileModule = module {

@@ -11,6 +11,8 @@ import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.offer.ui.OfferModel
+import com.hedvig.app.util.apollo.QueryResult
+import com.hedvig.app.util.apollo.safeQuery
 import e
 import java.time.LocalDate
 import kotlinx.coroutines.flow.catch
@@ -22,9 +24,9 @@ import kotlinx.coroutines.launch
 abstract class OfferViewModel : ViewModel() {
     protected val _viewState = MutableLiveData<ViewState>()
     val viewState: LiveData<ViewState> = _viewState
-    abstract val autoStartToken: MutableLiveData<SignOfferMutation.Data>
-    abstract val signStatus: MutableLiveData<SignStatusFragment>
-    abstract val signError: MutableLiveData<Boolean>
+    abstract val autoStartToken: LiveData<SignOfferMutation.Data>
+    abstract val signStatus: LiveData<SignStatusFragment>
+    abstract val signError: LiveData<Boolean>
     abstract fun removeDiscount()
     abstract fun writeDiscountToCache(data: RedeemReferralCodeMutation.Data)
     abstract fun triggerOpenChat(done: () -> Unit)
@@ -50,19 +52,40 @@ abstract class OfferViewModel : ViewModel() {
 }
 
 class OfferViewModelImpl(
-    private val offerRepository: OfferRepository
+    _quoteIds: List<String>,
+    private val offerRepository: OfferRepository,
 ) : OfferViewModel() {
+
+    private lateinit var quoteIds: List<String>
 
     override val autoStartToken = MutableLiveData<SignOfferMutation.Data>()
     override val signStatus = MutableLiveData<SignStatusFragment>()
     override val signError = MutableLiveData<Boolean>()
 
     init {
-        load()
+        if (_quoteIds.isEmpty()) {
+            viewModelScope.launch {
+                val idResult = offerRepository.quoteIdOfLastQuoteOfMember().safeQuery()
+                if (idResult !is QueryResult.Success) {
+                    // TODO: Error UI
+                    return@launch
+                }
+                val id = idResult.data.lastQuoteOfMember.asCompleteQuote?.id
+                if (id == null) {
+                    // TODO: Error UI
+                    return@launch
+                }
+                quoteIds = listOf(id)
+                load()
+            }
+        } else {
+            quoteIds = _quoteIds
+            load()
+        }
     }
 
     fun load() {
-        offerRepository.offer()
+        offerRepository.offer(quoteIds)
             .map(::toViewState)
             .onEach(_viewState::postValue)
             .catch { _viewState.postValue(ViewState.Error.GeneralError(it.message)) }
@@ -95,11 +118,11 @@ class OfferViewModelImpl(
     }
 
     private fun removeDiscountFromCache() {
-        offerRepository.removeDiscountFromCache()
+        offerRepository.removeDiscountFromCache(quoteIds)
     }
 
     override fun writeDiscountToCache(data: RedeemReferralCodeMutation.Data) =
-        offerRepository.writeDiscountToCache(data)
+        offerRepository.writeDiscountToCache(quoteIds, data)
 
     override fun triggerOpenChat(done: () -> Unit) {
         viewModelScope.launch {
@@ -160,7 +183,7 @@ class OfferViewModelImpl(
                 return@launch
             }
             response.getOrNull()?.data?.let {
-                offerRepository.writeStartDateToCache(it)
+                offerRepository.writeStartDateToCache(quoteIds, it)
             } ?: run {
                 e { "Missing data when choosing start date" }
             }
@@ -176,7 +199,7 @@ class OfferViewModelImpl(
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch
             }
-            response.getOrNull()?.data?.let { offerRepository.removeStartDateFromCache(it) }
+            response.getOrNull()?.data?.let { offerRepository.removeStartDateFromCache(quoteIds, it) }
         }
     }
 }
