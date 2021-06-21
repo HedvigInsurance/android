@@ -404,7 +404,7 @@ val changeAddressModule = module {
 }
 
 val changeDateBottomSheetModule = module {
-    viewModel { (data: ChangeDateBottomSheetData) -> ChangeDateBottomSheetViewModel(get(), get(), get(), data) }
+    viewModel { (data: ChangeDateBottomSheetData) -> ChangeDateBottomSheetViewModel(get(), get(), data) }
 }
 
 val serviceModule = module {
@@ -495,6 +495,5 @@ val useCaseModule = module {
     single { StartNorwegianAuthUseCase(get()) }
     single { SubscribeToAuthStatusUseCase(get()) }
     single { GetQuotesUseCase(get()) }
-    single { SetStartDateUseCase(get(), get()) }
     single { EditStartDateUseCase(get(), get()) }
 }
