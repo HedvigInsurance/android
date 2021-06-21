@@ -20,19 +20,19 @@ import java.time.LocalDate
 
 class OfferRepository(
     private val apolloClient: ApolloClient,
-    localeManager: LocaleManager
+    private val localeManager: LocaleManager
 ) {
-    private val offerQuery = OfferQuery(localeManager.defaultLocale())
+    private fun offerQuery(ids: List<String>) = OfferQuery(localeManager.defaultLocale(), ids)
 
     fun offer() = apolloClient
-        .query(offerQuery)
+        .query(offerQuery())
         .watcher()
         .toFlow()
 
     fun writeDiscountToCache(data: RedeemReferralCodeMutation.Data) {
         val cachedData = apolloClient
             .apolloStore
-            .read(offerQuery)
+            .read(offerQuery())
             .execute()
 
         if (cachedData.lastQuoteOfMember.asCompleteQuote == null)
@@ -71,7 +71,7 @@ class OfferRepository(
     fun removeDiscountFromCache() {
         val cachedData = apolloClient
             .apolloStore
-            .read(offerQuery)
+            .read(offerQuery())
             .execute()
 
         if (cachedData.lastQuoteOfMember.asCompleteQuote == null)
@@ -115,7 +115,7 @@ class OfferRepository(
 
         apolloClient
             .apolloStore
-            .writeAndPublish(offerQuery, newData)
+            .writeAndPublish(offerQuery(), newData)
             .execute()
     }
 
@@ -148,7 +148,7 @@ class OfferRepository(
     fun writeStartDateToCache(data: ChooseStartDateMutation.Data) {
         val cachedData = apolloClient
             .apolloStore
-            .read(offerQuery)
+            .read(offerQuery())
             .execute()
 
         val newDate = data.editQuote.asCompleteQuote?.startDate
@@ -172,7 +172,7 @@ class OfferRepository(
 
             apolloClient
                 .apolloStore
-                .writeAndPublish(offerQuery, newData)
+                .writeAndPublish(offerQuery(), newData)
                 .execute()
         }
     }
@@ -185,7 +185,7 @@ class OfferRepository(
     fun removeStartDateFromCache(data: RemoveStartDateMutation.Data) {
         val cachedData = apolloClient
             .apolloStore
-            .read(offerQuery)
+            .read(offerQuery())
             .execute()
 
         val newDate = data.removeStartDate.asCompleteQuote?.startDate
@@ -209,7 +209,7 @@ class OfferRepository(
 
             apolloClient
                 .apolloStore
-                .writeAndPublish(offerQuery, newData)
+                .writeAndPublish(offerQuery(), newData)
                 .execute()
         }
     }

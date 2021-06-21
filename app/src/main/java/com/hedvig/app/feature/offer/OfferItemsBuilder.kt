@@ -16,13 +16,6 @@ object OfferItemsBuilder {
             OfferModel.Facts(data),
             OfferModel.Perils(data),
             OfferModel.Footer(GDPR_LINK),
-            data.lastQuoteOfMember.asCompleteQuote?.currentInsurer?.let { currentInsurer ->
-                if (currentInsurer.switchable == true) {
-                    OfferModel.Switcher(currentInsurer.displayName)
-                } else {
-                    null
-                }
-            }
         )
     }
 

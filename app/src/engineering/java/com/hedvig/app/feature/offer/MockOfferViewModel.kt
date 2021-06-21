@@ -37,10 +37,12 @@ class MockOfferViewModel : OfferViewModel() {
             ViewState.OfferItems(
                 OfferItemsBuilder.createOfferItems(
                     mockData.copy(
-                        lastQuoteOfMember = mockData.lastQuoteOfMember.copy(
-                            asCompleteQuote = mockData.lastQuoteOfMember.asCompleteQuote!!.copy(
-                                startDate = date
-                            )
+                        quoteBundle = mockData.quoteBundle.copy(
+                            quotes = mockData.quoteBundle.quotes.map {
+                                it.copy(
+                                    startDate = date
+                                )
+                            }
                         )
                     )
                 ),
@@ -54,10 +56,10 @@ class MockOfferViewModel : OfferViewModel() {
             ViewState.OfferItems(
                 OfferItemsBuilder.createOfferItems(
                     mockData.copy(
-                        lastQuoteOfMember = mockData.lastQuoteOfMember.copy(
-                            asCompleteQuote = mockData.lastQuoteOfMember.asCompleteQuote!!.copy(
-                                startDate = null
-                            )
+                        quoteBundle = mockData.quoteBundle.copy(
+                            quotes = mockData.quoteBundle.quotes.map {
+                                it.copy(startDate = null)
+                            }
                         )
                     )
                 ),
