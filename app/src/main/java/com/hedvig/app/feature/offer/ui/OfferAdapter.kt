@@ -29,10 +29,10 @@ import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.extensions.colorAttr
-import com.hedvig.app.util.extensions.createWebLink
 import com.hedvig.app.util.extensions.getStringId
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.invalid
+import com.hedvig.app.util.extensions.setMarkdownText
 import com.hedvig.app.util.extensions.setStrikethrough
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.remove
@@ -329,13 +329,13 @@ class OfferAdapter(
                 marketManager: MarketManager
             ) {
                 if (data !is OfferModel.Footer) {
-                	return invalid(data)
+                    return invalid(data)
                 }
                 binding.chatButton.setHapticClickListener {
                     it.context.startActivity(ChatActivity.newInstance(it.context, true))
                 }
                 val link = itemView.context.getString(R.string.OFFER_FOOTER_GDPR_INFO, data.url)
-                binding.text.createWebLink(link)
+                binding.text.setMarkdownText(link)
             }
         }
     }

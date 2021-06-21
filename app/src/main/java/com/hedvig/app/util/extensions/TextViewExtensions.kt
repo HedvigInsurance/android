@@ -14,6 +14,7 @@ import io.noties.markwon.AbstractMarkwonPlugin
 import io.noties.markwon.Markwon
 import io.noties.markwon.MarkwonConfiguration
 import io.noties.markwon.core.CorePlugin
+import io.noties.markwon.core.MarkwonTheme
 import io.noties.markwon.linkify.LinkifyPlugin
 
 fun TextView.setStrikethrough(strikethrough: Boolean) {
@@ -42,21 +43,16 @@ fun TextView.setMarkdownText(text: String) {
                             }
                         }
                     }
+                },
+                object : AbstractMarkwonPlugin() {
+                    override fun configureTheme(builder: MarkwonTheme.Builder) {
+                        builder.isLinkUnderlined(false)
+                    }
                 }
             )
         )
         .build()
         .setMarkdown(this, text)
-}
-
-fun TextView.createWebLink(link: String) {
-    movementMethod = LinkMovementMethod.getInstance()
-    text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        Html.fromHtml(link, Html.FROM_HTML_MODE_COMPACT)
-    } else {
-        Html.fromHtml(link)
-    }
-    setLinkTextColor(context.getColor(R.color.textColorLink))
 }
 
 fun TextView.putCompoundDrawablesRelativeWithIntrinsicBounds(
