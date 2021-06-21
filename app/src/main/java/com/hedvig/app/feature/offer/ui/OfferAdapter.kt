@@ -11,9 +11,11 @@ import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.BASE_MARGIN_HALF
 import com.hedvig.app.R
 import com.hedvig.app.databinding.OfferFactAreaBinding
+import com.hedvig.app.databinding.OfferFooterBinding
 import com.hedvig.app.databinding.OfferHeaderBinding
 import com.hedvig.app.databinding.OfferPerilAreaBinding
 import com.hedvig.app.databinding.OfferSwitchBinding
+import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.offer.OfferRedeemCodeBottomSheet
 import com.hedvig.app.feature.offer.OfferSignDialog
 import com.hedvig.app.feature.offer.OfferTracker
@@ -30,6 +32,7 @@ import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.getStringId
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.invalid
+import com.hedvig.app.util.extensions.setMarkdownText
 import com.hedvig.app.util.extensions.setStrikethrough
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.remove
@@ -52,6 +55,7 @@ class OfferAdapter(
         R.layout.offer_fact_area -> ViewHolder.Facts(parent)
         R.layout.offer_peril_area -> ViewHolder.Perils(parent)
         R.layout.offer_switch -> ViewHolder.Switch(parent)
+        R.layout.offer_footer -> ViewHolder.Footer(parent)
         else -> throw Error("Invalid viewType: $viewType")
     }
 
@@ -60,6 +64,7 @@ class OfferAdapter(
         is OfferModel.Facts -> R.layout.offer_fact_area
         is OfferModel.Perils -> R.layout.offer_peril_area
         is OfferModel.Switcher -> R.layout.offer_switch
+        is OfferModel.Footer -> R.layout.offer_footer
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -313,6 +318,26 @@ class OfferAdapter(
                 e { "Invariant detected: ${data.javaClass.name} passed to ${this.javaClass.name}::bind" }
             }
         }
+
+        class Footer(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_footer)) {
+            private val binding by viewBinding(OfferFooterBinding::bind)
+            override fun bind(
+                data: OfferModel,
+                fragmentManager: FragmentManager,
+                tracker: OfferTracker,
+                removeDiscount: () -> Unit,
+                marketManager: MarketManager
+            ) {
+                if (data !is OfferModel.Footer) {
+                    return invalid(data)
+                }
+                binding.chatButton.setHapticClickListener {
+                    it.context.startActivity(ChatActivity.newInstance(it.context, true))
+                }
+                val link = itemView.context.getString(R.string.OFFER_FOOTER_GDPR_INFO, data.url)
+                binding.text.setMarkdownText(link)
+            }
+        }
     }
 }
 
@@ -331,5 +356,9 @@ sealed class OfferModel {
 
     data class Switcher(
         val displayName: String?,
+    ) : OfferModel()
+
+    data class Footer(
+        val url: String
     ) : OfferModel()
 }
