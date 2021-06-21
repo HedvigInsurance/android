@@ -36,8 +36,6 @@ abstract class OfferViewModel : ViewModel() {
     abstract fun startSign()
     abstract fun clearPreviousErrors()
     abstract fun manuallyRecheckSignStatus()
-    abstract fun chooseStartDate(id: String, date: LocalDate)
-    abstract fun removeStartDate(id: String)
 
     sealed class ViewState {
         data class OfferItems(
@@ -169,36 +167,6 @@ class OfferViewModelImpl(
             }
             response.getOrNull()?.data?.signStatus?.fragments?.signStatusFragment
                 ?.let { signStatus.postValue(it) }
-        }
-    }
-
-    override fun chooseStartDate(id: String, date: LocalDate) {
-        viewModelScope.launch {
-            val response = runCatching {
-                offerRepository.chooseStartDate(id, date)
-            }
-            if (response.isFailure || response.getOrNull()?.hasErrors() == true) {
-                response.exceptionOrNull()?.let { e(it) }
-                return@launch
-            }
-            response.getOrNull()?.data?.let {
-                offerRepository.writeStartDateToCache(quoteIds, it)
-            } ?: run {
-                e { "Missing data when choosing start date" }
-            }
-        }
-    }
-
-    override fun removeStartDate(id: String) {
-        viewModelScope.launch {
-            val response = runCatching {
-                offerRepository.removeStartDate(id)
-            }
-            if (response.isFailure || response.getOrNull()?.hasErrors() == true) {
-                response.exceptionOrNull()?.let { e(it) }
-                return@launch
-            }
-            response.getOrNull()?.data?.let { offerRepository.removeStartDateFromCache(quoteIds, it) }
         }
     }
 }

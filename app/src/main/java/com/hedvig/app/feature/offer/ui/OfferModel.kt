@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.offer.ui
 
+import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
 import com.hedvig.app.feature.table.Table
 import javax.money.MonetaryAmount
 
@@ -10,6 +11,7 @@ sealed class OfferModel {
         val netMonthlyCost: MonetaryAmount,
         val grossMonthlyCost: MonetaryAmount,
         val incentiveDisplayValue: String?,
+        val changeDateBottomSheetData: ChangeDateBottomSheetData
     ) : OfferModel()
 
     data class Facts(

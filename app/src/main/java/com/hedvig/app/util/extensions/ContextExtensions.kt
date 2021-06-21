@@ -170,6 +170,27 @@ fun Context.showAlert(
         }
         .show()
 
+fun Context.showAlert(
+    title: String,
+    message: String? = null,
+    @StringRes positiveLabel: Int = android.R.string.ok,
+    @StringRes negativeLabel: Int = android.R.string.cancel,
+    positiveAction: () -> Unit,
+    negativeAction: (() -> Unit)? = null,
+): androidx.appcompat.app.AlertDialog? =
+    MaterialAlertDialogBuilder(this)
+        .apply {
+            setTitle(title)
+            setPositiveButton(positiveLabel) { _, _ ->
+                positiveAction()
+            }
+            setNegativeButton(negativeLabel) { _, _ ->
+                negativeAction?.let { it() }
+            }
+            message?.let { setMessage(it) }
+        }
+        .show()
+
 fun Context.copyToClipboard(
     text: String,
 ) {

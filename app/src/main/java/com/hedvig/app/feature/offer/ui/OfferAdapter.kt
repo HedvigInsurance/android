@@ -97,6 +97,12 @@ class OfferAdapter(
                         grossPremium.setStrikethrough(false)
                     }
 
+                    startDateContainer.setHapticClickListener {
+                        tracker.chooseStartDate()
+                        ChangeDateBottomSheet.newInstance(data.changeDateBottomSheetData)
+                            .show(fragmentManager, ChangeDateBottomSheet.TAG)
+                    }
+
                     val incentiveDisplayValue = data.incentiveDisplayValue
                     if (incentiveDisplayValue != null) {
                         discountButton.setText(R.string.OFFER_REMOVE_DISCOUNT_BUTTON)
@@ -123,7 +129,7 @@ class OfferAdapter(
                             OfferRedeemCodeBottomSheet.newInstance()
                                 .show(
                                     fragmentManager,
-                                    ChangeDateBottomSheet.TAG
+                                    OfferRedeemCodeBottomSheet.TAG
                                 )
                         }
                     }

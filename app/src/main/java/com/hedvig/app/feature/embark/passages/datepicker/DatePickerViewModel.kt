@@ -2,7 +2,7 @@ package com.hedvig.app.feature.embark.passages.datepicker
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.hedvig.app.util.extensions.epochMillisToLocalDate
+import com.hedvig.app.util.extensions.epochMillisToLocalDateTime
 import java.time.LocalDateTime
 
 class DatePickerViewModel : ViewModel() {
@@ -20,5 +20,5 @@ class DatePickerViewModel : ViewModel() {
         showDatePicker.value = selectedEpochMillis
     }
 
-    private fun epochMillisToLocalDate(epochMillis: Long) = epochMillis.epochMillisToLocalDate()
+    private fun epochMillisToLocalDate(epochMillis: Long) = epochMillis.epochMillisToLocalDateTime()
 }

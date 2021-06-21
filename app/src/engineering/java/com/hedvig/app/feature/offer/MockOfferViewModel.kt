@@ -6,7 +6,6 @@ import com.hedvig.android.owldroid.fragment.SignStatusFragment
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
-import java.time.LocalDate
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -41,6 +40,8 @@ class MockOfferViewModel : OfferViewModel() {
     override fun startSign() = Unit
     override fun clearPreviousErrors() = Unit
     override fun manuallyRecheckSignStatus() = Unit
+
+    /*
     override fun chooseStartDate(id: String, date: LocalDate) {
         _viewState.value = ViewState.OfferItems(
             OfferItemsBuilder.createTopOfferItems(
@@ -78,7 +79,7 @@ class MockOfferViewModel : OfferViewModel() {
             OfferItemsBuilder.createBottomOfferItems(),
         )
     }
-
+    */
     companion object {
         var mockData = OFFER_DATA_SWEDISH_APARTMENT
     }
