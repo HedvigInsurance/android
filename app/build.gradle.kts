@@ -124,6 +124,7 @@ dependencies {
 
     implementation(Libs.Coroutines.core)
     implementation(Libs.Coroutines.android)
+    testImplementation(Libs.Coroutines.test)
 
     implementation(Libs.AndroidX.appCompat)
     implementation(Libs.AndroidX.media)
@@ -208,8 +209,10 @@ dependencies {
 
     testImplementation(Libs.assertK)
     androidTestImplementation(Libs.assertK)
-    androidTestImplementation(Libs.mockK)
     androidTestImplementation(Libs.kaspresso)
+
+    androidTestImplementation(Libs.MockK.android)
+    testImplementation(Libs.MockK.jvm)
 
     debugImplementation(Libs.leakCanary)
     debugImplementation(Libs.shake)

@@ -11,20 +11,21 @@ import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.offer.ui.OfferModel
+import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import e
-import java.time.LocalDate
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 abstract class OfferViewModel : ViewModel() {
     protected val _viewState = MutableLiveData<ViewState>()
     val viewState: LiveData<ViewState> = _viewState
-    abstract val autoStartToken: MutableLiveData<SignOfferMutation.Data>
-    abstract val signStatus: MutableLiveData<SignStatusFragment>
-    abstract val signError: MutableLiveData<Boolean>
+    abstract val autoStartToken: LiveData<SignOfferMutation.Data>
+    abstract val signStatus: LiveData<SignStatusFragment>
+    abstract val signError: LiveData<Boolean>
     abstract fun removeDiscount()
     abstract fun writeDiscountToCache(data: RedeemReferralCodeMutation.Data)
     abstract fun triggerOpenChat(done: () -> Unit)
@@ -37,7 +38,7 @@ abstract class OfferViewModel : ViewModel() {
     sealed class ViewState {
         data class OfferItems(
             val offerItems: List<OfferModel>,
-            val documents: List<DocumentItems>
+            val documents: List<DocumentItems>,
         ) : ViewState()
 
         sealed class Error : ViewState() {
@@ -50,23 +51,34 @@ abstract class OfferViewModel : ViewModel() {
 }
 
 class OfferViewModelImpl(
-    private val offerRepository: OfferRepository
+    _quoteIds: List<String>,
+    private val offerRepository: OfferRepository,
+    private val getQuotesUseCase: GetQuotesUseCase,
 ) : OfferViewModel() {
+
+    private lateinit var quoteIds: List<String>
 
     override val autoStartToken = MutableLiveData<SignOfferMutation.Data>()
     override val signStatus = MutableLiveData<SignStatusFragment>()
     override val signError = MutableLiveData<Boolean>()
 
     init {
-        load()
-    }
-
-    fun load() {
-        offerRepository.offer()
-            .map(::toViewState)
-            .onEach(_viewState::postValue)
-            .catch { _viewState.postValue(ViewState.Error.GeneralError(it.message)) }
-            .launchIn(viewModelScope)
+        viewModelScope.launch {
+            when (val idsResult = getQuotesUseCase(_quoteIds)) {
+                is GetQuotesUseCase.Result.Success -> {
+                    quoteIds = idsResult.ids
+                    idsResult
+                        .data
+                        .map(::toViewState)
+                        .onEach(_viewState::postValue)
+                        .catch { _viewState.postValue(ViewState.Error.GeneralError(it.message)) }
+                        .launchIn(this)
+                }
+                GetQuotesUseCase.Result.Error -> {
+                    _viewState.postValue(ViewState.Error.GeneralError(""))
+                }
+            }
+        }
     }
 
     private fun toViewState(response: Response<OfferQuery.Data>): ViewState {
@@ -77,7 +89,7 @@ class OfferViewModelImpl(
                 ViewState.HasContracts
             } else {
                 val offerItems = OfferItemsBuilder.createOfferItems(data)
-                val documentItems = OfferItemsBuilder.createDocumentItems(data)
+                val documentItems = OfferItemsBuilder.createDocumentItems(data.quoteBundle.quotes[0])
                 ViewState.OfferItems(offerItems, documentItems)
             }
         } ?: ViewState.Error.EmptyResponse
@@ -95,11 +107,11 @@ class OfferViewModelImpl(
     }
 
     private fun removeDiscountFromCache() {
-        offerRepository.removeDiscountFromCache()
+        offerRepository.removeDiscountFromCache(quoteIds)
     }
 
     override fun writeDiscountToCache(data: RedeemReferralCodeMutation.Data) =
-        offerRepository.writeDiscountToCache(data)
+        offerRepository.writeDiscountToCache(quoteIds, data)
 
     override fun triggerOpenChat(done: () -> Unit) {
         viewModelScope.launch {
@@ -160,7 +172,7 @@ class OfferViewModelImpl(
                 return@launch
             }
             response.getOrNull()?.data?.let {
-                offerRepository.writeStartDateToCache(it)
+                offerRepository.writeStartDateToCache(quoteIds, it)
             } ?: run {
                 e { "Missing data when choosing start date" }
             }
@@ -176,7 +188,7 @@ class OfferViewModelImpl(
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch
             }
-            response.getOrNull()?.data?.let { offerRepository.removeStartDateFromCache(it) }
+            response.getOrNull()?.data?.let { offerRepository.removeStartDateFromCache(quoteIds, it) }
         }
     }
 }

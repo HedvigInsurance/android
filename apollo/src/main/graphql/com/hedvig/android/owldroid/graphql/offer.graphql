@@ -1,11 +1,10 @@
-query Offer($locale: Locale!) {
-
+query Offer($locale: Locale!, $ids: [ID!]!) {
   redeemedCampaigns {
     ...IncentiveFragment
   }
 
-  lastQuoteOfMember {
-    ... on CompleteQuote {
+  quoteBundle(input: { ids: $ids }) {
+    quotes {
       startDate
       id
       typeOfContract
@@ -15,26 +14,27 @@ query Offer($locale: Locale!) {
         switchable
       }
       detailsTable(locale: $locale) {
-        ... TableFragment
+        ...TableFragment
       }
-      insuranceCost {
-        ...CostFragment
-      }
+
       perils(locale: $locale) {
-        ... PerilFragment
+        ...PerilFragment
       }
       termsAndConditions(locale: $locale) {
         displayName
         url
       }
       insurableLimits(locale: $locale) {
-        ... InsurableLimitsFragment
+        ...InsurableLimitsFragment
       }
       insuranceTerms(locale: $locale) {
         type
         displayName
         url
       }
+    }
+    bundleCost {
+      ...CostFragment
     }
   }
 

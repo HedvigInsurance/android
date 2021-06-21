@@ -1,11 +1,13 @@
 package com.hedvig.app.feature.offer
 
+import com.apollographql.apollo.ApolloCall
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.cache.http.HttpCachePolicy
 import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.coroutines.toFlow
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.graphql.ChooseStartDateMutation
+import com.hedvig.android.owldroid.graphql.LastQuoteIdQuery
 import com.hedvig.android.owldroid.graphql.OfferClosedMutation
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
@@ -20,34 +22,29 @@ import java.time.LocalDate
 
 class OfferRepository(
     private val apolloClient: ApolloClient,
-    localeManager: LocaleManager
+    private val localeManager: LocaleManager,
 ) {
-    private val offerQuery = OfferQuery(localeManager.defaultLocale())
+    private fun offerQuery(ids: List<String>) = OfferQuery(localeManager.defaultLocale(), ids)
 
-    fun offer() = apolloClient
-        .query(offerQuery)
+    fun offer(ids: List<String>) = apolloClient
+        .query(offerQuery(ids))
         .watcher()
         .toFlow()
 
-    fun writeDiscountToCache(data: RedeemReferralCodeMutation.Data) {
+    fun writeDiscountToCache(ids: List<String>, data: RedeemReferralCodeMutation.Data) {
         val cachedData = apolloClient
             .apolloStore
-            .read(offerQuery)
+            .read(offerQuery(ids))
             .execute()
 
-        if (cachedData.lastQuoteOfMember.asCompleteQuote == null)
-            return
-
-        val newCost = cachedData.lastQuoteOfMember.asCompleteQuote!!.insuranceCost.copy(
-            fragments = OfferQuery.InsuranceCost.Fragments(costFragment = data.redeemCode.cost.fragments.costFragment)
+        val newCost = cachedData.quoteBundle.bundleCost.copy(
+            fragments = OfferQuery.BundleCost.Fragments(costFragment = data.redeemCode.cost.fragments.costFragment)
         )
 
         val newData = cachedData
             .copy(
-                lastQuoteOfMember = cachedData.lastQuoteOfMember.copy(
-                    asCompleteQuote = cachedData.lastQuoteOfMember.asCompleteQuote!!.copy(
-                        insuranceCost = newCost
-                    )
+                quoteBundle = cachedData.quoteBundle.copy(
+                    bundleCost = newCost
                 ),
                 redeemedCampaigns = listOf(
                     OfferQuery.RedeemedCampaign(
@@ -60,7 +57,7 @@ class OfferRepository(
 
         apolloClient
             .apolloStore
-            .writeAndPublish(offerQuery, newData)
+            .writeAndPublish(offerQuery(ids), newData)
             .execute()
     }
 
@@ -68,17 +65,14 @@ class OfferRepository(
         .mutate(RemoveDiscountCodeMutation())
         .await()
 
-    fun removeDiscountFromCache() {
+    fun removeDiscountFromCache(ids: List<String>) {
         val cachedData = apolloClient
             .apolloStore
-            .read(offerQuery)
+            .read(offerQuery(ids))
             .execute()
 
-        if (cachedData.lastQuoteOfMember.asCompleteQuote == null)
-            return
-
         val oldCostFragment =
-            cachedData.lastQuoteOfMember.asCompleteQuote!!.insuranceCost.fragments.costFragment
+            cachedData.quoteBundle.bundleCost.fragments.costFragment
         val newCostFragment = oldCostFragment
             .copy(
                 monthlyDiscount = oldCostFragment
@@ -103,11 +97,9 @@ class OfferRepository(
 
         val newData = cachedData
             .copy(
-                lastQuoteOfMember = cachedData.lastQuoteOfMember.copy(
-                    asCompleteQuote = cachedData.lastQuoteOfMember.asCompleteQuote!!.copy(
-                        insuranceCost = cachedData.lastQuoteOfMember.asCompleteQuote!!.insuranceCost.copy(
-                            fragments = OfferQuery.InsuranceCost.Fragments(costFragment = newCostFragment)
-                        )
+                quoteBundle = cachedData.quoteBundle.copy(
+                    bundleCost = OfferQuery.BundleCost(
+                        fragments = OfferQuery.BundleCost.Fragments(newCostFragment)
                     )
                 ),
                 redeemedCampaigns = emptyList()
@@ -115,7 +107,7 @@ class OfferRepository(
 
         apolloClient
             .apolloStore
-            .writeAndPublish(offerQuery, newData)
+            .writeAndPublish(offerQuery(ids), newData)
             .execute()
     }
 
@@ -137,6 +129,7 @@ class OfferRepository(
             .build()
             .await()
 
+    // The following two functions should be merged into one routine.
     suspend fun chooseStartDate(id: String, date: LocalDate) =
         apolloClient.mutate(
             ChooseStartDateMutation(
@@ -145,10 +138,10 @@ class OfferRepository(
             )
         ).await()
 
-    fun writeStartDateToCache(data: ChooseStartDateMutation.Data) {
+    fun writeStartDateToCache(ids: List<String>, data: ChooseStartDateMutation.Data) {
         val cachedData = apolloClient
             .apolloStore
-            .read(offerQuery)
+            .read(offerQuery(ids))
             .execute()
 
         val newDate = data.editQuote.asCompleteQuote?.startDate
@@ -158,34 +151,36 @@ class OfferRepository(
             return
         }
 
-        cachedData.lastQuoteOfMember.asCompleteQuote?.let { completeQuote ->
-            val newData = cachedData
-                .copy(
-                    lastQuoteOfMember = OfferQuery.LastQuoteOfMember(
-                        asCompleteQuote = completeQuote
-                            .copy(
-                                id = newId,
-                                startDate = newDate
-                            )
-                    )
-                )
+        // TODO: This needs to be fundamentally re-written to support multiple quotes.
+        // cachedData.lastQuoteOfMember.asCompleteQuote?.let { completeQuote ->
+        //    val newData = cachedData
+        //        .copy(
+        //            lastQuoteOfMember = OfferQuery.LastQuoteOfMember(
+        //                asCompleteQuote = completeQuote
+        //                    .copy(
+        //                        id = newId,
+        //                        startDate = newDate
+        //                    )
+        //            )
+        //        )
 
-            apolloClient
-                .apolloStore
-                .writeAndPublish(offerQuery, newData)
-                .execute()
-        }
+        //    apolloClient
+        //        .apolloStore
+        //        .writeAndPublish(offerQuery(ids), newData)
+        //        .execute()
+        // }
     }
 
+    // The following two functions should be merged into one routine.
     suspend fun removeStartDate(id: String) =
         apolloClient
             .mutate(RemoveStartDateMutation(id))
             .await()
 
-    fun removeStartDateFromCache(data: RemoveStartDateMutation.Data) {
+    fun removeStartDateFromCache(ids: List<String>, data: RemoveStartDateMutation.Data) {
         val cachedData = apolloClient
             .apolloStore
-            .read(offerQuery)
+            .read(offerQuery(ids))
             .execute()
 
         val newDate = data.removeStartDate.asCompleteQuote?.startDate
@@ -195,22 +190,26 @@ class OfferRepository(
             return
         }
 
-        cachedData.lastQuoteOfMember.asCompleteQuote?.let { completeQuote ->
-            val newData = cachedData
-                .copy(
-                    lastQuoteOfMember = OfferQuery.LastQuoteOfMember(
-                        asCompleteQuote = completeQuote
-                            .copy(
-                                id = newId,
-                                startDate = newDate
-                            )
-                    )
-                )
+        // TODO: This needs to be fundamentally re-written to support multiple quotes.
+        // cachedData.lastQuoteOfMember.asCompleteQuote?.let { completeQuote ->
+        //     val newData = cachedData
+        //         .copy(
+        //             lastQuoteOfMember = OfferQuery.LastQuoteOfMember(
+        //                 asCompleteQuote = completeQuote
+        //                     .copy(
+        //                         id = newId,
+        //                         startDate = newDate
+        //                     )
+        //             )
+        //         )
 
-            apolloClient
-                .apolloStore
-                .writeAndPublish(offerQuery, newData)
-                .execute()
-        }
+        //     apolloClient
+        //         .apolloStore
+        //         .writeAndPublish(offerQuery(ids), newData)
+        //         .execute()
+        // }
     }
+
+    fun quoteIdOfLastQuoteOfMember(): ApolloCall<LastQuoteIdQuery.Data> = apolloClient
+        .query(LastQuoteIdQuery())
 }
