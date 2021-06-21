@@ -10,6 +10,7 @@ import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.app.feature.documents.DocumentItems
+import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.offer.ui.OfferModel
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import e
@@ -39,6 +40,7 @@ abstract class OfferViewModel : ViewModel() {
         data class OfferItems(
             val offerItems: List<OfferModel>,
             val documents: List<DocumentItems>,
+            val insurableLimitsItems: List<InsurableLimitItem>,
         ) : ViewState()
 
         sealed class Error : ViewState() {
@@ -90,7 +92,8 @@ class OfferViewModelImpl(
             } else {
                 val offerItems = OfferItemsBuilder.createOfferItems(data)
                 val documentItems = OfferItemsBuilder.createDocumentItems(data.quoteBundle.quotes[0])
-                ViewState.OfferItems(offerItems, documentItems)
+                val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(data.quoteBundle.quotes[0])
+                ViewState.OfferItems(offerItems, documentItems, insurableLimitsItems)
             }
         } ?: ViewState.Error.EmptyResponse
     }

@@ -20,7 +20,8 @@ class MockOfferViewModel : OfferViewModel() {
             {
                 val offerItems = OfferItemsBuilder.createOfferItems(mockData)
                 val documentItems = OfferItemsBuilder.createDocumentItems(mockData.quoteBundle.quotes[0])
-                _viewState.postValue(ViewState.OfferItems(offerItems, documentItems))
+                val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(mockData.quoteBundle.quotes[0])
+                _viewState.postValue(ViewState.OfferItems(offerItems, documentItems, insurableLimitsItems))
             },
             500
         )
@@ -46,6 +47,7 @@ class MockOfferViewModel : OfferViewModel() {
                         )
                     )
                 ),
+                listOf(),
                 listOf()
             )
         )
@@ -63,7 +65,8 @@ class MockOfferViewModel : OfferViewModel() {
                         )
                     )
                 ),
-                listOf()
+                listOf(),
+                listOf(),
             )
         )
     }

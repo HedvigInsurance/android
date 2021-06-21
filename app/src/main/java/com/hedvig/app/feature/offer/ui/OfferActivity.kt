@@ -16,6 +16,7 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityOfferBinding
 import com.hedvig.app.feature.documents.DocumentAdapter
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
+import com.hedvig.app.feature.insurablelimits.InsurableLimitsAdapter
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.offer.OfferSignDialog
 import com.hedvig.app.feature.offer.OfferTracker
@@ -88,10 +89,13 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 marketManager = marketManager,
                 removeDiscount = model::removeDiscount
             )
+            val insurableLimitsAdapter = InsurableLimitsAdapter(
+                fragmentManager = supportFragmentManager
+            )
             val documentAdapter = DocumentAdapter(
                 trackClick = tracker::openOfferLink
             )
-            val concatAdapter = ConcatAdapter(offerAdapter, documentAdapter)
+            val concatAdapter = ConcatAdapter(offerAdapter, insurableLimitsAdapter, documentAdapter)
 
             binding.offerScroll.adapter = concatAdapter
 
@@ -100,6 +104,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     OfferViewModel.ViewState.HasContracts -> startLoggedInActivity()
                     is OfferViewModel.ViewState.OfferItems -> {
                         offerAdapter.submitList(viewState.offerItems)
+                        insurableLimitsAdapter.submitList(viewState.insurableLimitsItems)
                         documentAdapter.submitList(viewState.documents)
                     }
                     is OfferViewModel.ViewState.Error.GeneralError -> showErrorDialog(

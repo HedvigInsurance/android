@@ -4,6 +4,7 @@ import android.net.Uri
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.documents.DocumentItems
+import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.offer.ui.OfferModel
 import com.hedvig.app.feature.table.intoTable
 import com.hedvig.app.util.apollo.toMonetaryAmount
@@ -37,7 +38,15 @@ object OfferItemsBuilder {
                 null
             ),
             OfferModel.Facts(data.quoteBundle.quotes[0].detailsTable.fragments.tableFragment.intoTable()),
-            OfferModel.Perils(data.quoteBundle.quotes[0].perils.map { it.fragments.perilFragment }),
+            *(
+                if (data.quoteBundle.quotes.size == 1) {
+                    arrayOf(
+                        OfferModel.Perils(data.quoteBundle.quotes[0].perils.map { it.fragments.perilFragment }),
+                    )
+                } else {
+                    arrayOf()
+                }
+                ),
             OfferModel.Footer(GDPR_LINK),
         )
     }
@@ -54,12 +63,18 @@ object OfferItemsBuilder {
         return listOf(DocumentItems.Header(R.string.OFFER_DOCUMENTS_SECTION_TITLE)) + documents
     }
 
-    fun createInsurableLimits(data: OfferQuery.Quote) {
-        data
-            .insurableLimits
-            .map { it.fragments.insurableLimitsFragment }
-            .let {
-                // TODO Create items
+    fun createInsurableLimits(data: OfferQuery.Quote) = data
+        .insurableLimits
+        .map {
+            it.fragments.insurableLimitsFragment.let { insurableLimitsFragment ->
+                InsurableLimitItem.InsurableLimit(
+                    label = insurableLimitsFragment.label,
+                    limit = insurableLimitsFragment.limit,
+                    description = insurableLimitsFragment.description,
+                )
             }
-    }
+        }
+        .let {
+            listOf(InsurableLimitItem.Header.Details) + it
+        }
 }
