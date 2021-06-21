@@ -13,43 +13,31 @@ import com.hedvig.app.util.apollo.toMonetaryAmount
 private const val GDPR_LINK = "https://www.hedvig.com/se/personuppgifter"
 
 object OfferItemsBuilder {
-    fun createOfferItems(data: OfferQuery.Data): List<OfferModel> {
-        return listOfNotNull(
-            OfferModel.Header(
-                "TODO",
-                data
-                    .quoteBundle
-                    .bundleCost
-                    .fragments
-                    .costFragment
-                    .monthlyNet
-                    .fragments
-                    .monetaryAmountFragment
-                    .toMonetaryAmount(),
-                data
-                    .quoteBundle
-                    .bundleCost
-                    .fragments
-                    .costFragment
-                    .monthlyGross
-                    .fragments
-                    .monetaryAmountFragment
-                    .toMonetaryAmount(),
-                null
-            ),
-            OfferModel.Facts(data.quoteBundle.quotes[0].detailsTable.fragments.tableFragment.intoTable()),
-            *(
-                if (data.quoteBundle.quotes.size == 1) {
-                    arrayOf(
-                        OfferModel.Perils(data.quoteBundle.quotes[0].perils.map { it.fragments.perilFragment }),
-                    )
-                } else {
-                    arrayOf()
-                }
-                ),
-            OfferModel.Footer(GDPR_LINK),
-        )
-    }
+    fun createTopOfferItems(data: OfferQuery.Data) = listOf(
+        OfferModel.Header(
+            "TODO",
+            data
+                .quoteBundle
+                .bundleCost
+                .fragments
+                .costFragment
+                .monthlyNet
+                .fragments
+                .monetaryAmountFragment
+                .toMonetaryAmount(),
+            data
+                .quoteBundle
+                .bundleCost
+                .fragments
+                .costFragment
+                .monthlyGross
+                .fragments
+                .monetaryAmountFragment
+                .toMonetaryAmount(),
+            null
+        ),
+        OfferModel.Facts(data.quoteBundle.quotes[0].detailsTable.fragments.tableFragment.intoTable()),
+    )
 
     fun createDocumentItems(data: OfferQuery.Quote): List<DocumentItems> {
         val documents = data.insuranceTerms.map {
@@ -77,4 +65,8 @@ object OfferItemsBuilder {
         .let {
             listOf(InsurableLimitItem.Header.Details) + it
         }
+
+    fun createBottomOfferItems(data: OfferQuery.Data) = listOf(
+        OfferModel.Footer(GDPR_LINK),
+    )
 }

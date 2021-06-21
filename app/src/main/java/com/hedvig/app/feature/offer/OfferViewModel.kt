@@ -38,9 +38,10 @@ abstract class OfferViewModel : ViewModel() {
 
     sealed class ViewState {
         data class OfferItems(
-            val offerItems: List<OfferModel>,
+            val topOfferItems: List<OfferModel>,
             val documents: List<DocumentItems>,
             val insurableLimitsItems: List<InsurableLimitItem>,
+            val bottomOfferItems: List<OfferModel.Footer>,
         ) : ViewState()
 
         sealed class Error : ViewState() {
@@ -90,10 +91,11 @@ class OfferViewModelImpl(
             if (data.contracts.isNotEmpty()) {
                 ViewState.HasContracts
             } else {
-                val offerItems = OfferItemsBuilder.createOfferItems(data)
+                val topOfferItems = OfferItemsBuilder.createTopOfferItems(data)
                 val documentItems = OfferItemsBuilder.createDocumentItems(data.quoteBundle.quotes[0])
                 val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(data.quoteBundle.quotes[0])
-                ViewState.OfferItems(offerItems, documentItems, insurableLimitsItems)
+                val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems(data)
+                ViewState.OfferItems(topOfferItems, documentItems, insurableLimitsItems, bottomOfferItems)
             }
         } ?: ViewState.Error.EmptyResponse
     }

@@ -83,7 +83,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             offerToolbar.setNavigationOnClickListener { onBackPressed() }
             offerToolbar.setOnMenuItemClickListener(::handleMenuItem)
 
-            val offerAdapter = OfferAdapter(
+            val topOfferAdapter = OfferAdapter(
                 fragmentManager = supportFragmentManager,
                 tracker = tracker,
                 marketManager = marketManager,
@@ -95,7 +95,18 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             val documentAdapter = DocumentAdapter(
                 trackClick = tracker::openOfferLink
             )
-            val concatAdapter = ConcatAdapter(offerAdapter, insurableLimitsAdapter, documentAdapter)
+            val bottomOfferAdapter = OfferAdapter(
+                fragmentManager = supportFragmentManager,
+                tracker = tracker,
+                marketManager = marketManager,
+                removeDiscount = model::removeDiscount
+            )
+            val concatAdapter = ConcatAdapter(
+                topOfferAdapter,
+                insurableLimitsAdapter,
+                documentAdapter,
+                bottomOfferAdapter,
+            )
 
             binding.offerScroll.adapter = concatAdapter
 
@@ -103,9 +114,10 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 when (viewState) {
                     OfferViewModel.ViewState.HasContracts -> startLoggedInActivity()
                     is OfferViewModel.ViewState.OfferItems -> {
-                        offerAdapter.submitList(viewState.offerItems)
+                        topOfferAdapter.submitList(viewState.topOfferItems)
                         insurableLimitsAdapter.submitList(viewState.insurableLimitsItems)
                         documentAdapter.submitList(viewState.documents)
+                        bottomOfferAdapter.submitList(viewState.bottomOfferItems)
                     }
                     is OfferViewModel.ViewState.Error.GeneralError -> showErrorDialog(
                         viewState.message ?: getString(R.string.home_tab_error_body)
