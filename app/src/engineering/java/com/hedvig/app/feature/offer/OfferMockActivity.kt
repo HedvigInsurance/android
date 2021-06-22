@@ -4,6 +4,8 @@ import com.hedvig.app.MockActivity
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.offerModule
+import com.hedvig.app.testdata.feature.offer.BUNDLE_WITH_CONCURRENT_INCEPTION_DATES
+import com.hedvig.app.testdata.feature.offer.BUNDLE_WITH_INDEPENDENT_INCEPTION_DATES
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_NON_SWITCHABLE
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_SWITCHABLE
@@ -43,6 +45,14 @@ class OfferMockActivity : MockActivity() {
         }
         clickableItem("Swedish House with added discount") {
             MockOfferViewModel.mockData = OFFER_DATA_SWEDISH_HOUSE_WITH_DISCOUNT
+            startActivity(OfferActivity.newInstance(context))
+        }
+        clickableItem("Bundle with concurrent inception dates") {
+            MockOfferViewModel.mockData = BUNDLE_WITH_CONCURRENT_INCEPTION_DATES
+            startActivity(OfferActivity.newInstance(context))
+        }
+        clickableItem("Bundle with independent inception dates") {
+            MockOfferViewModel.mockData = BUNDLE_WITH_INDEPENDENT_INCEPTION_DATES
             startActivity(OfferActivity.newInstance(context))
         }
     }

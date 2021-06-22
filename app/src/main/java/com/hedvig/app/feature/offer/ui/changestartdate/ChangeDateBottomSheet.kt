@@ -81,7 +81,11 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
                     .apply {
                         addOnPositiveButtonClickListener { epochMillis ->
                             changeDateView.setDateText(epochMillis.epochMillisToLocalDate())
-                            changeDateBottomSheetViewModel.onDateSelected(inception.quoteId, epochMillis)
+                            changeDateBottomSheetViewModel.onDateSelected(
+                                isConcurrent = inception.isConcurrent,
+                                quoteId = inception.quoteId,
+                                epochMillis = epochMillis
+                            )
                         }
                     }
                     .show(childFragmentManager, DATE_PICKER_TAG)

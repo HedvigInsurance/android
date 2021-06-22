@@ -21,8 +21,15 @@ class ChangeDateBottomSheetViewModel(
 
     private val selectedDates = mutableMapOf<String, LocalDate>()
 
-    fun onDateSelected(quoteId: String, epochMillis: Long) {
-        selectedDates[quoteId] = epochMillis.epochMillisToLocalDate()
+    fun onDateSelected(isConcurrent: Boolean, quoteId: String, epochMillis: Long) {
+        val date = epochMillis.epochMillisToLocalDate()
+        if (isConcurrent) {
+            selectedDates[quoteId] = date
+        } else {
+            data.inceptions.forEach {
+                selectedDates[it.quoteId] = date
+            }
+        }
     }
 
     fun onSwitchChecked(quoteId: String, checked: Boolean) {
@@ -30,7 +37,10 @@ class ChangeDateBottomSheetViewModel(
             tracker.activateOnInsuranceEnd()
             viewModelScope.launch {
                 _viewState.value = ViewState.Loading(true)
-                val result = editStartDateUseCase.removeStartDate(quoteId, data.idsInBundle)
+                val result = editStartDateUseCase.removeStartDate(
+                    id = quoteId,
+                    idsInBundle = data.idsInBundle
+                )
                 _viewState.value = when (result) {
                     is QueryResult.Error -> ViewState.Error(result.message)
                     is QueryResult.Success -> ViewState.Loading(false)
@@ -40,10 +50,10 @@ class ChangeDateBottomSheetViewModel(
     }
 
     fun onChooseDateClicked() {
-        if (selectedDates.isNotEmpty()) {
-            setNewDateAndDismiss()
+        _viewState.value = if (selectedDates.isNotEmpty()) {
+            ViewState.ShowConfirmationDialog
         } else {
-            _viewState.value = ViewState.ShowConfirmationDialog
+            ViewState.Dismiss
         }
     }
 

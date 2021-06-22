@@ -6,6 +6,8 @@ import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.type.InsuranceTermType
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.testdata.common.builders.TableFragmentBuilder
+import com.hedvig.app.testdata.feature.offer.builders.ConcurrentInceptionBuilder
+import com.hedvig.app.testdata.feature.offer.builders.IndependentInceptionBuilder
 import com.hedvig.app.testdata.feature.offer.builders.OfferDataBuilder
 
 val OFFER_DATA_SWEDISH_APARTMENT = OfferDataBuilder().build()
@@ -94,3 +96,35 @@ val OFFER_DATA_SWEDISH_HOUSE_WITH_DISCOUNT = OfferDataBuilder(
         )
     )
 ).build()
+
+val BUNDLE_WITH_CONCURRENT_INCEPTION_DATES = OfferDataBuilder(
+    typeOfContract = TypeOfContract.SE_HOUSE,
+    redeemedCampaigns = listOf(
+        OfferQuery.RedeemedCampaign(
+            fragments = OfferQuery.RedeemedCampaign.Fragments(
+                incentiveFragment = IncentiveFragment(
+                    incentive = null,
+                    displayValue = "10 SEK DISCOUNT/MO."
+                )
+            )
+        )
+    ),
+    inceptions = ConcurrentInceptionBuilder().build()
+).build()
+
+val BUNDLE_WITH_INDEPENDENT_INCEPTION_DATES = OfferDataBuilder(
+    typeOfContract = TypeOfContract.SE_HOUSE,
+    redeemedCampaigns = listOf(
+        OfferQuery.RedeemedCampaign(
+            fragments = OfferQuery.RedeemedCampaign.Fragments(
+                incentiveFragment = IncentiveFragment(
+                    incentive = null,
+                    displayValue = "10 SEK DISCOUNT/MO."
+                )
+            )
+        )
+    ),
+    inceptions = IndependentInceptionBuilder().build()
+).build()
+
+

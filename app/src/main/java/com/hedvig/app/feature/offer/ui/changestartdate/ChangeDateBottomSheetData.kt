@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.offer.ui.changestartdate
 
 import android.os.Parcelable
-import com.hedvig.android.owldroid.graphql.OfferQuery
 import java.time.LocalDate
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -11,22 +10,6 @@ data class ChangeDateBottomSheetData(
     val inceptions: List<Inception>
 ) : Parcelable {
 
-    constructor(quoteBundle: OfferQuery.QuoteBundle) : this(
-        inceptions = quoteBundle.quotes.map {
-            Inception(
-                quoteId = it.id,
-                startDate = it.startDate ?: LocalDate.now(),
-                currentInsurer = it.currentInsurer?.let { currentInsurer ->
-                    CurrentInsurer(
-                        id = currentInsurer.id!!,
-                        displayName = currentInsurer.displayName!!,
-                        switchable = currentInsurer.switchable!!
-                    )
-                }
-            )
-        }
-    )
-
     @IgnoredOnParcel
     val idsInBundle: List<String> = inceptions.map { it.quoteId }
 
@@ -34,7 +17,8 @@ data class ChangeDateBottomSheetData(
     data class Inception(
         val quoteId: String,
         val startDate: LocalDate,
-        val currentInsurer: CurrentInsurer?
+        val currentInsurer: CurrentInsurer?,
+        val isConcurrent: Boolean
     ) : Parcelable
 
     @Parcelize
