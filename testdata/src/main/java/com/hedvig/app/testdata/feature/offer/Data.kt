@@ -7,82 +7,99 @@ import com.hedvig.android.owldroid.type.InsuranceTermType
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.testdata.common.builders.TableFragmentBuilder
 import com.hedvig.app.testdata.feature.offer.builders.OfferDataBuilder
+import com.hedvig.app.testdata.feature.offer.builders.QuoteBuilder
 
 val OFFER_DATA_SWEDISH_APARTMENT = OfferDataBuilder().build()
 
 val OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_SWITCHABLE = OfferDataBuilder(
-    currentInsurer = OfferQuery.CurrentInsurer(
-        id = "ab2a1f4c-83af-4b9f-98d2-e7ea767b080c",
-        displayName = "Annat Försäkringsbolag",
-        switchable = true
+    quotes = listOf(
+        QuoteBuilder(
+            currentInsurer = OfferQuery.CurrentInsurer(
+                id = "ab2a1f4c-83af-4b9f-98d2-e7ea767b080c",
+                displayName = "Annat Försäkringsbolag",
+                switchable = true
+            )
+        ).build()
     )
 ).build()
 
 val OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_NON_SWITCHABLE = OfferDataBuilder(
-    currentInsurer = OfferQuery.CurrentInsurer(
-        id = "ab2a1f4c-83af-4b9f-98d2-e7ea767b080d",
-        displayName = "Annat Försäkringsbolag",
-        switchable = false
+    quotes = listOf(
+        QuoteBuilder(
+            currentInsurer = OfferQuery.CurrentInsurer(
+                id = "ab2a1f4c-83af-4b9f-98d2-e7ea767b080d",
+                displayName = "Annat Försäkringsbolag",
+                switchable = false
+            )
+        ).build()
     )
 ).build()
 
 val OFFER_DATA_SWEDISH_HOUSE = OfferDataBuilder(
-    typeOfContract = TypeOfContract.SE_HOUSE,
-    detailsTable = TableFragmentBuilder(
-        title = "Home Insurance",
-        sections = listOf(
-            "Details" to listOf(
-                Triple("Address", null, "Askersgatan 129 B"),
-                Triple("Postal code", null, "113 89"),
-                Triple("Insured people", null, "You + 2"),
-                Triple("Living space", null, "180 m2"),
-                Triple("Ancillary area", null, "48 m2"),
-                Triple("Year built", null, "1997"),
-                Triple("Number of baths", null, "2"),
-                Triple("Partly subleted", null, "No"),
+    quotes = listOf(
+        QuoteBuilder(
+            typeOfContract = TypeOfContract.SE_HOUSE,
+            detailsTable = TableFragmentBuilder(
+                title = "Home Insurance",
+                sections = listOf(
+                    "Details" to listOf(
+                        Triple("Address", null, "Askersgatan 129 B"),
+                        Triple("Postal code", null, "113 89"),
+                        Triple("Insured people", null, "You + 2"),
+                        Triple("Living space", null, "180 m2"),
+                        Triple("Ancillary area", null, "48 m2"),
+                        Triple("Year built", null, "1997"),
+                        Triple("Number of baths", null, "2"),
+                        Triple("Partly subleted", null, "No"),
+                    ),
+                    "Extra buildings" to listOf(
+                        Triple("Garage", null, "16 m2"),
+                        Triple("Attefalls house", "Has water connected", "23 m2"),
+                    )
+                )
+            ).build(),
+            insurableLimits = listOf(
+                OfferQuery.InsurableLimit(
+                    fragments = OfferQuery.InsurableLimit.Fragments(
+                        InsurableLimitsFragment(
+                            label = "Test insurable limit",
+                            limit = "Limit",
+                            description = "Description"
+                        )
+                    )
+                ),
+                OfferQuery.InsurableLimit(
+                    fragments = OfferQuery.InsurableLimit.Fragments(
+                        InsurableLimitsFragment(
+                            label = "Test insurable limit 2",
+                            limit = "Limit 2",
+                            description = "Description 2"
+                        )
+                    )
+                ),
             ),
-            "Extra buildings" to listOf(
-                Triple("Garage", null, "16 m2"),
-                Triple("Attefalls house", "Has water connected", "23 m2"),
-            )
-        )
-    ).build(),
-    insurableLimits = listOf(
-        OfferQuery.InsurableLimit(
-            fragments = OfferQuery.InsurableLimit.Fragments(
-                InsurableLimitsFragment(
-                    label = "Test insurable limit",
-                    limit = "Limit",
-                    description = "Description"
+            insuranceTerms = listOf(
+                OfferQuery.InsuranceTerm(
+                    type = InsuranceTermType.GENERAL_TERMS,
+                    displayName = "General term",
+                    url = "invalid url"
+                ),
+                OfferQuery.InsuranceTerm(
+                    type = InsuranceTermType.TERMS_AND_CONDITIONS,
+                    displayName = "Terms and conditions",
+                    url = "invalid url"
                 )
             )
-        ),
-        OfferQuery.InsurableLimit(
-            fragments = OfferQuery.InsurableLimit.Fragments(
-                InsurableLimitsFragment(
-                    label = "Test insurable limit 2",
-                    limit = "Limit 2",
-                    description = "Description 2"
-                )
-            )
-        ),
+        ).build()
     ),
-    insuranceTerms = listOf(
-        OfferQuery.InsuranceTerm(
-            type = InsuranceTermType.GENERAL_TERMS,
-            displayName = "General term",
-            url = "invalid url"
-        ),
-        OfferQuery.InsuranceTerm(
-            type = InsuranceTermType.TERMS_AND_CONDITIONS,
-            displayName = "Terms and conditions",
-            url = "invalid url"
-        )
-    )
 ).build()
 
 val OFFER_DATA_SWEDISH_HOUSE_WITH_DISCOUNT = OfferDataBuilder(
-    typeOfContract = TypeOfContract.SE_HOUSE,
+    quotes = listOf(
+        QuoteBuilder(
+            typeOfContract = TypeOfContract.SE_HOUSE,
+        ).build()
+    ),
     redeemedCampaigns = listOf(
         OfferQuery.RedeemedCampaign(
             fragments = OfferQuery.RedeemedCampaign.Fragments(
@@ -92,5 +109,16 @@ val OFFER_DATA_SWEDISH_HOUSE_WITH_DISCOUNT = OfferDataBuilder(
                 )
             )
         )
+    )
+).build()
+
+val OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL = OfferDataBuilder(
+    quotes = listOf(
+        QuoteBuilder(
+            typeOfContract = TypeOfContract.NO_HOME_CONTENT_OWN,
+        ).build(),
+        QuoteBuilder(
+            typeOfContract = TypeOfContract.NO_TRAVEL,
+        ).build()
     )
 ).build()
