@@ -14,7 +14,7 @@ fun OfferQuery.Inception1.toChangeDateBottomSheetData() = ChangeDateBottomSheetD
                     ?: throw IllegalArgumentException("Quote displayName not found"),
                 quoteId = quote.asCompleteQuote?.id
                     ?: throw IllegalArgumentException("Quote id not found"),
-                startDate = concurrentInception.startDate ?: LocalDate.now(),
+                startDate = concurrentInception.startDate,
                 currentInsurer = concurrentInception.currentInsurer?.fragments?.currentInsurerFragment?.let {
                     ChangeDateBottomSheetData.CurrentInsurer(
                         id = it.id
@@ -35,7 +35,7 @@ fun OfferQuery.Inception1.toChangeDateBottomSheetData() = ChangeDateBottomSheetD
                     ?: throw IllegalArgumentException("Quote displayName not found"),
                 quoteId = inception.correspondingQuote.asCompleteQuote1?.id
                     ?: throw IllegalArgumentException("Quote id not found"),
-                startDate = inception.startDate ?: LocalDate.now(),
+                startDate = inception.startDate,
                 currentInsurer = inception.currentInsurer?.fragments?.currentInsurerFragment?.let {
                     ChangeDateBottomSheetData.CurrentInsurer(
                         id = it.id

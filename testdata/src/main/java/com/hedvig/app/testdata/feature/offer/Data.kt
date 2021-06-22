@@ -89,7 +89,16 @@ val OFFER_DATA_SWEDISH_HOUSE_WITH_DISCOUNT = OfferDataBuilder(
         OfferQuery.RedeemedCampaign(
             fragments = OfferQuery.RedeemedCampaign.Fragments(
                 incentiveFragment = IncentiveFragment(
-                    incentive = null,
+                    incentive = IncentiveFragment.Incentive(
+                        asMonthlyCostDeduction = IncentiveFragment.AsMonthlyCostDeduction(
+                            amount = IncentiveFragment.Amount(
+                                amount = "30"
+                            )
+                        ),
+                        asPercentageDiscountMonths = null,
+                        asNoDiscount = null,
+                        asFreeMonths = null
+                    ),
                     displayValue = "10 SEK DISCOUNT/MO."
                 )
             )
@@ -127,4 +136,18 @@ val BUNDLE_WITH_INDEPENDENT_INCEPTION_DATES = OfferDataBuilder(
     inceptions = IndependentInceptionBuilder().build()
 ).build()
 
+val BUNDLE_WITH_START_DATE_FROM_PREVIOUS_INSURER = OfferDataBuilder(
+    typeOfContract = TypeOfContract.SE_HOUSE,
+    redeemedCampaigns = listOf(
+        OfferQuery.RedeemedCampaign(
+            fragments = OfferQuery.RedeemedCampaign.Fragments(
+                incentiveFragment = IncentiveFragment(
+                    incentive = null,
+                    displayValue = "10 SEK DISCOUNT/MO."
+                )
+            )
+        )
+    ),
+    inceptions = IndependentInceptionBuilder(startDateFromPreviousInsurer = true).build()
+).build()
 

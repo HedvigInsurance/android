@@ -23,7 +23,7 @@ class ChangeDateView @JvmOverloads constructor(
 
     fun bind(
         title: String?,
-        startDate: LocalDate,
+        startDate: LocalDate?,
         switchable: Boolean,
         datePickerListener: () -> Unit,
         switchListener: (Boolean) -> Unit
@@ -40,31 +40,36 @@ class ChangeDateView @JvmOverloads constructor(
         }
 
         if (switchable) {
+            binding.autoSetDateSwitch.isChecked = startDate == null
             binding.autoSetDateSwitch.setOnCheckedChangeListener { _, isChecked ->
                 switchListener(isChecked)
-
-                if (isChecked) {
-                    binding.datePickText.text = null
-                } else {
-                    binding.datePickText.setText(formatStartDate(startDate))
-                }
-
-                binding.datePickText.isEnabled = !isChecked
-                binding.datePickLayout.isEnabled = !isChecked
+                setCheckedState(isChecked, startDate)
             }
+            setCheckedState(startDate == null, startDate)
         }
     }
 
-    fun setDateText(startDate: LocalDate) {
+    private fun setCheckedState(isChecked: Boolean, startDate: LocalDate?) {
+        if (isChecked) {
+            binding.datePickText.text = null
+        } else {
+            binding.datePickText.setText(formatStartDate(startDate))
+        }
+
+        binding.datePickText.isEnabled = !isChecked
+        binding.datePickLayout.isEnabled = !isChecked
+    }
+
+    fun setDateText(startDate: LocalDate?) {
         val dateText = formatStartDate(startDate)
         binding.datePickText.setText(dateText)
     }
 
-    private fun formatStartDate(startDate: LocalDate): String? {
-        return if (startDate.isToday()) {
-            context.getString(R.string.START_DATE_TODAY)
-        } else {
-            startDate.format(dateFormat)
+    private fun formatStartDate(startDate: LocalDate?): String {
+        return when {
+            startDate == null -> ""
+            startDate.isToday() -> context.getString(R.string.START_DATE_TODAY)
+            else -> startDate.format(dateFormat)
         }
     }
 }

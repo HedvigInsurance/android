@@ -17,7 +17,7 @@ data class ChangeDateBottomSheetData(
     data class Inception(
         val title: String,
         val quoteId: String,
-        val startDate: LocalDate,
+        val startDate: LocalDate?,
         val currentInsurer: CurrentInsurer?,
         val isConcurrent: Boolean
     ) : Parcelable
