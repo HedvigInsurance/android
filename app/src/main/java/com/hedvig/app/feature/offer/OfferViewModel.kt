@@ -15,7 +15,6 @@ import com.hedvig.app.feature.offer.ui.OfferModel
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.perils.PerilItem
 import e
-import java.time.LocalDate
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -79,8 +78,8 @@ class OfferViewModelImpl(
                         .onEach { _viewState.value = it }
                         .catch { _viewState.value = ViewState.Error.GeneralError(it.message) }
                 }
-                GetQuotesUseCase.Result.Error -> {
-                    _viewState.value = ViewState.Error.GeneralError("")
+                is GetQuotesUseCase.Result.Error -> {
+                    _viewState.value = ViewState.Error.GeneralError(idsResult.message)
                 }
             }
         }
