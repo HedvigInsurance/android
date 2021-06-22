@@ -291,6 +291,7 @@
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".feature.home.ui.changeaddress.result.ChangeAddressResultActivity" />
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"

@@ -106,6 +106,10 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
     private fun showNextView(embarkData: EmbarkModel, passage: EmbarkStoryQuery.Passage?) {
         val offerKeys = embarkData.passage?.offerRedirect?.data?.keys
         if (offerKeys != null && offerKeys.isNotEmpty()) {
+            // TODO: Pass offerIds to OfferActivity
+            // val offerIds = model.getListFromStore(offerKeys)
+            // startActivity(OfferActivity.newInstance(this))
+
             val offerIds = offerKeys.mapNotNull { model.getFromStore(it) }
             showWebOffer(offerIds)
         } else if (embarkData.passage?.name == "Offer") {

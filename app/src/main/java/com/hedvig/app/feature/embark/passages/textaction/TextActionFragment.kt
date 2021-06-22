@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import androidx.core.os.bundleOf
-import androidx.core.view.doOnNextLayout
 import androidx.fragment.app.Fragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.EmbarkInputItemBinding
@@ -80,7 +79,10 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
                 .onEach { model.navigateToPassage(data.link) }
                 .launchIn(viewLifecycleScope)
 
-            messages.doOnNextLayout {
+            // We need to wait for all input views to be laid out before starting enter transition.
+            // This could perhaps be handled with a callback from the inputContainer.
+            viewLifecycleScope.launchWhenCreated {
+                delay(50)
                 startPostponedEnterTransition()
             }
         }

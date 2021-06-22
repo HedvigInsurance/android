@@ -12,8 +12,12 @@ import com.hedvig.app.feature.embark.masking.SHORT_DATE
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.animateResponse
 import com.hedvig.app.util.extensions.view.hapticClicks
+import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
+import dev.chrisbanes.insetter.doOnApplyWindowInsets
+import java.lang.IllegalArgumentException
+import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
@@ -36,6 +40,10 @@ class DatePickerFragment : Fragment(R.layout.fragment_embark_date_picker) {
 
             dateContainer.setOnClickListener {
                 datePickerViewModel.onShowDatePicker()
+            }
+
+            continueButton.doOnApplyWindowInsets { view, insets, initialState ->
+                view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
             }
 
             continueButton
@@ -66,9 +74,11 @@ class DatePickerFragment : Fragment(R.layout.fragment_embark_date_picker) {
     }
 
     private suspend fun saveAndAnimate() {
+        val date = datePickerViewModel.selectedDate.value?.format(DateTimeFormatter.ISO_DATE)
+            ?: throw IllegalArgumentException("No date selected when trying to continue")
         val inputText = binding.dateLabel.text.toString()
         model.putInStore("${data.passageName}Result", inputText)
-        model.putInStore(data.storeKey, inputText)
+        model.putInStore(data.storeKey, date)
         val response = model.preProcessResponse(data.passageName) ?: Response.SingleResponse(inputText)
         animateResponse(binding.responseContainer, response)
     }

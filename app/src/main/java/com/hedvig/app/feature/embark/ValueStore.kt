@@ -8,6 +8,7 @@ interface ValueStore : ValueStoreView {
     fun commitVersion()
     fun rollbackVersion()
     fun put(key: String, value: String)
+    fun put(key: String, value: List<String>)
     val prefill: ValueStoreView
     fun toMap(): Map<String, String>
     fun getMultiActionItems(key: String): List<Map<String, String>>
@@ -15,15 +16,19 @@ interface ValueStore : ValueStoreView {
 
 interface ValueStoreView {
     fun get(key: String): String?
+    fun getList(key: String): List<String>?
 }
 
 class ValueStoreImpl : ValueStore {
+    private val storedListValues = HashMap<String, List<String>>()
+
     private val storedValues = Stack<HashMap<String, String>>().apply { push(hashMapOf()) }
     private val stage = HashMap<String, String>()
 
     private val prefillValues = HashMap<String, String>()
 
     override var computedValues: Map<String, String>? = null
+
     override fun commitVersion() {
         storedValues.push(HashMap(storedValues.peek() + stage))
         stage.clear()
@@ -38,14 +43,26 @@ class ValueStoreImpl : ValueStore {
         prefillValues[key] = value
     }
 
+    /**
+     * Currently only used to store quoteIds, therefore no stage or prefill is required
+     */
+    override fun put(key: String, value: List<String>) {
+        storedListValues[key] = value
+    }
+
     override fun get(key: String): String? {
         return computedValues?.get(key)?.let {
             TemplateExpressionCalculator.evaluateTemplateExpression(it, storedValues.peek())
         } ?: storedValues.peek()[key] ?: stage[key]
     }
 
+    override fun getList(key: String): List<String>? {
+        return storedListValues[key]
+    }
+
     override val prefill = object : ValueStoreView {
         override fun get(key: String) = this@ValueStoreImpl.get(key) ?: prefillValues[key]
+        override fun getList(key: String): List<String>? = null
     }
 
     override fun toMap(): Map<String, String> {
