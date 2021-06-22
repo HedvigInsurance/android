@@ -13,6 +13,7 @@ import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.offer.ui.OfferModel
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
+import com.hedvig.app.feature.perils.PerilItem
 import e
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
@@ -39,6 +40,7 @@ abstract class OfferViewModel : ViewModel() {
     sealed class ViewState {
         data class OfferItems(
             val topOfferItems: List<OfferModel>,
+            val perils: List<PerilItem>,
             val documents: List<DocumentItems>,
             val insurableLimitsItems: List<InsurableLimitItem>,
             val bottomOfferItems: List<OfferModel.Footer>,
@@ -92,10 +94,11 @@ class OfferViewModelImpl(
                 ViewState.HasContracts
             } else {
                 val topOfferItems = OfferItemsBuilder.createTopOfferItems(data)
-                val documentItems = OfferItemsBuilder.createDocumentItems(data.quoteBundle.quotes[0])
+                val perilItems = OfferItemsBuilder.createPerilItems(data.quoteBundle.quotes[0])
                 val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(data.quoteBundle.quotes[0])
+                val documentItems = OfferItemsBuilder.createDocumentItems(data.quoteBundle.quotes[0])
                 val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems(data)
-                ViewState.OfferItems(topOfferItems, documentItems, insurableLimitsItems, bottomOfferItems)
+                ViewState.OfferItems(topOfferItems, perilItems, documentItems, insurableLimitsItems, bottomOfferItems)
             }
         } ?: ViewState.Error.EmptyResponse
     }
