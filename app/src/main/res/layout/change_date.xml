@@ -10,6 +10,15 @@
     android:paddingBottom="@dimen/base_margin"
     tools:context=".feature.offer.ui.changestartdate.ChangeDateBottomSheet">
 
+    <TextView
+        android:layout_marginTop="@dimen/base_margin"
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?textAppearanceHeadline6"
+        tools:text="Travel Insurance"
+        />
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/date_pick_layout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"

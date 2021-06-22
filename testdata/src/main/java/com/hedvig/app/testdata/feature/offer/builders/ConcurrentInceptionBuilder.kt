@@ -22,9 +22,9 @@ class ConcurrentInceptionBuilder(
             correspondingQuotes = quoteIds.map {
                 OfferQuery.CorrespondingQuote(
                     asCompleteQuote = OfferQuery.AsCompleteQuote(
+                        displayName = "Test insurance",
                         id = it
-                    ),
-                    asIncompleteQuote = null
+                    )
                 )
             },
             startDate = startDate,

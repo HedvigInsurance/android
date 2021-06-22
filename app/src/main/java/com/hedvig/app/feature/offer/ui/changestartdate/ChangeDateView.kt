@@ -22,6 +22,7 @@ class ChangeDateView @JvmOverloads constructor(
     private val dateFormat = DateTimeFormatter.ofPattern("d/M/yyyy")
 
     fun bind(
+        title: String?,
         startDate: LocalDate,
         switchable: Boolean,
         datePickerListener: () -> Unit,
@@ -29,6 +30,8 @@ class ChangeDateView @JvmOverloads constructor(
     ) {
 
         setDateText(startDate)
+        binding.title.text = title
+        binding.title.isVisible = title != null
         binding.autoSetDateSwitch.isVisible = switchable
         binding.autoSetDateTitle.isVisible = switchable
 

@@ -24,6 +24,7 @@ import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.invalid
+import com.hedvig.app.util.extensions.isToday
 import com.hedvig.app.util.extensions.setMarkdownText
 import com.hedvig.app.util.extensions.setStrikethrough
 import com.hedvig.app.util.extensions.showAlert
@@ -31,6 +32,7 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import e
+import java.time.LocalDate
 import javax.money.MonetaryAmount
 
 class OfferAdapter(
@@ -102,6 +104,9 @@ class OfferAdapter(
                         ChangeDateBottomSheet.newInstance(data.changeDateBottomSheetData)
                             .show(fragmentManager, ChangeDateBottomSheet.TAG)
                     }
+
+                    startDateLabel.text = data.startDateLabel.getString(itemView.context)
+                    startDate.text = data.startDate.getString(itemView.context)
 
                     val incentiveDisplayValue = data.incentiveDisplayValue
                     if (incentiveDisplayValue != null) {

@@ -15,6 +15,7 @@ data class ChangeDateBottomSheetData(
 
     @Parcelize
     data class Inception(
+        val title: String,
         val quoteId: String,
         val startDate: LocalDate,
         val currentInsurer: CurrentInsurer?,

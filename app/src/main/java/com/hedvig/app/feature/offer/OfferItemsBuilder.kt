@@ -6,13 +6,8 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.offer.ui.OfferModel
-<<<<<<< HEAD
-import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
 import com.hedvig.app.feature.perils.Peril
 import com.hedvig.app.feature.perils.PerilItem
-=======
-import com.hedvig.app.feature.offer.ui.changestartdate.toChangeDateBottomSheetData
->>>>>>> e4a9c4e0... Query inception and create extension function to create bottom sheet data
 import com.hedvig.app.feature.table.intoTable
 import com.hedvig.app.util.apollo.toMonetaryAmount
 
@@ -24,6 +19,8 @@ object OfferItemsBuilder {
     fun createTopOfferItems(data: OfferQuery.Data) = listOf(
         OfferModel.Header(
             title = data.getDisplayNameOrNull(),
+            startDate = data.quoteBundle.inception.getStartDate(),
+            startDateLabel = data.quoteBundle.inception.getStartDateLabel(),
             netMonthlyCost = data
                 .quoteBundle
                 .bundleCost

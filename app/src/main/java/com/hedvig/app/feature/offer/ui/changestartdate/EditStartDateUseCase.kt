@@ -19,7 +19,8 @@ class EditStartDateUseCase(
         id: String,
         idsInBundle: List<String>
     ): QueryResult<RemoveStartDateMutation.Data> {
-        return when (val response = apolloClient.mutate(RemoveStartDateMutation(id)).safeQuery()) {
+        val mutation = RemoveStartDateMutation(id)
+        return when (val response = apolloClient.mutate(mutation).safeQuery()) {
             is QueryResult.Success -> {
                 removeStartDateFromCache(id, idsInBundle, response.data)
                 response

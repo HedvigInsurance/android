@@ -71,6 +71,9 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
     private fun createChangeDateView(inception: ChangeDateBottomSheetData.Inception): View {
         val changeDateView = ChangeDateView(requireContext())
         changeDateView.bind(
+            title = if (!inception.isConcurrent) {
+                inception.title
+            } else null,
             startDate = inception.startDate,
             switchable = inception.currentInsurer?.switchable ?: false,
             datePickerListener = {
