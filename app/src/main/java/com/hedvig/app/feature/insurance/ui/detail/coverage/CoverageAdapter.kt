@@ -1,16 +1,21 @@
 package com.hedvig.app.feature.insurance.ui.detail.coverage
 
 import android.content.Context
+import android.graphics.Rect
 import android.graphics.drawable.PictureDrawable
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestBuilder
+import com.carousell.concatadapterextension.ItemDecorationOwner
+import com.carousell.concatadapterextension.SpanSizeLookupOwner
 import com.hedvig.android.owldroid.type.TypeOfContract
+import com.hedvig.app.BASE_MARGIN_DOUBLE
+import com.hedvig.app.BASE_MARGIN_HALF
 import com.hedvig.app.R
-import com.hedvig.app.databinding.ContractCoverageDetailRowBinding
 import com.hedvig.app.databinding.ContractDetailCoverageHeaderBinding
 import com.hedvig.app.databinding.PerilDetailBinding
 import com.hedvig.app.util.GenericDiffUtilItemCallback
@@ -24,18 +29,18 @@ class CoverageAdapter(
     private val requestBuilder: RequestBuilder<PictureDrawable>,
     private val fragmentManager: FragmentManager,
 ) :
-    ListAdapter<CoverageModel, CoverageAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
+    ListAdapter<CoverageModel, CoverageAdapter.ViewHolder>(GenericDiffUtilItemCallback()),
+    SpanSizeLookupOwner,
+    ItemDecorationOwner {
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
         is CoverageModel.Header -> R.layout.contract_detail_coverage_header
         is CoverageModel.Peril -> R.layout.peril_detail
-        is CoverageModel.InsurableLimit -> R.layout.contract_coverage_detail_row
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.contract_detail_coverage_header -> ViewHolder.Header(parent)
         R.layout.peril_detail -> ViewHolder.Peril(parent)
-        R.layout.contract_coverage_detail_row -> ViewHolder.InsurableLimit(parent)
         else -> throw Error("Invalid viewType: $viewType")
     }
 
@@ -67,17 +72,11 @@ class CoverageAdapter(
                 }
 
                 with(binding.root) {
-                    when (data) {
-                        is CoverageModel.Header.Perils ->
-                            text =
-                                context.getString(
-                                    R.string.CONTRACT_COVERAGE_CONTRACT_TYPE,
-                                    data.typeOfContract.displayNameDefinite(context)
-                                )
-                        CoverageModel.Header.InsurableLimits -> setText(
-                            R.string.CONTRACT_COVERAGE_MORE_INFO
+                    text =
+                        context.getString(
+                            R.string.CONTRACT_COVERAGE_CONTRACT_TYPE,
+                            data.typeOfContract.displayNameDefinite(context)
                         )
-                    }
                 }
             }
 
@@ -147,25 +146,40 @@ class CoverageAdapter(
                 }
             }
         }
+    }
 
-        class InsurableLimit(parent: ViewGroup) :
-            ViewHolder(parent.inflate(R.layout.contract_coverage_detail_row)) {
-            private val binding by viewBinding(ContractCoverageDetailRowBinding::bind)
-            override fun bind(
-                data: CoverageModel,
-                requestBuilder: RequestBuilder<PictureDrawable>,
-                fragmentManager: FragmentManager,
-            ) = with(binding) {
-                if (data !is CoverageModel.InsurableLimit) {
-                    return invalid(data)
-                }
-                label.text = data.inner.label
-                content.text = data.inner.limit
-                info.setHapticClickListener {
-                    InsurableLimitsBottomSheet.newInstance(data.inner)
-                        .show(fragmentManager, InsurableLimitsBottomSheet.TAG)
+    override fun getSpanSizeLookup() = object : GridLayoutManager.SpanSizeLookup() {
+        override fun getSpanSize(position: Int) = when (currentList[position]) {
+            is CoverageModel.Peril -> 1
+            else -> 2
+        }
+    }
+
+    override fun getItemDecorations(): List<RecyclerView.ItemDecoration> = listOf(
+        object : RecyclerView.ItemDecoration() {
+            override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
+                val position = parent.getChildViewHolder(view).bindingAdapterPosition
+                if (currentList[position] is CoverageModel.Peril) {
+                    val spanIndex =
+                        (view.layoutParams as? GridLayoutManager.LayoutParams)?.spanIndex ?: return
+
+                    when (spanIndex) {
+                        SPAN_LEFT -> {
+                            outRect.right = BASE_MARGIN_HALF
+                            outRect.left = BASE_MARGIN_DOUBLE
+                        }
+                        SPAN_RIGHT -> {
+                            outRect.left = BASE_MARGIN_HALF
+                            outRect.right = BASE_MARGIN_DOUBLE
+                        }
+                    }
                 }
             }
         }
+    )
+
+    companion object {
+        private const val SPAN_LEFT = 0
+        private const val SPAN_RIGHT = 1
     }
 }

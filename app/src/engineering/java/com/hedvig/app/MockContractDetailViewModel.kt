@@ -4,7 +4,9 @@ import android.net.Uri
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
-import com.hedvig.app.feature.insurance.ui.detail.coverage.CoverageModel
+import com.hedvig.app.feature.insurance.ui.detail.coverage.CoverageViewState
+import com.hedvig.app.feature.insurance.ui.detail.coverage.createCoverageItems
+import com.hedvig.app.feature.insurance.ui.detail.coverage.createInsurableLimitsItems
 import com.hedvig.app.feature.insurance.ui.detail.toModelItems
 import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoModel
 import com.hedvig.app.feature.table.Table
@@ -88,19 +90,10 @@ class MockContractDetailViewModel : ContractDetailViewModel() {
                     }
                 )
 
-                _coverageList.value = listOf(
-                    CoverageModel.Header.Perils(
-                        it.typeOfContract
-                    )
-                ) + it.perils.map {
-                    CoverageModel.Peril(
-                        it.fragments.perilFragment
-                    )
-                } + CoverageModel.Header.InsurableLimits + it.insurableLimits.map {
-                    CoverageModel.InsurableLimit(
-                        it.fragments.insurableLimitsFragment
-                    )
-                }
+                _coverageViewState.value = CoverageViewState(
+                    createCoverageItems(it),
+                    createInsurableLimitsItems(it)
+                )
             }
         }
     }

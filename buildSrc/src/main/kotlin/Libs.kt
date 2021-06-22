@@ -100,8 +100,8 @@ object Libs {
 
     object Markwon {
         private const val version = "4.6.2"
-        const val core = "io.noties.markwon:core:${version}"
-        const val linkify = "io.noties.markwon:linkify:${version}"
+        const val core = "io.noties.markwon:core:$version"
+        const val linkify = "io.noties.markwon:linkify:$version"
     }
 
     const val moneta = "org.javamoney:moneta:1.4.2"
@@ -126,4 +126,5 @@ object Libs {
 
     const val adyen = "com.adyen.checkout:drop-in:3.8.2"
     const val jsonTest = "org.json:json:20210307"
+    const val concatAdapterExtension = "com.github.carousell:ConcatAdapterExtension:1.2.1"
 }
