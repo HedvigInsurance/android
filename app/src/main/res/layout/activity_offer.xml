@@ -14,8 +14,9 @@
         android:layout_height="match_parent"
         android:clipToPadding="false"
         android:paddingBottom="120dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:spanCount="2"
         tools:itemCount="1"
         tools:listitem="@layout/offer_header" />
 

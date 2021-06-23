@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.insurance.ui.detail.coverage
+package com.hedvig.app.feature.perils
 
 import android.content.Context
 import android.graphics.Rect
@@ -25,17 +25,17 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import e
 
-class CoverageAdapter(
+class PerilsAdapter(
     private val requestBuilder: RequestBuilder<PictureDrawable>,
     private val fragmentManager: FragmentManager,
 ) :
-    ListAdapter<CoverageModel, CoverageAdapter.ViewHolder>(GenericDiffUtilItemCallback()),
+    ListAdapter<PerilItem, PerilsAdapter.ViewHolder>(GenericDiffUtilItemCallback()),
     SpanSizeLookupOwner,
     ItemDecorationOwner {
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
-        is CoverageModel.Header -> R.layout.contract_detail_coverage_header
-        is CoverageModel.Peril -> R.layout.peril_detail
+        is PerilItem.Header -> R.layout.contract_detail_coverage_header
+        is PerilItem.Peril -> R.layout.peril_detail
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
@@ -50,12 +50,12 @@ class CoverageAdapter(
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         abstract fun bind(
-            data: CoverageModel,
+            data: PerilItem,
             requestBuilder: RequestBuilder<PictureDrawable>,
             fragmentManager: FragmentManager,
         ): Any?
 
-        fun invalid(data: CoverageModel) {
+        fun invalid(data: PerilItem) {
             e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }
         }
 
@@ -63,11 +63,11 @@ class CoverageAdapter(
             ViewHolder(parent.inflate(R.layout.contract_detail_coverage_header)) {
             private val binding by viewBinding(ContractDetailCoverageHeaderBinding::bind)
             override fun bind(
-                data: CoverageModel,
+                data: PerilItem,
                 requestBuilder: RequestBuilder<PictureDrawable>,
                 fragmentManager: FragmentManager,
             ) = with(binding) {
-                if (data !is CoverageModel.Header) {
+                if (data !is PerilItem.Header) {
                     return invalid(data)
                 }
 
@@ -114,20 +114,20 @@ class CoverageAdapter(
         class Peril(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.peril_detail)) {
             private val binding by viewBinding(PerilDetailBinding::bind)
             override fun bind(
-                data: CoverageModel,
+                data: PerilItem,
                 requestBuilder: RequestBuilder<PictureDrawable>,
                 fragmentManager: FragmentManager,
             ) = with(binding) {
-                if (data !is CoverageModel.Peril) {
+                if (data !is PerilItem.Peril) {
                     return invalid(data)
                 }
 
                 label.text = data.inner.title
                 val iconUrl = "${icon.context.getString(R.string.BASE_URL)}${
                 if (icon.context.isDarkThemeActive) {
-                    data.inner.icon.variants.dark.svgUrl
+                    data.inner.darkUrl
                 } else {
-                    data.inner.icon.variants.light.svgUrl
+                    data.inner.lightUrl
                 }
                 }"
                 requestBuilder
@@ -135,10 +135,8 @@ class CoverageAdapter(
                     .into(icon)
 
                 root.setHapticClickListener {
-                    PerilBottomSheet.newInstance(
-                        root.context,
-                        data.inner
-                    )
+                    PerilBottomSheet
+                        .newInstance(data.inner)
                         .show(
                             fragmentManager,
                             PerilBottomSheet.TAG
@@ -150,7 +148,7 @@ class CoverageAdapter(
 
     override fun getSpanSizeLookup() = object : GridLayoutManager.SpanSizeLookup() {
         override fun getSpanSize(position: Int) = when (currentList[position]) {
-            is CoverageModel.Peril -> 1
+            is PerilItem.Peril -> 1
             else -> 2
         }
     }
@@ -159,7 +157,7 @@ class CoverageAdapter(
         object : RecyclerView.ItemDecoration() {
             override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
                 val position = parent.getChildViewHolder(view).bindingAdapterPosition
-                if (currentList[position] is CoverageModel.Peril) {
+                if (currentList[position] is PerilItem.Peril) {
                     val spanIndex =
                         (view.layoutParams as? GridLayoutManager.LayoutParams)?.spanIndex ?: return
 

@@ -6,6 +6,8 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.offer.ui.OfferModel
+import com.hedvig.app.feature.perils.Peril
+import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.feature.table.intoTable
 import com.hedvig.app.util.apollo.toMonetaryAmount
 
@@ -69,4 +71,12 @@ object OfferItemsBuilder {
     fun createBottomOfferItems(data: OfferQuery.Data) = listOf(
         OfferModel.Footer(GDPR_LINK),
     )
+
+    fun createPerilItems(data: OfferQuery.Quote) = data
+        .perils
+        .map { peril ->
+            peril.fragments.perilFragment.let { perilFragment ->
+                PerilItem.Peril(Peril.from(perilFragment))
+            }
+        }
 }

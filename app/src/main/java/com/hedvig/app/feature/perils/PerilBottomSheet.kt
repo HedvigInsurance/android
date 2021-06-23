@@ -1,17 +1,15 @@
-package com.hedvig.app.feature.insurance.ui.detail.coverage
+package com.hedvig.app.feature.perils
 
-import android.content.Context
 import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.core.view.updatePadding
 import com.bumptech.glide.RequestBuilder
-import com.hedvig.android.owldroid.fragment.PerilFragment
-import com.hedvig.app.R
+import com.hedvig.app.feature.insurance.ui.detail.coverage.PerilAdapter
+import com.hedvig.app.feature.insurance.ui.detail.coverage.PerilModel
 import com.hedvig.app.ui.view.ExpandableBottomSheet
 import com.hedvig.app.util.extensions.dp
-import com.hedvig.app.util.extensions.isDarkThemeActive
 import e
 import org.koin.android.ext.android.inject
 
@@ -36,7 +34,8 @@ class PerilBottomSheet : ExpandableBottomSheet() {
                     peril.info,
                     peril.covered,
                     peril.exception,
-                    peril.iconUrl
+                    peril.darkUrl,
+                    peril.lightUrl,
                 )
             )
         }
@@ -48,9 +47,10 @@ class PerilBottomSheet : ExpandableBottomSheet() {
         info: String,
         covered: List<String>,
         exceptions: List<String>,
-        iconLink: String,
+        iconDarkLink: String,
+        iconLightLink: String,
     ) = listOfNotNull(
-        PerilModel.Icon(iconLink),
+        PerilModel.Icon(iconLightLink, iconDarkLink),
         PerilModel.Title(title),
         PerilModel.Description(description),
         if (covered.isNotEmpty()) {
@@ -80,22 +80,9 @@ class PerilBottomSheet : ExpandableBottomSheet() {
 
         val TAG = PerilBottomSheet::class.java.name
 
-        fun newInstance(context: Context, peril: PerilFragment) = PerilBottomSheet().apply {
+        fun newInstance(peril: Peril) = PerilBottomSheet().apply {
             arguments = bundleOf(
-                PERIL to Peril(
-                    title = peril.title,
-                    description = peril.description,
-                    iconUrl = "${context.getString(R.string.BASE_URL)}${
-                        if (context.isDarkThemeActive) {
-                            peril.icon.variants.dark.svgUrl
-                        } else {
-                            peril.icon.variants.light.svgUrl
-                        }
-                    }",
-                    exception = peril.exceptions,
-                    covered = peril.covered,
-                    info = peril.info
-                )
+                PERIL to peril,
             )
         }
     }

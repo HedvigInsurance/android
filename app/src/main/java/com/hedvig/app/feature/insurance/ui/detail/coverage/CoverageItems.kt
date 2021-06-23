@@ -2,12 +2,14 @@ package com.hedvig.app.feature.insurance.ui.detail.coverage
 
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
+import com.hedvig.app.feature.perils.Peril
+import com.hedvig.app.feature.perils.PerilItem
 
-fun createCoverageItems(contract: InsuranceQuery.Contract): List<CoverageModel> {
+fun createCoverageItems(contract: InsuranceQuery.Contract): List<PerilItem> {
     return listOf(
-        CoverageModel.Header(contract.typeOfContract)
+        PerilItem.Header(contract.typeOfContract)
     ) + contract.perils.map {
-        CoverageModel.Peril(it.fragments.perilFragment)
+        PerilItem.Peril(Peril.from(it.fragments.perilFragment))
     }
 }
 
