@@ -80,43 +80,6 @@ class ChangeDateBottomSheetViewModel(
             }
         }
     }
-/*
-    override fun chooseStartDate(id: String, date: LocalDate) {
-        _viewState.postValue(
-            OfferViewModel.ViewState.OfferItems(
-                OfferItemsBuilder.createOfferItems(
-                    MockOfferViewModel.mockData.copy(
-                        quoteBundle = MockOfferViewModel.mockData.quoteBundle.copy(
-                            quotes = MockOfferViewModel.mockData.quoteBundle.quotes.map {
-                                it.copy(
-                                    startDate = date
-                                )
-                            }
-                        )
-                    )
-                ),
-                listOf()
-            )
-        )
-    }
-
-    override fun removeStartDate(id: String) {
-        _viewState.postValue(
-            OfferViewModel.ViewState.OfferItems(
-                OfferItemsBuilder.createOfferItems(
-                    MockOfferViewModel.mockData.copy(
-                        quoteBundle = MockOfferViewModel.mockData.quoteBundle.copy(
-                            quotes = MockOfferViewModel.mockData.quoteBundle.quotes.map {
-                                it.copy(startDate = null)
-                            }
-                        )
-                    )
-                ),
-                listOf()
-            )
-        )
-    }
- */
 
     sealed class ViewState {
         object Dismiss : ViewState()
