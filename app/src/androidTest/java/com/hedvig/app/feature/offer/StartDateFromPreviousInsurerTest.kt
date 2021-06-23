@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.offer
 
-import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.matcher.ViewMatchers
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.R
@@ -10,11 +10,13 @@ import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
+import com.hedvig.app.util.context
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import org.hamcrest.Matchers
 import org.junit.Rule
 import org.junit.Test
 
-class ActiveWhenCurrentInsuranceExpiresStartDateTest : TestCase() {
+class StartDateFromPreviousInsurerTest : TestCase() {
 
     @get:Rule
     val activityRule = LazyActivityScenarioRule(OfferActivity::class.java)
@@ -29,7 +31,7 @@ class ActiveWhenCurrentInsuranceExpiresStartDateTest : TestCase() {
 
     @Test
     fun shouldSetDateLabel() = run {
-        activityRule.launch()
+        activityRule.launch(OfferActivity.newInstance(context(), listOf("123")))
         onScreen<OfferScreen> {
             scroll {
                 childAt<OfferScreen.HeaderItem>(0) {
@@ -38,6 +40,26 @@ class ActiveWhenCurrentInsuranceExpiresStartDateTest : TestCase() {
                     }
                 }
             }
+        }
+    }
+
+    @Test
+    fun switchShouldBeCheckedWhenOpeningBottomSheet() = run {
+        activityRule.launch(OfferActivity.newInstance(context(), listOf("123")))
+        onScreen<OfferScreen> {
+            scroll {
+                childAt<OfferScreen.HeaderItem>(0) {
+                    startDate {
+                        click()
+                    }
+                }
+            }
+        }
+        onScreen<ChangeDateView> {
+            Matchers.allOf(
+                ViewMatchers.withId(R.id.auto_set_date_switch),
+                ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)
+            ).matches(ViewMatchers.isChecked())
         }
     }
 }

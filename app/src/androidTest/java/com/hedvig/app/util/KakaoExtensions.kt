@@ -12,14 +12,15 @@ import androidx.test.espresso.matcher.ViewMatchers
 import com.agoda.kakao.bottomnav.KBottomNavigationView
 import com.agoda.kakao.common.builders.ViewBuilder
 import com.agoda.kakao.common.utilities.getResourceString
+import com.agoda.kakao.common.views.KView
 import com.agoda.kakao.edit.KTextInputLayout
 import com.agoda.kakao.intent.KIntent
 import com.agoda.kakao.picker.date.KDatePicker
 import com.agoda.kakao.swiperefresh.KSwipeRefreshLayout
 import com.agoda.kakao.text.KTextView
 import com.google.android.material.textfield.TextInputLayout
-import org.hamcrest.Description
 import java.time.LocalDate
+import org.hamcrest.Description
 
 fun KTextInputLayout.hasError(@StringRes resId: Int, vararg formatArgs: Any) =
     hasError(context().getString(resId, *formatArgs))
@@ -40,6 +41,10 @@ fun KTextView.hasText(@StringRes resId: Int, vararg formatArgs: Any) =
 
 fun KTextView.hasPluralText(@PluralsRes resId: Int, quantity: Int, vararg formatArgs: Any) =
     hasText(context().resources.getQuantityString(resId, quantity, *formatArgs))
+
+fun KView.hasNrOfChildren(quantity: Int) {
+    view.check(ViewAssertions.matches(ViewMatchers.hasChildCount(quantity)))
+}
 
 fun KBottomNavigationView.hasNumberOfMenuItems(matcherNumber: Int) {
     view.check(
