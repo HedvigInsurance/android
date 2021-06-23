@@ -18,9 +18,20 @@ class MockOfferViewModel : OfferViewModel() {
     init {
         Handler(getMainLooper()).postDelayed(
             {
-                val offerItems = OfferItemsBuilder.createOfferItems(mockData)
+                val topOfferItems = OfferItemsBuilder.createTopOfferItems(mockData)
+                val perilItems = OfferItemsBuilder.createPerilItems(mockData.quoteBundle.quotes[0])
                 val documentItems = OfferItemsBuilder.createDocumentItems(mockData.quoteBundle.quotes[0])
-                _viewState.postValue(ViewState.OfferItems(offerItems, documentItems))
+                val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(mockData.quoteBundle.quotes[0])
+                val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems(mockData)
+                _viewState.postValue(
+                    ViewState.OfferItems(
+                        topOfferItems,
+                        perilItems,
+                        documentItems,
+                        insurableLimitsItems,
+                        bottomOfferItems
+                    )
+                )
             },
             500
         )
@@ -35,7 +46,7 @@ class MockOfferViewModel : OfferViewModel() {
     override fun chooseStartDate(id: String, date: LocalDate) {
         _viewState.postValue(
             ViewState.OfferItems(
-                OfferItemsBuilder.createOfferItems(
+                OfferItemsBuilder.createTopOfferItems(
                     mockData.copy(
                         quoteBundle = mockData.quoteBundle.copy(
                             quotes = mockData.quoteBundle.quotes.map {
@@ -46,7 +57,10 @@ class MockOfferViewModel : OfferViewModel() {
                         )
                     )
                 ),
-                listOf()
+                OfferItemsBuilder.createPerilItems(mockData.quoteBundle.quotes[0]),
+                OfferItemsBuilder.createDocumentItems(mockData.quoteBundle.quotes[0]),
+                OfferItemsBuilder.createInsurableLimits(mockData.quoteBundle.quotes[0]),
+                OfferItemsBuilder.createBottomOfferItems(mockData),
             )
         )
     }
@@ -54,7 +68,7 @@ class MockOfferViewModel : OfferViewModel() {
     override fun removeStartDate(id: String) {
         _viewState.postValue(
             ViewState.OfferItems(
-                OfferItemsBuilder.createOfferItems(
+                OfferItemsBuilder.createTopOfferItems(
                     mockData.copy(
                         quoteBundle = mockData.quoteBundle.copy(
                             quotes = mockData.quoteBundle.quotes.map {
@@ -63,7 +77,10 @@ class MockOfferViewModel : OfferViewModel() {
                         )
                     )
                 ),
-                listOf()
+                OfferItemsBuilder.createPerilItems(mockData.quoteBundle.quotes[0]),
+                OfferItemsBuilder.createDocumentItems(mockData.quoteBundle.quotes[0]),
+                OfferItemsBuilder.createInsurableLimits(mockData.quoteBundle.quotes[0]),
+                OfferItemsBuilder.createBottomOfferItems(mockData),
             )
         )
     }

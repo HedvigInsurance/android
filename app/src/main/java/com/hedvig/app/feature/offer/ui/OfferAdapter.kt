@@ -6,12 +6,10 @@ import androidx.core.view.doOnNextLayout
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.hedvig.app.BASE_MARGIN_HALF
 import com.hedvig.app.R
 import com.hedvig.app.databinding.OfferFactAreaBinding
 import com.hedvig.app.databinding.OfferFooterBinding
 import com.hedvig.app.databinding.OfferHeaderBinding
-import com.hedvig.app.databinding.OfferPerilAreaBinding
 import com.hedvig.app.databinding.OfferSwitchBinding
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.offer.OfferRedeemCodeBottomSheet
@@ -20,7 +18,6 @@ import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheet
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.table.generateTable
-import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.extensions.colorAttr
@@ -32,7 +29,6 @@ import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
-import com.hedvig.app.util.svg.buildRequestBuilder
 import e
 import javax.money.MonetaryAmount
 
@@ -46,7 +42,6 @@ class OfferAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.offer_header -> ViewHolder.Header(parent)
         R.layout.offer_fact_area -> ViewHolder.Facts(parent)
-        R.layout.offer_peril_area -> ViewHolder.Perils(parent)
         R.layout.offer_switch -> ViewHolder.Switch(parent)
         R.layout.offer_footer -> ViewHolder.Footer(parent)
         else -> throw Error("Invalid viewType: $viewType")
@@ -55,7 +50,6 @@ class OfferAdapter(
     override fun getItemViewType(position: Int) = when (getItem(position)) {
         is OfferModel.Header -> R.layout.offer_header
         is OfferModel.Facts -> R.layout.offer_fact_area
-        is OfferModel.Perils -> R.layout.offer_peril_area
         is OfferModel.Switcher -> R.layout.offer_switch
         is OfferModel.Footer -> R.layout.offer_footer
     }
@@ -198,57 +192,6 @@ class OfferAdapter(
             }
         }
 
-        class Perils(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_peril_area)) {
-            private val binding by viewBinding(OfferPerilAreaBinding::bind)
-
-            init {
-                binding.perils.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN_HALF))
-            }
-
-            override fun bind(
-                data: OfferModel,
-                fragmentManager: FragmentManager,
-                tracker: OfferTracker,
-                removeDiscount: () -> Unit,
-                marketManager: MarketManager,
-            ) {
-                binding.apply {
-                    if (perils.adapter == null) {
-                        perils.adapter =
-                            PerilsAdapter(fragmentManager, perils.context.buildRequestBuilder())
-                    }
-
-                    if (data !is OfferModel.Perils) {
-                        return invalid(data)
-                    }
-                    (perils.adapter as? PerilsAdapter)?.submitList(data.inner)
-
-                    // TODO: What do we do here? Idk
-                    // when (data.inner.lastQuoteOfMember.asCompleteQuote?.typeOfContract) {
-                    //     TypeOfContract.SE_HOUSE -> {
-                    //         perilInfo.setText(R.string.OFFER_SCREEN_COVERAGE_BODY_HOUSE)
-                    //     }
-                    //     TypeOfContract.SE_APARTMENT_BRF,
-                    //     TypeOfContract.SE_APARTMENT_STUDENT_BRF,
-                    //     TypeOfContract.NO_HOME_CONTENT_OWN,
-                    //     TypeOfContract.NO_HOME_CONTENT_YOUTH_OWN,
-                    //     -> {
-                    //         perilInfo.setText(R.string.OFFER_SCREEN_COVERAGE_BODY_BRF)
-                    //     }
-                    //     TypeOfContract.NO_HOME_CONTENT_RENT,
-                    //     TypeOfContract.NO_HOME_CONTENT_YOUTH_RENT,
-                    //     TypeOfContract.SE_APARTMENT_RENT,
-                    //     TypeOfContract.SE_APARTMENT_STUDENT_RENT,
-                    //     -> {
-                    //         perilInfo.setText(R.string.OFFER_SCREEN_COVERAGE_BODY_RENTAL)
-                    //     }
-                    //     else -> {
-                    //     }
-                    // }
-                }
-            }
-        }
-
         class Switch(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_switch)) {
             private val binding by viewBinding(OfferSwitchBinding::bind)
             override fun bind(
@@ -279,7 +222,7 @@ class OfferAdapter(
                 fragmentManager: FragmentManager,
                 tracker: OfferTracker,
                 removeDiscount: () -> Unit,
-                marketManager: MarketManager
+                marketManager: MarketManager,
             ) {
                 if (data !is OfferModel.Footer) {
                     return invalid(data)

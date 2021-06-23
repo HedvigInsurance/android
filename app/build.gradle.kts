@@ -205,6 +205,8 @@ dependencies {
 
     implementation(Libs.shimmer)
 
+    implementation(Libs.concatAdapterExtension)
+
     androidTestImplementation(Libs.Apollo.idlingResource)
 
     testImplementation(Libs.assertK)

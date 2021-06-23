@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="@dimen/base_margin_double"
-    android:paddingBottom="@dimen/base_margin_double">
+    android:padding="@dimen/base_margin_double">
 
     <TextView
         android:id="@+id/label"
@@ -22,8 +21,8 @@
         android:id="@+id/content"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textAlignment="textEnd"
         android:layout_marginEnd="@dimen/base_margin"
+        android:textAlignment="textEnd"
         android:textAppearance="?textAppearanceBody1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/info"
@@ -35,10 +34,10 @@
         android:id="@+id/info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:srcCompat="@drawable/ic_info_toolbar"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:srcCompat="@drawable/ic_info_toolbar"
         app:tint="?android:textColorPrimary" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

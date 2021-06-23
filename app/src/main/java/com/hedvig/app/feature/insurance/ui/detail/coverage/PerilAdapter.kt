@@ -15,11 +15,12 @@ import com.hedvig.app.databinding.PerilIconBinding
 import com.hedvig.app.databinding.PerilParagraphBinding
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
+import com.hedvig.app.util.extensions.invalid
+import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.viewBinding
-import e
 
 class PerilAdapter(
-    private val requestBuilder: RequestBuilder<PictureDrawable>
+    private val requestBuilder: RequestBuilder<PictureDrawable>,
 ) : ListAdapter<PerilModel, PerilAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
@@ -53,19 +54,15 @@ class PerilAdapter(
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         abstract fun bind(
             item: PerilModel,
-            requestBuilder: RequestBuilder<PictureDrawable>
+            requestBuilder: RequestBuilder<PictureDrawable>,
         )
-
-        fun invalid(data: PerilModel) {
-            e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }
-        }
 
         class CoveredAndException(parent: ViewGroup) :
             ViewHolder(parent.inflate(R.layout.covered_and_exception_item)) {
             private val binding by viewBinding(CoveredAndExceptionItemBinding::bind)
             override fun bind(
                 item: PerilModel,
-                requestBuilder: RequestBuilder<PictureDrawable>
+                requestBuilder: RequestBuilder<PictureDrawable>,
             ) {
                 if (item !is PerilModel.PerilList) {
                     invalid(item)
@@ -91,7 +88,7 @@ class PerilAdapter(
             private val binding by viewBinding(CoveredAndExceptionHeaderBinding::bind)
             override fun bind(
                 item: PerilModel,
-                requestBuilder: RequestBuilder<PictureDrawable>
+                requestBuilder: RequestBuilder<PictureDrawable>,
             ) {
                 if (item !is PerilModel.Header) {
                     invalid(item)
@@ -119,7 +116,7 @@ class PerilAdapter(
             private val binding by viewBinding(PerilParagraphBinding::bind)
             override fun bind(
                 item: PerilModel,
-                requestBuilder: RequestBuilder<PictureDrawable>
+                requestBuilder: RequestBuilder<PictureDrawable>,
             ) {
                 if (item !is PerilModel.Paragraph) {
                     invalid(item)
@@ -133,14 +130,21 @@ class PerilAdapter(
             private val binding by viewBinding(PerilIconBinding::bind)
             override fun bind(
                 item: PerilModel,
-                requestBuilder: RequestBuilder<PictureDrawable>
+                requestBuilder: RequestBuilder<PictureDrawable>,
             ) {
                 if (item !is PerilModel.Icon) {
                     invalid(item)
                     return
                 }
                 binding.root.apply {
-                    requestBuilder.load(item.link).into(this)
+                    val link = "${context.getString(R.string.BASE_URL)}${
+                    if (context.isDarkThemeActive) {
+                        item.darkUrl
+                    } else {
+                        item.lightUrl
+                    }
+                    }"
+                    requestBuilder.load(link).into(this)
                 }
             }
         }
@@ -149,7 +153,7 @@ class PerilAdapter(
             private val binding by viewBinding(ExpandableBottomSheetTitleBinding::bind)
             override fun bind(
                 item: PerilModel,
-                requestBuilder: RequestBuilder<PictureDrawable>
+                requestBuilder: RequestBuilder<PictureDrawable>,
             ) {
                 if (item !is PerilModel.Title) {
                     invalid(item)
@@ -164,7 +168,7 @@ class PerilAdapter(
             private val binding by viewBinding(PerilDescriptionBinding::bind)
             override fun bind(
                 item: PerilModel,
-                requestBuilder: RequestBuilder<PictureDrawable>
+                requestBuilder: RequestBuilder<PictureDrawable>,
             ) {
                 if (item !is PerilModel.Description) {
                     invalid(item)

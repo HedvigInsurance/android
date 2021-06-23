@@ -126,4 +126,5 @@ object Libs {
 
     const val adyen = "com.adyen.checkout:drop-in:3.8.2"
     const val jsonTest = "org.json:json:20210307"
+    const val concatAdapterExtension = "com.github.carousell:ConcatAdapterExtension:1.2.1"
 }
