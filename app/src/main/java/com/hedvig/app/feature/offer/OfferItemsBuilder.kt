@@ -45,8 +45,7 @@ object OfferItemsBuilder {
             incentiveDisplayValue = null,
             changeDateBottomSheetData = data.quoteBundle.inception.toChangeDateBottomSheetData()
         ),
-        OfferModel.Facts(data.quoteBundle.quotes[0].detailsTable.fragments.tableFragment.intoTable()),
-        OfferModel.Footer(GDPR_LINK),
+        OfferModel.Facts(data.quoteBundle.quotes[0].detailsTable.fragments.tableFragment.intoTable())
     )
 
     private fun OfferQuery.Data.getDisplayNameOrNull() = if (quoteBundle.quotes.size == 1) {
