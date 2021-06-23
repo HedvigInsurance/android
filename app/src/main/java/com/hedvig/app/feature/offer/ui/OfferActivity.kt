@@ -2,6 +2,7 @@ package com.hedvig.app.feature.offer.ui
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
 import android.transition.TransitionManager
 import android.view.MenuItem
@@ -9,17 +10,23 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.ConcatAdapter
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.RequestBuilder
+import com.carousell.concatadapterextension.ConcatItemDecoration
+import com.carousell.concatadapterextension.ConcatSpanSizeLookup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityOfferBinding
 import com.hedvig.app.feature.documents.DocumentAdapter
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
+import com.hedvig.app.feature.insurablelimits.InsurableLimitsAdapter
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.offer.OfferSignDialog
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
+import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
@@ -41,6 +48,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         get() = intent.getStringArrayExtra(QUOTE_IDS)?.toList() ?: emptyList()
     private val model: OfferViewModel by viewModel { parametersOf(quoteIds) }
     private val binding by viewBinding(ActivityOfferBinding::bind)
+    private val requestBuilder: RequestBuilder<PictureDrawable> by inject()
     private val tracker: OfferTracker by inject()
     private val marketManager: MarketManager by inject()
 
@@ -82,25 +90,52 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             offerToolbar.setNavigationOnClickListener { onBackPressed() }
             offerToolbar.setOnMenuItemClickListener(::handleMenuItem)
 
-            val offerAdapter = OfferAdapter(
+            val topOfferAdapter = OfferAdapter(
                 fragmentManager = supportFragmentManager,
                 tracker = tracker,
                 marketManager = marketManager,
                 removeDiscount = model::removeDiscount
             )
+            val perilsAdapter = PerilsAdapter(
+                fragmentManager = supportFragmentManager,
+                requestBuilder = requestBuilder,
+            )
+            val insurableLimitsAdapter = InsurableLimitsAdapter(
+                fragmentManager = supportFragmentManager
+            )
             val documentAdapter = DocumentAdapter(
                 trackClick = tracker::openOfferLink
             )
-            val concatAdapter = ConcatAdapter(offerAdapter, documentAdapter)
+            val bottomOfferAdapter = OfferAdapter(
+                fragmentManager = supportFragmentManager,
+                tracker = tracker,
+                marketManager = marketManager,
+                removeDiscount = model::removeDiscount
+            )
+            val concatAdapter = ConcatAdapter(
+                topOfferAdapter,
+                perilsAdapter,
+                insurableLimitsAdapter,
+                documentAdapter,
+                bottomOfferAdapter,
+            )
 
             binding.offerScroll.adapter = concatAdapter
+            binding.offerScroll.addItemDecoration(ConcatItemDecoration { concatAdapter.adapters })
+            (binding.offerScroll.layoutManager as? GridLayoutManager)?.let { gridLayoutManager ->
+                gridLayoutManager.spanSizeLookup =
+                    ConcatSpanSizeLookup(gridLayoutManager.spanCount) { concatAdapter.adapters }
+            }
 
             model.viewState.observe(this@OfferActivity) { viewState ->
                 when (viewState) {
                     OfferViewModel.ViewState.HasContracts -> startLoggedInActivity()
                     is OfferViewModel.ViewState.OfferItems -> {
-                        offerAdapter.submitList(viewState.offerItems)
+                        topOfferAdapter.submitList(viewState.topOfferItems)
+                        perilsAdapter.submitList(viewState.perils)
+                        insurableLimitsAdapter.submitList(viewState.insurableLimitsItems)
                         documentAdapter.submitList(viewState.documents)
+                        bottomOfferAdapter.submitList(viewState.bottomOfferItems)
                     }
                     is OfferViewModel.ViewState.Error.GeneralError -> showErrorDialog(
                         viewState.message ?: getString(R.string.home_tab_error_body)

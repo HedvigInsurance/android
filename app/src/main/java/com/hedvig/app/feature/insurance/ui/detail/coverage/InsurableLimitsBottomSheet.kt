@@ -17,7 +17,7 @@ class InsurableLimitsBottomSheet : BottomSheetDialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? = inflater.inflate(R.layout.insurable_limit_bottom_sheet, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -40,5 +40,15 @@ class InsurableLimitsBottomSheet : BottomSheetDialogFragment() {
                     BODY to insurableLimits.description
                 )
             }
+
+        fun newInstance(
+            label: String,
+            description: String,
+        ) = InsurableLimitsBottomSheet().apply {
+            arguments = bundleOf(
+                TITLE to label,
+                BODY to description
+            )
+        }
     }
 }
