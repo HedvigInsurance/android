@@ -17,7 +17,7 @@ private const val GDPR_LINK = "https://www.hedvig.com/se/personuppgifter"
 object OfferItemsBuilder {
     fun createTopOfferItems(data: OfferQuery.Data) = listOf(
         OfferModel.Header(
-            "TODO",
+            data.getDisplayNameOrNull(),
             data
                 .quoteBundle
                 .bundleCost
@@ -40,6 +40,12 @@ object OfferItemsBuilder {
         ),
         OfferModel.Facts(data.quoteBundle.quotes[0].detailsTable.fragments.tableFragment.intoTable()),
     )
+
+    private fun OfferQuery.Data.getDisplayNameOrNull() = if (quoteBundle.quotes.size == 1) {
+        quoteBundle.quotes.firstOrNull()?.displayName
+    } else {
+        null
+    }
 
     fun createDocumentItems(data: OfferQuery.Quote): List<DocumentItems> {
         val documents = data.insuranceTerms.map {
@@ -68,7 +74,7 @@ object OfferItemsBuilder {
             listOf(InsurableLimitItem.Header.Details) + it
         }
 
-    fun createBottomOfferItems(data: OfferQuery.Data) = listOf(
+    fun createBottomOfferItems() = listOf(
         OfferModel.Footer(GDPR_LINK),
     )
 

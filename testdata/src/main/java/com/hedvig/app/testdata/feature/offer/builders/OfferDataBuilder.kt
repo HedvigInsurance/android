@@ -28,6 +28,7 @@ data class OfferDataBuilder(
         quoteBundle = OfferQuery.QuoteBundle(
             quotes = listOf(
                 OfferQuery.Quote(
+                    displayName = "Test insurance",
                     startDate = startDate,
                     id = id,
                     typeOfContract = typeOfContract,
