@@ -22,4 +22,15 @@ sealed class OfferModel {
     data class Footer(
         val url: String,
     ) : OfferModel()
+
+    sealed class Subheading : OfferModel() {
+        object Coverage : Subheading()
+    }
+
+    data class QuoteDetails(
+        val name: String,
+        val id: String,
+    ) : OfferModel()
+
+    object Paragraph : OfferModel()
 }

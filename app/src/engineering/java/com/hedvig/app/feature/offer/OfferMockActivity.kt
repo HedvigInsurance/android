@@ -4,6 +4,7 @@ import com.hedvig.app.MockActivity
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.offerModule
+import com.hedvig.app.testdata.feature.offer.OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_NON_SWITCHABLE
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_SWITCHABLE
@@ -43,6 +44,10 @@ class OfferMockActivity : MockActivity() {
         }
         clickableItem("Swedish House with added discount") {
             MockOfferViewModel.mockData = OFFER_DATA_SWEDISH_HOUSE_WITH_DISCOUNT
+            startActivity(OfferActivity.newInstance(context))
+        }
+        clickableItem("Norway, Home Contents + Travel") {
+            MockOfferViewModel.mockData = OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL
             startActivity(OfferActivity.newInstance(context))
         }
     }

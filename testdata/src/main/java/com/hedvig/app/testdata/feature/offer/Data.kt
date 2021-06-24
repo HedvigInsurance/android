@@ -115,9 +115,11 @@ val OFFER_DATA_SWEDISH_HOUSE_WITH_DISCOUNT = OfferDataBuilder(
 val OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL = OfferDataBuilder(
     quotes = listOf(
         QuoteBuilder(
+            displayName = "Home Contents Insurance",
             typeOfContract = TypeOfContract.NO_HOME_CONTENT_OWN,
         ).build(),
         QuoteBuilder(
+            displayName = "Travel Insurance",
             typeOfContract = TypeOfContract.NO_TRAVEL,
         ).build()
     )

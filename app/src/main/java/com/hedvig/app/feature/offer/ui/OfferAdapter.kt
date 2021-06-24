@@ -3,14 +3,19 @@ package com.hedvig.app.feature.offer.ui
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.doOnNextLayout
+import androidx.core.view.updatePaddingRelative
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.hedvig.app.BASE_MARGIN_DOUBLE
+import com.hedvig.app.BASE_MARGIN_SEPTUPLE
 import com.hedvig.app.R
 import com.hedvig.app.databinding.OfferFactAreaBinding
 import com.hedvig.app.databinding.OfferFooterBinding
 import com.hedvig.app.databinding.OfferHeaderBinding
 import com.hedvig.app.databinding.OfferSwitchBinding
+import com.hedvig.app.databinding.TextHeadline5Binding
+import com.hedvig.app.databinding.TextSubtitle1Binding
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.offer.OfferRedeemCodeBottomSheet
 import com.hedvig.app.feature.offer.OfferSignDialog
@@ -21,13 +26,16 @@ import com.hedvig.app.feature.table.generateTable
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.extensions.colorAttr
+import com.hedvig.app.util.extensions.drawableAttr
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.invalid
+import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.setMarkdownText
 import com.hedvig.app.util.extensions.setStrikethrough
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
 import e
 import javax.money.MonetaryAmount
@@ -44,6 +52,9 @@ class OfferAdapter(
         R.layout.offer_fact_area -> ViewHolder.Facts(parent)
         R.layout.offer_switch -> ViewHolder.Switch(parent)
         R.layout.offer_footer -> ViewHolder.Footer(parent)
+        R.layout.text_headline5 -> ViewHolder.Subheading(parent)
+        R.layout.text_body2 -> ViewHolder.Paragraph(parent)
+        R.layout.text_subtitle1 -> ViewHolder.QuoteDetails(parent)
         else -> throw Error("Invalid viewType: $viewType")
     }
 
@@ -52,6 +63,9 @@ class OfferAdapter(
         is OfferModel.Facts -> R.layout.offer_fact_area
         is OfferModel.Switcher -> R.layout.offer_switch
         is OfferModel.Footer -> R.layout.offer_footer
+        is OfferModel.Subheading -> R.layout.text_headline5
+        OfferModel.Paragraph -> R.layout.text_body2
+        is OfferModel.QuoteDetails -> R.layout.text_subtitle1
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -233,6 +247,78 @@ class OfferAdapter(
                 val link = itemView.context.getString(R.string.OFFER_FOOTER_GDPR_INFO, data.url)
                 binding.text.setMarkdownText(link)
             }
+        }
+
+        class Subheading(parent: ViewGroup) : OfferAdapter.ViewHolder(parent.inflate(R.layout.text_headline5)) {
+            private val binding by viewBinding(TextHeadline5Binding::bind)
+
+            init {
+                binding.root.updateMargin(
+                    start = BASE_MARGIN_DOUBLE,
+                    end = BASE_MARGIN_DOUBLE,
+                )
+            }
+
+            override fun bind(
+                data: OfferModel,
+                fragmentManager: FragmentManager,
+                tracker: OfferTracker,
+                removeDiscount: () -> Unit,
+                marketManager: MarketManager,
+            ) = with(binding.root) {
+                if (data !is OfferModel.Subheading) {
+                    return invalid(data)
+                }
+
+                when (data) {
+                    OfferModel.Subheading.Coverage -> {
+                        updateMargin(
+                            top = BASE_MARGIN_SEPTUPLE
+                        )
+                        setText(R.string.offer_screen_coverage_title)
+                    }
+                }
+            }
+        }
+
+        class QuoteDetails(parent: ViewGroup) : OfferAdapter.ViewHolder(parent.inflate(R.layout.text_subtitle1)) {
+            private val binding by viewBinding(TextSubtitle1Binding::bind)
+
+            init {
+                with(binding.root) {
+                    updatePaddingRelative(
+                        start = BASE_MARGIN_DOUBLE,
+                        top = BASE_MARGIN_DOUBLE,
+                        end = BASE_MARGIN_DOUBLE,
+                        bottom = BASE_MARGIN_DOUBLE,
+                    )
+                    setBackgroundResource(context.drawableAttr(android.R.attr.selectableItemBackground))
+                }
+            }
+
+            override fun bind(
+                data: OfferModel,
+                fragmentManager: FragmentManager,
+                tracker: OfferTracker,
+                removeDiscount: () -> Unit,
+                marketManager: MarketManager,
+            ) = with(binding.root) {
+                if (data !is OfferModel.QuoteDetails) {
+                    return invalid(data)
+                }
+                text = data.name
+                setHapticClickListener { context.makeToast("TODO") }
+            }
+        }
+
+        class Paragraph(parent: ViewGroup) : OfferAdapter.ViewHolder(parent.inflate(R.layout.text_body2)) {
+            override fun bind(
+                data: OfferModel,
+                fragmentManager: FragmentManager,
+                tracker: OfferTracker,
+                removeDiscount: () -> Unit,
+                marketManager: MarketManager,
+            ) = Unit
         }
     }
 }

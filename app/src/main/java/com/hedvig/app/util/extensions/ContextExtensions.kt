@@ -58,6 +58,16 @@ fun Context.colorAttr(
     return typedValue.data
 }
 
+@DrawableRes
+fun Context.drawableAttr(
+    @AttrRes drawable: Int,
+    typedValue: TypedValue = TypedValue(),
+    resolveRefs: Boolean = true,
+): Int {
+    theme.resolveAttribute(drawable, typedValue, resolveRefs)
+    return typedValue.resourceId
+}
+
 fun Context.compatFont(@FontRes font: Int) = ResourcesCompat.getFont(this, font)
 
 fun Context.fontAttr(

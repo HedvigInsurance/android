@@ -7,6 +7,7 @@ import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
+import com.hedvig.app.util.context
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
@@ -25,10 +26,19 @@ class MultipleQuotesTest : TestCase() {
 
     @Test
     fun givenBundleWithMultipleQuotesShouldShowQuoteDetailScreens() = run {
-        activityRule.launch()
+        activityRule.launch(OfferActivity.newInstance(context(), listOf("123", "234")))
 
         OfferScreen {
-
+            scroll {
+                childAt<OfferScreen.QuoteDetail>(4) {
+                    text { hasText(homeContentsDisplayName) }
+                }
+            }
         }
     }
+
+    private val homeContentsDisplayName = OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL
+        .quoteBundle
+        .quotes[0]
+        .displayName
 }

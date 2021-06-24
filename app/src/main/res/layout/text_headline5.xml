@@ -3,5 +3,5 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:textAppearance="?textAppearanceBody2"
-    tools:text="Reusable TextView with Text Appearance Body 2" />
+    android:textAppearance="?textAppearanceHeadline5"
+    tools:text="Reusable TextView with Text Appearance Headline 5" />

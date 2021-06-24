@@ -94,9 +94,9 @@ class OfferViewModelImpl(
                 ViewState.HasContracts
             } else {
                 val topOfferItems = OfferItemsBuilder.createTopOfferItems(data)
-                val perilItems = OfferItemsBuilder.createPerilItems(data.quoteBundle.quotes[0])
-                val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(data.quoteBundle.quotes[0])
-                val documentItems = OfferItemsBuilder.createDocumentItems(data.quoteBundle.quotes[0])
+                val perilItems = OfferItemsBuilder.createPerilItems(data.quoteBundle.quotes)
+                val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(data.quoteBundle.quotes)
+                val documentItems = OfferItemsBuilder.createDocumentItems(data.quoteBundle.quotes)
                 val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems(data)
                 ViewState.OfferItems(topOfferItems, perilItems, documentItems, insurableLimitsItems, bottomOfferItems)
             }

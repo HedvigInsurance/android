@@ -38,8 +38,10 @@ data class QuoteBuilder(
     private val insurableLimits: List<OfferQuery.InsurableLimit> = emptyList(),
     private val insuranceTerms: List<OfferQuery.InsuranceTerm> = emptyList(),
     private val detailsTable: TableFragment = TableFragmentBuilder().build(),
+    private val displayName: String = typeOfContract.toString(),
 ) {
     fun build() = OfferQuery.Quote(
+        displayName = displayName,
         startDate = startDate,
         id = id,
         typeOfContract = typeOfContract,

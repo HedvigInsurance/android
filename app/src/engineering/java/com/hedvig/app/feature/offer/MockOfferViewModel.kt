@@ -19,9 +19,9 @@ class MockOfferViewModel : OfferViewModel() {
         Handler(getMainLooper()).postDelayed(
             {
                 val topOfferItems = OfferItemsBuilder.createTopOfferItems(mockData)
-                val perilItems = OfferItemsBuilder.createPerilItems(mockData.quoteBundle.quotes[0])
-                val documentItems = OfferItemsBuilder.createDocumentItems(mockData.quoteBundle.quotes[0])
-                val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(mockData.quoteBundle.quotes[0])
+                val perilItems = OfferItemsBuilder.createPerilItems(mockData.quoteBundle.quotes)
+                val documentItems = OfferItemsBuilder.createDocumentItems(mockData.quoteBundle.quotes)
+                val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(mockData.quoteBundle.quotes)
                 val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems(mockData)
                 _viewState.postValue(
                     ViewState.OfferItems(
@@ -57,9 +57,9 @@ class MockOfferViewModel : OfferViewModel() {
                         )
                     )
                 ),
-                OfferItemsBuilder.createPerilItems(mockData.quoteBundle.quotes[0]),
-                OfferItemsBuilder.createDocumentItems(mockData.quoteBundle.quotes[0]),
-                OfferItemsBuilder.createInsurableLimits(mockData.quoteBundle.quotes[0]),
+                OfferItemsBuilder.createPerilItems(mockData.quoteBundle.quotes),
+                OfferItemsBuilder.createDocumentItems(mockData.quoteBundle.quotes),
+                OfferItemsBuilder.createInsurableLimits(mockData.quoteBundle.quotes),
                 OfferItemsBuilder.createBottomOfferItems(mockData),
             )
         )
@@ -77,9 +77,9 @@ class MockOfferViewModel : OfferViewModel() {
                         )
                     )
                 ),
-                OfferItemsBuilder.createPerilItems(mockData.quoteBundle.quotes[0]),
-                OfferItemsBuilder.createDocumentItems(mockData.quoteBundle.quotes[0]),
-                OfferItemsBuilder.createInsurableLimits(mockData.quoteBundle.quotes[0]),
+                OfferItemsBuilder.createPerilItems(mockData.quoteBundle.quotes),
+                OfferItemsBuilder.createDocumentItems(mockData.quoteBundle.quotes),
+                OfferItemsBuilder.createInsurableLimits(mockData.quoteBundle.quotes),
                 OfferItemsBuilder.createBottomOfferItems(mockData),
             )
         )
