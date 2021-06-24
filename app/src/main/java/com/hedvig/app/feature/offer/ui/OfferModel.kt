@@ -5,7 +5,7 @@ import javax.money.MonetaryAmount
 
 sealed class OfferModel {
     data class Header(
-        val title: String,
+        val title: String?,
         val netMonthlyCost: MonetaryAmount,
         val grossMonthlyCost: MonetaryAmount,
         val incentiveDisplayValue: String?,

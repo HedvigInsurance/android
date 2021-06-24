@@ -97,7 +97,7 @@ class OfferViewModelImpl(
                 val perilItems = OfferItemsBuilder.createPerilItems(data.quoteBundle.quotes[0])
                 val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(data.quoteBundle.quotes[0])
                 val documentItems = OfferItemsBuilder.createDocumentItems(data.quoteBundle.quotes[0])
-                val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems(data)
+                val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems()
                 ViewState.OfferItems(topOfferItems, perilItems, documentItems, insurableLimitsItems, bottomOfferItems)
             }
         } ?: ViewState.Error.EmptyResponse

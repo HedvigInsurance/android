@@ -83,7 +83,7 @@ class OfferAdapter(
                     return invalid(data)
                 }
                 binding.apply {
-                    title.text = data.title
+                    title.text = data.title ?: itemView.context.getString(R.string.OFFER_INSURANCE_BUNDLE_TITLE)
 
                     premium.text = data.netMonthlyCost.format(premium.context, marketManager.market)
                     premiumPeriod.text = premiumPeriod.context.getString(R.string.OFFER_PRICE_PER_MONTH)
@@ -94,37 +94,6 @@ class OfferAdapter(
                     } else {
                         grossPremium.setStrikethrough(false)
                     }
-
-                    // TODO: This needs to be remade to support multiple start dates
-                    // startDateContainer.setHapticClickListener {
-                    //    tracker.chooseStartDate()
-                    //    ChangeDateBottomSheet.newInstance(
-                    //        ChangeDateBottomSheetData(
-                    //            quote.id,
-                    //            quote.currentInsurer?.switchable == true
-                    //        )
-                    //    )
-                    //        .show(
-                    //            fragmentManager,
-                    //            ChangeDateBottomSheet.TAG
-                    //        )
-                    // }
-
-                    // val sd = quote.startDate
-
-                    // if (sd != null) {
-                    //    if (sd == LocalDate.now()) {
-                    //        startDate.setText(R.string.START_DATE_TODAY)
-                    //    } else {
-                    //        startDate.text = sd.toString()
-                    //    }
-                    // } else {
-                    //    if (quote.currentInsurer?.switchable == true) {
-                    //        startDate.setText(R.string.ACTIVATE_INSURANCE_END_BTN)
-                    //    } else {
-                    //        startDate.setText(R.string.START_DATE_TODAY)
-                    //    }
-                    // }
 
                     val incentiveDisplayValue = data.incentiveDisplayValue
                     if (incentiveDisplayValue != null) {
