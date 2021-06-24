@@ -10,6 +10,7 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.OfferFactAreaBinding
 import com.hedvig.app.databinding.OfferFooterBinding
 import com.hedvig.app.databinding.OfferHeaderBinding
+import com.hedvig.app.databinding.OfferLoadingHeaderBinding
 import com.hedvig.app.databinding.OfferSwitchBinding
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.offer.OfferRedeemCodeBottomSheet
@@ -44,6 +45,7 @@ class OfferAdapter(
         R.layout.offer_fact_area -> ViewHolder.Facts(parent)
         R.layout.offer_switch -> ViewHolder.Switch(parent)
         R.layout.offer_footer -> ViewHolder.Footer(parent)
+        R.layout.offer_loading_header -> ViewHolder.Loading(parent)
         else -> throw Error("Invalid viewType: $viewType")
     }
 
@@ -52,6 +54,7 @@ class OfferAdapter(
         is OfferModel.Facts -> R.layout.offer_fact_area
         is OfferModel.Switcher -> R.layout.offer_switch
         is OfferModel.Footer -> R.layout.offer_footer
+        OfferModel.Loading -> R.layout.offer_loading_header
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -201,6 +204,17 @@ class OfferAdapter(
                 }
                 val link = itemView.context.getString(R.string.OFFER_FOOTER_GDPR_INFO, data.url)
                 binding.text.setMarkdownText(link)
+            }
+        }
+
+        class Loading(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_loading_header)) {
+            override fun bind(
+                data: OfferModel,
+                fragmentManager: FragmentManager,
+                tracker: OfferTracker,
+                removeDiscount: () -> Unit,
+                marketManager: MarketManager
+            ) {
             }
         }
     }

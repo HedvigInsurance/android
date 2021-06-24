@@ -15,12 +15,13 @@ import com.hedvig.app.feature.offer.ui.OfferModel
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.perils.PerilItem
 import e
+import kotlinx.coroutines.delay
+import java.time.LocalDate
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 
 abstract class OfferViewModel : ViewModel() {
     protected val _viewState = MutableLiveData<ViewState>()
@@ -51,6 +52,7 @@ abstract class OfferViewModel : ViewModel() {
             object EmptyResponse : Error()
         }
 
+        class Loading(val loadingItem: List<OfferModel.Loading>) : ViewState()
         object HasContracts : ViewState()
     }
 }
@@ -69,6 +71,8 @@ class OfferViewModelImpl(
 
     init {
         viewModelScope.launch {
+            val loadingItem = ViewState.Loading(OfferItemsBuilder.createLoadingItem())
+            _viewState.postValue(loadingItem)
             when (val idsResult = getQuotesUseCase(_quoteIds)) {
                 is GetQuotesUseCase.Result.Success -> {
                     quoteIds = idsResult.ids

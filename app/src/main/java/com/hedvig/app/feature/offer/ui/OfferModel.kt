@@ -4,6 +4,7 @@ import com.hedvig.app.feature.table.Table
 import javax.money.MonetaryAmount
 
 sealed class OfferModel {
+
     data class Header(
         val title: String?,
         val netMonthlyCost: MonetaryAmount,
@@ -22,4 +23,6 @@ sealed class OfferModel {
     data class Footer(
         val url: String,
     ) : OfferModel()
+
+    object Loading : OfferModel()
 }

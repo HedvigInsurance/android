@@ -1,13 +1,14 @@
 package com.hedvig.app.feature.offer
 
-import android.os.Handler
-import android.os.Looper.getMainLooper
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.fragment.SignStatusFragment
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
 import java.time.LocalDate
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MockOfferViewModel : OfferViewModel() {
 
@@ -16,25 +17,24 @@ class MockOfferViewModel : OfferViewModel() {
     override val signError = MutableLiveData<Boolean>()
 
     init {
-        Handler(getMainLooper()).postDelayed(
-            {
-                val topOfferItems = OfferItemsBuilder.createTopOfferItems(mockData)
-                val perilItems = OfferItemsBuilder.createPerilItems(mockData.quoteBundle.quotes[0])
-                val documentItems = OfferItemsBuilder.createDocumentItems(mockData.quoteBundle.quotes[0])
-                val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(mockData.quoteBundle.quotes[0])
-                val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems()
-                _viewState.postValue(
-                    ViewState.OfferItems(
-                        topOfferItems,
-                        perilItems,
-                        documentItems,
-                        insurableLimitsItems,
-                        bottomOfferItems
-                    )
+        viewModelScope.launch {
+            _viewState.postValue(ViewState.Loading(OfferItemsBuilder.createLoadingItem()))
+            delay(1000)
+            val topOfferItems = OfferItemsBuilder.createTopOfferItems(mockData)
+            val perilItems = OfferItemsBuilder.createPerilItems(mockData.quoteBundle.quotes[0])
+            val documentItems = OfferItemsBuilder.createDocumentItems(mockData.quoteBundle.quotes[0])
+            val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(mockData.quoteBundle.quotes[0])
+            val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems()
+            _viewState.postValue(
+                ViewState.OfferItems(
+                    topOfferItems,
+                    perilItems,
+                    documentItems,
+                    insurableLimitsItems,
+                    bottomOfferItems
                 )
-            },
-            500
-        )
+            )
+        }
     }
 
     override fun removeDiscount() = Unit

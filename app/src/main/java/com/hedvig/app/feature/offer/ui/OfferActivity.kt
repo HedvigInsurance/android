@@ -9,6 +9,7 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -39,6 +40,8 @@ import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -112,6 +115,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 marketManager = marketManager,
                 removeDiscount = model::removeDiscount
             )
+
             val concatAdapter = ConcatAdapter(
                 topOfferAdapter,
                 perilsAdapter,
@@ -132,15 +136,20 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     OfferViewModel.ViewState.HasContracts -> startLoggedInActivity()
                     is OfferViewModel.ViewState.OfferItems -> {
                         topOfferAdapter.submitList(viewState.topOfferItems)
-                        perilsAdapter.submitList(viewState.perils)
-                        insurableLimitsAdapter.submitList(viewState.insurableLimitsItems)
-                        documentAdapter.submitList(viewState.documents)
-                        bottomOfferAdapter.submitList(viewState.bottomOfferItems)
+                        // Workaround - recyclerview will scroll to bottom if updating all items simultaneously.
+                        lifecycleScope.launch {
+                            delay(500)
+                            perilsAdapter.submitList(viewState.perils)
+                            insurableLimitsAdapter.submitList(viewState.insurableLimitsItems)
+                            documentAdapter.submitList(viewState.documents)
+                            bottomOfferAdapter.submitList(viewState.bottomOfferItems)
+                        }
                     }
                     is OfferViewModel.ViewState.Error.GeneralError -> showErrorDialog(
                         viewState.message ?: getString(R.string.home_tab_error_body)
                     )
                     is OfferViewModel.ViewState.Error -> showErrorDialog(getString(R.string.home_tab_error_body))
+                    is OfferViewModel.ViewState.Loading -> topOfferAdapter.submitList(viewState.loadingItem)
                 }
             }
 
