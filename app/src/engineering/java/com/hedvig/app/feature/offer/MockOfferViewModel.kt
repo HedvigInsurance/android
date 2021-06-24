@@ -18,14 +18,14 @@ class MockOfferViewModel : OfferViewModel() {
 
     init {
         viewModelScope.launch {
-            _viewState.postValue(ViewState.Loading(OfferItemsBuilder.createLoadingItem()))
-            delay(1000)
+            _viewState.value = ViewState.Loading(OfferItemsBuilder.createLoadingItem())
+            delay(150)
             val topOfferItems = OfferItemsBuilder.createTopOfferItems(mockData)
             val perilItems = OfferItemsBuilder.createPerilItems(mockData.quoteBundle.quotes[0])
             val documentItems = OfferItemsBuilder.createDocumentItems(mockData.quoteBundle.quotes[0])
             val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(mockData.quoteBundle.quotes[0])
             val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems()
-            _viewState.postValue(
+            _viewState.value =
                 ViewState.OfferItems(
                     topOfferItems,
                     perilItems,
@@ -33,7 +33,6 @@ class MockOfferViewModel : OfferViewModel() {
                     insurableLimitsItems,
                     bottomOfferItems
                 )
-            )
         }
     }
 
@@ -44,44 +43,40 @@ class MockOfferViewModel : OfferViewModel() {
     override fun clearPreviousErrors() = Unit
     override fun manuallyRecheckSignStatus() = Unit
     override fun chooseStartDate(id: String, date: LocalDate) {
-        _viewState.postValue(
-            ViewState.OfferItems(
-                OfferItemsBuilder.createTopOfferItems(
-                    mockData.copy(
-                        quoteBundle = mockData.quoteBundle.copy(
-                            quotes = mockData.quoteBundle.quotes.map {
-                                it.copy(
-                                    startDate = date
-                                )
-                            }
-                        )
+        _viewState.value = ViewState.OfferItems(
+            OfferItemsBuilder.createTopOfferItems(
+                mockData.copy(
+                    quoteBundle = mockData.quoteBundle.copy(
+                        quotes = mockData.quoteBundle.quotes.map {
+                            it.copy(
+                                startDate = date
+                            )
+                        }
                     )
-                ),
-                OfferItemsBuilder.createPerilItems(mockData.quoteBundle.quotes[0]),
-                OfferItemsBuilder.createDocumentItems(mockData.quoteBundle.quotes[0]),
-                OfferItemsBuilder.createInsurableLimits(mockData.quoteBundle.quotes[0]),
-                OfferItemsBuilder.createBottomOfferItems(),
-            )
+                )
+            ),
+            OfferItemsBuilder.createPerilItems(mockData.quoteBundle.quotes[0]),
+            OfferItemsBuilder.createDocumentItems(mockData.quoteBundle.quotes[0]),
+            OfferItemsBuilder.createInsurableLimits(mockData.quoteBundle.quotes[0]),
+            OfferItemsBuilder.createBottomOfferItems(),
         )
     }
 
     override fun removeStartDate(id: String) {
-        _viewState.postValue(
-            ViewState.OfferItems(
-                OfferItemsBuilder.createTopOfferItems(
-                    mockData.copy(
-                        quoteBundle = mockData.quoteBundle.copy(
-                            quotes = mockData.quoteBundle.quotes.map {
-                                it.copy(startDate = null)
-                            }
-                        )
+        _viewState.value = ViewState.OfferItems(
+            OfferItemsBuilder.createTopOfferItems(
+                mockData.copy(
+                    quoteBundle = mockData.quoteBundle.copy(
+                        quotes = mockData.quoteBundle.quotes.map {
+                            it.copy(startDate = null)
+                        }
                     )
-                ),
-                OfferItemsBuilder.createPerilItems(mockData.quoteBundle.quotes[0]),
-                OfferItemsBuilder.createDocumentItems(mockData.quoteBundle.quotes[0]),
-                OfferItemsBuilder.createInsurableLimits(mockData.quoteBundle.quotes[0]),
-                OfferItemsBuilder.createBottomOfferItems(),
-            )
+                )
+            ),
+            OfferItemsBuilder.createPerilItems(mockData.quoteBundle.quotes[0]),
+            OfferItemsBuilder.createDocumentItems(mockData.quoteBundle.quotes[0]),
+            OfferItemsBuilder.createInsurableLimits(mockData.quoteBundle.quotes[0]),
+            OfferItemsBuilder.createBottomOfferItems(),
         )
     }
 

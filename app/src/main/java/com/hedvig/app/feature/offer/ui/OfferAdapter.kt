@@ -3,6 +3,7 @@ package com.hedvig.app.feature.offer.ui
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.doOnNextLayout
+import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -10,7 +11,6 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.OfferFactAreaBinding
 import com.hedvig.app.databinding.OfferFooterBinding
 import com.hedvig.app.databinding.OfferHeaderBinding
-import com.hedvig.app.databinding.OfferLoadingHeaderBinding
 import com.hedvig.app.databinding.OfferSwitchBinding
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.offer.OfferRedeemCodeBottomSheet
@@ -87,7 +87,6 @@ class OfferAdapter(
                 }
                 binding.apply {
                     title.text = data.title ?: itemView.context.getString(R.string.OFFER_INSURANCE_BUNDLE_TITLE)
-
                     premium.text = data.netMonthlyCost.format(premium.context, marketManager.market)
                     premiumPeriod.text = premiumPeriod.context.getString(R.string.OFFER_PRICE_PER_MONTH)
 
