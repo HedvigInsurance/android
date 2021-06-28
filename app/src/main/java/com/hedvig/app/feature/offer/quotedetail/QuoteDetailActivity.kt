@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.RequestBuilder
@@ -21,6 +23,7 @@ import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.util.extensions.toArrayList
 import com.hedvig.app.util.extensions.viewBinding
+import dev.chrisbanes.insetter.Insetter
 import e
 import org.koin.android.ext.android.inject
 
@@ -42,7 +45,18 @@ class QuoteDetailActivity : BaseActivity(R.layout.quote_detail_activity) {
         }
 
         with(binding) {
+            Insetter.setEdgeToEdgeSystemUiFlags(root, true)
+
+            Insetter.builder()
+                .setOnApplyInsetsListener { view, insets, initialState ->
+                    view.updatePadding(
+                        top = initialState.paddings.top + insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
+                    )
+                }
+                .applyToView(toolbar)
             toolbar.title = displayName
+            toolbar.setNavigationOnClickListener { finish() }
+
             val perilAdapter = PerilsAdapter(
                 requestBuilder = requestBuilder,
                 fragmentManager = supportFragmentManager,
@@ -68,6 +82,15 @@ class QuoteDetailActivity : BaseActivity(R.layout.quote_detail_activity) {
                 gridLayoutManager.spanSizeLookup =
                     ConcatSpanSizeLookup(gridLayoutManager.spanCount) { concatAdapter.adapters }
             }
+            Insetter
+                .builder()
+                .setOnApplyInsetsListener { view, insets, initialState ->
+                    view.updatePadding(
+                        bottom = initialState.paddings.bottom
+                            + insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
+                    )
+                }
+                .applyToView(recycler)
         }
     }
 
