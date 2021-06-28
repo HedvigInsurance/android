@@ -120,6 +120,13 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             val insurableLimitsAdapter = InsurableLimitsAdapter(
                 fragmentManager = supportFragmentManager
             )
+            val perilsAdapter = PerilsAdapter(
+                fragmentManager = supportFragmentManager,
+                requestBuilder = requestBuilder,
+            )
+            val insurableLimitsAdapter = InsurableLimitsAdapter(
+                fragmentManager = supportFragmentManager
+            )
             val documentAdapter = DocumentAdapter(
                 trackClick = tracker::openOfferLink
             )

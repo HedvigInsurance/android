@@ -26,4 +26,3 @@ data class Peril(
         )
     }
 }
-

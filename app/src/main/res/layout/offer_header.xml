@@ -39,7 +39,8 @@
                 android:layout_marginStart="@dimen/base_margin_double"
                 android:layout_marginTop="@dimen/base_margin_triple"
                 android:layout_marginEnd="@dimen/base_margin_double"
-                android:textAppearance="?textAppearanceHeadline5"
+                android:textAppearance="?textAppearanceCaption"
+                android:textAllCaps="true"
                 tools:text="HEDVIG BOSTADSRÄTT" />
 
             <TextView

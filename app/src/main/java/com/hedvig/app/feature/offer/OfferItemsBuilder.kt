@@ -17,7 +17,7 @@ object OfferItemsBuilder {
     fun createTopOfferItems(data: OfferQuery.Data): List<OfferModel> = ArrayList<OfferModel>().apply {
         add(
             OfferModel.Header(
-                "TODO",
+                data.getDisplayNameOrNull(),
                 data
                     .quoteBundle
                     .bundleCost
@@ -52,6 +52,11 @@ object OfferItemsBuilder {
             // We don't have this text, as far as I know
         }
     }
+    private fun OfferQuery.Data.getDisplayNameOrNull() = if (quoteBundle.quotes.size == 1) {
+        quoteBundle.quotes.firstOrNull()?.displayName
+    } else {
+        null
+    }
 
     fun createDocumentItems(data: List<OfferQuery.Quote>): List<DocumentItems> {
         if (data.size != 1) {
@@ -76,7 +81,7 @@ object OfferItemsBuilder {
         emptyList()
     }
 
-    fun createBottomOfferItems(data: OfferQuery.Data) = listOf(
+    fun createBottomOfferItems() = listOf(
         OfferModel.Footer(GDPR_LINK),
     )
 

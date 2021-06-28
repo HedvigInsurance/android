@@ -25,7 +25,7 @@ class MockOfferViewModel : OfferViewModel() {
                 val perilItems = OfferItemsBuilder.createPerilItems(mockData.quoteBundle.quotes)
                 val documentItems = OfferItemsBuilder.createDocumentItems(mockData.quoteBundle.quotes)
                 val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(mockData.quoteBundle.quotes)
-                val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems(mockData)
+                val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems()
                 _viewState.postValue(
                     ViewState.OfferItems(
                         topOfferItems,
@@ -63,7 +63,7 @@ class MockOfferViewModel : OfferViewModel() {
                 OfferItemsBuilder.createPerilItems(mockData.quoteBundle.quotes),
                 OfferItemsBuilder.createDocumentItems(mockData.quoteBundle.quotes),
                 OfferItemsBuilder.createInsurableLimits(mockData.quoteBundle.quotes),
-                OfferItemsBuilder.createBottomOfferItems(mockData),
+                OfferItemsBuilder.createBottomOfferItems(),
             )
         )
     }
@@ -83,7 +83,7 @@ class MockOfferViewModel : OfferViewModel() {
                 OfferItemsBuilder.createPerilItems(mockData.quoteBundle.quotes),
                 OfferItemsBuilder.createDocumentItems(mockData.quoteBundle.quotes),
                 OfferItemsBuilder.createInsurableLimits(mockData.quoteBundle.quotes),
-                OfferItemsBuilder.createBottomOfferItems(mockData),
+                OfferItemsBuilder.createBottomOfferItems(),
             )
         )
     }
