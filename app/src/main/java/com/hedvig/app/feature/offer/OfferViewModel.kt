@@ -11,7 +11,11 @@ import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
+import com.hedvig.app.feature.offer.quotedetail.buildDocuments
+import com.hedvig.app.feature.offer.quotedetail.buildInsurableLimits
+import com.hedvig.app.feature.offer.quotedetail.buildPerils
 import com.hedvig.app.feature.offer.ui.OfferModel
+import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.perils.PerilItem
 import e
@@ -37,6 +41,16 @@ abstract class OfferViewModel : ViewModel() {
     abstract fun chooseStartDate(id: String, date: LocalDate)
     abstract fun removeStartDate(id: String)
 
+    data class QuoteDetailItems(
+        val perils: List<PerilItem.Peril>,
+        val insurableLimits: List<InsurableLimitItem.InsurableLimit>,
+        val documents: List<DocumentItems.Document>,
+    )
+
+    abstract suspend fun getQuoteDetailItems(
+        id: String,
+    ): QuoteDetailItems?
+
     sealed class ViewState {
         data class OfferItems(
             val topOfferItems: List<OfferModel>,
@@ -59,6 +73,7 @@ class OfferViewModelImpl(
     _quoteIds: List<String>,
     private val offerRepository: OfferRepository,
     private val getQuotesUseCase: GetQuotesUseCase,
+    private val getQuoteUseCase: GetQuoteUseCase,
 ) : OfferViewModel() {
 
     private lateinit var quoteIds: List<String>
@@ -197,6 +212,22 @@ class OfferViewModelImpl(
                 return@launch
             }
             response.getOrNull()?.data?.let { offerRepository.removeStartDateFromCache(quoteIds, it) }
+        }
+    }
+
+    override suspend fun getQuoteDetailItems(
+        id: String,
+    ): QuoteDetailItems? = when (val result = getQuoteUseCase(quoteIds, id)) {
+        GetQuoteUseCase.Result.Error -> {
+            _viewState.value = ViewState.Error.GeneralError("")
+            null
+        }
+        is GetQuoteUseCase.Result.Success -> {
+            QuoteDetailItems(
+                buildPerils(result.quote),
+                buildInsurableLimits(result.quote),
+                buildDocuments(result.quote)
+            )
         }
     }
 }

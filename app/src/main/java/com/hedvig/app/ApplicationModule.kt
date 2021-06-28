@@ -91,6 +91,7 @@ import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.offer.OfferViewModelImpl
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetViewModel
+import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.onboarding.ChoosePlanRepository
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
@@ -333,7 +334,7 @@ val marketingModule = module {
 }
 
 val offerModule = module {
-    viewModel<OfferViewModel> { (ids: List<String>) -> OfferViewModelImpl(ids, get(), get()) }
+    viewModel<OfferViewModel> { (ids: List<String>) -> OfferViewModelImpl(ids, get(), get(), get()) }
 }
 
 val profileModule = module {
@@ -494,4 +495,5 @@ val useCaseModule = module {
     single { StartNorwegianAuthUseCase(get()) }
     single { SubscribeToAuthStatusUseCase(get()) }
     single { GetQuotesUseCase(get()) }
+    single { GetQuoteUseCase(get()) }
 }

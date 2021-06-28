@@ -9,6 +9,7 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,6 +27,7 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.offer.OfferSignDialog
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
+import com.hedvig.app.feature.offer.quotedetail.QuoteDetailActivity
 import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
@@ -39,6 +41,7 @@ import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -90,11 +93,27 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             offerToolbar.setNavigationOnClickListener { onBackPressed() }
             offerToolbar.setOnMenuItemClickListener(::handleMenuItem)
 
+            val openQuoteDetails = { quoteID: String ->
+                lifecycleScope.launch {
+                    val (perils, insurableLimits, documents) = model.getQuoteDetailItems(quoteID) ?: return@launch
+                    startActivity(
+                        QuoteDetailActivity.newInstance(
+                            this@OfferActivity,
+                            perils,
+                            insurableLimits,
+                            documents,
+                        )
+                    )
+                }
+                Unit
+            }
+
             val topOfferAdapter = OfferAdapter(
                 fragmentManager = supportFragmentManager,
                 tracker = tracker,
                 marketManager = marketManager,
-                removeDiscount = model::removeDiscount
+                removeDiscount = model::removeDiscount,
+                openQuoteDetails,
             )
             val perilsAdapter = PerilsAdapter(
                 fragmentManager = supportFragmentManager,
@@ -110,7 +129,8 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 fragmentManager = supportFragmentManager,
                 tracker = tracker,
                 marketManager = marketManager,
-                removeDiscount = model::removeDiscount
+                removeDiscount = model::removeDiscount,
+                openQuoteDetails,
             )
             val concatAdapter = ConcatAdapter(
                 topOfferAdapter,

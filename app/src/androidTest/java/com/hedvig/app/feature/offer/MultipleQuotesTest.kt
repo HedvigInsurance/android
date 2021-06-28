@@ -2,6 +2,7 @@ package com.hedvig.app.feature.offer
 
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.feature.offer.ui.OfferActivity
+import com.hedvig.app.feature.perils.PerilRecyclerItem
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
@@ -32,6 +33,15 @@ class MultipleQuotesTest : TestCase() {
             scroll {
                 childAt<OfferScreen.QuoteDetail>(4) {
                     text { hasText(homeContentsDisplayName) }
+                    click()
+                }
+            }
+        }
+
+        QuoteDetailScreen {
+            recycler {
+                childAt<PerilRecyclerItem>(0) {
+                    label { hasText(homeContentsFirstPerilTitle) }
                 }
             }
         }
@@ -41,4 +51,13 @@ class MultipleQuotesTest : TestCase() {
         .quoteBundle
         .quotes[0]
         .displayName
+
+    private val homeContentsFirstPerilTitle = OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL
+        .quoteBundle
+        .quotes[0]
+        .perils[0]
+        .fragments
+        .perilFragment
+        .title
 }
+

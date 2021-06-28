@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.offer
 
-import android.net.Uri
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.documents.DocumentItems
@@ -59,12 +58,7 @@ object OfferItemsBuilder {
             return emptyList()
         }
         val documents = data[0].insuranceTerms.map {
-            DocumentItems.Document(
-                title = it.displayName,
-                subtitle = null,
-                uri = Uri.parse(it.url),
-                type = DocumentItems.Document.Type.GENERAL_TERMS
-            )
+            DocumentItems.Document.from(it)
         }
         return listOf(DocumentItems.Header(R.string.OFFER_DOCUMENTS_SECTION_TITLE)) + documents
     }
@@ -73,13 +67,7 @@ object OfferItemsBuilder {
         data[0]
             .insurableLimits
             .map {
-                it.fragments.insurableLimitsFragment.let { insurableLimitsFragment ->
-                    InsurableLimitItem.InsurableLimit(
-                        label = insurableLimitsFragment.label,
-                        limit = insurableLimitsFragment.limit,
-                        description = insurableLimitsFragment.description,
-                    )
-                }
+                InsurableLimitItem.InsurableLimit.from(it.fragments.insurableLimitsFragment)
             }
             .let {
                 listOf(InsurableLimitItem.Header.Details) + it

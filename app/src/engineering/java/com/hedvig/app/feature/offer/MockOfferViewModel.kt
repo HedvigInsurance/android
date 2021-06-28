@@ -6,6 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.fragment.SignStatusFragment
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
+import com.hedvig.app.feature.offer.quotedetail.buildDocuments
+import com.hedvig.app.feature.offer.quotedetail.buildInsurableLimits
+import com.hedvig.app.feature.offer.quotedetail.buildPerils
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
 import java.time.LocalDate
 
@@ -82,6 +85,17 @@ class MockOfferViewModel : OfferViewModel() {
                 OfferItemsBuilder.createInsurableLimits(mockData.quoteBundle.quotes),
                 OfferItemsBuilder.createBottomOfferItems(mockData),
             )
+        )
+    }
+
+    override suspend fun getQuoteDetailItems(
+        id: String,
+    ): QuoteDetailItems? {
+        val quote = mockData.quoteBundle.quotes.first { it.id == id }
+        return QuoteDetailItems(
+            buildPerils(quote),
+            buildInsurableLimits(quote),
+            buildDocuments(quote)
         )
     }
 

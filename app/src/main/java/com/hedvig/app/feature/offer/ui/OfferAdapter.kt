@@ -29,7 +29,6 @@ import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.drawableAttr
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.invalid
-import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.setMarkdownText
 import com.hedvig.app.util.extensions.setStrikethrough
 import com.hedvig.app.util.extensions.showAlert
@@ -45,6 +44,7 @@ class OfferAdapter(
     private val tracker: OfferTracker,
     private val marketManager: MarketManager,
     private val removeDiscount: () -> Unit,
+    private val openQuoteDetails: (quoteID: String) -> Unit,
 ) : ListAdapter<OfferModel, OfferAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
@@ -54,7 +54,7 @@ class OfferAdapter(
         R.layout.offer_footer -> ViewHolder.Footer(parent)
         R.layout.text_headline5 -> ViewHolder.Subheading(parent)
         R.layout.text_body2 -> ViewHolder.Paragraph(parent)
-        R.layout.text_subtitle1 -> ViewHolder.QuoteDetails(parent)
+        R.layout.text_subtitle1 -> ViewHolder.QuoteDetails(parent, openQuoteDetails)
         else -> throw Error("Invalid viewType: $viewType")
     }
 
@@ -281,7 +281,10 @@ class OfferAdapter(
             }
         }
 
-        class QuoteDetails(parent: ViewGroup) : OfferAdapter.ViewHolder(parent.inflate(R.layout.text_subtitle1)) {
+        class QuoteDetails(
+            parent: ViewGroup,
+            private val openQuoteDetails: (quoteID: String) -> Unit,
+        ) : OfferAdapter.ViewHolder(parent.inflate(R.layout.text_subtitle1)) {
             private val binding by viewBinding(TextSubtitle1Binding::bind)
 
             init {
@@ -307,7 +310,7 @@ class OfferAdapter(
                     return invalid(data)
                 }
                 text = data.name
-                setHapticClickListener { context.makeToast("TODO") }
+                setHapticClickListener { openQuoteDetails(data.id) }
             }
         }
 
