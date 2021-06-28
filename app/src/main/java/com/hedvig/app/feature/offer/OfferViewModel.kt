@@ -42,6 +42,7 @@ abstract class OfferViewModel : ViewModel() {
     abstract fun removeStartDate(id: String)
 
     data class QuoteDetailItems(
+        val displayName: String,
         val perils: List<PerilItem.Peril>,
         val insurableLimits: List<InsurableLimitItem.InsurableLimit>,
         val documents: List<DocumentItems.Document>,
@@ -224,6 +225,7 @@ class OfferViewModelImpl(
         }
         is GetQuoteUseCase.Result.Success -> {
             QuoteDetailItems(
+                result.quote.displayName,
                 buildPerils(result.quote),
                 buildInsurableLimits(result.quote),
                 buildDocuments(result.quote)

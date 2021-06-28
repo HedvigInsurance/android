@@ -95,13 +95,11 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
             val openQuoteDetails = { quoteID: String ->
                 lifecycleScope.launch {
-                    val (perils, insurableLimits, documents) = model.getQuoteDetailItems(quoteID) ?: return@launch
+                    val quoteDetailItems = model.getQuoteDetailItems(quoteID) ?: return@launch
                     startActivity(
                         QuoteDetailActivity.newInstance(
                             this@OfferActivity,
-                            perils,
-                            insurableLimits,
-                            documents,
+                            quoteDetailItems,
                         )
                     )
                 }

@@ -90,9 +90,10 @@ class MockOfferViewModel : OfferViewModel() {
 
     override suspend fun getQuoteDetailItems(
         id: String,
-    ): QuoteDetailItems? {
+    ): QuoteDetailItems {
         val quote = mockData.quoteBundle.quotes.first { it.id == id }
         return QuoteDetailItems(
+            quote.displayName,
             buildPerils(quote),
             buildInsurableLimits(quote),
             buildDocuments(quote)

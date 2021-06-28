@@ -16,6 +16,7 @@ import com.hedvig.app.feature.documents.DocumentAdapter
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.insurablelimits.InsurableLimitsAdapter
+import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.util.extensions.toArrayList
@@ -29,17 +30,19 @@ class QuoteDetailActivity : BaseActivity(R.layout.quote_detail_activity) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val displayName = intent.getStringExtra(QUOTE_DISPLAY_NAME)
         val perils: List<PerilItem>? = intent.getParcelableArrayListExtra<PerilItem.Peril>(PERILS)
         val insurableLimits: List<InsurableLimitItem>? =
             intent.getParcelableArrayListExtra<InsurableLimitItem.InsurableLimit>(INSURABLE_LIMITS)
         val documents = intent.getParcelableArrayListExtra<DocumentItems.Document>(DOCUMENTS)
 
-        if (perils == null || insurableLimits == null || documents == null) {
+        if (displayName == null || perils == null || insurableLimits == null || documents == null) {
             e { "Programmer error: PERILS/INSURABLE_LIMITS/DOCUMENTS not provided to ${this.javaClass.name}" }
             return
         }
 
         with(binding) {
+            toolbar.title = displayName
             val perilAdapter = PerilsAdapter(
                 requestBuilder = requestBuilder,
                 fragmentManager = supportFragmentManager,
@@ -69,18 +72,18 @@ class QuoteDetailActivity : BaseActivity(R.layout.quote_detail_activity) {
     }
 
     companion object {
+        private const val QUOTE_DISPLAY_NAME = "QUOTE_DISPLAY_NAME"
         private const val PERILS = "PERILS"
         private const val INSURABLE_LIMITS = "INSURABLE_LIMITS"
         private const val DOCUMENTS = "DOCUMENTS"
         fun newInstance(
             context: Context,
-            perils: List<PerilItem>,
-            insurableLimits: List<InsurableLimitItem.InsurableLimit>,
-            documents: List<DocumentItems.Document>,
+            quoteDetailItems: OfferViewModel.QuoteDetailItems,
         ) = Intent(context, QuoteDetailActivity::class.java).apply {
-            putParcelableArrayListExtra(PERILS, perils.toArrayList())
-            putParcelableArrayListExtra(INSURABLE_LIMITS, insurableLimits.toArrayList())
-            putParcelableArrayListExtra(DOCUMENTS, documents.toArrayList())
+            putExtra(QUOTE_DISPLAY_NAME, quoteDetailItems.displayName)
+            putParcelableArrayListExtra(PERILS, quoteDetailItems.perils.toArrayList())
+            putParcelableArrayListExtra(INSURABLE_LIMITS, quoteDetailItems.insurableLimits.toArrayList())
+            putParcelableArrayListExtra(DOCUMENTS, quoteDetailItems.documents.toArrayList())
         }
     }
 }
