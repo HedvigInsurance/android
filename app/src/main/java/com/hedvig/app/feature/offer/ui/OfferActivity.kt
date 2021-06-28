@@ -7,8 +7,10 @@ import android.os.Bundle
 import android.transition.TransitionManager
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.core.view.doOnNextLayout
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
@@ -132,28 +134,31 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     ConcatSpanSizeLookup(gridLayoutManager.spanCount) { concatAdapter.adapters }
             }
 
-            lifecycleScope.launchWhenResumed {
-                model.viewState.collect { viewState ->
-                    when (viewState) {
-                        OfferViewModel.ViewState.HasContracts -> startLoggedInActivity()
-                        is OfferViewModel.ViewState.OfferItems -> {
-                            topOfferAdapter.submitList(viewState.topOfferItems)
-                            // Workaround - recyclerview will scroll to bottom if updating all items simultaneously.
-                            lifecycleScope.launch {
-                                delay(500)
-                                perilsAdapter.submitList(viewState.perils)
-                                insurableLimitsAdapter.submitList(viewState.insurableLimitsItems)
-                                documentAdapter.submitList(viewState.documents)
-                                bottomOfferAdapter.submitList(viewState.bottomOfferItems)
+            lifecycleScope.launch {
+                model.viewState
+                    .flowWithLifecycle(lifecycle)
+                    .collect { viewState ->
+                        when (viewState) {
+                            OfferViewModel.ViewState.HasContracts -> startLoggedInActivity()
+                            is OfferViewModel.ViewState.OfferItems -> {
+                                topOfferAdapter.submitList(viewState.topOfferItems)
+                                // Workaround - recyclerview will scroll to bottom if updating all items simultaneously.
+                                offerScroll.doOnNextLayout {
+                                    perilsAdapter.submitList(viewState.perils)
+                                    insurableLimitsAdapter.submitList(viewState.insurableLimitsItems)
+                                    documentAdapter.submitList(viewState.documents)
+                                    bottomOfferAdapter.submitList(viewState.bottomOfferItems)
+                                }
                             }
+                            is OfferViewModel.ViewState.Error.GeneralError -> showErrorDialog(
+                                viewState.message ?: getString(R.string.home_tab_error_body)
+                            )
+                            is OfferViewModel.ViewState.Error -> showErrorDialog(
+                                getString(R.string.home_tab_error_body)
+                            )
+                            is OfferViewModel.ViewState.Loading -> topOfferAdapter.submitList(viewState.loadingItem)
                         }
-                        is OfferViewModel.ViewState.Error.GeneralError -> showErrorDialog(
-                            viewState.message ?: getString(R.string.home_tab_error_body)
-                        )
-                        is OfferViewModel.ViewState.Error -> showErrorDialog(getString(R.string.home_tab_error_body))
-                        is OfferViewModel.ViewState.Loading -> topOfferAdapter.submitList(viewState.loadingItem)
                     }
-                }
             }
 
             signButton.setHapticClickListener {

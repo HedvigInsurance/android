@@ -53,7 +53,7 @@ abstract class OfferViewModel : ViewModel() {
             object EmptyResponse : Error()
         }
 
-        class Loading(val loadingItem: List<OfferModel.Loading>) : ViewState()
+        data class Loading(val loadingItem: List<OfferModel.Loading>) : ViewState()
         object HasContracts : ViewState()
     }
 }
