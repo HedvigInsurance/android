@@ -9,11 +9,13 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.BASE_MARGIN_SEPTUPLE
+import com.hedvig.app.BASE_MARGIN_TRIPLE
 import com.hedvig.app.R
 import com.hedvig.app.databinding.OfferFactAreaBinding
 import com.hedvig.app.databinding.OfferFooterBinding
 import com.hedvig.app.databinding.OfferHeaderBinding
 import com.hedvig.app.databinding.OfferSwitchBinding
+import com.hedvig.app.databinding.TextBody2Binding
 import com.hedvig.app.databinding.TextHeadline5Binding
 import com.hedvig.app.databinding.TextSubtitle1Binding
 import com.hedvig.app.feature.chat.ui.ChatActivity
@@ -64,7 +66,7 @@ class OfferAdapter(
         is OfferModel.Switcher -> R.layout.offer_switch
         is OfferModel.Footer -> R.layout.offer_footer
         is OfferModel.Subheading -> R.layout.text_headline5
-        OfferModel.Paragraph -> R.layout.text_body2
+        is OfferModel.Paragraph -> R.layout.text_body2
         is OfferModel.QuoteDetails -> R.layout.text_subtitle1
     }
 
@@ -284,13 +286,34 @@ class OfferAdapter(
         }
 
         class Paragraph(parent: ViewGroup) : OfferAdapter.ViewHolder(parent.inflate(R.layout.text_body2)) {
+            private val binding by viewBinding(TextBody2Binding::bind)
+
+            init {
+                binding.root.updateMargin(
+                    start = BASE_MARGIN_DOUBLE,
+                    top = BASE_MARGIN_DOUBLE,
+                    end = BASE_MARGIN_DOUBLE,
+                    bottom = BASE_MARGIN_TRIPLE,
+                )
+            }
+
             override fun bind(
                 data: OfferModel,
                 fragmentManager: FragmentManager,
                 tracker: OfferTracker,
                 removeDiscount: () -> Unit,
                 marketManager: MarketManager,
-            ) = Unit
+            ) = with(binding.root) {
+                if (data !is OfferModel.Paragraph) {
+                    return invalid(data)
+                }
+
+                setText(
+                    when (data) {
+                        OfferModel.Paragraph.Coverage -> R.string.offer_screen_MULTIPLE_INSURANCES_coverage_paragraph
+                    }
+                )
+            }
         }
     }
 }

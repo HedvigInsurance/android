@@ -32,5 +32,7 @@ sealed class OfferModel {
         val id: String,
     ) : OfferModel()
 
-    object Paragraph : OfferModel()
+    sealed class Paragraph : OfferModel() {
+        object Coverage: Paragraph()
+    }
 }

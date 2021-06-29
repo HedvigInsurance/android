@@ -44,14 +44,13 @@ object OfferItemsBuilder {
         )
         add(OfferModel.Subheading.Coverage)
         if (data.quoteBundle.quotes.size > 1) {
-            add(OfferModel.Paragraph)
+            add(OfferModel.Paragraph.Coverage)
             data.quoteBundle.quotes.forEach { quote ->
                 add(OfferModel.QuoteDetails(quote.displayName, quote.id))
             }
-        } else {
-            // We don't have this text, as far as I know
         }
     }
+
     private fun OfferQuery.Data.getDisplayNameOrNull() = if (quoteBundle.quotes.size == 1) {
         quoteBundle.quotes.firstOrNull()?.displayName
     } else {
