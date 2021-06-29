@@ -28,7 +28,7 @@ class MockOfferViewModel : OfferViewModel() {
             val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(mockData.quoteBundle.quotes)
             val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems()
             _viewState.value =
-                ViewState(
+                ViewState.Loaded(
                     topOfferItems,
                     perilItems,
                     documentItems,
@@ -45,7 +45,7 @@ class MockOfferViewModel : OfferViewModel() {
     override fun clearPreviousErrors() = Unit
     override fun manuallyRecheckSignStatus() = Unit
     override fun chooseStartDate(id: String, date: LocalDate) {
-        _viewState.value = ViewState(
+        _viewState.value = ViewState.Loaded(
             OfferItemsBuilder.createTopOfferItems(
                 mockData.copy(
                     quoteBundle = mockData.quoteBundle.copy(
@@ -65,7 +65,7 @@ class MockOfferViewModel : OfferViewModel() {
     }
 
     override fun removeStartDate(id: String) {
-        _viewState.value = ViewState(
+        _viewState.value = ViewState.Loaded(
             OfferItemsBuilder.createTopOfferItems(
                 mockData.copy(
                     quoteBundle = mockData.quoteBundle.copy(
