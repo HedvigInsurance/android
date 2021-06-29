@@ -35,7 +35,7 @@ abstract class OfferViewModel : ViewModel() {
 
     sealed class Event {
         sealed class Error : Event() {
-            data class GeneralError(val message: String?) : Error()
+            data class GeneralError(val message: String? = null) : Error()
             object EmptyResponse : Error()
         }
 
@@ -251,7 +251,7 @@ class OfferViewModelImpl(
         viewModelScope.launch {
             when (val result = getQuoteUseCase(quoteIds, id)) {
                 GetQuoteUseCase.Result.Error -> {
-                    _events.tryEmit(Event.Error.GeneralError(""))
+                    _events.tryEmit(Event.Error.GeneralError())
                 }
                 is GetQuoteUseCase.Result.Success -> {
                     _events.tryEmit(
