@@ -3,6 +3,7 @@ package com.hedvig.app.feature.offer.ui
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.doOnNextLayout
+import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -44,6 +45,7 @@ class OfferAdapter(
         R.layout.offer_fact_area -> ViewHolder.Facts(parent)
         R.layout.offer_switch -> ViewHolder.Switch(parent)
         R.layout.offer_footer -> ViewHolder.Footer(parent)
+        R.layout.offer_loading_header -> ViewHolder.Loading(parent)
         else -> throw Error("Invalid viewType: $viewType")
     }
 
@@ -52,6 +54,7 @@ class OfferAdapter(
         is OfferModel.Facts -> R.layout.offer_fact_area
         is OfferModel.Switcher -> R.layout.offer_switch
         is OfferModel.Footer -> R.layout.offer_footer
+        OfferModel.Loading -> R.layout.offer_loading_header
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -84,7 +87,6 @@ class OfferAdapter(
                 }
                 binding.apply {
                     title.text = data.title ?: itemView.context.getString(R.string.OFFER_INSURANCE_BUNDLE_TITLE)
-
                     premium.text = data.netMonthlyCost.format(premium.context, marketManager.market)
                     premiumPeriod.text = premiumPeriod.context.getString(R.string.OFFER_PRICE_PER_MONTH)
 
@@ -201,6 +203,17 @@ class OfferAdapter(
                 }
                 val link = itemView.context.getString(R.string.OFFER_FOOTER_GDPR_INFO, data.url)
                 binding.text.setMarkdownText(link)
+            }
+        }
+
+        class Loading(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_loading_header)) {
+            override fun bind(
+                data: OfferModel,
+                fragmentManager: FragmentManager,
+                tracker: OfferTracker,
+                removeDiscount: () -> Unit,
+                marketManager: MarketManager
+            ) {
             }
         }
     }

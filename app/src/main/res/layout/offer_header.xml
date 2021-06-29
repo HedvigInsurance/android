@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/gradient_summer_sky"
     android:paddingTop="@dimen/base_margin_septuple"
     android:paddingBottom="@dimen/base_margin_quadruple"
-    android:background="@drawable/gradient_summer_sky"
     tools:context=".feature.offer.ui.OfferActivity">
 
     <com.google.android.material.card.MaterialCardView
@@ -23,13 +23,13 @@
 
             <TextView
                 android:id="@+id/campaign"
+                style="@style/Hedvig.TextAppearance.Discount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/base_margin_half"
                 android:background="@drawable/background_premium_box_with_campaign"
                 android:gravity="center"
                 android:paddingBottom="@dimen/base_margin_half"
-                style="@style/Hedvig.TextAppearance.Discount"
                 tools:text="25 % BUNDLE DISCOUNT・10 SEK DISCOUNT/MO.・15 % DISCOUNT FROM SEB" />
 
             <TextView
