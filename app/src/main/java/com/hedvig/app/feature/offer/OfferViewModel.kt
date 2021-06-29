@@ -23,15 +23,17 @@ import e
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import java.time.LocalDate
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 
 abstract class OfferViewModel : ViewModel() {
-    protected val _viewState = MutableLiveData<ViewState>()
-    val viewState: LiveData<ViewState> = _viewState
+    protected val _viewState = MutableStateFlow<ViewState>(ViewState.Loading(OfferItemsBuilder.createLoadingItem()))
+    val viewState: StateFlow<ViewState> = _viewState
 
     sealed class Event {
         sealed class Error : Event() {
@@ -74,13 +76,17 @@ abstract class OfferViewModel : ViewModel() {
         id: String,
     )
 
-    data class ViewState(
-        val topOfferItems: List<OfferModel>,
-        val perils: List<PerilItem>,
-        val documents: List<DocumentItems>,
-        val insurableLimitsItems: List<InsurableLimitItem>,
-        val bottomOfferItems: List<OfferModel.Footer>,
-    )
+    sealed class ViewState {
+        data class Loaded(
+            val topOfferItems: List<OfferModel>,
+            val perils: List<PerilItem>,
+            val documents: List<DocumentItems>,
+            val insurableLimitsItems: List<InsurableLimitItem>,
+            val bottomOfferItems: List<OfferModel.Footer>,
+        ) : ViewState()
+
+        data class Loading(val loadingItem: List<OfferModel.Loading>) : ViewState()
+    }
 }
 
 class OfferViewModelImpl(
@@ -106,7 +112,7 @@ class OfferViewModelImpl(
                         .onEach { response ->
                             when (val result = toDataOrError(response)) {
                                 is Either.Left -> {
-                                    _viewState.postValue(toViewState(result.value))
+                                    _viewState.value = toViewState(result.value)
                                 }
                                 is Either.Right -> {
                                     _events.tryEmit(result.value)
@@ -145,7 +151,7 @@ class OfferViewModelImpl(
         val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(data.quoteBundle.quotes)
         val documentItems = OfferItemsBuilder.createDocumentItems(data.quoteBundle.quotes)
         val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems()
-        return ViewState(topOfferItems, perilItems, documentItems, insurableLimitsItems, bottomOfferItems)
+        return ViewState.Loaded(topOfferItems, perilItems, documentItems, insurableLimitsItems, bottomOfferItems)
     }
 
     override fun removeDiscount() {

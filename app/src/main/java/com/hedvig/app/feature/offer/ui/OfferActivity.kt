@@ -119,6 +119,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 removeDiscount = model::removeDiscount,
                 openQuoteDetails = model::onOpenQuoteDetails,
             )
+
             val concatAdapter = ConcatAdapter(
                 topOfferAdapter,
                 perilsAdapter,
@@ -134,13 +135,24 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     ConcatSpanSizeLookup(gridLayoutManager.spanCount) { concatAdapter.adapters }
             }
 
-            model.viewState.observe(this@OfferActivity) { viewState ->
-                topOfferAdapter.submitList(viewState.topOfferItems)
-                perilsAdapter.submitList(viewState.perils)
-                insurableLimitsAdapter.submitList(viewState.insurableLimitsItems)
-                documentAdapter.submitList(viewState.documents)
-                bottomOfferAdapter.submitList(viewState.bottomOfferItems)
-            }
+            model
+                .viewState
+                .flowWithLifecycle(lifecycle)
+                .onEach { viewState ->
+                    when (viewState) {
+                        is OfferViewModel.ViewState.Loaded -> {
+                            topOfferAdapter.submitList(viewState.topOfferItems)
+                            perilsAdapter.submitList(viewState.perils)
+                            insurableLimitsAdapter.submitList(viewState.insurableLimitsItems)
+                            documentAdapter.submitList(viewState.documents)
+                            bottomOfferAdapter.submitList(viewState.bottomOfferItems)
+                        }
+                        is OfferViewModel.ViewState.Loading -> {
+                            topOfferAdapter.submitList(viewState.loadingItem)
+                        }
+                    }
+                }
+                .launchIn(lifecycleScope)
 
             model
                 .events

@@ -57,6 +57,7 @@ class OfferAdapter(
         R.layout.text_headline5 -> ViewHolder.Subheading(parent)
         R.layout.text_body2 -> ViewHolder.Paragraph(parent)
         R.layout.text_subtitle1 -> ViewHolder.QuoteDetails(parent, openQuoteDetails)
+        R.layout.offer_loading_header -> ViewHolder.Loading(parent)
         else -> throw Error("Invalid viewType: $viewType")
     }
 
@@ -68,6 +69,7 @@ class OfferAdapter(
         is OfferModel.Subheading -> R.layout.text_headline5
         is OfferModel.Paragraph -> R.layout.text_body2
         is OfferModel.QuoteDetails -> R.layout.text_subtitle1
+        OfferModel.Loading -> R.layout.offer_loading_header
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -100,7 +102,6 @@ class OfferAdapter(
                 }
                 binding.apply {
                     title.text = data.title ?: itemView.context.getString(R.string.OFFER_INSURANCE_BUNDLE_TITLE)
-
                     premium.text = data.netMonthlyCost.format(premium.context, marketManager.market)
                     premiumPeriod.text = premiumPeriod.context.getString(R.string.OFFER_PRICE_PER_MONTH)
 
@@ -314,6 +315,16 @@ class OfferAdapter(
                     }
                 )
             }
+        }
+
+        class Loading(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_loading_header)) {
+            override fun bind(
+                data: OfferModel,
+                fragmentManager: FragmentManager,
+                tracker: OfferTracker,
+                removeDiscount: () -> Unit,
+                marketManager: MarketManager,
+            ) = Unit
         }
     }
 }

@@ -95,4 +95,6 @@ object OfferItemsBuilder {
     } else {
         emptyList()
     }
+
+    fun createLoadingItem(): List<OfferModel.Loading> = listOf(OfferModel.Loading)
 }
