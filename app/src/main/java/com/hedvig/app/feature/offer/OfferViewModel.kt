@@ -18,10 +18,13 @@ import com.hedvig.app.feature.offer.ui.OfferModel
 import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.perils.PerilItem
+import com.hedvig.app.util.Either
 import e
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -29,6 +32,25 @@ import java.time.LocalDate
 abstract class OfferViewModel : ViewModel() {
     protected val _viewState = MutableLiveData<ViewState>()
     val viewState: LiveData<ViewState> = _viewState
+
+    sealed class Event {
+        sealed class Error : Event() {
+            data class GeneralError(val message: String?) : Error()
+            object EmptyResponse : Error()
+        }
+
+        object HasContracts : Event()
+        data class OpenQuoteDetails(
+            val quoteDetailItems: QuoteDetailItems,
+        ) : Event()
+    }
+
+    protected val _events = MutableSharedFlow<Event>(
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
+    )
+    val events: SharedFlow<Event> = _events
+
     abstract val autoStartToken: LiveData<SignOfferMutation.Data>
     abstract val signStatus: LiveData<SignStatusFragment>
     abstract val signError: LiveData<Boolean>
@@ -48,26 +70,17 @@ abstract class OfferViewModel : ViewModel() {
         val documents: List<DocumentItems.Document>,
     )
 
-    abstract suspend fun getQuoteDetailItems(
+    abstract fun onOpenQuoteDetails(
         id: String,
-    ): QuoteDetailItems?
+    )
 
-    sealed class ViewState {
-        data class OfferItems(
-            val topOfferItems: List<OfferModel>,
-            val perils: List<PerilItem>,
-            val documents: List<DocumentItems>,
-            val insurableLimitsItems: List<InsurableLimitItem>,
-            val bottomOfferItems: List<OfferModel.Footer>,
-        ) : ViewState()
-
-        sealed class Error : ViewState() {
-            data class GeneralError(val message: String?) : Error()
-            object EmptyResponse : Error()
-        }
-
-        object HasContracts : ViewState()
-    }
+    data class ViewState(
+        val topOfferItems: List<OfferModel>,
+        val perils: List<PerilItem>,
+        val documents: List<DocumentItems>,
+        val insurableLimitsItems: List<InsurableLimitItem>,
+        val bottomOfferItems: List<OfferModel.Footer>,
+    )
 }
 
 class OfferViewModelImpl(
@@ -90,33 +103,49 @@ class OfferViewModelImpl(
                     quoteIds = idsResult.ids
                     idsResult
                         .data
-                        .map(::toViewState)
-                        .onEach(_viewState::postValue)
-                        .catch { _viewState.postValue(ViewState.Error.GeneralError(it.message)) }
+                        .onEach { response ->
+                            when (val result = toDataOrError(response)) {
+                                is Either.Left -> {
+                                    _viewState.postValue(toViewState(result.value))
+                                }
+                                is Either.Right -> {
+                                    _events.tryEmit(result.value)
+                                }
+                            }
+                        }
+                        .catch {
+                            _events.tryEmit(Event.Error.GeneralError(it.message))
+                        }
                         .launchIn(this)
                 }
                 GetQuotesUseCase.Result.Error -> {
-                    _viewState.postValue(ViewState.Error.GeneralError(""))
+                    _events.tryEmit(Event.Error.GeneralError(""))
                 }
             }
         }
     }
 
-    private fun toViewState(response: Response<OfferQuery.Data>): ViewState {
-        return response.errors?.let {
-            ViewState.Error.GeneralError(it.firstOrNull()?.message)
-        } ?: response.data?.let { data ->
-            if (data.contracts.isNotEmpty()) {
-                ViewState.HasContracts
-            } else {
-                val topOfferItems = OfferItemsBuilder.createTopOfferItems(data)
-                val perilItems = OfferItemsBuilder.createPerilItems(data.quoteBundle.quotes)
-                val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(data.quoteBundle.quotes)
-                val documentItems = OfferItemsBuilder.createDocumentItems(data.quoteBundle.quotes)
-                val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems()
-                ViewState.OfferItems(topOfferItems, perilItems, documentItems, insurableLimitsItems, bottomOfferItems)
-            }
-        } ?: ViewState.Error.EmptyResponse
+    private fun toDataOrError(response: Response<OfferQuery.Data>): Either<OfferQuery.Data, Event> {
+        response.errors?.let {
+            return Either.Right(Event.Error.GeneralError(it.firstOrNull()?.message))
+        }
+
+        val data = response.data ?: return Either.Right(Event.Error.EmptyResponse)
+
+        if (data.contracts.isNotEmpty()) {
+            return Either.Right(Event.HasContracts)
+        }
+
+        return Either.Left(data)
+    }
+
+    private fun toViewState(data: OfferQuery.Data): ViewState {
+        val topOfferItems = OfferItemsBuilder.createTopOfferItems(data)
+        val perilItems = OfferItemsBuilder.createPerilItems(data.quoteBundle.quotes)
+        val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(data.quoteBundle.quotes)
+        val documentItems = OfferItemsBuilder.createDocumentItems(data.quoteBundle.quotes)
+        val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems()
+        return ViewState(topOfferItems, perilItems, documentItems, insurableLimitsItems, bottomOfferItems)
     }
 
     override fun removeDiscount() {
@@ -216,20 +245,27 @@ class OfferViewModelImpl(
         }
     }
 
-    override suspend fun getQuoteDetailItems(
+    override fun onOpenQuoteDetails(
         id: String,
-    ): QuoteDetailItems? = when (val result = getQuoteUseCase(quoteIds, id)) {
-        GetQuoteUseCase.Result.Error -> {
-            _viewState.value = ViewState.Error.GeneralError("")
-            null
-        }
-        is GetQuoteUseCase.Result.Success -> {
-            QuoteDetailItems(
-                result.quote.displayName,
-                buildPerils(result.quote),
-                buildInsurableLimits(result.quote),
-                buildDocuments(result.quote)
-            )
+    ) {
+        viewModelScope.launch {
+            when (val result = getQuoteUseCase(quoteIds, id)) {
+                GetQuoteUseCase.Result.Error -> {
+                    _events.tryEmit(Event.Error.GeneralError(""))
+                }
+                is GetQuoteUseCase.Result.Success -> {
+                    _events.tryEmit(
+                        Event.OpenQuoteDetails(
+                            QuoteDetailItems(
+                                result.quote.displayName,
+                                buildPerils(result.quote),
+                                buildInsurableLimits(result.quote),
+                                buildDocuments(result.quote)
+                            )
+                        )
+                    )
+                }
+            }
         }
     }
 }

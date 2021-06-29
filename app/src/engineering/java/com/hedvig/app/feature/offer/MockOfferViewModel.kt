@@ -27,7 +27,7 @@ class MockOfferViewModel : OfferViewModel() {
                 val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(mockData.quoteBundle.quotes)
                 val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems()
                 _viewState.postValue(
-                    ViewState.OfferItems(
+                    ViewState(
                         topOfferItems,
                         perilItems,
                         documentItems,
@@ -48,7 +48,7 @@ class MockOfferViewModel : OfferViewModel() {
     override fun manuallyRecheckSignStatus() = Unit
     override fun chooseStartDate(id: String, date: LocalDate) {
         _viewState.postValue(
-            ViewState.OfferItems(
+            ViewState(
                 OfferItemsBuilder.createTopOfferItems(
                     mockData.copy(
                         quoteBundle = mockData.quoteBundle.copy(
@@ -70,7 +70,7 @@ class MockOfferViewModel : OfferViewModel() {
 
     override fun removeStartDate(id: String) {
         _viewState.postValue(
-            ViewState.OfferItems(
+            ViewState(
                 OfferItemsBuilder.createTopOfferItems(
                     mockData.copy(
                         quoteBundle = mockData.quoteBundle.copy(
@@ -88,15 +88,19 @@ class MockOfferViewModel : OfferViewModel() {
         )
     }
 
-    override suspend fun getQuoteDetailItems(
+    override fun onOpenQuoteDetails(
         id: String,
-    ): QuoteDetailItems {
+    ) {
         val quote = mockData.quoteBundle.quotes.first { it.id == id }
-        return QuoteDetailItems(
-            quote.displayName,
-            buildPerils(quote),
-            buildInsurableLimits(quote),
-            buildDocuments(quote)
+        _events.tryEmit(
+            Event.OpenQuoteDetails(
+                QuoteDetailItems(
+                    quote.displayName,
+                    buildPerils(quote),
+                    buildInsurableLimits(quote),
+                    buildDocuments(quote),
+                )
+            )
         )
     }
 
