@@ -85,4 +85,6 @@ object OfferItemsBuilder {
                 PerilItem.Peril(Peril.from(perilFragment))
             }
         }
+
+    fun createLoadingItem(): List<OfferModel.Loading> = listOf(OfferModel.Loading)
 }
