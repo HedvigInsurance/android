@@ -10,6 +10,7 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheet
 import com.hedvig.app.util.KMaterialDatePicker
+import com.hedvig.app.util.withParentIndex
 import com.kaspersky.kaspresso.screens.KScreen
 import org.hamcrest.Matcher
 
@@ -44,8 +45,13 @@ object OfferScreen : KScreen<OfferScreen>() {
         val text = KTextView { withMatcher(parent) }
     }
 
-    class FAQ(parent: Matcher<View>) : KRecyclerItem<FAQ>(parent) {
+    class FAQ(private val parent: Matcher<View>) : KRecyclerItem<FAQ>(parent) {
         val title = KTextView(parent) { withText(R.string.offer_faq_title) }
+
+        fun faqRow(index: Int, function: KTextView.() -> Unit) = KTextView(parent) {
+            withParent { withId(R.id.rowContainer) }
+            withParentIndex(index)
+        }.invoke(function)
     }
 }
 

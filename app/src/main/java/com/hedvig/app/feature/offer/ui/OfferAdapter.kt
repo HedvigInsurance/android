@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.offer.ui
 
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.doOnNextLayout
@@ -32,6 +33,7 @@ import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.drawableAttr
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.invalid
+import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.setMarkdownText
 import com.hedvig.app.util.extensions.setStrikethrough
 import com.hedvig.app.util.extensions.showAlert
@@ -332,6 +334,31 @@ class OfferAdapter(
             ) = with(binding) {
                 if (data !is OfferModel.FAQ) {
                     return invalid(data)
+                }
+
+                rowContainer.removeAllViews()
+
+                val layoutInflater = LayoutInflater.from(rowContainer.context)
+
+                data.items.forEach { (headline, _) ->
+                    val rowBinding = TextSubtitle1Binding.inflate(
+                        layoutInflater,
+                        rowContainer,
+                        false
+                    )
+
+                    with(rowBinding.root) {
+                        updatePaddingRelative(
+                            start = BASE_MARGIN_DOUBLE,
+                            top = BASE_MARGIN_DOUBLE,
+                            end = BASE_MARGIN_DOUBLE,
+                            bottom = BASE_MARGIN_DOUBLE,
+                        )
+                        setBackgroundResource(context.drawableAttr(android.R.attr.selectableItemBackground))
+                        text = headline
+                    }
+
+                    rowContainer.addView(rowBinding.root)
                 }
             }
         }

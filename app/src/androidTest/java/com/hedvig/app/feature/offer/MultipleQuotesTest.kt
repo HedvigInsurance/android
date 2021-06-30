@@ -26,17 +26,25 @@ class MultipleQuotesTest : TestCase() {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun givenAnyQuoteBundleShouldShowFAQSection() = run {
+    fun givenAnyQuoteBundleWithFAQItemsShouldShowFAQSection() = run {
         activityRule.launch(OfferActivity.newInstance(context(), listOf("123", "234")))
 
         OfferScreen {
             scroll {
                 childAt<OfferScreen.FAQ>(6) {
                     title { isVisible() }
+                    faqRow(0) {
+                        hasText(firstFaqRowText)
+                    }
                 }
             }
         }
     }
+
+    private val firstFaqRowText = OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL
+        .quoteBundle
+        .frequentlyAskedQuestions[0]
+        .headline!!
 
     @Test
     fun givenBundleWithMultipleQuotesShouldShowQuoteDetailScreens() = run {
@@ -74,4 +82,3 @@ class MultipleQuotesTest : TestCase() {
         .perilFragment
         .title
 }
-
