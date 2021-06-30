@@ -33,7 +33,6 @@ import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.drawableAttr
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.invalid
-import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.setMarkdownText
 import com.hedvig.app.util.extensions.setStrikethrough
 import com.hedvig.app.util.extensions.showAlert
@@ -60,7 +59,7 @@ class OfferAdapter(
         R.layout.text_headline5 -> ViewHolder.Subheading(parent)
         R.layout.text_body2 -> ViewHolder.Paragraph(parent)
         R.layout.text_subtitle1 -> ViewHolder.QuoteDetails(parent, openQuoteDetails)
-        R.layout.offer_faq -> ViewHolder.FAQ(parent)
+        R.layout.offer_faq -> ViewHolder.FAQ(parent, fragmentManager)
         R.layout.offer_loading_header -> ViewHolder.Loading(parent)
         else -> throw Error("Invalid viewType: $viewType")
     }
@@ -322,7 +321,10 @@ class OfferAdapter(
             }
         }
 
-        class FAQ(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_faq)) {
+        class FAQ(
+            parent: ViewGroup,
+            private val fragmentManager: FragmentManager,
+        ) : ViewHolder(parent.inflate(R.layout.offer_faq)) {
             private val binding by viewBinding(OfferFaqBinding::bind)
 
             override fun bind(
@@ -340,7 +342,7 @@ class OfferAdapter(
 
                 val layoutInflater = LayoutInflater.from(rowContainer.context)
 
-                data.items.forEach { (headline, _) ->
+                data.items.forEach { (headline, body) ->
                     val rowBinding = TextSubtitle1Binding.inflate(
                         layoutInflater,
                         rowContainer,
@@ -356,6 +358,11 @@ class OfferAdapter(
                         )
                         setBackgroundResource(context.drawableAttr(android.R.attr.selectableItemBackground))
                         text = headline
+                        setHapticClickListener {
+                            FAQBottomSheet
+                                .newInstance(headline, body)
+                                .show(fragmentManager, FAQBottomSheet.TAG)
+                        }
                     }
 
                     rowContainer.addView(rowBinding.root)

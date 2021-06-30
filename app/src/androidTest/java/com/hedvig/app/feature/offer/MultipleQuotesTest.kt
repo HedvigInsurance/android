@@ -35,9 +35,15 @@ class MultipleQuotesTest : TestCase() {
                     title { isVisible() }
                     faqRow(0) {
                         hasText(firstFaqRowText)
+                        click()
                     }
                 }
             }
+        }
+
+        FAQBottomSheetScreen {
+            title { hasText(firstFaqRowText) }
+            body { hasText(firstFaqRowBody) }
         }
     }
 
@@ -45,6 +51,11 @@ class MultipleQuotesTest : TestCase() {
         .quoteBundle
         .frequentlyAskedQuestions[0]
         .headline!!
+
+    private val firstFaqRowBody = OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL
+        .quoteBundle
+        .frequentlyAskedQuestions[0]
+        .body!!
 
     @Test
     fun givenBundleWithMultipleQuotesShouldShowQuoteDetailScreens() = run {
