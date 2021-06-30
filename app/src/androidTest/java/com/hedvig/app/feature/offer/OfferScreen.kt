@@ -24,6 +24,7 @@ object OfferScreen : KScreen<OfferScreen>() {
             itemType(::SwitcherItem)
             itemType(::Facts)
             itemType(::QuoteDetail)
+            itemType(::FAQ)
         }
     )
 
@@ -41,6 +42,10 @@ object OfferScreen : KScreen<OfferScreen>() {
 
     class QuoteDetail(parent: Matcher<View>) : KRecyclerItem<QuoteDetail>(parent) {
         val text = KTextView { withMatcher(parent) }
+    }
+
+    class FAQ(parent: Matcher<View>) : KRecyclerItem<FAQ>(parent) {
+        val title = KTextView(parent) { withText(R.string.offer_faq_title) }
     }
 }
 

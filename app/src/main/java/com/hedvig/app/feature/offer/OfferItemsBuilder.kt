@@ -9,6 +9,7 @@ import com.hedvig.app.feature.perils.Peril
 import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.feature.table.intoTable
 import com.hedvig.app.util.apollo.toMonetaryAmount
+import com.hedvig.app.util.safeLet
 
 // TODO Add extension to BundledQuote and fetch this from BE
 private const val GDPR_LINK = "https://www.hedvig.com/se/personuppgifter"
@@ -80,7 +81,18 @@ object OfferItemsBuilder {
         emptyList()
     }
 
-    fun createBottomOfferItems() = listOf(
+    fun createBottomOfferItems(bundle: OfferQuery.QuoteBundle) = listOfNotNull(
+        if (bundle.frequentlyAskedQuestions.isNotEmpty()) {
+            OfferModel.FAQ(
+                bundle.frequentlyAskedQuestions.mapNotNull {
+                    safeLet(it.headline, it.body) { headline, body ->
+                        headline to body
+                    }
+                }
+            )
+        } else {
+            null
+        },
         OfferModel.Footer(GDPR_LINK),
     )
 

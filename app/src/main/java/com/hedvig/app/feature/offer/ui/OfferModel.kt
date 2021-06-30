@@ -28,13 +28,18 @@ sealed class OfferModel {
         object Coverage : Subheading()
     }
 
+    sealed class Paragraph : OfferModel() {
+        object Coverage: Paragraph()
+    }
+
     data class QuoteDetails(
         val name: String,
         val id: String,
     ) : OfferModel()
 
-    sealed class Paragraph : OfferModel() {
-        object Coverage: Paragraph()
-    }
+    data class FAQ(
+        val items: List<Pair<String, String>>
+    ): OfferModel()
+
     object Loading : OfferModel()
 }

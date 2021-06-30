@@ -12,6 +12,7 @@ import com.hedvig.app.BASE_MARGIN_SEPTUPLE
 import com.hedvig.app.BASE_MARGIN_TRIPLE
 import com.hedvig.app.R
 import com.hedvig.app.databinding.OfferFactAreaBinding
+import com.hedvig.app.databinding.OfferFaqBinding
 import com.hedvig.app.databinding.OfferFooterBinding
 import com.hedvig.app.databinding.OfferHeaderBinding
 import com.hedvig.app.databinding.OfferSwitchBinding
@@ -57,6 +58,7 @@ class OfferAdapter(
         R.layout.text_headline5 -> ViewHolder.Subheading(parent)
         R.layout.text_body2 -> ViewHolder.Paragraph(parent)
         R.layout.text_subtitle1 -> ViewHolder.QuoteDetails(parent, openQuoteDetails)
+        R.layout.offer_faq -> ViewHolder.FAQ(parent)
         R.layout.offer_loading_header -> ViewHolder.Loading(parent)
         else -> throw Error("Invalid viewType: $viewType")
     }
@@ -69,6 +71,7 @@ class OfferAdapter(
         is OfferModel.Subheading -> R.layout.text_headline5
         is OfferModel.Paragraph -> R.layout.text_body2
         is OfferModel.QuoteDetails -> R.layout.text_subtitle1
+        is OfferModel.FAQ -> R.layout.offer_faq
         OfferModel.Loading -> R.layout.offer_loading_header
     }
 
@@ -314,6 +317,22 @@ class OfferAdapter(
                         OfferModel.Paragraph.Coverage -> R.string.offer_screen_MULTIPLE_INSURANCES_coverage_paragraph
                     }
                 )
+            }
+        }
+
+        class FAQ(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_faq)) {
+            private val binding by viewBinding(OfferFaqBinding::bind)
+
+            override fun bind(
+                data: OfferModel,
+                fragmentManager: FragmentManager,
+                tracker: OfferTracker,
+                removeDiscount: () -> Unit,
+                marketManager: MarketManager,
+            ) = with(binding) {
+                if (data !is OfferModel.FAQ) {
+                    return invalid(data)
+                }
             }
         }
 

@@ -15,16 +15,18 @@ data class OfferDataBuilder(
         .build(),
     private val redeemedCampaigns: List<OfferQuery.RedeemedCampaign> = emptyList(),
     private val contracts: List<OfferQuery.Contract> = emptyList(),
+    private val frequentlyAskedQuestions: List<OfferQuery.FrequentlyAskedQuestion> = emptyList(),
 ) {
     fun build() = OfferQuery.Data(
         quoteBundle = OfferQuery.QuoteBundle(
             quotes = quotes,
             bundleCost = OfferQuery.BundleCost(
                 fragments = OfferQuery.BundleCost.Fragments(insuranceCost)
-            )
+            ),
+            frequentlyAskedQuestions = frequentlyAskedQuestions,
         ),
         redeemedCampaigns = redeemedCampaigns,
-        contracts = contracts
+        contracts = contracts,
     )
 }
 
@@ -56,5 +58,17 @@ data class QuoteBuilder(
         ),
         insurableLimits = insurableLimits,
         insuranceTerms = insuranceTerms
+    )
+}
+
+data class FaqBuilder(
+    private val headline: String,
+    private val body: String,
+    private val id: String = "123",
+) {
+    fun build() = OfferQuery.FrequentlyAskedQuestion(
+        id = id,
+        headline = headline,
+        body = body,
     )
 }

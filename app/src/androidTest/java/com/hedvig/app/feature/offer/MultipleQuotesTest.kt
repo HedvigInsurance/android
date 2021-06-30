@@ -26,6 +26,19 @@ class MultipleQuotesTest : TestCase() {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
+    fun givenAnyQuoteBundleShouldShowFAQSection() = run {
+        activityRule.launch(OfferActivity.newInstance(context(), listOf("123", "234")))
+
+        OfferScreen {
+            scroll {
+                childAt<OfferScreen.FAQ>(6) {
+                    title { isVisible() }
+                }
+            }
+        }
+    }
+
+    @Test
     fun givenBundleWithMultipleQuotesShouldShowQuoteDetailScreens() = run {
         activityRule.launch(OfferActivity.newInstance(context(), listOf("123", "234")))
 

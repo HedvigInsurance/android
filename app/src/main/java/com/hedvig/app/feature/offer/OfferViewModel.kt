@@ -82,7 +82,7 @@ abstract class OfferViewModel : ViewModel() {
             val perils: List<PerilItem>,
             val documents: List<DocumentItems>,
             val insurableLimitsItems: List<InsurableLimitItem>,
-            val bottomOfferItems: List<OfferModel.Footer>,
+            val bottomOfferItems: List<OfferModel>,
         ) : ViewState()
 
         data class Loading(val loadingItem: List<OfferModel.Loading>) : ViewState()
@@ -150,7 +150,7 @@ class OfferViewModelImpl(
         val perilItems = OfferItemsBuilder.createPerilItems(data.quoteBundle.quotes)
         val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(data.quoteBundle.quotes)
         val documentItems = OfferItemsBuilder.createDocumentItems(data.quoteBundle.quotes)
-        val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems()
+        val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems(data.quoteBundle)
         return ViewState.Loaded(topOfferItems, perilItems, documentItems, insurableLimitsItems, bottomOfferItems)
     }
 
