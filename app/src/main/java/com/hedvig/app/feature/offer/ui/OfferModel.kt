@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.offer.ui
 
+import com.hedvig.app.feature.offer.ui.faq.FAQItem
 import com.hedvig.app.feature.table.Table
 import javax.money.MonetaryAmount
 
@@ -29,7 +30,7 @@ sealed class OfferModel {
     }
 
     sealed class Paragraph : OfferModel() {
-        object Coverage: Paragraph()
+        object Coverage : Paragraph()
     }
 
     data class QuoteDetails(
@@ -38,8 +39,8 @@ sealed class OfferModel {
     ) : OfferModel()
 
     data class FAQ(
-        val items: List<Pair<String, String>>
-    ): OfferModel()
+        val items: List<FAQItem>
+    ) : OfferModel()
 
     object Loading : OfferModel()
 }

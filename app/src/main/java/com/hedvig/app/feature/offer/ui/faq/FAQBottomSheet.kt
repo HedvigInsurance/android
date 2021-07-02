@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.offer.ui
+package com.hedvig.app.feature.offer.ui.faq
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,6 +8,7 @@ import androidx.core.os.bundleOf
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FaqBottomSheetBinding
+import com.hedvig.app.feature.offer.ui.faq.FAQItem
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import e
 
@@ -39,12 +40,11 @@ class FAQBottomSheet : BottomSheetDialogFragment() {
         private const val BODY = "BODY"
 
         fun newInstance(
-            headline: String,
-            body: String,
+            item: FAQItem
         ) = FAQBottomSheet().apply {
             arguments = bundleOf(
-                TITLE to headline,
-                BODY to body,
+                TITLE to item.headline,
+                BODY to item.body,
             )
         }
 

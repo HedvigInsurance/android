@@ -25,6 +25,7 @@ import com.hedvig.app.feature.offer.OfferRedeemCodeBottomSheet
 import com.hedvig.app.feature.offer.OfferSignDialog
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheet
+import com.hedvig.app.feature.offer.ui.faq.FAQBottomSheet
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.table.generateTable
 import com.hedvig.app.util.GenericDiffUtilItemCallback
@@ -342,7 +343,7 @@ class OfferAdapter(
 
                 val layoutInflater = LayoutInflater.from(rowContainer.context)
 
-                data.items.forEach { (headline, body) ->
+                data.items.forEach { item ->
                     val rowBinding = TextSubtitle1Binding.inflate(
                         layoutInflater,
                         rowContainer,
@@ -357,10 +358,10 @@ class OfferAdapter(
                             bottom = BASE_MARGIN_DOUBLE,
                         )
                         setBackgroundResource(context.drawableAttr(android.R.attr.selectableItemBackground))
-                        text = headline
+                        text = item.headline
                         setHapticClickListener {
                             FAQBottomSheet
-                                .newInstance(headline, body)
+                                .newInstance(item)
                                 .show(fragmentManager, FAQBottomSheet.TAG)
                         }
                     }

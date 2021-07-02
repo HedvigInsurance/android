@@ -2,7 +2,7 @@ package com.hedvig.app.feature.offer
 
 import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
-import com.hedvig.app.feature.offer.ui.FAQBottomSheet
+import com.hedvig.app.feature.offer.ui.faq.FAQBottomSheet
 import com.kaspersky.kaspresso.screens.KScreen
 
 object FAQBottomSheetScreen : KScreen<FAQBottomSheetScreen>() {
