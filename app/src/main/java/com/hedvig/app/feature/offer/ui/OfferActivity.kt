@@ -227,6 +227,10 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         }
     }
 
+    private fun setSignState(signMethod: SignMethod) {
+        // Set sign state
+    }
+
     private fun startLoggedInActivity() {
         storeBoolean(IS_VIEWING_OFFER, false)
         LoggedInActivity.newInstance(
