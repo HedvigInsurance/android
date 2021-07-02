@@ -8,7 +8,6 @@ import androidx.core.os.bundleOf
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FaqBottomSheetBinding
-import com.hedvig.app.feature.offer.ui.faq.FAQItem
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import e
 
