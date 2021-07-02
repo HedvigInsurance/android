@@ -15,7 +15,7 @@ import com.hedvig.app.feature.offer.ui.OfferModel
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.perils.PerilItem
 import e
-import java.time.LocalDate
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 abstract class OfferViewModel : ViewModel() {
     protected val _viewState = MutableStateFlow<ViewState>(ViewState.Loading(OfferItemsBuilder.createLoadingItem()))
@@ -36,8 +37,6 @@ abstract class OfferViewModel : ViewModel() {
     abstract fun startSign()
     abstract fun clearPreviousErrors()
     abstract fun manuallyRecheckSignStatus()
-    abstract fun chooseStartDate(id: String, date: LocalDate)
-    abstract fun removeStartDate(id: String)
 
     sealed class ViewState {
         data class OfferItems(
@@ -80,9 +79,10 @@ class OfferViewModelImpl(
                         .map(::toViewState)
                         .onEach { _viewState.value = it }
                         .catch { _viewState.value = ViewState.Error.GeneralError(it.message) }
+                        .launchIn(this)
                 }
-                GetQuotesUseCase.Result.Error -> {
-                    _viewState.value = ViewState.Error.GeneralError("")
+                is GetQuotesUseCase.Result.Error -> {
+                    _viewState.value = ViewState.Error.GeneralError(idsResult.message)
                 }
             }
         }
@@ -169,36 +169,6 @@ class OfferViewModelImpl(
             }
             response.getOrNull()?.data?.signStatus?.fragments?.signStatusFragment
                 ?.let { signStatus.postValue(it) }
-        }
-    }
-
-    override fun chooseStartDate(id: String, date: LocalDate) {
-        viewModelScope.launch {
-            val response = runCatching {
-                offerRepository.chooseStartDate(id, date)
-            }
-            if (response.isFailure || response.getOrNull()?.hasErrors() == true) {
-                response.exceptionOrNull()?.let { e(it) }
-                return@launch
-            }
-            response.getOrNull()?.data?.let {
-                offerRepository.writeStartDateToCache(quoteIds, it)
-            } ?: run {
-                e { "Missing data when choosing start date" }
-            }
-        }
-    }
-
-    override fun removeStartDate(id: String) {
-        viewModelScope.launch {
-            val response = runCatching {
-                offerRepository.removeStartDate(id)
-            }
-            if (response.isFailure || response.getOrNull()?.hasErrors() == true) {
-                response.exceptionOrNull()?.let { e(it) }
-                return@launch
-            }
-            response.getOrNull()?.data?.let { offerRepository.removeStartDateFromCache(quoteIds, it) }
         }
     }
 }

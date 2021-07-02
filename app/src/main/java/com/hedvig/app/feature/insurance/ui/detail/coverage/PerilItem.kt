@@ -7,4 +7,3 @@ data class CoverageViewState(
     val perilItems: List<PerilItem>,
     val insurableLimitItems: List<InsurableLimitItem>,
 )
-

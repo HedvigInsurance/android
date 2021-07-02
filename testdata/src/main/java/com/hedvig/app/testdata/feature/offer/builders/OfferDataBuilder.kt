@@ -23,6 +23,7 @@ data class OfferDataBuilder(
     private val redeemedCampaigns: List<OfferQuery.RedeemedCampaign> = emptyList(),
     private val contracts: List<OfferQuery.Contract> = emptyList(),
     private val detailsTable: TableFragment = TableFragmentBuilder().build(),
+    private val inceptions: OfferQuery.Inception1 = ConcurrentInceptionBuilder().build(),
 ) {
     fun build() = OfferQuery.Data(
         quoteBundle = OfferQuery.QuoteBundle(
@@ -47,7 +48,8 @@ data class OfferDataBuilder(
             ),
             bundleCost = OfferQuery.BundleCost(
                 fragments = OfferQuery.BundleCost.Fragments(insuranceCost)
-            )
+            ),
+            inception = inceptions
         ),
         redeemedCampaigns = redeemedCampaigns,
         contracts = contracts
