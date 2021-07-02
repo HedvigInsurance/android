@@ -34,8 +34,8 @@ import com.hedvig.app.R
 import com.hedvig.app.SplashActivity
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.SettingsActivity
-import kotlin.system.exitProcess
 import kotlinx.coroutines.delay
+import kotlin.system.exitProcess
 
 private const val SHARED_PREFERENCE_NAME = "hedvig_shared_preference"
 private const val SHARED_PREFERENCE_IS_LOGGED_IN = "shared_preference_is_logged_in"
@@ -164,6 +164,27 @@ fun Context.showAlert(
                 positiveAction()
             }
             setNegativeButton(resources.getString(negativeLabel)) { _, _ ->
+                negativeAction?.let { it() }
+            }
+            message?.let { setMessage(it) }
+        }
+        .show()
+
+fun Context.showAlert(
+    title: String,
+    message: String? = null,
+    @StringRes positiveLabel: Int = android.R.string.ok,
+    @StringRes negativeLabel: Int = android.R.string.cancel,
+    positiveAction: () -> Unit,
+    negativeAction: (() -> Unit)? = null,
+): androidx.appcompat.app.AlertDialog? =
+    MaterialAlertDialogBuilder(this)
+        .apply {
+            setTitle(title)
+            setPositiveButton(positiveLabel) { _, _ ->
+                positiveAction()
+            }
+            setNegativeButton(negativeLabel) { _, _ ->
                 negativeAction?.let { it() }
             }
             message?.let { setMessage(it) }
