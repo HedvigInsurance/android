@@ -1,17 +1,18 @@
 package com.hedvig.app.feature.offer
 
 import android.view.View
+import androidx.test.espresso.matcher.ViewMatchers
+import com.agoda.kakao.check.KCheckBox
 import com.agoda.kakao.common.views.KView
-import com.agoda.kakao.dialog.KAlertDialog
 import com.agoda.kakao.recycler.KRecyclerItem
 import com.agoda.kakao.recycler.KRecyclerView
 import com.agoda.kakao.screen.Screen
 import com.agoda.kakao.text.KButton
 import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
-import com.hedvig.app.util.KMaterialDatePicker
 import com.kaspersky.kaspresso.screens.KScreen
 import org.hamcrest.Matcher
+import org.hamcrest.Matchers
 
 class OfferScreen : Screen<OfferScreen>() {
 
@@ -39,15 +40,20 @@ class OfferScreen : Screen<OfferScreen>() {
 }
 
 class ChangeDateBottomSheetScreen : Screen<ChangeDateBottomSheetScreen>() {
-    val materialDatePicker = KMaterialDatePicker()
     val submit = KButton { withId(R.id.chooseDateButton) }
     val changeDateContainer = KView {
         withId(R.id.change_date_container)
     }
-    val confirmSubmit = KAlertDialog()
 }
 
-class ChangeDateView : KScreen<ChangeDateView>() {
+object ChangeDateView : KScreen<ChangeDateView>() {
     override val layoutId = R.layout.change_date
     override val viewClass = ChangeDateView::class.java
+
+    val switches = KCheckBox {
+        Matchers.allOf(
+            ViewMatchers.withId(R.id.auto_set_date_switch),
+            ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)
+        ).matches(ViewMatchers.isChecked())
+    }
 }

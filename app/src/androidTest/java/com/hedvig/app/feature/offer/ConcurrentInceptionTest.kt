@@ -5,6 +5,7 @@ import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.feature.embark.masking.ISO_8601_DATE
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.testdata.feature.offer.BUNDLE_WITH_CONCURRENT_INCEPTION_DATES_SPECIFIC_DATE
+import com.hedvig.app.testdata.feature.offer.CONCURRENT_INCEPTION_START_DATE
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
@@ -14,7 +15,6 @@ import com.hedvig.app.util.hasNrOfChildren
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
-import java.time.LocalDate
 
 class ConcurrentInceptionTest : TestCase() {
 
@@ -36,7 +36,7 @@ class ConcurrentInceptionTest : TestCase() {
             scroll {
                 childAt<OfferScreen.HeaderItem>(0) {
                     startDate {
-                        hasText(LocalDate.of(2021, 6, 22).format(ISO_8601_DATE))
+                        hasText(CONCURRENT_INCEPTION_START_DATE.format(ISO_8601_DATE))
                     }
                 }
             }

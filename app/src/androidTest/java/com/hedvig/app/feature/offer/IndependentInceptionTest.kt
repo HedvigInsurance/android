@@ -38,7 +38,7 @@ class IndependentInceptionTest : TestCase() {
                         hasText(R.string.OFFER_START_DATE_PLURAL)
                     }
                     startDate {
-                        hasText("")
+                        hasEmptyText()
                     }
                 }
             }

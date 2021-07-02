@@ -90,6 +90,7 @@ val OFFER_DATA_SWEDISH_HOUSE_WITH_DISCOUNT = OfferDataBuilder(
         )
     )
 ).build()
+val CONCURRENT_INCEPTION_START_DATE: LocalDate = LocalDate.of(2021, 6, 22)
 val BUNDLE_WITH_CONCURRENT_INCEPTION_DATES_SPECIFIC_DATE = OfferDataBuilder(
     typeOfContract = TypeOfContract.SE_HOUSE,
     detailsTable = TableFragmentBuilder(
@@ -132,7 +133,7 @@ val BUNDLE_WITH_CONCURRENT_INCEPTION_DATES_SPECIFIC_DATE = OfferDataBuilder(
         ),
     ),
     redeemedCampaigns = listOf(),
-    inceptions = ConcurrentInceptionBuilder(startDate = LocalDate.of(2021, 6, 22)).build(),
+    inceptions = ConcurrentInceptionBuilder(startDate = CONCURRENT_INCEPTION_START_DATE).build(),
     insuranceTerms = listOf(
         OfferQuery.InsuranceTerm(
             type = InsuranceTermType.GENERAL_TERMS,
