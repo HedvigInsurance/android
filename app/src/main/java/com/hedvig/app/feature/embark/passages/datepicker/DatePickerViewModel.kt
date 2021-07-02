@@ -13,12 +13,10 @@ class DatePickerViewModel : ViewModel() {
 
     fun onDateSelected(epochMillis: Long) {
         selectedEpochMillis = epochMillis
-        selectedDate.value = epochMillisToLocalDate(epochMillis)
+        selectedDate.value = epochMillis.epochMillisToLocalDateTime()
     }
 
     fun onShowDatePicker() {
         showDatePicker.value = selectedEpochMillis
     }
-
-    private fun epochMillisToLocalDate(epochMillis: Long) = epochMillis.epochMillisToLocalDateTime()
 }
