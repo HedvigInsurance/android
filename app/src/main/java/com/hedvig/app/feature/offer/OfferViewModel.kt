@@ -9,13 +9,13 @@ import com.hedvig.android.owldroid.fragment.SignStatusFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
+import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.offer.ui.OfferModel
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.perils.PerilItem
 import e
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -23,7 +23,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 abstract class OfferViewModel : ViewModel() {
     protected val _viewState = MutableStateFlow<ViewState>(ViewState.Loading(OfferItemsBuilder.createLoadingItem()))
@@ -45,6 +44,7 @@ abstract class OfferViewModel : ViewModel() {
             val documents: List<DocumentItems>,
             val insurableLimitsItems: List<InsurableLimitItem>,
             val bottomOfferItems: List<OfferModel.Footer>,
+            val signMethod: SignMethod
         ) : ViewState()
 
         sealed class Error : ViewState() {
@@ -100,7 +100,14 @@ class OfferViewModelImpl(
                 val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(data.quoteBundle.quotes[0])
                 val documentItems = OfferItemsBuilder.createDocumentItems(data.quoteBundle.quotes[0])
                 val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems()
-                ViewState.OfferItems(topOfferItems, perilItems, documentItems, insurableLimitsItems, bottomOfferItems)
+                ViewState.OfferItems(
+                    topOfferItems = topOfferItems,
+                    perils = perilItems,
+                    documents = documentItems,
+                    insurableLimitsItems = insurableLimitsItems,
+                    bottomOfferItems = bottomOfferItems,
+                    signMethod = data.signMethodForQuotes
+                )
             }
         } ?: ViewState.Error.EmptyResponse
     }

@@ -19,6 +19,7 @@ import com.bumptech.glide.RequestBuilder
 import com.carousell.concatadapterextension.ConcatItemDecoration
 import com.carousell.concatadapterextension.ConcatSpanSizeLookup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityOfferBinding
@@ -148,6 +149,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                                     documentAdapter.submitList(viewState.documents)
                                     bottomOfferAdapter.submitList(viewState.bottomOfferItems)
                                 }
+                                setSignState(viewState.signMethod)
                             }
                             is OfferViewModel.ViewState.Error.GeneralError -> showErrorDialog(
                                 viewState.message ?: getString(R.string.home_tab_error_body)
@@ -168,6 +170,10 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 )
             }
         }
+    }
+
+    private fun setSignState(signMethod: SignMethod) {
+        // Set sign state
     }
 
     private fun startLoggedInActivity() {
