@@ -27,7 +27,7 @@ sealed class OfferModel {
 
     sealed class Subheading : OfferModel() {
         object Coverage : Subheading()
-        object Switcher : Subheading()
+        data class Switcher(val amountOfCurrentInsurers: Int) : Subheading()
     }
 
     sealed class Paragraph : OfferModel() {

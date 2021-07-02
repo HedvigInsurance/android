@@ -246,8 +246,11 @@ class OfferAdapter(
                         setText(R.string.offer_screen_coverage_title)
                         updateMargin(bottom = 0)
                     }
-                    OfferModel.Subheading.Switcher -> {
-                        setText(R.string.offer_switcher_title)
+                    is OfferModel.Subheading.Switcher -> {
+                        text = context.resources.getQuantityString(
+                            R.plurals.offer_switcher_title,
+                            data.amountOfCurrentInsurers
+                        )
                         updateMargin(bottom = BASE_MARGIN_DOUBLE)
                     }
                 }
