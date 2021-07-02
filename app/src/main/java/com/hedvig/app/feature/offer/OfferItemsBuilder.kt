@@ -81,20 +81,26 @@ object OfferItemsBuilder {
         emptyList()
     }
 
-    fun createBottomOfferItems(bundle: OfferQuery.QuoteBundle) = listOfNotNull(
+    fun createBottomOfferItems(bundle: OfferQuery.QuoteBundle) = ArrayList<OfferModel>().apply {
         if (bundle.frequentlyAskedQuestions.isNotEmpty()) {
-            OfferModel.FAQ(
-                bundle.frequentlyAskedQuestions.mapNotNull {
-                    safeLet(it.headline, it.body) { headline, body ->
-                        headline to body
+            add(
+                OfferModel.FAQ(
+                    bundle.frequentlyAskedQuestions.mapNotNull {
+                        safeLet(it.headline, it.body) { headline, body ->
+                            headline to body
+                        }
                     }
-                }
+                )
             )
-        } else {
-            null
-        },
-        OfferModel.Footer(GDPR_LINK),
-    )
+        }
+        if (bundle.quotes.any { it.currentInsurer != null }) {
+            add(OfferModel.Subheading.Switcher)
+            bundle.quotes.mapNotNull { it.currentInsurer?.displayName }.forEach { currentInsurer ->
+                add(OfferModel.CurrentInsurer(currentInsurer))
+            }
+        }
+        add(OfferModel.Footer(GDPR_LINK))
+    }
 
     fun createPerilItems(data: List<OfferQuery.Quote>) = if (data.size == 1) {
         data[0]

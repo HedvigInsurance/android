@@ -34,7 +34,7 @@ object OfferScreen : KScreen<OfferScreen>() {
     }
 
     class SwitcherItem(parent: Matcher<View>) : KRecyclerItem<SwitcherItem>(parent) {
-        val title = KTextView(parent) { withId(R.id.switchTitle) }
+        val currentInsurer = KTextView(parent) { withId(R.id.currentInsurer) }
     }
 
     class Facts(parent: Matcher<View>) : KRecyclerItem<Facts>(parent) {

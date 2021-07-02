@@ -41,7 +41,6 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
-import e
 import javax.money.MonetaryAmount
 
 class OfferAdapter(
@@ -68,7 +67,7 @@ class OfferAdapter(
     override fun getItemViewType(position: Int) = when (getItem(position)) {
         is OfferModel.Header -> R.layout.offer_header
         is OfferModel.Facts -> R.layout.offer_fact_area
-        is OfferModel.Switcher -> R.layout.offer_switch
+        is OfferModel.CurrentInsurer -> R.layout.offer_switch
         is OfferModel.Footer -> R.layout.offer_footer
         is OfferModel.Subheading -> R.layout.text_headline5
         is OfferModel.Paragraph -> R.layout.text_body2
@@ -191,18 +190,12 @@ class OfferAdapter(
                 tracker: OfferTracker,
                 removeDiscount: () -> Unit,
                 marketManager: MarketManager,
-            ) {
-                if (data is OfferModel.Switcher) {
-                    val insurer = data.displayName
-                        ?: binding.switchTitle.resources.getString(R.string.OTHER_INSURER_OPTION_APP)
-                    binding.switchTitle.text = binding.switchTitle.resources.getString(
-                        R.string.OFFER_SWITCH_TITLE_APP,
-                        insurer
-                    )
-                    return
+            ) = with(binding) {
+                if (data !is OfferModel.CurrentInsurer) {
+                    return invalid(data)
                 }
 
-                e { "Invariant detected: ${data.javaClass.name} passed to ${this.javaClass.name}::bind" }
+                currentInsurer.text = data.displayName
             }
         }
 
@@ -232,6 +225,7 @@ class OfferAdapter(
             init {
                 binding.root.updateMargin(
                     start = BASE_MARGIN_DOUBLE,
+                    top = BASE_MARGIN_SEPTUPLE,
                     end = BASE_MARGIN_DOUBLE,
                 )
             }
@@ -249,10 +243,12 @@ class OfferAdapter(
 
                 when (data) {
                     OfferModel.Subheading.Coverage -> {
-                        updateMargin(
-                            top = BASE_MARGIN_SEPTUPLE
-                        )
                         setText(R.string.offer_screen_coverage_title)
+                        updateMargin(bottom = 0)
+                    }
+                    OfferModel.Subheading.Switcher -> {
+                        setText(R.string.offer_switcher_title)
+                        updateMargin(bottom = BASE_MARGIN_DOUBLE)
                     }
                 }
             }
