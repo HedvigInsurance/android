@@ -77,14 +77,9 @@ class OfferViewModelImpl(
                     idsResult
                         .data
                         .map(::toViewState)
-                        .onEach { viewState ->
-                            Timber.d("ViewState: $viewState")
-                            _viewState.value = viewState
-                        }
-                        .catch {
-                            Timber.d("Error: ${it.message}")
-                            _viewState.value = ViewState.Error.GeneralError(it.message)
-                        }
+                        .onEach { _viewState.value = it }
+                        .catch { _viewState.value = ViewState.Error.GeneralError(it.message) }
+                        .launchIn(this)
                 }
                 is GetQuotesUseCase.Result.Error -> {
                     _viewState.value = ViewState.Error.GeneralError(idsResult.message)

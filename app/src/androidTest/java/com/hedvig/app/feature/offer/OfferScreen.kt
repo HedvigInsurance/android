@@ -2,6 +2,7 @@ package com.hedvig.app.feature.offer
 
 import android.view.View
 import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
 import com.agoda.kakao.check.KCheckBox
 import com.agoda.kakao.common.views.KView
 import com.agoda.kakao.recycler.KRecyclerItem
@@ -12,7 +13,6 @@ import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
 import com.kaspersky.kaspresso.screens.KScreen
 import org.hamcrest.Matcher
-import org.hamcrest.Matchers
 
 class OfferScreen : Screen<OfferScreen>() {
 
@@ -51,9 +51,7 @@ object ChangeDateView : KScreen<ChangeDateView>() {
     override val viewClass = ChangeDateView::class.java
 
     val switches = KCheckBox {
-        Matchers.allOf(
-            ViewMatchers.withId(R.id.auto_set_date_switch),
-            ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)
-        ).matches(ViewMatchers.isChecked())
+        withId(R.id.auto_set_date_switch)
+        isDisplayed()
     }
 }
