@@ -1,9 +1,9 @@
 package com.hedvig.app.feature.offer.ui.changestartdate
 
 import android.os.Parcelable
-import java.time.LocalDate
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
+import java.time.LocalDate
 
 @Parcelize
 data class ChangeDateBottomSheetData(

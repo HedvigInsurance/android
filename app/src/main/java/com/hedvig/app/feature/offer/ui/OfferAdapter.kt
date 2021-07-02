@@ -3,7 +3,6 @@ package com.hedvig.app.feature.offer.ui
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.doOnNextLayout
-import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -24,7 +23,6 @@ import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.invalid
-import com.hedvig.app.util.extensions.isToday
 import com.hedvig.app.util.extensions.setMarkdownText
 import com.hedvig.app.util.extensions.setStrikethrough
 import com.hedvig.app.util.extensions.showAlert
@@ -32,7 +30,6 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import e
-import java.time.LocalDate
 import javax.money.MonetaryAmount
 
 class OfferAdapter(

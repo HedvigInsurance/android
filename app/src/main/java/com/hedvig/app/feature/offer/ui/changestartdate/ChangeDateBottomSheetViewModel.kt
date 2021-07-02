@@ -5,10 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.extensions.epochMillisToLocalDate
-import java.time.LocalDate
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 class ChangeDateBottomSheetViewModel(
     private val tracker: OfferTracker,

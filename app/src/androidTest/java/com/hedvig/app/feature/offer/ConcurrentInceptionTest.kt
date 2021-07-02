@@ -12,9 +12,9 @@ import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.hasNrOfChildren
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
-import java.time.LocalDate
 import org.junit.Rule
 import org.junit.Test
+import java.time.LocalDate
 
 class ConcurrentInceptionTest : TestCase() {
 

@@ -275,4 +275,3 @@ val BUNDLE_WITH_START_DATE_FROM_PREVIOUS_INSURER = OfferDataBuilder(
         )
     )
 ).build()
-

@@ -19,8 +19,8 @@ import com.agoda.kakao.picker.date.KDatePicker
 import com.agoda.kakao.swiperefresh.KSwipeRefreshLayout
 import com.agoda.kakao.text.KTextView
 import com.google.android.material.textfield.TextInputLayout
-import java.time.LocalDate
 import org.hamcrest.Description
+import java.time.LocalDate
 
 fun KTextInputLayout.hasError(@StringRes resId: Int, vararg formatArgs: Any) =
     hasError(context().getString(resId, *formatArgs))

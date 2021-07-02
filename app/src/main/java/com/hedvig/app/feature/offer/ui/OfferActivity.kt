@@ -42,7 +42,6 @@ import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
