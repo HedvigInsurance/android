@@ -10,6 +10,7 @@ import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheet
+import com.hedvig.app.util.withParentIndex
 import com.kaspersky.kaspresso.screens.KScreen
 import org.hamcrest.Matcher
 
@@ -24,6 +25,7 @@ object OfferScreen : KScreen<OfferScreen>() {
             itemType(::SwitcherItem)
             itemType(::Facts)
             itemType(::QuoteDetail)
+            itemType(::FAQ)
         }
     )
 
@@ -42,6 +44,15 @@ object OfferScreen : KScreen<OfferScreen>() {
 
     class QuoteDetail(parent: Matcher<View>) : KRecyclerItem<QuoteDetail>(parent) {
         val text = KTextView { withMatcher(parent) }
+    }
+
+    class FAQ(private val parent: Matcher<View>) : KRecyclerItem<FAQ>(parent) {
+        val title = KTextView(parent) { withText(R.string.offer_faq_title) }
+
+        fun faqRow(index: Int, function: KTextView.() -> Unit) = KTextView(parent) {
+            withParent { withId(R.id.rowContainer) }
+            withParentIndex(index)
+        }.invoke(function)
     }
 }
 

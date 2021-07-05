@@ -11,6 +11,7 @@ import com.hedvig.app.feature.offer.quotedetail.buildPerils
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 class MockOfferViewModel : OfferViewModel() {
 
@@ -25,7 +26,7 @@ class MockOfferViewModel : OfferViewModel() {
             val perilItems = OfferItemsBuilder.createPerilItems(mockData.quoteBundle.quotes)
             val documentItems = OfferItemsBuilder.createDocumentItems(mockData.quoteBundle.quotes)
             val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(mockData.quoteBundle.quotes)
-            val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems()
+            val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems(mockData.quoteBundle)
             _viewState.value =
                 ViewState.Loaded(
                     topOfferItems,

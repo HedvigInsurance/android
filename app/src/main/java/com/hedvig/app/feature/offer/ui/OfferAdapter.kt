@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.offer.ui
 
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.doOnNextLayout
@@ -12,6 +13,7 @@ import com.hedvig.app.BASE_MARGIN_SEPTUPLE
 import com.hedvig.app.BASE_MARGIN_TRIPLE
 import com.hedvig.app.R
 import com.hedvig.app.databinding.OfferFactAreaBinding
+import com.hedvig.app.databinding.OfferFaqBinding
 import com.hedvig.app.databinding.OfferFooterBinding
 import com.hedvig.app.databinding.OfferHeaderBinding
 import com.hedvig.app.databinding.OfferSwitchBinding
@@ -23,6 +25,7 @@ import com.hedvig.app.feature.offer.OfferRedeemCodeBottomSheet
 import com.hedvig.app.feature.offer.OfferSignDialog
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheet
+import com.hedvig.app.feature.offer.ui.faq.FAQBottomSheet
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.table.generateTable
 import com.hedvig.app.util.GenericDiffUtilItemCallback
@@ -57,6 +60,7 @@ class OfferAdapter(
         R.layout.text_headline5 -> ViewHolder.Subheading(parent)
         R.layout.text_body2 -> ViewHolder.Paragraph(parent)
         R.layout.text_subtitle1 -> ViewHolder.QuoteDetails(parent, openQuoteDetails)
+        R.layout.offer_faq -> ViewHolder.FAQ(parent)
         R.layout.offer_loading_header -> ViewHolder.Loading(parent)
         else -> throw Error("Invalid viewType: $viewType")
     }
@@ -69,6 +73,7 @@ class OfferAdapter(
         is OfferModel.Subheading -> R.layout.text_headline5
         is OfferModel.Paragraph -> R.layout.text_body2
         is OfferModel.QuoteDetails -> R.layout.text_subtitle1
+        is OfferModel.FAQ -> R.layout.offer_faq
         OfferModel.Loading -> R.layout.offer_loading_header
     }
 
@@ -334,6 +339,54 @@ class OfferAdapter(
                 removeDiscount: () -> Unit,
                 marketManager: MarketManager,
             ) = Unit
+        }
+
+        class FAQ(
+            parent: ViewGroup,
+        ) : ViewHolder(parent.inflate(R.layout.offer_faq)) {
+            private val binding by viewBinding(OfferFaqBinding::bind)
+
+            override fun bind(
+                data: OfferModel,
+                fragmentManager: FragmentManager,
+                tracker: OfferTracker,
+                removeDiscount: () -> Unit,
+                marketManager: MarketManager,
+            ) = with(binding) {
+                if (data !is OfferModel.FAQ) {
+                    return invalid(data)
+                }
+
+                rowContainer.removeAllViews()
+
+                val layoutInflater = LayoutInflater.from(rowContainer.context)
+
+                data.items.forEach { item ->
+                    val rowBinding = TextSubtitle1Binding.inflate(
+                        layoutInflater,
+                        rowContainer,
+                        false
+                    )
+
+                    with(rowBinding.root) {
+                        updatePaddingRelative(
+                            start = BASE_MARGIN_DOUBLE,
+                            top = BASE_MARGIN_DOUBLE,
+                            end = BASE_MARGIN_DOUBLE,
+                            bottom = BASE_MARGIN_DOUBLE,
+                        )
+                        setBackgroundResource(context.drawableAttr(android.R.attr.selectableItemBackground))
+                        text = item.headline
+                        setHapticClickListener {
+                            FAQBottomSheet
+                                .newInstance(item)
+                                .show(fragmentManager, FAQBottomSheet.TAG)
+                        }
+                    }
+
+                    rowContainer.addView(rowBinding.root)
+                }
+            }
         }
     }
 }

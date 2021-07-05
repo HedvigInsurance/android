@@ -37,6 +37,11 @@ query Offer($locale: Locale!, $ids: [ID!]!) {
     bundleCost {
       ...CostFragment
     }
+    frequentlyAskedQuestions(locale: $locale) {
+      id
+      headline
+      body
+    }
     inception {
       ... on ConcurrentInception {
         correspondingQuotes {
