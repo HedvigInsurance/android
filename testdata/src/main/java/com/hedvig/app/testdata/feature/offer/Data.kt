@@ -4,6 +4,7 @@ import com.hedvig.android.owldroid.fragment.IncentiveFragment
 import com.hedvig.android.owldroid.fragment.InsurableLimitsFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.type.InsuranceTermType
+import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.testdata.common.builders.TableFragmentBuilder
 import com.hedvig.app.testdata.feature.offer.builders.ConcurrentInceptionBuilder
@@ -190,7 +191,8 @@ val BUNDLE_WITH_CONCURRENT_INCEPTION_DATES = OfferDataBuilder(
         ),
     ),
     redeemedCampaigns = listOf(),
-    inceptions = ConcurrentInceptionBuilder().build()
+    inceptions = ConcurrentInceptionBuilder().build(),
+    signMethod = SignMethod.APPROVE_ONLY
 ).build()
 
 val BUNDLE_WITH_INDEPENDENT_INCEPTION_DATES = OfferDataBuilder(
@@ -274,5 +276,6 @@ val BUNDLE_WITH_START_DATE_FROM_PREVIOUS_INSURER = OfferDataBuilder(
             displayName = "Terms and conditions",
             url = "invalid url"
         )
-    )
+    ),
+    signMethod = SignMethod.SIMPLE_SIGN
 ).build()

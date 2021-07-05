@@ -43,7 +43,8 @@ object OfferItemsBuilder {
                 .monetaryAmountFragment
                 .toMonetaryAmount(),
             incentiveDisplayValue = null,
-            changeDateBottomSheetData = data.quoteBundle.inception.toChangeDateBottomSheetData()
+            changeDateBottomSheetData = data.quoteBundle.inception.toChangeDateBottomSheetData(),
+            signMethod = data.signMethodForQuotes
         ),
         OfferModel.Facts(data.quoteBundle.quotes[0].detailsTable.fragments.tableFragment.intoTable())
     )
