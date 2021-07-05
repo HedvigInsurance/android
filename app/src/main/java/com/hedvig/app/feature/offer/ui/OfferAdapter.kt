@@ -2,10 +2,12 @@ package com.hedvig.app.feature.offer.ui
 
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.view.doOnNextLayout
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.R
 import com.hedvig.app.databinding.OfferFactAreaBinding
 import com.hedvig.app.databinding.OfferFooterBinding
@@ -36,7 +38,8 @@ class OfferAdapter(
     private val fragmentManager: FragmentManager,
     private val tracker: OfferTracker,
     private val marketManager: MarketManager,
-    private val removeDiscount: () -> Unit,
+    private val onRemoveDiscount: () -> Unit,
+    private val onSign: (SignMethod) -> Unit,
 ) : ListAdapter<OfferModel, OfferAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
@@ -57,7 +60,7 @@ class OfferAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position), fragmentManager, tracker, removeDiscount, marketManager)
+        holder.bind(getItem(position), fragmentManager, tracker, onRemoveDiscount, onSign, marketManager)
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -66,6 +69,7 @@ class OfferAdapter(
             fragmentManager: FragmentManager,
             tracker: OfferTracker,
             removeDiscount: () -> Unit,
+            onSign: (SignMethod) -> Unit,
             marketManager: MarketManager,
         )
 
@@ -79,6 +83,7 @@ class OfferAdapter(
                 fragmentManager: FragmentManager,
                 tracker: OfferTracker,
                 removeDiscount: () -> Unit,
+                onSign: (SignMethod) -> Unit,
                 marketManager: MarketManager,
             ) {
                 if (data !is OfferModel.Header) {
@@ -136,12 +141,9 @@ class OfferAdapter(
                         }
                     }
 
+                    sign.bindWithSignMethod(data.signMethod)
                     sign.setHapticClickListener {
-                        tracker.floatingSign()
-                        OfferSignDialog.newInstance().show(
-                            fragmentManager,
-                            OfferSignDialog.TAG
-                        )
+                        onSign(data.signMethod)
                     }
                 }
             }
@@ -159,6 +161,7 @@ class OfferAdapter(
                 fragmentManager: FragmentManager,
                 tracker: OfferTracker,
                 removeDiscount: () -> Unit,
+                onSign: (SignMethod) -> Unit,
                 marketManager: MarketManager,
             ) {
                 if (data !is OfferModel.Facts) {
@@ -178,6 +181,7 @@ class OfferAdapter(
                 fragmentManager: FragmentManager,
                 tracker: OfferTracker,
                 removeDiscount: () -> Unit,
+                onSign: (SignMethod) -> Unit,
                 marketManager: MarketManager,
             ) {
                 if (data is OfferModel.Switcher) {
@@ -201,6 +205,7 @@ class OfferAdapter(
                 fragmentManager: FragmentManager,
                 tracker: OfferTracker,
                 removeDiscount: () -> Unit,
+                onSign: (SignMethod) -> Unit,
                 marketManager: MarketManager,
             ) {
                 if (data !is OfferModel.Footer) {
@@ -220,6 +225,7 @@ class OfferAdapter(
                 fragmentManager: FragmentManager,
                 tracker: OfferTracker,
                 removeDiscount: () -> Unit,
+                onSign: (SignMethod) -> Unit,
                 marketManager: MarketManager
             ) {
             }
