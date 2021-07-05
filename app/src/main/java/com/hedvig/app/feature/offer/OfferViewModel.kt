@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.apollographql.apollo.api.Response
 import com.hedvig.android.owldroid.fragment.SignStatusFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
@@ -18,28 +17,24 @@ import com.hedvig.app.feature.offer.ui.OfferModel
 import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.perils.PerilItem
-import com.hedvig.app.util.Either
 import e
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import java.time.LocalDate
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 abstract class OfferViewModel : ViewModel() {
     protected val _viewState = MutableStateFlow<ViewState>(ViewState.Loading(OfferItemsBuilder.createLoadingItem()))
     val viewState: StateFlow<ViewState> = _viewState
 
     sealed class Event {
-        sealed class Error : Event() {
-            data class GeneralError(val message: String? = null) : Error()
-            object EmptyResponse : Error()
-        }
+        data class Error(val message: String? = null) : Event()
 
         object HasContracts : Event()
         data class OpenQuoteDetails(
@@ -110,39 +105,28 @@ class OfferViewModelImpl(
                     idsResult
                         .data
                         .onEach { response ->
-                            when (val result = toDataOrError(response)) {
-                                is Either.Left -> {
-                                    _viewState.value = toViewState(result.value)
+                            when (response) {
+                                is OfferRepository.OfferResult.Error -> {
+                                    _events.tryEmit(Event.Error(response.message))
                                 }
-                                is Either.Right -> {
-                                    _events.tryEmit(result.value)
+                                OfferRepository.OfferResult.HasContracts -> {
+                                    _events.tryEmit(Event.HasContracts)
+                                }
+                                is OfferRepository.OfferResult.Success -> {
+                                    _viewState.value = toViewState(response.data)
                                 }
                             }
                         }
                         .catch {
-                            _events.tryEmit(Event.Error.GeneralError(it.message))
+                            _events.tryEmit(Event.Error(it.message))
                         }
                         .launchIn(this)
                 }
                 GetQuotesUseCase.Result.Error -> {
-                    _events.tryEmit(Event.Error.GeneralError(""))
+                    _events.tryEmit(Event.Error())
                 }
             }
         }
-    }
-
-    private fun toDataOrError(response: Response<OfferQuery.Data>): Either<OfferQuery.Data, Event> {
-        response.errors?.let {
-            return Either.Right(Event.Error.GeneralError(it.firstOrNull()?.message))
-        }
-
-        val data = response.data ?: return Either.Right(Event.Error.EmptyResponse)
-
-        if (data.contracts.isNotEmpty()) {
-            return Either.Right(Event.HasContracts)
-        }
-
-        return Either.Left(data)
     }
 
     private fun toViewState(data: OfferQuery.Data): ViewState {
@@ -257,7 +241,7 @@ class OfferViewModelImpl(
         viewModelScope.launch {
             when (val result = getQuoteUseCase(quoteIds, id)) {
                 GetQuoteUseCase.Result.Error -> {
-                    _events.tryEmit(Event.Error.GeneralError())
+                    _events.tryEmit(Event.Error())
                 }
                 is GetQuoteUseCase.Result.Success -> {
                     _events.tryEmit(

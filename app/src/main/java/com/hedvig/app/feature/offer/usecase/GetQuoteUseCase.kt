@@ -20,13 +20,11 @@ class GetQuoteUseCase(
             .offer(bundleIds)
             .first()
 
-        if (offer.hasErrors()) {
+        if (offer !is OfferRepository.OfferResult.Success) {
             return Result.Error
         }
 
-        val data = offer.data ?: return Result.Error
-
-        val quote = data.quoteBundle.quotes.firstOrNull { it.id == quoteId } ?: return Result.Error
+        val quote = offer.data.quoteBundle.quotes.firstOrNull { it.id == quoteId } ?: return Result.Error
 
         return Result.Success(quote)
     }
