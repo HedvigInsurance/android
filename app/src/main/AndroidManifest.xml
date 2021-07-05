@@ -292,6 +292,8 @@
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize" />
 
+        <activity android:name=".feature.offer.quotedetail.QuoteDetailActivity" />
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_hedvig_h" />

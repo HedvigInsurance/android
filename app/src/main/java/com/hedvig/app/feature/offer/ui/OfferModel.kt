@@ -33,6 +33,18 @@ sealed class OfferModel {
         val url: String,
     ) : OfferModel()
 
+    sealed class Subheading : OfferModel() {
+        object Coverage : Subheading()
+    }
+
+    data class QuoteDetails(
+        val name: String,
+        val id: String,
+    ) : OfferModel()
+
+    sealed class Paragraph : OfferModel() {
+        object Coverage: Paragraph()
+    }
     object Loading : OfferModel()
 }
 

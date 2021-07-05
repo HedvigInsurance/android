@@ -2,6 +2,7 @@ package com.hedvig.app.feature.offer
 
 import com.apollographql.apollo.ApolloCall
 import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.api.cache.http.HttpCachePolicy
 import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.coroutines.toFlow
@@ -15,6 +16,7 @@ import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.android.owldroid.graphql.SignStatusQuery
 import com.hedvig.android.owldroid.graphql.SignStatusSubscription
 import com.hedvig.app.util.LocaleManager
+import kotlinx.coroutines.flow.map
 
 class OfferRepository(
     private val apolloClient: ApolloClient,
@@ -26,6 +28,30 @@ class OfferRepository(
         .query(offerQuery(ids))
         .watcher()
         .toFlow()
+        .map(::toDataOrError)
+
+    sealed class OfferResult {
+        object HasContracts : OfferResult()
+
+        data class Error(val message: String? = null) : OfferResult()
+        data class Success(
+            val data: OfferQuery.Data
+        ) : OfferResult()
+    }
+
+    private fun toDataOrError(response: Response<OfferQuery.Data>): OfferResult {
+        response.errors?.let {
+            return OfferResult.Error(it.firstOrNull()?.message)
+        }
+
+        val data = response.data ?: return OfferResult.Error()
+
+        if (data.contracts.isNotEmpty()) {
+            return OfferResult.HasContracts
+        }
+
+        return OfferResult.Success(data)
+    }
 
     fun writeDiscountToCache(ids: List<String>, data: RedeemReferralCodeMutation.Data) {
         val cachedData = apolloClient

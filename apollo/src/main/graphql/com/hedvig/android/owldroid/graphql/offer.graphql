@@ -5,7 +5,7 @@ query Offer($locale: Locale!, $ids: [ID!]!) {
 
   quoteBundle(input: { ids: $ids }) {
     quotes {
-      displayName
+      displayName(locale: $locale)
       startDate
       id
       typeOfContract

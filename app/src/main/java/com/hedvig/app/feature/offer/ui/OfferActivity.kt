@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.transition.TransitionManager
 import android.view.MenuItem
 import android.widget.Toast
-import androidx.core.view.doOnNextLayout
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.lifecycle.flowWithLifecycle
@@ -29,6 +28,7 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.offer.OfferSignDialog
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
+import com.hedvig.app.feature.offer.quotedetail.QuoteDetailActivity
 import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
@@ -42,8 +42,8 @@ import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -99,7 +99,8 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 fragmentManager = supportFragmentManager,
                 tracker = tracker,
                 marketManager = marketManager,
-                removeDiscount = model::removeDiscount
+                removeDiscount = model::removeDiscount,
+                openQuoteDetails = model::onOpenQuoteDetails,
             )
             val perilsAdapter = PerilsAdapter(
                 fragmentManager = supportFragmentManager,
@@ -115,7 +116,8 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 fragmentManager = supportFragmentManager,
                 tracker = tracker,
                 marketManager = marketManager,
-                removeDiscount = model::removeDiscount
+                removeDiscount = model::removeDiscount,
+                openQuoteDetails = model::onOpenQuoteDetails,
             )
 
             val concatAdapter = ConcatAdapter(
@@ -133,32 +135,42 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     ConcatSpanSizeLookup(gridLayoutManager.spanCount) { concatAdapter.adapters }
             }
 
-            lifecycleScope.launch {
-                model.viewState
-                    .flowWithLifecycle(lifecycle)
-                    .collect { viewState ->
-                        when (viewState) {
-                            OfferViewModel.ViewState.HasContracts -> startLoggedInActivity()
-                            is OfferViewModel.ViewState.OfferItems -> {
-                                topOfferAdapter.submitList(viewState.topOfferItems)
-                                // Workaround - recyclerview will scroll to bottom if updating all items simultaneously.
-                                offerScroll.doOnNextLayout {
-                                    perilsAdapter.submitList(viewState.perils)
-                                    insurableLimitsAdapter.submitList(viewState.insurableLimitsItems)
-                                    documentAdapter.submitList(viewState.documents)
-                                    bottomOfferAdapter.submitList(viewState.bottomOfferItems)
-                                }
-                            }
-                            is OfferViewModel.ViewState.Error.GeneralError -> showErrorDialog(
-                                viewState.message ?: getString(R.string.home_tab_error_body)
-                            )
-                            is OfferViewModel.ViewState.Error -> showErrorDialog(
-                                getString(R.string.home_tab_error_body)
-                            )
-                            is OfferViewModel.ViewState.Loading -> topOfferAdapter.submitList(viewState.loadingItem)
+            model
+                .viewState
+                .flowWithLifecycle(lifecycle)
+                .onEach { viewState ->
+                    when (viewState) {
+                        is OfferViewModel.ViewState.Loaded -> {
+                            topOfferAdapter.submitList(viewState.topOfferItems)
+                            perilsAdapter.submitList(viewState.perils)
+                            insurableLimitsAdapter.submitList(viewState.insurableLimitsItems)
+                            documentAdapter.submitList(viewState.documents)
+                            bottomOfferAdapter.submitList(viewState.bottomOfferItems)
+                        }
+                        is OfferViewModel.ViewState.Loading -> {
+                            topOfferAdapter.submitList(viewState.loadingItem)
                         }
                     }
-            }
+                }
+                .launchIn(lifecycleScope)
+
+            model
+                .events
+                .flowWithLifecycle(lifecycle)
+                .onEach { event ->
+                    when (event) {
+                        is OfferViewModel.Event.Error -> showErrorDialog(
+                            event.message ?: getString(R.string.home_tab_error_body)
+                        )
+                        OfferViewModel.Event.HasContracts -> startLoggedInActivity()
+                        is OfferViewModel.Event.OpenQuoteDetails -> {
+                            startActivity(
+                                QuoteDetailActivity.newInstance(this@OfferActivity, event.quoteDetailItems)
+                            )
+                        }
+                    }
+                }
+                .launchIn(lifecycleScope)
 
             signButton.setHapticClickListener {
                 tracker.floatingSign()
