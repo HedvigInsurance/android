@@ -3,6 +3,7 @@ package com.hedvig.app.feature.offer.ui
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.view.doOnNextLayout
 import androidx.core.view.updatePaddingRelative
 import androidx.fragment.app.FragmentManager
@@ -188,6 +189,7 @@ class OfferAdapter(
 
         class Switch(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_switch)) {
             private val binding by viewBinding(OfferSwitchBinding::bind)
+
             override fun bind(data: OfferModel) {
                 if (data is OfferModel.Switcher) {
                     val insurer = data.displayName
@@ -205,6 +207,7 @@ class OfferAdapter(
 
         class Footer(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_footer)) {
             private val binding by viewBinding(OfferFooterBinding::bind)
+
             override fun bind(data: OfferModel) {
                 if (data !is OfferModel.Footer) {
                     return invalid(data)
