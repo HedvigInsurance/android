@@ -14,10 +14,10 @@ import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.feature.table.intoTable
 import com.hedvig.app.util.apollo.toMonetaryAmount
 
-// TODO Add extension to BundledQuote and fetch this from BE
-private const val GDPR_LINK = "https://www.hedvig.com/se/personuppgifter"
-
 object OfferItemsBuilder {
+
+    // TODO Add extension to BundledQuote and fetch this from BE
+    const val GDPR_LINK = "https://www.hedvig.com/se/personuppgifter"
 
     fun createTopOfferItems(data: OfferQuery.Data) = listOf(
         OfferModel.Header(

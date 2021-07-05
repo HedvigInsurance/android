@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?android:colorBackground"
@@ -31,6 +32,8 @@
         android:clickable="true"
         android:focusable="true"
         android:linksClickable="true"
-        android:text="@string/OFFER_FOOTER_GDPR_INFO" />
+        android:textAlignment="center"
+        android:textAppearance="?textAppearanceCaption"
+        tools:text="@string/OFFER_FOOTER_GDPR_INFO" />
 
 </LinearLayout>
