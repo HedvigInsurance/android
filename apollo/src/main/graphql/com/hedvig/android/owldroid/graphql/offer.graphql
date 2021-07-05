@@ -37,6 +37,34 @@ query Offer($locale: Locale!, $ids: [ID!]!) {
     bundleCost {
       ...CostFragment
     }
+    inception {
+      ... on ConcurrentInception {
+        correspondingQuotes {
+          ... on CompleteQuote {
+            id
+            displayName
+          }
+        }
+        startDate
+        currentInsurer {
+          ...CurrentInsurerFragment
+        }
+      }
+      ... on IndependentInceptions {
+        inceptions {
+          correspondingQuote {
+            ... on CompleteQuote {
+              id
+              displayName
+            }
+          }
+          startDate
+          currentInsurer {
+            ...CurrentInsurerFragment
+          }
+        }
+      }
+    }
   }
 
   contracts {
@@ -44,4 +72,10 @@ query Offer($locale: Locale!, $ids: [ID!]!) {
       __typename
     }
   }
+}
+
+fragment CurrentInsurerFragment on CurrentInsurer {
+  id
+  displayName
+  switchable
 }

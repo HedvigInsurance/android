@@ -27,7 +27,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 
 abstract class OfferViewModel : ViewModel() {
     protected val _viewState = MutableStateFlow<ViewState>(ViewState.Loading(OfferItemsBuilder.createLoadingItem()))
@@ -57,8 +56,6 @@ abstract class OfferViewModel : ViewModel() {
     abstract fun startSign()
     abstract fun clearPreviousErrors()
     abstract fun manuallyRecheckSignStatus()
-    abstract fun chooseStartDate(id: String, date: LocalDate)
-    abstract fun removeStartDate(id: String)
 
     data class QuoteDetailItems(
         val displayName: String,
@@ -122,8 +119,8 @@ class OfferViewModelImpl(
                         }
                         .launchIn(this)
                 }
-                GetQuotesUseCase.Result.Error -> {
-                    _events.tryEmit(Event.Error())
+                is GetQuotesUseCase.Result.Error -> {
+                    _events.tryEmit(Event.Error(idsResult.message))
                 }
             }
         }
@@ -202,36 +199,6 @@ class OfferViewModelImpl(
             }
             response.getOrNull()?.data?.signStatus?.fragments?.signStatusFragment
                 ?.let { signStatus.postValue(it) }
-        }
-    }
-
-    override fun chooseStartDate(id: String, date: LocalDate) {
-        viewModelScope.launch {
-            val response = runCatching {
-                offerRepository.chooseStartDate(id, date)
-            }
-            if (response.isFailure || response.getOrNull()?.hasErrors() == true) {
-                response.exceptionOrNull()?.let { e(it) }
-                return@launch
-            }
-            response.getOrNull()?.data?.let {
-                offerRepository.writeStartDateToCache(quoteIds, it)
-            } ?: run {
-                e { "Missing data when choosing start date" }
-            }
-        }
-    }
-
-    override fun removeStartDate(id: String) {
-        viewModelScope.launch {
-            val response = runCatching {
-                offerRepository.removeStartDate(id)
-            }
-            if (response.isFailure || response.getOrNull()?.hasErrors() == true) {
-                response.exceptionOrNull()?.let { e(it) }
-                return@launch
-            }
-            response.getOrNull()?.data?.let { offerRepository.removeStartDateFromCache(quoteIds, it) }
         }
     }
 

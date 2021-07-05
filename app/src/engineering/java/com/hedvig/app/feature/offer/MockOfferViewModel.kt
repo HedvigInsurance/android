@@ -9,7 +9,6 @@ import com.hedvig.app.feature.offer.quotedetail.buildDocuments
 import com.hedvig.app.feature.offer.quotedetail.buildInsurableLimits
 import com.hedvig.app.feature.offer.quotedetail.buildPerils
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
-import java.time.LocalDate
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -44,43 +43,6 @@ class MockOfferViewModel : OfferViewModel() {
     override fun startSign() = Unit
     override fun clearPreviousErrors() = Unit
     override fun manuallyRecheckSignStatus() = Unit
-    override fun chooseStartDate(id: String, date: LocalDate) {
-        _viewState.value = ViewState.Loaded(
-            OfferItemsBuilder.createTopOfferItems(
-                mockData.copy(
-                    quoteBundle = mockData.quoteBundle.copy(
-                        quotes = mockData.quoteBundle.quotes.map {
-                            it.copy(
-                                startDate = date
-                            )
-                        }
-                    )
-                )
-            ),
-            OfferItemsBuilder.createPerilItems(mockData.quoteBundle.quotes),
-            OfferItemsBuilder.createDocumentItems(mockData.quoteBundle.quotes),
-            OfferItemsBuilder.createInsurableLimits(mockData.quoteBundle.quotes),
-            OfferItemsBuilder.createBottomOfferItems(),
-        )
-    }
-
-    override fun removeStartDate(id: String) {
-        _viewState.value = ViewState.Loaded(
-            OfferItemsBuilder.createTopOfferItems(
-                mockData.copy(
-                    quoteBundle = mockData.quoteBundle.copy(
-                        quotes = mockData.quoteBundle.quotes.map {
-                            it.copy(startDate = null)
-                        }
-                    )
-                )
-            ),
-            OfferItemsBuilder.createPerilItems(mockData.quoteBundle.quotes),
-            OfferItemsBuilder.createDocumentItems(mockData.quoteBundle.quotes),
-            OfferItemsBuilder.createInsurableLimits(mockData.quoteBundle.quotes),
-            OfferItemsBuilder.createBottomOfferItems(),
-        )
-    }
 
     override fun onOpenQuoteDetails(
         id: String,
