@@ -12,6 +12,9 @@ import com.agoda.kakao.screen.Screen
 import com.agoda.kakao.text.KButton
 import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
+import com.hedvig.app.feature.documents.DocumentRecyclerItem
+import com.hedvig.app.feature.insurablelimits.InsurableLimitRecyclerItem
+import com.hedvig.app.feature.perils.PerilRecyclerItem
 import org.hamcrest.Matcher
 
 class ContractDetailScreen : Screen<ContractDetailScreen>() {
@@ -31,20 +34,13 @@ class ContractDetailScreen : Screen<ContractDetailScreen>() {
             parent, { withId(R.id.recycler) },
             {
                 itemType(::Header)
-                itemType(::Peril)
-                itemType(::Row)
+                itemType(::PerilRecyclerItem)
+                itemType(::InsurableLimitRecyclerItem)
             }
         )
 
         class Header(parent: Matcher<View>) : KRecyclerItem<Header>(parent) {
             val text = KTextView { withMatcher(parent) }
-        }
-
-        class Peril(parent: Matcher<View>) : KRecyclerItem<Peril>(parent)
-
-        class Row(parent: Matcher<View>) : KRecyclerItem<Row>(parent) {
-            val label = KTextView(parent) { withId(R.id.label) }
-            val content = KTextView(parent) { withId(R.id.content) }
         }
 
         class PerilBottomSheetScreen : Screen<PerilBottomSheetScreen>() {
@@ -99,17 +95,13 @@ class ContractDetailScreen : Screen<ContractDetailScreen>() {
         val recycler = KRecyclerView(
             parent, { withId(R.id.recycler) },
             {
-                itemType(::Button)
+                itemType(::DocumentRecyclerItem)
             }
         )
 
         val agreementUrl = KIntent {
             hasAction(Intent.ACTION_VIEW)
             hasData("https://www.example.com")
-        }
-
-        class Button(parent: Matcher<View>) : KRecyclerItem<Button>(parent) {
-            val button = KButton { withMatcher(parent) }
         }
     }
 }

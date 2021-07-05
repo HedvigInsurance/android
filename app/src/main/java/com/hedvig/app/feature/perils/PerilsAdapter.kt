@@ -20,6 +20,7 @@ import com.hedvig.app.databinding.ContractDetailCoverageHeaderBinding
 import com.hedvig.app.databinding.PerilDetailBinding
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
+import com.hedvig.app.util.extensions.invalid
 import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
@@ -54,10 +55,6 @@ class PerilsAdapter(
             requestBuilder: RequestBuilder<PictureDrawable>,
             fragmentManager: FragmentManager,
         ): Any?
-
-        fun invalid(data: PerilItem) {
-            e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }
-        }
 
         class Header(parent: ViewGroup) :
             ViewHolder(parent.inflate(R.layout.contract_detail_coverage_header)) {

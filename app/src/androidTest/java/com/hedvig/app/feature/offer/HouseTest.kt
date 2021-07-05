@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.offer
 
-import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_HOUSE
@@ -30,7 +29,7 @@ class HouseTest : TestCase() {
     fun shouldNotCrashWhenShowingHouseOffer() = run {
         activityRule.launch(OfferActivity.newInstance(context(), listOf("123")))
 
-        onScreen<OfferScreen> {
+        OfferScreen {
             scroll {
                 flakySafely {
                     childAt<OfferScreen.Facts>(1) {

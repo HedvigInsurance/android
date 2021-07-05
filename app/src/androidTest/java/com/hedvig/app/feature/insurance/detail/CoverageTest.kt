@@ -3,6 +3,7 @@ package com.hedvig.app.feature.insurance.detail
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
+import com.hedvig.app.feature.perils.PerilRecyclerItem
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
@@ -48,7 +49,7 @@ class CoverageTest : TestCase() {
                                     .contracts[0]
                                     .let { it.perils.size + it.insurableLimits.size }
                         )
-                        childAt<ContractDetailScreen.CoverageTab.Peril>(3) {
+                        childAt<PerilRecyclerItem>(3) {
                             click()
                         }
                     }

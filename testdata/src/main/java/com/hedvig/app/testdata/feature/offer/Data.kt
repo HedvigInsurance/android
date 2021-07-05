@@ -9,67 +9,76 @@ import com.hedvig.app.testdata.common.builders.TableFragmentBuilder
 import com.hedvig.app.testdata.feature.offer.builders.ConcurrentInceptionBuilder
 import com.hedvig.app.testdata.feature.offer.builders.IndependentInceptionBuilder
 import com.hedvig.app.testdata.feature.offer.builders.OfferDataBuilder
+import com.hedvig.app.testdata.feature.offer.builders.QuoteBuilder
 import java.time.LocalDate
 
 val OFFER_DATA_SWEDISH_APARTMENT = OfferDataBuilder().build()
 
 val OFFER_DATA_SWEDISH_HOUSE = OfferDataBuilder(
-    typeOfContract = TypeOfContract.SE_HOUSE,
-    detailsTable = TableFragmentBuilder(
-        title = "Home Insurance",
-        sections = listOf(
-            "Details" to listOf(
-                Triple("Address", null, "Askersgatan 129 B"),
-                Triple("Postal code", null, "113 89"),
-                Triple("Insured people", null, "You + 2"),
-                Triple("Living space", null, "180 m2"),
-                Triple("Ancillary area", null, "48 m2"),
-                Triple("Year built", null, "1997"),
-                Triple("Number of baths", null, "2"),
-                Triple("Partly subleted", null, "No"),
+    quotes = listOf(
+        QuoteBuilder(
+            typeOfContract = TypeOfContract.SE_HOUSE,
+            detailsTable = TableFragmentBuilder(
+                title = "Home Insurance",
+                sections = listOf(
+                    "Details" to listOf(
+                        Triple("Address", null, "Askersgatan 129 B"),
+                        Triple("Postal code", null, "113 89"),
+                        Triple("Insured people", null, "You + 2"),
+                        Triple("Living space", null, "180 m2"),
+                        Triple("Ancillary area", null, "48 m2"),
+                        Triple("Year built", null, "1997"),
+                        Triple("Number of baths", null, "2"),
+                        Triple("Partly subleted", null, "No"),
+                    ),
+                    "Extra buildings" to listOf(
+                        Triple("Garage", null, "16 m2"),
+                        Triple("Attefalls house", "Has water connected", "23 m2"),
+                    )
+                )
+            ).build(),
+            insurableLimits = listOf(
+                OfferQuery.InsurableLimit(
+                    fragments = OfferQuery.InsurableLimit.Fragments(
+                        InsurableLimitsFragment(
+                            label = "Test insurable limit",
+                            limit = "Limit",
+                            description = "Description"
+                        )
+                    )
+                ),
+                OfferQuery.InsurableLimit(
+                    fragments = OfferQuery.InsurableLimit.Fragments(
+                        InsurableLimitsFragment(
+                            label = "Test insurable limit 2",
+                            limit = "Limit 2",
+                            description = "Description 2"
+                        )
+                    )
+                ),
             ),
-            "Extra buildings" to listOf(
-                Triple("Garage", null, "16 m2"),
-                Triple("Attefalls house", "Has water connected", "23 m2"),
-            )
-        )
-    ).build(),
-    insurableLimits = listOf(
-        OfferQuery.InsurableLimit(
-            fragments = OfferQuery.InsurableLimit.Fragments(
-                InsurableLimitsFragment(
-                    label = "Test insurable limit",
-                    limit = "Limit",
-                    description = "Description"
+            insuranceTerms = listOf(
+                OfferQuery.InsuranceTerm(
+                    type = InsuranceTermType.GENERAL_TERMS,
+                    displayName = "General term",
+                    url = "invalid url"
+                ),
+                OfferQuery.InsuranceTerm(
+                    type = InsuranceTermType.TERMS_AND_CONDITIONS,
+                    displayName = "Terms and conditions",
+                    url = "invalid url"
                 )
             )
-        ),
-        OfferQuery.InsurableLimit(
-            fragments = OfferQuery.InsurableLimit.Fragments(
-                InsurableLimitsFragment(
-                    label = "Test insurable limit 2",
-                    limit = "Limit 2",
-                    description = "Description 2"
-                )
-            )
-        ),
-    ),
-    insuranceTerms = listOf(
-        OfferQuery.InsuranceTerm(
-            type = InsuranceTermType.GENERAL_TERMS,
-            displayName = "General term",
-            url = "invalid url"
-        ),
-        OfferQuery.InsuranceTerm(
-            type = InsuranceTermType.TERMS_AND_CONDITIONS,
-            displayName = "Terms and conditions",
-            url = "invalid url"
-        )
+        ).build()
     )
 ).build()
 
 val OFFER_DATA_SWEDISH_HOUSE_WITH_DISCOUNT = OfferDataBuilder(
-    typeOfContract = TypeOfContract.SE_HOUSE,
+    quotes = listOf(
+        QuoteBuilder(
+            typeOfContract = TypeOfContract.SE_HOUSE,
+        ).build()
+    ),
     redeemedCampaigns = listOf(
         OfferQuery.RedeemedCampaign(
             fragments = OfferQuery.RedeemedCampaign.Fragments(
@@ -90,111 +99,146 @@ val OFFER_DATA_SWEDISH_HOUSE_WITH_DISCOUNT = OfferDataBuilder(
         )
     )
 ).build()
+
 val CONCURRENT_INCEPTION_START_DATE: LocalDate = LocalDate.of(2021, 6, 22)
+
 val BUNDLE_WITH_CONCURRENT_INCEPTION_DATES_SPECIFIC_DATE = OfferDataBuilder(
-    typeOfContract = TypeOfContract.SE_HOUSE,
-    detailsTable = TableFragmentBuilder(
-        title = "Home Insurance",
-        sections = listOf(
-            "Details" to listOf(
-                Triple("Address", null, "Askersgatan 129 B"),
-                Triple("Postal code", null, "113 89"),
-                Triple("Insured people", null, "You + 2"),
-                Triple("Living space", null, "180 m2"),
-                Triple("Ancillary area", null, "48 m2"),
-                Triple("Year built", null, "1997"),
-                Triple("Number of baths", null, "2"),
-                Triple("Partly subleted", null, "No"),
+    quotes = listOf(
+        QuoteBuilder(
+            typeOfContract = TypeOfContract.SE_HOUSE,
+            detailsTable = TableFragmentBuilder(
+                title = "Home Insurance",
+                sections = listOf(
+                    "Details" to listOf(
+                        Triple("Address", null, "Askersgatan 129 B"),
+                        Triple("Postal code", null, "113 89"),
+                        Triple("Insured people", null, "You + 2"),
+                        Triple("Living space", null, "180 m2"),
+                        Triple("Ancillary area", null, "48 m2"),
+                        Triple("Year built", null, "1997"),
+                        Triple("Number of baths", null, "2"),
+                        Triple("Partly subleted", null, "No"),
+                    ),
+                    "Extra buildings" to listOf(
+                        Triple("Garage", null, "16 m2"),
+                        Triple("Attefalls house", "Has water connected", "23 m2"),
+                    )
+                )
+            ).build(),
+            insurableLimits = listOf(
+                OfferQuery.InsurableLimit(
+                    fragments = OfferQuery.InsurableLimit.Fragments(
+                        InsurableLimitsFragment(
+                            label = "Test insurable limit",
+                            limit = "Limit",
+                            description = "Description"
+                        )
+                    )
+                ),
+                OfferQuery.InsurableLimit(
+                    fragments = OfferQuery.InsurableLimit.Fragments(
+                        InsurableLimitsFragment(
+                            label = "Test insurable limit",
+                            limit = "Limit",
+                            description = "Description"
+                        )
+                    )
+                ),
+                OfferQuery.InsurableLimit(
+                    fragments = OfferQuery.InsurableLimit.Fragments(
+                        InsurableLimitsFragment(
+                            label = "Test insurable limit 2",
+                            limit = "Limit 2",
+                            description = "Description 2"
+                        )
+                    )
+                ),
             ),
-            "Extra buildings" to listOf(
-                Triple("Garage", null, "16 m2"),
-                Triple("Attefalls house", "Has water connected", "23 m2"),
-            )
-        )
-    ).build(),
-    insurableLimits = listOf(
-        OfferQuery.InsurableLimit(
-            fragments = OfferQuery.InsurableLimit.Fragments(
-                InsurableLimitsFragment(
-                    label = "Test insurable limit",
-                    limit = "Limit",
-                    description = "Description"
+            insuranceTerms = listOf(
+                OfferQuery.InsuranceTerm(
+                    type = InsuranceTermType.GENERAL_TERMS,
+                    displayName = "General term",
+                    url = "invalid url"
+                ),
+                OfferQuery.InsuranceTerm(
+                    type = InsuranceTermType.TERMS_AND_CONDITIONS,
+                    displayName = "Terms and conditions",
+                    url = "invalid url"
                 )
             )
-        ),
-        OfferQuery.InsurableLimit(
-            fragments = OfferQuery.InsurableLimit.Fragments(
-                InsurableLimitsFragment(
-                    label = "Test insurable limit 2",
-                    limit = "Limit 2",
-                    description = "Description 2"
-                )
-            )
-        ),
+        ).build()
     ),
     redeemedCampaigns = listOf(),
     inceptions = ConcurrentInceptionBuilder(startDate = CONCURRENT_INCEPTION_START_DATE).build(),
-    insuranceTerms = listOf(
-        OfferQuery.InsuranceTerm(
-            type = InsuranceTermType.GENERAL_TERMS,
-            displayName = "General term",
-            url = "invalid url"
-        ),
-        OfferQuery.InsuranceTerm(
-            type = InsuranceTermType.TERMS_AND_CONDITIONS,
-            displayName = "Terms and conditions",
-            url = "invalid url"
-        )
-    )
 ).build()
 
 val BUNDLE_WITH_CONCURRENT_INCEPTION_DATES = OfferDataBuilder(
-    typeOfContract = TypeOfContract.SE_HOUSE,
-    detailsTable = TableFragmentBuilder(
-        title = "Home Insurance",
-        sections = listOf(
-            "Details" to listOf(
-                Triple("Address", null, "Askersgatan 129 B"),
-                Triple("Postal code", null, "113 89"),
-                Triple("Insured people", null, "You + 2"),
-                Triple("Living space", null, "180 m2"),
-                Triple("Ancillary area", null, "48 m2"),
-                Triple("Year built", null, "1997"),
-                Triple("Number of baths", null, "2"),
-                Triple("Partly subleted", null, "No"),
+    quotes = listOf(
+        QuoteBuilder(
+            typeOfContract = TypeOfContract.SE_HOUSE,
+            detailsTable = TableFragmentBuilder(
+                title = "Home Insurance",
+                sections = listOf(
+                    "Details" to listOf(
+                        Triple("Address", null, "Askersgatan 129 B"),
+                        Triple("Postal code", null, "113 89"),
+                        Triple("Insured people", null, "You + 2"),
+                        Triple("Living space", null, "180 m2"),
+                        Triple("Ancillary area", null, "48 m2"),
+                        Triple("Year built", null, "1997"),
+                        Triple("Number of baths", null, "2"),
+                        Triple("Partly subleted", null, "No"),
+                    ),
+                    "Extra buildings" to listOf(
+                        Triple("Garage", null, "16 m2"),
+                        Triple("Attefalls house", "Has water connected", "23 m2"),
+                    )
+                )
+            ).build(),
+            insurableLimits = listOf(
+                OfferQuery.InsurableLimit(
+                    fragments = OfferQuery.InsurableLimit.Fragments(
+                        InsurableLimitsFragment(
+                            label = "Test insurable limit",
+                            limit = "Limit",
+                            description = "Description"
+                        )
+                    )
+                ),
+                OfferQuery.InsurableLimit(
+                    fragments = OfferQuery.InsurableLimit.Fragments(
+                        InsurableLimitsFragment(
+                            label = "Test insurable limit 2",
+                            limit = "Limit 2",
+                            description = "Description 2"
+                        )
+                    )
+                ),
             ),
-            "Extra buildings" to listOf(
-                Triple("Garage", null, "16 m2"),
-                Triple("Attefalls house", "Has water connected", "23 m2"),
-            )
-        )
-    ).build(),
-    insurableLimits = listOf(
-        OfferQuery.InsurableLimit(
-            fragments = OfferQuery.InsurableLimit.Fragments(
-                InsurableLimitsFragment(
-                    label = "Test insurable limit",
-                    limit = "Limit",
-                    description = "Description"
-                )
-            )
-        ),
-        OfferQuery.InsurableLimit(
-            fragments = OfferQuery.InsurableLimit.Fragments(
-                InsurableLimitsFragment(
-                    label = "Test insurable limit 2",
-                    limit = "Limit 2",
-                    description = "Description 2"
-                )
-            )
-        ),
+        ).build()
     ),
     redeemedCampaigns = listOf(),
     inceptions = ConcurrentInceptionBuilder().build()
 ).build()
 
 val BUNDLE_WITH_INDEPENDENT_INCEPTION_DATES = OfferDataBuilder(
-    typeOfContract = TypeOfContract.SE_HOUSE,
+    quotes = listOf(
+        QuoteBuilder(
+            typeOfContract = TypeOfContract.SE_HOUSE,
+            insuranceTerms = listOf(
+                OfferQuery.InsuranceTerm(
+                    type = InsuranceTermType.GENERAL_TERMS,
+                    displayName = "General term",
+                    url = "invalid url"
+                ),
+                OfferQuery.InsuranceTerm(
+                    type = InsuranceTermType.TERMS_AND_CONDITIONS,
+                    displayName = "Terms and conditions",
+                    url = "invalid url"
+                )
+            )
+        ).build()
+    ),
     redeemedCampaigns = listOf(
         OfferQuery.RedeemedCampaign(
             fragments = OfferQuery.RedeemedCampaign.Fragments(
@@ -206,73 +250,78 @@ val BUNDLE_WITH_INDEPENDENT_INCEPTION_DATES = OfferDataBuilder(
         )
     ),
     inceptions = IndependentInceptionBuilder().build(),
-    insuranceTerms = listOf(
-        OfferQuery.InsuranceTerm(
-            type = InsuranceTermType.GENERAL_TERMS,
-            displayName = "General term",
-            url = "invalid url"
-        ),
-        OfferQuery.InsuranceTerm(
-            type = InsuranceTermType.TERMS_AND_CONDITIONS,
-            displayName = "Terms and conditions",
-            url = "invalid url"
-        )
-    )
 ).build()
 
 val BUNDLE_WITH_START_DATE_FROM_PREVIOUS_INSURER = OfferDataBuilder(
-    typeOfContract = TypeOfContract.SE_HOUSE,
-    detailsTable = TableFragmentBuilder(
-        title = "Home Insurance",
-        sections = listOf(
-            "Details" to listOf(
-                Triple("Address", null, "Askersgatan 129 B"),
-                Triple("Postal code", null, "113 89"),
-                Triple("Insured people", null, "You + 2"),
-                Triple("Living space", null, "180 m2"),
-                Triple("Ancillary area", null, "48 m2"),
-                Triple("Year built", null, "1997"),
-                Triple("Number of baths", null, "2"),
-                Triple("Partly subleted", null, "No"),
+    quotes = listOf(
+        QuoteBuilder(
+            typeOfContract = TypeOfContract.SE_HOUSE,
+            detailsTable = TableFragmentBuilder(
+                title = "Home Insurance",
+                sections = listOf(
+                    "Details" to listOf(
+                        Triple("Address", null, "Askersgatan 129 B"),
+                        Triple("Postal code", null, "113 89"),
+                        Triple("Insured people", null, "You + 2"),
+                        Triple("Living space", null, "180 m2"),
+                        Triple("Ancillary area", null, "48 m2"),
+                        Triple("Year built", null, "1997"),
+                        Triple("Number of baths", null, "2"),
+                        Triple("Partly subleted", null, "No"),
+                    ),
+                    "Extra buildings" to listOf(
+                        Triple("Garage", null, "16 m2"),
+                        Triple("Attefalls house", "Has water connected", "23 m2"),
+                    )
+                )
+            ).build(),
+            insurableLimits = listOf(
+                OfferQuery.InsurableLimit(
+                    fragments = OfferQuery.InsurableLimit.Fragments(
+                        InsurableLimitsFragment(
+                            label = "Test insurable limit",
+                            limit = "Limit",
+                            description = "Description"
+                        )
+                    )
+                ),
+                OfferQuery.InsurableLimit(
+                    fragments = OfferQuery.InsurableLimit.Fragments(
+                        InsurableLimitsFragment(
+                            label = "Test insurable limit 2",
+                            limit = "Limit 2",
+                            description = "Description 2"
+                        )
+                    )
+                ),
             ),
-            "Extra buildings" to listOf(
-                Triple("Garage", null, "16 m2"),
-                Triple("Attefalls house", "Has water connected", "23 m2"),
-            )
-        )
-    ).build(),
-    insurableLimits = listOf(
-        OfferQuery.InsurableLimit(
-            fragments = OfferQuery.InsurableLimit.Fragments(
-                InsurableLimitsFragment(
-                    label = "Test insurable limit",
-                    limit = "Limit",
-                    description = "Description"
+            insuranceTerms = listOf(
+                OfferQuery.InsuranceTerm(
+                    type = InsuranceTermType.GENERAL_TERMS,
+                    displayName = "General term",
+                    url = "invalid url"
+                ),
+                OfferQuery.InsuranceTerm(
+                    type = InsuranceTermType.TERMS_AND_CONDITIONS,
+                    displayName = "Terms and conditions",
+                    url = "invalid url"
                 )
             )
-        ),
-        OfferQuery.InsurableLimit(
-            fragments = OfferQuery.InsurableLimit.Fragments(
-                InsurableLimitsFragment(
-                    label = "Test insurable limit 2",
-                    limit = "Limit 2",
-                    description = "Description 2"
-                )
-            )
-        ),
+        ).build()
     ),
     redeemedCampaigns = listOf(),
     inceptions = IndependentInceptionBuilder(startDateFromPreviousInsurer = true).build(),
-    insuranceTerms = listOf(
-        OfferQuery.InsuranceTerm(
-            type = InsuranceTermType.GENERAL_TERMS,
-            displayName = "General term",
-            url = "invalid url"
-        ),
-        OfferQuery.InsuranceTerm(
-            type = InsuranceTermType.TERMS_AND_CONDITIONS,
-            displayName = "Terms and conditions",
-            url = "invalid url"
-        )
+).build()
+
+val OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL = OfferDataBuilder(
+    quotes = listOf(
+        QuoteBuilder(
+            displayName = "Home Contents Insurance",
+            typeOfContract = TypeOfContract.NO_HOME_CONTENT_OWN,
+        ).build(),
+        QuoteBuilder(
+            displayName = "Travel Insurance",
+            typeOfContract = TypeOfContract.NO_TRAVEL,
+        ).build()
     )
 ).build()

@@ -1,7 +1,5 @@
 package com.hedvig.app.feature.offer.usecase
 
-import com.apollographql.apollo.api.Response
-import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
@@ -13,7 +11,7 @@ class GetQuotesUseCase(
     sealed class Result {
         data class Success(
             val ids: List<String>,
-            val data: Flow<Response<OfferQuery.Data>>,
+            val data: Flow<OfferRepository.OfferResult>,
         ) : Result()
 
         data class Error(val message: String?) : Result()

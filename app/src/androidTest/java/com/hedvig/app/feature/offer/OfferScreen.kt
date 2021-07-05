@@ -1,20 +1,21 @@
 package com.hedvig.app.feature.offer
 
 import android.view.View
-import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
 import com.agoda.kakao.check.KCheckBox
 import com.agoda.kakao.common.views.KView
 import com.agoda.kakao.recycler.KRecyclerItem
 import com.agoda.kakao.recycler.KRecyclerView
-import com.agoda.kakao.screen.Screen
 import com.agoda.kakao.text.KButton
 import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
+import com.hedvig.app.feature.offer.ui.OfferActivity
+import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheet
 import com.kaspersky.kaspresso.screens.KScreen
 import org.hamcrest.Matcher
 
-class OfferScreen : Screen<OfferScreen>() {
+object OfferScreen : KScreen<OfferScreen>() {
+    override val layoutId = R.layout.activity_offer
+    override val viewClass = OfferActivity::class.java
 
     val scroll = KRecyclerView(
         { withId(R.id.offerScroll) },
@@ -22,6 +23,7 @@ class OfferScreen : Screen<OfferScreen>() {
             itemType(::HeaderItem)
             itemType(::SwitcherItem)
             itemType(::Facts)
+            itemType(::QuoteDetail)
         }
     )
 
@@ -37,9 +39,16 @@ class OfferScreen : Screen<OfferScreen>() {
     class Facts(parent: Matcher<View>) : KRecyclerItem<Facts>(parent) {
         val expandableContent = KView(parent) { withId(R.id.expandableContentView) }
     }
+
+    class QuoteDetail(parent: Matcher<View>) : KRecyclerItem<QuoteDetail>(parent) {
+        val text = KTextView { withMatcher(parent) }
+    }
 }
 
-class ChangeDateBottomSheetScreen : Screen<ChangeDateBottomSheetScreen>() {
+object ChangeDateSheet : KScreen<ChangeDateSheet>() {
+    override val layoutId = R.layout.dialog_change_start_date
+    override val viewClass = ChangeDateBottomSheet::class.java
+
     val submit = KButton { withId(R.id.chooseDateButton) }
     val changeDateContainer = KView {
         withId(R.id.change_date_container)

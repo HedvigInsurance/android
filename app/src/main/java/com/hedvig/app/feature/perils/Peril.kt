@@ -2,7 +2,7 @@ package com.hedvig.app.feature.perils
 
 import android.os.Parcelable
 import com.hedvig.android.owldroid.fragment.PerilFragment
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Peril(

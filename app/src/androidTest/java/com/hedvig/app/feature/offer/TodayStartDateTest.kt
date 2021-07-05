@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.offer
 
-import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.offer.ui.OfferActivity
@@ -30,7 +29,7 @@ class TodayStartDateTest : TestCase() {
     @Test
     fun shouldSetDateLabel() = run {
         activityRule.launch(OfferActivity.newInstance(context(), listOf("123")))
-        onScreen<OfferScreen> {
+        OfferScreen {
             scroll {
                 childAt<OfferScreen.HeaderItem>(0) {
                     startDate {

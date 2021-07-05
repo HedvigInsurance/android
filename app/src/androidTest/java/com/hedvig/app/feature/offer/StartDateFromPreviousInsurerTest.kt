@@ -30,7 +30,7 @@ class StartDateFromPreviousInsurerTest : TestCase() {
     @Test
     fun shouldSetDateLabel() = run {
         activityRule.launch(OfferActivity.newInstance(context(), listOf("123")))
-        onScreen<OfferScreen> {
+        OfferScreen {
             scroll {
                 childAt<OfferScreen.HeaderItem>(0) {
                     startDate {
@@ -44,7 +44,7 @@ class StartDateFromPreviousInsurerTest : TestCase() {
     @Test
     fun switchShouldBeCheckedWhenOpeningBottomSheet() = run {
         activityRule.launch(OfferActivity.newInstance(context(), listOf("123")))
-        onScreen<OfferScreen> {
+        OfferScreen {
             scroll {
                 childAt<OfferScreen.HeaderItem>(0) {
                     startDate {
