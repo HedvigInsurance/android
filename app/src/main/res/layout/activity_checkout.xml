@@ -16,7 +16,7 @@
         app:navigationIcon="@drawable/ic_back"
         app:title="@string/CHECKOUT_TITLE" />
 
-    <androidx.core.widget.NestedScrollView
+    <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -125,6 +125,6 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </androidx.core.widget.NestedScrollView>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
