@@ -27,13 +27,10 @@ import com.hedvig.app.feature.documents.DocumentAdapter
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
 import com.hedvig.app.feature.insurablelimits.InsurableLimitsAdapter
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.feature.offer.OfferItemsBuilder
 import com.hedvig.app.feature.offer.OfferSignDialog
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.offer.quotedetail.QuoteDetailActivity
-import com.hedvig.app.feature.offer.ui.checkout.CheckoutActivity
-import com.hedvig.app.feature.offer.ui.checkout.CheckoutParameter
 import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
@@ -233,32 +230,22 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
     private fun setSignState(signMethod: SignMethod) {
         binding.signButton.bindWithSignMethod(signMethod)
-        binding.signButton.setHapticClickListener {
-            onSign(signMethod)
-        }
+        onSign(signMethod)
     }
 
     private fun onSign(signMethod: SignMethod) {
         when (signMethod) {
             SignMethod.SWEDISH_BANK_ID -> {
-                tracker.floatingSign()
-                OfferSignDialog.newInstance().show(
-                    supportFragmentManager,
-                    OfferSignDialog.TAG
-                )
+                binding.signButton.setHapticClickListener {
+                    tracker.floatingSign()
+                    OfferSignDialog.newInstance().show(
+                        supportFragmentManager,
+                        OfferSignDialog.TAG
+                    )
+                }
             }
             SignMethod.SIMPLE_SIGN -> {
-                startActivity(
-                    CheckoutActivity.newInstance(
-                        this,
-                        CheckoutParameter(
-                            // TODO Get data from viewmodel
-                            title = "Travel Insurance",
-                            subtitle = "79 NOK/mo.",
-                            gdprUrl = OfferItemsBuilder.GDPR_LINK
-                        )
-                    )
-                )
+                // Start checkout activity
             }
             SignMethod.APPROVE_ONLY -> {
             }
@@ -266,10 +253,6 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             SignMethod.DANISH_BANK_ID,
             SignMethod.UNKNOWN__ -> showErrorDialog("Could not parse sign method", ::finish)
         }
-    }
-
-    private fun setSignState(signMethod: SignMethod) {
-        // Set sign state
     }
 
     private fun startLoggedInActivity() {
