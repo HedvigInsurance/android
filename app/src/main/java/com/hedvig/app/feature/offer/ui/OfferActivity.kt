@@ -34,6 +34,7 @@ import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
+import com.hedvig.app.util.extensions.showErrorDialog
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.view.hide
@@ -100,8 +101,9 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 fragmentManager = supportFragmentManager,
                 tracker = tracker,
                 marketManager = marketManager,
-                removeDiscount = model::removeDiscount,
                 openQuoteDetails = model::onOpenQuoteDetails,
+                onRemoveDiscount = model::removeDiscount,
+                onSign = ::onSign
             )
             val perilsAdapter = PerilsAdapter(
                 fragmentManager = supportFragmentManager,
@@ -117,8 +119,9 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 fragmentManager = supportFragmentManager,
                 tracker = tracker,
                 marketManager = marketManager,
-                removeDiscount = model::removeDiscount,
                 openQuoteDetails = model::onOpenQuoteDetails,
+                onRemoveDiscount = model::removeDiscount,
+                onSign = ::onSign
             )
 
             val concatAdapter = ConcatAdapter(
@@ -147,6 +150,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                             insurableLimitsAdapter.submitList(viewState.insurableLimitsItems)
                             documentAdapter.submitList(viewState.documents)
                             bottomOfferAdapter.submitList(viewState.bottomOfferItems)
+                            setSignState(viewState.signMethod)
                         }
                         is OfferViewModel.ViewState.Loading -> {
                             topOfferAdapter.submitList(viewState.loadingItem)
@@ -162,7 +166,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     when (event) {
                         is OfferViewModel.Event.Error -> showErrorDialog(
                             event.message ?: getString(R.string.home_tab_error_body)
-                        )
+                        ) { }
                         OfferViewModel.Event.HasContracts -> startLoggedInActivity()
                         is OfferViewModel.Event.OpenQuoteDetails -> {
                             startActivity(
@@ -184,7 +188,30 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     }
 
     private fun setSignState(signMethod: SignMethod) {
-        // Set sign state
+        binding.signButton.bindWithSignMethod(signMethod)
+        onSign(signMethod)
+    }
+
+    private fun onSign(signMethod: SignMethod) {
+        when (signMethod) {
+            SignMethod.SWEDISH_BANK_ID -> {
+                binding.signButton.setHapticClickListener {
+                    tracker.floatingSign()
+                    OfferSignDialog.newInstance().show(
+                        supportFragmentManager,
+                        OfferSignDialog.TAG
+                    )
+                }
+            }
+            SignMethod.SIMPLE_SIGN -> {
+                // Start checkout activity
+            }
+            SignMethod.APPROVE_ONLY -> {
+            }
+            SignMethod.NORWEGIAN_BANK_ID,
+            SignMethod.DANISH_BANK_ID,
+            SignMethod.UNKNOWN__ -> showErrorDialog("Could not parse sign method", ::finish)
+        }
     }
 
     private fun startLoggedInActivity() {
@@ -222,14 +249,6 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             true
         }
         else -> false
-    }
-
-    private fun showErrorDialog(message: String) {
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.error_dialog_title)
-            .setMessage(message)
-            .setPositiveButton(R.string.ALERT_OK) { _, _ -> finish() }
-            .show()
     }
 
     private fun showRestartDialog() {

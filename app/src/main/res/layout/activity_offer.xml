@@ -12,15 +12,15 @@
         android:id="@+id/offerScroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipToPadding="false"
         android:layout_above="@+id/signButton"
+        android:clipToPadding="false"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:spanCount="2"
         tools:itemCount="1"
         tools:listitem="@layout/offer_header" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/signButton"
         style="?attr/materialButtonContainedLargeStyle"
         android:layout_width="match_parent"
@@ -30,7 +30,6 @@
         android:layout_marginTop="@dimen/base_margin_quadruple"
         android:text="@string/OFFER_SIGN_BUTTON"
         android:visibility="gone"
-        app:icon="@drawable/ic_bank_id"
         app:iconGravity="textEnd"
         app:iconPadding="@dimen/base_margin_double"
         tools:visibility="visible" />
