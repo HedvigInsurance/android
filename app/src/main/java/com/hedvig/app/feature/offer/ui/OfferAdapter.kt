@@ -15,7 +15,6 @@ import com.hedvig.app.databinding.OfferHeaderBinding
 import com.hedvig.app.databinding.OfferSwitchBinding
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.offer.OfferRedeemCodeBottomSheet
-import com.hedvig.app.feature.offer.OfferSignDialog
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheet
 import com.hedvig.app.feature.settings.MarketManager
@@ -43,7 +42,14 @@ class OfferAdapter(
 ) : ListAdapter<OfferModel, OfferAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
-        R.layout.offer_header -> ViewHolder.Header(parent)
+        R.layout.offer_header -> ViewHolder.Header(
+            parent,
+            marketManager,
+            fragmentManager,
+            tracker,
+            onSign,
+            onRemoveDiscount
+        )
         R.layout.offer_fact_area -> ViewHolder.Facts(parent)
         R.layout.offer_switch -> ViewHolder.Switch(parent)
         R.layout.offer_footer -> ViewHolder.Footer(parent)
@@ -60,32 +66,25 @@ class OfferAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position), fragmentManager, tracker, onRemoveDiscount, onSign, marketManager)
+        holder.bind(getItem(position))
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        abstract fun bind(
-            data: OfferModel,
-            fragmentManager: FragmentManager,
-            tracker: OfferTracker,
-            removeDiscount: () -> Unit,
-            onSign: (SignMethod) -> Unit,
-            marketManager: MarketManager,
-        )
+        abstract fun bind(data: OfferModel)
 
-        class Header(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_header)) {
+        class Header(
+            parent: ViewGroup,
+            private val marketManager: MarketManager,
+            private val fragmentManager: FragmentManager,
+            private val tracker: OfferTracker,
+            private val onSign: (SignMethod) -> Unit,
+            private val onRemoveDiscount: () -> Unit
+        ) : ViewHolder(parent.inflate(R.layout.offer_header)) {
             private val binding by viewBinding(OfferHeaderBinding::bind)
 
             private operator fun MonetaryAmount.minus(other: MonetaryAmount) = subtract(other)
 
-            override fun bind(
-                data: OfferModel,
-                fragmentManager: FragmentManager,
-                tracker: OfferTracker,
-                removeDiscount: () -> Unit,
-                onSign: (SignMethod) -> Unit,
-                marketManager: MarketManager,
-            ) {
+            override fun bind(data: OfferModel) {
                 if (data !is OfferModel.Header) {
                     return invalid(data)
                 }
@@ -123,7 +122,7 @@ class OfferAdapter(
                                 R.string.OFFER_REMOVE_DISCOUNT_ALERT_REMOVE,
                                 R.string.OFFER_REMOVE_DISCOUNT_ALERT_CANCEL,
                                 {
-                                    removeDiscount()
+                                    onRemoveDiscount()
                                 }
                             )
                         }
@@ -156,14 +155,7 @@ class OfferAdapter(
                 binding.expandableContentView.initialize()
             }
 
-            override fun bind(
-                data: OfferModel,
-                fragmentManager: FragmentManager,
-                tracker: OfferTracker,
-                removeDiscount: () -> Unit,
-                onSign: (SignMethod) -> Unit,
-                marketManager: MarketManager,
-            ) {
+            override fun bind(data: OfferModel) {
                 if (data !is OfferModel.Facts) {
                     return invalid(data)
                 }
@@ -176,14 +168,8 @@ class OfferAdapter(
 
         class Switch(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_switch)) {
             private val binding by viewBinding(OfferSwitchBinding::bind)
-            override fun bind(
-                data: OfferModel,
-                fragmentManager: FragmentManager,
-                tracker: OfferTracker,
-                removeDiscount: () -> Unit,
-                onSign: (SignMethod) -> Unit,
-                marketManager: MarketManager,
-            ) {
+
+            override fun bind(data: OfferModel) {
                 if (data is OfferModel.Switcher) {
                     val insurer = data.displayName
                         ?: binding.switchTitle.resources.getString(R.string.OTHER_INSURER_OPTION_APP)
@@ -200,14 +186,8 @@ class OfferAdapter(
 
         class Footer(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_footer)) {
             private val binding by viewBinding(OfferFooterBinding::bind)
-            override fun bind(
-                data: OfferModel,
-                fragmentManager: FragmentManager,
-                tracker: OfferTracker,
-                removeDiscount: () -> Unit,
-                onSign: (SignMethod) -> Unit,
-                marketManager: MarketManager,
-            ) {
+
+            override fun bind(data: OfferModel) {
                 if (data !is OfferModel.Footer) {
                     return invalid(data)
                 }
@@ -220,15 +200,7 @@ class OfferAdapter(
         }
 
         class Loading(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_loading_header)) {
-            override fun bind(
-                data: OfferModel,
-                fragmentManager: FragmentManager,
-                tracker: OfferTracker,
-                removeDiscount: () -> Unit,
-                onSign: (SignMethod) -> Unit,
-                marketManager: MarketManager
-            ) {
-            }
+            override fun bind(data: OfferModel) {}
         }
     }
 }

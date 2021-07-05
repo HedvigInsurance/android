@@ -1,11 +1,9 @@
 package com.hedvig.app.feature.offer.ui
 
-import android.widget.Button
-import androidx.core.content.ContextCompat
 import com.google.android.material.button.MaterialButton
 import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.R
-import java.lang.IllegalArgumentException
+import com.hedvig.app.util.extensions.compatDrawable
 
 fun SignMethod.checkoutTextRes() = when (this) {
     SignMethod.SWEDISH_BANK_ID -> R.string.OFFER_SIGN_BUTTON
@@ -13,7 +11,7 @@ fun SignMethod.checkoutTextRes() = when (this) {
     SignMethod.APPROVE_ONLY -> R.string.OFFER_APPROVE_CHANGES
     SignMethod.NORWEGIAN_BANK_ID, // Deprecated
     SignMethod.DANISH_BANK_ID, // Deprecated
-    SignMethod.UNKNOWN__ -> throw IllegalArgumentException("Could not parse checkout string for $this")
+    SignMethod.UNKNOWN__ -> null
 }
 
 fun SignMethod.checkoutIconRes() = when (this) {
@@ -26,9 +24,12 @@ fun SignMethod.checkoutIconRes() = when (this) {
 }
 
 fun MaterialButton.bindWithSignMethod(signMethod: SignMethod) {
-    text = context.getString(signMethod.checkoutTextRes())
+    text = signMethod.checkoutTextRes()?.let {
+        context.getString(it)
+    } ?: "Unknown sign method"
+
     signMethod.checkoutIconRes()?.let {
-        val icon = ContextCompat.getDrawable(context, it)
+        val icon = context.compatDrawable(it)
         setIcon(icon)
     }
 }
