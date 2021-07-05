@@ -103,3 +103,5 @@ class TextInputLayoutPlaceholderMatcher(
 }
 
 fun ViewBuilder.withPlaceholder(placeholder: String) = withMatcher(TextInputLayoutPlaceholderMatcher(placeholder))
+
+fun ViewBuilder.withParentIndex(index: Int) = withMatcher(ViewMatchers.withParentIndex(index))

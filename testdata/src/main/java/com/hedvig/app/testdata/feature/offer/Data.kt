@@ -7,6 +7,7 @@ import com.hedvig.android.owldroid.type.InsuranceTermType
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.testdata.common.builders.TableFragmentBuilder
 import com.hedvig.app.testdata.feature.offer.builders.ConcurrentInceptionBuilder
+import com.hedvig.app.testdata.feature.offer.builders.FaqBuilder
 import com.hedvig.app.testdata.feature.offer.builders.IndependentInceptionBuilder
 import com.hedvig.app.testdata.feature.offer.builders.OfferDataBuilder
 import com.hedvig.app.testdata.feature.offer.builders.QuoteBuilder
@@ -322,6 +323,12 @@ val OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL = OfferDataBuilder(
         QuoteBuilder(
             displayName = "Travel Insurance",
             typeOfContract = TypeOfContract.NO_TRAVEL,
+        ).build()
+    ),
+    frequentlyAskedQuestions = listOf(
+        FaqBuilder(
+            headline = "Test headline",
+            body = "Test body",
         ).build()
     )
 ).build()
