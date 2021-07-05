@@ -5,10 +5,10 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.offer.ui.OfferModel
-import com.hedvig.app.feature.offer.ui.faq.FAQItem
 import com.hedvig.app.feature.offer.ui.changestartdate.getStartDate
 import com.hedvig.app.feature.offer.ui.changestartdate.getStartDateLabel
 import com.hedvig.app.feature.offer.ui.changestartdate.toChangeDateBottomSheetData
+import com.hedvig.app.feature.offer.ui.faq.FAQItem
 import com.hedvig.app.feature.perils.Peril
 import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.feature.table.intoTable
@@ -102,8 +102,21 @@ object OfferItemsBuilder {
         }
         if (bundle.quotes.any { it.currentInsurer != null }) {
             add(OfferModel.Subheading.Switcher(bundle.quotes.count { it.currentInsurer?.displayName != null }))
-            bundle.quotes.mapNotNull { it.currentInsurer?.displayName }.forEach { currentInsurer ->
-                add(OfferModel.CurrentInsurer(currentInsurer))
+            bundle.quotes.mapNotNull {
+                it.currentInsurer?.displayName?.let { currentInsurer ->
+                    currentInsurer to it.displayName
+                }
+            }.forEach { (currentInsurer, associatedQuote) ->
+                add(
+                    OfferModel.CurrentInsurer(
+                        displayName = currentInsurer,
+                        associatedQuote = if (bundle.quotes.size > 1) {
+                            associatedQuote
+                        } else {
+                            null
+                        }
+                    )
+                )
             }
         }
         add(OfferModel.Footer(GDPR_LINK))

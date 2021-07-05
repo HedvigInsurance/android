@@ -12,7 +12,7 @@ import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
 
-class NonInsurelySwitcherTest : TestCase() {
+class OneNonInsurelySwitcherTest : TestCase() {
     @get:Rule
     val activityRule = LazyActivityScenarioRule(OfferActivity::class.java)
 
@@ -35,6 +35,7 @@ class NonInsurelySwitcherTest : TestCase() {
         OfferScreen {
             scroll {
                 childAt<OfferScreen.SwitcherItem>(12) {
+                    associatedQuote { isGone() }
                     currentInsurer { hasText(previousInsurerName) }
                 }
             }

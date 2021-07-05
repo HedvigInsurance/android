@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.doOnNextLayout
+import androidx.core.view.isVisible
 import androidx.core.view.updatePaddingRelative
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.ListAdapter
@@ -204,6 +205,8 @@ class OfferAdapter(
                     return invalid(data)
                 }
 
+                associatedQuote.isVisible = data.associatedQuote != null
+                data.associatedQuote?.let { associatedQuote.text = it }
                 currentInsurer.text = data.displayName
             }
         }

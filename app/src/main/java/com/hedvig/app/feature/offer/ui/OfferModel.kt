@@ -28,6 +28,7 @@ sealed class OfferModel {
 
     data class CurrentInsurer(
         val displayName: String?,
+        val associatedQuote: String?,
     ) : OfferModel()
 
     data class Footer(

@@ -35,6 +35,7 @@ object OfferScreen : KScreen<OfferScreen>() {
     }
 
     class SwitcherItem(parent: Matcher<View>) : KRecyclerItem<SwitcherItem>(parent) {
+        val associatedQuote = KTextView(parent) { withId(R.id.associatedQuote) }
         val currentInsurer = KTextView(parent) { withId(R.id.currentInsurer) }
     }
 
