@@ -34,7 +34,7 @@ class MockOfferViewModel : OfferViewModel() {
                     documentItems,
                     insurableLimitsItems,
                     bottomOfferItems,
-                    SignMethod.SIMPLE_SIGN
+                    mockData.signMethodForQuotes
                 )
         }
     }

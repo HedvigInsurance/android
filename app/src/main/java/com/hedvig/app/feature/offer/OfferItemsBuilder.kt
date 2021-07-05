@@ -19,6 +19,7 @@ import com.hedvig.app.util.safeLet
 private const val GDPR_LINK = "https://www.hedvig.com/se/personuppgifter"
 
 object OfferItemsBuilder {
+
     fun createTopOfferItems(data: OfferQuery.Data): List<OfferModel> = ArrayList<OfferModel>().apply {
         add(
             OfferModel.Header(
@@ -44,7 +45,8 @@ object OfferItemsBuilder {
                     .monetaryAmountFragment
                     .toMonetaryAmount(),
                 incentiveDisplayValue = null,
-                changeDateBottomSheetData = data.quoteBundle.inception.toChangeDateBottomSheetData()
+                changeDateBottomSheetData = data.quoteBundle.inception.toChangeDateBottomSheetData(),
+                signMethod = data.signMethodForQuotes
             ),
         )
         add(
