@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.fragment.SignStatusFragment
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
+import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -29,7 +30,8 @@ class MockOfferViewModel : OfferViewModel() {
                     perilItems,
                     documentItems,
                     insurableLimitsItems,
-                    bottomOfferItems
+                    bottomOfferItems,
+                    SignMethod.SIMPLE_SIGN
                 )
         }
     }
