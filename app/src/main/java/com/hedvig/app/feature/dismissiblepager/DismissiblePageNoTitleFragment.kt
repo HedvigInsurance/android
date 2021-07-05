@@ -31,8 +31,8 @@ class DismissiblePageNoTitleFragment : Fragment(R.layout.dismissible_page_no_tit
             requestBuilder
                 .load(
                     Uri.parse(
-                        requireContext().getString(R.string.BASE_URL)
-                            + model.imageUrls.iconByTheme(requireContext())
+                        requireContext().getString(R.string.BASE_URL) +
+                            model.imageUrls.iconByTheme(requireContext())
                     )
                 )
                 .into(illustration)

@@ -2,34 +2,56 @@ package com.hedvig.app.feature.offer
 
 import com.apollographql.apollo.ApolloCall
 import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.api.cache.http.HttpCachePolicy
 import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.coroutines.toFlow
 import com.hedvig.android.owldroid.fragment.CostFragment
-import com.hedvig.android.owldroid.graphql.ChooseStartDateMutation
 import com.hedvig.android.owldroid.graphql.LastQuoteIdQuery
 import com.hedvig.android.owldroid.graphql.OfferClosedMutation
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.RemoveDiscountCodeMutation
-import com.hedvig.android.owldroid.graphql.RemoveStartDateMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.android.owldroid.graphql.SignStatusQuery
 import com.hedvig.android.owldroid.graphql.SignStatusSubscription
 import com.hedvig.app.util.LocaleManager
-import e
-import java.time.LocalDate
+import kotlinx.coroutines.flow.map
 
 class OfferRepository(
     private val apolloClient: ApolloClient,
     private val localeManager: LocaleManager,
 ) {
-    private fun offerQuery(ids: List<String>) = OfferQuery(localeManager.defaultLocale(), ids)
+    fun offerQuery(ids: List<String>) = OfferQuery(localeManager.defaultLocale(), ids)
 
     fun offer(ids: List<String>) = apolloClient
         .query(offerQuery(ids))
         .watcher()
         .toFlow()
+        .map(::toDataOrError)
+
+    sealed class OfferResult {
+        object HasContracts : OfferResult()
+
+        data class Error(val message: String? = null) : OfferResult()
+        data class Success(
+            val data: OfferQuery.Data
+        ) : OfferResult()
+    }
+
+    private fun toDataOrError(response: Response<OfferQuery.Data>): OfferResult {
+        response.errors?.let {
+            return OfferResult.Error(it.firstOrNull()?.message)
+        }
+
+        val data = response.data ?: return OfferResult.Error()
+
+        if (data.contracts.isNotEmpty()) {
+            return OfferResult.HasContracts
+        }
+
+        return OfferResult.Success(data)
+    }
 
     fun writeDiscountToCache(ids: List<String>, data: RedeemReferralCodeMutation.Data) {
         val cachedData = apolloClient
@@ -128,87 +150,6 @@ class OfferRepository(
             .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
             .build()
             .await()
-
-    // The following two functions should be merged into one routine.
-    suspend fun chooseStartDate(id: String, date: LocalDate) =
-        apolloClient.mutate(
-            ChooseStartDateMutation(
-                id,
-                date
-            )
-        ).await()
-
-    fun writeStartDateToCache(ids: List<String>, data: ChooseStartDateMutation.Data) {
-        val cachedData = apolloClient
-            .apolloStore
-            .read(offerQuery(ids))
-            .execute()
-
-        val newDate = data.editQuote.asCompleteQuote?.startDate
-        val newId = data.editQuote.asCompleteQuote?.id
-        if (newId == null) {
-            e { "Id is null" }
-            return
-        }
-
-        // TODO: This needs to be fundamentally re-written to support multiple quotes.
-        // cachedData.lastQuoteOfMember.asCompleteQuote?.let { completeQuote ->
-        //    val newData = cachedData
-        //        .copy(
-        //            lastQuoteOfMember = OfferQuery.LastQuoteOfMember(
-        //                asCompleteQuote = completeQuote
-        //                    .copy(
-        //                        id = newId,
-        //                        startDate = newDate
-        //                    )
-        //            )
-        //        )
-
-        //    apolloClient
-        //        .apolloStore
-        //        .writeAndPublish(offerQuery(ids), newData)
-        //        .execute()
-        // }
-    }
-
-    // The following two functions should be merged into one routine.
-    suspend fun removeStartDate(id: String) =
-        apolloClient
-            .mutate(RemoveStartDateMutation(id))
-            .await()
-
-    fun removeStartDateFromCache(ids: List<String>, data: RemoveStartDateMutation.Data) {
-        val cachedData = apolloClient
-            .apolloStore
-            .read(offerQuery(ids))
-            .execute()
-
-        val newDate = data.removeStartDate.asCompleteQuote?.startDate
-        val newId = data.removeStartDate.asCompleteQuote?.id
-        if (newId == null) {
-            e { "Id is null" }
-            return
-        }
-
-        // TODO: This needs to be fundamentally re-written to support multiple quotes.
-        // cachedData.lastQuoteOfMember.asCompleteQuote?.let { completeQuote ->
-        //     val newData = cachedData
-        //         .copy(
-        //             lastQuoteOfMember = OfferQuery.LastQuoteOfMember(
-        //                 asCompleteQuote = completeQuote
-        //                     .copy(
-        //                         id = newId,
-        //                         startDate = newDate
-        //                     )
-        //             )
-        //         )
-
-        //     apolloClient
-        //         .apolloStore
-        //         .writeAndPublish(offerQuery(ids), newData)
-        //         .execute()
-        // }
-    }
 
     fun quoteIdOfLastQuoteOfMember(): ApolloCall<LastQuoteIdQuery.Data> = apolloClient
         .query(LastQuoteIdQuery())
