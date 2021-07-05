@@ -36,28 +36,42 @@ class CheckoutActivity : BaseActivity(R.layout.activity_checkout) {
             text.setMarkdownText(link)
 
             emailEditText.addTextChangedListener {
-                viewModel.onEmailChanged(it?.toString() ?: "")
+                viewModel.onEmailChanged(
+                    input = it?.toString() ?: "",
+                    hasError = emailInputContainer.error != null
+                )
+            }
+            emailEditText.setOnFocusChangeListener { _, hasFocus ->
+                if (!hasFocus) {
+                    viewModel.validateInput()
+                }
             }
             identityNumberEditText.addTextChangedListener {
-                viewModel.onIdentityNumberChanged(it?.toString() ?: "")
+                viewModel.onIdentityNumberChanged(
+                    input = it?.toString() ?: "",
+                    hasError = identityNumberInputContainer.error != null
+                )
+            }
+            identityNumberEditText.setOnFocusChangeListener { _, hasFocus ->
+                if (!hasFocus) {
+                    viewModel.validateInput()
+                }
+            }
+
+            signButton.setOnClickListener {
+                viewModel.validateInput()
             }
         }
 
         lifecycleScope.launch {
             viewModel.viewState
                 .flowWithLifecycle(lifecycle)
-                .collect { viewState ->
-                    when (viewState) {
-                        CheckoutViewModel.ViewState.Loading -> {
-                        }
-                        is CheckoutViewModel.ViewState.Input -> setInputState(viewState)
-                    }
-                }
+                .collect(::setInputState)
         }
     }
 
-    private fun setInputState(viewState: CheckoutViewModel.ViewState.Input) {
-        binding.signButton.isEnabled = viewState.allValid
+    private fun setInputState(viewState: CheckoutViewModel.ViewState) {
+        binding.signButton.isEnabled = viewState.enableSign
         setContainerInputState(binding.emailInputContainer, viewState.emailInputState)
         setContainerInputState(binding.identityNumberInputContainer, viewState.identityInputState)
     }
@@ -70,12 +84,8 @@ class CheckoutActivity : BaseActivity(R.layout.activity_checkout) {
             is CheckoutViewModel.ViewState.InputState.Invalid -> {
                 textInputLayout.error = getString(state.stringRes ?: R.string.component_error)
             }
-            CheckoutViewModel.ViewState.InputState.NoInput -> {
-                textInputLayout.error = null
-            }
-            is CheckoutViewModel.ViewState.InputState.Valid -> {
-                textInputLayout.error = null
-            }
+            CheckoutViewModel.ViewState.InputState.NoInput,
+            is CheckoutViewModel.ViewState.InputState.Valid -> textInputLayout.error = null
         }
     }
 
