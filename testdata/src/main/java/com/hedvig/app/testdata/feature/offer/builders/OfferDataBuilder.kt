@@ -3,6 +3,7 @@ package com.hedvig.app.testdata.feature.offer.builders
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.TableFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
+import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.testdata.common.builders.CostBuilder
 import com.hedvig.app.testdata.common.builders.TableFragmentBuilder
@@ -29,6 +30,7 @@ data class OfferDataBuilder(
         ),
         redeemedCampaigns = redeemedCampaigns,
         contracts = contracts,
+        signMethodForQuotes = SignMethod.SWEDISH_BANK_ID
     )
 }
 
@@ -71,6 +73,6 @@ data class FaqBuilder(
     fun build() = OfferQuery.FrequentlyAskedQuestion(
         id = id,
         headline = headline,
-        body = body,
+        body = body
     )
 }
