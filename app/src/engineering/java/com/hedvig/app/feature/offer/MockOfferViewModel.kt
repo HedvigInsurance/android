@@ -44,43 +44,6 @@ class MockOfferViewModel : OfferViewModel() {
     override fun startSign() = Unit
     override fun clearPreviousErrors() = Unit
     override fun manuallyRecheckSignStatus() = Unit
-    override fun chooseStartDate(id: String, date: LocalDate) {
-        _viewState.value = ViewState.Loaded(
-            OfferItemsBuilder.createTopOfferItems(
-                mockData.copy(
-                    quoteBundle = mockData.quoteBundle.copy(
-                        quotes = mockData.quoteBundle.quotes.map {
-                            it.copy(
-                                startDate = date
-                            )
-                        }
-                    )
-                )
-            ),
-            OfferItemsBuilder.createPerilItems(mockData.quoteBundle.quotes),
-            OfferItemsBuilder.createDocumentItems(mockData.quoteBundle.quotes),
-            OfferItemsBuilder.createInsurableLimits(mockData.quoteBundle.quotes),
-            OfferItemsBuilder.createBottomOfferItems(mockData.quoteBundle),
-        )
-    }
-
-    override fun removeStartDate(id: String) {
-        _viewState.value = ViewState.Loaded(
-            OfferItemsBuilder.createTopOfferItems(
-                mockData.copy(
-                    quoteBundle = mockData.quoteBundle.copy(
-                        quotes = mockData.quoteBundle.quotes.map {
-                            it.copy(startDate = null)
-                        }
-                    )
-                )
-            ),
-            OfferItemsBuilder.createPerilItems(mockData.quoteBundle.quotes),
-            OfferItemsBuilder.createDocumentItems(mockData.quoteBundle.quotes),
-            OfferItemsBuilder.createInsurableLimits(mockData.quoteBundle.quotes),
-            OfferItemsBuilder.createBottomOfferItems(mockData.quoteBundle),
-        )
-    }
 
     override fun onOpenQuoteDetails(
         id: String,

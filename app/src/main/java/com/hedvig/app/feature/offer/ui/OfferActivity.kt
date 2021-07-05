@@ -159,10 +159,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 .flowWithLifecycle(lifecycle)
                 .onEach { event ->
                     when (event) {
-                        OfferViewModel.Event.Error.EmptyResponse -> showErrorDialog(
-                            getString(R.string.home_tab_error_body)
-                        )
-                        is OfferViewModel.Event.Error.GeneralError -> showErrorDialog(
+                        is OfferViewModel.Event.Error -> showErrorDialog(
                             event.message ?: getString(R.string.home_tab_error_body)
                         )
                         OfferViewModel.Event.HasContracts -> startLoggedInActivity()

@@ -59,7 +59,7 @@ class OfferAdapter(
         R.layout.text_headline5 -> ViewHolder.Subheading(parent)
         R.layout.text_body2 -> ViewHolder.Paragraph(parent)
         R.layout.text_subtitle1 -> ViewHolder.QuoteDetails(parent, openQuoteDetails)
-        R.layout.offer_faq -> ViewHolder.FAQ(parent, fragmentManager)
+        R.layout.offer_faq -> ViewHolder.FAQ(parent)
         R.layout.offer_loading_header -> ViewHolder.Loading(parent)
         else -> throw Error("Invalid viewType: $viewType")
     }
@@ -116,6 +116,15 @@ class OfferAdapter(
                         grossPremium.setStrikethrough(false)
                     }
 
+                    startDateContainer.setHapticClickListener {
+                        tracker.chooseStartDate()
+                        ChangeDateBottomSheet.newInstance(data.changeDateBottomSheetData)
+                            .show(fragmentManager, ChangeDateBottomSheet.TAG)
+                    }
+
+                    startDateLabel.text = data.startDateLabel.getString(itemView.context)
+                    startDate.text = data.startDate.getString(itemView.context)
+
                     val incentiveDisplayValue = data.incentiveDisplayValue
                     if (incentiveDisplayValue != null) {
                         discountButton.setText(R.string.OFFER_REMOVE_DISCOUNT_BUTTON)
@@ -142,7 +151,7 @@ class OfferAdapter(
                             OfferRedeemCodeBottomSheet.newInstance()
                                 .show(
                                     fragmentManager,
-                                    ChangeDateBottomSheet.TAG
+                                    OfferRedeemCodeBottomSheet.TAG
                                 )
                         }
                     }
@@ -323,7 +332,6 @@ class OfferAdapter(
 
         class FAQ(
             parent: ViewGroup,
-            private val fragmentManager: FragmentManager,
         ) : ViewHolder(parent.inflate(R.layout.offer_faq)) {
             private val binding by viewBinding(OfferFaqBinding::bind)
 

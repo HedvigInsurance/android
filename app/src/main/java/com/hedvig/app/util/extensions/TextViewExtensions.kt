@@ -2,14 +2,10 @@ package com.hedvig.app.util.extensions
 
 import android.graphics.Paint
 import android.net.Uri
-import android.os.Build
-import android.text.Html
-import android.text.method.LinkMovementMethod
 import android.view.KeyEvent
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import androidx.annotation.DrawableRes
-import com.hedvig.app.R
 import io.noties.markwon.AbstractMarkwonPlugin
 import io.noties.markwon.Markwon
 import io.noties.markwon.MarkwonConfiguration
