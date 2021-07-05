@@ -191,6 +191,14 @@ fun Context.showAlert(
         }
         .show()
 
+fun Context.showErrorDialog(message: String, positiveAction: () -> Unit) {
+    MaterialAlertDialogBuilder(this)
+        .setTitle(R.string.error_dialog_title)
+        .setMessage(message)
+        .setPositiveButton(R.string.ALERT_OK) { _, _ -> positiveAction() }
+        .show()
+}
+
 fun Context.copyToClipboard(
     text: String,
 ) {

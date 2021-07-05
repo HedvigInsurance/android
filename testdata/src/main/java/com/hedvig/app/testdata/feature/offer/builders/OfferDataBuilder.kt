@@ -25,6 +25,7 @@ data class OfferDataBuilder(
     private val contracts: List<OfferQuery.Contract> = emptyList(),
     private val detailsTable: TableFragment = TableFragmentBuilder().build(),
     private val inceptions: OfferQuery.Inception1 = ConcurrentInceptionBuilder().build(),
+    private val signMethod: SignMethod = SignMethod.SWEDISH_BANK_ID
 ) {
     fun build() = OfferQuery.Data(
         quoteBundle = OfferQuery.QuoteBundle(
@@ -54,6 +55,6 @@ data class OfferDataBuilder(
         ),
         redeemedCampaigns = redeemedCampaigns,
         contracts = contracts,
-        signMethodForQuotes = SignMethod.SWEDISH_BANK_ID
+        signMethodForQuotes = signMethod
     )
 }

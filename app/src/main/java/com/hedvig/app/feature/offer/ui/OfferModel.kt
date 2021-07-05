@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.offer.ui
 
 import android.content.Context
+import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.R
 import com.hedvig.app.feature.embark.masking.ISO_8601_DATE
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
@@ -18,7 +19,8 @@ sealed class OfferModel {
         val netMonthlyCost: MonetaryAmount,
         val grossMonthlyCost: MonetaryAmount,
         val incentiveDisplayValue: String?,
-        val changeDateBottomSheetData: ChangeDateBottomSheetData
+        val changeDateBottomSheetData: ChangeDateBottomSheetData,
+        val signMethod: SignMethod
     ) : OfferModel()
 
     data class Facts(
