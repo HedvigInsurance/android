@@ -88,8 +88,7 @@
 
         <activity
             android:name=".feature.checkout.CheckoutMockActivity"
-            android:label="Checkout Mock Screen"
-            android:theme="@style/Hedvig.Theme" />
+            android:label="Checkout Mock Screen" />
 
         <activity android:name=".feature.payment.PaymentMockActivity" />
 
