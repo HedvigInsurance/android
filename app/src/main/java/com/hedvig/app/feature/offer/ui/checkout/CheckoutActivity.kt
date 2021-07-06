@@ -16,16 +16,15 @@ import com.hedvig.app.util.extensions.viewBinding
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class CheckoutActivity : BaseActivity(R.layout.activity_checkout) {
-
-    private val viewModel: CheckoutViewModel by viewModel()
-
-    private val binding by viewBinding(ActivityCheckoutBinding::bind)
     private val parameter by lazy {
         intent.getParcelableExtra<CheckoutParameter>(PARAMETER)
             ?: throw IllegalArgumentException("No parameter found for ${this.javaClass.simpleName}")
     }
+    private val viewModel: CheckoutViewModel by viewModel { parametersOf(parameter.quoteIds) }
+    private val binding by viewBinding(ActivityCheckoutBinding::bind)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,6 +60,10 @@ class CheckoutActivity : BaseActivity(R.layout.activity_checkout) {
 
             signButton.setHapticClickListener {
                 viewModel.validateInput()
+                viewModel.onTrySign(
+                    emailEditText.text.toString(),
+                    identityNumberEditText.text.toString()
+                )
             }
         }
 
