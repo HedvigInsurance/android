@@ -95,6 +95,7 @@ import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetView
 import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
 import com.hedvig.app.feature.offer.ui.changestartdate.EditStartDateUseCase
 import com.hedvig.app.feature.offer.ui.checkout.CheckoutViewModel
+import com.hedvig.app.feature.offer.ui.checkout.SignQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.onboarding.ChoosePlanRepository
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
@@ -428,11 +429,7 @@ val repositoriesModule = module {
     single { ClaimsRepository(get(), get()) }
     single { InsuranceRepository(get(), get()) }
     single { ProfileRepository(get()) }
-    single {
-        RedeemReferralCodeRepository(
-            get()
-        )
-    }
+    single { RedeemReferralCodeRepository(get(), get()) }
     single { UserRepository(get()) }
     single { WhatsNewRepository(get(), get(), get()) }
     single { WelcomeRepository(get(), get()) }
@@ -448,7 +445,7 @@ val repositoriesModule = module {
     single { HomeRepository(get(), get()) }
     single { TrustlyRepository(get()) }
     single { MemberIdRepository(get()) }
-    single { PaymentRepository(get()) }
+    single { PaymentRepository(get(), get()) }
     single { ChoosePlanRepository(get(), get()) }
 }
 
@@ -505,6 +502,7 @@ val useCaseModule = module {
     single { GetQuotesUseCase(get()) }
     single { GetQuoteUseCase(get()) }
     single { EditStartDateUseCase(get(), get()) }
+    single { SignQuotesUseCase(get()) }
 }
 
 val pushTokenManagerModule = module {

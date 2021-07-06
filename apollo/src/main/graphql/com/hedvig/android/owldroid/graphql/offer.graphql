@@ -47,7 +47,7 @@ query Offer($locale: Locale!, $ids: [ID!]!) {
         correspondingQuotes {
           ... on CompleteQuote {
             id
-            displayName
+            displayName(locale: $locale)
           }
         }
         startDate
@@ -60,7 +60,7 @@ query Offer($locale: Locale!, $ids: [ID!]!) {
           correspondingQuote {
             ... on CompleteQuote {
               id
-              displayName
+              displayName(locale: $locale)
             }
           }
           startDate

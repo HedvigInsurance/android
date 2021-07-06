@@ -25,11 +25,19 @@ class SignQuotesUseCase(private val apolloClient: ApolloClient) {
         }
     }
 
-    private suspend fun signQuotes(quoteIds: List<String>): SignQuoteResult {
+    suspend fun signQuotes(quoteIds: List<String>): SignQuoteResult {
         val mutation = SignQuotesMutation(quoteIds)
         return when (val result = apolloClient.mutate(mutation).safeQuery()) {
             is QueryResult.Error -> SignQuoteResult.Error(result.message)
-            is QueryResult.Success -> SignQuoteResult.Success
+            is QueryResult.Success -> {
+                result.data.signQuotes.asAlreadyCompleted?.let {
+                    SignQuoteResult.Success
+                } ?: result.data.signQuotes.asSimpleSignSession?.let {
+                    SignQuoteResult.Success
+                } ?: result.data.signQuotes.asFailedToStartSign?.let {
+                    SignQuoteResult.Error(it.errorMessage)
+                } ?: SignQuoteResult.Error(null)
+            }
         }
     }
 }
