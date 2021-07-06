@@ -22,4 +22,11 @@ fun validatePhoneNumber(phoneNumber: CharSequence): ValidationResult =
         ValidationResult(true, null)
     }
 
+fun validateNationalIdentityNumber(nationalIdentityNumber: String): ValidationResult =
+    if (nationalIdentityNumber.length != 10) {
+        ValidationResult(false, R.string.INVALID_NATIONAL_IDENTITY_NUMBER)
+    } else {
+        ValidationResult(true, null)
+    }
+
 data class ValidationResult(val isSuccessful: Boolean, @StringRes val errorTextKey: Int?)
