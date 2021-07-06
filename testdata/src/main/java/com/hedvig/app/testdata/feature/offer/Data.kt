@@ -6,6 +6,7 @@ import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.type.InsuranceTermType
 import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.android.owldroid.type.TypeOfContract
+import com.hedvig.app.testdata.common.builders.CostBuilder
 import com.hedvig.app.testdata.common.builders.TableFragmentBuilder
 import com.hedvig.app.testdata.feature.offer.builders.ConcurrentInceptionBuilder
 import com.hedvig.app.testdata.feature.offer.builders.FaqBuilder
@@ -333,4 +334,57 @@ val OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL = OfferDataBuilder(
             body = "Test body",
         ).build()
     )
+).build()
+
+val BUNDLE_NAME = "Checkout Bundle"
+val BUNDLE_WITH_SIMPLE_SIGN = OfferDataBuilder(
+    bundleDisplayName = BUNDLE_NAME,
+    insuranceCost = CostBuilder(discountAmount = "20", grossAmount = "449.00").build(),
+    quotes = listOf(
+        QuoteBuilder(
+            typeOfContract = TypeOfContract.SE_HOUSE,
+            detailsTable = TableFragmentBuilder(
+                title = "Home Insurance",
+                sections = listOf(
+                    "Details" to listOf(
+                        Triple("Address", null, "Askersgatan 129 B"),
+                        Triple("Postal code", null, "113 89"),
+                        Triple("Insured people", null, "You + 2"),
+                        Triple("Living space", null, "180 m2"),
+                        Triple("Ancillary area", null, "48 m2"),
+                        Triple("Year built", null, "1997"),
+                        Triple("Number of baths", null, "2"),
+                        Triple("Partly subleted", null, "No"),
+                    ),
+                    "Extra buildings" to listOf(
+                        Triple("Garage", null, "16 m2"),
+                        Triple("Attefalls house", "Has water connected", "23 m2"),
+                    )
+                )
+            ).build(),
+            insurableLimits = listOf(
+                OfferQuery.InsurableLimit(
+                    fragments = OfferQuery.InsurableLimit.Fragments(
+                        InsurableLimitsFragment(
+                            label = "Test insurable limit",
+                            limit = "Limit",
+                            description = "Description"
+                        )
+                    )
+                ),
+                OfferQuery.InsurableLimit(
+                    fragments = OfferQuery.InsurableLimit.Fragments(
+                        InsurableLimitsFragment(
+                            label = "Test insurable limit 2",
+                            limit = "Limit 2",
+                            description = "Description 2"
+                        )
+                    )
+                ),
+            ),
+        ).build()
+    ),
+    redeemedCampaigns = listOf(),
+    inceptions = ConcurrentInceptionBuilder().build(),
+    signMethod = SignMethod.SIMPLE_SIGN
 ).build()

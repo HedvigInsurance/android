@@ -337,7 +337,7 @@ val marketingModule = module {
 }
 
 val offerModule = module {
-    viewModel<OfferViewModel> { (ids: List<String>) -> OfferViewModelImpl(ids, get(), get(), get()) }
+    viewModel<OfferViewModel> { (ids: List<String>) -> OfferViewModelImpl(ids, get(), get(), get(), get()) }
 }
 
 val profileModule = module {
@@ -411,7 +411,7 @@ val changeDateBottomSheetModule = module {
 }
 
 val checkoutModule = module {
-    viewModel { (ids: List<String>) -> CheckoutViewModel(ids, get()) }
+    viewModel { (ids: List<String>) -> CheckoutViewModel(ids, get(), get(), get()) }
 }
 
 val serviceModule = module {
