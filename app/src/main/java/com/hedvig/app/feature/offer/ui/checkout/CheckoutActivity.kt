@@ -11,9 +11,10 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityCheckoutBinding
 import com.hedvig.app.util.extensions.setMarkdownText
+import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CheckoutActivity : BaseActivity(R.layout.activity_checkout) {
@@ -58,16 +59,15 @@ class CheckoutActivity : BaseActivity(R.layout.activity_checkout) {
                 }
             }
 
-            signButton.setOnClickListener {
+            signButton.setHapticClickListener {
                 viewModel.validateInput()
             }
         }
 
-        lifecycleScope.launch {
-            viewModel.viewState
-                .flowWithLifecycle(lifecycle)
-                .collect(::setInputState)
-        }
+        viewModel.viewState
+            .flowWithLifecycle(lifecycle)
+            .onEach(::setInputState)
+            .launchIn(lifecycleScope)
     }
 
     private fun setInputState(viewState: CheckoutViewModel.ViewState) {
