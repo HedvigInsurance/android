@@ -26,6 +26,7 @@ class CheckoutMockActivity : MockActivity() {
                 CheckoutActivity.newInstance(
                     context,
                     CheckoutParameter(
+                        quoteIds = listOf(""),
                         title = "Test Checkout Insurance",
                         subtitle = "79 NOK/mo.",
                         gdprUrl = OfferItemsBuilder.GDPR_LINK

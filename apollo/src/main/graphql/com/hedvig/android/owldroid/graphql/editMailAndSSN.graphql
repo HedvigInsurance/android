@@ -1,0 +1,16 @@
+mutation EditMailAndSSN($ssn: String!, $email: String!) {
+  editQuote(input: {
+    ssn: $ssn,
+    email: $email
+  }) {
+    ... on CompleteQuote {
+      id
+      startDate
+    }
+    ... on UnderwritingLimitsHit {
+      limits {
+        code
+      }
+    }
+  }
+}

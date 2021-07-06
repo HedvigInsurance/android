@@ -212,6 +212,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                         this,
                         CheckoutParameter(
                             // TODO Get data from viewmodel
+                            quoteIds = listOf(),
                             title = "Travel Insurance",
                             subtitle = "79 NOK/mo.",
                             gdprUrl = OfferItemsBuilder.GDPR_LINK

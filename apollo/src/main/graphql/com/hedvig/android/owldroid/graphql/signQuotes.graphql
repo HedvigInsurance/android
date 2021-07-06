@@ -1,0 +1,9 @@
+mutation SignQuotes($quoteIds: [ID!]!) {
+  signQuotes(input: {
+    quoteIds: $quoteIds,
+  }) {
+    ... on SimpleSignSession {
+      id
+    }
+  }
+}

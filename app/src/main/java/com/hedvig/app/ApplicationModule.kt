@@ -410,7 +410,7 @@ val changeDateBottomSheetModule = module {
 }
 
 val checkoutModule = module {
-    viewModel { CheckoutViewModel() }
+    viewModel { (ids: List<String>) -> CheckoutViewModel(ids, get()) }
 }
 
 val serviceModule = module {

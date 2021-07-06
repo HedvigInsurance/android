@@ -1,13 +1,18 @@
 package com.hedvig.app.feature.offer.ui.checkout
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.hedvig.app.util.ValidationResult
 import com.hedvig.app.util.validateEmail
 import com.hedvig.app.util.validateNationalIdentityNumber
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
-class CheckoutViewModel : ViewModel() {
+class CheckoutViewModel(
+    private val quoteIds: List<String>,
+    private val signQuotesUseCase: SignQuotesUseCase
+) : ViewModel() {
 
     protected val _viewState = MutableStateFlow(
         ViewState(
@@ -64,6 +69,30 @@ class CheckoutViewModel : ViewModel() {
         )
     }
 
+    fun onTrySign(emailInput: String, identityNumberInput: String) {
+        if (viewState.value.canSign()) {
+            signQuotes(
+                identityNumberInput = identityNumberInput,
+                emailInput = emailInput,
+                quoteIds = quoteIds
+            )
+        }
+    }
+
+    private fun signQuotes(identityNumberInput: String, emailInput: String, quoteIds: List<String>) {
+        viewModelScope.launch {
+            val result = signQuotesUseCase.editAndSignQuotes(
+                quoteIds = quoteIds,
+                ssn = identityNumberInput,
+                email = emailInput
+            )
+            when (result) {
+                is SignQuotesUseCase.SignQuoteResult.Error -> TODO("Show error")
+                SignQuotesUseCase.SignQuoteResult.Success -> TODO("Go to next screen")
+            }
+        }
+    }
+
     data class ViewState(
         val enableSign: Boolean,
         val emailInputState: InputState,
@@ -74,5 +103,9 @@ class CheckoutViewModel : ViewModel() {
             data class Invalid(val input: String, val stringRes: Int?) : InputState()
             object NoInput : InputState()
         }
+    }
+
+    private fun ViewState.canSign(): Boolean {
+        return emailInputState is ViewState.InputState.Valid && identityInputState is ViewState.InputState.Valid
     }
 }
