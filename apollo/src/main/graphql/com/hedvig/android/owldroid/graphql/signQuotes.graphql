@@ -5,5 +5,11 @@ mutation SignQuotes($quoteIds: [ID!]!) {
     ... on SimpleSignSession {
       id
     }
+    ... on FailedToStartSign {
+      errorMessage
+    }
+    ... on AlreadyCompleted {
+      ignore
+    }
   }
 }
