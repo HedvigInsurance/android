@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.offer
 
 import com.hedvig.android.owldroid.graphql.OfferQuery
+import com.hedvig.app.R
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS
 import com.hedvig.app.util.ApolloCacheClearRule
@@ -48,6 +49,7 @@ class MultipleNonInsurelySwitcherTest : TestCase() {
                     }
                     currentInsurer { hasText(previousInsurerNameForQuote(1)) }
                 }
+                childAt<OfferScreen.InfoCard>(10) { title { hasText(R.string.offer_switch_info_card_title) } }
             }
         }
     }

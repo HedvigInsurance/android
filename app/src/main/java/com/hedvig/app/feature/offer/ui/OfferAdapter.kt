@@ -13,6 +13,7 @@ import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.BASE_MARGIN_SEPTUPLE
 import com.hedvig.app.BASE_MARGIN_TRIPLE
 import com.hedvig.app.R
+import com.hedvig.app.databinding.InfoCardBinding
 import com.hedvig.app.databinding.OfferFactAreaBinding
 import com.hedvig.app.databinding.OfferFaqBinding
 import com.hedvig.app.databinding.OfferFooterBinding
@@ -62,6 +63,7 @@ class OfferAdapter(
         R.layout.text_subtitle1 -> ViewHolder.QuoteDetails(parent, openQuoteDetails)
         R.layout.offer_faq -> ViewHolder.FAQ(parent)
         R.layout.offer_loading_header -> ViewHolder.Loading(parent)
+        R.layout.info_card -> ViewHolder.InfoCard(parent)
         else -> throw Error("Invalid viewType: $viewType")
     }
 
@@ -75,6 +77,7 @@ class OfferAdapter(
         is OfferModel.QuoteDetails -> R.layout.text_subtitle1
         is OfferModel.FAQ -> R.layout.offer_faq
         OfferModel.Loading -> R.layout.offer_loading_header
+        OfferModel.SwitchInfoCard -> R.layout.info_card
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -389,6 +392,23 @@ class OfferAdapter(
                 removeDiscount: () -> Unit,
                 marketManager: MarketManager,
             ) = Unit
+        }
+
+        class InfoCard(parent: ViewGroup) : OfferAdapter.ViewHolder(parent.inflate(R.layout.info_card)) {
+            private val binding by viewBinding(InfoCardBinding::bind)
+            override fun bind(
+                data: OfferModel,
+                fragmentManager: FragmentManager,
+                tracker: OfferTracker,
+                removeDiscount: () -> Unit,
+                marketManager: MarketManager
+            ) = with(binding) {
+                if (data !is OfferModel.SwitchInfoCard) {
+                    return invalid(data)
+                }
+
+                title.setText(R.string.offer_switch_info_card_title)
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.offer
 
 import com.hedvig.android.owldroid.graphql.OfferQuery
+import com.hedvig.app.R
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_NON_SWITCHABLE
 import com.hedvig.app.util.ApolloCacheClearRule
@@ -38,6 +39,7 @@ class OneNonInsurelySwitcherTest : TestCase() {
                     associatedQuote { isGone() }
                     currentInsurer { hasText(previousInsurerName) }
                 }
+                childAt<OfferScreen.InfoCard>(13) { title { hasText(R.string.offer_switch_info_card_title) } }
             }
         }
     }

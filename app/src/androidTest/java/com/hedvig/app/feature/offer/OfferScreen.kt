@@ -26,6 +26,7 @@ object OfferScreen : KScreen<OfferScreen>() {
             itemType(::Facts)
             itemType(::QuoteDetail)
             itemType(::FAQ)
+            itemType(::InfoCard)
         }
     )
 
@@ -54,6 +55,10 @@ object OfferScreen : KScreen<OfferScreen>() {
             withParent { withId(R.id.rowContainer) }
             withParentIndex(index)
         }.invoke(function)
+    }
+
+    class InfoCard(parent: Matcher<View>) : KRecyclerItem<InfoCard>(parent) {
+        val title = KTextView(parent) { withId(R.id.title) }
     }
 }
 

@@ -118,6 +118,7 @@ object OfferItemsBuilder {
                     )
                 )
             }
+            add(OfferModel.SwitchInfoCard)
         }
         add(OfferModel.Footer(GDPR_LINK))
     }
