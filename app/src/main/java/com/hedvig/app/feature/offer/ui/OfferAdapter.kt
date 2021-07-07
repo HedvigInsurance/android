@@ -119,7 +119,7 @@ class OfferAdapter(
                     premium.text = data.netMonthlyCost.format(premium.context, marketManager.market)
                     premiumPeriod.text = premiumPeriod.context.getString(R.string.OFFER_PRICE_PER_MONTH)
 
-                    if (!data.grossMonthlyCost.isZero && data.grossMonthlyCost != data.netMonthlyCost) {
+                    if (!(data.grossMonthlyCost - data.netMonthlyCost).isZero) {
                         originalPremium.setStrikethrough(true)
                         originalPremium.text =
                             data.grossMonthlyCost.format(originalPremium.context, marketManager.market)
