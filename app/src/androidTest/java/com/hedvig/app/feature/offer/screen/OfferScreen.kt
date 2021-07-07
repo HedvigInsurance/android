@@ -6,6 +6,7 @@ import com.agoda.kakao.recycler.KRecyclerItem
 import com.agoda.kakao.recycler.KRecyclerView
 import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
+import com.hedvig.app.common.ErrorItem
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.util.withParentIndex
 import com.kaspersky.kaspresso.screens.KScreen
@@ -25,6 +26,7 @@ object OfferScreen : KScreen<OfferScreen>() {
             itemType(OfferScreen::FAQ)
             itemType(OfferScreen::InfoCard)
             itemType(OfferScreen::WarningCard)
+            itemType(::ErrorItem)
         }
     )
 
@@ -65,4 +67,3 @@ object OfferScreen : KScreen<OfferScreen>() {
         val body = KTextView(parent) { withId(R.id.body) }
     }
 }
-
