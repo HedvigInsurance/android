@@ -43,7 +43,8 @@ object OfferItemsBuilder {
                     .fragments
                     .monetaryAmountFragment
                     .toMonetaryAmount(),
-                incentiveDisplayValue = null,
+                incentiveDisplayValue = data.redeemedCampaigns.mapNotNull { it.fragments.incentiveFragment.displayValue },
+                hasCampaigns = data.redeemedCampaigns.isNotEmpty(),
                 changeDateBottomSheetData = data.quoteBundle.inception.toChangeDateBottomSheetData(),
                 signMethod = data.signMethodForQuotes
             ),

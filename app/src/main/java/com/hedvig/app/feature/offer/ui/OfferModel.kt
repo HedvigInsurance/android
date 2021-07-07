@@ -19,7 +19,8 @@ sealed class OfferModel {
         val startDateLabel: OfferStartDateLabel,
         val netMonthlyCost: MonetaryAmount,
         val grossMonthlyCost: MonetaryAmount,
-        val incentiveDisplayValue: String?,
+        val incentiveDisplayValue: List<String>,
+        val hasCampaigns: Boolean,
         val changeDateBottomSheetData: ChangeDateBottomSheetData,
         val signMethod: SignMethod
     ) : OfferModel()

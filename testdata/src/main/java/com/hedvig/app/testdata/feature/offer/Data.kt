@@ -6,6 +6,7 @@ import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.type.InsuranceTermType
 import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.android.owldroid.type.TypeOfContract
+import com.hedvig.app.testdata.common.builders.CostBuilder
 import com.hedvig.app.testdata.common.builders.TableFragmentBuilder
 import com.hedvig.app.testdata.feature.offer.builders.ConcurrentInceptionBuilder
 import com.hedvig.app.testdata.feature.offer.builders.FaqBuilder
@@ -100,6 +101,7 @@ val OFFER_DATA_SWEDISH_HOUSE = OfferDataBuilder(
 ).build()
 
 val OFFER_DATA_SWEDISH_HOUSE_WITH_DISCOUNT = OfferDataBuilder(
+    insuranceCost = CostBuilder(netAmount = "349.0", grossAmount = "249.0").build(),
     quotes = listOf(
         QuoteBuilder(
             typeOfContract = TypeOfContract.SE_HOUSE,
