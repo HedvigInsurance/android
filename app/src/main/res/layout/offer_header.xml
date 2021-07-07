@@ -15,7 +15,6 @@
         android:layout_margin="@dimen/base_margin_double">
 
         <LinearLayout
-            android:id="@+id/premiumContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -42,16 +41,6 @@
                 android:textAppearance="?textAppearanceCaption"
                 android:textAllCaps="true"
                 tools:text="HEDVIG BOSTADSRÄTT" />
-
-            <TextView
-                android:id="@+id/grossPremium"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/base_margin_double"
-                android:textAppearance="?textAppearanceSubtitle1"
-                android:visibility="gone"
-                tools:text="179 kr/mån"
-                tools:visibility="visible" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -147,7 +136,7 @@
                 app:iconGravity="textEnd"
                 app:iconPadding="@dimen/base_margin_double" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/discountButton"
                 style="?materialButtonTextStyle"
                 android:layout_width="wrap_content"

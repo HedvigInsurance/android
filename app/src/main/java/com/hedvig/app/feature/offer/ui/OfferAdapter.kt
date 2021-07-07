@@ -34,13 +34,13 @@ import com.hedvig.app.feature.table.generateTable
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.extensions.colorAttr
+import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.drawableAttr
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.invalid
 import com.hedvig.app.util.extensions.setMarkdownText
 import com.hedvig.app.util.extensions.setStrikethrough
 import com.hedvig.app.util.extensions.showAlert
-import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
@@ -120,10 +120,9 @@ class OfferAdapter(
                     premiumPeriod.text = premiumPeriod.context.getString(R.string.OFFER_PRICE_PER_MONTH)
 
                     if (!(data.grossMonthlyCost - data.netMonthlyCost).isZero) {
-                        grossPremium.setStrikethrough(true)
-                        grossPremium.text = data.grossMonthlyCost.format(grossPremium.context, marketManager.market)
-                    } else {
-                        grossPremium.setStrikethrough(false)
+                        originalPremium.setStrikethrough(true)
+                        originalPremium.text =
+                            data.grossMonthlyCost.format(originalPremium.context, marketManager.market)
                     }
 
                     startDateContainer.setHapticClickListener {
@@ -135,34 +134,38 @@ class OfferAdapter(
                     startDateLabel.text = data.startDateLabel.getString(itemView.context)
                     startDate.text = data.startDate.getString(itemView.context)
 
-                    val incentiveDisplayValue = data.incentiveDisplayValue
-                    if (incentiveDisplayValue != null) {
-                        discountButton.setText(R.string.OFFER_REMOVE_DISCOUNT_BUTTON)
-                        campaign.text = incentiveDisplayValue
-                        discountButton.context.colorAttr(R.attr.colorError)
-                        discountButton.setHapticClickListener {
-                            tracker.removeDiscount()
-                            discountButton.context.showAlert(
-                                R.string.OFFER_REMOVE_DISCOUNT_ALERT_TITLE,
-                                R.string.OFFER_REMOVE_DISCOUNT_ALERT_DESCRIPTION,
-                                R.string.OFFER_REMOVE_DISCOUNT_ALERT_REMOVE,
-                                R.string.OFFER_REMOVE_DISCOUNT_ALERT_CANCEL,
-                                {
-                                    onRemoveDiscount()
-                                }
-                            )
+                    campaign.text = data.incentiveDisplayValue.joinToString()
+                    if (data.hasCampaigns) {
+                        discountButton.apply {
+                            setText(R.string.OFFER_REMOVE_DISCOUNT_BUTTON)
+                            setTextColor(context.colorAttr(R.attr.colorError))
+                            icon = null
+                            setHapticClickListener {
+                                tracker.removeDiscount()
+                                discountButton.context.showAlert(
+                                    R.string.OFFER_REMOVE_DISCOUNT_ALERT_TITLE,
+                                    R.string.OFFER_REMOVE_DISCOUNT_ALERT_DESCRIPTION,
+                                    R.string.OFFER_REMOVE_DISCOUNT_ALERT_REMOVE,
+                                    R.string.OFFER_REMOVE_DISCOUNT_ALERT_CANCEL,
+                                    {
+                                        onRemoveDiscount()
+                                    }
+                                )
+                            }
                         }
                     } else {
-                        discountButton.setText(R.string.OFFER_ADD_DISCOUNT_BUTTON)
-                        premiumContainer.background = null
-                        campaign.remove()
-                        discountButton.setHapticClickListener {
-                            tracker.addDiscount()
-                            OfferRedeemCodeBottomSheet.newInstance()
-                                .show(
-                                    fragmentManager,
-                                    OfferRedeemCodeBottomSheet.TAG
-                                )
+                        discountButton.apply {
+                            setText(R.string.OFFER_ADD_DISCOUNT_BUTTON)
+                            setTextColor(context.getColor(R.color.textColorPrimary))
+                            icon = context.compatDrawable(R.drawable.ic_add_circle)
+                            setHapticClickListener {
+                                tracker.addDiscount()
+                                OfferRedeemCodeBottomSheet.newInstance()
+                                    .show(
+                                        fragmentManager,
+                                        OfferRedeemCodeBottomSheet.TAG
+                                    )
+                            }
                         }
                     }
 
