@@ -357,7 +357,7 @@ val OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL = OfferDataBuilder(
     )
 ).build()
 
-val OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS = OfferDataBuilder(
+val OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_ALL_NONSWITCHABLE = OfferDataBuilder(
     quotes = listOf(
         QuoteBuilder(
             displayName = "Home Contents Insurance",
@@ -375,6 +375,64 @@ val OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS = O
                 id = "ab2a1f4c-83af-4b9f-98d2-e7ea767b080f",
                 displayName = "Annat Försäkringsbolag 2",
                 switchable = false
+            )
+        ).build()
+    ),
+    frequentlyAskedQuestions = listOf(
+        FaqBuilder(
+            headline = "Test headline",
+            body = "Test body",
+        ).build()
+    )
+).build()
+
+val OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_ALL_SWITCHABLE = OfferDataBuilder(
+    quotes = listOf(
+        QuoteBuilder(
+            displayName = "Home Contents Insurance",
+            typeOfContract = TypeOfContract.NO_HOME_CONTENT_OWN,
+            currentInsurer = OfferQuery.CurrentInsurer(
+                id = "ab2a1f4c-83af-4b9f-98d2-e7ea767b080d",
+                displayName = "Annat Försäkringsbolag",
+                switchable = true
+            )
+        ).build(),
+        QuoteBuilder(
+            displayName = "Travel Insurance",
+            typeOfContract = TypeOfContract.NO_TRAVEL,
+            currentInsurer = OfferQuery.CurrentInsurer(
+                id = "ab2a1f4c-83af-4b9f-98d2-e7ea767b080f",
+                displayName = "Annat Försäkringsbolag 2",
+                switchable = true
+            )
+        ).build()
+    ),
+    frequentlyAskedQuestions = listOf(
+        FaqBuilder(
+            headline = "Test headline",
+            body = "Test body",
+        ).build()
+    )
+).build()
+
+val OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_MIXED_SWITCHABLE = OfferDataBuilder(
+    quotes = listOf(
+        QuoteBuilder(
+            displayName = "Home Contents Insurance",
+            typeOfContract = TypeOfContract.NO_HOME_CONTENT_OWN,
+            currentInsurer = OfferQuery.CurrentInsurer(
+                id = "ab2a1f4c-83af-4b9f-98d2-e7ea767b080d",
+                displayName = "Annat Försäkringsbolag",
+                switchable = false
+            )
+        ).build(),
+        QuoteBuilder(
+            displayName = "Travel Insurance",
+            typeOfContract = TypeOfContract.NO_TRAVEL,
+            currentInsurer = OfferQuery.CurrentInsurer(
+                id = "ab2a1f4c-83af-4b9f-98d2-e7ea767b080f",
+                displayName = "Annat Försäkringsbolag 2",
+                switchable = true
             )
         ).build()
     ),
