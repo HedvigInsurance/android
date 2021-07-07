@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.offer
+package com.hedvig.app.feature.offer.screen
 
 import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
