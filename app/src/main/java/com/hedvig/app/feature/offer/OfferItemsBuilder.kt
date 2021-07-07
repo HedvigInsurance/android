@@ -103,13 +103,13 @@ object OfferItemsBuilder {
         if (bundle.quotes.any { it.currentInsurer != null }) {
             add(OfferModel.Subheading.Switcher(bundle.quotes.count { it.currentInsurer?.displayName != null }))
             bundle.quotes.mapNotNull {
-                it.currentInsurer?.displayName?.let { currentInsurer ->
+                it.currentInsurer?.let { currentInsurer ->
                     currentInsurer to it.displayName
                 }
             }.forEach { (currentInsurer, associatedQuote) ->
                 add(
                     OfferModel.CurrentInsurer(
-                        displayName = currentInsurer,
+                        displayName = currentInsurer.displayName,
                         associatedQuote = if (bundle.quotes.size > 1) {
                             associatedQuote
                         } else {
@@ -117,8 +117,14 @@ object OfferItemsBuilder {
                         }
                     )
                 )
+                add(
+                    if (currentInsurer.switchable == true) {
+                        OfferModel.AutomaticSwitchCard
+                    } else {
+                        OfferModel.ManualSwitchCard
+                    }
+                )
             }
-            add(OfferModel.SwitchInfoCard)
         }
         add(OfferModel.Footer(GDPR_LINK))
     }

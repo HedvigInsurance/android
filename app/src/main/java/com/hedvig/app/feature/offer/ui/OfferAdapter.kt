@@ -22,6 +22,7 @@ import com.hedvig.app.databinding.OfferSwitchBinding
 import com.hedvig.app.databinding.TextBody2Binding
 import com.hedvig.app.databinding.TextHeadline5Binding
 import com.hedvig.app.databinding.TextSubtitle1Binding
+import com.hedvig.app.databinding.WarningCardBinding
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.offer.OfferRedeemCodeBottomSheet
 import com.hedvig.app.feature.offer.OfferSignDialog
@@ -64,6 +65,7 @@ class OfferAdapter(
         R.layout.offer_faq -> ViewHolder.FAQ(parent)
         R.layout.offer_loading_header -> ViewHolder.Loading(parent)
         R.layout.info_card -> ViewHolder.InfoCard(parent)
+        R.layout.warning_card -> ViewHolder.WarningCard(parent)
         else -> throw Error("Invalid viewType: $viewType")
     }
 
@@ -77,7 +79,8 @@ class OfferAdapter(
         is OfferModel.QuoteDetails -> R.layout.text_subtitle1
         is OfferModel.FAQ -> R.layout.offer_faq
         OfferModel.Loading -> R.layout.offer_loading_header
-        OfferModel.SwitchInfoCard -> R.layout.info_card
+        OfferModel.AutomaticSwitchCard -> R.layout.info_card
+        OfferModel.ManualSwitchCard -> R.layout.warning_card
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -403,11 +406,29 @@ class OfferAdapter(
                 removeDiscount: () -> Unit,
                 marketManager: MarketManager
             ) = with(binding) {
-                if (data !is OfferModel.SwitchInfoCard) {
+                if (data !is OfferModel.AutomaticSwitchCard) {
                     return invalid(data)
                 }
 
                 title.setText(R.string.offer_switch_info_card_title)
+            }
+        }
+
+        class WarningCard(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.warning_card)) {
+            private val binding by viewBinding(WarningCardBinding::bind)
+            override fun bind(
+                data: OfferModel,
+                fragmentManager: FragmentManager,
+                tracker: OfferTracker,
+                removeDiscount: () -> Unit,
+                marketManager: MarketManager
+            ) = with(binding) {
+                if (data !is OfferModel.ManualSwitchCard) {
+                    return invalid(data)
+                }
+
+                title.setText(R.string.offer_manual_switch_card_title)
+                body.setText(R.string.offer_manual_switch_card_body)
             }
         }
     }

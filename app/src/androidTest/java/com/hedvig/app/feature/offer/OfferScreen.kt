@@ -27,6 +27,7 @@ object OfferScreen : KScreen<OfferScreen>() {
             itemType(::QuoteDetail)
             itemType(::FAQ)
             itemType(::InfoCard)
+            itemType(::WarningCard)
         }
     )
 
@@ -59,6 +60,11 @@ object OfferScreen : KScreen<OfferScreen>() {
 
     class InfoCard(parent: Matcher<View>) : KRecyclerItem<InfoCard>(parent) {
         val title = KTextView(parent) { withId(R.id.title) }
+    }
+
+    class WarningCard(parent: Matcher<View>) : KRecyclerItem<WarningCard>(parent) {
+        val title = KTextView(parent) { withId(R.id.title) }
+        val body = KTextView(parent) { withId(R.id.body) }
     }
 }
 

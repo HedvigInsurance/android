@@ -13,7 +13,7 @@ import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
 
-class OneNonInsurelySwitcherTest : TestCase() {
+class OneNonSwitchableSwitcherTest : TestCase() {
     @get:Rule
     val activityRule = LazyActivityScenarioRule(OfferActivity::class.java)
 
@@ -39,7 +39,10 @@ class OneNonInsurelySwitcherTest : TestCase() {
                     associatedQuote { isGone() }
                     currentInsurer { hasText(previousInsurerName) }
                 }
-                childAt<OfferScreen.InfoCard>(13) { title { hasText(R.string.offer_switch_info_card_title) } }
+                childAt<OfferScreen.WarningCard>(13) {
+                    title { hasText(R.string.offer_manual_switch_card_title) }
+                    body { hasText(R.string.offer_manual_switch_card_body) }
+                }
             }
         }
     }

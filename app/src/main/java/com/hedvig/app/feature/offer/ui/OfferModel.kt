@@ -54,7 +54,8 @@ sealed class OfferModel {
     ) : OfferModel()
 
     object Loading : OfferModel()
-    object SwitchInfoCard : OfferModel()
+    object AutomaticSwitchCard : OfferModel()
+    object ManualSwitchCard : OfferModel()
 }
 
 sealed class OfferStartDate {
