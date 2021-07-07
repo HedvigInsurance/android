@@ -16,6 +16,8 @@ import com.hedvig.app.feature.offer.quotedetail.buildDocuments
 import com.hedvig.app.feature.offer.quotedetail.buildInsurableLimits
 import com.hedvig.app.feature.offer.quotedetail.buildPerils
 import com.hedvig.app.feature.offer.ui.OfferModel
+import com.hedvig.app.feature.offer.ui.checkout.CheckoutParameter
+import com.hedvig.app.feature.offer.ui.checkout.SignQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.perils.PerilItem
@@ -43,6 +45,12 @@ abstract class OfferViewModel : ViewModel() {
         data class OpenQuoteDetails(
             val quoteDetailItems: QuoteDetailItems,
         ) : Event()
+
+        data class OpenCheckout(
+            val checkoutParameter: CheckoutParameter
+        ) : Event()
+
+        object ApproveSuccessful : Event()
     }
 
     protected val _events = MutableSharedFlow<Event>(
@@ -86,14 +94,18 @@ abstract class OfferViewModel : ViewModel() {
 
         object Loading : ViewState()
     }
+
+    abstract fun onOpenCheckout()
+    abstract fun onApprove()
 }
 
 class OfferViewModelImpl(
-    _quoteIds: List<String>,
+    private val _quoteIds: List<String>,
     private val offerRepository: OfferRepository,
     private val getQuotesUseCase: GetQuotesUseCase,
     private val getQuoteUseCase: GetQuoteUseCase,
-    private val loginStatusService: LoginStatusService
+    private val loginStatusService: LoginStatusService,
+    private val signQuotesUseCase: SignQuotesUseCase,
 ) : OfferViewModel() {
 
     private lateinit var quoteIds: List<String>
@@ -131,6 +143,25 @@ class OfferViewModelImpl(
                 is GetQuotesUseCase.Result.Error -> {
                     _events.tryEmit(Event.Error(idsResult.message))
                 }
+            }
+        }
+    }
+
+    override fun onOpenCheckout() {
+        _events.tryEmit(
+            Event.OpenCheckout(
+                CheckoutParameter(
+                    quoteIds = _quoteIds
+                )
+            )
+        )
+    }
+
+    override fun onApprove() {
+        viewModelScope.launch {
+            when (val result = signQuotesUseCase.signQuotes(quoteIds)) {
+                is SignQuotesUseCase.SignQuoteResult.Error -> _events.tryEmit(Event.Error(result.message))
+                SignQuotesUseCase.SignQuoteResult.Success -> _events.tryEmit(Event.ApproveSuccessful)
             }
         }
     }

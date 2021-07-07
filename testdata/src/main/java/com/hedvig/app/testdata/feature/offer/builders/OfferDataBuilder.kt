@@ -14,6 +14,7 @@ import com.hedvig.app.testdata.feature.insurance.builders.PerilBuilder
 import java.time.LocalDate
 
 data class OfferDataBuilder(
+    private val bundleDisplayName: String = "Bundle Display Name",
     private val quotes: List<OfferQuery.Quote> = listOf(QuoteBuilder().build()),
     private val insuranceCost: CostFragment = CostBuilder()
         .build(),
@@ -25,6 +26,7 @@ data class OfferDataBuilder(
 ) {
     fun build() = OfferQuery.Data(
         quoteBundle = OfferQuery.QuoteBundle(
+            displayName = bundleDisplayName,
             quotes = quotes,
             bundleCost = OfferQuery.BundleCost(
                 fragments = OfferQuery.BundleCost.Fragments(insuranceCost)

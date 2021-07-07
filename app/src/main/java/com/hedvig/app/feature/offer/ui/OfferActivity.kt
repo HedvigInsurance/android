@@ -27,13 +27,11 @@ import com.hedvig.app.feature.documents.DocumentAdapter
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
 import com.hedvig.app.feature.insurablelimits.InsurableLimitsAdapter
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.feature.offer.OfferItemsBuilder
 import com.hedvig.app.feature.offer.OfferSignDialog
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.offer.quotedetail.QuoteDetailActivity
 import com.hedvig.app.feature.offer.ui.checkout.CheckoutActivity
-import com.hedvig.app.feature.offer.ui.checkout.CheckoutParameter
 import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
@@ -191,6 +189,16 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                                 QuoteDetailActivity.newInstance(this@OfferActivity, event.quoteDetailItems)
                             )
                         }
+                        is OfferViewModel.Event.OpenCheckout -> {
+                            startActivity(CheckoutActivity.newInstance(this@OfferActivity, event.checkoutParameter))
+                        }
+                        OfferViewModel.Event.ApproveSuccessful -> startActivity(
+                            LoggedInActivity.newInstance(
+                                context = this@OfferActivity,
+                                isFromOnboarding = false,
+                                withoutHistory = true
+                            )
+                        )
                     }
                 }
                 .launchIn(lifecycleScope)
@@ -247,21 +255,9 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     OfferSignDialog.TAG
                 )
             }
-            SignMethod.SIMPLE_SIGN -> {
-                startActivity(
-                    CheckoutActivity.newInstance(
-                        this,
-                        CheckoutParameter(
-                            // TODO Get data from viewmodel
-                            quoteIds = listOf(),
-                            title = "Travel Insurance",
-                            subtitle = "79 NOK/mo.",
-                            gdprUrl = OfferItemsBuilder.GDPR_LINK
-                        )
-                    )
-                )
-            }
+            SignMethod.SIMPLE_SIGN -> model.onOpenCheckout()
             SignMethod.APPROVE_ONLY -> {
+                model.onApprove()
             }
             SignMethod.NORWEGIAN_BANK_ID,
             SignMethod.DANISH_BANK_ID,
@@ -271,10 +267,12 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
     private fun startLoggedInActivity() {
         storeBoolean(IS_VIEWING_OFFER, false)
-        LoggedInActivity.newInstance(
-            context = this,
-            isFromOnboarding = true,
-            withoutHistory = true
+        startActivity(
+            LoggedInActivity.newInstance(
+                context = this,
+                isFromOnboarding = true,
+                withoutHistory = true
+            )
         )
     }
 
