@@ -151,7 +151,7 @@ class CheckoutViewModel(
     sealed class TitleViewState {
 
         data class Loaded(
-            val bundleName: String?,
+            val bundleName: String,
             val netAmount: MonetaryAmount,
             val grossAmount: MonetaryAmount,
             val market: Market?

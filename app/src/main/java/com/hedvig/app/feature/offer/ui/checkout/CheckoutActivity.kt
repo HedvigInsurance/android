@@ -23,6 +23,7 @@ import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
+import com.hedvig.app.util.minus
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -117,9 +118,9 @@ class CheckoutActivity : BaseActivity(R.layout.activity_checkout) {
 
                 binding.title.show()
                 binding.cost.show()
-                binding.originalCost.isVisible = !titleState.netAmount.subtract(titleState.grossAmount).isZero
+                binding.originalCost.isVisible = !(titleState.netAmount - titleState.grossAmount).isZero
 
-                binding.title.text = titleState.bundleName ?: "No bundle name found"
+                binding.title.text = titleState.bundleName
                 val netAmount = titleState.netAmount.format(this, titleState.market)
                 val netString = getString(R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, netAmount)
                 binding.cost.text = netString
