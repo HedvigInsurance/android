@@ -2,6 +2,7 @@ package com.hedvig.app.testdata.feature.offer
 
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.type.TypeOfContract
+import com.hedvig.app.testdata.common.builders.TableFragmentBuilder
 import com.hedvig.app.testdata.feature.offer.builders.OfferDataBuilder
 
 val OFFER_DATA_SWEDISH_APARTMENT = OfferDataBuilder().build()
@@ -24,14 +25,23 @@ val OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_NON_SWITCHABLE = OfferData
 
 val OFFER_DATA_SWEDISH_HOUSE = OfferDataBuilder(
     typeOfContract = TypeOfContract.SE_HOUSE,
-    variant = OfferDataBuilder.Variant.SWEDISH_HOUSE,
-    extraBuildings = listOf(
-        OfferQuery.ExtraBuilding(
-            asExtraBuildingCore = OfferQuery.AsExtraBuildingCore(
-                displayName = "Extrabyggnad",
-                area = 10,
-                hasWaterConnected = false
+    detailsTable = TableFragmentBuilder(
+        title = "Home Insurance",
+        sections = listOf(
+            "Details" to listOf(
+                Triple("Address", null, "Askersgatan 129 B"),
+                Triple("Postal code", null, "113 89"),
+                Triple("Insured people", null, "You + 2"),
+                Triple("Living space", null, "180 m2"),
+                Triple("Ancillary area", null, "48 m2"),
+                Triple("Year built", null, "1997"),
+                Triple("Number of baths", null, "2"),
+                Triple("Partly subleted", null, "No"),
+            ),
+            "Extra buildings" to listOf(
+                Triple("Garage", null, "16 m2"),
+                Triple("Attefalls house", "Has water connected", "23 m2"),
             )
         )
-    )
+    ).build()
 ).build()

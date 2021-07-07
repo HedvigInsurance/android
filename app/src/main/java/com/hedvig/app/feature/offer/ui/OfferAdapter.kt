@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.offer.ui
 
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.doOnNextLayout
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -11,7 +11,6 @@ import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.BASE_MARGIN_HALF
 import com.hedvig.app.R
-import com.hedvig.app.databinding.AdditionalBuildingsRowBinding
 import com.hedvig.app.databinding.OfferFactAreaBinding
 import com.hedvig.app.databinding.OfferHeaderBinding
 import com.hedvig.app.databinding.OfferPerilAreaBinding
@@ -24,12 +23,15 @@ import com.hedvig.app.feature.offer.TermsAdapter
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheet
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.feature.table.generateTable
+import com.hedvig.app.feature.table.intoTable
 import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.extensions.getStringId
 import com.hedvig.app.util.extensions.inflate
+import com.hedvig.app.util.extensions.invalid
 import com.hedvig.app.util.extensions.setStrikethrough
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.remove
@@ -44,7 +46,7 @@ class OfferAdapter(
     private val fragmentManager: FragmentManager,
     private val tracker: OfferTracker,
     private val marketManager: MarketManager,
-    private val removeDiscount: () -> Unit
+    private val removeDiscount: () -> Unit,
 ) : ListAdapter<OfferModel, OfferAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
@@ -76,7 +78,7 @@ class OfferAdapter(
             fragmentManager: FragmentManager,
             tracker: OfferTracker,
             removeDiscount: () -> Unit,
-            marketManager: MarketManager
+            marketManager: MarketManager,
         )
 
         class Header(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_header)) {
@@ -87,7 +89,7 @@ class OfferAdapter(
                 fragmentManager: FragmentManager,
                 tracker: OfferTracker,
                 removeDiscount: () -> Unit,
-                marketManager: MarketManager
+                marketManager: MarketManager,
             ) {
                 if (data is OfferModel.Header) {
                     binding.apply {
@@ -255,7 +257,7 @@ class OfferAdapter(
                 fragmentManager: FragmentManager,
                 tracker: OfferTracker,
                 removeDiscount: () -> Unit,
-                marketManager: MarketManager
+                marketManager: MarketManager,
             ) = Unit
         }
 
@@ -271,136 +273,18 @@ class OfferAdapter(
                 fragmentManager: FragmentManager,
                 tracker: OfferTracker,
                 removeDiscount: () -> Unit,
-                marketManager: MarketManager
+                marketManager: MarketManager,
             ) {
-                if (data is OfferModel.Facts) {
-                    binding.apply {
-                        data
-                            .inner
-                            .lastQuoteOfMember
-                            .asCompleteQuote
-                            ?.quoteDetails
-                            ?.asSwedishApartmentQuoteDetails
-                            ?.let { swedishApartmentQuote ->
-                                ancillarySpaceLabel.remove()
-                                ancillarySpace.remove()
-                                yearOfConstructionLabel.remove()
-                                yearOfConstruction.remove()
-                                bathroomsLabel.remove()
-                                bathrooms.remove()
-                                subletedLabel.remove()
-                                subleted.remove()
-                                additionalBuildingsTitle.remove()
-                                additionalBuildingsContainer.remove()
-                                additionalBuildingsSeparator.remove()
-
-                                bindCommon(
-                                    swedishApartmentQuote.livingSpace,
-                                    swedishApartmentQuote.householdSize
-                                )
-
-                                expandableContentView.contentSizeChanged()
-                            }
-
-                        data
-                            .inner
-                            .lastQuoteOfMember
-                            .asCompleteQuote
-                            ?.quoteDetails
-                            ?.asSwedishHouseQuoteDetails
-                            ?.let { swedishHouseQuote ->
-                                bindCommon(
-                                    swedishHouseQuote.livingSpace,
-                                    swedishHouseQuote.householdSize
-                                )
-                                ancillarySpaceLabel.show()
-                                ancillarySpace.show()
-                                ancillarySpace.text = ancillarySpace.resources.getString(
-                                    R.string.HOUSE_INFO_BIYTA_SQUAREMETERS,
-                                    swedishHouseQuote.ancillarySpace
-                                )
-
-                                yearOfConstructionLabel.show()
-                                yearOfConstruction.show()
-                                yearOfConstruction.text =
-                                    swedishHouseQuote.yearOfConstruction.toString()
-
-                                bathroomsLabel.show()
-                                bathrooms.show()
-                                bathrooms.text = swedishHouseQuote.numberOfBathrooms.toString()
-
-                                subletedLabel.show()
-                                subleted.show()
-                                subleted.text = if (swedishHouseQuote.isSubleted) {
-                                    subleted.resources.getString(R.string.HOUSE_INFO_SUBLETED_TRUE)
-                                } else {
-                                    subleted.resources.getString(R.string.HOUSE_INFO_SUBLETED_FALSE)
-                                }
-
-                                swedishHouseQuote.extraBuildings.let { extraBuildings ->
-                                    if (extraBuildings.isEmpty()) {
-                                        additionalBuildingsContainer.remove()
-                                        additionalBuildingsTitle.remove()
-                                        additionalBuildingsSeparator.remove()
-                                    } else {
-                                        additionalBuildingsTitle.show()
-                                        additionalBuildingsContainer.show()
-                                        bindExtraBuildings(extraBuildings)
-                                    }
-                                }
-
-                                expandableContentView.contentSizeChanged()
-                            }
-                        return
-                    }
+                if (data !is OfferModel.Facts) {
+                    return invalid(data)
                 }
-
-                e { "Invariant detected: ${data.javaClass.name} passed to ${this.javaClass.name}::bind" }
-            }
-
-            private fun bindCommon(dataLivingSpace: Int, personsInHousehold: Int) {
-                binding.apply {
-                    livingSpace.text =
-                        livingSpace.resources.getString(
-                            R.string.HOUSE_INFO_BOYTA_SQUAREMETERS,
-                            dataLivingSpace
-                        )
-                    coinsured.text = personsInHousehold.toString()
-                    offerExpirationDate.text = offerExpirationDate.resources.getString(
-                        R.string.OFFER_INFO_OFFER_EXPIRES,
-                        LocalDate.now().plusMonths(1).toString()
-                    )
-                }
-            }
-
-            private fun bindExtraBuildings(extraBuildings: List<OfferQuery.ExtraBuilding>) {
-                binding.apply {
-                    additionalBuildingsTitle.show()
-                    additionalBuildingsSeparator.show()
-
-                    extraBuildings.forEach { eb ->
-                        val extraBuilding = eb.asExtraBuildingCore ?: return@forEach
-                        val binding =
-                            AdditionalBuildingsRowBinding.inflate(
-                                LayoutInflater.from(additionalBuildingsContainer.context),
-                                additionalBuildingsContainer,
-                                false
-                            )
-                        binding.title.text = extraBuilding.displayName
-
-                        var bodyText =
-                            binding.root.resources.getString(
-                                R.string.HOUSE_INFO_BOYTA_SQUAREMETERS,
-                                extraBuilding.area
-                            )
-                        if (extraBuilding.hasWaterConnected) {
-                            bodyText += ", " + binding.root.resources.getString(R.string.HOUSE_INFO_CONNECTED_WATER)
+                data.inner.lastQuoteOfMember.asCompleteQuote?.detailsTable?.fragments?.tableFragment?.intoTable()
+                    ?.let { table ->
+                        generateTable(binding.expandableContent, table)
+                        binding.expandableContentView.doOnNextLayout {
+                            binding.expandableContentView.contentSizeChanged()
                         }
-                        binding.body.text = bodyText
-                        additionalBuildingsContainer.addView(binding.root)
                     }
-                    additionalBuildingsContainer.show()
-                }
             }
         }
 
@@ -416,7 +300,7 @@ class OfferAdapter(
                 fragmentManager: FragmentManager,
                 tracker: OfferTracker,
                 removeDiscount: () -> Unit,
-                marketManager: MarketManager
+                marketManager: MarketManager,
             ) {
                 binding.apply {
                     if (perils.adapter == null) {
@@ -473,7 +357,7 @@ class OfferAdapter(
                 fragmentManager: FragmentManager,
                 tracker: OfferTracker,
                 removeDiscount: () -> Unit,
-                marketManager: MarketManager
+                marketManager: MarketManager,
             ) {
                 binding.apply {
                     if (termsDocuments.adapter == null) {
@@ -509,7 +393,7 @@ class OfferAdapter(
                 fragmentManager: FragmentManager,
                 tracker: OfferTracker,
                 removeDiscount: () -> Unit,
-                marketManager: MarketManager
+                marketManager: MarketManager,
             ) {
                 if (data is OfferModel.Switcher) {
                     val insurer = data.displayName

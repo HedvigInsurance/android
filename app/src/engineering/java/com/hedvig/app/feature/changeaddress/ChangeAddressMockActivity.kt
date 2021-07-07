@@ -7,9 +7,9 @@ import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressViewModel
 import com.hedvig.app.feature.home.ui.changeaddress.GetAddressChangeStoryIdUseCase
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement
-import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement.UpcomingAgreementTable
 import com.hedvig.app.feature.home.ui.changeaddress.ViewState
 import com.hedvig.app.feature.home.ui.changeaddress.result.ChangeAddressResultActivity
+import com.hedvig.app.feature.table.Table
 import com.hedvig.app.genericDevelopmentAdapter
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -47,41 +47,41 @@ class ChangeAddressMockActivity : MockActivity() {
                     UpcomingAgreement(
                         activeFrom = LocalDate.of(2021, 1, 13),
                         address = "Test Address 12",
-                        table = UpcomingAgreementTable(
+                        table = Table(
                             title = "Mock Upcoming Agreement",
                             sections = listOf(
-                                UpcomingAgreementTable.Section(
+                                Table.Section(
                                     title = "Details",
                                     rows = listOf(
-                                        UpcomingAgreementTable.Row(
+                                        Table.Row(
                                             title = "Address",
                                             value = "Test Address 12",
-                                            subTitle = null
+                                            subtitle = null
                                         ),
-                                        UpcomingAgreementTable.Row(
+                                        Table.Row(
                                             title = "Postal code",
                                             value = "11234",
-                                            subTitle = null
+                                            subtitle = null
                                         ),
-                                        UpcomingAgreementTable.Row(
+                                        Table.Row(
                                             title = "City",
                                             value = "Test city",
-                                            subTitle = null
+                                            subtitle = null
                                         )
                                     )
                                 ),
-                                UpcomingAgreementTable.Section(
+                                Table.Section(
                                     title = "Extra buildings",
                                     rows = listOf(
-                                        UpcomingAgreementTable.Row(
+                                        Table.Row(
                                             title = "Garage",
                                             value = "22 sqm",
-                                            subTitle = null
+                                            subtitle = null
                                         ),
-                                        UpcomingAgreementTable.Row(
+                                        Table.Row(
                                             title = "Attefall",
                                             value = "15 sqm",
-                                            subTitle = null
+                                            subtitle = null
                                         )
                                     )
                                 )

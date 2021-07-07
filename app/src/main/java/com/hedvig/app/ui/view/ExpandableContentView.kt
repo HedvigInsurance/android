@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.updateLayoutParams
+import com.google.android.material.button.MaterialButton
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ExpandableContentViewBinding
 import com.hedvig.app.util.extensions.view.performOnTapHapticFeedback
@@ -55,8 +57,12 @@ class ExpandableContentView : ConstraintLayout {
                         expandableContentContainer.updateHeight(va.animatedValue as Int)
                         if (field) {
                             bottomFadeOut.alpha = 1.0f - animatedFraction
+                            (expandableContentToggle as? MaterialButton)?.icon?.level =
+                                (animatedFraction * 10000).toInt()
                         } else {
                             bottomFadeOut.alpha = animatedFraction
+                            (expandableContentToggle as? MaterialButton)?.icon?.level =
+                                ((1.0f - animatedFraction) * 10000).toInt()
                         }
                     }
                     start()
@@ -96,23 +102,17 @@ class ExpandableContentView : ConstraintLayout {
     }
 
     fun contentSizeChanged() {
-        binding.apply {
-            expandableContentContainer.measure(
-                LayoutParams.MATCH_PARENT,
-                LayoutParams.WRAP_CONTENT
-            )
-            expandedContentHeight = expandableContentContainer.measuredHeight
-        }
+        binding.expandableContentContainer.measure(
+            MeasureSpec.makeMeasureSpec(binding.root.width, MeasureSpec.EXACTLY),
+            MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
+        )
+        expandedContentHeight = binding.expandableContentContainer.measuredHeight
     }
 
     companion object {
         const val ANIMATION_DURATION_MILLIS = 300L
-        fun View.updateHeight(newHeight: Int) {
-            layoutParams = LayoutParams(
-                layoutParams
-            ).apply {
-                height = newHeight
-            }
+        private fun View.updateHeight(newHeight: Int) {
+            updateLayoutParams { height = newHeight }
         }
     }
 }
