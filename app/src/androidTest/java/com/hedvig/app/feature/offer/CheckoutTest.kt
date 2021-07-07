@@ -5,7 +5,6 @@ import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.feature.offer.ui.checkout.CheckoutActivity
 import com.hedvig.app.feature.offer.ui.checkout.CheckoutParameter
 import com.hedvig.app.testdata.feature.offer.BUNDLE_NAME
-import com.hedvig.app.testdata.feature.offer.BUNDLE_WITH_CONCURRENT_INCEPTION_DATES_SPECIFIC_DATE
 import com.hedvig.app.testdata.feature.offer.BUNDLE_WITH_SIMPLE_SIGN
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
