@@ -9,8 +9,11 @@ import com.hedvig.app.testdata.feature.offer.BUNDLE_WITH_INDEPENDENT_INCEPTION_D
 import com.hedvig.app.testdata.feature.offer.BUNDLE_WITH_START_DATE_FROM_PREVIOUS_INSURER
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_ALL_NONSWITCHABLE
+import com.hedvig.app.testdata.feature.offer.OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_ALL_SWITCHABLE
+import com.hedvig.app.testdata.feature.offer.OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_MIXED_SWITCHABLE
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_NON_SWITCHABLE
+import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_SWITCHABLE
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_HOUSE
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_HOUSE_WITH_DISCOUNT
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -34,6 +37,10 @@ class OfferMockActivity : MockActivity() {
             MockOfferViewModel.mockData = OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_NON_SWITCHABLE
             startActivity(OfferActivity.newInstance(context))
         }
+        clickableItem("Swedish Apartment + Previous Insurer, Switchable") {
+            MockOfferViewModel.mockData = OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_SWITCHABLE
+            startActivity(OfferActivity.newInstance(context))
+        }
         clickableItem("Swedish House") {
             MockOfferViewModel.mockData = OFFER_DATA_SWEDISH_HOUSE
             startActivity(OfferActivity.newInstance(context))
@@ -46,8 +53,19 @@ class OfferMockActivity : MockActivity() {
             MockOfferViewModel.mockData = OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL
             startActivity(OfferActivity.newInstance(context))
         }
-        clickableItem("Norway, Home Contents + Travel, Both with Previous Insurer") {
-            MockOfferViewModel.mockData = OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_ALL_NONSWITCHABLE
+        clickableItem("Norway, Home Contents + Travel, Both with Previous Insurer, All Non-Switchable") {
+            MockOfferViewModel.mockData =
+                OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_ALL_NONSWITCHABLE
+            startActivity(OfferActivity.newInstance(context))
+        }
+        clickableItem("Norway, Home Contents + Travel, Both with Previous Insurer, All Switchable") {
+            MockOfferViewModel.mockData =
+                OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_ALL_SWITCHABLE
+            startActivity(OfferActivity.newInstance(context))
+        }
+        clickableItem("Norway, Home Contents + Travel, Both with Previous Insurer, Mixed Switchable") {
+            MockOfferViewModel.mockData =
+                OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_MIXED_SWITCHABLE
             startActivity(OfferActivity.newInstance(context))
         }
         clickableItem("Bundle with concurrent inception dates") {
