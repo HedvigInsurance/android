@@ -446,7 +446,7 @@ val OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_MIX
             body = "Test body",
         ).build()
     )
-)
+).build()
 
 val BUNDLE_NAME = "Checkout Bundle"
 val BUNDLE_WITH_SIMPLE_SIGN = OfferDataBuilder(
