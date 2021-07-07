@@ -411,6 +411,7 @@ class OfferAdapter(
                 }
 
                 title.setText(R.string.offer_switch_info_card_title)
+                body.setText(R.string.offer_switch_info_card_body)
             }
         }
 

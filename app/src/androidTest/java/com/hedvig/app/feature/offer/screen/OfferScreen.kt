@@ -57,6 +57,7 @@ object OfferScreen : KScreen<OfferScreen>() {
 
     class InfoCard(parent: Matcher<View>) : KRecyclerItem<InfoCard>(parent) {
         val title = KTextView(parent) { withId(R.id.title) }
+        val body = KTextView(parent) { withId(R.id.body) }
     }
 
     class WarningCard(parent: Matcher<View>) : KRecyclerItem<WarningCard>(parent) {
