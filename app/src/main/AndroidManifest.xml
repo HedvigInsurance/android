@@ -181,6 +181,9 @@
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
         <activity
+            android:name=".feature.offer.ui.checkout.CheckoutActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".feature.referrals.ReferralsReceiverActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"

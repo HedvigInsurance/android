@@ -8,6 +8,7 @@ import com.hedvig.android.owldroid.fragment.SignStatusFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
+import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.offer.quotedetail.buildDocuments
@@ -75,6 +76,7 @@ abstract class OfferViewModel : ViewModel() {
             val documents: List<DocumentItems>,
             val insurableLimitsItems: List<InsurableLimitItem>,
             val bottomOfferItems: List<OfferModel>,
+            val signMethod: SignMethod
         ) : ViewState()
 
         data class Loading(val loadingItem: List<OfferModel.Loading>) : ViewState()
@@ -132,7 +134,14 @@ class OfferViewModelImpl(
         val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(data.quoteBundle.quotes)
         val documentItems = OfferItemsBuilder.createDocumentItems(data.quoteBundle.quotes)
         val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems(data.quoteBundle)
-        return ViewState.Loaded(topOfferItems, perilItems, documentItems, insurableLimitsItems, bottomOfferItems)
+        return ViewState.Loaded(
+            topOfferItems,
+            perilItems,
+            documentItems,
+            insurableLimitsItems,
+            bottomOfferItems,
+            data.signMethodForQuotes
+        )
     }
 
     override fun removeDiscount() {

@@ -15,10 +15,10 @@ import com.hedvig.app.feature.table.intoTable
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.safeLet
 
-// TODO Add extension to BundledQuote and fetch this from BE
-private const val GDPR_LINK = "https://www.hedvig.com/se/personuppgifter"
-
 object OfferItemsBuilder {
+    // TODO Add extension to BundledQuote and fetch this from BE
+    const val GDPR_LINK = "https://www.hedvig.com/se/personuppgifter"
+
     fun createTopOfferItems(data: OfferQuery.Data): List<OfferModel> = ArrayList<OfferModel>().apply {
         add(
             OfferModel.Header(
@@ -44,7 +44,8 @@ object OfferItemsBuilder {
                     .monetaryAmountFragment
                     .toMonetaryAmount(),
                 incentiveDisplayValue = null,
-                changeDateBottomSheetData = data.quoteBundle.inception.toChangeDateBottomSheetData()
+                changeDateBottomSheetData = data.quoteBundle.inception.toChangeDateBottomSheetData(),
+                signMethod = data.signMethodForQuotes
             ),
         )
         add(

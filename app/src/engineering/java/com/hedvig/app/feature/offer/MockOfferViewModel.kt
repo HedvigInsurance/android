@@ -8,10 +8,10 @@ import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.app.feature.offer.quotedetail.buildDocuments
 import com.hedvig.app.feature.offer.quotedetail.buildInsurableLimits
 import com.hedvig.app.feature.offer.quotedetail.buildPerils
+import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 
 class MockOfferViewModel : OfferViewModel() {
 
@@ -33,7 +33,8 @@ class MockOfferViewModel : OfferViewModel() {
                     perilItems,
                     documentItems,
                     insurableLimitsItems,
-                    bottomOfferItems
+                    bottomOfferItems,
+                    mockData.signMethodForQuotes
                 )
         }
     }

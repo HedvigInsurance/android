@@ -81,6 +81,7 @@ open class HedvigApplication : Application() {
                     useCaseModule,
                     valueStoreModule,
                     onboardingModule,
+                    checkoutModule
                 )
             )
         }

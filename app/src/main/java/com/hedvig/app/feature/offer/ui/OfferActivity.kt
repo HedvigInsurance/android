@@ -18,6 +18,7 @@ import com.bumptech.glide.RequestBuilder
 import com.carousell.concatadapterextension.ConcatItemDecoration
 import com.carousell.concatadapterextension.ConcatSpanSizeLookup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityOfferBinding
@@ -25,14 +26,18 @@ import com.hedvig.app.feature.documents.DocumentAdapter
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
 import com.hedvig.app.feature.insurablelimits.InsurableLimitsAdapter
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.app.feature.offer.OfferItemsBuilder
 import com.hedvig.app.feature.offer.OfferSignDialog
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.offer.quotedetail.QuoteDetailActivity
+import com.hedvig.app.feature.offer.ui.checkout.CheckoutActivity
+import com.hedvig.app.feature.offer.ui.checkout.CheckoutParameter
 import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
+import com.hedvig.app.util.extensions.showErrorDialog
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.view.hide
@@ -99,8 +104,9 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 fragmentManager = supportFragmentManager,
                 tracker = tracker,
                 marketManager = marketManager,
-                removeDiscount = model::removeDiscount,
                 openQuoteDetails = model::onOpenQuoteDetails,
+                onRemoveDiscount = model::removeDiscount,
+                onSign = ::onSign
             )
             val perilsAdapter = PerilsAdapter(
                 fragmentManager = supportFragmentManager,
@@ -116,8 +122,9 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 fragmentManager = supportFragmentManager,
                 tracker = tracker,
                 marketManager = marketManager,
-                removeDiscount = model::removeDiscount,
                 openQuoteDetails = model::onOpenQuoteDetails,
+                onRemoveDiscount = model::removeDiscount,
+                onSign = ::onSign
             )
 
             val concatAdapter = ConcatAdapter(
@@ -146,6 +153,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                             insurableLimitsAdapter.submitList(viewState.insurableLimitsItems)
                             documentAdapter.submitList(viewState.documents)
                             bottomOfferAdapter.submitList(viewState.bottomOfferItems)
+                            setSignState(viewState.signMethod)
                         }
                         is OfferViewModel.ViewState.Loading -> {
                             topOfferAdapter.submitList(viewState.loadingItem)
@@ -161,7 +169,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     when (event) {
                         is OfferViewModel.Event.Error -> showErrorDialog(
                             event.message ?: getString(R.string.home_tab_error_body)
-                        )
+                        ) { }
                         OfferViewModel.Event.HasContracts -> startLoggedInActivity()
                         is OfferViewModel.Event.OpenQuoteDetails -> {
                             startActivity(
@@ -179,6 +187,43 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     OfferSignDialog.TAG
                 )
             }
+        }
+    }
+
+    private fun setSignState(signMethod: SignMethod) {
+        binding.signButton.bindWithSignMethod(signMethod)
+        binding.signButton.setHapticClickListener {
+            onSign(signMethod)
+        }
+    }
+
+    private fun onSign(signMethod: SignMethod) {
+        when (signMethod) {
+            SignMethod.SWEDISH_BANK_ID -> {
+                tracker.floatingSign()
+                OfferSignDialog.newInstance().show(
+                    supportFragmentManager,
+                    OfferSignDialog.TAG
+                )
+            }
+            SignMethod.SIMPLE_SIGN -> {
+                startActivity(
+                    CheckoutActivity.newInstance(
+                        this,
+                        CheckoutParameter(
+                            // TODO Get data from viewmodel
+                            title = "Travel Insurance",
+                            subtitle = "79 NOK/mo.",
+                            gdprUrl = OfferItemsBuilder.GDPR_LINK
+                        )
+                    )
+                )
+            }
+            SignMethod.APPROVE_ONLY -> {
+            }
+            SignMethod.NORWEGIAN_BANK_ID,
+            SignMethod.DANISH_BANK_ID,
+            SignMethod.UNKNOWN__ -> showErrorDialog("Could not parse sign method", ::finish)
         }
     }
 
@@ -217,14 +262,6 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             true
         }
         else -> false
-    }
-
-    private fun showErrorDialog(message: String) {
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.error_dialog_title)
-            .setMessage(message)
-            .setPositiveButton(R.string.ALERT_OK) { _, _ -> finish() }
-            .show()
     }
 
     private fun showRestartDialog() {

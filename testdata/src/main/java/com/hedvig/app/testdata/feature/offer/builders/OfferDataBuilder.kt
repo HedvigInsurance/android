@@ -3,6 +3,7 @@ package com.hedvig.app.testdata.feature.offer.builders
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.TableFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
+import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.testdata.common.builders.CostBuilder
 import com.hedvig.app.testdata.common.builders.TableFragmentBuilder
@@ -17,6 +18,7 @@ data class OfferDataBuilder(
     private val contracts: List<OfferQuery.Contract> = emptyList(),
     private val frequentlyAskedQuestions: List<OfferQuery.FrequentlyAskedQuestion> = emptyList(),
     private val inceptions: OfferQuery.Inception1 = ConcurrentInceptionBuilder().build(),
+    private val signMethod: SignMethod = SignMethod.SWEDISH_BANK_ID
 ) {
     fun build() = OfferQuery.Data(
         quoteBundle = OfferQuery.QuoteBundle(
@@ -29,6 +31,7 @@ data class OfferDataBuilder(
         ),
         redeemedCampaigns = redeemedCampaigns,
         contracts = contracts,
+        signMethodForQuotes = signMethod
     )
 }
 
@@ -71,6 +74,6 @@ data class FaqBuilder(
     fun build() = OfferQuery.FrequentlyAskedQuestion(
         id = id,
         headline = headline,
-        body = body,
+        body = body
     )
 }
