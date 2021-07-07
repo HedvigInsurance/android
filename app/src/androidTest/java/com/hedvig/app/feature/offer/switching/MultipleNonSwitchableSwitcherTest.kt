@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.offer
+package com.hedvig.app.feature.offer.switching
 
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.R
