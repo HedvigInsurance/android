@@ -82,6 +82,7 @@ open class HedvigApplication : Application() {
                     valueStoreModule,
                     onboardingModule,
                     pushTokenManagerModule,
+                    checkoutModule,
                 )
             )
         }

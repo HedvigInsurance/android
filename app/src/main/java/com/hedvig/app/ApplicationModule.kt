@@ -94,6 +94,7 @@ import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetViewModel
 import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
 import com.hedvig.app.feature.offer.ui.changestartdate.EditStartDateUseCase
+import com.hedvig.app.feature.offer.ui.checkout.CheckoutViewModel
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.onboarding.ChoosePlanRepository
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
@@ -151,14 +152,14 @@ import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.svg.GlideApp
 import com.hedvig.app.util.svg.SvgSoftwareLayerSetter
 import com.mixpanel.android.mpmetrics.MixpanelAPI
+import java.time.Clock
+import java.util.Locale
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import timber.log.Timber
-import java.time.Clock
-import java.util.Locale
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APPLICATION_ID == "com.hedvig.test.app"
 
@@ -408,6 +409,10 @@ val changeAddressModule = module {
 
 val changeDateBottomSheetModule = module {
     viewModel { (data: ChangeDateBottomSheetData) -> ChangeDateBottomSheetViewModel(get(), get(), data) }
+}
+
+val checkoutModule = module {
+    viewModel { CheckoutViewModel() }
 }
 
 val serviceModule = module {
