@@ -28,8 +28,9 @@ sealed class OfferModel {
         val table: Table,
     ) : OfferModel()
 
-    data class Switcher(
+    data class CurrentInsurer(
         val displayName: String?,
+        val associatedQuote: String?,
     ) : OfferModel()
 
     data class Footer(
@@ -38,6 +39,7 @@ sealed class OfferModel {
 
     sealed class Subheading : OfferModel() {
         object Coverage : Subheading()
+        data class Switcher(val amountOfCurrentInsurers: Int) : Subheading()
     }
 
     sealed class Paragraph : OfferModel() {
@@ -54,6 +56,8 @@ sealed class OfferModel {
     ) : OfferModel()
 
     object Loading : OfferModel()
+    object AutomaticSwitchCard : OfferModel()
+    object ManualSwitchCard : OfferModel()
 }
 
 sealed class OfferStartDate {

@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.doOnNextLayout
+import androidx.core.view.isVisible
 import androidx.core.view.updatePaddingRelative
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.ListAdapter
@@ -13,6 +14,7 @@ import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.BASE_MARGIN_SEPTUPLE
 import com.hedvig.app.BASE_MARGIN_TRIPLE
 import com.hedvig.app.R
+import com.hedvig.app.databinding.InfoCardBinding
 import com.hedvig.app.databinding.OfferFactAreaBinding
 import com.hedvig.app.databinding.OfferFaqBinding
 import com.hedvig.app.databinding.OfferFooterBinding
@@ -21,6 +23,7 @@ import com.hedvig.app.databinding.OfferSwitchBinding
 import com.hedvig.app.databinding.TextBody2Binding
 import com.hedvig.app.databinding.TextHeadline5Binding
 import com.hedvig.app.databinding.TextSubtitle1Binding
+import com.hedvig.app.databinding.WarningCardBinding
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.offer.OfferRedeemCodeBottomSheet
 import com.hedvig.app.feature.offer.OfferTracker
@@ -41,7 +44,6 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
-import e
 import javax.money.MonetaryAmount
 
 class OfferAdapter(
@@ -70,19 +72,23 @@ class OfferAdapter(
         R.layout.text_subtitle1 -> ViewHolder.QuoteDetails(parent, openQuoteDetails)
         R.layout.offer_faq -> ViewHolder.FAQ(parent, fragmentManager)
         R.layout.offer_loading_header -> ViewHolder.Loading(parent)
+        R.layout.info_card -> ViewHolder.InfoCard(parent)
+        R.layout.warning_card -> ViewHolder.WarningCard(parent)
         else -> throw Error("Invalid viewType: $viewType")
     }
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
         is OfferModel.Header -> R.layout.offer_header
         is OfferModel.Facts -> R.layout.offer_fact_area
-        is OfferModel.Switcher -> R.layout.offer_switch
+        is OfferModel.CurrentInsurer -> R.layout.offer_switch
         is OfferModel.Footer -> R.layout.offer_footer
         is OfferModel.Subheading -> R.layout.text_headline5
         is OfferModel.Paragraph -> R.layout.text_body2
         is OfferModel.QuoteDetails -> R.layout.text_subtitle1
         is OfferModel.FAQ -> R.layout.offer_faq
         OfferModel.Loading -> R.layout.offer_loading_header
+        OfferModel.AutomaticSwitchCard -> R.layout.info_card
+        OfferModel.ManualSwitchCard -> R.layout.warning_card
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -189,18 +195,14 @@ class OfferAdapter(
         class Switch(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_switch)) {
             private val binding by viewBinding(OfferSwitchBinding::bind)
 
-            override fun bind(data: OfferModel) {
-                if (data is OfferModel.Switcher) {
-                    val insurer = data.displayName
-                        ?: binding.switchTitle.resources.getString(R.string.OTHER_INSURER_OPTION_APP)
-                    binding.switchTitle.text = binding.switchTitle.resources.getString(
-                        R.string.OFFER_SWITCH_TITLE_APP,
-                        insurer
-                    )
-                    return
+            override fun bind(data: OfferModel) = with(binding) {
+                if (data !is OfferModel.CurrentInsurer) {
+                    return invalid(data)
                 }
 
-                e { "Invariant detected: ${data.javaClass.name} passed to ${this.javaClass.name}::bind" }
+                associatedQuote.isVisible = data.associatedQuote != null
+                data.associatedQuote?.let { associatedQuote.text = it }
+                currentInsurer.text = data.displayName
             }
         }
 
@@ -225,6 +227,7 @@ class OfferAdapter(
             init {
                 binding.root.updateMargin(
                     start = BASE_MARGIN_DOUBLE,
+                    top = BASE_MARGIN_SEPTUPLE,
                     end = BASE_MARGIN_DOUBLE,
                 )
             }
@@ -236,10 +239,15 @@ class OfferAdapter(
 
                 when (data) {
                     OfferModel.Subheading.Coverage -> {
-                        updateMargin(
-                            top = BASE_MARGIN_SEPTUPLE
-                        )
                         setText(R.string.offer_screen_coverage_title)
+                        updateMargin(bottom = 0)
+                    }
+                    is OfferModel.Subheading.Switcher -> {
+                        text = context.resources.getQuantityString(
+                            R.plurals.offer_switcher_title,
+                            data.amountOfCurrentInsurers
+                        )
+                        updateMargin(bottom = BASE_MARGIN_DOUBLE)
                     }
                 }
             }
@@ -297,10 +305,6 @@ class OfferAdapter(
             }
         }
 
-        class Loading(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_loading_header)) {
-            override fun bind(data: OfferModel) = Unit
-        }
-
         class FAQ(
             parent: ViewGroup,
             private val fragmentManager: FragmentManager
@@ -341,6 +345,36 @@ class OfferAdapter(
 
                     rowContainer.addView(rowBinding.root)
                 }
+            }
+        }
+
+        class Loading(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_loading_header)) {
+            override fun bind(data: OfferModel) = Unit
+        }
+
+        class InfoCard(parent: ViewGroup) : OfferAdapter.ViewHolder(parent.inflate(R.layout.info_card)) {
+            private val binding by viewBinding(InfoCardBinding::bind)
+
+            override fun bind(data: OfferModel) = with(binding) {
+                if (data !is OfferModel.AutomaticSwitchCard) {
+                    return invalid(data)
+                }
+
+                title.setText(R.string.offer_switch_info_card_title)
+                body.setText(R.string.offer_switch_info_card_body)
+            }
+        }
+
+        class WarningCard(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.warning_card)) {
+            private val binding by viewBinding(WarningCardBinding::bind)
+
+            override fun bind(data: OfferModel) = with(binding) {
+                if (data !is OfferModel.ManualSwitchCard) {
+                    return invalid(data)
+                }
+
+                title.setText(R.string.offer_manual_switch_card_title)
+                body.setText(R.string.offer_manual_switch_card_body)
             }
         }
     }

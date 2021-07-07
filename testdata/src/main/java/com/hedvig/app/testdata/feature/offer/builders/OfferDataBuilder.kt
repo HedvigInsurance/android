@@ -27,7 +27,7 @@ data class OfferDataBuilder(
                 fragments = OfferQuery.BundleCost.Fragments(insuranceCost)
             ),
             frequentlyAskedQuestions = frequentlyAskedQuestions,
-            inception = inceptions
+            inception = inceptions,
         ),
         redeemedCampaigns = redeemedCampaigns,
         contracts = contracts,
@@ -59,10 +59,10 @@ data class QuoteBuilder(
         perils = perils,
         termsAndConditions = OfferQuery.TermsAndConditions(
             displayName = "Villkor",
-            url = termsAndConditionsUrl
+            url = termsAndConditionsUrl,
         ),
         insurableLimits = insurableLimits,
-        insuranceTerms = insuranceTerms
+        insuranceTerms = insuranceTerms,
     )
 }
 

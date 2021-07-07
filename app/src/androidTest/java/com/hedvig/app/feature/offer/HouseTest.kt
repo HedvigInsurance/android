@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.offer
 
 import com.hedvig.android.owldroid.graphql.OfferQuery
+import com.hedvig.app.feature.offer.screen.OfferScreen
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_HOUSE
 import com.hedvig.app.util.ApolloCacheClearRule

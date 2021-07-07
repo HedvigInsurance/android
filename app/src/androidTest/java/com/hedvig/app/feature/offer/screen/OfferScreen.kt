@@ -1,15 +1,12 @@
-package com.hedvig.app.feature.offer
+package com.hedvig.app.feature.offer.screen
 
 import android.view.View
-import com.agoda.kakao.check.KCheckBox
 import com.agoda.kakao.common.views.KView
 import com.agoda.kakao.recycler.KRecyclerItem
 import com.agoda.kakao.recycler.KRecyclerView
-import com.agoda.kakao.text.KButton
 import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
 import com.hedvig.app.feature.offer.ui.OfferActivity
-import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheet
 import com.hedvig.app.util.withParentIndex
 import com.kaspersky.kaspresso.screens.KScreen
 import org.hamcrest.Matcher
@@ -21,11 +18,13 @@ object OfferScreen : KScreen<OfferScreen>() {
     val scroll = KRecyclerView(
         { withId(R.id.offerScroll) },
         {
-            itemType(::HeaderItem)
-            itemType(::SwitcherItem)
-            itemType(::Facts)
-            itemType(::QuoteDetail)
-            itemType(::FAQ)
+            itemType(OfferScreen::HeaderItem)
+            itemType(OfferScreen::SwitcherItem)
+            itemType(OfferScreen::Facts)
+            itemType(OfferScreen::QuoteDetail)
+            itemType(OfferScreen::FAQ)
+            itemType(OfferScreen::InfoCard)
+            itemType(OfferScreen::WarningCard)
         }
     )
 
@@ -35,7 +34,8 @@ object OfferScreen : KScreen<OfferScreen>() {
     }
 
     class SwitcherItem(parent: Matcher<View>) : KRecyclerItem<SwitcherItem>(parent) {
-        val title = KTextView(parent) { withId(R.id.switchTitle) }
+        val associatedQuote = KTextView(parent) { withId(R.id.associatedQuote) }
+        val currentInsurer = KTextView(parent) { withId(R.id.currentInsurer) }
     }
 
     class Facts(parent: Matcher<View>) : KRecyclerItem<Facts>(parent) {
@@ -54,24 +54,15 @@ object OfferScreen : KScreen<OfferScreen>() {
             withParentIndex(index)
         }.invoke(function)
     }
-}
 
-object ChangeDateSheet : KScreen<ChangeDateSheet>() {
-    override val layoutId = R.layout.dialog_change_start_date
-    override val viewClass = ChangeDateBottomSheet::class.java
+    class InfoCard(parent: Matcher<View>) : KRecyclerItem<InfoCard>(parent) {
+        val title = KTextView(parent) { withId(R.id.title) }
+        val body = KTextView(parent) { withId(R.id.body) }
+    }
 
-    val submit = KButton { withId(R.id.chooseDateButton) }
-    val changeDateContainer = KView {
-        withId(R.id.change_date_container)
+    class WarningCard(parent: Matcher<View>) : KRecyclerItem<WarningCard>(parent) {
+        val title = KTextView(parent) { withId(R.id.title) }
+        val body = KTextView(parent) { withId(R.id.body) }
     }
 }
 
-object ChangeDateView : KScreen<ChangeDateView>() {
-    override val layoutId = R.layout.change_date
-    override val viewClass = ChangeDateView::class.java
-
-    val switches = KCheckBox {
-        withId(R.id.auto_set_date_switch)
-        isDisplayed()
-    }
-}

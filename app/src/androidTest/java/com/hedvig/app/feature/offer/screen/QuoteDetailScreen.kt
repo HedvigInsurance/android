@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.offer
+package com.hedvig.app.feature.offer.screen
 
 import com.agoda.kakao.recycler.KRecyclerView
 import com.agoda.kakao.toolbar.KToolbar

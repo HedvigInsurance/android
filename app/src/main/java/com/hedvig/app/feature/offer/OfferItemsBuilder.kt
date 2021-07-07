@@ -89,20 +89,46 @@ object OfferItemsBuilder {
         emptyList()
     }
 
-    fun createBottomOfferItems(bundle: OfferQuery.QuoteBundle) = listOfNotNull(
+    fun createBottomOfferItems(bundle: OfferQuery.QuoteBundle) = ArrayList<OfferModel>().apply {
         if (bundle.frequentlyAskedQuestions.isNotEmpty()) {
-            OfferModel.FAQ(
-                bundle.frequentlyAskedQuestions.mapNotNull {
-                    safeLet(it.headline, it.body) { headline, body ->
-                        FAQItem(headline, body)
+            add(
+                OfferModel.FAQ(
+                    bundle.frequentlyAskedQuestions.mapNotNull {
+                        safeLet(it.headline, it.body) { headline, body ->
+                            FAQItem(headline, body)
+                        }
                     }
-                }
+                )
             )
-        } else {
-            null
-        },
-        OfferModel.Footer(GDPR_LINK),
-    )
+        }
+        if (bundle.quotes.any { it.currentInsurer != null }) {
+            add(OfferModel.Subheading.Switcher(bundle.quotes.count { it.currentInsurer?.displayName != null }))
+            bundle.quotes.mapNotNull {
+                it.currentInsurer?.let { currentInsurer ->
+                    currentInsurer to it.displayName
+                }
+            }.forEach { (currentInsurer, associatedQuote) ->
+                add(
+                    OfferModel.CurrentInsurer(
+                        displayName = currentInsurer.displayName,
+                        associatedQuote = if (bundle.quotes.size > 1) {
+                            associatedQuote
+                        } else {
+                            null
+                        }
+                    )
+                )
+                add(
+                    if (currentInsurer.switchable == true) {
+                        OfferModel.AutomaticSwitchCard
+                    } else {
+                        OfferModel.ManualSwitchCard
+                    }
+                )
+            }
+        }
+        add(OfferModel.Footer(GDPR_LINK))
+    }
 
     fun createPerilItems(data: List<OfferQuery.Quote>) = if (data.size == 1) {
         data[0]
