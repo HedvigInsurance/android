@@ -183,7 +183,6 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                         is OfferViewModel.Event.Error -> showErrorDialog(
                             event.message ?: getString(R.string.home_tab_error_body)
                         ) { }
-                        OfferViewModel.Event.HasContracts -> startLoggedInActivity()
                         is OfferViewModel.Event.OpenQuoteDetails -> {
                             startActivity(
                                 QuoteDetailActivity.newInstance(this@OfferActivity, event.quoteDetailItems)
@@ -256,9 +255,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 )
             }
             SignMethod.SIMPLE_SIGN -> model.onOpenCheckout()
-            SignMethod.APPROVE_ONLY -> {
-                model.onApprove()
-            }
+            SignMethod.APPROVE_ONLY -> model.onApprove()
             SignMethod.NORWEGIAN_BANK_ID,
             SignMethod.DANISH_BANK_ID,
             SignMethod.UNKNOWN__ -> showErrorDialog("Could not parse sign method", ::finish)
