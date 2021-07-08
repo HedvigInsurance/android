@@ -42,7 +42,6 @@ abstract class OfferViewModel : ViewModel() {
         data class Error(val message: String? = null) : Event()
 
         object HasContracts : Event()
-        object ApproveOrSignSuccessful : Event()
         data class OpenQuoteDetails(
             val quoteDetailItems: QuoteDetailItems,
         ) : Event()
@@ -99,7 +98,6 @@ abstract class OfferViewModel : ViewModel() {
     }
 
     abstract fun onOpenCheckout()
-    abstract fun onApprove()
 }
 
 class OfferViewModelImpl(
@@ -160,8 +158,9 @@ class OfferViewModelImpl(
         )
     }
 
-    override fun onApprove() {
+    override fun approveOffer() {
         viewModelScope.launch {
+            _viewState.value = ViewState.Loading(OfferItemsBuilder.createLoadingItem())
             when (val result = signQuotesUseCase.approveQuotes(quoteIds)) {
                 is SignQuotesUseCase.SignQuoteResult.Error -> _events.tryEmit(Event.Error(result.message))
                 SignQuotesUseCase.SignQuoteResult.Success -> _events.tryEmit(Event.ApproveSuccessful)
@@ -275,13 +274,6 @@ class OfferViewModelImpl(
                     )
                 }
             }
-        }
-    }
-
-    override fun approveOffer() {
-        viewModelScope.launch {
-            offerRepository.approveOffer(quoteIds)
-            _events.tryEmit(Event.ApproveOrSignSuccessful)
         }
     }
 }

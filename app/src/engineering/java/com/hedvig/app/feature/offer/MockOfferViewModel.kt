@@ -76,10 +76,6 @@ class MockOfferViewModel : OfferViewModel() {
         )
     }
 
-    override fun onApprove() {
-        _events.tryEmit(Event.ApproveSuccessful)
-    }
-
     companion object {
         var mockData = OFFER_DATA_SWEDISH_APARTMENT
     }
