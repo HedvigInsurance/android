@@ -34,10 +34,8 @@ import com.hedvig.app.feature.offer.ui.checkout.CheckoutActivity
 import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
-import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.extensions.showErrorDialog
 import com.hedvig.app.util.extensions.startClosableChat
-import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
@@ -214,22 +212,11 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 )
             }
             SignMethod.SIMPLE_SIGN -> model.onOpenCheckout()
-            SignMethod.APPROVE_ONLY -> model.onApprove()
+            SignMethod.APPROVE_ONLY -> model.approveOffer()
             SignMethod.NORWEGIAN_BANK_ID,
             SignMethod.DANISH_BANK_ID,
             SignMethod.UNKNOWN__ -> showErrorDialog("Could not parse sign method", ::finish)
         }
-    }
-
-    private fun startLoggedInActivity() {
-        storeBoolean(IS_VIEWING_OFFER, false)
-        startActivity(
-            LoggedInActivity.newInstance(
-                context = this,
-                isFromOnboarding = true,
-                withoutHistory = true
-            )
-        )
     }
 
     private fun handleMenuItem(menuItem: MenuItem) = when (menuItem.itemId) {

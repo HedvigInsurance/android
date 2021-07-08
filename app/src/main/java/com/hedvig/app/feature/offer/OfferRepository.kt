@@ -154,10 +154,6 @@ class OfferRepository(
         .build()
         .await()
 
-    suspend fun approveOffer(quoteIds: List<String>) = apolloClient
-        .mutate(ApproveQuotesMutation(quoteIds))
-        .await()
-
     fun quoteIdOfLastQuoteOfMember(): ApolloCall<LastQuoteIdQuery.Data> = apolloClient
         .query(LastQuoteIdQuery())
 }

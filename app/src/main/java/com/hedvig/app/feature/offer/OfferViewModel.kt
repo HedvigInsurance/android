@@ -20,6 +20,7 @@ import com.hedvig.app.feature.offer.ui.checkout.SignQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.perils.PerilItem
+import com.hedvig.app.util.apollo.QueryResult
 import e
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -39,7 +40,6 @@ abstract class OfferViewModel : ViewModel() {
         data class Error(val message: String? = null) : Event()
 
         object HasContracts : Event()
-        object ApproveOrSignSuccessful : Event()
         data class OpenQuoteDetails(
             val quoteDetailItems: QuoteDetailItems,
         ) : Event()
@@ -94,7 +94,6 @@ abstract class OfferViewModel : ViewModel() {
     }
 
     abstract fun onOpenCheckout()
-    abstract fun onApprove()
 }
 
 class OfferViewModelImpl(
@@ -153,8 +152,9 @@ class OfferViewModelImpl(
         )
     }
 
-    override fun onApprove() {
+    override fun approveOffer() {
         viewModelScope.launch {
+            _viewState.value = ViewState.Loading(OfferItemsBuilder.createLoadingItem())
             when (val result = signQuotesUseCase.approveQuotes(quoteIds)) {
                 is SignQuotesUseCase.SignQuoteResult.Error -> _events.tryEmit(Event.Error(result.message))
                 SignQuotesUseCase.SignQuoteResult.Success -> _events.tryEmit(Event.ApproveSuccessful)
@@ -266,13 +266,6 @@ class OfferViewModelImpl(
                     )
                 }
             }
-        }
-    }
-
-    override fun approveOffer() {
-        viewModelScope.launch {
-            offerRepository.approveOffer(quoteIds)
-            _events.tryEmit(Event.ApproveOrSignSuccessful)
         }
     }
 }
