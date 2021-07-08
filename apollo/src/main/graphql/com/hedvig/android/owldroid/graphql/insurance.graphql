@@ -1,4 +1,4 @@
-query InsuranceQuery($locale: Locale!) {
+query InsuranceQuery($locale: Locale!, $showDetailsTable: Boolean! = false) {
   contracts {
     id
     status {

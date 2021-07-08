@@ -4,12 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
-    <com.hedvig.app.ui.view.HedvigCardView
+    <FrameLayout
         android:id="@+id/expandableContentContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/purple"
-        android:elevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -23,13 +21,14 @@
 
     <Button
         android:id="@+id/expandableContentToggle"
-        style="?attr/materialButtonContainedLargeStyle"
-        android:layout_width="match_parent"
+        style="?materialButtonOutlinedStyle"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin_quadruple"
         android:text="@string/OFFER_HOUSE_SUMMARY_BUTTON_EXPAND"
-        android:theme="@style/Hedvig.Button.Large"
+        app:icon="@drawable/ic_dropdown_rotate"
+        app:iconPadding="@dimen/base_margin"
         app:layout_constraintBottom_toBottomOf="@id/expandableContentContainer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -16,6 +16,7 @@ import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyIntentsActivityScenarioRule
 import com.hedvig.app.util.MarketRule
+import com.hedvig.app.util.MockedOfferPersistenceManagerRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.stub
@@ -44,6 +45,9 @@ class ActiveWithMultiplePSAsAndConnectPayment : TestCase() {
 
     @get:Rule
     val marketRule = MarketRule(Market.NO)
+
+    @get:Rule
+    val offerPersistenceRule = MockedOfferPersistenceManagerRule()
 
     @Test
     fun shouldOpenPSALinksAndConnectPayment() = run {

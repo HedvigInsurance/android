@@ -15,7 +15,7 @@ android {
         resValues = false
         shaders = false
     }
-    
+
     kotlinOptions {
         jvmTarget = "1.8"
     }

@@ -160,13 +160,13 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                                     R.string.REFERRAL_SMS_MESSAGE,
                                     incentive.format(requireContext(), marketManager.market),
                                     "${
-                                        requireContext().getString(R.string.WEB_BASE_URL)
+                                    requireContext().getString(R.string.WEB_BASE_URL)
                                     }/${
-                                        localeManager.defaultLocale().toWebLocaleTag()
+                                    localeManager.defaultLocale().toWebLocaleTag()
                                     }/forever/${
-                                        Uri.encode(
-                                            code
-                                        )
+                                    Uri.encode(
+                                        code
+                                    )
                                     }"
                                 )
                             )

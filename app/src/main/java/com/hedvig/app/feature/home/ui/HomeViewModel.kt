@@ -18,12 +18,9 @@ import kotlinx.coroutines.launch
 abstract class HomeViewModel : ViewModel() {
     protected val _homeData = MutableLiveData<Result<HomeQuery.Data>>()
     protected val _payinStatusData = MutableLiveData<PayinStatusQuery.Data>()
-    // TODO Fetch address change in progress
-    protected val _addressChangeInProgress = MutableLiveData("")
-    val data: LiveData<Triple<Result<HomeQuery.Data>?, PayinStatusQuery.Data?, String?>> = combineTuple(
+    val data: LiveData<Pair<Result<HomeQuery.Data>?, PayinStatusQuery.Data?>> = combineTuple(
         _homeData,
-        _payinStatusData,
-        _addressChangeInProgress
+        _payinStatusData
     )
 
     abstract fun load()
@@ -38,25 +35,19 @@ class HomeViewModelImpl(
             homeRepository
                 .home()
                 .onEach { response ->
-                    response.errors?.let {
-                        _homeData.postValue(Result.failure(Error()))
-                        return@onEach
+                    when (response) {
+                        is HomeRepository.HomeResult.Error -> _homeData.postValue(Result.failure(Error()))
+                        is HomeRepository.HomeResult.Home -> _homeData.postValue(Result.success(response.data))
                     }
-                    response.data?.let { _homeData.postValue(Result.success(it)) }
                 }
-                .catch { e ->
-                    _homeData.postValue(Result.failure(e))
-                }
+                .catch { e -> _homeData.postValue(Result.failure(e)) }
                 .launchIn(this)
 
             payinStatusRepository
                 .payinStatus()
-                .onEach { response ->
-                    response.data?.let { _payinStatusData.postValue(it) }
-                }
-                .catch { err ->
-                    e(err)
-                }.launchIn(this)
+                .onEach { response -> response.data?.let { _payinStatusData.postValue(it) } }
+                .catch { err -> e(err) }
+                .launchIn(this)
         }
     }
 

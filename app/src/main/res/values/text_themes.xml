@@ -65,6 +65,13 @@
         <item name="android:textColor">?android:textColorTertiary</item>
     </style>
 
+    <style name="Hedvig.TextAppearance.Discount" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="lineHeight">16sp</item>
+        <item name="android:letterSpacing">0.1</item>
+        <item name="android:textColor">?android:textColorSecondary</item>
+    </style>
+
+
     <style name="Hedvig.TextAppearance.Overline" parent="TextAppearance.MaterialComponents.Overline">
         <item name="lineHeight">16sp</item>
         <item name="android:letterSpacing">0.05</item>

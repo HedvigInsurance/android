@@ -86,6 +86,10 @@
             android:label="Trustly Mock Screen"
             android:theme="@style/Hedvig.Theme" />
 
+        <activity
+            android:name=".feature.checkout.CheckoutMockActivity"
+            android:label="Checkout Mock Screen" />
+
         <activity android:name=".feature.payment.PaymentMockActivity" />
 
         <activity android:name=".feature.changeaddress.ChangeAddressMockActivity" />

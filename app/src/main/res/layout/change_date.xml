@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bottom_sheet_dialog_no_title_fragment_background"
+    android:orientation="vertical"
+    android:paddingTop="@dimen/base_margin"
+    android:paddingBottom="@dimen/base_margin"
+    tools:context=".feature.offer.ui.changestartdate.ChangeDateBottomSheet">
+
+    <TextView
+        android:layout_marginTop="@dimen/base_margin"
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?textAppearanceHeadline6"
+        tools:text="Travel Insurance"
+        />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/date_pick_layout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:hint="@string/OFFER_START_DATE"
+        app:boxCornerRadiusBottomEnd="@dimen/base_margin"
+        app:boxCornerRadiusBottomStart="@dimen/base_margin"
+        app:boxCornerRadiusTopEnd="@dimen/base_margin"
+        app:boxCornerRadiusTopStart="@dimen/base_margin">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/datePickText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:editable="false"
+            android:focusable="false"
+            android:textAppearance="?textAppearanceBody1"
+            android:textColor="@color/textColorSecondary" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/autoSetDateTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:text="@string/OFFER_PLAN_EXPIRE_TITLE"
+        android:textAppearance="?textAppearanceSubtitle1" />
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/auto_set_date_switch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_half"
+        android:text="@string/OFFER_PLAN_EXIRES_TEXT"
+        android:textColor="@color/textColorPrimary"
+        app:switchPadding="@dimen/base_margin_triple"
+        app:switchTextAppearance="?textAppearanceBody2" />
+
+</LinearLayout>

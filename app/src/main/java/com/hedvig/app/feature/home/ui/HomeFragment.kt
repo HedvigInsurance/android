@@ -98,7 +98,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             )
         }
 
-        model.data.observe(viewLifecycleOwner) { (homeData, payinStatusData, pendingAddress) ->
+        model.data.observe(viewLifecycleOwner) { (homeData, payinStatusData) ->
             if (homeData == null) {
                 return@observe
             }
@@ -116,9 +116,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             if (isPending(successData.contracts)) {
                 (binding.recycler.adapter as? HomeAdapter)?.submitList(
                     listOf(
-                        HomeModel.BigText.Pending(
-                            firstName
-                        ),
+                        HomeModel.BigText.Pending(firstName),
                         HomeModel.BodyText.Pending
                     )
                 )
@@ -148,18 +146,25 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                 )
             }
 
+            val addressInProgress = successData.quoteBundle.quotes.mapNotNull {
+                it.quoteDetails.asSwedishHouseQuoteDetails?.street
+                    ?: it.quoteDetails.asSwedishApartmentQuoteDetails?.street
+                    ?: it.quoteDetails.asNorwegianHomeContentsDetails?.street
+                    ?: it.quoteDetails.asDanishHomeContentsDetails?.street
+            }.joinToString()
+
             if (isTerminated(successData.contracts)) {
                 val items = mutableListOf<HomeModel>().apply {
                     add(HomeModel.BigText.Terminated(firstName))
                     add(HomeModel.BodyText.Terminated)
                     add(HomeModel.StartClaimOutlined)
                     add(HomeModel.HowClaimsWork(successData.howClaimsWork))
-                    if (pendingAddress != null && pendingAddress.isNotBlank()) {
-                        add(HomeModel.PendingAddressChange(pendingAddress))
+                    if (addressInProgress.isNotBlank()) {
+                        add(HomeModel.PendingAddressChange(addressInProgress))
                     }
                     if (FeatureFlag.MOVING_FLOW.enabled) {
                         add(HomeModel.Header(getString(R.string.home_tab_editing_section_title)))
-                        add(HomeModel.ChangeAddress(pendingAddress))
+                        add(HomeModel.ChangeAddress(addressInProgress))
                     }
                 }
                 (binding.recycler.adapter as? HomeAdapter)?.submitList(items)
@@ -171,8 +176,8 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     add(HomeModel.BigText.Active(firstName))
                     add(HomeModel.StartClaimContained)
                     add(HomeModel.HowClaimsWork(successData.howClaimsWork))
-                    if (pendingAddress != null && pendingAddress.isNotBlank()) {
-                        add(HomeModel.PendingAddressChange(pendingAddress))
+                    if (addressInProgress.isNotBlank()) {
+                        add(HomeModel.PendingAddressChange(addressInProgress))
                     }
                     addAll(listOfNotNull(*upcomingRenewals(successData.contracts).toTypedArray()))
                     if (payinStatusData?.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP) {
@@ -189,7 +194,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     )
                     if (FeatureFlag.MOVING_FLOW.enabled) {
                         add(HomeModel.Header(getString(R.string.home_tab_editing_section_title)))
-                        add(HomeModel.ChangeAddress(pendingAddress))
+                        add(HomeModel.ChangeAddress(addressInProgress))
                     }
                 }
                 (binding.recycler.adapter as? HomeAdapter)?.submitList(items)

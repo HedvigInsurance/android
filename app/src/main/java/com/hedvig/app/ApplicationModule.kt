@@ -1,8 +1,10 @@
 package com.hedvig.app
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.drawable.PictureDrawable
 import android.os.Build
+import androidx.preference.PreferenceManager
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.NormalizedCacheFactory
 import com.apollographql.apollo.cache.normalized.lru.EvictionPolicy
@@ -86,10 +88,18 @@ import com.hedvig.app.feature.marketpicker.MarketPickerTracker
 import com.hedvig.app.feature.marketpicker.MarketPickerViewModel
 import com.hedvig.app.feature.marketpicker.MarketPickerViewModelImpl
 import com.hedvig.app.feature.marketpicker.MarketRepository
+import com.hedvig.app.feature.offer.OfferPersistenceManager
+import com.hedvig.app.feature.offer.OfferPersistenceManagerImpl
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.offer.OfferViewModelImpl
+import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
+import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetViewModel
+import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
+import com.hedvig.app.feature.offer.ui.changestartdate.EditStartDateUseCase
+import com.hedvig.app.feature.offer.ui.checkout.CheckoutViewModel
+import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.onboarding.ChoosePlanRepository
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModelImpl
@@ -324,7 +334,7 @@ val whatsNewModule = module {
 
 val insuranceModule = module {
     viewModel<InsuranceViewModel> { InsuranceViewModelImpl(get()) }
-    viewModel<ContractDetailViewModel> { ContractDetailViewModelImpl(get(), get()) }
+    viewModel<ContractDetailViewModel> { ContractDetailViewModelImpl(get(), get(), get()) }
 }
 
 val marketingModule = module {
@@ -332,7 +342,7 @@ val marketingModule = module {
 }
 
 val offerModule = module {
-    viewModel<OfferViewModel> { OfferViewModelImpl(get()) }
+    viewModel<OfferViewModel> { (ids: List<String>) -> OfferViewModelImpl(ids, get(), get(), get()) }
 }
 
 val profileModule = module {
@@ -401,6 +411,14 @@ val changeAddressModule = module {
     viewModel<ChangeAddressViewModel> { ChangeAddressViewModelImpl(get(), get()) }
 }
 
+val changeDateBottomSheetModule = module {
+    viewModel { (data: ChangeDateBottomSheetData) -> ChangeDateBottomSheetViewModel(get(), get(), data) }
+}
+
+val checkoutModule = module {
+    viewModel { CheckoutViewModel() }
+}
+
 val serviceModule = module {
     single { FileService(get()) }
     single { LoginStatusService(get(), get()) }
@@ -431,7 +449,7 @@ val repositoriesModule = module {
     single { EmbarkRepository(get(), get(), get(), get()) }
     single { ReferralsRepository(get()) }
     single { LoggedInRepository(get(), get()) }
-    single { HomeRepository(get(), get()) }
+    single { HomeRepository(get(), get(), get()) }
     single { TrustlyRepository(get()) }
     single { MemberIdRepository(get()) }
     single { PaymentRepository(get()) }
@@ -488,8 +506,23 @@ val useCaseModule = module {
     single { StartDanishAuthUseCase(get()) }
     single { StartNorwegianAuthUseCase(get()) }
     single { SubscribeToAuthStatusUseCase(get()) }
+    single { GetQuotesUseCase(get()) }
+    single { GetQuoteUseCase(get()) }
+    single { EditStartDateUseCase(get(), get()) }
 }
 
 val pushTokenManagerModule = module {
     single { PushTokenManager(FirebaseMessaging.getInstance()) }
+}
+
+val preferenceManagerModule = module {
+    single<SharedPreferences> {
+        PreferenceManager.getDefaultSharedPreferences(get())
+    }
+}
+
+val offerPersistenceManagerModule = module {
+    single<OfferPersistenceManager> {
+        OfferPersistenceManagerImpl(get())
+    }
 }

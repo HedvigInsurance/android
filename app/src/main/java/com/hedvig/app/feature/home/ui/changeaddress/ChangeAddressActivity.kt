@@ -71,58 +71,60 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
         }
     }
 
-    private fun setViewState(viewState: ViewState) = when (viewState) {
-        Loading -> {
-            binding.spinner.loadingSpinner.show()
-            binding.contentScrollView.remove()
-        }
-        is SelfChangeAddress -> setContent(
-            titleText = getString(R.string.moving_intro_title),
-            subtitleText = getString(R.string.moving_intro_description),
-            buttonText = getString(R.string.moving_intro_open_flow_button_text),
-            buttonIcon = null,
-            onContinue = {
-                startActivity(
-                    EmbarkActivity.newInstance(
-                        context = this,
-                        storyName = viewState.embarkStoryId,
-                        storyTitle = "Change address"
-                    )
-                )
+    private fun setViewState(viewState: ViewState) {
+        when (viewState) {
+            Loading -> {
+                binding.spinner.loadingSpinner.show()
+                binding.contentScrollView.remove()
             }
-        )
-        ManualChangeAddress -> setContent(
-            titleText = getString(R.string.moving_intro_title),
-            subtitleText = getString(R.string.moving_intro_manual_handling_description),
-            buttonText = getString(R.string.moving_intro_manual_handling_button_text),
-            buttonIcon = R.drawable.ic_chat_white,
-            onContinue = { openChat() }
-        )
-        is ChangeAddressInProgress -> setUpcomingChangeContent(
-            titleText = getString(R.string.moving_intro_existing_move_title),
-            subtitleText = getString(R.string.moving_intro_existing_move_description),
-            buttonText = getString(R.string.moving_intro_manual_handling_button_text),
-            buttonIcon = R.drawable.ic_chat_white,
-            onContinue = { openChat() },
-            viewState.upcomingAgreementResult
-        )
-        is UpcomingAgreementError -> setContent(
-            titleText = getString(R.string.error_dialog_title),
-            subtitleText = when (viewState.error) {
-                NoContractsError -> "You do not have any contracts eligible for address change"
-                is GeneralError -> viewState.error.message ?: "Could not continue, please try again later"
-            },
-            buttonText = "Try again",
-            buttonIcon = null,
-            onContinue = { model.reload() }
-        )
-        is SelfChangeError -> setContent(
-            titleText = getString(R.string.error_dialog_title),
-            subtitleText = viewState.error.message ?: "Could not continue, please try again later",
-            buttonText = "Try again",
-            buttonIcon = null,
-            onContinue = { model.reload() }
-        )
+            is SelfChangeAddress -> setContent(
+                titleText = getString(R.string.moving_intro_title),
+                subtitleText = getString(R.string.moving_intro_description),
+                buttonText = getString(R.string.moving_intro_open_flow_button_text),
+                buttonIcon = null,
+                onContinue = {
+                    startActivity(
+                        EmbarkActivity.newInstance(
+                            context = this,
+                            storyName = viewState.embarkStoryId,
+                            storyTitle = "Change address"
+                        )
+                    )
+                }
+            )
+            ManualChangeAddress -> setContent(
+                titleText = getString(R.string.moving_intro_title),
+                subtitleText = getString(R.string.moving_intro_manual_handling_description),
+                buttonText = getString(R.string.moving_intro_manual_handling_button_text),
+                buttonIcon = R.drawable.ic_chat_white,
+                onContinue = { openChat() }
+            )
+            is ChangeAddressInProgress -> setUpcomingChangeContent(
+                titleText = getString(R.string.moving_intro_existing_move_title),
+                subtitleText = getString(R.string.moving_intro_existing_move_description),
+                buttonText = getString(R.string.moving_intro_manual_handling_button_text),
+                buttonIcon = R.drawable.ic_chat_white,
+                onContinue = { openChat() },
+                viewState.upcomingAgreementResult
+            )
+            is UpcomingAgreementError -> setContent(
+                titleText = getString(R.string.error_dialog_title),
+                subtitleText = when (viewState.error) {
+                    NoContractsError -> "You do not have any contracts eligible for address change"
+                    is GeneralError -> viewState.error.message ?: "Could not continue, please try again later"
+                },
+                buttonText = "Try again",
+                buttonIcon = null,
+                onContinue = { model.reload() }
+            )
+            is SelfChangeError -> setContent(
+                titleText = getString(R.string.error_dialog_title),
+                subtitleText = viewState.error.message ?: "Could not continue, please try again later",
+                buttonText = "Try again",
+                buttonIcon = null,
+                onContinue = { model.reload() }
+            )
+        }
     }
 
     private fun openChat() = startActivity(ChatActivity.newInstance(this, true))

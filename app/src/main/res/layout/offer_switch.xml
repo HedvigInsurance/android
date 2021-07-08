@@ -4,107 +4,42 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?android:colorBackground"
-    android:paddingBottom="@dimen/base_margin_quadruple">
+    android:layout_marginHorizontal="@dimen/base_margin_double"
+    android:layout_marginBottom="@dimen/base_margin_double">
 
     <TextView
-        android:id="@+id/switchTitle"
+        android:id="@+id/associatedQuote"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_double"
-        android:layout_marginTop="@dimen/base_margin_quadruple"
-        android:layout_marginEnd="@dimen/base_margin_double"
-        android:textAlignment="center"
-        android:textAppearance="?textAppearanceHeadline5"
+        android:layout_marginTop="@dimen/base_margin_triple"
+        android:textAppearance="?textAppearanceHeadline6"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/OFFER_SWITCH_TITLE_APP" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/bulletStart"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_begin="@dimen/base_margin_quintuple" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/bulletEnd"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_end="@dimen/base_margin_quintuple" />
+        tools:text="Home Insurance"
+        tools:visibility="visible" />
 
     <TextView
-        android:id="@+id/bulletOne"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/numbered_bullet_background_sphere"
-        android:gravity="center"
-        android:text="@string/one"
-        android:textAppearance="?textAppearanceSubtitle1"
-        app:layout_constraintBottom_toBottomOf="@id/bulletOneText"
-        app:layout_constraintStart_toStartOf="@id/bulletStart"
-        app:layout_constraintTop_toTopOf="@id/bulletOneText" />
-
-    <TextView
-        android:id="@+id/bulletOneText"
+        android:id="@+id/currentInsurerLabel"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_double"
-        android:layout_marginTop="@dimen/base_margin_triple"
-        android:text="@string/SIGN_MOBILE_BANK_ID"
-        android:textAppearance="?textAppearanceSubtitle1"
-        app:layout_constraintEnd_toEndOf="@id/bulletEnd"
-        app:layout_constraintStart_toEndOf="@id/bulletOne"
-        app:layout_constraintTop_toBottomOf="@id/switchTitle" />
-
-    <TextView
-        android:id="@+id/bulletTwo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/numbered_bullet_background_sphere"
-        android:gravity="center"
-        android:text="@string/two"
-        android:textAppearance="?textAppearanceSubtitle1"
-        app:layout_constraintBottom_toBottomOf="@id/bulletTwoText"
-        app:layout_constraintStart_toStartOf="@id/bulletStart"
-        app:layout_constraintTop_toTopOf="@id/bulletTwoText" />
-
-    <TextView
-        android:id="@+id/bulletTwoText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginTop="@dimen/base_margin_double"
-        android:text="@string/OFFER_SWITCH_COL_PARAGRAPH_ONE_APP"
+        android:text="@string/offer_screen.switcher_current_insurer_label"
         android:textAppearance="?textAppearanceSubtitle1"
-        app:layout_constraintEnd_toEndOf="@id/bulletEnd"
-        app:layout_constraintStart_toEndOf="@id/bulletTwo"
-        app:layout_constraintTop_toBottomOf="@id/bulletOneText" />
+        app:layout_constraintEnd_toStartOf="@id/currentInsurer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/associatedQuote" />
 
     <TextView
-        android:id="@+id/bulletThree"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/numbered_bullet_background_sphere"
-        android:gravity="center"
-        android:text="@string/three"
-        android:textAppearance="?textAppearanceSubtitle1"
-        app:layout_constraintBottom_toBottomOf="@id/bulletThreeText"
-        app:layout_constraintStart_toStartOf="@id/bulletStart"
-        app:layout_constraintTop_toTopOf="@id/bulletThreeText" />
-
-    <TextView
-        android:id="@+id/bulletThreeText"
+        android:id="@+id/currentInsurer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_double"
-        android:layout_marginTop="@dimen/base_margin"
-        android:text="@string/OFFER_SWITCH_COL_THREE_PARAGRAPH_APP"
-        android:textAppearance="?textAppearanceSubtitle1"
-        app:layout_constraintEnd_toEndOf="@id/bulletEnd"
-        app:layout_constraintStart_toEndOf="@id/bulletThree"
-        app:layout_constraintTop_toBottomOf="@id/bulletTwoText" />
+        android:textAlignment="textEnd"
+        android:textAppearance="?textAppearanceBody1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/currentInsurerLabel"
+        app:layout_constraintTop_toTopOf="@id/currentInsurerLabel"
+        tools:text="Annat Försäkringsbolag" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

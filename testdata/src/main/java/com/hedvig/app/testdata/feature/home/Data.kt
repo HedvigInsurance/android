@@ -1,5 +1,6 @@
 package com.hedvig.app.testdata.feature.home
 
+import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.app.testdata.common.ContractStatus
 import com.hedvig.app.testdata.feature.home.builders.HomeDataBuilder
 import com.hedvig.app.testdata.feature.home.builders.ImportantMessageBuilder
@@ -41,7 +42,7 @@ val HOME_DATA_ACTIVE = HomeDataBuilder(listOf(ContractStatus.ACTIVE)).build()
 val HOME_DATA_TERMINATED_TODAY = HomeDataBuilder(listOf(ContractStatus.TERMINATED_TODAY)).build()
 
 val HOME_DATA_ACTIVE_WITH_PSA = HomeDataBuilder(
-    listOf(ContractStatus.ACTIVE),
+    contracts = listOf(ContractStatus.ACTIVE),
     importantMessages = listOf(
         ImportantMessageBuilder(
             "COVID-19: Your insurance doesn’t cover trips to certain countries. See full list at UD."
@@ -50,7 +51,7 @@ val HOME_DATA_ACTIVE_WITH_PSA = HomeDataBuilder(
 ).build()
 
 val HOME_DATA_ACTIVE_WITH_MULTIPLE_PSA = HomeDataBuilder(
-    listOf(ContractStatus.ACTIVE),
+    contracts = listOf(ContractStatus.ACTIVE),
     importantMessages = listOf(
         ImportantMessageBuilder(
             "COVID-19: Your insurance doesn’t cover trips to certain countries. See full list at UD."
@@ -58,5 +59,27 @@ val HOME_DATA_ACTIVE_WITH_MULTIPLE_PSA = HomeDataBuilder(
         ImportantMessageBuilder(
             "COVID-19: Your insurance doesn’t cover trips to certain countries. See full list at UD."
         ).build()
+    )
+).build()
+
+val HOME_DATA_WITH_PENDING_CHANGE = HomeDataBuilder(
+    contracts = listOf(ContractStatus.ACTIVE),
+    pendingQuotesList = listOf(
+        HomeQuery.Quote(
+            quoteDetails = HomeQuery.QuoteDetails(
+                asSwedishApartmentQuoteDetails = HomeQuery.AsSwedishApartmentQuoteDetails(
+                    street = "New test street 123"
+                ),
+                asSwedishHouseQuoteDetails = HomeQuery.AsSwedishHouseQuoteDetails(
+                    street = "New test street 123"
+                ),
+                asDanishHomeContentsDetails = HomeQuery.AsDanishHomeContentsDetails(
+                    street = "New test street 123"
+                ),
+                asNorwegianHomeContentsDetails = HomeQuery.AsNorwegianHomeContentsDetails(
+                    street = "New test street 123"
+                )
+            )
+        )
     )
 ).build()

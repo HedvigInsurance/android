@@ -2,35 +2,63 @@ package com.hedvig.app.feature.offer.ui
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
+import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
-import androidx.core.view.doOnLayout
+import android.transition.TransitionManager
+import android.view.MenuItem
+import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ConcatAdapter
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.hedvig.android.owldroid.graphql.OfferQuery
+import com.bumptech.glide.RequestBuilder
+import com.carousell.concatadapterextension.ConcatItemDecoration
+import com.carousell.concatadapterextension.ConcatSpanSizeLookup
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityOfferBinding
+import com.hedvig.app.feature.documents.DocumentAdapter
+import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
+import com.hedvig.app.feature.insurablelimits.InsurableLimitsAdapter
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.app.feature.offer.OfferItemsBuilder
+import com.hedvig.app.feature.offer.OfferSignDialog
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
+import com.hedvig.app.feature.offer.quotedetail.QuoteDetailActivity
+import com.hedvig.app.feature.offer.ui.checkout.CheckoutActivity
+import com.hedvig.app.feature.offer.ui.checkout.CheckoutParameter
+import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
-import com.hedvig.app.util.boundedColorLerp
-import com.hedvig.app.util.extensions.compatColor
+import com.hedvig.app.util.extensions.showErrorDialog
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.storeBoolean
+import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class OfferActivity : BaseActivity(R.layout.activity_offer) {
-    private val model: OfferViewModel by viewModel()
+    private val quoteIds: List<String>
+        get() = intent.getStringArrayExtra(QUOTE_IDS)?.toList() ?: emptyList()
+    private val model: OfferViewModel by viewModel { parametersOf(quoteIds) }
     private val binding by viewBinding(ActivityOfferBinding::bind)
+    private val requestBuilder: RequestBuilder<PictureDrawable> by inject()
     private val tracker: OfferTracker by inject()
     private val marketManager: MarketManager by inject()
 
@@ -42,95 +70,210 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         binding.apply {
             offerRoot.setEdgeToEdgeSystemUiFlags(true)
             scrollInitialPaddingTop = offerScroll.paddingTop
-            offerToolbar.doOnLayout { applyInsets(it.height) }
+            offerToolbar.background.alpha = 0
 
             offerToolbar.doOnApplyWindowInsets { view, insets, initialState ->
                 view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
                 applyInsets(view.height)
             }
-            setSupportActionBar(offerToolbar)
-
-            offerScroll.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
+            signButton.doOnApplyWindowInsets { view, insets, initialState ->
+                view.updateMargin(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
             }
 
             offerScroll.addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 private var scrollY = 0
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     scrollY += dy
-
                     val percentage = scrollY.toFloat() / offerToolbar.height
+                    offerToolbar.background.alpha = (percentage * 255).toInt().coerceAtMost(255)
 
-                    offerToolbar.setBackgroundColor(
-                        boundedColorLerp(
-                            Color.TRANSPARENT,
-                            compatColor(R.color.translucent_tool_bar),
-                            percentage
-                        )
-                    )
+                    if (percentage > 4 && !signButton.isVisible) {
+                        TransitionManager.beginDelayedTransition(offerRoot)
+                        signButton.show()
+                    } else if (percentage < 4 && signButton.isVisible) {
+                        TransitionManager.beginDelayedTransition(offerRoot)
+                        signButton.hide()
+                    }
                 }
             })
 
-            offerScroll.adapter = OfferAdapter(
-                supportFragmentManager,
-                tracker,
-                marketManager
-            ) {
-                model.removeDiscount()
+            offerToolbar.setNavigationOnClickListener { onBackPressed() }
+            offerToolbar.setOnMenuItemClickListener(::handleMenuItem)
+
+            val topOfferAdapter = OfferAdapter(
+                fragmentManager = supportFragmentManager,
+                tracker = tracker,
+                marketManager = marketManager,
+                openQuoteDetails = model::onOpenQuoteDetails,
+                onRemoveDiscount = model::removeDiscount,
+                onSign = ::onSign
+            )
+            val perilsAdapter = PerilsAdapter(
+                fragmentManager = supportFragmentManager,
+                requestBuilder = requestBuilder,
+            )
+            val insurableLimitsAdapter = InsurableLimitsAdapter(
+                fragmentManager = supportFragmentManager
+            )
+            val documentAdapter = DocumentAdapter(
+                trackClick = tracker::openOfferLink
+            )
+            val bottomOfferAdapter = OfferAdapter(
+                fragmentManager = supportFragmentManager,
+                tracker = tracker,
+                marketManager = marketManager,
+                openQuoteDetails = model::onOpenQuoteDetails,
+                onRemoveDiscount = model::removeDiscount,
+                onSign = ::onSign
+            )
+
+            val concatAdapter = ConcatAdapter(
+                topOfferAdapter,
+                perilsAdapter,
+                insurableLimitsAdapter,
+                documentAdapter,
+                bottomOfferAdapter,
+            )
+
+            binding.offerScroll.adapter = concatAdapter
+            binding.offerScroll.addItemDecoration(ConcatItemDecoration { concatAdapter.adapters })
+            (binding.offerScroll.layoutManager as? GridLayoutManager)?.let { gridLayoutManager ->
+                gridLayoutManager.spanSizeLookup =
+                    ConcatSpanSizeLookup(gridLayoutManager.spanCount) { concatAdapter.adapters }
             }
 
-            model.data.observe(this@OfferActivity) {
-                it?.let { data ->
-                    data.lastQuoteOfMember.asCompleteQuote?.street?.let { street ->
-                        offerToolbarAddress.text = street
+            model
+                .viewState
+                .flowWithLifecycle(lifecycle)
+                .onEach { viewState ->
+                    when (viewState) {
+                        is OfferViewModel.ViewState.Loaded -> {
+                            topOfferAdapter.submitList(viewState.topOfferItems)
+                            perilsAdapter.submitList(viewState.perils)
+                            insurableLimitsAdapter.submitList(viewState.insurableLimitsItems)
+                            documentAdapter.submitList(viewState.documents)
+                            bottomOfferAdapter.submitList(viewState.bottomOfferItems)
+                            setSignState(viewState.signMethod)
+                        }
+                        is OfferViewModel.ViewState.Loading -> {
+                            topOfferAdapter.submitList(viewState.loadingItem)
+                        }
                     }
+                }
+                .launchIn(lifecycleScope)
 
-                    if (data.contracts.isNotEmpty()) {
-                        storeBoolean(IS_VIEWING_OFFER, false)
-                        startActivity(
-                            Intent(
-                                this@OfferActivity,
-                                LoggedInActivity::class.java
-                            ).apply {
-                                putExtra(LoggedInActivity.EXTRA_IS_FROM_ONBOARDING, true)
-                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                            }
-                        )
-                    } else {
-                        (offerScroll.adapter as? OfferAdapter)?.submitList(
-                            listOfNotNull(
-                                OfferModel.Header(data),
-                                OfferModel.Info,
-                                OfferModel.Facts(data),
-                                OfferModel.Perils(data),
-                                OfferModel.Terms(data),
-                                data.lastQuoteOfMember.asCompleteQuote?.currentInsurer?.let { currentInsurer ->
-                                    if (currentInsurer.switchable == true) {
-                                        OfferModel.Switcher(currentInsurer.displayName)
-                                    } else {
-                                        null
-                                    }
-                                },
-                                OfferModel.Footer
+            model
+                .events
+                .flowWithLifecycle(lifecycle)
+                .onEach { event ->
+                    when (event) {
+                        is OfferViewModel.Event.Error -> showErrorDialog(
+                            event.message ?: getString(R.string.home_tab_error_body)
+                        ) { }
+                        OfferViewModel.Event.HasContracts -> startLoggedInActivity()
+                        is OfferViewModel.Event.OpenQuoteDetails -> {
+                            startActivity(
+                                QuoteDetailActivity.newInstance(this@OfferActivity, event.quoteDetailItems)
                             )
-                        )
+                        }
                     }
                 }
-            }
+                .launchIn(lifecycleScope)
 
-            settings.setHapticClickListener {
-                tracker.settings()
-                startActivity(SettingsActivity.newInstance(this@OfferActivity))
-            }
-
-            offerChatButton.setHapticClickListener {
-                tracker.openChat()
-                model.triggerOpenChat {
-                    startClosableChat(true)
-                }
+            signButton.setHapticClickListener {
+                tracker.floatingSign()
+                OfferSignDialog.newInstance().show(
+                    supportFragmentManager,
+                    OfferSignDialog.TAG
+                )
             }
         }
+    }
+
+    private fun setSignState(signMethod: SignMethod) {
+        binding.signButton.bindWithSignMethod(signMethod)
+        binding.signButton.setHapticClickListener {
+            onSign(signMethod)
+        }
+    }
+
+    private fun onSign(signMethod: SignMethod) {
+        when (signMethod) {
+            SignMethod.SWEDISH_BANK_ID -> {
+                tracker.floatingSign()
+                OfferSignDialog.newInstance().show(
+                    supportFragmentManager,
+                    OfferSignDialog.TAG
+                )
+            }
+            SignMethod.SIMPLE_SIGN -> {
+                startActivity(
+                    CheckoutActivity.newInstance(
+                        this,
+                        CheckoutParameter(
+                            // TODO Get data from viewmodel
+                            title = "Travel Insurance",
+                            subtitle = "79 NOK/mo.",
+                            gdprUrl = OfferItemsBuilder.GDPR_LINK
+                        )
+                    )
+                )
+            }
+            SignMethod.APPROVE_ONLY -> {
+            }
+            SignMethod.NORWEGIAN_BANK_ID,
+            SignMethod.DANISH_BANK_ID,
+            SignMethod.UNKNOWN__ -> showErrorDialog("Could not parse sign method", ::finish)
+        }
+    }
+
+    private fun startLoggedInActivity() {
+        storeBoolean(IS_VIEWING_OFFER, false)
+        LoggedInActivity.newInstance(
+            context = this,
+            isFromOnboarding = true,
+            withoutHistory = true
+        )
+    }
+
+    private fun handleMenuItem(menuItem: MenuItem) = when (menuItem.itemId) {
+        R.id.chat -> {
+            tracker.openChat()
+            model.triggerOpenChat {
+                startClosableChat(true)
+            }
+            true
+        }
+        R.id.app_settings -> {
+            tracker.settings()
+            startActivity(SettingsActivity.newInstance(this))
+            true
+        }
+        R.id.app_info -> {
+            startActivity(MoreOptionsActivity.newInstance(this))
+            true
+        }
+        R.id.login -> {
+            marketManager.market?.openAuth(this, supportFragmentManager)
+            true
+        }
+        R.id.restart -> {
+            showRestartDialog()
+            true
+        }
+        else -> false
+    }
+
+    private fun showRestartDialog() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.settings_alert_restart_onboarding_title)
+            .setMessage(R.string.settings_alert_restart_onboarding_description)
+            .setPositiveButton(R.string.ALERT_OK) { _, _ ->
+                // TODO
+                Toast.makeText(this, "Not implemented", Toast.LENGTH_LONG).show()
+            }
+            .setNegativeButton(R.string.ALERT_CANCEL) { dialog, _ -> dialog.dismiss() }
+            .show()
     }
 
     private fun applyInsets(height: Int) {
@@ -138,13 +281,10 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     }
 
     companion object {
-        fun newInstance(context: Context) = Intent(context, OfferActivity::class.java)
-
-        val OfferQuery.AsCompleteQuote.street: String?
-            get() {
-                quoteDetails.asSwedishApartmentQuoteDetails?.street?.let { return it }
-                quoteDetails.asSwedishHouseQuoteDetails?.street?.let { return it }
-                return null
+        private const val QUOTE_IDS = "QUOTE_IDS"
+        fun newInstance(context: Context, quoteIds: List<String> = emptyList()) =
+            Intent(context, OfferActivity::class.java).apply {
+                putExtra(QUOTE_IDS, quoteIds.toTypedArray())
             }
     }
 }

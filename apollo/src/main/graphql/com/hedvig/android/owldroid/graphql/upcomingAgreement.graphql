@@ -24,15 +24,7 @@ fragment UpcomingAgreementFragment on Contract {
   }
 
   upcomingAgreementDetailsTable(locale: $locale) {
-    title
-    sections {
-      title
-      rows {
-        title
-        subtitle
-        value
-      }
-    }
+    ... TableFragment
   }
 }
 
