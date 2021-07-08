@@ -20,7 +20,6 @@ import com.hedvig.app.feature.offer.ui.checkout.SignQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.perils.PerilItem
-import com.hedvig.app.util.apollo.QueryResult
 import e
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -212,9 +211,7 @@ class OfferViewModelImpl(
             offerRepository.subscribeSignStatus()
                 .onEach { response ->
                     response.data?.signStatus?.status?.fragments?.signStatusFragment?.let {
-                        signStatus.postValue(
-                            it
-                        )
+                        signStatus.postValue(it)
                     }
                 }
                 .catch { e(it) }
