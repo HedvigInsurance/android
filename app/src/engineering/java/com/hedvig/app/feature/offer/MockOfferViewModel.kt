@@ -63,6 +63,8 @@ class MockOfferViewModel : OfferViewModel() {
         )
     }
 
+    override fun approveOffer() = Unit
+
     override fun onOpenCheckout() {
         _events.tryEmit(
             Event.OpenCheckout(

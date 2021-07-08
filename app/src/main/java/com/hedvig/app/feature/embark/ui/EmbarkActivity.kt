@@ -33,6 +33,7 @@ import com.hedvig.app.feature.embark.passages.selectaction.SelectActionFragment
 import com.hedvig.app.feature.embark.passages.selectaction.SelectActionParameter
 import com.hedvig.app.feature.embark.passages.textaction.TextActionFragment
 import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
+import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
@@ -106,12 +107,8 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
     private fun showNextView(embarkData: EmbarkModel, passage: EmbarkStoryQuery.Passage?) {
         val offerKeys = embarkData.passage?.offerRedirect?.data?.keys
         if (offerKeys != null && offerKeys.isNotEmpty()) {
-            // TODO: Pass offerIds to OfferActivity
-            // val offerIds = model.getListFromStore(offerKeys)
-            // startActivity(OfferActivity.newInstance(this))
-
-            val offerIds = offerKeys.mapNotNull { model.getFromStore(it) }
-            showWebOffer(offerIds)
+            val offerIds = model.getListFromStore(offerKeys)
+            startActivity(OfferActivity.newInstance(this, offerIds))
         } else if (embarkData.passage?.name == "Offer") {
             showWebOffer(
                 listOf(

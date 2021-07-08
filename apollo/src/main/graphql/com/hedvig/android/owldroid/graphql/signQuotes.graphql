@@ -8,8 +8,5 @@ mutation SignQuotes($quoteIds: [ID!]!) {
     ... on FailedToStartSign {
       errorMessage
     }
-    ... on AlreadyCompleted {
-      ignore
-    }
   }
 }
