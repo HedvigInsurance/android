@@ -22,8 +22,6 @@ import e
 import kotlinx.coroutines.launch
 
 abstract class ContractDetailViewModel : ViewModel() {
-    val yourInfoListItemBuilder = YourInfoListItemBuilder()
-
     protected val _data = MutableLiveData<Result<InsuranceQuery.Contract>>()
     val data: LiveData<Result<InsuranceQuery.Contract>> = _data
 

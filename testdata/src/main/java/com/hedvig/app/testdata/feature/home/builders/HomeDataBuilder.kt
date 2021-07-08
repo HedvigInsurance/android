@@ -1,6 +1,8 @@
 package com.hedvig.app.testdata.feature.home.builders
 
 import com.hedvig.android.owldroid.fragment.IconVariantsFragment
+import com.hedvig.android.owldroid.fragment.TableFragment
+import com.hedvig.android.owldroid.fragment.UpcomingAgreementFragment
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.app.testdata.common.ContractStatus
 import java.time.LocalDate
@@ -88,7 +90,7 @@ data class HomeDataBuilder(
                     )
                 } else {
                     null
-                }
+                },
             )
         },
         isEligibleToCreateClaim = contracts.any { it == ContractStatus.ACTIVE },

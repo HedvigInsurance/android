@@ -87,7 +87,7 @@ class OfferViewModelImpl(
     _quoteIds: List<String>,
     private val offerRepository: OfferRepository,
     private val getQuotesUseCase: GetQuotesUseCase,
-    private val getQuoteUseCase: GetQuoteUseCase,
+    private val getQuoteUseCase: GetQuoteUseCase
 ) : OfferViewModel() {
 
     private lateinit var quoteIds: List<String>

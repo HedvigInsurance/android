@@ -18,8 +18,6 @@ class DocumentsFragment : Fragment(R.layout.contract_detail_documents_fragment) 
     private val binding by viewBinding(ContractDetailDocumentsFragmentBinding::bind)
     private val model: ContractDetailViewModel by sharedViewModel()
 
-    private val marketManager: MarketManager by inject()
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.root.apply {
             doOnApplyWindowInsets { view, insets, initialState ->

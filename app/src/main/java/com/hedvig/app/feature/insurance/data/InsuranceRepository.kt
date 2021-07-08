@@ -12,13 +12,13 @@ class InsuranceRepository(
     private val localeManager: LocaleManager
 ) {
     suspend fun insurance() = apolloClient
-        .query(InsuranceQuery(localeManager.defaultLocale()))
+        .query(InsuranceQuery(localeManager.defaultLocale(), false))
         .await()
 
     suspend operator fun invoke(): InsuranceResult {
         return when (
             val response =
-                apolloClient.query(InsuranceQuery(localeManager.defaultLocale())).safeQuery()
+                apolloClient.query(InsuranceQuery(localeManager.defaultLocale(), false)).safeQuery()
         ) {
             is QueryResult.Success -> InsuranceResult.Insurance(response.data)
             is QueryResult.Error -> InsuranceResult.Error(response.message)

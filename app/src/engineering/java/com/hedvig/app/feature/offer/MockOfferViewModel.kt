@@ -8,7 +8,6 @@ import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.app.feature.offer.quotedetail.buildDocuments
 import com.hedvig.app.feature.offer.quotedetail.buildInsurableLimits
 import com.hedvig.app.feature.offer.quotedetail.buildPerils
-import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -61,8 +60,6 @@ class MockOfferViewModel : OfferViewModel() {
             )
         )
     }
-
-    override fun clearLocallyStoredQuoteIds() {}
 
     companion object {
         var mockData = OFFER_DATA_SWEDISH_APARTMENT
