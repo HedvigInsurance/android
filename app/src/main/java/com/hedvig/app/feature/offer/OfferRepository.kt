@@ -44,14 +44,7 @@ class OfferRepository(
         response.errors?.let {
             return OfferResult.Error(it.firstOrNull()?.message)
         }
-
         val data = response.data ?: return OfferResult.Error()
-
-        /*
-        if (data.contracts.isNotEmpty()) {
-            return OfferResult.HasContracts
-        }
-        */
         return OfferResult.Success(data)
     }
 
