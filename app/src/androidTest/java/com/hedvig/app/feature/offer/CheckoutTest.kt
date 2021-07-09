@@ -32,7 +32,7 @@ class CheckoutTest : TestCase() {
         activityRule.launch(CheckoutActivity.newInstance(context(), CheckoutParameter(listOf("123"))))
 
         CheckoutScreen {
-            title.hasText(BUNDLE_NAME)
+            title { hasText(BUNDLE_NAME) }
             originalCost.hasText("449 kr")
             cost.hasText("349 kr/mo.")
         }
