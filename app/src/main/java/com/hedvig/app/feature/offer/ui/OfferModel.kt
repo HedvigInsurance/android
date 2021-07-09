@@ -56,7 +56,6 @@ sealed class OfferModel {
         val items: List<FAQItem>
     ) : OfferModel()
 
-    object Loading : OfferModel()
     object AutomaticSwitchCard : OfferModel()
     object ManualSwitchCard : OfferModel()
 }

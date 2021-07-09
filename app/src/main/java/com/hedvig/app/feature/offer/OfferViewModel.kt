@@ -30,7 +30,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 abstract class OfferViewModel : ViewModel() {
-    protected val _viewState = MutableStateFlow<ViewState>(ViewState.Loading(OfferItemsBuilder.createLoadingItem()))
+    protected val _viewState = MutableStateFlow<ViewState>(ViewState.Loading)
     val viewState: StateFlow<ViewState> = _viewState
 
     sealed class Event {
@@ -79,7 +79,7 @@ abstract class OfferViewModel : ViewModel() {
             val signMethod: SignMethod
         ) : ViewState()
 
-        data class Loading(val loadingItem: List<OfferModel.Loading>) : ViewState()
+        object Loading : ViewState()
     }
 }
 

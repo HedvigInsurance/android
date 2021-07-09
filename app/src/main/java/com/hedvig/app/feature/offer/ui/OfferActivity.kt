@@ -47,8 +47,10 @@ import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -85,7 +87,6 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     scrollY += dy
                     val percentage = scrollY.toFloat() / offerToolbar.height
-                    offerToolbar.background.alpha = (percentage * 255).toInt().coerceAtMost(255)
 
                     if (percentage > 4 && !signButton.isVisible) {
                         TransitionManager.beginDelayedTransition(offerRoot)
@@ -148,15 +149,19 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 .onEach { viewState ->
                     when (viewState) {
                         is OfferViewModel.ViewState.Loaded -> {
+                            if (concatAdapter.itemCount == 0) {
+                                scheduleEnterAnimation()
+                            }
                             topOfferAdapter.submitList(viewState.topOfferItems)
                             perilsAdapter.submitList(viewState.perils)
                             insurableLimitsAdapter.submitList(viewState.insurableLimitsItems)
                             documentAdapter.submitList(viewState.documents)
                             bottomOfferAdapter.submitList(viewState.bottomOfferItems)
                             setSignState(viewState.signMethod)
+                            binding.progressBar.hide()
                         }
                         is OfferViewModel.ViewState.Loading -> {
-                            topOfferAdapter.submitList(viewState.loadingItem)
+                            binding.progressBar.show()
                         }
                     }
                 }
@@ -187,6 +192,24 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     OfferSignDialog.TAG
                 )
             }
+        }
+    }
+
+    private fun scheduleEnterAnimation() {
+        binding.offerScroll.scheduleLayoutAnimation()
+        binding.offerScroll.postOnAnimation {
+            changeBackgroundWithDelay()
+        }
+    }
+
+    // Some items in the concat adapter does not have a background. We want them
+    // to have the default colorBackground. Before submitting items to the recycler view we
+    // are showing a gradient for a smoother transition to the header item. Hence why we need to change
+    // the background here.
+    private fun changeBackgroundWithDelay() {
+        lifecycleScope.launch {
+            delay(800)
+            binding.offerRoot.setBackgroundColor(binding.offerRoot.context.getColor(R.color.colorBackground))
         }
     }
 

@@ -21,7 +21,7 @@ class MockOfferViewModel : OfferViewModel() {
 
     init {
         viewModelScope.launch {
-            delay(150)
+            delay(650)
             val topOfferItems = OfferItemsBuilder.createTopOfferItems(mockData)
             val perilItems = OfferItemsBuilder.createPerilItems(mockData.quoteBundle.quotes)
             val documentItems = OfferItemsBuilder.createDocumentItems(mockData.quoteBundle.quotes)
