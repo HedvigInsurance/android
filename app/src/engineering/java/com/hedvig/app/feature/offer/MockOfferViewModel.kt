@@ -5,10 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.fragment.SignStatusFragment
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
-import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationTitle
 import com.hedvig.app.feature.offer.quotedetail.buildDocuments
 import com.hedvig.app.feature.offer.quotedetail.buildInsurableLimits
 import com.hedvig.app.feature.offer.quotedetail.buildPerils
+import com.hedvig.app.service.LoginStatus
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -27,16 +27,16 @@ class MockOfferViewModel : OfferViewModel() {
             val documentItems = OfferItemsBuilder.createDocumentItems(mockData.quoteBundle.quotes)
             val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(mockData.quoteBundle.quotes)
             val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems(mockData.quoteBundle)
-            _viewState.value =
-                ViewState.Loaded(
-                    topOfferItems = topOfferItems,
-                    perils = perilItems,
-                    documents = documentItems,
-                    insurableLimitsItems = insurableLimitsItems,
-                    bottomOfferItems = bottomOfferItems,
-                    signMethod = mockData.signMethodForQuotes,
-                    title = mockData.quoteBundle.appConfiguration.title
-                )
+            _viewState.value = ViewState.Offer(
+                topOfferItems = topOfferItems,
+                perils = perilItems,
+                documents = documentItems,
+                insurableLimitsItems = insurableLimitsItems,
+                bottomOfferItems = bottomOfferItems,
+                signMethod = mockData.signMethodForQuotes,
+                title = mockData.quoteBundle.appConfiguration.title,
+                loginStatus = LoginStatus.LOGGED_IN
+            )
         }
     }
 

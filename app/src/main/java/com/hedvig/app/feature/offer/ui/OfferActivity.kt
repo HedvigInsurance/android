@@ -38,6 +38,7 @@ import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
+import com.hedvig.app.service.LoginStatus
 import com.hedvig.app.util.extensions.showErrorDialog
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.storeBoolean
@@ -149,7 +150,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 .flowWithLifecycle(lifecycle)
                 .onEach { viewState ->
                     when (viewState) {
-                        is OfferViewModel.ViewState.Loaded -> {
+                        is OfferViewModel.ViewState.Offer -> {
                             if (concatAdapter.itemCount == 0) {
                                 scheduleEnterAnimation()
                             }
@@ -167,6 +168,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                                 QuoteBundleAppConfigurationTitle.UNKNOWN__ -> binding.toolbarTitle.show()
                             }
                             binding.progressBar.hide()
+                            inflateMenu(viewState.loginStatus)
                         }
                         is OfferViewModel.ViewState.Loading -> {
                             binding.progressBar.show()
@@ -218,6 +220,14 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         lifecycleScope.launch {
             delay(800)
             binding.offerRoot.setBackgroundColor(binding.offerRoot.context.getColor(R.color.colorBackground))
+        }
+    }
+
+    private fun inflateMenu(loginStatus: LoginStatus) {
+        when (loginStatus) {
+            LoginStatus.ONBOARDING,
+            LoginStatus.IN_OFFER -> binding.offerToolbar.inflateMenu(R.menu.offer_menu)
+            LoginStatus.LOGGED_IN -> binding.offerToolbar.inflateMenu(R.menu.offer_menu_logged_in)
         }
     }
 
