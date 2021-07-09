@@ -64,13 +64,15 @@ class MockOfferViewModel : OfferViewModel() {
         )
     }
 
-    override fun approveOffer() = Unit
+    override fun approveOffer() {
+        _events.tryEmit(Event.ApproveSuccessful)
+    }
 
     override fun onOpenCheckout() {
         _events.tryEmit(
             Event.OpenCheckout(
                 CheckoutParameter(
-                    quoteIds = listOf()
+                    quoteIds = listOf(mockData.quoteBundle.quotes[0].id)
                 )
             )
         )

@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.offer.ui.checkout
 
 import com.apollographql.apollo.ApolloClient
-import com.hedvig.android.owldroid.graphql.ApproveQuotesMutation
 import com.hedvig.android.owldroid.graphql.EditMailAndSSNMutation
 import com.hedvig.android.owldroid.graphql.SignQuotesMutation
 import com.hedvig.app.util.apollo.QueryResult
@@ -26,25 +25,29 @@ class SignQuotesUseCase(private val apolloClient: ApolloClient) {
         }
     }
 
-    private suspend fun signQuotes(quoteIds: List<String>): SignQuoteResult {
+    suspend fun signQuotes(quoteIds: List<String>): SignQuoteResult {
         val mutation = SignQuotesMutation(quoteIds)
         return when (val result = apolloClient.mutate(mutation).safeQuery()) {
             is QueryResult.Error -> SignQuoteResult.Error(result.message)
             is QueryResult.Success -> {
-                result.data.signQuotes.asSimpleSignSession?.let {
-                    SignQuoteResult.Success
-                } ?: result.data.signQuotes.asFailedToStartSign?.let {
+                val signResponse = result.data?.signOrApproveQuotes?.asSignQuoteResponse?.signResponse
+                signResponse?.asFailedToStartSign?.let {
                     SignQuoteResult.Error(it.errorMessage)
+                } ?: signResponse?.asSimpleSignSession?.let {
+                    SignQuoteResult.Success
+                } ?: signResponse?.asSwedishBankIdSession?.let {
+                    SignQuoteResult.Success
+                }
+
+                val approveResponseResponse = result.data?.signOrApproveQuotes?.asApproveQuoteResponse
+                approveResponseResponse?.approved?.let { approved ->
+                    if (approved) {
+                        SignQuoteResult.Success
+                    } else {
+                        SignQuoteResult.Error(null)
+                    }
                 } ?: SignQuoteResult.Error(null)
             }
-        }
-    }
-
-    suspend fun approveQuotes(quoteIds: List<String>): SignQuoteResult {
-        val mutation = ApproveQuotesMutation(quoteIds)
-        return when (val result = apolloClient.mutate(mutation).safeQuery()) {
-            is QueryResult.Error -> SignQuoteResult.Error(result.message)
-            is QueryResult.Success -> SignQuoteResult.Success
         }
     }
 }

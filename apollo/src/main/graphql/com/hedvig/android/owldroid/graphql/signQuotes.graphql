@@ -1,12 +1,20 @@
 mutation SignQuotes($quoteIds: [ID!]!) {
-  signQuotes(input: {
-    quoteIds: $quoteIds,
-  }) {
-    ... on SimpleSignSession {
-      id
+  signOrApproveQuotes(quoteIds: $quoteIds) {
+    ... on SignQuoteResponse {
+      signResponse {
+        ... on SimpleSignSession {
+          id
+        }
+        ... on FailedToStartSign {
+          errorMessage
+        }
+        ... on SwedishBankIdSession {
+          autoStartToken
+        }
+      }
     }
-    ... on FailedToStartSign {
-      errorMessage
+    ... on ApproveQuoteResponse {
+      approved
     }
   }
 }
