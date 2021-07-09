@@ -8,8 +8,8 @@ import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.app.feature.offer.quotedetail.buildDocuments
 import com.hedvig.app.feature.offer.quotedetail.buildInsurableLimits
 import com.hedvig.app.feature.offer.quotedetail.buildPerils
-import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.feature.offer.ui.checkout.CheckoutParameter
+import com.hedvig.app.service.LoginStatus
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -29,13 +29,14 @@ class MockOfferViewModel : OfferViewModel() {
             val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(mockData.quoteBundle.quotes)
             val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems(mockData.quoteBundle)
             _viewState.value =
-                ViewState.Loaded(
+                ViewState.Offer(
                     topOfferItems,
                     perilItems,
                     documentItems,
                     insurableLimitsItems,
                     bottomOfferItems,
-                    mockData.signMethodForQuotes
+                    mockData.signMethodForQuotes,
+                    LoginStatus.LOGGED_IN
                 )
         }
     }
@@ -63,13 +64,15 @@ class MockOfferViewModel : OfferViewModel() {
         )
     }
 
-    override fun approveOffer() = Unit
+    override fun approveOffer() {
+        _events.tryEmit(Event.ApproveSuccessful)
+    }
 
     override fun onOpenCheckout() {
         _events.tryEmit(
             Event.OpenCheckout(
                 CheckoutParameter(
-                    quoteIds = listOf()
+                    quoteIds = listOf(mockData.quoteBundle.quotes[0].id)
                 )
             )
         )

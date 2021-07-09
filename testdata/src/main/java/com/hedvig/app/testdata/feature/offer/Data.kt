@@ -448,9 +448,15 @@ val OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_MIX
 ).build()
 
 val BUNDLE_NAME = "Checkout Bundle"
+val BUNDLE_GROSS_COST = "449"
+val BUNDLE_NET_COST = "349"
 val BUNDLE_WITH_SIMPLE_SIGN = OfferDataBuilder(
     bundleDisplayName = BUNDLE_NAME,
-    insuranceCost = CostBuilder(discountAmount = "20", grossAmount = "449.00").build(),
+    insuranceCost = CostBuilder(
+        discountAmount = "20",
+        grossAmount = BUNDLE_GROSS_COST,
+        netAmount = BUNDLE_NET_COST
+    ).build(),
     quotes = listOf(
         QuoteBuilder(
             typeOfContract = TypeOfContract.SE_HOUSE,
