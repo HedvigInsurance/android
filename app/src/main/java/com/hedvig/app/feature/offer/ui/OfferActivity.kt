@@ -143,7 +143,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 .flowWithLifecycle(lifecycle)
                 .onEach { viewState ->
                     when (viewState) {
-                        is OfferViewModel.ViewState.Loaded -> {
+                        is OfferViewModel.ViewState.Offer -> {
                             topOfferAdapter.submitList(viewState.topOfferItems)
                             perilsAdapter.submitList(viewState.perils)
                             insurableLimitsAdapter.submitList(viewState.insurableLimitsItems)

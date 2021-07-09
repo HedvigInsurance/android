@@ -80,7 +80,7 @@ abstract class OfferViewModel : ViewModel() {
     abstract fun approveOffer()
 
     sealed class ViewState {
-        data class Loaded(
+        data class Offer(
             val topOfferItems: List<OfferModel>,
             val perils: List<PerilItem>,
             val documents: List<DocumentItems>,
@@ -167,7 +167,7 @@ class OfferViewModelImpl(
         val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(data.quoteBundle.quotes)
         val documentItems = OfferItemsBuilder.createDocumentItems(data.quoteBundle.quotes)
         val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems(data.quoteBundle)
-        return ViewState.Loaded(
+        return ViewState.Offer(
             topOfferItems,
             perilItems,
             documentItems,
