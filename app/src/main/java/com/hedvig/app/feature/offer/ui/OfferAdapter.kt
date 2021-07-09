@@ -71,7 +71,6 @@ class OfferAdapter(
         R.layout.text_body2 -> ViewHolder.Paragraph(parent)
         R.layout.text_subtitle1 -> ViewHolder.QuoteDetails(parent, openQuoteDetails)
         R.layout.offer_faq -> ViewHolder.FAQ(parent, fragmentManager)
-        R.layout.offer_loading_header -> ViewHolder.Loading(parent)
         R.layout.info_card -> ViewHolder.InfoCard(parent)
         R.layout.warning_card -> ViewHolder.WarningCard(parent)
         else -> throw Error("Invalid viewType: $viewType")
@@ -86,7 +85,6 @@ class OfferAdapter(
         is OfferModel.Paragraph -> R.layout.text_body2
         is OfferModel.QuoteDetails -> R.layout.text_subtitle1
         is OfferModel.FAQ -> R.layout.offer_faq
-        OfferModel.Loading -> R.layout.offer_loading_header
         OfferModel.AutomaticSwitchCard -> R.layout.info_card
         OfferModel.ManualSwitchCard -> R.layout.warning_card
     }
@@ -349,10 +347,6 @@ class OfferAdapter(
                     rowContainer.addView(rowBinding.root)
                 }
             }
-        }
-
-        class Loading(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_loading_header)) {
-            override fun bind(data: OfferModel) = Unit
         }
 
         class InfoCard(parent: ViewGroup) : OfferAdapter.ViewHolder(parent.inflate(R.layout.info_card)) {
