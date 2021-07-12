@@ -6,7 +6,8 @@ import com.hedvig.android.owldroid.type.HedvigColor
 
 data class CommonClaimBuilder(
     val title: String = "Example",
-    val variant: Variant = Variant.TITLE_AND_BULLET_POINTS
+    val variant: Variant = Variant.TITLE_AND_BULLET_POINTS,
+    val emergencyNumber: String = "+46000000000",
 ) {
     fun build() = HomeQuery.CommonClaim(
         title = title,
@@ -37,7 +38,8 @@ data class CommonClaimBuilder(
             },
             asEmergency = if (variant == Variant.EMERGENCY) {
                 HomeQuery.AsEmergency(
-                    color = HedvigColor.BLACK
+                    color = HedvigColor.BLACK,
+                    emergencyNumber = emergencyNumber,
                 )
             } else {
                 null
