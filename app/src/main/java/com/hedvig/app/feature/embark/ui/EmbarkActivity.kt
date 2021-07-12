@@ -268,7 +268,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                     numberActions = numberActionSet.numberActions.map { numberAction ->
                         NumberActionParams.NumberAction(
                             key = numberAction.data!!.key,
-                            title = numberAction.data!!.label,
+                            title = numberAction.data!!.title,
                             placeholder = numberAction.data!!.placeholder,
                             unit = numberAction.data!!.unit,
                             maxValue = numberAction.data!!.maxValue,
