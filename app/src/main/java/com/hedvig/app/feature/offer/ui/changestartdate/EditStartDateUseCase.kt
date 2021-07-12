@@ -50,7 +50,6 @@ class EditStartDateUseCase(
             .read(offerRepository.offerQuery(ids))
             .execute()
 
-        val newDate = data.editQuote.asCompleteQuote?.startDate
         val newId = data.editQuote.asCompleteQuote?.id
         if (newId == null) {
             e { "Id is null" }
@@ -83,7 +82,6 @@ class EditStartDateUseCase(
             .read(offerRepository.offerQuery(ids))
             .execute()
 
-        val newDate = data.removeStartDate.asCompleteQuote?.startDate
         val newId = data.removeStartDate.asCompleteQuote?.id
         if (newId == null) {
             e { "Id is null" }

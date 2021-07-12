@@ -25,8 +25,8 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityOfferBinding
 import com.hedvig.app.feature.documents.DocumentAdapter
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
+import com.hedvig.app.feature.home.ui.changeaddress.result.ChangeAddressResultActivity
 import com.hedvig.app.feature.insurablelimits.InsurableLimitsAdapter
-import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.offer.OfferSignDialog
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
@@ -182,19 +182,36 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                         ) { }
                         is OfferViewModel.Event.OpenQuoteDetails -> {
                             startActivity(
-                                QuoteDetailActivity.newInstance(this@OfferActivity, event.quoteDetailItems)
+                                QuoteDetailActivity.newInstance(
+                                    this@OfferActivity,
+                                    event.quoteDetailItems
+                                )
                             )
                         }
                         is OfferViewModel.Event.OpenCheckout -> {
-                            startActivity(CheckoutActivity.newInstance(this@OfferActivity, event.checkoutParameter))
-                        }
-                        OfferViewModel.Event.ApproveSuccessful -> startActivity(
-                            LoggedInActivity.newInstance(
-                                context = this@OfferActivity,
-                                isFromOnboarding = false,
-                                withoutHistory = true
+                            startActivity(
+                                CheckoutActivity.newInstance(
+                                    this@OfferActivity,
+                                    event.checkoutParameter
+                                )
                             )
-                        )
+                        }
+                        is OfferViewModel.Event.ApproveSuccessful -> {
+                            startActivity(
+                                ChangeAddressResultActivity.newInstance(
+                                    this@OfferActivity,
+                                    ChangeAddressResultActivity.Result.Success(event.moveDate)
+                                )
+                            )
+                        }
+                        OfferViewModel.Event.ApproveError -> {
+                            startActivity(
+                                ChangeAddressResultActivity.newInstance(
+                                    this@OfferActivity,
+                                    ChangeAddressResultActivity.Result.Error
+                                )
+                            )
+                        }
                     }
                 }
                 .launchIn(lifecycleScope)

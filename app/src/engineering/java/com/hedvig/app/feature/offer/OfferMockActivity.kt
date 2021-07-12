@@ -4,6 +4,7 @@ import com.hedvig.app.MockActivity
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.offerModule
+import com.hedvig.app.testdata.feature.offer.BUNDLE_WITH_APPROVE
 import com.hedvig.app.testdata.feature.offer.BUNDLE_WITH_CONCURRENT_INCEPTION_DATES
 import com.hedvig.app.testdata.feature.offer.BUNDLE_WITH_INDEPENDENT_INCEPTION_DATES
 import com.hedvig.app.testdata.feature.offer.BUNDLE_WITH_START_DATE_FROM_PREVIOUS_INSURER
@@ -78,6 +79,10 @@ class OfferMockActivity : MockActivity() {
         }
         clickableItem("Bundle with start date from previous insurer") {
             MockOfferViewModel.mockData = BUNDLE_WITH_START_DATE_FROM_PREVIOUS_INSURER
+            startActivity(OfferActivity.newInstance(context))
+        }
+        clickableItem("Offer with approve sign method") {
+            MockOfferViewModel.mockData = BUNDLE_WITH_APPROVE
             startActivity(OfferActivity.newInstance(context))
         }
     }

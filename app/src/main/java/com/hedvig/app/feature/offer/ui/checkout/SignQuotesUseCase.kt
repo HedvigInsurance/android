@@ -6,7 +6,9 @@ import com.hedvig.android.owldroid.graphql.SignQuotesMutation
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
 
-class SignQuotesUseCase(private val apolloClient: ApolloClient) {
+class SignQuotesUseCase(
+    private val apolloClient: ApolloClient
+) {
 
     sealed class SignQuoteResult {
         object Success : SignQuoteResult()
@@ -25,7 +27,7 @@ class SignQuotesUseCase(private val apolloClient: ApolloClient) {
         }
     }
 
-    suspend fun signQuotes(quoteIds: List<String>): SignQuoteResult {
+    private suspend fun signQuotes(quoteIds: List<String>): SignQuoteResult {
         val mutation = SignQuotesMutation(quoteIds)
         return when (val result = apolloClient.mutate(mutation).safeQuery()) {
             is QueryResult.Error -> SignQuoteResult.Error(result.message)
@@ -37,15 +39,6 @@ class SignQuotesUseCase(private val apolloClient: ApolloClient) {
                     SignQuoteResult.Success
                 } ?: signResponse?.asSwedishBankIdSession?.let {
                     SignQuoteResult.Success
-                }
-
-                val approveResponseResponse = result.data?.signOrApproveQuotes?.asApproveQuoteResponse
-                approveResponseResponse?.approved?.let { approved ->
-                    if (approved) {
-                        SignQuoteResult.Success
-                    } else {
-                        SignQuoteResult.Error(null)
-                    }
                 } ?: SignQuoteResult.Error(null)
             }
         }

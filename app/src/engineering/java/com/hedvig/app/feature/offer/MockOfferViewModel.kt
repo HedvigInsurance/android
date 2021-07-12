@@ -13,6 +13,7 @@ import com.hedvig.app.service.LoginStatus
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 class MockOfferViewModel : OfferViewModel() {
 
@@ -65,7 +66,7 @@ class MockOfferViewModel : OfferViewModel() {
     }
 
     override fun approveOffer() {
-        _events.tryEmit(Event.ApproveSuccessful)
+        _events.tryEmit(Event.ApproveSuccessful(LocalDate.now()))
     }
 
     override fun onOpenCheckout() {
