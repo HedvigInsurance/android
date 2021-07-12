@@ -10,6 +10,7 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.ChangeAddressResultActivityBinding
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import e
@@ -17,9 +18,12 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import kotlinx.parcelize.Parcelize
+import org.koin.android.ext.android.inject
+import org.koin.java.KoinJavaComponent.inject
 
 class ChangeAddressResultActivity : BaseActivity(R.layout.change_address_result_activity) {
     private val binding by viewBinding(ChangeAddressResultActivityBinding::bind)
+    private val cacheManager: CacheManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,12 +51,7 @@ class ChangeAddressResultActivity : BaseActivity(R.layout.change_address_result_
 
                     continueButton.setText(R.string.moving_confirmation_success_button_text)
                     continueButton.setHapticClickListener {
-                        startActivity(
-                            LoggedInActivity.newInstance(
-                                this@ChangeAddressResultActivity,
-                                withoutHistory = true
-                            )
-                        )
+                        clearCacheAndShowLoggedIn()
                     }
                 }
                 Result.Error -> {
@@ -76,6 +75,11 @@ class ChangeAddressResultActivity : BaseActivity(R.layout.change_address_result_
     }
 
     override fun onBackPressed() {
+        clearCacheAndShowLoggedIn()
+    }
+
+    private fun clearCacheAndShowLoggedIn() {
+        cacheManager.clearCache()
         startActivity(
             LoggedInActivity.newInstance(
                 this@ChangeAddressResultActivity,

@@ -150,6 +150,7 @@ import com.hedvig.app.service.push.managers.PaymentNotificationManager
 import com.hedvig.app.terminated.TerminatedTracker
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.ApolloTimberLogger
+import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.svg.GlideApp
 import com.hedvig.app.util.svg.SvgSoftwareLayerSetter
@@ -505,6 +506,10 @@ val useCaseModule = module {
     single { EditStartDateUseCase(get(), get()) }
     single { SignQuotesUseCase(get()) }
     single { ApproveQuotesUseCase(get(), get()) }
+}
+
+val cacheManagerModule = module {
+    single { CacheManager(get()) }
 }
 
 val pushTokenManagerModule = module {
