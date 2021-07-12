@@ -338,7 +338,7 @@ val marketingModule = module {
 }
 
 val offerModule = module {
-    viewModel<OfferViewModel> { (ids: List<String>) -> OfferViewModelImpl(ids, get(), get(), get()) }
+    viewModel<OfferViewModel> { (ids: List<String>) -> OfferViewModelImpl(ids, get(), get(), get(), get()) }
 }
 
 val profileModule = module {

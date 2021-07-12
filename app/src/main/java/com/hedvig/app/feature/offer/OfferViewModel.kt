@@ -19,6 +19,8 @@ import com.hedvig.app.feature.offer.ui.OfferModel
 import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.perils.PerilItem
+import com.hedvig.app.service.LoginStatus
+import com.hedvig.app.service.LoginStatusService
 import e
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -71,7 +73,7 @@ abstract class OfferViewModel : ViewModel() {
     )
 
     sealed class ViewState {
-        data class Loaded(
+        data class Offer(
             val topOfferItems: List<OfferModel>,
             val perils: List<PerilItem>,
             val documents: List<DocumentItems>,
@@ -79,6 +81,7 @@ abstract class OfferViewModel : ViewModel() {
             val bottomOfferItems: List<OfferModel>,
             val signMethod: SignMethod,
             val title: QuoteBundleAppConfigurationTitle,
+            val loginStatus: LoginStatus
         ) : ViewState()
 
         object Loading : ViewState()
@@ -90,6 +93,7 @@ class OfferViewModelImpl(
     private val offerRepository: OfferRepository,
     private val getQuotesUseCase: GetQuotesUseCase,
     private val getQuoteUseCase: GetQuoteUseCase,
+    private val loginStatusService: LoginStatusService
 ) : OfferViewModel() {
 
     private lateinit var quoteIds: List<String>
@@ -114,7 +118,8 @@ class OfferViewModelImpl(
                                     _events.tryEmit(Event.HasContracts)
                                 }
                                 is OfferRepository.OfferResult.Success -> {
-                                    _viewState.value = toViewState(response.data)
+                                    val loginStatus = loginStatusService.getLoginStatus()
+                                    _viewState.value = toViewState(response.data, loginStatus)
                                 }
                             }
                         }
@@ -130,20 +135,21 @@ class OfferViewModelImpl(
         }
     }
 
-    private fun toViewState(data: OfferQuery.Data): ViewState {
+    private fun toViewState(data: OfferQuery.Data, loginStatus: LoginStatus): ViewState {
         val topOfferItems = OfferItemsBuilder.createTopOfferItems(data)
         val perilItems = OfferItemsBuilder.createPerilItems(data.quoteBundle.quotes)
         val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(data.quoteBundle.quotes)
         val documentItems = OfferItemsBuilder.createDocumentItems(data.quoteBundle.quotes)
         val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems(data.quoteBundle)
-        return ViewState.Loaded(
+        return ViewState.Offer(
             topOfferItems = topOfferItems,
             perils = perilItems,
             documents = documentItems,
             insurableLimitsItems = insurableLimitsItems,
             bottomOfferItems = bottomOfferItems,
             signMethod = data.signMethodForQuotes,
-            title = data.quoteBundle.appConfiguration.title
+            title = data.quoteBundle.appConfiguration.title,
+            loginStatus = loginStatus
         )
     }
 
