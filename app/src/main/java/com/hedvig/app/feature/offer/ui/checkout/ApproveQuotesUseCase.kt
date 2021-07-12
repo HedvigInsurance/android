@@ -16,7 +16,7 @@ class ApproveQuotesUseCase(
     sealed class ApproveQuotesResult {
         data class Success(val date: LocalDate?) : ApproveQuotesResult()
         sealed class Error : ApproveQuotesResult() {
-            data class GeneralError(val message: String?) : Error()
+            data class GeneralError(val message: String? = null) : Error()
             object ApproveError : Error()
         }
     }
@@ -34,7 +34,7 @@ class ApproveQuotesUseCase(
                     } else {
                         ApproveQuotesResult.Error.ApproveError
                     }
-                } ?: ApproveQuotesResult.Error.GeneralError(null)
+                } ?: ApproveQuotesResult.Error.GeneralError()
             }
         }
     }
