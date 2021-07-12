@@ -15,12 +15,13 @@ import com.hedvig.app.feature.offer.quotedetail.buildDocuments
 import com.hedvig.app.feature.offer.quotedetail.buildInsurableLimits
 import com.hedvig.app.feature.offer.quotedetail.buildPerils
 import com.hedvig.app.feature.offer.ui.OfferModel
+import com.hedvig.app.feature.offer.ui.checkout.ApproveQuotesUseCase
 import com.hedvig.app.feature.offer.ui.checkout.CheckoutParameter
-import com.hedvig.app.feature.offer.ui.checkout.SignQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.perils.PerilItem
 import e
+import java.time.LocalDate
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,7 +48,10 @@ abstract class OfferViewModel : ViewModel() {
             val checkoutParameter: CheckoutParameter
         ) : Event()
 
-        object ApproveSuccessful : Event()
+        object ApproveError : Event()
+        data class ApproveSuccessful(
+            val moveDate: LocalDate?
+        ) : Event()
     }
 
     protected val _events = MutableSharedFlow<Event>(
@@ -100,7 +104,7 @@ class OfferViewModelImpl(
     private val offerRepository: OfferRepository,
     private val getQuotesUseCase: GetQuotesUseCase,
     private val getQuoteUseCase: GetQuoteUseCase,
-    private val signQuotesUseCase: SignQuotesUseCase
+    private val approveQuotesUseCase: ApproveQuotesUseCase
 ) : OfferViewModel() {
 
     private lateinit var quoteIds: List<String>
@@ -154,10 +158,12 @@ class OfferViewModelImpl(
     override fun approveOffer() {
         viewModelScope.launch {
             _viewState.value = ViewState.Loading(OfferItemsBuilder.createLoadingItem())
-            when (val result = signQuotesUseCase.signQuotes(quoteIds)) {
-                is SignQuotesUseCase.SignQuoteResult.Error -> _events.tryEmit(Event.Error(result.message))
-                SignQuotesUseCase.SignQuoteResult.Success -> _events.tryEmit(Event.ApproveSuccessful)
+            val event = when (val result = approveQuotesUseCase.approveQuotes(quoteIds)) {
+                is ApproveQuotesUseCase.ApproveQuotesResult.Error.GeneralError -> Event.Error(result.message)
+                ApproveQuotesUseCase.ApproveQuotesResult.Error.ApproveError -> Event.ApproveError
+                is ApproveQuotesUseCase.ApproveQuotesResult.Success -> Event.ApproveSuccessful(result.date)
             }
+            _events.tryEmit(event)
         }
     }
 

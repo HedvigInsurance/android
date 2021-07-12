@@ -13,10 +13,10 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import e
-import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
+import kotlinx.parcelize.Parcelize
 
 class ChangeAddressResultActivity : BaseActivity(R.layout.change_address_result_activity) {
     private val binding by viewBinding(ChangeAddressResultActivityBinding::bind)
@@ -36,10 +36,15 @@ class ChangeAddressResultActivity : BaseActivity(R.layout.change_address_result_
                     toolbar.isVisible = false
                     image.setImageResource(R.drawable.illustration_move_success)
                     title.setText(R.string.moving_confirmation_success_title)
-                    subtitle.text = getString(
-                        R.string.moving_confirmation_success_paragraph,
-                        DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(result.date)
-                    )
+                    subtitle.text = if (result.date == null) {
+                        getString(R.string.moving_confirmation_success_no_date_paragraph_copy)
+                    } else {
+                        getString(
+                            R.string.moving_confirmation_success_paragraph,
+                            DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(result.date)
+                        )
+                    }
+
                     continueButton.setText(R.string.moving_confirmation_success_button_text)
                     continueButton.setHapticClickListener {
                         startActivity(
@@ -50,7 +55,7 @@ class ChangeAddressResultActivity : BaseActivity(R.layout.change_address_result_
                         )
                     }
                 }
-                Result.UnderwritingLimitsHit -> {
+                Result.Error -> {
                     toolbar.isVisible = true
                     image.setImageResource(R.drawable.illustration_helicopter)
                     title.setText(R.string.moving_uw_failure_title)
@@ -70,14 +75,23 @@ class ChangeAddressResultActivity : BaseActivity(R.layout.change_address_result_
         }
     }
 
+    override fun onBackPressed() {
+        startActivity(
+            LoggedInActivity.newInstance(
+                this@ChangeAddressResultActivity,
+                withoutHistory = true
+            )
+        )
+    }
+
     sealed class Result : Parcelable {
         @Parcelize
         data class Success(
-            val date: LocalDate,
+            val date: LocalDate?,
         ) : Result()
 
         @Parcelize
-        object UnderwritingLimitsHit : Result()
+        object Error : Result()
     }
 
     companion object {

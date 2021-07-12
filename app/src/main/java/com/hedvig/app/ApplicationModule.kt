@@ -92,10 +92,11 @@ import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.offer.OfferViewModelImpl
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetViewModel
-import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
 import com.hedvig.app.feature.offer.ui.changestartdate.EditStartDateUseCase
+import com.hedvig.app.feature.offer.ui.checkout.ApproveQuotesUseCase
 import com.hedvig.app.feature.offer.ui.checkout.CheckoutViewModel
 import com.hedvig.app.feature.offer.ui.checkout.SignQuotesUseCase
+import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.onboarding.ChoosePlanRepository
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
@@ -503,6 +504,7 @@ val useCaseModule = module {
     single { GetQuoteUseCase(get()) }
     single { EditStartDateUseCase(get(), get()) }
     single { SignQuotesUseCase(get()) }
+    single { ApproveQuotesUseCase(get(), get()) }
 }
 
 val pushTokenManagerModule = module {
