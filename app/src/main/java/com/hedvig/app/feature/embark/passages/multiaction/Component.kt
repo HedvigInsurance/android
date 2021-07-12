@@ -19,6 +19,7 @@ sealed class MultiActionItem {
     @Parcelize
     data class DropDown(
         val key: String,
+        val text: String,
         val value: String,
     ) : Parcelable
 
