@@ -3,6 +3,9 @@ package com.hedvig.app.testdata.feature.offer.builders
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.TableFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
+import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationGradientOption
+import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationStartDateTerminology
+import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationTitle
 import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.testdata.common.builders.CostBuilder
@@ -28,6 +31,13 @@ data class OfferDataBuilder(
             ),
             frequentlyAskedQuestions = frequentlyAskedQuestions,
             inception = inceptions,
+            appConfiguration = OfferQuery.AppConfiguration(
+                showCampaignManagement = true,
+                showFAQ = true,
+                startDateTerminology = QuoteBundleAppConfigurationStartDateTerminology.START_DATE,
+                title = QuoteBundleAppConfigurationTitle.LOGO,
+                gradientOption = QuoteBundleAppConfigurationGradientOption.GRADIENT_THREE
+            )
         ),
         redeemedCampaigns = redeemedCampaigns,
         contracts = contracts,

@@ -70,6 +70,13 @@ query Offer($locale: Locale!, $ids: [ID!]!) {
         }
       }
     }
+    appConfiguration {
+      showCampaignManagement
+      showFAQ
+      startDateTerminology
+      title
+      gradientOption
+    }
   }
 
   signMethodForQuotes(input: $ids)

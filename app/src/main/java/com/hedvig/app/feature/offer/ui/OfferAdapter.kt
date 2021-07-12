@@ -129,10 +129,12 @@ class OfferAdapter(
                             .show(fragmentManager, ChangeDateBottomSheet.TAG)
                     }
 
-                    startDateLabel.text = data.startDateLabel.getString(itemView.context)
+                    startDateLabel.text = itemView.context.getString(data.startDateLabel)
                     startDate.text = data.startDate.getString(itemView.context)
 
                     campaign.text = data.incentiveDisplayValue.joinToString()
+
+                    discountButton.isVisible = data.showCampaignManagement
                     if (data.hasCampaigns) {
                         discountButton.apply {
                             setText(R.string.OFFER_REMOVE_DISCOUNT_BUTTON)
@@ -171,6 +173,8 @@ class OfferAdapter(
                     sign.setHapticClickListener {
                         onSign(data.signMethod)
                     }
+
+                    root.setBackgroundResource(data.gradientRes)
                 }
             }
         }

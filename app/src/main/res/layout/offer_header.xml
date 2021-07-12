@@ -2,6 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/gradient_summer_sky"
@@ -38,8 +39,8 @@
                 android:layout_marginStart="@dimen/base_margin_double"
                 android:layout_marginTop="@dimen/base_margin_triple"
                 android:layout_marginEnd="@dimen/base_margin_double"
-                android:textAppearance="?textAppearanceCaption"
                 android:textAllCaps="true"
+                android:textAppearance="?textAppearanceCaption"
                 tools:text="HEDVIG BOSTADSRÄTT" />
 
             <LinearLayout
@@ -132,6 +133,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/base_margin_double"
                 android:layout_marginTop="@dimen/base_margin_quadruple"
+                android:layout_marginBottom="@dimen/base_margin"
                 android:text="@string/OFFER_SIGN_BUTTON"
                 app:iconGravity="textEnd"
                 app:iconPadding="@dimen/base_margin_double" />
@@ -141,7 +143,6 @@
                 style="?materialButtonTextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/base_margin"
                 android:layout_marginBottom="@dimen/base_margin_double"
                 android:textColor="@color/textColorSecondary"
                 app:icon="@drawable/ic_add_circle"

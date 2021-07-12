@@ -18,6 +18,7 @@ import com.bumptech.glide.RequestBuilder
 import com.carousell.concatadapterextension.ConcatItemDecoration
 import com.carousell.concatadapterextension.ConcatSpanSizeLookup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationTitle
 import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
@@ -158,6 +159,13 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                             documentAdapter.submitList(viewState.documents)
                             bottomOfferAdapter.submitList(viewState.bottomOfferItems)
                             setSignState(viewState.signMethod)
+
+                            TransitionManager.beginDelayedTransition(binding.offerToolbar)
+                            when (viewState.title) {
+                                QuoteBundleAppConfigurationTitle.LOGO -> binding.toolbarLogo.show()
+                                QuoteBundleAppConfigurationTitle.UPDATE_SUMMARY,
+                                QuoteBundleAppConfigurationTitle.UNKNOWN__ -> binding.toolbarTitle.show()
+                            }
                             binding.progressBar.hide()
                         }
                         is OfferViewModel.ViewState.Loading -> {

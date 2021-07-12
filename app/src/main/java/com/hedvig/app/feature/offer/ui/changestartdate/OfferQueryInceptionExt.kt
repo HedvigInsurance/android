@@ -1,8 +1,9 @@
 package com.hedvig.app.feature.offer.ui.changestartdate
 
 import com.hedvig.android.owldroid.graphql.OfferQuery
+import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationStartDateTerminology
+import com.hedvig.app.R
 import com.hedvig.app.feature.offer.ui.OfferStartDate
-import com.hedvig.app.feature.offer.ui.OfferStartDateLabel
 import java.lang.IllegalArgumentException
 import java.time.LocalDate
 
@@ -77,10 +78,16 @@ fun OfferQuery.Inception1.hasNoDate(): Boolean {
         (asIndependentInceptions != null && asIndependentInceptions?.inceptions?.all { it.startDate == null } == true)
 }
 
-fun OfferQuery.Inception1.getStartDateLabel(): OfferStartDateLabel {
-    return if (asIndependentInceptions != null) {
-        OfferStartDateLabel.Multiple
-    } else {
-        OfferStartDateLabel.Single
+fun OfferQuery.Inception1.getStartDateLabel(
+    startDateTerminology: QuoteBundleAppConfigurationStartDateTerminology
+): Int {
+    return when (startDateTerminology) {
+        QuoteBundleAppConfigurationStartDateTerminology.START_DATE -> if (asIndependentInceptions != null) {
+            R.string.OFFER_START_DATE_PLURAL
+        } else {
+            R.string.OFFER_START_DATE
+        }
+        QuoteBundleAppConfigurationStartDateTerminology.ACCESS_DATE -> R.string.OFFER_ACCESS_DATE
+        QuoteBundleAppConfigurationStartDateTerminology.UNKNOWN__ -> R.string.OFFER_START_DATE
     }
 }
