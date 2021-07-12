@@ -5,10 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.fragment.SignStatusFragment
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
+import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationTitle
 import com.hedvig.app.feature.offer.quotedetail.buildDocuments
 import com.hedvig.app.feature.offer.quotedetail.buildInsurableLimits
 import com.hedvig.app.feature.offer.quotedetail.buildPerils
-import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -29,12 +29,13 @@ class MockOfferViewModel : OfferViewModel() {
             val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems(mockData.quoteBundle)
             _viewState.value =
                 ViewState.Loaded(
-                    topOfferItems,
-                    perilItems,
-                    documentItems,
-                    insurableLimitsItems,
-                    bottomOfferItems,
-                    mockData.signMethodForQuotes
+                    topOfferItems = topOfferItems,
+                    perils = perilItems,
+                    documents = documentItems,
+                    insurableLimitsItems = insurableLimitsItems,
+                    bottomOfferItems = bottomOfferItems,
+                    signMethod = mockData.signMethodForQuotes,
+                    title = mockData.quoteBundle.appConfiguration.title
                 )
         }
     }

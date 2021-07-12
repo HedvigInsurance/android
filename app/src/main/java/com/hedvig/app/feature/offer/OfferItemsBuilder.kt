@@ -1,6 +1,8 @@
 package com.hedvig.app.feature.offer
 
 import com.hedvig.android.owldroid.graphql.OfferQuery
+import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationGradientOption
+import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationStartDateTerminology
 import com.hedvig.app.R
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
@@ -24,7 +26,7 @@ object OfferItemsBuilder {
             OfferModel.Header(
                 title = data.getDisplayNameOrNull(),
                 startDate = data.quoteBundle.inception.getStartDate(),
-                startDateLabel = data.quoteBundle.inception.getStartDateLabel(),
+                startDateLabel = data.quoteBundle.inception.getStartDateLabel(data.quoteBundle.appConfiguration.startDateTerminology),
                 netMonthlyCost = data
                     .quoteBundle
                     .bundleCost
@@ -46,7 +48,14 @@ object OfferItemsBuilder {
                 incentiveDisplayValue = data.redeemedCampaigns.mapNotNull { it.fragments.incentiveFragment.displayValue },
                 hasCampaigns = data.redeemedCampaigns.isNotEmpty(),
                 changeDateBottomSheetData = data.quoteBundle.inception.toChangeDateBottomSheetData(),
-                signMethod = data.signMethodForQuotes
+                signMethod = data.signMethodForQuotes,
+                showCampaignManagement = data.quoteBundle.appConfiguration.showCampaignManagement,
+                gradientRes = when (data.quoteBundle.appConfiguration.gradientOption) {
+                    QuoteBundleAppConfigurationGradientOption.GRADIENT_ONE -> R.drawable.gradient_fall_sunset
+                    QuoteBundleAppConfigurationGradientOption.GRADIENT_TWO -> R.drawable.gradient_spring_fog
+                    QuoteBundleAppConfigurationGradientOption.GRADIENT_THREE -> R.drawable.gradient_summer_sky
+                    QuoteBundleAppConfigurationGradientOption.UNKNOWN__ -> R.drawable.gradient_spring_fog
+                },
             ),
         )
         add(
@@ -91,7 +100,7 @@ object OfferItemsBuilder {
     }
 
     fun createBottomOfferItems(bundle: OfferQuery.QuoteBundle) = ArrayList<OfferModel>().apply {
-        if (bundle.frequentlyAskedQuestions.isNotEmpty()) {
+        if (bundle.frequentlyAskedQuestions.isNotEmpty() && bundle.appConfiguration.showFAQ) {
             add(
                 OfferModel.FAQ(
                     bundle.frequentlyAskedQuestions.mapNotNull {
