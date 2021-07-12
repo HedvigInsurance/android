@@ -58,6 +58,7 @@ query HomeQuery($locale: Locale!, $languageCode: String!) {
       }
       ... on Emergency {
         color
+        emergencyNumber
       }
     }
   }

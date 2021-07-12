@@ -74,7 +74,7 @@ class EmergencyActivity : BaseActivity(R.layout.activity_emergency) {
             firstMessage.commonClaimCreateClaimButton.remove()
 
             if (data.eligibleToClaim) {
-                showInsuranceActive()
+                showInsuranceActive(data.emergencyNumber)
             } else {
                 showInsuranceInactive()
             }
@@ -89,12 +89,12 @@ class EmergencyActivity : BaseActivity(R.layout.activity_emergency) {
         }
     }
 
-    private fun showInsuranceActive() {
+    private fun showInsuranceActive(emergencyNumber: String) {
         binding.apply {
             secondEmergencyButton.enable()
             secondEmergencyButton.setHapticClickListener {
                 tracker.callGlobalAssistance()
-                makeACall(GLOBAL_ASSISTANCE_URI)
+                makeACall(Uri.parse("tel:$emergencyNumber"))
             }
         }
     }
@@ -104,7 +104,6 @@ class EmergencyActivity : BaseActivity(R.layout.activity_emergency) {
     }
 
     companion object {
-        private val GLOBAL_ASSISTANCE_URI = Uri.parse("tel:+4538489461")
         private const val EMERGENCY_DATA = "emergency_data"
 
         fun newInstance(context: Context, data: EmergencyData) =
