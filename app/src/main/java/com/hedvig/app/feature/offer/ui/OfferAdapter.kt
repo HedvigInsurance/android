@@ -44,7 +44,7 @@ import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
-import javax.money.MonetaryAmount
+import com.hedvig.app.util.minus
 
 class OfferAdapter(
     private val fragmentManager: FragmentManager,
@@ -105,8 +105,6 @@ class OfferAdapter(
             private val onRemoveDiscount: () -> Unit
         ) : ViewHolder(parent.inflate(R.layout.offer_header)) {
             private val binding by viewBinding(OfferHeaderBinding::bind)
-
-            private operator fun MonetaryAmount.minus(other: MonetaryAmount) = subtract(other)
 
             override fun bind(data: OfferModel) {
                 if (data !is OfferModel.Header) {

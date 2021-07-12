@@ -16,5 +16,5 @@ fragment IncentiveFragment on Campaign {
       __typename
     }
   }
-  displayValue
+  displayValue(locale: $locale)
 }

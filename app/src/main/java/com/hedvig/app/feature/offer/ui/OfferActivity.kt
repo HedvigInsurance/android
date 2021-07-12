@@ -25,23 +25,19 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityOfferBinding
 import com.hedvig.app.feature.documents.DocumentAdapter
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
+import com.hedvig.app.feature.home.ui.changeaddress.result.ChangeAddressResultActivity
 import com.hedvig.app.feature.insurablelimits.InsurableLimitsAdapter
-import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.feature.offer.OfferItemsBuilder
 import com.hedvig.app.feature.offer.OfferSignDialog
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.offer.quotedetail.QuoteDetailActivity
 import com.hedvig.app.feature.offer.ui.checkout.CheckoutActivity
-import com.hedvig.app.feature.offer.ui.checkout.CheckoutParameter
 import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
-import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.service.LoginStatus
 import com.hedvig.app.util.extensions.showErrorDialog
 import com.hedvig.app.util.extensions.startClosableChat
-import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
@@ -185,10 +181,36 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                         is OfferViewModel.Event.Error -> showErrorDialog(
                             event.message ?: getString(R.string.home_tab_error_body)
                         ) { }
-                        OfferViewModel.Event.HasContracts -> startLoggedInActivity()
                         is OfferViewModel.Event.OpenQuoteDetails -> {
                             startActivity(
-                                QuoteDetailActivity.newInstance(this@OfferActivity, event.quoteDetailItems)
+                                QuoteDetailActivity.newInstance(
+                                    this@OfferActivity,
+                                    event.quoteDetailItems
+                                )
+                            )
+                        }
+                        is OfferViewModel.Event.OpenCheckout -> {
+                            startActivity(
+                                CheckoutActivity.newInstance(
+                                    this@OfferActivity,
+                                    event.checkoutParameter
+                                )
+                            )
+                        }
+                        is OfferViewModel.Event.ApproveSuccessful -> {
+                            startActivity(
+                                ChangeAddressResultActivity.newInstance(
+                                    this@OfferActivity,
+                                    ChangeAddressResultActivity.Result.Success(event.moveDate)
+                                )
+                            )
+                        }
+                        OfferViewModel.Event.ApproveError -> {
+                            startActivity(
+                                ChangeAddressResultActivity.newInstance(
+                                    this@OfferActivity,
+                                    ChangeAddressResultActivity.Result.Error
+                                )
                             )
                         }
                     }
@@ -247,34 +269,12 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     OfferSignDialog.TAG
                 )
             }
-            SignMethod.SIMPLE_SIGN -> {
-                startActivity(
-                    CheckoutActivity.newInstance(
-                        this,
-                        CheckoutParameter(
-                            // TODO Get data from viewmodel
-                            title = "Travel Insurance",
-                            subtitle = "79 NOK/mo.",
-                            gdprUrl = OfferItemsBuilder.GDPR_LINK
-                        )
-                    )
-                )
-            }
-            SignMethod.APPROVE_ONLY -> {
-            }
+            SignMethod.SIMPLE_SIGN -> model.onOpenCheckout()
+            SignMethod.APPROVE_ONLY -> model.approveOffer()
             SignMethod.NORWEGIAN_BANK_ID,
             SignMethod.DANISH_BANK_ID,
             SignMethod.UNKNOWN__ -> showErrorDialog("Could not parse sign method", ::finish)
         }
-    }
-
-    private fun startLoggedInActivity() {
-        storeBoolean(IS_VIEWING_OFFER, false)
-        LoggedInActivity.newInstance(
-            context = this,
-            isFromOnboarding = true,
-            withoutHistory = true
-        )
     }
 
     private fun handleMenuItem(menuItem: MenuItem) = when (menuItem.itemId) {

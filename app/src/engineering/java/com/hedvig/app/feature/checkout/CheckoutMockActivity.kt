@@ -2,7 +2,6 @@ package com.hedvig.app.feature.checkout
 
 import com.hedvig.app.MockActivity
 import com.hedvig.app.feature.offer.MockOfferViewModel
-import com.hedvig.app.feature.offer.OfferItemsBuilder
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.offer.ui.checkout.CheckoutActivity
 import com.hedvig.app.feature.offer.ui.checkout.CheckoutParameter
@@ -26,9 +25,7 @@ class CheckoutMockActivity : MockActivity() {
                 CheckoutActivity.newInstance(
                     context,
                     CheckoutParameter(
-                        title = "Test Checkout Insurance",
-                        subtitle = "79 NOK/mo.",
-                        gdprUrl = OfferItemsBuilder.GDPR_LINK
+                        quoteIds = listOf(""),
                     )
                 )
             )

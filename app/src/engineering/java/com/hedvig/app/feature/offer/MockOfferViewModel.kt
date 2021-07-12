@@ -8,10 +8,12 @@ import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.app.feature.offer.quotedetail.buildDocuments
 import com.hedvig.app.feature.offer.quotedetail.buildInsurableLimits
 import com.hedvig.app.feature.offer.quotedetail.buildPerils
+import com.hedvig.app.feature.offer.ui.checkout.CheckoutParameter
 import com.hedvig.app.service.LoginStatus
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 class MockOfferViewModel : OfferViewModel() {
 
@@ -58,6 +60,20 @@ class MockOfferViewModel : OfferViewModel() {
                     buildPerils(quote),
                     buildInsurableLimits(quote),
                     buildDocuments(quote),
+                )
+            )
+        )
+    }
+
+    override fun approveOffer() {
+        _events.tryEmit(Event.ApproveSuccessful(LocalDate.now()))
+    }
+
+    override fun onOpenCheckout() {
+        _events.tryEmit(
+            Event.OpenCheckout(
+                CheckoutParameter(
+                    quoteIds = listOf(mockData.quoteBundle.quotes[0].id)
                 )
             )
         )

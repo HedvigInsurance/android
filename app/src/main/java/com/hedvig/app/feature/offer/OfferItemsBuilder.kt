@@ -11,10 +11,11 @@ import com.hedvig.app.feature.offer.ui.changestartdate.getStartDate
 import com.hedvig.app.feature.offer.ui.changestartdate.getStartDateLabel
 import com.hedvig.app.feature.offer.ui.changestartdate.toChangeDateBottomSheetData
 import com.hedvig.app.feature.offer.ui.faq.FAQItem
+import com.hedvig.app.feature.offer.ui.grossMonthlyCost
+import com.hedvig.app.feature.offer.ui.netMonthlyCost
 import com.hedvig.app.feature.perils.Peril
 import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.feature.table.intoTable
-import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.safeLet
 
 object OfferItemsBuilder {
@@ -24,27 +25,11 @@ object OfferItemsBuilder {
     fun createTopOfferItems(data: OfferQuery.Data): List<OfferModel> = ArrayList<OfferModel>().apply {
         add(
             OfferModel.Header(
-                title = data.getDisplayNameOrNull(),
+                title = data.quoteBundle.displayName,
                 startDate = data.quoteBundle.inception.getStartDate(),
                 startDateLabel = data.quoteBundle.inception.getStartDateLabel(data.quoteBundle.appConfiguration.startDateTerminology),
-                netMonthlyCost = data
-                    .quoteBundle
-                    .bundleCost
-                    .fragments
-                    .costFragment
-                    .monthlyNet
-                    .fragments
-                    .monetaryAmountFragment
-                    .toMonetaryAmount(),
-                grossMonthlyCost = data
-                    .quoteBundle
-                    .bundleCost
-                    .fragments
-                    .costFragment
-                    .monthlyGross
-                    .fragments
-                    .monetaryAmountFragment
-                    .toMonetaryAmount(),
+                netMonthlyCost = data.netMonthlyCost(),
+                grossMonthlyCost = data.grossMonthlyCost(),
                 incentiveDisplayValue = data.redeemedCampaigns.mapNotNull { it.fragments.incentiveFragment.displayValue },
                 hasCampaigns = data.redeemedCampaigns.isNotEmpty(),
                 changeDateBottomSheetData = data.quoteBundle.inception.toChangeDateBottomSheetData(),
@@ -68,12 +53,6 @@ object OfferItemsBuilder {
                 add(OfferModel.QuoteDetails(quote.displayName, quote.id))
             }
         }
-    }
-
-    private fun OfferQuery.Data.getDisplayNameOrNull() = if (quoteBundle.quotes.size == 1) {
-        quoteBundle.quotes.firstOrNull()?.displayName
-    } else {
-        null
     }
 
     fun createDocumentItems(data: List<OfferQuery.Quote>): List<DocumentItems> {

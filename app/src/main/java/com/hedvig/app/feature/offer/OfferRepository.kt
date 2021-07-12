@@ -7,6 +7,7 @@ import com.apollographql.apollo.api.cache.http.HttpCachePolicy
 import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.coroutines.toFlow
 import com.hedvig.android.owldroid.fragment.CostFragment
+import com.hedvig.android.owldroid.graphql.ApproveQuotesMutation
 import com.hedvig.android.owldroid.graphql.LastQuoteIdQuery
 import com.hedvig.android.owldroid.graphql.OfferClosedMutation
 import com.hedvig.android.owldroid.graphql.OfferQuery
@@ -43,13 +44,7 @@ class OfferRepository(
         response.errors?.let {
             return OfferResult.Error(it.firstOrNull()?.message)
         }
-
         val data = response.data ?: return OfferResult.Error()
-
-        if (data.contracts.isNotEmpty()) {
-            return OfferResult.HasContracts
-        }
-
         return OfferResult.Success(data)
     }
 
@@ -133,23 +128,24 @@ class OfferRepository(
             .execute()
     }
 
-    suspend fun triggerOpenChatFromOffer() =
-        apolloClient.mutate(OfferClosedMutation()).await()
+    suspend fun triggerOpenChatFromOffer() = apolloClient
+        .mutate(OfferClosedMutation())
+        .await()
 
-    suspend fun startSign() =
-        apolloClient.mutate(SignOfferMutation()).await()
+    suspend fun startSign() = apolloClient
+        .mutate(SignOfferMutation())
+        .await()
 
-    fun subscribeSignStatus() =
-        apolloClient
-            .subscribe(SignStatusSubscription())
-            .toFlow()
+    fun subscribeSignStatus() = apolloClient
+        .subscribe(SignStatusSubscription())
+        .toFlow()
 
-    suspend fun fetchSignStatus() =
-        apolloClient.query(SignStatusQuery())
-            .toBuilder()
-            .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
-            .build()
-            .await()
+    suspend fun fetchSignStatus() = apolloClient
+        .query(SignStatusQuery())
+        .toBuilder()
+        .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
+        .build()
+        .await()
 
     fun quoteIdOfLastQuoteOfMember(): ApolloCall<LastQuoteIdQuery.Data> = apolloClient
         .query(LastQuoteIdQuery())

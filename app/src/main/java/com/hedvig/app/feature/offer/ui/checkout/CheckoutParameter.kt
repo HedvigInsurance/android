@@ -5,7 +5,5 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class CheckoutParameter(
-    val title: String,
-    val subtitle: String,
-    val gdprUrl: String
+    val quoteIds: List<String>,
 ) : Parcelable

@@ -3,6 +3,8 @@ package com.hedvig.app.feature.offer.ui.checkout
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.transition.TransitionManager
+import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -10,30 +12,36 @@ import com.google.android.material.textfield.TextInputLayout
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityCheckoutBinding
+import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.app.feature.offer.OfferItemsBuilder
+import com.hedvig.app.service.LoginStatusService
+import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.extensions.setMarkdownText
+import com.hedvig.app.util.extensions.setStrikethrough
+import com.hedvig.app.util.extensions.showErrorDialog
+import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
+import com.hedvig.app.util.minus
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class CheckoutActivity : BaseActivity(R.layout.activity_checkout) {
-
-    private val viewModel: CheckoutViewModel by viewModel()
-
-    private val binding by viewBinding(ActivityCheckoutBinding::bind)
     private val parameter by lazy {
         intent.getParcelableExtra<CheckoutParameter>(PARAMETER)
             ?: throw IllegalArgumentException("No parameter found for ${this.javaClass.simpleName}")
     }
+    private val viewModel: CheckoutViewModel by viewModel { parametersOf(parameter.quoteIds) }
+    private val binding by viewBinding(ActivityCheckoutBinding::bind)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding.apply {
             toolbar.setNavigationOnClickListener { onBackPressed() }
-            title.text = parameter.title
-            subtitle.text = parameter.subtitle
-            val link = getString(R.string.OFFER_FOOTER_GDPR_INFO, parameter.gdprUrl)
+            val link = getString(R.string.OFFER_FOOTER_GDPR_INFO, OfferItemsBuilder.GDPR_LINK)
             text.setMarkdownText(link)
 
             emailEditText.addTextChangedListener {
@@ -61,16 +69,30 @@ class CheckoutActivity : BaseActivity(R.layout.activity_checkout) {
 
             signButton.setHapticClickListener {
                 viewModel.validateInput()
+                viewModel.onTrySign(
+                    emailEditText.text.toString(),
+                    identityNumberEditText.text.toString()
+                )
             }
         }
 
-        viewModel.viewState
+        viewModel.inputViewState
             .flowWithLifecycle(lifecycle)
             .onEach(::setInputState)
             .launchIn(lifecycleScope)
+
+        viewModel.titleViewState
+            .flowWithLifecycle(lifecycle)
+            .onEach(::setTitleState)
+            .launchIn(lifecycleScope)
+
+        viewModel.events
+            .flowWithLifecycle(lifecycle)
+            .onEach(::handleEvent)
+            .launchIn(lifecycleScope)
     }
 
-    private fun setInputState(viewState: CheckoutViewModel.ViewState) {
+    private fun setInputState(viewState: CheckoutViewModel.InputViewState) {
         binding.signButton.isEnabled = viewState.enableSign
         setContainerInputState(binding.emailInputContainer, viewState.emailInputState)
         setContainerInputState(binding.identityNumberInputContainer, viewState.identityInputState)
@@ -78,14 +100,60 @@ class CheckoutActivity : BaseActivity(R.layout.activity_checkout) {
 
     private fun setContainerInputState(
         textInputLayout: TextInputLayout,
-        state: CheckoutViewModel.ViewState.InputState
+        state: CheckoutViewModel.InputViewState.InputState
     ) {
         when (state) {
-            is CheckoutViewModel.ViewState.InputState.Invalid -> {
+            is CheckoutViewModel.InputViewState.InputState.Invalid -> {
                 textInputLayout.error = getString(state.stringRes ?: R.string.component_error)
             }
-            CheckoutViewModel.ViewState.InputState.NoInput,
-            is CheckoutViewModel.ViewState.InputState.Valid -> textInputLayout.error = null
+            CheckoutViewModel.InputViewState.InputState.NoInput,
+            is CheckoutViewModel.InputViewState.InputState.Valid -> textInputLayout.error = null
+        }
+    }
+
+    private fun setTitleState(titleState: CheckoutViewModel.TitleViewState) {
+        when (titleState) {
+            is CheckoutViewModel.TitleViewState.Loaded -> {
+                TransitionManager.beginDelayedTransition(binding.root)
+
+                binding.title.show()
+                binding.cost.show()
+                binding.originalCost.isVisible = !(titleState.netAmount - titleState.grossAmount).isZero
+
+                binding.title.text = titleState.bundleName
+                val netAmount = titleState.netAmount.format(this, titleState.market)
+                val netString = getString(R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, netAmount)
+                binding.cost.text = netString
+                binding.originalCost.text = titleState.grossAmount.format(this, titleState.market)
+                binding.originalCost.setStrikethrough(true)
+            }
+            CheckoutViewModel.TitleViewState.Loading -> {
+            }
+        }
+    }
+
+    private fun handleEvent(event: CheckoutViewModel.Event) {
+        when (event) {
+            is CheckoutViewModel.Event.Error -> showErrorDialog(
+                event.message ?: getString(R.string.home_tab_error_body)
+            ) { }
+            CheckoutViewModel.Event.CheckoutSuccess -> {
+                startActivity(
+                    LoggedInActivity.newInstance(
+                        this,
+                        withoutHistory = true,
+                        isFromOnboarding = true
+                    )
+                )
+            }
+            CheckoutViewModel.Event.HasContracts -> {
+                storeBoolean(LoginStatusService.IS_VIEWING_OFFER, false)
+                LoggedInActivity.newInstance(
+                    context = this,
+                    isFromOnboarding = true,
+                    withoutHistory = true
+                )
+            }
         }
     }
 

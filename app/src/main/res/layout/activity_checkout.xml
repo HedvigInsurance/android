@@ -36,17 +36,36 @@
                 android:textAppearance="?textAppearanceHeadline5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                android:visibility="invisible"
+                tools:visibility="visible"
                 tools:text="Travel Insurance" />
 
             <TextView
-                android:id="@+id/subtitle"
-                android:layout_width="match_parent"
+                android:id="@+id/original_cost"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/base_margin_double"
+                android:layout_marginStart="@dimen/base_margin_double"
                 android:layout_marginTop="@dimen/base_margin"
                 android:textAppearance="?textAppearanceHeadline6"
-                android:textColor="?android:textColorPrimary"
+                android:textColor="?android:textColorHint"
+                android:visibility="invisible"
+                tools:visibility="visible"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/title"
+                tools:text="59" />
+
+            <TextView
+                android:id="@+id/cost"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/base_margin_double"
+                android:layout_marginTop="@dimen/base_margin"
+                android:layout_marginEnd="@dimen/base_margin_double"
+                android:textAppearance="?textAppearanceHeadline6"
+                android:textColor="?android:textColorPrimary"
+                android:visibility="invisible"
+                tools:visibility="visible"
+                app:layout_constraintStart_toEndOf="@id/original_cost"
                 app:layout_constraintTop_toBottomOf="@id/title"
                 tools:text="79 NOK/mo." />
 
@@ -59,7 +78,7 @@
                 android:layout_marginTop="@dimen/base_margin_quintuple"
                 android:hint="@string/PROFILE_MY_INFO_EMAIL_LABEL"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/subtitle">
+                app:layout_constraintTop_toBottomOf="@id/cost">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/emailEditText"

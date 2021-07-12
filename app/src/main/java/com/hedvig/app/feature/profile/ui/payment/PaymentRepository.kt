@@ -7,13 +7,15 @@ import com.apollographql.apollo.coroutines.toFlow
 import com.apollographql.apollo.fetcher.ApolloResponseFetchers
 import com.hedvig.android.owldroid.graphql.PaymentQuery
 import com.hedvig.android.owldroid.type.PayoutMethodStatus
+import com.hedvig.app.util.LocaleManager
 
 class PaymentRepository(
     private val apolloClient: ApolloClient,
+    private val localeManager: LocaleManager
 ) {
-    private val paymentQuery = PaymentQuery()
+    private val paymentQuery = PaymentQuery(localeManager.defaultLocale())
     fun payment() = apolloClient
-        .query(PaymentQuery())
+        .query(PaymentQuery(localeManager.defaultLocale()))
         .watcher()
         .toFlow()
 

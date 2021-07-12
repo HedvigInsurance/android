@@ -447,3 +447,112 @@ val OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_MIX
         ).build()
     )
 ).build()
+
+val BUNDLE_NAME = "Checkout Bundle"
+val BUNDLE_GROSS_COST = "449"
+val BUNDLE_NET_COST = "349"
+val BUNDLE_WITH_SIMPLE_SIGN = OfferDataBuilder(
+    bundleDisplayName = BUNDLE_NAME,
+    insuranceCost = CostBuilder(
+        discountAmount = "20",
+        grossAmount = BUNDLE_GROSS_COST,
+        netAmount = BUNDLE_NET_COST
+    ).build(),
+    quotes = listOf(
+        QuoteBuilder(
+            typeOfContract = TypeOfContract.SE_HOUSE,
+            detailsTable = TableFragmentBuilder(
+                title = "Home Insurance",
+                sections = listOf(
+                    "Details" to listOf(
+                        Triple("Address", null, "Askersgatan 129 B"),
+                        Triple("Postal code", null, "113 89"),
+                        Triple("Insured people", null, "You + 2"),
+                        Triple("Living space", null, "180 m2"),
+                        Triple("Ancillary area", null, "48 m2"),
+                        Triple("Year built", null, "1997"),
+                        Triple("Number of baths", null, "2"),
+                        Triple("Partly subleted", null, "No"),
+                    ),
+                    "Extra buildings" to listOf(
+                        Triple("Garage", null, "16 m2"),
+                        Triple("Attefalls house", "Has water connected", "23 m2"),
+                    )
+                )
+            ).build(),
+            insurableLimits = listOf(
+                OfferQuery.InsurableLimit(
+                    fragments = OfferQuery.InsurableLimit.Fragments(
+                        InsurableLimitsFragment(
+                            label = "Test insurable limit",
+                            limit = "Limit",
+                            description = "Description"
+                        )
+                    )
+                ),
+                OfferQuery.InsurableLimit(
+                    fragments = OfferQuery.InsurableLimit.Fragments(
+                        InsurableLimitsFragment(
+                            label = "Test insurable limit 2",
+                            limit = "Limit 2",
+                            description = "Description 2"
+                        )
+                    )
+                ),
+            ),
+        ).build()
+    ),
+    redeemedCampaigns = listOf(),
+    inceptions = ConcurrentInceptionBuilder().build(),
+    signMethod = SignMethod.SIMPLE_SIGN
+).build()
+
+val BUNDLE_WITH_APPROVE = OfferDataBuilder(
+    quotes = listOf(
+        QuoteBuilder(
+            typeOfContract = TypeOfContract.SE_HOUSE,
+            detailsTable = TableFragmentBuilder(
+                title = "Home Insurance",
+                sections = listOf(
+                    "Details" to listOf(
+                        Triple("Address", null, "Askersgatan 129 B"),
+                        Triple("Postal code", null, "113 89"),
+                        Triple("Insured people", null, "You + 2"),
+                        Triple("Living space", null, "180 m2"),
+                        Triple("Ancillary area", null, "48 m2"),
+                        Triple("Year built", null, "1997"),
+                        Triple("Number of baths", null, "2"),
+                        Triple("Partly subleted", null, "No"),
+                    ),
+                    "Extra buildings" to listOf(
+                        Triple("Garage", null, "16 m2"),
+                        Triple("Attefalls house", "Has water connected", "23 m2"),
+                    )
+                )
+            ).build(),
+            insurableLimits = listOf(
+                OfferQuery.InsurableLimit(
+                    fragments = OfferQuery.InsurableLimit.Fragments(
+                        InsurableLimitsFragment(
+                            label = "Test insurable limit",
+                            limit = "Limit",
+                            description = "Description"
+                        )
+                    )
+                ),
+                OfferQuery.InsurableLimit(
+                    fragments = OfferQuery.InsurableLimit.Fragments(
+                        InsurableLimitsFragment(
+                            label = "Test insurable limit 2",
+                            limit = "Limit 2",
+                            description = "Description 2"
+                        )
+                    )
+                ),
+            ),
+        ).build()
+    ),
+    redeemedCampaigns = listOf(),
+    inceptions = ConcurrentInceptionBuilder().build(),
+    signMethod = SignMethod.APPROVE_ONLY
+).build()

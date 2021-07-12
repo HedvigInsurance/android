@@ -16,12 +16,15 @@ import com.hedvig.app.feature.offer.quotedetail.buildDocuments
 import com.hedvig.app.feature.offer.quotedetail.buildInsurableLimits
 import com.hedvig.app.feature.offer.quotedetail.buildPerils
 import com.hedvig.app.feature.offer.ui.OfferModel
+import com.hedvig.app.feature.offer.ui.checkout.ApproveQuotesUseCase
+import com.hedvig.app.feature.offer.ui.checkout.CheckoutParameter
 import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.service.LoginStatus
 import com.hedvig.app.service.LoginStatusService
 import e
+import java.time.LocalDate
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,6 +45,15 @@ abstract class OfferViewModel : ViewModel() {
         object HasContracts : Event()
         data class OpenQuoteDetails(
             val quoteDetailItems: QuoteDetailItems,
+        ) : Event()
+
+        data class OpenCheckout(
+            val checkoutParameter: CheckoutParameter
+        ) : Event()
+
+        object ApproveError : Event()
+        data class ApproveSuccessful(
+            val moveDate: LocalDate?
         ) : Event()
     }
 
@@ -72,6 +84,8 @@ abstract class OfferViewModel : ViewModel() {
         id: String,
     )
 
+    abstract fun approveOffer()
+
     sealed class ViewState {
         data class Offer(
             val topOfferItems: List<OfferModel>,
@@ -86,14 +100,17 @@ abstract class OfferViewModel : ViewModel() {
 
         object Loading : ViewState()
     }
+
+    abstract fun onOpenCheckout()
 }
 
 class OfferViewModelImpl(
-    _quoteIds: List<String>,
+    private val _quoteIds: List<String>,
     private val offerRepository: OfferRepository,
     private val getQuotesUseCase: GetQuotesUseCase,
     private val getQuoteUseCase: GetQuoteUseCase,
-    private val loginStatusService: LoginStatusService
+    private val loginStatusService: LoginStatusService,
+    private val approveQuotesUseCase: ApproveQuotesUseCase
 ) : OfferViewModel() {
 
     private lateinit var quoteIds: List<String>
@@ -132,6 +149,28 @@ class OfferViewModelImpl(
                     _events.tryEmit(Event.Error(idsResult.message))
                 }
             }
+        }
+    }
+
+    override fun onOpenCheckout() {
+        _events.tryEmit(
+            Event.OpenCheckout(
+                CheckoutParameter(
+                    quoteIds = _quoteIds
+                )
+            )
+        )
+    }
+
+    override fun approveOffer() {
+        viewModelScope.launch {
+            _viewState.value = ViewState.Loading
+            val event = when (val result = approveQuotesUseCase.approveQuotes(quoteIds)) {
+                is ApproveQuotesUseCase.ApproveQuotesResult.Error.GeneralError -> Event.Error(result.message)
+                ApproveQuotesUseCase.ApproveQuotesResult.Error.ApproveError -> Event.ApproveError
+                is ApproveQuotesUseCase.ApproveQuotesResult.Success -> Event.ApproveSuccessful(result.date)
+            }
+            _events.tryEmit(event)
         }
     }
 
