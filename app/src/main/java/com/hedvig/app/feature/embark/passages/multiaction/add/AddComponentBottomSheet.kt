@@ -76,18 +76,19 @@ class AddComponentBottomSheet : BottomSheetDialogFragment() {
 
     private fun createDropDownComponent(dropdown: MultiActionComponent.Dropdown): TextInputLayout {
         return LayoutComponentDropdownBinding.inflate(LayoutInflater.from(requireContext()), binding.componentContainer, false).apply {
-            val dropDownOptions = dropdown.options.map { it.text }
-            val adapter = ArrayAdapter(requireContext(), R.layout.dropdown_menu_popup_item, R.id.dropdown_popup, dropDownOptions)
+            val dropDownText = dropdown.options.map { it.text }
+            val dropdownValues = dropdown.options.map { it.value }
+            val adapter = ArrayAdapter(requireContext(), R.layout.dropdown_menu_popup_item, R.id.dropdown_popup, dropDownText)
 
             dropdownLayout.hint = dropdown.label
             dropdownInput.setAdapter(adapter)
             dropdownInput.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-                viewModel.onDropDownChanged(dropdown.key, dropDownOptions[position])
+                viewModel.onDropDownChanged(dropdown.key, dropDownText[position], dropdownValues[position])
             }
 
             componentState?.selectedDropDowns?.firstOrNull { it.key == dropdown.key }?.let {
-                dropdownInput.setText(it.value, false)
-                viewModel.onDropDownChanged(dropdown.key, it.value)
+                dropdownInput.setText(it.text, false)
+                viewModel.onDropDownChanged(dropdown.key, it.text, it.value)
             }
         }.root
     }

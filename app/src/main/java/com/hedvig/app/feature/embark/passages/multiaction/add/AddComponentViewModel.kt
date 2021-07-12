@@ -7,10 +7,10 @@ import com.hedvig.app.feature.embark.passages.multiaction.MultiActionComponent
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionItem
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionParams
 import com.hedvig.app.util.LiveEvent
+import java.util.UUID
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
-import java.util.UUID
 
 class AddComponentViewModel(
     private val component: MultiActionItem.Component?,
@@ -24,7 +24,7 @@ class AddComponentViewModel(
     init {
         multiActionParams.components.forEach {
             when (it) {
-                is MultiActionComponent.Dropdown -> onDropDownChanged(it.key, null)
+                is MultiActionComponent.Dropdown -> onDropDownChanged(it.key, null, null)
                 is MultiActionComponent.Number -> onNumberChanged(it.key, null, null)
                 is MultiActionComponent.Switch -> onSwitchChanged(it.key, it.defaultValue, it.label)
             }
@@ -57,6 +57,7 @@ class AddComponentViewModel(
         selectedDropDowns = dropDownStates.value.map {
             MultiActionItem.DropDown(
                 key = it.key,
+                text = (it.value as? DropDownState.Selected)?.text ?: "",
                 value = (it.value as? DropDownState.Selected)?.value ?: ""
             )
         },
@@ -93,11 +94,11 @@ class AddComponentViewModel(
         }
     }
 
-    fun onDropDownChanged(key: String, value: String?) {
-        val state = if (value == null) {
+    fun onDropDownChanged(key: String, text: String?, value: String?) {
+        val state = if (value == null || text == null) {
             DropDownState.NotSelected
         } else {
-            DropDownState.Selected(value)
+            DropDownState.Selected(text = text, value = value)
         }
 
         dropDownStates.value = dropDownStates.value.toMutableMap().apply {
@@ -116,7 +117,11 @@ class AddComponentViewModel(
     }
 
     sealed class DropDownState {
-        data class Selected(val value: String) : DropDownState()
+        data class Selected(
+            val text: String,
+            val value: String
+        ) : DropDownState()
+
         object NotSelected : DropDownState()
     }
 
