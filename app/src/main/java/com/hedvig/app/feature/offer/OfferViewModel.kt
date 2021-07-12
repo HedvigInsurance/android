@@ -211,9 +211,7 @@ class OfferViewModelImpl(
             offerRepository.subscribeSignStatus()
                 .onEach { response ->
                     response.data?.signStatus?.status?.fragments?.signStatusFragment?.let {
-                        signStatus.postValue(
-                            it
-                        )
+                        signStatus.postValue(it)
                     }
                 }
                 .catch { e(it) }

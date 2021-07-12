@@ -178,7 +178,8 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                             LoggedInActivity.newInstance(
                                 context = this@OfferActivity,
                                 isFromOnboarding = false,
-                                withoutHistory = true
+                                withoutHistory = true,
+                                notificationText = getString(R.string.MOVING_FLOW_SUCCESS_TOAST)
                             )
                         )
                     }

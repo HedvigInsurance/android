@@ -15,6 +15,7 @@ import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import androidx.lifecycle.lifecycleScope
 import com.github.florent37.viewtooltip.ViewTooltip
+import com.google.android.material.snackbar.Snackbar
 import com.hedvig.android.owldroid.type.Feature
 import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.BaseActivity
@@ -46,11 +47,12 @@ import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
+import java.time.LocalDate
+import javax.money.MonetaryAmount
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.time.LocalDate
-import javax.money.MonetaryAmount
 
 class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     private val claimsViewModel: ClaimsViewModel by viewModel()
@@ -167,6 +169,16 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
             bindData()
             setupToolBar()
+        }
+
+        val notificationText = intent.getStringExtra(EXTRA_NOTIFICATION_TEXT)
+        notificationText?.let {
+            lifecycleScope.launchWhenCreated {
+                delay(1000)
+                Snackbar.make(this@LoggedInActivity, binding.root, it, Snackbar.LENGTH_LONG).apply {
+                    anchorView = binding.bottomNavigation
+                }.show()
+            }
         }
     }
 
@@ -400,11 +412,13 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
     companion object {
         private const val INITIAL_TAB = "INITIAL_TAB"
+        private const val EXTRA_NOTIFICATION_TEXT = "EXTRA_NOTIFICATION_TEXT"
         fun newInstance(
             context: Context,
             withoutHistory: Boolean = false,
             initialTab: LoggedInTabs = LoggedInTabs.HOME,
             isFromOnboarding: Boolean = false,
+            notificationText: String? = null
         ) =
             Intent(context, LoggedInActivity::class.java).apply {
                 if (withoutHistory) {
@@ -413,6 +427,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 }
                 putExtra(INITIAL_TAB, initialTab)
                 putExtra(EXTRA_IS_FROM_ONBOARDING, isFromOnboarding)
+                putExtra(EXTRA_NOTIFICATION_TEXT, notificationText)
             }
 
         const val EXTRA_IS_FROM_ONBOARDING = "extra_is_from_onboarding"
