@@ -164,7 +164,7 @@ class OfferViewModelImpl(
 
     override fun approveOffer() {
         viewModelScope.launch {
-            _viewState.value = ViewState.Loading(OfferItemsBuilder.createLoadingItem())
+            _viewState.value = ViewState.Loading
             val event = when (val result = approveQuotesUseCase.approveQuotes(quoteIds)) {
                 is ApproveQuotesUseCase.ApproveQuotesResult.Error.GeneralError -> Event.Error(result.message)
                 ApproveQuotesUseCase.ApproveQuotesResult.Error.ApproveError -> Event.ApproveError
