@@ -9,11 +9,13 @@ class RefreshQuotesUseCase(
 ) {
     sealed class Result {
         object Success : Result()
-        object Error : Result()
+        data class Error(val message: String? = null) : Result()
     }
 
-    suspend operator fun invoke(ids: List<String>) = when (offerRepository.refreshOfferQuery(ids).safeQuery()) {
+    suspend operator fun invoke(ids: List<String>) = when (
+        val result = offerRepository.refreshOfferQuery(ids).safeQuery()
+    ) {
         is QueryResult.Success -> Result.Success
-        else -> Result.Error
+        is QueryResult.Error -> Result.Error(result.message)
     }
 }

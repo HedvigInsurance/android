@@ -287,12 +287,12 @@ class OfferViewModelImpl(
     }
 
     override fun reload() {
-        _viewState.value = ViewState.Loading(OfferItemsBuilder.createLoadingItem())
+        _viewState.value = ViewState.Loading
         viewModelScope.launch {
-            when (refreshQuotesUseCase(quoteIds)) {
+            when (val result = refreshQuotesUseCase(quoteIds)) {
                 RefreshQuotesUseCase.Result.Success -> {
                 }
-                RefreshQuotesUseCase.Result.Error -> _events.tryEmit(Event.Error())
+                is RefreshQuotesUseCase.Result.Error -> _events.tryEmit(Event.Error(result.message))
             }
         }
     }
