@@ -130,7 +130,9 @@ class OfferAdapter(
                     startDateLabel.text = itemView.context.getString(data.startDateLabel)
                     startDate.text = data.startDate.getString(itemView.context)
 
-                    campaign.text = data.incentiveDisplayValue.joinToString()
+                    val campaignText = data.incentiveDisplayValue.joinToString()
+                    campaign.text = campaignText
+                    campaign.isVisible = campaignText.isNotBlank()
 
                     discountButton.isVisible = data.showCampaignManagement
                     if (data.hasCampaigns) {
