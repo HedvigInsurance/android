@@ -64,6 +64,7 @@ sealed class OfferModel {
 
     object AutomaticSwitchCard : OfferModel()
     object ManualSwitchCard : OfferModel()
+    object Error : OfferModel()
 }
 
 sealed class OfferStartDate {

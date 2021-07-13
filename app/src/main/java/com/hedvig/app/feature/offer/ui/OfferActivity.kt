@@ -178,9 +178,13 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 .flowWithLifecycle(lifecycle)
                 .onEach { event ->
                     when (event) {
-                        is OfferViewModel.Event.Error -> showErrorDialog(
-                            event.message ?: getString(R.string.home_tab_error_body)
-                        ) { }
+                        is OfferViewModel.Event.Error -> {
+                            perilsAdapter.submitList(emptyList())
+                            insurableLimitsAdapter.submitList(emptyList())
+                            documentAdapter.submitList(emptyList())
+                            bottomOfferAdapter.submitList(emptyList())
+                            topOfferAdapter.submitList(listOf(OfferModel.Error))
+                        }
                         is OfferViewModel.Event.OpenQuoteDetails -> {
                             startActivity(
                                 QuoteDetailActivity.newInstance(

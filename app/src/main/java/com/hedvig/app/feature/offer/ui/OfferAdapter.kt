@@ -14,6 +14,7 @@ import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.BASE_MARGIN_SEPTUPLE
 import com.hedvig.app.BASE_MARGIN_TRIPLE
 import com.hedvig.app.R
+import com.hedvig.app.databinding.GenericErrorBinding
 import com.hedvig.app.databinding.InfoCardBinding
 import com.hedvig.app.databinding.OfferFactAreaBinding
 import com.hedvig.app.databinding.OfferFaqBinding
@@ -73,6 +74,7 @@ class OfferAdapter(
         R.layout.offer_faq -> ViewHolder.FAQ(parent, fragmentManager)
         R.layout.info_card -> ViewHolder.InfoCard(parent)
         R.layout.warning_card -> ViewHolder.WarningCard(parent)
+        R.layout.generic_error -> ViewHolder.Error(parent)
         else -> throw Error("Invalid viewType: $viewType")
     }
 
@@ -87,6 +89,7 @@ class OfferAdapter(
         is OfferModel.FAQ -> R.layout.offer_faq
         OfferModel.AutomaticSwitchCard -> R.layout.info_card
         OfferModel.ManualSwitchCard -> R.layout.warning_card
+        OfferModel.Error -> R.layout.generic_error
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -374,6 +377,15 @@ class OfferAdapter(
 
                 title.setText(R.string.offer_manual_switch_card_title)
                 body.setText(R.string.offer_manual_switch_card_body)
+            }
+        }
+
+        class Error(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.generic_error)) {
+            private val binding by viewBinding(GenericErrorBinding::bind)
+            override fun bind(data: OfferModel) = with(binding) {
+                if (data !is OfferModel.Error) {
+                    return invalid(data)
+                }
             }
         }
     }
