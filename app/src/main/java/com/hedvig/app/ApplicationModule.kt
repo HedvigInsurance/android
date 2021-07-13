@@ -163,7 +163,7 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import timber.log.Timber
 import java.time.Clock
-import java.util.*
+import java.util.Locale
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APPLICATION_ID == "com.hedvig.test.app"
 
