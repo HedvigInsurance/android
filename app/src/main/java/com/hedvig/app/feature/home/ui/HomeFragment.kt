@@ -16,6 +16,7 @@ import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
 import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
+import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.FeatureFlag
 import com.hedvig.app.util.extensions.view.updatePadding
@@ -157,7 +158,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     if (pendingAddress != null && pendingAddress.isNotBlank()) {
                         add(HomeModel.PendingAddressChange(pendingAddress))
                     }
-                    if (FeatureFlag.MOVING_FLOW.enabled) {
+                    if (FeatureFlag.MOVING_FLOW.enabled && marketManager.market == Market.SE) {
                         add(HomeModel.Header(getString(R.string.home_tab_editing_section_title)))
                         add(HomeModel.ChangeAddress(pendingAddress))
                     }
@@ -187,7 +188,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                             ).toTypedArray()
                         )
                     )
-                    if (FeatureFlag.MOVING_FLOW.enabled) {
+                    if (FeatureFlag.MOVING_FLOW.enabled && marketManager.market == Market.SE) {
                         add(HomeModel.Header(getString(R.string.home_tab_editing_section_title)))
                         add(HomeModel.ChangeAddress(pendingAddress))
                     }
