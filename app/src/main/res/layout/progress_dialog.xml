@@ -18,5 +18,5 @@
         android:layout_centerVertical="true"
         android:layout_margin="@dimen/base_margin"
         android:layout_toEndOf="@+id/progressBar"
-        android:text="Signing..." />
+        android:text="@string/CHECKOUT_PROGRESS" />
 </RelativeLayout>
