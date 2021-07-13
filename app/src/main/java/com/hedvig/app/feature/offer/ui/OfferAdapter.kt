@@ -386,6 +386,11 @@ class OfferAdapter(
             private val reload: () -> Unit,
         ) : ViewHolder(parent.inflate(R.layout.generic_error)) {
             private val binding by viewBinding(GenericErrorBinding::bind)
+
+            init {
+                binding.root.setBackgroundColor(binding.root.context.colorAttr(android.R.attr.colorBackground))
+            }
+
             override fun bind(data: OfferModel) = with(binding.retry) {
                 if (data !is OfferModel.Error) {
                     return invalid(data)
