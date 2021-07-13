@@ -17,6 +17,7 @@ import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.extensions.getStoredBoolean
 import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.storeBoolean
+import com.hedvig.app.util.featureflags.RuntimeBehavior
 import e
 import i
 import kotlinx.coroutines.CoroutineScope
@@ -126,6 +127,8 @@ open class HedvigApplication : Application() {
         }
 
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
+
+        RuntimeBehavior.initialize(marketManager, isDebug())
     }
 
     private suspend fun acquireHedvigToken() {
