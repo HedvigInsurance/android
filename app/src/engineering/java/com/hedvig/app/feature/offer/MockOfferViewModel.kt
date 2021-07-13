@@ -22,24 +22,7 @@ class MockOfferViewModel : OfferViewModel() {
     override val signError = MutableLiveData<Boolean>()
 
     init {
-        viewModelScope.launch {
-            delay(650)
-            val topOfferItems = OfferItemsBuilder.createTopOfferItems(mockData)
-            val perilItems = OfferItemsBuilder.createPerilItems(mockData.quoteBundle.quotes)
-            val documentItems = OfferItemsBuilder.createDocumentItems(mockData.quoteBundle.quotes)
-            val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(mockData.quoteBundle.quotes)
-            val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems(mockData.quoteBundle)
-            _viewState.value = ViewState.Offer(
-                topOfferItems = topOfferItems,
-                perils = perilItems,
-                documents = documentItems,
-                insurableLimitsItems = insurableLimitsItems,
-                bottomOfferItems = bottomOfferItems,
-                signMethod = mockData.signMethodForQuotes,
-                title = mockData.quoteBundle.appConfiguration.title,
-                loginStatus = LoginStatus.LOGGED_IN
-            )
-        }
+        load()
     }
 
     override fun removeDiscount() = Unit
@@ -78,9 +61,40 @@ class MockOfferViewModel : OfferViewModel() {
             )
         )
     }
-    override fun reload() {}
+
+    override fun reload() {
+        shouldError = false
+        load()
+    }
+
+    private fun load() {
+        viewModelScope.launch {
+            delay(650)
+            if (shouldError) {
+                _events.tryEmit(Event.Error())
+                return@launch
+            }
+            val topOfferItems = OfferItemsBuilder.createTopOfferItems(mockData)
+            val perilItems = OfferItemsBuilder.createPerilItems(mockData.quoteBundle.quotes)
+            val documentItems = OfferItemsBuilder.createDocumentItems(mockData.quoteBundle.quotes)
+            val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(mockData.quoteBundle.quotes)
+            val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems(mockData.quoteBundle)
+            _viewState.value =
+                ViewState.Offer(
+                    topOfferItems = topOfferItems,
+                    perils = perilItems,
+                    documents = documentItems,
+                    insurableLimitsItems = insurableLimitsItems,
+                    bottomOfferItems = bottomOfferItems,
+                    signMethod = mockData.signMethodForQuotes,
+                    title = mockData.quoteBundle.appConfiguration.title,
+                    loginStatus = LoginStatus.LOGGED_IN
+                )
+        }
+    }
 
     companion object {
+        var shouldError = false
         var mockData = OFFER_DATA_SWEDISH_APARTMENT
     }
 }

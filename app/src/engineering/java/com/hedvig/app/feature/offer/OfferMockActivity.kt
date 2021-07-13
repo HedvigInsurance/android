@@ -31,54 +31,93 @@ class OfferMockActivity : MockActivity() {
     override fun adapter() = genericDevelopmentAdapter {
         header("Offer Screen")
         clickableItem("Swedish Apartment") {
-            MockOfferViewModel.mockData = OFFER_DATA_SWEDISH_APARTMENT
+            MockOfferViewModel.apply {
+                mockData = OFFER_DATA_SWEDISH_APARTMENT
+                shouldError = false
+            }
             startActivity(OfferActivity.newInstance(context))
         }
         clickableItem("Swedish Apartment + Previous Insurer, Non-Switchable") {
-            MockOfferViewModel.mockData = OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_NON_SWITCHABLE
+            MockOfferViewModel.apply {
+                mockData = OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_NON_SWITCHABLE
+                shouldError = false
+            }
             startActivity(OfferActivity.newInstance(context))
         }
         clickableItem("Swedish Apartment + Previous Insurer, Switchable") {
-            MockOfferViewModel.mockData = OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_SWITCHABLE
+            MockOfferViewModel.apply {
+                mockData = OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_SWITCHABLE
+                shouldError = false
+            }
             startActivity(OfferActivity.newInstance(context))
         }
         clickableItem("Swedish House") {
-            MockOfferViewModel.mockData = OFFER_DATA_SWEDISH_HOUSE
+            MockOfferViewModel.apply {
+                mockData = OFFER_DATA_SWEDISH_HOUSE
+                shouldError = false
+            }
             startActivity(OfferActivity.newInstance(context))
         }
         clickableItem("Swedish House with added discount") {
-            MockOfferViewModel.mockData = OFFER_DATA_SWEDISH_HOUSE_WITH_DISCOUNT
+            MockOfferViewModel.apply {
+                mockData = OFFER_DATA_SWEDISH_HOUSE_WITH_DISCOUNT
+                shouldError = false
+            }
             startActivity(OfferActivity.newInstance(context))
         }
         clickableItem("Norway, Home Contents + Travel") {
-            MockOfferViewModel.mockData = OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL
+            MockOfferViewModel.apply {
+                mockData = OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL
+                shouldError = false
+            }
             startActivity(OfferActivity.newInstance(context))
         }
         clickableItem("Norway, Home Contents + Travel, Both with Previous Insurer, All Non-Switchable") {
-            MockOfferViewModel.mockData =
-                OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_ALL_NONSWITCHABLE
+            MockOfferViewModel.apply {
+                mockData = OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_ALL_NONSWITCHABLE
+                shouldError = false
+            }
             startActivity(OfferActivity.newInstance(context))
         }
         clickableItem("Norway, Home Contents + Travel, Both with Previous Insurer, All Switchable") {
-            MockOfferViewModel.mockData =
-                OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_ALL_SWITCHABLE
+            MockOfferViewModel.apply {
+                mockData = OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_ALL_SWITCHABLE
+                shouldError = false
+            }
             startActivity(OfferActivity.newInstance(context))
         }
         clickableItem("Norway, Home Contents + Travel, Both with Previous Insurer, Mixed Switchable") {
-            MockOfferViewModel.mockData =
-                OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_MIXED_SWITCHABLE
+            MockOfferViewModel.apply {
+                mockData = OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_MIXED_SWITCHABLE
+                shouldError = false
+            }
             startActivity(OfferActivity.newInstance(context))
         }
         clickableItem("Bundle with concurrent inception dates") {
-            MockOfferViewModel.mockData = BUNDLE_WITH_CONCURRENT_INCEPTION_DATES
+            MockOfferViewModel.apply {
+                mockData = BUNDLE_WITH_CONCURRENT_INCEPTION_DATES
+                shouldError = false
+            }
             startActivity(OfferActivity.newInstance(context))
         }
         clickableItem("Bundle with independent inception dates") {
-            MockOfferViewModel.mockData = BUNDLE_WITH_INDEPENDENT_INCEPTION_DATES
+            MockOfferViewModel.apply {
+                mockData = BUNDLE_WITH_INDEPENDENT_INCEPTION_DATES
+                shouldError = false
+            }
             startActivity(OfferActivity.newInstance(context))
         }
         clickableItem("Bundle with start date from previous insurer") {
-            MockOfferViewModel.mockData = BUNDLE_WITH_START_DATE_FROM_PREVIOUS_INSURER
+            MockOfferViewModel.apply {
+                mockData = BUNDLE_WITH_START_DATE_FROM_PREVIOUS_INSURER
+                shouldError = false
+            }
+            startActivity(OfferActivity.newInstance(context))
+        }
+        clickableItem("Error") {
+            MockOfferViewModel.apply {
+                shouldError = true
+            }
             startActivity(OfferActivity.newInstance(context))
         }
         clickableItem("Offer with approve sign method") {
