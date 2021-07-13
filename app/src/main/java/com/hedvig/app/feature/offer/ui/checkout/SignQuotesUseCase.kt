@@ -12,7 +12,7 @@ class SignQuotesUseCase(
 
     sealed class SignQuoteResult {
         object Success : SignQuoteResult()
-        data class Error(val message: String?) : SignQuoteResult()
+        data class Error(val message: String? = null) : SignQuoteResult()
     }
 
     suspend fun editAndSignQuotes(
@@ -20,10 +20,17 @@ class SignQuotesUseCase(
         ssn: String,
         email: String
     ): SignQuoteResult {
-        val mutation = EditMailAndSSNMutation(ssn, email)
-        return when (val result = apolloClient.mutate(mutation).safeQuery()) {
-            is QueryResult.Error -> SignQuoteResult.Error(result.message)
-            is QueryResult.Success -> signQuotes(quoteIds)
+        val results = quoteIds.map { quoteId ->
+            val mutation = EditMailAndSSNMutation(quoteId, ssn, email)
+            apolloClient.mutate(mutation).safeQuery()
+        }
+
+        return if (results.all { it is QueryResult.Success }) {
+            signQuotes(quoteIds)
+        } else {
+            results.firstOrNull { it is QueryResult.Error }
+                ?.let { SignQuoteResult.Error((it as? QueryResult.Error)?.message) }
+                ?: SignQuoteResult.Error()
         }
     }
 

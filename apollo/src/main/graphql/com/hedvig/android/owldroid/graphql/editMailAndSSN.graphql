@@ -1,5 +1,6 @@
-mutation EditMailAndSSN($ssn: String!, $email: String!) {
+mutation EditMailAndSSN($quoteId: ID!, $ssn: String!, $email: String!) {
   editQuote(input: {
+    id: $quoteId,
     ssn: $ssn,
     email: $email
   }) {
