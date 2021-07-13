@@ -4,8 +4,10 @@ import android.view.View
 import com.agoda.kakao.common.views.KView
 import com.agoda.kakao.recycler.KRecyclerItem
 import com.agoda.kakao.recycler.KRecyclerView
+import com.agoda.kakao.text.KButton
 import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
+import com.hedvig.app.common.ErrorItem
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.util.withParentIndex
 import com.kaspersky.kaspresso.screens.KScreen
@@ -25,12 +27,14 @@ object OfferScreen : KScreen<OfferScreen>() {
             itemType(OfferScreen::FAQ)
             itemType(OfferScreen::InfoCard)
             itemType(OfferScreen::WarningCard)
+            itemType(::ErrorItem)
         }
     )
 
     class HeaderItem(parent: Matcher<View>) : KRecyclerItem<HeaderItem>(parent) {
         val startDate = KTextView(parent) { withId(R.id.startDate) }
         val startDateLabel = KTextView(parent) { withId(R.id.startDateLabel) }
+        val sign=KButton(parent){withId(R.id.sign)}
     }
 
     class SwitcherItem(parent: Matcher<View>) : KRecyclerItem<SwitcherItem>(parent) {
@@ -65,4 +69,3 @@ object OfferScreen : KScreen<OfferScreen>() {
         val body = KTextView(parent) { withId(R.id.body) }
     }
 }
-

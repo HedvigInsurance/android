@@ -105,7 +105,8 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 marketManager = marketManager,
                 openQuoteDetails = model::onOpenQuoteDetails,
                 onRemoveDiscount = model::removeDiscount,
-                onSign = ::onSign
+                onSign = ::onSign,
+                reload = model::reload,
             )
             val perilsAdapter = PerilsAdapter(
                 fragmentManager = supportFragmentManager,
@@ -123,7 +124,8 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 marketManager = marketManager,
                 openQuoteDetails = model::onOpenQuoteDetails,
                 onRemoveDiscount = model::removeDiscount,
-                onSign = ::onSign
+                onSign = ::onSign,
+                reload = model::reload,
             )
 
             val concatAdapter = ConcatAdapter(
@@ -147,7 +149,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 .onEach { viewState ->
                     when (viewState) {
                         is OfferViewModel.ViewState.Offer -> {
-                            if (concatAdapter.itemCount == 0) {
+                            if (concatAdapter.itemCount == 0 || concatAdapter.itemCount == 1) {
                                 scheduleEnterAnimation()
                             }
                             topOfferAdapter.submitList(viewState.topOfferItems)
@@ -178,9 +180,14 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 .flowWithLifecycle(lifecycle)
                 .onEach { event ->
                     when (event) {
-                        is OfferViewModel.Event.Error -> showErrorDialog(
-                            event.message ?: getString(R.string.home_tab_error_body)
-                        ) { }
+                        is OfferViewModel.Event.Error -> {
+                            perilsAdapter.submitList(emptyList())
+                            insurableLimitsAdapter.submitList(emptyList())
+                            documentAdapter.submitList(emptyList())
+                            bottomOfferAdapter.submitList(emptyList())
+                            topOfferAdapter.submitList(listOf(OfferModel.Error))
+                            binding.progressBar.isVisible = false
+                        }
                         is OfferViewModel.Event.OpenQuoteDetails -> {
                             startActivity(
                                 QuoteDetailActivity.newInstance(

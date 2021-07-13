@@ -98,6 +98,7 @@ import com.hedvig.app.feature.offer.ui.checkout.CheckoutViewModel
 import com.hedvig.app.feature.offer.ui.checkout.SignQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
+import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
 import com.hedvig.app.feature.onboarding.ChoosePlanRepository
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModelImpl
@@ -155,14 +156,14 @@ import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.svg.GlideApp
 import com.hedvig.app.util.svg.SvgSoftwareLayerSetter
 import com.mixpanel.android.mpmetrics.MixpanelAPI
-import java.time.Clock
-import java.util.Locale
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import timber.log.Timber
+import java.time.Clock
+import java.util.Locale
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APPLICATION_ID == "com.hedvig.test.app"
 
@@ -341,7 +342,9 @@ val marketingModule = module {
 }
 
 val offerModule = module {
-    viewModel<OfferViewModel> { (ids: List<String>) -> OfferViewModelImpl(ids, get(), get(), get(), get(), get()) }
+    viewModel<OfferViewModel> { (ids: List<String>) ->
+        OfferViewModelImpl(ids, get(), get(), get(), get(), get(), get())
+    }
 }
 
 val profileModule = module {
@@ -506,6 +509,7 @@ val useCaseModule = module {
     single { EditStartDateUseCase(get(), get()) }
     single { SignQuotesUseCase(get()) }
     single { ApproveQuotesUseCase(get(), get()) }
+    single { RefreshQuotesUseCase(get()) }
 }
 
 val cacheManagerModule = module {
