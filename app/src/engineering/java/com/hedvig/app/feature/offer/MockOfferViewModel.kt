@@ -78,6 +78,7 @@ class MockOfferViewModel : OfferViewModel() {
             )
         )
     }
+    override fun reload() {}
 
     companion object {
         var mockData = OFFER_DATA_SWEDISH_APARTMENT

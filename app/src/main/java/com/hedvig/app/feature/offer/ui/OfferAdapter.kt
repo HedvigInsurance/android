@@ -54,6 +54,7 @@ class OfferAdapter(
     private val openQuoteDetails: (quoteID: String) -> Unit,
     private val onRemoveDiscount: () -> Unit,
     private val onSign: (SignMethod) -> Unit,
+    private val reload: () -> Unit,
 ) : ListAdapter<OfferModel, OfferAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
@@ -74,7 +75,7 @@ class OfferAdapter(
         R.layout.offer_faq -> ViewHolder.FAQ(parent, fragmentManager)
         R.layout.info_card -> ViewHolder.InfoCard(parent)
         R.layout.warning_card -> ViewHolder.WarningCard(parent)
-        R.layout.generic_error -> ViewHolder.Error(parent)
+        R.layout.generic_error -> ViewHolder.Error(parent, reload)
         else -> throw Error("Invalid viewType: $viewType")
     }
 
@@ -380,12 +381,16 @@ class OfferAdapter(
             }
         }
 
-        class Error(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.generic_error)) {
+        class Error(
+            parent: ViewGroup,
+            private val reload: () -> Unit,
+        ) : ViewHolder(parent.inflate(R.layout.generic_error)) {
             private val binding by viewBinding(GenericErrorBinding::bind)
-            override fun bind(data: OfferModel) = with(binding) {
+            override fun bind(data: OfferModel) = with(binding.retry) {
                 if (data !is OfferModel.Error) {
                     return invalid(data)
                 }
+                setHapticClickListener { reload() }
             }
         }
     }

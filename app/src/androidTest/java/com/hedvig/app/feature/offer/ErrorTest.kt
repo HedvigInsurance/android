@@ -4,6 +4,7 @@ import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.common.ErrorItem
 import com.hedvig.app.feature.offer.screen.OfferScreen
 import com.hedvig.app.feature.offer.ui.OfferActivity
+import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
@@ -17,9 +18,18 @@ class ErrorTest : TestCase() {
     @get:Rule
     val activityRule = LazyActivityScenarioRule(OfferActivity::class.java)
 
+    var shouldFail = true
+
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        OfferQuery.QUERY_DOCUMENT to apolloResponse { graphQLError("Error") }
+        OfferQuery.QUERY_DOCUMENT to apolloResponse {
+            if (shouldFail) {
+                shouldFail = false
+                graphQLError("Error")
+            } else {
+                success(OFFER_DATA_SWEDISH_APARTMENT)
+            }
+        }
     )
 
     @get:Rule
@@ -32,7 +42,13 @@ class ErrorTest : TestCase() {
         OfferScreen {
             scroll {
                 childAt<ErrorItem>(0) {
-                    retry { isVisible() }
+                    retry {
+                        isVisible()
+                        click()
+                    }
+                }
+                childAt<OfferScreen.HeaderItem>(0) {
+                    sign { isVisible() }
                 }
             }
         }

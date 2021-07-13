@@ -105,7 +105,8 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 marketManager = marketManager,
                 openQuoteDetails = model::onOpenQuoteDetails,
                 onRemoveDiscount = model::removeDiscount,
-                onSign = ::onSign
+                onSign = ::onSign,
+                reload = model::reload,
             )
             val perilsAdapter = PerilsAdapter(
                 fragmentManager = supportFragmentManager,
@@ -123,7 +124,8 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 marketManager = marketManager,
                 openQuoteDetails = model::onOpenQuoteDetails,
                 onRemoveDiscount = model::removeDiscount,
-                onSign = ::onSign
+                onSign = ::onSign,
+                reload = model::reload,
             )
 
             val concatAdapter = ConcatAdapter(

@@ -6,6 +6,7 @@ import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.api.cache.http.HttpCachePolicy
 import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.coroutines.toFlow
+import com.apollographql.apollo.fetcher.ApolloResponseFetchers
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.graphql.ApproveQuotesMutation
 import com.hedvig.android.owldroid.graphql.LastQuoteIdQuery
@@ -149,4 +150,11 @@ class OfferRepository(
 
     fun quoteIdOfLastQuoteOfMember(): ApolloCall<LastQuoteIdQuery.Data> = apolloClient
         .query(LastQuoteIdQuery())
+
+    fun refreshOfferQuery(ids: List<String>) = apolloClient
+        .query(offerQuery(ids))
+        .toBuilder()
+        .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
+        .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
+        .build()
 }

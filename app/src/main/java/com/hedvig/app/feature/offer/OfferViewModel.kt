@@ -20,6 +20,7 @@ import com.hedvig.app.feature.offer.ui.checkout.ApproveQuotesUseCase
 import com.hedvig.app.feature.offer.ui.checkout.CheckoutParameter
 import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
+import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
 import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.service.LoginStatus
 import com.hedvig.app.service.LoginStatusService
@@ -102,6 +103,7 @@ abstract class OfferViewModel : ViewModel() {
     }
 
     abstract fun onOpenCheckout()
+    abstract fun reload()
 }
 
 class OfferViewModelImpl(
@@ -110,7 +112,8 @@ class OfferViewModelImpl(
     private val getQuotesUseCase: GetQuotesUseCase,
     private val getQuoteUseCase: GetQuoteUseCase,
     private val loginStatusService: LoginStatusService,
-    private val approveQuotesUseCase: ApproveQuotesUseCase
+    private val approveQuotesUseCase: ApproveQuotesUseCase,
+    private val refreshQuotesUseCase: RefreshQuotesUseCase,
 ) : OfferViewModel() {
 
     private lateinit var quoteIds: List<String>
@@ -279,6 +282,17 @@ class OfferViewModelImpl(
                         )
                     )
                 }
+            }
+        }
+    }
+
+    override fun reload() {
+        _viewState.value = ViewState.Loading(OfferItemsBuilder.createLoadingItem())
+        viewModelScope.launch {
+            when (refreshQuotesUseCase(quoteIds)) {
+                RefreshQuotesUseCase.Result.Success -> {
+                }
+                RefreshQuotesUseCase.Result.Error -> _events.tryEmit(Event.Error())
             }
         }
     }
