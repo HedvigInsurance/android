@@ -4,10 +4,12 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.transition.TransitionManager
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
@@ -36,6 +38,7 @@ class CheckoutActivity : BaseActivity(R.layout.activity_checkout) {
     }
     private val viewModel: CheckoutViewModel by viewModel { parametersOf(parameter.quoteIds) }
     private val binding by viewBinding(ActivityCheckoutBinding::bind)
+    private lateinit var progressDialog: AlertDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,6 +93,11 @@ class CheckoutActivity : BaseActivity(R.layout.activity_checkout) {
             .flowWithLifecycle(lifecycle)
             .onEach(::handleEvent)
             .launchIn(lifecycleScope)
+
+        progressDialog = MaterialAlertDialogBuilder(this)
+            .setView(R.layout.progress_dialog)
+            .setCancelable(false)
+            .create()
     }
 
     private fun setInputState(viewState: CheckoutViewModel.InputViewState) {
@@ -134,9 +142,10 @@ class CheckoutActivity : BaseActivity(R.layout.activity_checkout) {
 
     private fun handleEvent(event: CheckoutViewModel.Event) {
         when (event) {
-            is CheckoutViewModel.Event.Error -> showErrorDialog(
-                event.message ?: getString(R.string.home_tab_error_body)
-            ) { }
+            is CheckoutViewModel.Event.Error -> {
+                progressDialog.dismiss()
+                showErrorDialog(event.message ?: getString(R.string.home_tab_error_body)) { }
+            }
             CheckoutViewModel.Event.CheckoutSuccess -> {
                 startActivity(
                     LoggedInActivity.newInstance(
@@ -154,6 +163,7 @@ class CheckoutActivity : BaseActivity(R.layout.activity_checkout) {
                     withoutHistory = true
                 )
             }
+            CheckoutViewModel.Event.Loading -> progressDialog.show()
         }
     }
 

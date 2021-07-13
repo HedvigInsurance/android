@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.offer.ui.checkout
 
-import android.transition.TransitionManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.app.feature.offer.OfferRepository
@@ -10,6 +9,7 @@ import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.ValidationResult
+import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.validateEmail
 import com.hedvig.app.util.validateNationalIdentityNumber
 import javax.money.MonetaryAmount
@@ -27,7 +27,8 @@ class CheckoutViewModel(
     private val _quoteIds: List<String>,
     private val getQuotesUseCase: GetQuotesUseCase,
     private val signQuotesUseCase: SignQuotesUseCase,
-    private val marketManager: MarketManager
+    private val marketManager: MarketManager,
+    private val cacheManager: CacheManager,
 ) : ViewModel() {
 
     init {
@@ -126,6 +127,7 @@ class CheckoutViewModel(
 
     fun onTrySign(emailInput: String, identityNumberInput: String) {
         if (inputViewState.value.canSign()) {
+            _events.tryEmit(Event.Loading)
             signQuotes(
                 identityNumberInput = identityNumberInput,
                 emailInput = emailInput,
@@ -143,7 +145,10 @@ class CheckoutViewModel(
             )
             when (result) {
                 is SignQuotesUseCase.SignQuoteResult.Error -> _events.tryEmit(Event.Error(result.message))
-                SignQuotesUseCase.SignQuoteResult.Success -> _events.tryEmit(Event.CheckoutSuccess)
+                SignQuotesUseCase.SignQuoteResult.Success -> {
+                    cacheManager.clearCache()
+                    _events.tryEmit(Event.CheckoutSuccess)
+                }
             }
         }
     }
@@ -180,9 +185,10 @@ class CheckoutViewModel(
         data class Error(val message: String? = null) : Event()
         object HasContracts : Event()
         object CheckoutSuccess : Event()
+        object Loading : Event()
     }
 
-    protected val _events = MutableSharedFlow<Event>(
+    private val _events = MutableSharedFlow<Event>(
         extraBufferCapacity = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST,
     )
