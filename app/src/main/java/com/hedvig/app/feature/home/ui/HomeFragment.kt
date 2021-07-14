@@ -158,10 +158,6 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     if (pendingAddress != null && pendingAddress.isNotBlank()) {
                         add(HomeModel.PendingAddressChange(pendingAddress))
                     }
-                    if (FeatureFlag.MOVING_FLOW.enabled && marketManager.market == Market.SE) {
-                        add(HomeModel.Header(getString(R.string.home_tab_editing_section_title)))
-                        add(HomeModel.ChangeAddress(pendingAddress))
-                    }
                 }
                 (binding.recycler.adapter as? HomeAdapter)?.submitList(items)
             }
