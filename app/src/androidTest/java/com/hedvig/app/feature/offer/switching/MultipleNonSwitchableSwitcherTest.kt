@@ -43,18 +43,14 @@ class MultipleNonSwitchableSwitcherTest : TestCase() {
                     }
                     currentInsurer { hasText(previousInsurerNameForQuote(0)) }
                 }
-                childAt<OfferScreen.WarningCard>(9) {
-                    title { hasText(R.string.offer_manual_switch_card_title) }
-                    body { hasText(R.string.offer_manual_switch_card_body) }
-                }
-                childAt<OfferScreen.SwitcherItem>(10) {
+                childAt<OfferScreen.SwitcherItem>(9) {
                     associatedQuote {
                         isVisible()
                         hasText(quoteDisplayName(1))
                     }
                     currentInsurer { hasText(previousInsurerNameForQuote(1)) }
                 }
-                childAt<OfferScreen.WarningCard>(11) {
+                childAt<OfferScreen.WarningCard>(10) {
                     title { hasText(R.string.offer_manual_switch_card_title) }
                     body { hasText(R.string.offer_manual_switch_card_body) }
                 }

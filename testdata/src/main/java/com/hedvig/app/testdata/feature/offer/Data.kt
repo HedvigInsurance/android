@@ -448,9 +448,43 @@ val OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_MIX
     )
 ).build()
 
-val BUNDLE_NAME = "Checkout Bundle"
-val BUNDLE_GROSS_COST = "449"
-val BUNDLE_NET_COST = "349"
+val OFFER_DATA_DENMARK_BUNDLE_HOME_CONTENTS_TRAVEL_ACCIDENT_MULTIPLE_PREVIOUS_INSURERS_MIXED_SWITCHABLE =
+    OfferDataBuilder(
+        quotes = listOf(
+            QuoteBuilder(
+                displayName = "Home Contents Insurance",
+                typeOfContract = TypeOfContract.DK_HOME_CONTENT_OWN,
+                currentInsurer = OfferQuery.CurrentInsurer(
+                    id = "ab2a1f4c-83af-4b9f-98d2-e7ea767b080d",
+                    displayName = "Annat Försäkringsbolag",
+                    switchable = false
+                )
+            ).build(),
+            QuoteBuilder(
+                displayName = "Travel Insurance",
+                typeOfContract = TypeOfContract.DK_TRAVEL,
+                currentInsurer = OfferQuery.CurrentInsurer(
+                    id = "ab2a1f4c-83af-4b9f-98d2-e7ea767b080f",
+                    displayName = "Annat Försäkringsbolag 2",
+                    switchable = true
+                )
+            ).build(),
+            QuoteBuilder(
+                displayName = "Travel Insurance",
+                typeOfContract = TypeOfContract.DK_ACCIDENT,
+                currentInsurer = OfferQuery.CurrentInsurer(
+                    id = "ab2a1f4c-83af-4b9f-98d2-e7ea767b080f",
+                    displayName = "Annat Försäkringsbolag 3",
+                    switchable = false
+                )
+            ).build(),
+        )
+    ).build()
+
+const val BUNDLE_NAME = "Checkout Bundle"
+const val BUNDLE_GROSS_COST = "449"
+const val BUNDLE_NET_COST = "349"
+
 val BUNDLE_WITH_SIMPLE_SIGN = OfferDataBuilder(
     bundleDisplayName = BUNDLE_NAME,
     insuranceCost = CostBuilder(
