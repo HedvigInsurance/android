@@ -253,6 +253,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     }
 
     private fun inflateMenu(loginStatus: LoginStatus) {
+        binding.offerToolbar.menu.clear()
         when (loginStatus) {
             LoginStatus.ONBOARDING,
             LoginStatus.IN_OFFER -> binding.offerToolbar.inflateMenu(R.menu.offer_menu)

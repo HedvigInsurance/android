@@ -100,7 +100,7 @@
                 android:hint="@string/simple_sign_login.text_field.label"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/emailInputContainer"
-                app:placeholderText="DDMMYYXXXX">
+                app:placeholderText="@string/simple_sign_login.text_field.helper_text">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/identityNumberEditText"
@@ -140,7 +140,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/signButton"
-                tools:text="@string/OFFER_FOOTER_GDPR_INFO" />
+                tools:text="@string/CHECKOUT_FOOTER" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
