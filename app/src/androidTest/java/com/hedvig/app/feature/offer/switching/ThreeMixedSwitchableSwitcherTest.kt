@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.offer.switching
 
 import com.hedvig.android.owldroid.graphql.OfferQuery
-import com.hedvig.app.R
 import com.hedvig.app.feature.offer.screen.OfferScreen
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_DENMARK_BUNDLE_HOME_CONTENTS_TRAVEL_ACCIDENT_MULTIPLE_PREVIOUS_INSURERS_MIXED_SWITCHABLE
@@ -48,20 +47,14 @@ class ThreeMixedSwitchableSwitcherTest : TestCase() {
                         hasText(quoteDisplayName(2))
                     }
                 }
-                childAt<OfferScreen.WarningCard>(10) {
-                    title { hasText(R.string.offer_manual_switch_card_title) }
-                    body { hasText(R.string.offer_manual_switch_card_body) }
-                }
+                childAt<OfferScreen.WarningCard>(10) { isShown() }
                 childAt<OfferScreen.SwitcherItem>(11) {
                     associatedQuote {
                         isVisible()
                         hasText(quoteDisplayName(1))
                     }
                 }
-                childAt<OfferScreen.InfoCard>(12) {
-                    title { hasText(R.string.offer_switch_info_card_title) }
-                    body { hasText(R.string.offer_switch_info_card_body) }
-                }
+                childAt<OfferScreen.InfoCard>(12) { isShown() }
             }
         }
     }
