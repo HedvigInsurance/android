@@ -7,6 +7,7 @@ import com.hedvig.app.databinding.ActivityDevelopmentBinding
 import com.hedvig.app.feature.adyen.AdyenMockActivity
 import com.hedvig.app.feature.changeaddress.ChangeAddressMockActivity
 import com.hedvig.app.feature.chat.ChatMockActivity
+import com.hedvig.app.feature.checkout.CheckoutMockActivity
 import com.hedvig.app.feature.embark.EmbarkMockActivity
 import com.hedvig.app.feature.home.HomeMockActivity
 import com.hedvig.app.feature.insurance.InsuranceMockActivity
@@ -55,6 +56,9 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
                     },
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Offer") {
                         startActivity(Intent(this, OfferMockActivity::class.java))
+                    },
+                    DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Checkout") {
+                        startActivity(Intent(this, CheckoutMockActivity::class.java))
                     },
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Home") {
                         startActivity(Intent(this, HomeMockActivity::class.java))

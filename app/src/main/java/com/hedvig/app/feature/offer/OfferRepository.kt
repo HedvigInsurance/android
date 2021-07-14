@@ -1,53 +1,68 @@
 package com.hedvig.app.feature.offer
 
+import com.apollographql.apollo.ApolloCall
 import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.api.cache.http.HttpCachePolicy
 import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.coroutines.toFlow
+import com.apollographql.apollo.fetcher.ApolloResponseFetchers
 import com.hedvig.android.owldroid.fragment.CostFragment
-import com.hedvig.android.owldroid.graphql.ChooseStartDateMutation
+import com.hedvig.android.owldroid.graphql.ApproveQuotesMutation
+import com.hedvig.android.owldroid.graphql.LastQuoteIdQuery
 import com.hedvig.android.owldroid.graphql.OfferClosedMutation
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.RemoveDiscountCodeMutation
-import com.hedvig.android.owldroid.graphql.RemoveStartDateMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.android.owldroid.graphql.SignStatusQuery
 import com.hedvig.android.owldroid.graphql.SignStatusSubscription
 import com.hedvig.app.util.LocaleManager
-import e
-import java.time.LocalDate
+import kotlinx.coroutines.flow.map
 
 class OfferRepository(
     private val apolloClient: ApolloClient,
-    localeManager: LocaleManager
+    private val localeManager: LocaleManager,
 ) {
-    private val offerQuery = OfferQuery(localeManager.defaultLocale())
+    fun offerQuery(ids: List<String>) = OfferQuery(localeManager.defaultLocale(), ids)
 
-    fun offer() = apolloClient
-        .query(offerQuery)
+    fun offer(ids: List<String>) = apolloClient
+        .query(offerQuery(ids))
         .watcher()
         .toFlow()
+        .map(::toDataOrError)
 
-    fun writeDiscountToCache(data: RedeemReferralCodeMutation.Data) {
+    sealed class OfferResult {
+        object HasContracts : OfferResult()
+
+        data class Error(val message: String? = null) : OfferResult()
+        data class Success(
+            val data: OfferQuery.Data
+        ) : OfferResult()
+    }
+
+    private fun toDataOrError(response: Response<OfferQuery.Data>): OfferResult {
+        response.errors?.let {
+            return OfferResult.Error(it.firstOrNull()?.message)
+        }
+        val data = response.data ?: return OfferResult.Error()
+        return OfferResult.Success(data)
+    }
+
+    fun writeDiscountToCache(ids: List<String>, data: RedeemReferralCodeMutation.Data) {
         val cachedData = apolloClient
             .apolloStore
-            .read(offerQuery)
+            .read(offerQuery(ids))
             .execute()
 
-        if (cachedData.lastQuoteOfMember.asCompleteQuote == null)
-            return
-
-        val newCost = cachedData.lastQuoteOfMember.asCompleteQuote!!.insuranceCost.copy(
-            fragments = OfferQuery.InsuranceCost.Fragments(costFragment = data.redeemCode.cost.fragments.costFragment)
+        val newCost = cachedData.quoteBundle.bundleCost.copy(
+            fragments = OfferQuery.BundleCost.Fragments(costFragment = data.redeemCode.cost.fragments.costFragment)
         )
 
         val newData = cachedData
             .copy(
-                lastQuoteOfMember = cachedData.lastQuoteOfMember.copy(
-                    asCompleteQuote = cachedData.lastQuoteOfMember.asCompleteQuote!!.copy(
-                        insuranceCost = newCost
-                    )
+                quoteBundle = cachedData.quoteBundle.copy(
+                    bundleCost = newCost
                 ),
                 redeemedCampaigns = listOf(
                     OfferQuery.RedeemedCampaign(
@@ -60,7 +75,7 @@ class OfferRepository(
 
         apolloClient
             .apolloStore
-            .writeAndPublish(offerQuery, newData)
+            .writeAndPublish(offerQuery(ids), newData)
             .execute()
     }
 
@@ -68,17 +83,14 @@ class OfferRepository(
         .mutate(RemoveDiscountCodeMutation())
         .await()
 
-    fun removeDiscountFromCache() {
+    fun removeDiscountFromCache(ids: List<String>) {
         val cachedData = apolloClient
             .apolloStore
-            .read(offerQuery)
+            .read(offerQuery(ids))
             .execute()
 
-        if (cachedData.lastQuoteOfMember.asCompleteQuote == null)
-            return
-
         val oldCostFragment =
-            cachedData.lastQuoteOfMember.asCompleteQuote!!.insuranceCost.fragments.costFragment
+            cachedData.quoteBundle.bundleCost.fragments.costFragment
         val newCostFragment = oldCostFragment
             .copy(
                 monthlyDiscount = oldCostFragment
@@ -103,11 +115,9 @@ class OfferRepository(
 
         val newData = cachedData
             .copy(
-                lastQuoteOfMember = cachedData.lastQuoteOfMember.copy(
-                    asCompleteQuote = cachedData.lastQuoteOfMember.asCompleteQuote!!.copy(
-                        insuranceCost = cachedData.lastQuoteOfMember.asCompleteQuote!!.insuranceCost.copy(
-                            fragments = OfferQuery.InsuranceCost.Fragments(costFragment = newCostFragment)
-                        )
+                quoteBundle = cachedData.quoteBundle.copy(
+                    bundleCost = OfferQuery.BundleCost(
+                        fragments = OfferQuery.BundleCost.Fragments(newCostFragment)
                     )
                 ),
                 redeemedCampaigns = emptyList()
@@ -115,102 +125,36 @@ class OfferRepository(
 
         apolloClient
             .apolloStore
-            .writeAndPublish(offerQuery, newData)
+            .writeAndPublish(offerQuery(ids), newData)
             .execute()
     }
 
-    suspend fun triggerOpenChatFromOffer() =
-        apolloClient.mutate(OfferClosedMutation()).await()
+    suspend fun triggerOpenChatFromOffer() = apolloClient
+        .mutate(OfferClosedMutation())
+        .await()
 
-    suspend fun startSign() =
-        apolloClient.mutate(SignOfferMutation()).await()
+    suspend fun startSign() = apolloClient
+        .mutate(SignOfferMutation())
+        .await()
 
-    fun subscribeSignStatus() =
-        apolloClient
-            .subscribe(SignStatusSubscription())
-            .toFlow()
+    fun subscribeSignStatus() = apolloClient
+        .subscribe(SignStatusSubscription())
+        .toFlow()
 
-    suspend fun fetchSignStatus() =
-        apolloClient.query(SignStatusQuery())
-            .toBuilder()
-            .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
-            .build()
-            .await()
+    suspend fun fetchSignStatus() = apolloClient
+        .query(SignStatusQuery())
+        .toBuilder()
+        .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
+        .build()
+        .await()
 
-    suspend fun chooseStartDate(id: String, date: LocalDate) =
-        apolloClient.mutate(
-            ChooseStartDateMutation(
-                id,
-                date
-            )
-        ).await()
+    fun quoteIdOfLastQuoteOfMember(): ApolloCall<LastQuoteIdQuery.Data> = apolloClient
+        .query(LastQuoteIdQuery())
 
-    fun writeStartDateToCache(data: ChooseStartDateMutation.Data) {
-        val cachedData = apolloClient
-            .apolloStore
-            .read(offerQuery)
-            .execute()
-
-        val newDate = data.editQuote.asCompleteQuote?.startDate
-        val newId = data.editQuote.asCompleteQuote?.id
-        if (newId == null) {
-            e { "Id is null" }
-            return
-        }
-
-        cachedData.lastQuoteOfMember.asCompleteQuote?.let { completeQuote ->
-            val newData = cachedData
-                .copy(
-                    lastQuoteOfMember = OfferQuery.LastQuoteOfMember(
-                        asCompleteQuote = completeQuote
-                            .copy(
-                                id = newId,
-                                startDate = newDate
-                            )
-                    )
-                )
-
-            apolloClient
-                .apolloStore
-                .writeAndPublish(offerQuery, newData)
-                .execute()
-        }
-    }
-
-    suspend fun removeStartDate(id: String) =
-        apolloClient
-            .mutate(RemoveStartDateMutation(id))
-            .await()
-
-    fun removeStartDateFromCache(data: RemoveStartDateMutation.Data) {
-        val cachedData = apolloClient
-            .apolloStore
-            .read(offerQuery)
-            .execute()
-
-        val newDate = data.removeStartDate.asCompleteQuote?.startDate
-        val newId = data.removeStartDate.asCompleteQuote?.id
-        if (newId == null) {
-            e { "Id is null" }
-            return
-        }
-
-        cachedData.lastQuoteOfMember.asCompleteQuote?.let { completeQuote ->
-            val newData = cachedData
-                .copy(
-                    lastQuoteOfMember = OfferQuery.LastQuoteOfMember(
-                        asCompleteQuote = completeQuote
-                            .copy(
-                                id = newId,
-                                startDate = newDate
-                            )
-                    )
-                )
-
-            apolloClient
-                .apolloStore
-                .writeAndPublish(offerQuery, newData)
-                .execute()
-        }
-    }
+    fun refreshOfferQuery(ids: List<String>) = apolloClient
+        .query(offerQuery(ids))
+        .toBuilder()
+        .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
+        .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
+        .build()
 }

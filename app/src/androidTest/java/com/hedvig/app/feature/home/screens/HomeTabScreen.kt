@@ -10,6 +10,7 @@ import com.agoda.kakao.screen.Screen
 import com.agoda.kakao.text.KButton
 import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
+import com.hedvig.app.common.ErrorItem
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinActivity
 import com.hedvig.app.feature.trustly.TrustlyConnectPayinActivity
 import org.hamcrest.Matcher
@@ -87,10 +88,6 @@ class HomeTabScreen : Screen<HomeTabScreen>() {
 
     class CommonClaimItem(parent: Matcher<View>) : KRecyclerItem<CommonClaimItem>(parent) {
         val text = KTextView(parent) { withId(R.id.label) }
-    }
-
-    class ErrorItem(parent: Matcher<View>) : KRecyclerItem<ErrorItem>(parent) {
-        val retry = KButton(parent) { withId(R.id.retry) }
     }
 
     class ChangeAddressItem(parent: Matcher<View>) : KRecyclerItem<ChangeAddressItem>(parent) {

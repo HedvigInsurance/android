@@ -1,7 +1,10 @@
 package com.hedvig.app.feature.insurance.ui.detail.coverage
 
 sealed class PerilModel {
-    data class Icon(val link: String) : PerilModel()
+    data class Icon(
+        val lightUrl: String,
+        val darkUrl: String,
+    ) : PerilModel()
     data class Title(val text: String) : PerilModel()
     data class Description(val text: String) : PerilModel()
     sealed class PerilList : PerilModel() {

@@ -7,8 +7,6 @@ class OfferTracker(
     private val mixpanel: MixpanelAPI
 ) {
 
-    private var hasSigned = false
-
     fun openChat() = mixpanel.track("OFFER_OPEN_CHAT")
     fun openOfferLink(displayName: String) = mixpanel.track(
         "OFFER_OPEN_LINK",
@@ -19,11 +17,6 @@ class OfferTracker(
     fun removeDiscount() = mixpanel.track("OFFER_REMOVE_DISCOUNT_BUTTON")
     fun addDiscount() = mixpanel.track("OFFER_ADD_DISCOUNT_BUTTON")
     fun terms() = mixpanel.track("OFFER_TERMS")
-    fun userDidSign(price: Double) {
-        if (!hasSigned) {
-            hasSigned = true
-        }
-    }
 
     fun chooseStartDate() = mixpanel.track("START_DATE_BTN")
     fun activateToday() = mixpanel.track("ACTIVATE_TODAY_BTN")

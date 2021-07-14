@@ -1,4 +1,4 @@
-query Payment {
+query Payment($locale: Locale!) {
   contracts {
     status {
       ...ContractStatusFragment

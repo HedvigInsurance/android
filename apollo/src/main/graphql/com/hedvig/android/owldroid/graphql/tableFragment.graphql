@@ -1,0 +1,11 @@
+fragment TableFragment on Table {
+  title
+  sections {
+    title
+    rows {
+      title
+      subtitle
+      value
+    }
+  }
+}

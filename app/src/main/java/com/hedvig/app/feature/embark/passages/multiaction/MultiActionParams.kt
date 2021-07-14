@@ -24,7 +24,7 @@ sealed class MultiActionComponent : Parcelable {
         @Parcelize
         data class Option(
             val text: String,
-            val label: String
+            val value: String
         ) : Parcelable
     }
 

@@ -4,12 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingEnd="@dimen/base_margin_double"
-    android:paddingStart="@dimen/base_margin_double"
     android:clipToPadding="false"
     android:id="@+id/recycler"
     android:paddingTop="@dimen/base_margin_quintuple"
     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
     tools:context=".feature.insurance.ui.detail.documents.DocumentsFragment"
     tools:itemCount="2"
-    tools:listitem="@layout/contract_detail_documents_document" />
+    tools:listitem="@layout/document" />

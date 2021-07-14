@@ -52,7 +52,7 @@ class ComponentViewHolder(parent: ViewGroup) : MultiActionViewHolder(parent.infl
         onComponentClick: (Long) -> Unit,
         onComponentRemove: (Long) -> Unit
     ) {
-        binding.title.text = item.selectedDropDowns.joinToString { it.value }
+        binding.title.text = item.selectedDropDowns.joinToString { it.text }
 
         val switchLabels = item.switches
             .filter { it.value }

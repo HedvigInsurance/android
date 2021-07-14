@@ -16,10 +16,4 @@
         android:icon="@drawable/ic_profile"
         android:title="@string/common_signin_button_text"
         app:showAsAction="never" />
-
-    <item
-        android:id="@+id/restart"
-        android:icon="@drawable/ic_restart_chat"
-        android:title="@string/EMBARK_RESTART_BUTTON"
-        app:showAsAction="never" />
 </menu>

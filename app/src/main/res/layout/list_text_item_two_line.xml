@@ -1,30 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="@dimen/base_margin_double"
-    android:layout_marginVertical="@dimen/base_margin_and_a_half">
+    android:layout_marginVertical="@dimen/base_margin_and_a_half"
+    android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/label"
+    <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textAppearance="?textAppearanceSubtitle1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Address" />
+        android:layout_weight="0.5"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?textAppearanceSubtitle1"
+            tools:text="Attefalls house" />
+
+        <TextView
+            android:id="@+id/subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?textAppearanceBody1"
+            tools:text="Has water connected" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/value"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="end|center_vertical"
+        android:layout_weight="0.5"
+        android:textAlignment="textEnd"
         android:textAppearance="?textAppearanceBody1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/label"
-        tools:text="Askergatan 112 B" />
+        tools:text="23 m2" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

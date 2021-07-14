@@ -4,11 +4,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
+import com.hedvig.app.databinding.EmbarkMessageItemBinding
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.setMarkdownText
 import com.hedvig.app.util.extensions.viewBinding
-import com.hedvig.app.databinding.EmbarkMessageItemBinding
 
 class MessageAdapter(
     messages: List<String>,
