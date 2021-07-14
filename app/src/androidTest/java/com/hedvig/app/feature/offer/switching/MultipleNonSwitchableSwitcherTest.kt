@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.offer.switching
 
 import com.hedvig.android.owldroid.graphql.OfferQuery
-import com.hedvig.app.R
 import com.hedvig.app.feature.offer.screen.OfferScreen
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_ALL_NONSWITCHABLE
@@ -43,21 +42,14 @@ class MultipleNonSwitchableSwitcherTest : TestCase() {
                     }
                     currentInsurer { hasText(previousInsurerNameForQuote(0)) }
                 }
-                childAt<OfferScreen.WarningCard>(9) {
-                    title { hasText(R.string.offer_manual_switch_card_title) }
-                    body { hasText(R.string.offer_manual_switch_card_body) }
-                }
-                childAt<OfferScreen.SwitcherItem>(10) {
+                childAt<OfferScreen.SwitcherItem>(9) {
                     associatedQuote {
                         isVisible()
                         hasText(quoteDisplayName(1))
                     }
                     currentInsurer { hasText(previousInsurerNameForQuote(1)) }
                 }
-                childAt<OfferScreen.WarningCard>(11) {
-                    title { hasText(R.string.offer_manual_switch_card_title) }
-                    body { hasText(R.string.offer_manual_switch_card_body) }
-                }
+                childAt<OfferScreen.WarningCard>(10) { isShown() }
             }
         }
     }

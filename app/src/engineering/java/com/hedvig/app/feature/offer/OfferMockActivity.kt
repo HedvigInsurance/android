@@ -8,6 +8,7 @@ import com.hedvig.app.testdata.feature.offer.BUNDLE_WITH_APPROVE
 import com.hedvig.app.testdata.feature.offer.BUNDLE_WITH_CONCURRENT_INCEPTION_DATES
 import com.hedvig.app.testdata.feature.offer.BUNDLE_WITH_INDEPENDENT_INCEPTION_DATES
 import com.hedvig.app.testdata.feature.offer.BUNDLE_WITH_START_DATE_FROM_PREVIOUS_INSURER
+import com.hedvig.app.testdata.feature.offer.OFFER_DATA_DENMARK_BUNDLE_HOME_CONTENTS_TRAVEL_ACCIDENT_MULTIPLE_PREVIOUS_INSURERS_MIXED_SWITCHABLE
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_ALL_NONSWITCHABLE
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_ALL_SWITCHABLE
@@ -89,6 +90,14 @@ class OfferMockActivity : MockActivity() {
         clickableItem("Norway, Home Contents + Travel, Both with Previous Insurer, Mixed Switchable") {
             MockOfferViewModel.apply {
                 mockData = OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_MIXED_SWITCHABLE
+                shouldError = false
+            }
+            startActivity(OfferActivity.newInstance(context))
+        }
+        clickableItem("Denmark, Home Contents + Travel + Accident, All with Previous Insurer, Mixed Switchable") {
+            MockOfferViewModel.apply {
+                mockData =
+                    OFFER_DATA_DENMARK_BUNDLE_HOME_CONTENTS_TRAVEL_ACCIDENT_MULTIPLE_PREVIOUS_INSURERS_MIXED_SWITCHABLE
                 shouldError = false
             }
             startActivity(OfferActivity.newInstance(context))

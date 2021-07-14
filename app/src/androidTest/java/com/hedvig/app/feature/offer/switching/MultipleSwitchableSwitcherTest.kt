@@ -43,21 +43,14 @@ class MultipleSwitchableSwitcherTest : TestCase() {
                     }
                     currentInsurer { hasText(previousInsurerNameForQuote(0)) }
                 }
-                childAt<OfferScreen.InfoCard>(9) {
-                    title { hasText(R.string.offer_switch_info_card_title) }
-                    body { hasText(R.string.offer_switch_info_card_body) }
-                }
-                childAt<OfferScreen.SwitcherItem>(10) {
+                childAt<OfferScreen.SwitcherItem>(9) {
                     associatedQuote {
                         isVisible()
                         hasText(quoteDisplayName(1))
                     }
                     currentInsurer { hasText(previousInsurerNameForQuote(1)) }
                 }
-                childAt<OfferScreen.InfoCard>(11) {
-                    title { hasText(R.string.offer_switch_info_card_title) }
-                    body { hasText(R.string.offer_switch_info_card_body) }
-                }
+                childAt<OfferScreen.InfoCard>(10) { isShown() }
             }
         }
     }

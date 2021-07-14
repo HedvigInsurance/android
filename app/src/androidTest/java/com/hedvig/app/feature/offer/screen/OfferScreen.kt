@@ -34,7 +34,7 @@ object OfferScreen : KScreen<OfferScreen>() {
     class HeaderItem(parent: Matcher<View>) : KRecyclerItem<HeaderItem>(parent) {
         val startDate = KTextView(parent) { withId(R.id.startDate) }
         val startDateLabel = KTextView(parent) { withId(R.id.startDateLabel) }
-        val sign=KButton(parent){withId(R.id.sign)}
+        val sign = KButton(parent) { withId(R.id.sign) }
     }
 
     class SwitcherItem(parent: Matcher<View>) : KRecyclerItem<SwitcherItem>(parent) {
@@ -62,10 +62,20 @@ object OfferScreen : KScreen<OfferScreen>() {
     class InfoCard(parent: Matcher<View>) : KRecyclerItem<InfoCard>(parent) {
         val title = KTextView(parent) { withId(R.id.title) }
         val body = KTextView(parent) { withId(R.id.body) }
+
+        fun isShown() {
+            title { hasText(R.string.offer_switch_info_card_title) }
+            body { hasText(R.string.offer_switch_info_card_body) }
+        }
     }
 
     class WarningCard(parent: Matcher<View>) : KRecyclerItem<WarningCard>(parent) {
         val title = KTextView(parent) { withId(R.id.title) }
         val body = KTextView(parent) { withId(R.id.body) }
+
+        fun isShown() {
+            title { hasText(R.string.offer_manual_switch_card_title) }
+            body { hasText(R.string.offer_manual_switch_card_body) }
+        }
     }
 }

@@ -2,7 +2,6 @@ package com.hedvig.app.feature.offer
 
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationGradientOption
-import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationStartDateTerminology
 import com.hedvig.app.R
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
@@ -27,10 +26,15 @@ object OfferItemsBuilder {
             OfferModel.Header(
                 title = data.quoteBundle.displayName,
                 startDate = data.quoteBundle.inception.getStartDate(),
-                startDateLabel = data.quoteBundle.inception.getStartDateLabel(data.quoteBundle.appConfiguration.startDateTerminology),
+                startDateLabel = data
+                    .quoteBundle
+                    .inception
+                    .getStartDateLabel(data.quoteBundle.appConfiguration.startDateTerminology),
                 netMonthlyCost = data.netMonthlyCost(),
                 grossMonthlyCost = data.grossMonthlyCost(),
-                incentiveDisplayValue = data.redeemedCampaigns.mapNotNull { it.fragments.incentiveFragment.displayValue },
+                incentiveDisplayValue = data
+                    .redeemedCampaigns
+                    .mapNotNull { it.fragments.incentiveFragment.displayValue },
                 hasCampaigns = data.redeemedCampaigns.isNotEmpty(),
                 changeDateBottomSheetData = data.quoteBundle.inception.toChangeDateBottomSheetData(),
                 signMethod = data.signMethodForQuotes,
@@ -92,11 +96,16 @@ object OfferItemsBuilder {
         }
         if (bundle.quotes.any { it.currentInsurer != null }) {
             add(OfferModel.Subheading.Switcher(bundle.quotes.count { it.currentInsurer?.displayName != null }))
-            bundle.quotes.mapNotNull {
+            val nonSwitchables = bundle.quotes.mapNotNull {
                 it.currentInsurer?.let { currentInsurer ->
-                    currentInsurer to it.displayName
+                    if (currentInsurer.switchable == false) {
+                        currentInsurer to it.displayName
+                    } else {
+                        null
+                    }
                 }
-            }.forEach { (currentInsurer, associatedQuote) ->
+            }
+            nonSwitchables.forEach { (currentInsurer, associatedQuote) ->
                 add(
                     OfferModel.CurrentInsurer(
                         displayName = currentInsurer.displayName,
@@ -107,16 +116,36 @@ object OfferItemsBuilder {
                         }
                     )
                 )
-                add(
+            }
+            if (nonSwitchables.isNotEmpty()) {
+                add(OfferModel.ManualSwitchCard)
+            }
+            val switchables = bundle.quotes.mapNotNull {
+                it.currentInsurer?.let { currentInsurer ->
                     if (currentInsurer.switchable == true) {
-                        OfferModel.AutomaticSwitchCard
+                        currentInsurer to it.displayName
                     } else {
-                        OfferModel.ManualSwitchCard
+                        null
                     }
+                }
+            }
+            switchables.forEach { (currentInsurer, associatedQuote) ->
+                add(
+                    OfferModel.CurrentInsurer(
+                        displayName = currentInsurer.displayName,
+                        associatedQuote = if (bundle.quotes.size > 1) {
+                            associatedQuote
+                        } else {
+                            null
+                        }
+                    )
                 )
             }
+            if (switchables.isNotEmpty()) {
+                add(OfferModel.AutomaticSwitchCard)
+            }
+            add(OfferModel.Footer(GDPR_LINK))
         }
-        add(OfferModel.Footer(GDPR_LINK))
     }
 
     fun createPerilItems(data: List<OfferQuery.Quote>) = if (data.size == 1) {
