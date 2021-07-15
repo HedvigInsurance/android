@@ -6,9 +6,9 @@ import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
 import android.transition.TransitionManager
 import android.view.MenuItem
-import android.widget.Toast
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
-import androidx.core.view.updatePadding
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ConcatAdapter
@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestBuilder
 import com.carousell.concatadapterextension.ConcatItemDecoration
 import com.carousell.concatadapterextension.ConcatSpanSizeLookup
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationTitle
 import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.BaseActivity
@@ -32,6 +31,7 @@ import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.offer.quotedetail.QuoteDetailActivity
 import com.hedvig.app.feature.offer.ui.checkout.CheckoutActivity
+import com.hedvig.app.feature.offer.ui.util.OfferScrollListener
 import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
@@ -62,29 +62,34 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     private val tracker: OfferTracker by inject()
     private val marketManager: MarketManager by inject()
 
-    private var scrollInitialPaddingTop = 0
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding.apply {
             offerRoot.setEdgeToEdgeSystemUiFlags(true)
-            scrollInitialPaddingTop = offerScroll.paddingTop
-            offerToolbar.background.alpha = 0
 
-            offerToolbar.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
-                applyInsets(view.height)
+            ViewCompat.setOnApplyWindowInsetsListener(offerToolbar) { view, insets ->
+                view.updateMargin(top = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top)
+                insets
             }
+
             signButton.doOnApplyWindowInsets { view, insets, initialState ->
                 view.updateMargin(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
             }
 
+            appbar.background.alpha = 0
             offerScroll.addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 private var scrollY = 0
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     scrollY += dy
                     val percentage = scrollY.toFloat() / offerToolbar.height
+                    appbar.background.alpha = (percentage * 40).toInt()
+
+                    if (percentage >= 9) {
+                        appbar.elevation = 5f
+                    } else {
+                        appbar.elevation = 0f
+                    }
 
                     if (percentage > 4 && !signButton.isVisible) {
                         TransitionManager.beginDelayedTransition(offerRoot)
@@ -306,27 +311,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             marketManager.market?.openAuth(this, supportFragmentManager)
             true
         }
-        R.id.restart -> {
-            showRestartDialog()
-            true
-        }
         else -> false
-    }
-
-    private fun showRestartDialog() {
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.settings_alert_restart_onboarding_title)
-            .setMessage(R.string.settings_alert_restart_onboarding_description)
-            .setPositiveButton(R.string.ALERT_OK) { _, _ ->
-                // TODO
-                Toast.makeText(this, "Not implemented", Toast.LENGTH_LONG).show()
-            }
-            .setNegativeButton(R.string.ALERT_CANCEL) { dialog, _ -> dialog.dismiss() }
-            .show()
-    }
-
-    private fun applyInsets(height: Int) {
-        binding.offerScroll.updatePadding(top = height + scrollInitialPaddingTop)
     }
 
     companion object {
