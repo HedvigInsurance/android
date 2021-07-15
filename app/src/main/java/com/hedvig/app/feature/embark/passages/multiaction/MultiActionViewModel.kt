@@ -53,6 +53,7 @@ class MultiActionViewModel(
             }
             component.selectedDropDowns.forEach { dropDown ->
                 addToStore("${multiActionParams.key}[$index]${dropDown.key}", dropDown.value)
+                addToStore("${multiActionParams.key}[$index]${dropDown.key}.Label", dropDown.text)
             }
             component.switches.forEach { switch ->
                 addToStore("${multiActionParams.key}[$index]${switch.key}", switch.value.toString())

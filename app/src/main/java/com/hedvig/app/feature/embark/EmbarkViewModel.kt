@@ -478,7 +478,7 @@ abstract class EmbarkViewModel(
             .findAll(message)
             .fold(message) { acc, curr ->
                 val key = curr.value.removeSurrounding("{", "}")
-                val fromStore = store.get(key) ?: return acc
+                val fromStore = store.get(key) ?: return@fold acc
                 acc.replace(curr.value, fromStore)
             }
 
