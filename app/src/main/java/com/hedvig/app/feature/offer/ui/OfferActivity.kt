@@ -160,11 +160,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     setSignState(viewState.signMethod)
 
                     TransitionManager.beginDelayedTransition(binding.offerToolbar)
-                    when (viewState.title) {
-                        QuoteBundleAppConfigurationTitle.LOGO -> binding.toolbarLogo.show()
-                        QuoteBundleAppConfigurationTitle.UPDATE_SUMMARY,
-                        QuoteBundleAppConfigurationTitle.UNKNOWN__ -> binding.toolbarTitle.show()
-                    }
+                    setTitleVisibility(viewState)
                     inflateMenu(viewState.loginStatus)
                     binding.progressBar.isVisible = viewState.isLoading
                     binding.offerScroll.isVisible = !viewState.isLoading
@@ -227,6 +223,20 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     supportFragmentManager,
                     OfferSignDialog.TAG
                 )
+            }
+        }
+    }
+
+    private fun setTitleVisibility(viewState: OfferViewModel.ViewState) {
+        when (viewState.title) {
+            QuoteBundleAppConfigurationTitle.LOGO -> {
+                binding.toolbarLogo.isVisible = true
+                binding.toolbarTitle.isVisible = false
+            }
+            QuoteBundleAppConfigurationTitle.UPDATE_SUMMARY,
+            QuoteBundleAppConfigurationTitle.UNKNOWN__ -> {
+                binding.toolbarTitle.isVisible = true
+                binding.toolbarLogo.isVisible = false
             }
         }
     }
