@@ -27,7 +27,7 @@ class MockOfferViewModel : OfferViewModel() {
 
     override fun removeDiscount() = Unit
     override fun writeDiscountToCache(data: RedeemReferralCodeMutation.Data) = Unit
-    override fun triggerOpenChat(done: () -> Unit) = Unit
+    override suspend fun triggerOpenChat() = Unit
     override fun startSign() = Unit
     override fun clearPreviousErrors() = Unit
     override fun manuallyRecheckSignStatus() = Unit

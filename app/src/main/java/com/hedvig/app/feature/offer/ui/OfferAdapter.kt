@@ -55,6 +55,7 @@ class OfferAdapter(
     private val onRemoveDiscount: () -> Unit,
     private val onSign: (SignMethod) -> Unit,
     private val reload: () -> Unit,
+    private val openChat: () -> Unit
 ) : ListAdapter<OfferModel, OfferAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
@@ -68,7 +69,7 @@ class OfferAdapter(
         )
         R.layout.offer_fact_area -> ViewHolder.Facts(parent)
         R.layout.offer_switch -> ViewHolder.Switch(parent)
-        R.layout.offer_footer -> ViewHolder.Footer(parent)
+        R.layout.offer_footer -> ViewHolder.Footer(parent, openChat)
         R.layout.text_headline5 -> ViewHolder.Subheading(parent)
         R.layout.text_body2 -> ViewHolder.Paragraph(parent)
         R.layout.text_subtitle1 -> ViewHolder.QuoteDetails(parent, openQuoteDetails)
@@ -215,8 +216,15 @@ class OfferAdapter(
             }
         }
 
-        class Footer(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_footer)) {
+        class Footer(
+            parent: ViewGroup,
+            openChat: () -> Unit
+        ) : ViewHolder(parent.inflate(R.layout.offer_footer)) {
             private val binding by viewBinding(OfferFooterBinding::bind)
+
+            init {
+                binding.chatButton.setHapticClickListener { openChat() }
+            }
 
             override fun bind(data: OfferModel) {
                 if (data !is OfferModel.Footer) {

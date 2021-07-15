@@ -107,6 +107,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 onRemoveDiscount = model::removeDiscount,
                 onSign = ::onSign,
                 reload = model::reload,
+                openChat = ::openChat,
             )
             val perilsAdapter = PerilsAdapter(
                 fragmentManager = supportFragmentManager,
@@ -126,6 +127,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 onRemoveDiscount = model::removeDiscount,
                 onSign = ::onSign,
                 reload = model::reload,
+                openChat = ::openChat,
             )
 
             val concatAdapter = ConcatAdapter(
@@ -234,6 +236,13 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         }
     }
 
+    private fun openChat() {
+        lifecycleScope.launch {
+            model.triggerOpenChat()
+            startClosableChat(true)
+        }
+    }
+
     private fun scheduleEnterAnimation() {
         binding.offerScroll.scheduleLayoutAnimation()
         binding.offerScroll.postOnAnimation {
@@ -288,9 +297,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     private fun handleMenuItem(menuItem: MenuItem) = when (menuItem.itemId) {
         R.id.chat -> {
             tracker.openChat()
-            model.triggerOpenChat {
-                startClosableChat(true)
-            }
+            openChat()
             true
         }
         R.id.app_settings -> {
