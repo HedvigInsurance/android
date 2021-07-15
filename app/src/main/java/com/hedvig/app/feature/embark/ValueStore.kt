@@ -95,6 +95,6 @@ class ValueStoreImpl : ValueStore {
     }
 
     companion object {
-        private val MULTI_ACTION_KEY = Regex("\\[([0-9]+)\\]([a-zA-Z]+)\$")
+        private val MULTI_ACTION_KEY = Regex("\\[([0-9]+)\\]([a-zA-Z.]+)\$")
     }
 }
