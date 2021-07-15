@@ -69,7 +69,7 @@ abstract class OfferViewModel : ViewModel() {
     abstract val signError: LiveData<Boolean>
     abstract fun removeDiscount()
     abstract fun writeDiscountToCache(data: RedeemReferralCodeMutation.Data)
-    abstract fun triggerOpenChat(done: () -> Unit)
+    abstract suspend fun triggerOpenChat()
     abstract fun startSign()
     abstract fun clearPreviousErrors()
     abstract fun manuallyRecheckSignStatus()
@@ -213,14 +213,10 @@ class OfferViewModelImpl(
     override fun writeDiscountToCache(data: RedeemReferralCodeMutation.Data) =
         offerRepository.writeDiscountToCache(quoteIds, data)
 
-    override fun triggerOpenChat(done: () -> Unit) {
-        viewModelScope.launch {
-            val result = runCatching { offerRepository.triggerOpenChatFromOffer() }
-            if (result.isFailure) {
-                result.exceptionOrNull()?.let { e(it) }
-                return@launch
-            }
-            result.getOrNull()?.let { done() }
+    override suspend fun triggerOpenChat() {
+        val result = runCatching { offerRepository.triggerOpenChatFromOffer() }
+        if (result.isFailure) {
+            result.exceptionOrNull()?.let { e(it) }
         }
     }
 
