@@ -25,6 +25,7 @@ import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.service.LoginStatus
 import com.hedvig.app.service.LoginStatusService
 import e
+import java.time.LocalDate
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,10 +35,9 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 
 abstract class OfferViewModel : ViewModel() {
-    protected val _viewState = MutableStateFlow<ViewState>(ViewState.Loading)
+    protected val _viewState = MutableStateFlow(ViewState(isLoading = true))
     val viewState: StateFlow<ViewState> = _viewState
 
     sealed class Event {
@@ -87,20 +87,17 @@ abstract class OfferViewModel : ViewModel() {
 
     abstract fun approveOffer()
 
-    sealed class ViewState {
-        data class Offer(
-            val topOfferItems: List<OfferModel>,
-            val perils: List<PerilItem>,
-            val documents: List<DocumentItems>,
-            val insurableLimitsItems: List<InsurableLimitItem>,
-            val bottomOfferItems: List<OfferModel>,
-            val signMethod: SignMethod,
-            val title: QuoteBundleAppConfigurationTitle,
-            val loginStatus: LoginStatus
-        ) : ViewState()
-
-        object Loading : ViewState()
-    }
+    data class ViewState(
+        val topOfferItems: List<OfferModel> = emptyList(),
+        val perils: List<PerilItem> = emptyList(),
+        val documents: List<DocumentItems> = emptyList(),
+        val insurableLimitsItems: List<InsurableLimitItem> = emptyList(),
+        val bottomOfferItems: List<OfferModel> = emptyList(),
+        val signMethod: SignMethod = SignMethod.SIMPLE_SIGN,
+        val title: QuoteBundleAppConfigurationTitle = QuoteBundleAppConfigurationTitle.LOGO,
+        val loginStatus: LoginStatus = LoginStatus.LOGGED_IN,
+        val isLoading: Boolean = false
+    )
 
     abstract fun onOpenCheckout()
     abstract fun reload()
@@ -167,7 +164,7 @@ class OfferViewModelImpl(
 
     override fun approveOffer() {
         viewModelScope.launch {
-            _viewState.value = ViewState.Loading
+            _viewState.value = _viewState.value.copy(isLoading = true)
             val event = when (val result = approveQuotesUseCase.approveQuotes(quoteIds)) {
                 is ApproveQuotesUseCase.ApproveQuotesResult.Error.GeneralError -> Event.Error(result.message)
                 ApproveQuotesUseCase.ApproveQuotesResult.Error.ApproveError -> Event.ApproveError
@@ -183,7 +180,7 @@ class OfferViewModelImpl(
         val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(data.quoteBundle.quotes)
         val documentItems = OfferItemsBuilder.createDocumentItems(data.quoteBundle.quotes)
         val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems(data.quoteBundle)
-        return ViewState.Offer(
+        return ViewState(
             topOfferItems = topOfferItems,
             perils = perilItems,
             documents = documentItems,
@@ -283,7 +280,7 @@ class OfferViewModelImpl(
     }
 
     override fun reload() {
-        _viewState.value = ViewState.Loading
+        _viewState.value = _viewState.value.copy(isLoading = true)
         viewModelScope.launch {
             when (val result = refreshQuotesUseCase(quoteIds)) {
                 RefreshQuotesUseCase.Result.Success -> {

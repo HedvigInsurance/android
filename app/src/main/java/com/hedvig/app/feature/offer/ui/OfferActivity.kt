@@ -149,31 +149,25 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 .viewState
                 .flowWithLifecycle(lifecycle)
                 .onEach { viewState ->
-                    when (viewState) {
-                        is OfferViewModel.ViewState.Offer -> {
-                            if (concatAdapter.itemCount == 0 || concatAdapter.itemCount == 1) {
-                                scheduleEnterAnimation()
-                            }
-                            topOfferAdapter.submitList(viewState.topOfferItems)
-                            perilsAdapter.submitList(viewState.perils)
-                            insurableLimitsAdapter.submitList(viewState.insurableLimitsItems)
-                            documentAdapter.submitList(viewState.documents)
-                            bottomOfferAdapter.submitList(viewState.bottomOfferItems)
-                            setSignState(viewState.signMethod)
-
-                            TransitionManager.beginDelayedTransition(binding.offerToolbar)
-                            when (viewState.title) {
-                                QuoteBundleAppConfigurationTitle.LOGO -> binding.toolbarLogo.show()
-                                QuoteBundleAppConfigurationTitle.UPDATE_SUMMARY,
-                                QuoteBundleAppConfigurationTitle.UNKNOWN__ -> binding.toolbarTitle.show()
-                            }
-                            binding.progressBar.hide()
-                            inflateMenu(viewState.loginStatus)
-                        }
-                        is OfferViewModel.ViewState.Loading -> {
-                            binding.progressBar.show()
-                        }
+                    if (concatAdapter.itemCount == 0 || concatAdapter.itemCount == 1) {
+                        scheduleEnterAnimation()
                     }
+                    topOfferAdapter.submitList(viewState.topOfferItems)
+                    perilsAdapter.submitList(viewState.perils)
+                    insurableLimitsAdapter.submitList(viewState.insurableLimitsItems)
+                    documentAdapter.submitList(viewState.documents)
+                    bottomOfferAdapter.submitList(viewState.bottomOfferItems)
+                    setSignState(viewState.signMethod)
+
+                    TransitionManager.beginDelayedTransition(binding.offerToolbar)
+                    when (viewState.title) {
+                        QuoteBundleAppConfigurationTitle.LOGO -> binding.toolbarLogo.show()
+                        QuoteBundleAppConfigurationTitle.UPDATE_SUMMARY,
+                        QuoteBundleAppConfigurationTitle.UNKNOWN__ -> binding.toolbarTitle.show()
+                    }
+                    inflateMenu(viewState.loginStatus)
+                    binding.progressBar.isVisible = viewState.isLoading
+                    binding.offerScroll.isVisible = !viewState.isLoading
                 }
                 .launchIn(lifecycleScope)
 
@@ -189,6 +183,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                             bottomOfferAdapter.submitList(emptyList())
                             topOfferAdapter.submitList(listOf(OfferModel.Error))
                             binding.progressBar.isVisible = false
+                            binding.offerScroll.isVisible = true
                         }
                         is OfferViewModel.Event.OpenQuoteDetails -> {
                             startActivity(
