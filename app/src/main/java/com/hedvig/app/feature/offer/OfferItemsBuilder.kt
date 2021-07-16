@@ -144,8 +144,8 @@ object OfferItemsBuilder {
             if (switchables.isNotEmpty()) {
                 add(OfferModel.AutomaticSwitchCard)
             }
-            add(OfferModel.Footer(GDPR_LINK))
         }
+        add(OfferModel.Footer(GDPR_LINK))
     }
 
     fun createPerilItems(data: List<OfferQuery.Quote>) = if (data.size == 1) {
