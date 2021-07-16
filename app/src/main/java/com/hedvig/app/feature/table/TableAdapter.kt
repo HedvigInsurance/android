@@ -19,11 +19,11 @@ class TableAdapter : ListAdapter<TableAdapter.UpcomingAgreementItem, TableAdapte
 
     fun setTable(table: Table) {
         submitList(
-            listOf(
-                UpcomingAgreementItem.CenteredHeader(table.title),
+            listOfNotNull(
+                table.title.takeIf { it.isNotBlank() }?.let(UpcomingAgreementItem::CenteredHeader),
             ) + table.sections.flatMap { section ->
-                listOf(
-                    UpcomingAgreementItem.Header(section.title),
+                listOfNotNull(
+                    section.title.takeIf { it.isNotBlank() }?.let(UpcomingAgreementItem::Header),
                 ) + section.rows.map { row ->
                     row.subtitle?.let { subtitle ->
                         UpcomingAgreementItem.BuildingItem(row.title, subtitle, row.value)
