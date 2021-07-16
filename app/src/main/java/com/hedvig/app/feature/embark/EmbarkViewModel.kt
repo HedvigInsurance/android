@@ -13,6 +13,8 @@ import com.hedvig.android.owldroid.type.EmbarkExpressionTypeBinary
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeMultiple
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeUnary
 import com.hedvig.app.feature.embark.util.VariableExtractor
+import com.hedvig.app.service.LoginStatus
+import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.util.Percent
 import com.hedvig.app.util.getWithDotNotation
 import com.hedvig.app.util.plus
@@ -28,27 +30,27 @@ import org.json.JSONObject
 
 abstract class EmbarkViewModel(
     private val tracker: EmbarkTracker,
-    private val valueStore: ValueStore,
+    private val valueStore: ValueStore
 ) : ViewModel() {
     private val _data = MutableLiveData<EmbarkModel>()
     val data: LiveData<EmbarkModel> = _data
-
     protected val _errorMessage = MutableLiveData<String?>()
-    val errorMessage: LiveData<String?> = _errorMessage
 
+    val errorMessage: LiveData<String?> = _errorMessage
     abstract fun fetchStory(name: String)
 
     abstract suspend fun callGraphQL(query: String, variables: JSONObject? = null): JSONObject?
 
     protected lateinit var storyData: EmbarkStoryQuery.Data
+    private lateinit var loginStatus: LoginStatus
 
     private val backStack = Stack<String>()
     private var totalSteps: Int = 0
 
-    protected fun setInitialState() {
+    protected fun setInitialState(loginStatus: LoginStatus) {
         storyData.embarkStory?.let { story ->
             valueStore.computedValues = story.getComputedValues()
-
+            this.loginStatus = loginStatus
             val firstPassage = story.passages.first { it.id == story.startPassage }
 
             totalSteps = getPassagesLeft(firstPassage)
@@ -56,7 +58,9 @@ abstract class EmbarkViewModel(
             val model = EmbarkModel(
                 passage = preProcessPassage(firstPassage),
                 navigationDirection = NavigationDirection.INITIAL,
-                progress = currentProgress(firstPassage)
+                progress = currentProgress(firstPassage),
+                isLoggedIn = loginStatus == LoginStatus.LOGGED_IN,
+                hasTooltips = firstPassage.tooltips.isNotEmpty()
             )
             _data.postValue(model)
 
@@ -115,7 +119,9 @@ abstract class EmbarkViewModel(
             val model = EmbarkModel(
                 passage = preProcessPassage(nextPassage),
                 navigationDirection = NavigationDirection.FORWARDS,
-                progress = currentProgress(nextPassage)
+                progress = currentProgress(nextPassage),
+                isLoggedIn = loginStatus == LoginStatus.LOGGED_IN,
+                hasTooltips = nextPassage?.tooltips?.isNotEmpty() == true
             )
             _data.postValue(model)
             nextPassage?.tracks?.forEach { track ->
@@ -242,7 +248,9 @@ abstract class EmbarkViewModel(
             val model = EmbarkModel(
                 passage = preProcessPassage(nextPassage),
                 navigationDirection = NavigationDirection.BACKWARDS,
-                progress = currentProgress(nextPassage)
+                progress = currentProgress(nextPassage),
+                isLoggedIn = loginStatus == LoginStatus.LOGGED_IN,
+                hasTooltips = nextPassage?.tooltips?.isNotEmpty() == true
             )
             _data.postValue(model)
 
@@ -588,6 +596,7 @@ abstract class EmbarkViewModel(
 
 class EmbarkViewModelImpl(
     private val embarkRepository: EmbarkRepository,
+    private val loginStatusService: LoginStatusService,
     tracker: EmbarkTracker,
     valueStore: ValueStore,
     storyName: String,
@@ -605,9 +614,10 @@ class EmbarkViewModelImpl(
             if (result.isFailure) {
                 _errorMessage.value = result.getOrNull()?.errors?.toString() ?: result.exceptionOrNull()?.message
             } else {
+                val loginStatus = loginStatusService.getLoginStatus()
                 result.getOrNull()?.data?.let { d ->
                     storyData = d
-                    setInitialState()
+                    setInitialState(loginStatus)
                 }
             }
         }
