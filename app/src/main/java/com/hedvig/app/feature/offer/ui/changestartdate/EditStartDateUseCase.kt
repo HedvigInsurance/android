@@ -2,13 +2,12 @@ package com.hedvig.app.feature.offer.ui.changestartdate
 
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.ChooseStartDateMutation
+import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RemoveStartDateMutation
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
 import com.hedvig.app.util.extensions.replace
-import e
-import java.lang.IllegalArgumentException
 import java.time.LocalDate
 
 class EditStartDateUseCase(
@@ -22,7 +21,9 @@ class EditStartDateUseCase(
         val mutation = RemoveStartDateMutation(id)
         return when (val response = apolloClient.mutate(mutation).safeQuery()) {
             is QueryResult.Success -> {
-                removeStartDateFromCache(id, idsInBundle, response.data)
+                if (response.data.removeStartDate.asCompleteQuote?.id != null) {
+                    writeStartDateToCache(id, idsInBundle, response.data.removeStartDate.asCompleteQuote?.startDate)
+                }
                 response
             }
             is QueryResult.Error -> response
@@ -37,74 +38,75 @@ class EditStartDateUseCase(
         val mutation = ChooseStartDateMutation(id, date)
         return when (val response = apolloClient.mutate(mutation).safeQuery()) {
             is QueryResult.Success -> {
-                writeStartDateToCache(id, idsInBundle, response.data)
+                if (response.data.editQuote.asCompleteQuote?.id != null) {
+                    writeStartDateToCache(id, idsInBundle, response.data.editQuote.asCompleteQuote?.startDate)
+                }
                 response
             }
             is QueryResult.Error -> response
         }
     }
 
-    private fun writeStartDateToCache(id: String, ids: List<String>, data: ChooseStartDateMutation.Data) {
-        val cachedData = apolloClient
-            .apolloStore
-            .read(offerRepository.offerQuery(ids))
-            .execute()
+    private fun writeStartDateToCache(id: String, ids: List<String>, startDate: LocalDate?) {
+        val cachedOffer = getCachedOffer(ids)
+        val newData = createNewOfferFromStartDate(cachedOffer, id, startDate)
+        publishNewOffer(ids, newData)
+    }
 
-        val newId = data.editQuote.asCompleteQuote?.id
-        if (newId == null) {
-            e { "Id is null" }
-            return
-        }
-
-        val modifiedQuote = cachedData.quoteBundle.quotes.find { it.id == id }?.copy(
-            startDate = data.editQuote.asCompleteQuote?.startDate
-        ) ?: throw IllegalArgumentException("Could not find quote with id $id")
-
-        val newQuotes = cachedData.quoteBundle.quotes.replace(modifiedQuote) {
-            it.id == id
-        }
-
-        val newData = cachedData.copy(
-            quoteBundle = cachedData.quoteBundle.copy(
-                quotes = newQuotes
-            )
+    private fun createNewOfferFromStartDate(
+        cachedOffer: OfferQuery.Data,
+        id: String,
+        startDate: LocalDate?
+    ): OfferQuery.Data {
+        val modifiedInception = createModifiedInception(
+            cachedData = cachedOffer,
+            id = id,
+            startDate = startDate
         )
 
-        apolloClient
-            .apolloStore
+        return cachedOffer.copy(
+            quoteBundle = cachedOffer.quoteBundle.copy(
+                inception = modifiedInception
+            )
+        )
+    }
+
+    private fun publishNewOffer(ids: List<String>, newData: OfferQuery.Data) {
+        apolloClient.apolloStore
             .writeAndPublish(offerRepository.offerQuery(ids), newData)
             .execute()
     }
 
-    private fun removeStartDateFromCache(id: String, ids: List<String>, data: RemoveStartDateMutation.Data) {
-        val cachedData = apolloClient
-            .apolloStore
-            .read(offerRepository.offerQuery(ids))
-            .execute()
+    private fun getCachedOffer(ids: List<String>) = apolloClient.apolloStore
+        .read(offerRepository.offerQuery(ids))
+        .execute()
 
-        val newId = data.removeStartDate.asCompleteQuote?.id
-        if (newId == null) {
-            e { "Id is null" }
-            return
+    private fun createModifiedInception(
+        cachedData: OfferQuery.Data,
+        id: String,
+        startDate: LocalDate?
+    ): OfferQuery.Inception1 {
+        val modifiedIndependentInception = cachedData.quoteBundle
+            .inception
+            .asIndependentInceptions
+            ?.inceptions
+            ?.find { it.correspondingQuote.asCompleteQuote1?.id == id }
+            ?.copy(startDate = startDate)
+
+        return with(cachedData.quoteBundle.inception) {
+            if (modifiedIndependentInception != null) {
+                copy(
+                    asIndependentInceptions = asIndependentInceptions?.copy(
+                        inceptions = asIndependentInceptions?.inceptions
+                            ?.replace(modifiedIndependentInception) { it.correspondingQuote.asCompleteQuote1?.id == id }
+                            ?: asIndependentInceptions?.inceptions ?: emptyList()
+                    )
+                )
+            } else {
+                copy(
+                    asConcurrentInception = asConcurrentInception?.copy(startDate = startDate)
+                )
+            }
         }
-
-        val modifiedQuote = cachedData.quoteBundle.quotes.find { it.id == id }?.copy(
-            startDate = data.removeStartDate.asCompleteQuote?.startDate
-        ) ?: throw IllegalArgumentException("Could not find quote with id $id")
-
-        val newQuotes = cachedData.quoteBundle.quotes.replace(modifiedQuote) {
-            it.id == id
-        }
-
-        val newData = cachedData.copy(
-            quoteBundle = cachedData.quoteBundle.copy(
-                quotes = newQuotes
-            )
-        )
-
-        apolloClient
-            .apolloStore
-            .writeAndPublish(offerRepository.offerQuery(ids), newData)
-            .execute()
     }
 }
