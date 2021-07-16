@@ -6,8 +6,6 @@ import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
 import android.transition.TransitionManager
 import android.view.MenuItem
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -35,14 +33,14 @@ import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.service.LoginStatus
+import com.hedvig.app.util.extensions.insetSystemBottomWithMargin
+import com.hedvig.app.util.extensions.insetSystemTopWithMargin
 import com.hedvig.app.util.extensions.showErrorDialog
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
@@ -66,15 +64,8 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
         binding.apply {
             offerRoot.setEdgeToEdgeSystemUiFlags(true)
-
-            ViewCompat.setOnApplyWindowInsetsListener(offerToolbar) { view, insets ->
-                view.updateMargin(top = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top)
-                insets
-            }
-
-            signButton.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updateMargin(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
-            }
+            offerToolbar.insetSystemTopWithMargin()
+            signButton.insetSystemBottomWithMargin()
 
             appbar.background.alpha = 0
             offerScroll.addOnScrollListener(object : RecyclerView.OnScrollListener() {
