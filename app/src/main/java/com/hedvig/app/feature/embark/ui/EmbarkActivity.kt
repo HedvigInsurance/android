@@ -150,10 +150,9 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
 
     private fun showExitDialog() {
         MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.settings_alert_restart_onboarding_title)
-            .setMessage(R.string.settings_alert_restart_onboarding_description)
-            .setPositiveButton(R.string.ALERT_OK) { _, _ -> finish() }
-            .setNegativeButton(R.string.ALERT_CANCEL) { dialog, _ -> dialog.dismiss() }
+            .setMessage(R.string.EMBARK_EXIT_DIALOG_MESSAGE)
+            .setPositiveButton(R.string.EMBARK_EXIT_DIALOG_POSITIVE_BUTTON) { _, _ -> finish() }
+            .setNegativeButton(R.string.EMBARK_EXIT_DIALOG_NEGATIVE_BUTTON) { dialog, _ -> dialog.dismiss() }
             .show()
     }
 
