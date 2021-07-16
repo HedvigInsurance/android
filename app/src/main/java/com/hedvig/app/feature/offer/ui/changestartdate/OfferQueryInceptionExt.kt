@@ -54,11 +54,9 @@ fun OfferQuery.Inception1.toChangeDateBottomSheetData() = ChangeDateBottomSheetD
 )
 
 fun OfferQuery.Inception1.getStartDate(): OfferStartDate {
-    if (hasNoDate()) {
-        return OfferStartDate.WhenCurrentPlanExpires
-    }
-
     return when {
+        hasNoDate() -> OfferStartDate.AtDate(LocalDate.now())
+        isSwitcher() -> OfferStartDate.WhenCurrentPlanExpires
         asConcurrentInception != null -> OfferStartDate.AtDate(asConcurrentInception?.startDate ?: LocalDate.now())
         asIndependentInceptions != null -> {
             val inception = asIndependentInceptions?.inceptions?.firstOrNull()
@@ -78,14 +76,25 @@ fun OfferQuery.Inception1.hasNoDate(): Boolean {
         (asIndependentInceptions != null && asIndependentInceptions?.inceptions?.all { it.startDate == null } == true)
 }
 
+fun OfferQuery.Inception1.isSwitcher(): Boolean {
+    return (asConcurrentInception?.currentInsurer != null) ||
+        (asIndependentInceptions?.inceptions?.any { it.currentInsurer == null } == true)
+}
+
 fun OfferQuery.Inception1.getStartDateLabel(
     startDateTerminology: QuoteBundleAppConfigurationStartDateTerminology
 ): Int {
     return when (startDateTerminology) {
-        QuoteBundleAppConfigurationStartDateTerminology.START_DATE -> if (asIndependentInceptions != null) {
-            R.string.OFFER_START_DATE_PLURAL
-        } else {
-            R.string.OFFER_START_DATE
+        QuoteBundleAppConfigurationStartDateTerminology.START_DATE -> {
+            if (asIndependentInceptions?.inceptions?.size == 1) {
+                R.string.OFFER_START_DATE
+            } else if (asIndependentInceptions != null) {
+                R.string.OFFER_START_DATE_PLURAL
+            } else if (asConcurrentInception != null) {
+                R.string.OFFER_START_DATE
+            } else {
+                R.string.OFFER_START_DATE
+            }
         }
         QuoteBundleAppConfigurationStartDateTerminology.ACCESS_DATE -> R.string.OFFER_ACCESS_DATE
         QuoteBundleAppConfigurationStartDateTerminology.UNKNOWN__ -> R.string.OFFER_START_DATE
