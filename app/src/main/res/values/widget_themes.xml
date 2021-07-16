@@ -147,6 +147,13 @@
         <item name="colorSurface">@color/separator_light</item>
     </style>
 
+    <style name="ThemeOverlay.Hedvig.Card.Outlined.Unfilled" parent="">
+        <item name="cardElevation">0dp</item>
+        <item name="strokeColor">@color/color_divider</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="colorSurface">?android:colorBackground</item>
+    </style>
+
     <style name="Hedvig.DatePicker" parent="ThemeOverlay.MaterialComponents.MaterialCalendar">
         <item name="materialCalendarHeaderLayout">@style/Hedvig.CalendarHeader</item>
         <item name="materialCalendarHeaderSelection">@style/Hedvig.HeaderSelection</item>
