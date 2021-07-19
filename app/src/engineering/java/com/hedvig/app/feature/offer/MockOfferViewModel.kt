@@ -78,7 +78,7 @@ class MockOfferViewModel : OfferViewModel() {
             val perilItems = OfferItemsBuilder.createPerilItems(mockData.quoteBundle.quotes)
             val documentItems = OfferItemsBuilder.createDocumentItems(mockData.quoteBundle.quotes)
             val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(mockData.quoteBundle.quotes)
-            val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems(mockData.quoteBundle)
+            val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems(mockData)
             _viewState.value =
                 ViewState(
                     topOfferItems = topOfferItems,

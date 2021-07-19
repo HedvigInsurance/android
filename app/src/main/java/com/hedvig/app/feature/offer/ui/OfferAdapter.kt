@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.BASE_MARGIN_DOUBLE
+import com.hedvig.app.BASE_MARGIN_OCTUPLE
 import com.hedvig.app.BASE_MARGIN_SEPTUPLE
 import com.hedvig.app.BASE_MARGIN_TRIPLE
 import com.hedvig.app.R
@@ -233,7 +234,15 @@ class OfferAdapter(
                 binding.chatButton.setHapticClickListener {
                     it.context.startActivity(ChatActivity.newInstance(it.context, true))
                 }
-                val link = itemView.context.getString(R.string.OFFER_FOOTER_GDPR_INFO, data.url)
+                val checkoutString = data.signMethod
+                    .checkoutTextRes()
+                    ?.let(itemView.context::getString)
+
+                val link = itemView.context.getString(
+                    R.string.OFFER_FOOTER_GDPR_INFO,
+                    checkoutString,
+                    data.url
+                )
                 binding.text.setMarkdownText(link)
             }
         }
@@ -398,6 +407,7 @@ class OfferAdapter(
             private val binding by viewBinding(GenericErrorBinding::bind)
 
             init {
+                binding.root.setPadding(0, BASE_MARGIN_OCTUPLE, 0, 0)
                 binding.root.setBackgroundColor(binding.root.context.colorAttr(android.R.attr.colorBackground))
             }
 

@@ -41,6 +41,7 @@ sealed class OfferModel {
     ) : OfferModel()
 
     data class Footer(
+        val signMethod: SignMethod,
         val url: String,
     ) : OfferModel()
 
