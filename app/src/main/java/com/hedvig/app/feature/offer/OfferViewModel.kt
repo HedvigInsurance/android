@@ -179,7 +179,7 @@ class OfferViewModelImpl(
         val perilItems = OfferItemsBuilder.createPerilItems(data.quoteBundle.quotes)
         val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(data.quoteBundle.quotes)
         val documentItems = OfferItemsBuilder.createDocumentItems(data.quoteBundle.quotes)
-        val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems(data.quoteBundle)
+        val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems(data)
         return ViewState(
             topOfferItems = topOfferItems,
             perils = perilItems,

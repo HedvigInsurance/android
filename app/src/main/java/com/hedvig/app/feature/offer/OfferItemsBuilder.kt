@@ -82,7 +82,8 @@ object OfferItemsBuilder {
         emptyList()
     }
 
-    fun createBottomOfferItems(bundle: OfferQuery.QuoteBundle) = ArrayList<OfferModel>().apply {
+    fun createBottomOfferItems(data: OfferQuery.Data) = ArrayList<OfferModel>().apply {
+        val bundle = data.quoteBundle
         if (bundle.frequentlyAskedQuestions.isNotEmpty() && bundle.appConfiguration.showFAQ) {
             add(
                 OfferModel.FAQ(
@@ -145,7 +146,7 @@ object OfferItemsBuilder {
                 add(OfferModel.AutomaticSwitchCard)
             }
         }
-        add(OfferModel.Footer(GDPR_LINK))
+        add(OfferModel.Footer(data.signMethodForQuotes, GDPR_LINK))
     }
 
     fun createPerilItems(data: List<OfferQuery.Quote>) = if (data.size == 1) {
