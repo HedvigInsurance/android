@@ -55,8 +55,8 @@ fun OfferQuery.Inception1.toChangeDateBottomSheetData() = ChangeDateBottomSheetD
 
 fun OfferQuery.Inception1.getStartDate(): OfferStartDate {
     return when {
-        hasNoDate() -> OfferStartDate.AtDate(LocalDate.now())
         isSwitcher() -> OfferStartDate.WhenCurrentPlanExpires
+        hasNoDate() -> OfferStartDate.AtDate(LocalDate.now())
         asConcurrentInception != null -> OfferStartDate.AtDate(asConcurrentInception?.startDate ?: LocalDate.now())
         asIndependentInceptions != null -> {
             val inception = asIndependentInceptions?.inceptions?.firstOrNull()
@@ -64,21 +64,21 @@ fun OfferQuery.Inception1.getStartDate(): OfferStartDate {
             if (allStartDatesEqual == true) {
                 OfferStartDate.AtDate(inception?.startDate ?: LocalDate.now())
             } else {
-                OfferStartDate.None
+                OfferStartDate.Multiple
             }
         }
         else -> throw IllegalArgumentException("Could not parse inception")
     }
 }
 
-fun OfferQuery.Inception1.hasNoDate(): Boolean {
+private fun OfferQuery.Inception1.hasNoDate(): Boolean {
     return (asConcurrentInception != null && asConcurrentInception?.startDate == null) ||
         (asIndependentInceptions != null && asIndependentInceptions?.inceptions?.all { it.startDate == null } == true)
 }
 
-fun OfferQuery.Inception1.isSwitcher(): Boolean {
-    return (asConcurrentInception?.currentInsurer != null) ||
-        (asIndependentInceptions?.inceptions?.any { it.currentInsurer == null } == true)
+private fun OfferQuery.Inception1.isSwitcher(): Boolean {
+    return (asIndependentInceptions?.inceptions?.all { it.currentInsurer?.fragments?.currentInsurerFragment?.switchable == true } == true) ||
+        (asConcurrentInception?.currentInsurer?.fragments?.currentInsurerFragment?.switchable == true)
 }
 
 fun OfferQuery.Inception1.getStartDateLabel(
@@ -86,14 +86,11 @@ fun OfferQuery.Inception1.getStartDateLabel(
 ): Int {
     return when (startDateTerminology) {
         QuoteBundleAppConfigurationStartDateTerminology.START_DATE -> {
-            if (asIndependentInceptions?.inceptions?.size == 1) {
-                R.string.OFFER_START_DATE
-            } else if (asIndependentInceptions != null) {
-                R.string.OFFER_START_DATE_PLURAL
-            } else if (asConcurrentInception != null) {
-                R.string.OFFER_START_DATE
-            } else {
-                R.string.OFFER_START_DATE
+            when {
+                asIndependentInceptions?.inceptions?.size == 1 -> R.string.OFFER_START_DATE
+                asIndependentInceptions != null -> R.string.OFFER_START_DATE_PLURAL
+                asConcurrentInception != null -> R.string.OFFER_START_DATE
+                else -> R.string.OFFER_START_DATE
             }
         }
         QuoteBundleAppConfigurationStartDateTerminology.ACCESS_DATE -> R.string.OFFER_ACCESS_DATE

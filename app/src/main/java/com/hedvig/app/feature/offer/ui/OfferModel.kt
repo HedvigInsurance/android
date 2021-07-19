@@ -70,7 +70,7 @@ sealed class OfferModel {
 
 sealed class OfferStartDate {
     object WhenCurrentPlanExpires : OfferStartDate()
-    object None : OfferStartDate()
+    object Multiple : OfferStartDate()
     data class AtDate(val date: LocalDate) : OfferStartDate()
 }
 
@@ -80,6 +80,6 @@ fun OfferStartDate.getString(context: Context): String? = when (this) {
     } else {
         date.format(ISO_8601_DATE)
     }
-    OfferStartDate.WhenCurrentPlanExpires -> context.getString(R.string.ACTIVATE_INSURANCE_END_BTN)
-    OfferStartDate.None -> null
+    OfferStartDate.Multiple -> context.getString(R.string.OFFER_START_DATE_MULTIPLE)
+    OfferStartDate.WhenCurrentPlanExpires -> context.getString(R.string.START_DATE_EXPIRES)
 }
