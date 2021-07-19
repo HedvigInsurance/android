@@ -24,6 +24,20 @@
         app:layout_constraintTop_toBottomOf="@id/messages"
         app:layout_constraintWidth_max="@dimen/embark_chat_bubble_max_width" />
 
+    <Button
+        android:id="@+id/singleActionButton"
+        style="?materialButtonContainedLargeStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/base_margin_double"
+        android:layout_marginEnd="@dimen/base_margin_double"
+        android:layout_marginBottom="@dimen/base_margin_double"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Continue to offer" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/actions"
         android:layout_width="0dp"
@@ -33,6 +47,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"
+        tools:visibility="visible"
         app:spanCount="2"
         tools:itemCount="2"
         tools:listitem="@layout/embark_select_action_item" />
