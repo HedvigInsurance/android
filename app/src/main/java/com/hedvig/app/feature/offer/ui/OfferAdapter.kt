@@ -231,12 +231,10 @@ class OfferAdapter(
                 if (data !is OfferModel.Footer) {
                     return invalid(data)
                 }
-                binding.chatButton.setHapticClickListener {
-                    it.context.startActivity(ChatActivity.newInstance(it.context, true))
-                }
                 val checkoutString = data.signMethod
                     .checkoutTextRes()
                     ?.let(itemView.context::getString)
+                    ?: itemView.context.getString(R.string.OFFER_SIGN_BUTTON)
 
                 val link = itemView.context.getString(
                     R.string.OFFER_FOOTER_GDPR_INFO,

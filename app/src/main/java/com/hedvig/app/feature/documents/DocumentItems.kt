@@ -28,7 +28,7 @@ sealed class DocumentItems {
         }
 
         fun getTitle(context: Context) = title ?: titleRes?.let(context::getString)
-        fun getSubTitle(context: Context) = title ?: titleRes?.let(context::getString)
+        fun getSubTitle(context: Context) = subtitle ?: subTitleRes?.let(context::getString)
 
         companion object {
             fun from(insuranceTerm: OfferQuery.InsuranceTerm) = Document(
