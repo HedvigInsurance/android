@@ -34,7 +34,7 @@ import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.service.LoginStatus
 import com.hedvig.app.util.extensions.insetSystemBottomWithMargin
-import com.hedvig.app.util.extensions.insetSystemTopWithMargin
+import com.hedvig.app.util.extensions.insetSystemTopWithPadding
 import com.hedvig.app.util.extensions.showErrorDialog
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.view.hide
@@ -64,7 +64,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
         binding.apply {
             offerRoot.setEdgeToEdgeSystemUiFlags(true)
-            offerToolbar.insetSystemTopWithMargin()
+            offerToolbar.insetSystemTopWithPadding()
             signButton.insetSystemBottomWithMargin()
 
             appbar.background.alpha = 0
@@ -73,7 +73,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     scrollY += dy
                     val percentage = scrollY.toFloat() / offerToolbar.height
-                    appbar.background.alpha = (percentage * 40).toInt()
+                    appbar.background.alpha = (percentage * 40).toInt().coerceAtMost(255)
 
                     if (percentage >= 9) {
                         appbar.elevation = 5f
