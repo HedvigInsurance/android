@@ -35,7 +35,6 @@ import com.hedvig.app.feature.embark.passages.textaction.TextActionFragment
 import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.updatePadding
@@ -74,12 +73,16 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 }
             }
 
-            setupToolbarMenu(progressToolbar)
+
             progressToolbar.toolbar.title = storyTitle
 
             model.data.observe(this@EmbarkActivity) { embarkData ->
                 loadingSpinnerLayout.loadingSpinner.remove()
-                setupToolbarMenu(progressToolbar)
+                setupToolbarMenu(
+                    progressToolbar,
+                    embarkData.hasTooltips,
+                    embarkData.isLoggedIn
+                )
                 progressToolbar.setProgress(embarkData.progress)
 
                 val passage = embarkData.passage
@@ -126,20 +129,12 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
     }
 
     private fun handleMenuItem(menuItem: MenuItem) = when (menuItem.itemId) {
-        R.id.app_settings -> {
-            startActivity(SettingsActivity.newInstance(this@EmbarkActivity))
-            true
-        }
-        R.id.app_info -> {
-            startActivity(MoreOptionsActivity.newInstance(this@EmbarkActivity))
-            true
-        }
         R.id.login -> {
             marketManager.market?.openAuth(this, supportFragmentManager)
             true
         }
-        R.id.restart -> {
-            showRestartDialog()
+        R.id.exit -> {
+            showExitDialog()
             true
         }
         R.id.tooltip -> {
@@ -153,23 +148,25 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         else -> false
     }
 
-    private fun showRestartDialog() {
+    private fun showExitDialog() {
         MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.settings_alert_restart_onboarding_title)
-            .setMessage(R.string.settings_alert_restart_onboarding_description)
-            .setPositiveButton(R.string.ALERT_OK) { _, _ -> model.fetchStory(storyName) }
-            .setNegativeButton(R.string.ALERT_CANCEL) { dialog, _ -> dialog.dismiss() }
+            .setMessage(R.string.EMBARK_EXIT_DIALOG_MESSAGE)
+            .setPositiveButton(R.string.EMBARK_EXIT_DIALOG_POSITIVE_BUTTON) { _, _ -> finish() }
+            .setNegativeButton(R.string.EMBARK_EXIT_DIALOG_NEGATIVE_BUTTON) { dialog, _ -> dialog.dismiss() }
             .show()
     }
 
-    private fun setupToolbarMenu(progressToolbar: MaterialProgressToolbar) {
+    private fun setupToolbarMenu(
+        progressToolbar: MaterialProgressToolbar,
+        hasToolTips: Boolean,
+        isLoggedIn: Boolean
+    ) {
         invalidateOptionsMenu()
-        progressToolbar.toolbar.menu.clear()
-
-        if (model.data.value?.passage?.tooltips?.isNotEmpty() == true) {
-            progressToolbar.toolbar.inflateMenu(R.menu.embark_tooltip_menu)
-        } else {
-            progressToolbar.toolbar.inflateMenu(R.menu.embark_menu)
+        with(progressToolbar.toolbar) {
+            menu.clear()
+            inflateMenu(R.menu.embark_menu)
+            menu.findItem(R.id.tooltip).isVisible = hasToolTips
+            menu.findItem(R.id.login).isVisible = !isLoggedIn
         }
     }
 
