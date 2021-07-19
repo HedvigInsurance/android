@@ -43,7 +43,9 @@ class MultiActionAdapter(
 
 abstract class MultiActionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
-class ComponentViewHolder(parent: ViewGroup) : MultiActionViewHolder(parent.inflate(R.layout.view_multi_action_component)) {
+class ComponentViewHolder(
+    parent: ViewGroup
+) : MultiActionViewHolder(parent.inflate(R.layout.view_multi_action_component)) {
 
     private val binding by viewBinding(ViewMultiActionComponentBinding::bind)
 

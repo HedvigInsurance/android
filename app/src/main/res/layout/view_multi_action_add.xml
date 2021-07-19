@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:foreground="?selectableItemBackground"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    app:cardCornerRadius="@dimen/base_margin"
-    android:layout_margin="@dimen/base_margin">
+    android:layout_margin="@dimen/base_margin"
+    android:foreground="?selectableItemBackground"
+    android:theme="@style/ThemeOverlay.Hedvig.Card.Outlined.Unfilled">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:minHeight="88dp"
-        android:minWidth="160dp">
+        android:minWidth="160dp"
+        android:minHeight="88dp">
 
         <ImageView
             android:id="@+id/addButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/base_margin_triple"
+            android:layout_marginBottom="@dimen/base_margin"
             android:contentDescription="@null"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed"
             app:srcCompat="@drawable/ic_add_circle"
             app:tint="?colorPrimary" />
 
@@ -31,7 +31,6 @@
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/base_margin_double"
             android:gravity="center_vertical"
             android:text="@string/embark.multiaction.add_building_button"
             android:textAppearance="?textAppearanceBody2"
@@ -44,4 +43,4 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>
