@@ -18,7 +18,7 @@ class ChangeDateView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
-    private var binding: ChangeDateBinding = ChangeDateBinding.inflate(LayoutInflater.from(context), this, true)
+    private val binding: ChangeDateBinding = ChangeDateBinding.inflate(LayoutInflater.from(context), this, true)
     private val dateFormat = DateTimeFormatter.ofPattern("d/M/yyyy")
 
     fun bind(

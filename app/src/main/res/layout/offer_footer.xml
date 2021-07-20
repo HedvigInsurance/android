@@ -29,9 +29,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_sextuple"
-        android:clickable="true"
-        android:focusable="true"
-        android:linksClickable="true"
         android:textAlignment="center"
         android:textAppearance="?textAppearanceCaption"
         tools:text="@string/OFFER_FOOTER_GDPR_INFO" />

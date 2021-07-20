@@ -110,7 +110,7 @@
                     android:paddingBottom="@dimen/base_margin"
                     android:text="@string/CHARITY_INFO_BUTTON_LABEL"
                     app:icon="@drawable/ic_info"
-                    app:iconTint="?textColorLink" />
+                    app:iconTint="?android:textColorLink" />
 
             </LinearLayout>
 
@@ -169,7 +169,7 @@
                     android:paddingBottom="@dimen/base_margin"
                     android:text="@string/CHARITY_INFO_BUTTON_LABEL"
                     app:icon="@drawable/ic_info"
-                    app:iconTint="?textColorLink" />
+                    app:iconTint="?android:textColorLink" />
 
             </LinearLayout>
 
