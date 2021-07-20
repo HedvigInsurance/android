@@ -324,7 +324,8 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                             "Could not match $it to a component"
                         )
                     }
-                }
+                },
+                submitLabel = multiAction.multiActionData.link.fragments.embarkLinkFragment.label,
             )
             return MultiActionFragment.newInstance(params)
         }

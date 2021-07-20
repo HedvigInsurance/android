@@ -56,12 +56,13 @@ class MultiActionFragment : Fragment(R.layout.fragment_embark_multi_action) {
 
         val adapter = MultiActionAdapter(
             multiActionViewModel::onComponentClicked,
-            multiActionViewModel::onComponentRemoved
+            multiActionViewModel::onComponentRemoved,
+            multiActionViewModel::createNewComponent,
         )
         binding.apply {
             messages.adapter = MessageAdapter(multiActionParams.messages)
             componentContainer.adapter = adapter
-            continueButton.text = multiActionParams.addLabel
+            continueButton.text = multiActionParams.submitLabel
 
             messages.doOnNextLayout {
                 startPostponedEnterTransition()

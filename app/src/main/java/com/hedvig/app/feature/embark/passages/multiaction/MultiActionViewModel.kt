@@ -17,7 +17,7 @@ class MultiActionViewModel(
     private val _addedComponents = MutableStateFlow<List<Component>>(listOf())
     val components = _addedComponents.map { components ->
         if (components.size < multiActionParams.maxAmount) {
-            val addButton = AddButton(::createNewComponent)
+            val addButton = AddButton(multiActionParams.addLabel)
             listOf(addButton) + components
         } else {
             components
@@ -40,11 +40,11 @@ class MultiActionViewModel(
 
     fun onComponentClicked(id: Long) {
         _addedComponents.value
-            ?.find { it.id == id }
+            .find { it.id == id }
             ?.let(::createNewComponent)
     }
 
-    private fun createNewComponent(state: Component? = null) {
+    fun createNewComponent(state: Component? = null) {
         _newComponent.tryEmit(state)
     }
 
