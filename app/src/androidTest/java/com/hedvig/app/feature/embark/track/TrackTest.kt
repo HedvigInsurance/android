@@ -51,9 +51,7 @@ class TrackTest : TestCase() {
                 flakySafely { verify(exactly = 1) { tracker.track("Enter Passage") } }
             }
             step("Navigate to next passage, populating store with data") {
-                selectActions {
-                    childAt<EmbarkScreen.SelectAction>(0) { click() }
-                }
+                singleSelectAction { click() }
             }
             step("Verify that next passage is showing") {
                 messages {
@@ -77,9 +75,7 @@ class TrackTest : TestCase() {
                 }
             }
             step("Navigate to next passage") {
-                selectActions {
-                    childAt<EmbarkScreen.SelectAction>(0) { click() }
-                }
+                singleSelectAction { click() }
             }
             step("Verify that next passage is showing") {
                 messages {
