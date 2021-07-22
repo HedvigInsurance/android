@@ -1,11 +1,11 @@
 package com.hedvig.app.feature.embark.passages.multiaction
 
 import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 sealed class MultiActionItem {
     data class AddButton(
-        val onClick: () -> Unit
+        val label: String
     ) : MultiActionItem()
 
     @Parcelize
