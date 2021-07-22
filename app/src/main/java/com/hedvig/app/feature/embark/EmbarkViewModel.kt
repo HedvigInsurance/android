@@ -12,6 +12,7 @@ import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeBinary
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeMultiple
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeUnary
+import com.hedvig.android.owldroid.type.EmbarkExternalRedirectLocation
 import com.hedvig.app.feature.embark.util.VariableExtractor
 import com.hedvig.app.service.LoginStatus
 import com.hedvig.app.service.LoginStatusService
@@ -21,6 +22,9 @@ import com.hedvig.app.util.plus
 import com.hedvig.app.util.safeLet
 import com.hedvig.app.util.toStringArray
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
@@ -34,9 +38,20 @@ abstract class EmbarkViewModel(
 ) : ViewModel() {
     private val _data = MutableLiveData<EmbarkModel>()
     val data: LiveData<EmbarkModel> = _data
-    protected val _errorMessage = MutableLiveData<String?>()
 
-    val errorMessage: LiveData<String?> = _errorMessage
+    protected val _events = MutableSharedFlow<Event>(
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
+    )
+    val events: SharedFlow<Event> = _events
+
+    sealed class Event {
+        data class Offer(val ids: List<String>) : Event()
+        data class Error(val message: String? = null) : Event()
+        object Close : Event()
+        object Chat : Event()
+    }
+
     abstract fun fetchStory(name: String)
 
     abstract suspend fun callGraphQL(query: String, variables: JSONObject? = null): JSONObject?
@@ -99,6 +114,35 @@ abstract class EmbarkViewModel(
                             navigateToPassage(to)
                             return
                         }
+                    }
+                }
+            }
+            nextPassage?.offerRedirect?.data?.keys?.takeIf { it.isNotEmpty() }?.let { keys ->
+                val ids = getListFromStore(keys)
+                _events.tryEmit(Event.Offer(ids))
+                return
+            }
+            nextPassage?.externalRedirect?.data?.location?.let { location ->
+                when (location) {
+                    EmbarkExternalRedirectLocation.OFFER -> {
+                        val id = getFromStore("quoteId")
+                        if (id == null) {
+                            _events.tryEmit(Event.Error())
+                            return
+                        }
+                        _events.tryEmit(Event.Offer(listOf(id)))
+                        return
+                    }
+                    EmbarkExternalRedirectLocation.CLOSE -> {
+                        _events.tryEmit(Event.Close)
+                        return
+                    }
+                    EmbarkExternalRedirectLocation.CHAT -> {
+                        _events.tryEmit(Event.Chat)
+                        return
+                    }
+                    else -> {
+                        // Do nothing
                     }
                 }
             }
@@ -612,13 +656,18 @@ class EmbarkViewModelImpl(
                 embarkRepository.embarkStory(name)
             }
             if (result.isFailure) {
-                _errorMessage.value = result.getOrNull()?.errors?.toString() ?: result.exceptionOrNull()?.message
-            } else {
-                val loginStatus = loginStatusService.getLoginStatus()
-                result.getOrNull()?.data?.let { d ->
-                    storyData = d
-                    setInitialState(loginStatus)
-                }
+                _events.tryEmit(
+                    Event.Error(
+                        result.getOrNull()?.errors?.toString()
+                            ?: result.exceptionOrNull()?.message
+                    )
+                )
+                return@launch
+            }
+            val loginStatus = loginStatusService.getLoginStatus()
+            result.getOrNull()?.data?.let { d ->
+                storyData = d
+                setInitialState(loginStatus)
             }
         }
     }
