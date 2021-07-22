@@ -44,7 +44,11 @@ class CheckoutActivity : BaseActivity(R.layout.activity_checkout) {
         super.onCreate(savedInstanceState)
         binding.apply {
             toolbar.setNavigationOnClickListener { onBackPressed() }
-            val link = getString(R.string.OFFER_FOOTER_GDPR_INFO, OfferItemsBuilder.GDPR_LINK)
+            val link = getString(
+                R.string.OFFER_FOOTER_GDPR_INFO,
+                getString(R.string.CHECKOUT_BUTTON),
+                OfferItemsBuilder.GDPR_LINK
+            )
             text.setMarkdownText(link)
 
             emailEditText.addTextChangedListener {
