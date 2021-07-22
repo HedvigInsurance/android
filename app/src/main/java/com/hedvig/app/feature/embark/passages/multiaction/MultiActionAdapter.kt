@@ -8,8 +8,10 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.ViewMultiActionAddBinding
 import com.hedvig.app.databinding.ViewMultiActionComponentBinding
 import com.hedvig.app.util.GenericDiffUtilItemCallback
+import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.invalid
+import com.hedvig.app.util.extensions.view.increaseTouchableArea
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 
@@ -62,6 +64,7 @@ class MultiActionAdapter(
 
                 binding.subtitle.text = inputLabels + switchLabels
 
+                binding.removeButton.increaseTouchableArea(32.dp)
                 binding.removeButton.setOnClickListener {
                     onComponentRemove(item.id)
                 }
