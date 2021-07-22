@@ -3,11 +3,13 @@ package com.hedvig.app.feature.offer.ui.checkout
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.EditMailAndSSNMutation
 import com.hedvig.android.owldroid.graphql.SignQuotesMutation
+import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
 
 class SignQuotesUseCase(
-    private val apolloClient: ApolloClient
+    private val apolloClient: ApolloClient,
+    private val tracker: OfferTracker,
 ) {
 
     sealed class SignQuoteResult {
@@ -26,7 +28,11 @@ class SignQuotesUseCase(
         }
 
         return if (results.all { it is QueryResult.Success }) {
-            signQuotes(quoteIds)
+            val result = signQuotes(quoteIds)
+            if (result == SignQuoteResult.Success) {
+                tracker.signQuotes(quoteIds)
+            }
+            result
         } else {
             results.firstOrNull { it is QueryResult.Error }
                 ?.let { SignQuoteResult.Error((it as? QueryResult.Error)?.message) }

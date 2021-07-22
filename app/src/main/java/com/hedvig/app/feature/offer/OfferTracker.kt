@@ -6,6 +6,10 @@ import com.mixpanel.android.mpmetrics.MixpanelAPI
 class OfferTracker(
     private val mixpanel: MixpanelAPI
 ) {
+    fun signQuotes(quoteIds: List<String>) = mixpanel.track(
+        "QUOTES_SIGNED",
+        jsonObjectOf("quoteIds" to quoteIds),
+    )
 
     fun openChat() = mixpanel.track("OFFER_OPEN_CHAT")
     fun openOfferLink(displayName: String) = mixpanel.track(
@@ -19,7 +23,6 @@ class OfferTracker(
     fun terms() = mixpanel.track("OFFER_TERMS")
 
     fun chooseStartDate() = mixpanel.track("START_DATE_BTN")
-    fun activateToday() = mixpanel.track("ACTIVATE_TODAY_BTN")
     fun activateOnInsuranceEnd() = mixpanel.track("ACTIVATE_INSURANCE_END_BTN")
     fun changeDateContinue() = mixpanel.track("ALERT_CONTINUE")
     fun settings() = mixpanel.track("SETTINGS_ACCESSIBILITY_HINT")

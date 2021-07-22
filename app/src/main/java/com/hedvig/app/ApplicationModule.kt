@@ -343,7 +343,7 @@ val marketingModule = module {
 
 val offerModule = module {
     viewModel<OfferViewModel> { (ids: List<String>) ->
-        OfferViewModelImpl(ids, get(), get(), get(), get(), get(), get())
+        OfferViewModelImpl(ids, get(), get(), get(), get(), get(), get(), get())
     }
 }
 
@@ -507,8 +507,8 @@ val useCaseModule = module {
     single { GetQuotesUseCase(get()) }
     single { GetQuoteUseCase(get()) }
     single { EditStartDateUseCase(get(), get()) }
-    single { SignQuotesUseCase(get()) }
-    single { ApproveQuotesUseCase(get(), get()) }
+    single { SignQuotesUseCase(get(), get()) }
+    single { ApproveQuotesUseCase(get(), get(), get()) }
     single { RefreshQuotesUseCase(get()) }
 }
 

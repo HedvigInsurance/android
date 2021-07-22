@@ -10,6 +10,7 @@ import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationTitle
 import com.hedvig.android.owldroid.type.SignMethod
+import com.hedvig.android.owldroid.type.SignState
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.offer.quotedetail.buildDocuments
@@ -25,7 +26,6 @@ import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.service.LoginStatus
 import com.hedvig.app.service.LoginStatusService
 import e
-import java.time.LocalDate
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,6 +35,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 abstract class OfferViewModel : ViewModel() {
     protected val _viewState = MutableStateFlow(ViewState(isLoading = true))
@@ -111,6 +112,7 @@ class OfferViewModelImpl(
     private val loginStatusService: LoginStatusService,
     private val approveQuotesUseCase: ApproveQuotesUseCase,
     private val refreshQuotesUseCase: RefreshQuotesUseCase,
+    private val tracker: OfferTracker,
 ) : OfferViewModel() {
 
     private lateinit var quoteIds: List<String>
@@ -219,8 +221,22 @@ class OfferViewModelImpl(
 
     override fun startSign() {
         viewModelScope.launch {
+            var hasCompletedSign = false
             offerRepository.subscribeSignStatus()
                 .onEach { response ->
+                    if (
+                        response
+                            .data
+                            ?.signStatus
+                            ?.status
+                            ?.fragments
+                            ?.signStatusFragment
+                            ?.signState == SignState.COMPLETED &&
+                        !hasCompletedSign
+                    ) {
+                        hasCompletedSign = true
+                        tracker.signQuotes(quoteIds)
+                    }
                     response.data?.signStatus?.status?.fragments?.signStatusFragment?.let {
                         signStatus.postValue(
                             it
