@@ -10,6 +10,5 @@ object ChangeDateView : KScreen<ChangeDateView>() {
 
     val switches = KCheckBox {
         withId(R.id.auto_set_date_switch)
-        isDisplayed()
     }
 }
