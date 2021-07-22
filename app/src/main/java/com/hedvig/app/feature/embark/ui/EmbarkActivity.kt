@@ -16,6 +16,7 @@ import com.hedvig.android.owldroid.type.EmbarkExternalRedirectLocation
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityEmbarkBinding
+import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.embark.EmbarkModel
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.NavigationDirection
@@ -73,7 +74,6 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 }
             }
 
-
             progressToolbar.toolbar.title = storyTitle
 
             model.data.observe(this@EmbarkActivity) { embarkData ->
@@ -112,19 +112,29 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         if (offerKeys != null && offerKeys.isNotEmpty()) {
             val offerIds = model.getListFromStore(offerKeys)
             startActivity(OfferActivity.newInstance(this, offerIds))
-        } else if (embarkData.passage?.name == "Offer") {
+            return
+        }
+        if (embarkData.passage?.name == "Offer") {
             showWebOffer(
                 listOf(
                     model.getFromStore("contractBundleId")
                         ?: throw java.lang.IllegalArgumentException("No contractBundleId found")
                 )
             )
-        } else if (embarkData.passage?.externalRedirect?.data?.location == EmbarkExternalRedirectLocation.OFFER) {
-            val key = model.getFromStore("quoteId")
-                ?: throw IllegalArgumentException("Could not find value with key quoteId from store")
-            showWebOffer(listOf(key))
-        } else {
-            transitionToNextPassage(embarkData.navigationDirection, passage)
+        }
+        when (embarkData.passage?.externalRedirect?.data?.location) {
+            EmbarkExternalRedirectLocation.OFFER -> {
+                val key = model.getFromStore("quoteId")
+                    ?: throw IllegalArgumentException("Could not find value with key quoteId from store")
+                showWebOffer(listOf(key))
+            }
+            EmbarkExternalRedirectLocation.CLOSE -> {
+                finish()
+            }
+            EmbarkExternalRedirectLocation.CHAT -> {
+                startActivity(ChatActivity.newInstance(this))
+            }
+            else -> transitionToNextPassage(embarkData.navigationDirection, passage)
         }
     }
 
