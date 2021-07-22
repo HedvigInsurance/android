@@ -8,16 +8,15 @@
     android:orientation="vertical"
     android:paddingTop="@dimen/base_margin"
     android:paddingBottom="@dimen/base_margin"
-    tools:context=".feature.offer.ui.changestartdate.ChangeDateBottomSheet">
+    tools:context=".feature.offer.ui.changestartdate.ChangeDateView">
 
     <TextView
-        android:layout_marginTop="@dimen/base_margin"
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin"
         android:textAppearance="?textAppearanceHeadline6"
-        tools:text="Travel Insurance"
-        />
+        tools:text="Travel Insurance" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/date_pick_layout"
@@ -55,9 +54,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_half"
-        android:text="@string/OFFER_PLAN_EXIRES_TEXT"
         android:textColor="@color/textColorPrimary"
         app:switchPadding="@dimen/base_margin_triple"
-        app:switchTextAppearance="?textAppearanceBody2" />
+        app:switchTextAppearance="?textAppearanceBody2"
+        tools:text="@string/OFFER_PLAN_EXIRES_TEXT" />
 
 </LinearLayout>
