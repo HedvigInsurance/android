@@ -34,6 +34,7 @@ class MultipleQuotesTest : TestCase() {
 
         OfferScreen {
             scroll {
+                scrollToEnd() // Ensure that the view is not laid out behind system UI and hence not interactable
                 childAt<OfferScreen.FAQ>(6) {
                     title { isVisible() }
                     faqRow(0) {
@@ -66,6 +67,7 @@ class MultipleQuotesTest : TestCase() {
 
         OfferScreen {
             scroll {
+                scrollToEnd() // Ensure that the view is not laid out behind system UI and hence not interactable
                 childAt<OfferScreen.QuoteDetail>(4) {
                     text { hasText(homeContentsDisplayName) }
                     click()
