@@ -66,6 +66,6 @@ abstract class RedeemCodeBottomSheet : BottomSheetDialogFragment() {
 
     private fun wrongPromotionCode() {
         binding.textField.errorIconDrawable = requireContext().compatDrawable(R.drawable.ic_warning_triangle)
-        binding.textField.error = getString(R.string.REFERRAL_ERROR_MISSINGCODE_BODY)
+        binding.textField.error = getString(R.string.offer_discount_error_alert_title)
     }
 }
