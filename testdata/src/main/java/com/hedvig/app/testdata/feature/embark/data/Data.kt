@@ -1637,3 +1637,26 @@ val STORY_WITH_GRAPHQL_MUTATION_AND_OFFER_REDIRECT = EmbarkStoryDataBuilder(
             .build()
     )
 ).build()
+
+val STORY_WITH_CLOSE_AND_CHAT = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER
+            .copy(
+                action = SelectActionBuilder(
+                    options = listOf(
+                        SelectOptionBuilder(link = STANDARD_FIRST_LINK.copy(label = "Chat")).build(),
+                        SelectOptionBuilder(link = LINK_TO_THIRD_PASSAGE.copy(label = "Close")).build(),
+                    )
+                ).build()
+            )
+            .build(),
+        STANDARD_SECOND_PASSAGE_BUILDER
+            .copy(
+                externalRedirect = EmbarkExternalRedirectLocation.CHAT
+            )
+            .build(),
+        STANDARD_THIRD_PASSAGE_BUILDER
+            .copy(externalRedirect = EmbarkExternalRedirectLocation.CLOSE)
+            .build()
+    )
+).build()
