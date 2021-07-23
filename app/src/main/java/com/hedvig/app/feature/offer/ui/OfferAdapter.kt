@@ -241,7 +241,7 @@ class OfferAdapter(
                 val link = itemView.context.getString(
                     R.string.OFFER_FOOTER_GDPR_INFO,
                     checkoutString,
-                    data.url
+                    itemView.context.getString(R.string.PRIVACY_POLICY_URL)
                 )
                 binding.text.setMarkdownText(link)
             }
