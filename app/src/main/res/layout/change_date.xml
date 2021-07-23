@@ -57,6 +57,6 @@
         android:textColor="@color/textColorPrimary"
         app:switchPadding="@dimen/base_margin_triple"
         app:switchTextAppearance="?textAppearanceBody2"
-        tools:text="@string/OFFER_PLAN_EXIRES_TEXT" />
+        android:text="@string/OFFER_PLAN_EXIRES_TEXT" />
 
 </LinearLayout>

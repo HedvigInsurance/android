@@ -21,6 +21,8 @@ class EmbarkScreen : Screen<EmbarkScreen>() {
 
     val selectActions = KRecyclerView({ withId(R.id.actions) }, { itemType(::SelectAction) })
 
+    val singleSelectAction = KButton { withId(R.id.singleActionButton) }
+
     val textActionSingleInput = KEditText { withId(R.id.input) }
 
     val textActionSubmit = KButton { withId(R.id.textActionSubmit) }

@@ -1,5 +1,6 @@
 package com.hedvig.app.testdata.feature.offer
 
+import com.hedvig.android.owldroid.fragment.CurrentInsurerFragment
 import com.hedvig.android.owldroid.fragment.IncentiveFragment
 import com.hedvig.android.owldroid.fragment.InsurableLimitsFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
@@ -97,7 +98,8 @@ val OFFER_DATA_SWEDISH_HOUSE = OfferDataBuilder(
                 )
             )
         ).build()
-    )
+    ),
+    inceptions = ConcurrentInceptionBuilder(currentInsurer = null).build()
 ).build()
 
 val OFFER_DATA_SWEDISH_HOUSE_WITH_DISCOUNT = OfferDataBuilder(
@@ -197,7 +199,7 @@ val BUNDLE_WITH_CONCURRENT_INCEPTION_DATES_SPECIFIC_DATE = OfferDataBuilder(
         ).build()
     ),
     redeemedCampaigns = listOf(),
-    inceptions = ConcurrentInceptionBuilder(startDate = CONCURRENT_INCEPTION_START_DATE).build(),
+    inceptions = ConcurrentInceptionBuilder(startDate = CONCURRENT_INCEPTION_START_DATE, currentInsurer = null).build(),
 ).build()
 
 val BUNDLE_WITH_CONCURRENT_INCEPTION_DATES = OfferDataBuilder(
@@ -246,7 +248,7 @@ val BUNDLE_WITH_CONCURRENT_INCEPTION_DATES = OfferDataBuilder(
         ).build()
     ),
     redeemedCampaigns = listOf(),
-    inceptions = ConcurrentInceptionBuilder().build(),
+    inceptions = ConcurrentInceptionBuilder(currentInsurer = null).build(),
     signMethod = SignMethod.APPROVE_ONLY
 ).build()
 
@@ -278,7 +280,7 @@ val BUNDLE_WITH_INDEPENDENT_INCEPTION_DATES = OfferDataBuilder(
             )
         )
     ),
-    inceptions = IndependentInceptionBuilder().build(),
+    inceptions = IndependentInceptionBuilder(withCurrentInsurer = false).build(),
 ).build()
 
 val BUNDLE_WITH_START_DATE_FROM_PREVIOUS_INSURER = OfferDataBuilder(
@@ -339,7 +341,31 @@ val BUNDLE_WITH_START_DATE_FROM_PREVIOUS_INSURER = OfferDataBuilder(
         ).build()
     ),
     redeemedCampaigns = listOf(),
-    inceptions = IndependentInceptionBuilder(startDateFromPreviousInsurer = true).build()
+    inceptions = OfferQuery.Inception1(
+        asIndependentInceptions = OfferQuery.AsIndependentInceptions(
+            inceptions = listOf(
+                OfferQuery.Inception(
+                    correspondingQuote = OfferQuery.CorrespondingQuote1(
+                        asCompleteQuote1 = OfferQuery.AsCompleteQuote1(
+                            displayName = "Test Insurance",
+                            id = "ea656f5f-40b2-4953-85d9-752b33e69e38"
+                        )
+                    ),
+                    startDate = null,
+                    currentInsurer = OfferQuery.CurrentInsurer2(
+                        fragments = OfferQuery.CurrentInsurer2.Fragments(
+                            CurrentInsurerFragment(
+                                id = "currentinsurerid",
+                                displayName = "Test current insurer",
+                                switchable = true
+                            )
+                        )
+                    )
+                ),
+            )
+        ),
+        asConcurrentInception = null
+    )
 ).build()
 
 val OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL = OfferDataBuilder(

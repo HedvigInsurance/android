@@ -35,7 +35,7 @@ class StartDateFromPreviousInsurerTest : TestCase() {
             scroll {
                 childAt<OfferScreen.HeaderItem>(0) {
                     startDate {
-                        hasText(R.string.ACTIVATE_INSURANCE_END_BTN)
+                        hasText(R.string.START_DATE_EXPIRES)
                     }
                 }
             }

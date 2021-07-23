@@ -5,7 +5,8 @@ import com.hedvig.android.owldroid.graphql.OfferQuery
 import java.time.LocalDate
 
 class IndependentInceptionBuilder(
-    val startDateFromPreviousInsurer: Boolean = false
+    val startDateFromPreviousInsurer: Boolean = false,
+    val withCurrentInsurer: Boolean = true
 ) {
     fun build() = OfferQuery.Inception1(
         asIndependentInceptions = OfferQuery.AsIndependentInceptions(
@@ -18,15 +19,17 @@ class IndependentInceptionBuilder(
                         )
                     ),
                     startDate = if (startDateFromPreviousInsurer) null else LocalDate.now(),
-                    currentInsurer = OfferQuery.CurrentInsurer2(
-                        fragments = OfferQuery.CurrentInsurer2.Fragments(
-                            CurrentInsurerFragment(
-                                id = "currentinsurerid",
-                                displayName = "Test current insurer",
-                                switchable = false
+                    currentInsurer = if (withCurrentInsurer) {
+                        OfferQuery.CurrentInsurer2(
+                            fragments = OfferQuery.CurrentInsurer2.Fragments(
+                                CurrentInsurerFragment(
+                                    id = "currentinsurerid",
+                                    displayName = "Test current insurer",
+                                    switchable = false
+                                )
                             )
                         )
-                    )
+                    } else null
                 ),
                 OfferQuery.Inception(
                     correspondingQuote = OfferQuery.CorrespondingQuote1(
@@ -36,15 +39,17 @@ class IndependentInceptionBuilder(
                         )
                     ),
                     startDate = if (startDateFromPreviousInsurer) null else LocalDate.now().plusDays(3),
-                    currentInsurer = OfferQuery.CurrentInsurer2(
-                        fragments = OfferQuery.CurrentInsurer2.Fragments(
-                            CurrentInsurerFragment(
-                                id = "currentinsurerid2",
-                                displayName = "Test current insurer 2",
-                                switchable = true
+                    currentInsurer = if (withCurrentInsurer) {
+                        OfferQuery.CurrentInsurer2(
+                            fragments = OfferQuery.CurrentInsurer2.Fragments(
+                                CurrentInsurerFragment(
+                                    id = "currentinsurerid2",
+                                    displayName = "Test current insurer 2",
+                                    switchable = true
+                                )
                             )
                         )
-                    )
+                    } else null
                 ),
                 OfferQuery.Inception(
                     correspondingQuote = OfferQuery.CorrespondingQuote1(
@@ -54,18 +59,19 @@ class IndependentInceptionBuilder(
                         )
                     ),
                     startDate = if (startDateFromPreviousInsurer) null else LocalDate.now().plusDays(5),
-                    currentInsurer = OfferQuery.CurrentInsurer2(
-                        fragments = OfferQuery.CurrentInsurer2.Fragments(
-                            CurrentInsurerFragment(
-                                id = "currentinsurerid3",
-                                displayName = "Test current insurer 3",
-                                switchable = false
+                    currentInsurer = if (withCurrentInsurer) {
+                        OfferQuery.CurrentInsurer2(
+                            fragments = OfferQuery.CurrentInsurer2.Fragments(
+                                CurrentInsurerFragment(
+                                    id = "currentinsurerid3",
+                                    displayName = "Test current insurer 3",
+                                    switchable = false
+                                )
                             )
                         )
-                    )
+                    } else null
                 )
             )
-
         ),
         asConcurrentInception = null,
     )

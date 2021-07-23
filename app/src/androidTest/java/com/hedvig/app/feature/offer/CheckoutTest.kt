@@ -34,17 +34,17 @@ class CheckoutTest : TestCase() {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldDisplayCostAndBundleName() {
+    fun shouldDisplayCostAndBundleName() = run {
         activityRule.launch(CheckoutActivity.newInstance(context(), CheckoutParameter(listOf("123"))))
 
         CheckoutScreen {
-            title.hasText(BUNDLE_NAME)
+            title { hasText(BUNDLE_NAME) }
             val netAmount = Money.of(BUNDLE_NET_COST.toBigDecimal(), "SEK").format(context(), market())
             val netString = context().getString(R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, netAmount)
-            cost.hasText(netString)
+            cost { hasText(netString) }
 
             val grossAmount = Money.of(BUNDLE_GROSS_COST.toBigDecimal(), "SEK").format(context(), market())
-            originalCost.hasText(grossAmount)
+            originalCost { hasText(grossAmount) }
         }
     }
 }

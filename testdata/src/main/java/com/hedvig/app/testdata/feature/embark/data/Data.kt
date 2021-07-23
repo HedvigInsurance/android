@@ -1341,20 +1341,22 @@ val STORY_WITH_NUMBER_ACTION_SET = EmbarkStoryDataBuilder(
                 action = NumberActionSetBuilder(
                     listOf(
                         NumberActionSetBuilder.NumberAction(
+                            key = "BAR",
                             unit = "other people",
                             placeholder = "1",
-                            label = "Co-insured",
+                            label = "",
                             maxValue = 75,
                             minValue = 1,
-                            title = "BAR",
+                            title = "Co-insured",
                         ),
                         NumberActionSetBuilder.NumberAction(
+                            key = "FOO",
                             unit = "sqm",
                             placeholder = "52",
-                            label = "House size",
+                            label = "",
                             maxValue = 75,
                             minValue = 1,
-                            title = "FOO",
+                            title = "House size",
                         )
                     ),
                     link = STANDARD_FIRST_LINK

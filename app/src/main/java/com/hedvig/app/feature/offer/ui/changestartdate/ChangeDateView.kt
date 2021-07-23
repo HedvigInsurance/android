@@ -28,7 +28,6 @@ class ChangeDateView @JvmOverloads constructor(
         datePickerListener: () -> Unit,
         switchListener: (Boolean) -> Unit
     ) {
-
         setDateText(startDate)
         binding.title.text = title
         binding.title.isVisible = title != null

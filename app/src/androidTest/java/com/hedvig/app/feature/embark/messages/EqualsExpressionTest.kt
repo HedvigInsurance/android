@@ -37,9 +37,7 @@ class EqualsExpressionTest : TestCase() {
         )
 
         Screen.onScreen<EmbarkScreen> {
-            selectActions {
-                firstChild<EmbarkScreen.SelectAction> { click() }
-            }
+            singleSelectAction { click() }
             messages {
                 hasSize(1)
                 firstChild<EmbarkScreen.MessageRow> {
