@@ -37,11 +37,7 @@ class TemplateValuesTest : TestCase() {
         )
 
         Screen.onScreen<EmbarkScreen> {
-            selectActions {
-                firstChild<EmbarkScreen.SelectAction> {
-                    click()
-                }
-            }
+            singleSelectAction { click() }
             messages {
                 firstChild<EmbarkScreen.MessageRow> {
                     text {

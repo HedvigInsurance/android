@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -49,6 +50,16 @@
                     <include
                         android:id="@+id/cardContainer"
                         layout="@layout/insurance_contract_card" />
+
+                    <TextView
+                        android:id="@+id/termination_info"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/base_margin_double"
+                        android:text="@string/INSURANCE_DETAILS_TERMINATION_INFO"
+                        android:textAppearance="?textAppearanceCaption"
+                        android:visibility="gone"
+                        tools:visibility="visible" />
 
                     <com.google.android.material.tabs.TabLayout
                         android:id="@+id/tabContainer"

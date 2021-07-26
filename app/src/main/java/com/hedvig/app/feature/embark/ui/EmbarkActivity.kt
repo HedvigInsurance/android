@@ -7,16 +7,17 @@ import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.transition.Transition
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
-import com.hedvig.android.owldroid.type.EmbarkExternalRedirectLocation
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityEmbarkBinding
-import com.hedvig.app.feature.embark.EmbarkModel
+import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.NavigationDirection
 import com.hedvig.app.feature.embark.passages.UpgradeAppFragment
@@ -33,14 +34,15 @@ import com.hedvig.app.feature.embark.passages.selectaction.SelectActionFragment
 import com.hedvig.app.feature.embark.passages.selectaction.SelectActionParameter
 import com.hedvig.app.feature.embark.passages.textaction.TextActionFragment
 import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
+import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.feature.settings.SettingsActivity
-import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.whenApiVersion
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -73,28 +75,51 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 }
             }
 
-            setupToolbarMenu(progressToolbar)
             progressToolbar.toolbar.title = storyTitle
 
             model.data.observe(this@EmbarkActivity) { embarkData ->
                 loadingSpinnerLayout.loadingSpinner.remove()
-                setupToolbarMenu(progressToolbar)
+                setupToolbarMenu(
+                    progressToolbar,
+                    embarkData.hasTooltips,
+                    embarkData.isLoggedIn
+                )
                 progressToolbar.setProgress(embarkData.progress)
 
                 val passage = embarkData.passage
                 actionBar?.title = passage?.name
 
-                showNextView(embarkData, passage)
+                transitionToNextPassage(embarkData.navigationDirection, passage)
             }
 
-            model.errorMessage.observe(this@EmbarkActivity) { message ->
-                AlertDialog.Builder(this@EmbarkActivity)
-                    .setTitle(R.string.error_dialog_title)
-                    .setMessage(message ?: getString(R.string.NETWORK_ERROR_ALERT_MESSAGE))
-                    .setPositiveButton(R.string.error_dialog_button) { _, _ -> this@EmbarkActivity.finish() }
-                    .create()
-                    .show()
-            }
+            model
+                .events
+                .flowWithLifecycle(lifecycle)
+                .onEach { event ->
+                    when (event) {
+                        EmbarkViewModel.Event.Close -> finish()
+                        EmbarkViewModel.Event.Chat -> startActivity(
+                            ChatActivity.newInstance(this@EmbarkActivity)
+                        )
+                        is EmbarkViewModel.Event.Offer -> startActivity(
+                            OfferActivity.newInstance(
+                                this@EmbarkActivity,
+                                event.ids,
+                            )
+                        )
+                        is EmbarkViewModel.Event.Error -> {
+                            AlertDialog.Builder(this@EmbarkActivity)
+                                .setTitle(R.string.error_dialog_title)
+                                .setMessage(event.message ?: getString(R.string.NETWORK_ERROR_ALERT_MESSAGE))
+                                .setPositiveButton(R.string.error_dialog_button) { _, _ ->
+                                    this@EmbarkActivity.finish()
+                                }
+                                .create()
+                                .show()
+                        }
+                    }
+                }
+                .launchIn(lifecycleScope)
 
             progressToolbar.toolbar.apply {
                 setOnMenuItemClickListener(::handleMenuItem)
@@ -103,46 +128,13 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         }
     }
 
-    private fun showNextView(embarkData: EmbarkModel, passage: EmbarkStoryQuery.Passage?) {
-        val offerKeys = embarkData.passage?.offerRedirect?.data?.keys
-        if (offerKeys != null && offerKeys.isNotEmpty()) {
-            // TODO: Pass offerIds to OfferActivity
-            // val offerIds = model.getListFromStore(offerKeys)
-            // startActivity(OfferActivity.newInstance(this))
-
-            val offerIds = offerKeys.mapNotNull { model.getFromStore(it) }
-            showWebOffer(offerIds)
-        } else if (embarkData.passage?.name == "Offer") {
-            showWebOffer(
-                listOf(
-                    model.getFromStore("contractBundleId")
-                        ?: throw java.lang.IllegalArgumentException("No contractBundleId found")
-                )
-            )
-        } else if (embarkData.passage?.externalRedirect?.data?.location == EmbarkExternalRedirectLocation.OFFER) {
-            val key = model.getFromStore("quoteId")
-                ?: throw IllegalArgumentException("Could not find value with key quoteId from store")
-            showWebOffer(listOf(key))
-        } else {
-            transitionToNextPassage(embarkData.navigationDirection, passage)
-        }
-    }
-
     private fun handleMenuItem(menuItem: MenuItem) = when (menuItem.itemId) {
-        R.id.app_settings -> {
-            startActivity(SettingsActivity.newInstance(this@EmbarkActivity))
-            true
-        }
-        R.id.app_info -> {
-            startActivity(MoreOptionsActivity.newInstance(this@EmbarkActivity))
-            true
-        }
         R.id.login -> {
             marketManager.market?.openAuth(this, supportFragmentManager)
             true
         }
-        R.id.restart -> {
-            showRestartDialog()
+        R.id.exit -> {
+            showExitDialog()
             true
         }
         R.id.tooltip -> {
@@ -156,23 +148,25 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         else -> false
     }
 
-    private fun showRestartDialog() {
+    private fun showExitDialog() {
         MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.settings_alert_restart_onboarding_title)
-            .setMessage(R.string.settings_alert_restart_onboarding_description)
-            .setPositiveButton(R.string.ALERT_OK) { _, _ -> model.fetchStory(storyName) }
-            .setNegativeButton(R.string.ALERT_CANCEL) { dialog, _ -> dialog.dismiss() }
+            .setMessage(R.string.EMBARK_EXIT_DIALOG_MESSAGE)
+            .setPositiveButton(R.string.EMBARK_EXIT_DIALOG_POSITIVE_BUTTON) { _, _ -> finish() }
+            .setNegativeButton(R.string.EMBARK_EXIT_DIALOG_NEGATIVE_BUTTON) { dialog, _ -> dialog.dismiss() }
             .show()
     }
 
-    private fun setupToolbarMenu(progressToolbar: MaterialProgressToolbar) {
+    private fun setupToolbarMenu(
+        progressToolbar: MaterialProgressToolbar,
+        hasToolTips: Boolean,
+        isLoggedIn: Boolean
+    ) {
         invalidateOptionsMenu()
-        progressToolbar.toolbar.menu.clear()
-
-        if (model.data.value?.passage?.tooltips?.isNotEmpty() == true) {
-            progressToolbar.toolbar.inflateMenu(R.menu.embark_tooltip_menu)
-        } else {
-            progressToolbar.toolbar.inflateMenu(R.menu.embark_menu)
+        with(progressToolbar.toolbar) {
+            menu.clear()
+            inflateMenu(R.menu.embark_menu)
+            menu.findItem(R.id.tooltip).isVisible = hasToolTips
+            menu.findItem(R.id.login).isVisible = !isLoggedIn
         }
     }
 
@@ -268,7 +262,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                     numberActions = numberActionSet.numberActions.map { numberAction ->
                         NumberActionParams.NumberAction(
                             key = numberAction.data!!.key,
-                            title = numberAction.data!!.label,
+                            title = numberAction.data!!.title,
                             placeholder = numberAction.data!!.placeholder,
                             unit = numberAction.data!!.unit,
                             maxValue = numberAction.data!!.maxValue,
@@ -330,24 +324,13 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                             "Could not match $it to a component"
                         )
                     }
-                }
+                },
+                submitLabel = multiAction.multiActionData.link.fragments.embarkLinkFragment.label,
             )
             return MultiActionFragment.newInstance(params)
         }
 
         return UpgradeAppFragment.newInstance()
-    }
-
-    private fun showWebOffer(keys: List<String>) {
-        startActivityForResult(
-            WebOnboardingActivity.newNoInstance(
-                this@EmbarkActivity,
-                "",
-                true,
-                keys
-            ),
-            REQUEST_OFFER
-        )
     }
 
     override fun onBackPressed() {
@@ -358,8 +341,6 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
     }
 
     companion object {
-        private const val REQUEST_OFFER = 1
-
         private const val SHARED_AXIS = MaterialSharedAxis.X
         internal const val STORY_NAME = "STORY_NAME"
         internal const val STORY_TITLE = "STORY_TITLE"

@@ -3,6 +3,7 @@ package com.hedvig.app.testdata.dashboard.builders
 import com.hedvig.android.owldroid.fragment.AddressFragment
 import com.hedvig.android.owldroid.fragment.ContractStatusFragment
 import com.hedvig.android.owldroid.fragment.InsurableLimitsFragment
+import com.hedvig.android.owldroid.fragment.TableFragment
 import com.hedvig.android.owldroid.fragment.UpcomingAgreementChangeFragment
 import com.hedvig.android.owldroid.fragment.UpcomingAgreementFragment
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
@@ -11,6 +12,7 @@ import com.hedvig.android.owldroid.type.DanishHomeContentLineOfBusiness
 import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.testdata.common.ContractStatus
+import com.hedvig.app.testdata.common.builders.TableFragmentBuilder
 import com.hedvig.app.testdata.feature.insurance.builders.PerilBuilder
 import java.time.LocalDate
 
@@ -24,6 +26,7 @@ class InsuranceDataBuilder(
         ),
     private val displayName: String = "Hemförsäkring",
     private val showUpcomingAgreement: Boolean = false,
+    private val upcomingDetailsTable: TableFragment = TableFragmentBuilder().build(),
 ) {
 
     fun build() = InsuranceQuery.Data(
@@ -236,8 +239,9 @@ class InsuranceDataBuilder(
                             asTerminatedTodayStatus = null
                         ),
                         upcomingAgreementDetailsTable = UpcomingAgreementFragment.UpcomingAgreementDetailsTable(
-                            title = "",
-                            sections = emptyList()
+                            fragments = UpcomingAgreementFragment.UpcomingAgreementDetailsTable.Fragments(
+                                upcomingDetailsTable
+                            )
                         )
                     )
                 )

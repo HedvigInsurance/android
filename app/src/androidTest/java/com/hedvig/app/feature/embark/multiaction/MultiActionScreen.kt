@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.embark.multiaction
 
 import android.view.View
-import com.agoda.kakao.image.KImageView
 import com.agoda.kakao.recycler.KRecyclerItem
 import com.agoda.kakao.recycler.KRecyclerView
 import com.agoda.kakao.text.KButton
@@ -23,9 +22,7 @@ object MultiActionScreen : KScreen<MultiActionScreen>() {
         }
     )
 
-    class AddBuildingButton(parent: Matcher<View>) : KRecyclerItem<AddBuildingButton>(parent) {
-        val button = KImageView(parent) { withId(R.id.addButton) }
-    }
+    class AddBuildingButton(parent: Matcher<View>) : KRecyclerItem<AddBuildingButton>(parent)
 
     class Component(parent: Matcher<View>) : KRecyclerItem<Component>(parent) {
         val title = KTextView(parent) { withId(R.id.title) }

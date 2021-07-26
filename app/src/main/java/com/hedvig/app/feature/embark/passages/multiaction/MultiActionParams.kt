@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.embark.passages.multiaction
 
 import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class MultiActionParams(
@@ -11,7 +11,8 @@ data class MultiActionParams(
     val link: String,
     val addLabel: String,
     val maxAmount: Int,
-    val components: List<MultiActionComponent>
+    val components: List<MultiActionComponent>,
+    val submitLabel: String
 ) : Parcelable
 
 sealed class MultiActionComponent : Parcelable {
@@ -24,7 +25,7 @@ sealed class MultiActionComponent : Parcelable {
         @Parcelize
         data class Option(
             val text: String,
-            val label: String
+            val value: String
         ) : Parcelable
     }
 

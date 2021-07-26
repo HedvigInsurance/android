@@ -4,6 +4,7 @@ import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.app.R
+import com.hedvig.app.common.ErrorItem
 import com.hedvig.app.feature.home.screens.HomeTabScreen
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.testdata.feature.home.HOME_DATA_PENDING
@@ -51,7 +52,7 @@ class NoFirstNameErrorTest : TestCase() {
 
         onScreen<HomeTabScreen> {
             recycler {
-                childAt<HomeTabScreen.ErrorItem>(0) {
+                childAt<ErrorItem>(0) {
                     retry {
                         click()
                     }

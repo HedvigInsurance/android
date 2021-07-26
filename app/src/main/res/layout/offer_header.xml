@@ -2,19 +2,20 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/hedvig_black"
+    android:background="@drawable/gradient_summer_sky"
+    android:paddingTop="150dp"
     android:paddingBottom="@dimen/base_margin_quadruple"
     tools:context=".feature.offer.ui.OfferActivity">
 
-    <com.hedvig.app.ui.view.HedvigCardView
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/base_margin_double">
 
         <LinearLayout
-            android:id="@+id/premiumContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -22,12 +23,14 @@
 
             <TextView
                 android:id="@+id/campaign"
-                android:layout_width="wrap_content"
+                style="@style/Hedvig.TextAppearance.Discount"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/base_margin_half"
                 android:background="@drawable/background_premium_box_with_campaign"
-                android:textAppearance="?textAppearanceSubtitle1"
-                tools:text="Discount" />
+                android:gravity="center"
+                android:paddingBottom="@dimen/base_margin_half"
+                tools:text="25 % BUNDLE DISCOUNT・10 SEK DISCOUNT/MO.・15 % DISCOUNT FROM SEB" />
 
             <TextView
                 android:id="@+id/title"
@@ -36,56 +39,72 @@
                 android:layout_marginStart="@dimen/base_margin_double"
                 android:layout_marginTop="@dimen/base_margin_triple"
                 android:layout_marginEnd="@dimen/base_margin_double"
-                android:textAppearance="?textAppearanceHeadline5"
+                android:textAllCaps="true"
+                android:textAppearance="?textAppearanceCaption"
                 tools:text="HEDVIG BOSTADSRÄTT" />
 
-            <TextView
-                android:id="@+id/grossPremium"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/base_margin_double"
-                android:textAppearance="?textAppearanceSubtitle1"
-                android:visibility="gone"
-                tools:text="179 kr/mån"
-                tools:visibility="visible" />
-
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/base_margin_double"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/premium"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?textAppearanceHeadline3"
-                    tools:text="179 kr/month" />
+                    android:layout_gravity="center"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/original_premium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
+                        android:layout_marginEnd="@dimen/base_margin"
+                        android:textAppearance="?textAppearanceHeadline6"
+                        android:textColor="@color/gray"
+                        tools:text="179 SEK" />
+
+                    <TextView
+                        android:id="@+id/premium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
+                        android:textAppearance="?textAppearanceHeadline4"
+                        tools:text="179 SEK" />
+
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/premiumPeriod"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/OFFER_PREMIUM_PERIOD_ABBREVIATION"
+                    android:layout_gravity="center"
+                    android:text="@string/OFFER_PRICE_PER_MONTH"
                     android:textAppearance="?textAppearanceSubtitle1"
-                    android:textColor="@color/gray" />
+                    android:textColor="@color/grey_inactive" />
 
             </LinearLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/startDateContainer"
+                style="?materialButtonTextStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/base_margin_double"
-                android:background="@drawable/background_pick_date"
+                android:background="@drawable/background_rounded_corners_ripple"
                 android:padding="@dimen/base_margin">
 
                 <TextView
                     android:id="@+id/startDateLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/START_DATE_BTN"
+                    android:drawablePadding="@dimen/base_margin"
+                    android:gravity="center_vertical"
+                    android:text="@string/OFFER_ACCESS_DATE"
                     android:textAppearance="?textAppearanceBody1"
+                    android:textColor="@color/textColorSecondary"
+                    app:drawableStartCompat="@drawable/ic_calendar"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -96,48 +115,40 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/base_margin_double"
                     android:layout_marginEnd="@dimen/base_margin_double"
+                    android:gravity="center_vertical|end"
                     android:textAlignment="textEnd"
                     android:textAppearance="?textAppearanceBody1"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/startDateExpandIcon"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/startDateLabel"
                     app:layout_constraintTop_toTopOf="parent"
-                    tools:text="@string/ACTIVATE_INSURANCE_END_BTN" />
-
-                <ImageView
-                    android:id="@+id/startDateExpandIcon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:contentDescription="@null"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_expand" />
+                    tools:text="@string/START_DATE_TODAY" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/sign"
                 style="?materialButtonContainedLargeStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/base_margin_double"
                 android:layout_marginTop="@dimen/base_margin_quadruple"
+                android:layout_marginBottom="@dimen/base_margin"
                 android:text="@string/OFFER_SIGN_BUTTON"
-                app:icon="@drawable/ic_bank_id"
                 app:iconGravity="textEnd"
-                app:iconPadding="@dimen/base_margin_double"
-                tools:translationY="0dp" />
+                app:iconPadding="@dimen/base_margin_double" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/discountButton"
                 style="?materialButtonTextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/base_margin"
                 android:layout_marginBottom="@dimen/base_margin_double"
-                tools:text="@string/OFFER_ADD_DISCOUNT_BUTTON" />
+                android:textColor="@color/textColorSecondary"
+                app:icon="@drawable/ic_add_circle"
+                app:iconPadding="@dimen/base_margin"
+                tools:text="@string/REFERRAL_ADDCOUPON_HEADLINE" />
 
         </LinearLayout>
-    </com.hedvig.app.ui.view.HedvigCardView>
+    </com.google.android.material.card.MaterialCardView>
 </FrameLayout>

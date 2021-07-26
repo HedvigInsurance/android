@@ -1,232 +1,100 @@
 package com.hedvig.app.feature.offer
 
-import android.os.Handler
-import android.os.Looper.getMainLooper
 import androidx.lifecycle.MutableLiveData
-import com.hedvig.android.owldroid.fragment.CostFragment
-import com.hedvig.android.owldroid.fragment.IncentiveFragment
-import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
+import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.fragment.SignStatusFragment
-import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
-import com.hedvig.android.owldroid.type.ApartmentType
-import com.hedvig.android.owldroid.type.TypeOfContract
-import com.hedvig.app.testdata.feature.insurance.builders.PerilBuilder
+import com.hedvig.app.feature.offer.quotedetail.buildDocuments
+import com.hedvig.app.feature.offer.quotedetail.buildInsurableLimits
+import com.hedvig.app.feature.offer.quotedetail.buildPerils
+import com.hedvig.app.feature.offer.ui.checkout.CheckoutParameter
+import com.hedvig.app.service.LoginStatus
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 class MockOfferViewModel : OfferViewModel() {
-    override val data = MutableLiveData<OfferQuery.Data>()
+
     override val autoStartToken = MutableLiveData<SignOfferMutation.Data>()
     override val signStatus = MutableLiveData<SignStatusFragment>()
     override val signError = MutableLiveData<Boolean>()
 
     init {
-        Handler(getMainLooper()).postDelayed(
-            {
-                data.postValue(mockData)
-            },
-            500
-        )
+        load()
     }
 
     override fun removeDiscount() = Unit
     override fun writeDiscountToCache(data: RedeemReferralCodeMutation.Data) = Unit
-    override fun triggerOpenChat(done: () -> Unit) = Unit
+    override suspend fun triggerOpenChat() = Unit
     override fun startSign() = Unit
     override fun clearPreviousErrors() = Unit
     override fun manuallyRecheckSignStatus() = Unit
-    override fun chooseStartDate(id: String, date: LocalDate) {
-        data.postValue(
-            mockData.copy(
-                lastQuoteOfMember = mockData.lastQuoteOfMember.copy(
-                    asCompleteQuote = mockData.lastQuoteOfMember.asCompleteQuote!!.copy(
-                        startDate = date
-                    )
+
+    override fun onOpenQuoteDetails(
+        id: String,
+    ) {
+        val quote = mockData.quoteBundle.quotes.first { it.id == id }
+        _events.tryEmit(
+            Event.OpenQuoteDetails(
+                QuoteDetailItems(
+                    quote.displayName,
+                    buildPerils(quote),
+                    buildInsurableLimits(quote),
+                    buildDocuments(quote),
                 )
             )
         )
     }
 
-    override fun removeStartDate(id: String) {
-        data.postValue(
-            mockData.copy(
-                lastQuoteOfMember = mockData.lastQuoteOfMember.copy(
-                    asCompleteQuote = mockData.lastQuoteOfMember.asCompleteQuote!!.copy(
-                        startDate = null
-                    )
+    override fun approveOffer() {
+        _events.tryEmit(Event.ApproveSuccessful(LocalDate.now()))
+    }
+
+    override fun onOpenCheckout() {
+        _events.tryEmit(
+            Event.OpenCheckout(
+                CheckoutParameter(
+                    quoteIds = listOf(mockData.quoteBundle.quotes[0].id)
                 )
             )
         )
+    }
+
+    override fun reload() {
+        shouldError = false
+        load()
+    }
+
+    private fun load() {
+        viewModelScope.launch {
+            delay(650)
+            if (shouldError) {
+                _events.tryEmit(Event.Error())
+                return@launch
+            }
+            val topOfferItems = OfferItemsBuilder.createTopOfferItems(mockData)
+            val perilItems = OfferItemsBuilder.createPerilItems(mockData.quoteBundle.quotes)
+            val documentItems = OfferItemsBuilder.createDocumentItems(mockData.quoteBundle.quotes)
+            val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(mockData.quoteBundle.quotes)
+            val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems(mockData)
+            _viewState.value =
+                ViewState(
+                    topOfferItems = topOfferItems,
+                    perils = perilItems,
+                    documents = documentItems,
+                    insurableLimitsItems = insurableLimitsItems,
+                    bottomOfferItems = bottomOfferItems,
+                    signMethod = mockData.signMethodForQuotes,
+                    title = mockData.quoteBundle.appConfiguration.title,
+                    loginStatus = LoginStatus.LOGGED_IN
+                )
+        }
     }
 
     companion object {
+        var shouldError = false
         var mockData = OFFER_DATA_SWEDISH_APARTMENT
-
-        private val UNSIGNED_WITH_APARTMENT = OfferQuery.Data(
-            redeemedCampaigns = listOf(
-                OfferQuery.RedeemedCampaign(
-                    fragments = OfferQuery.RedeemedCampaign.Fragments(
-                        IncentiveFragment(
-                            incentive = IncentiveFragment.Incentive(
-                                asPercentageDiscountMonths = IncentiveFragment.AsPercentageDiscountMonths(
-                                    percentageDiscount = 50.0,
-                                    pdmQuantity = 3
-                                ),
-                                asFreeMonths = null,
-                                asMonthlyCostDeduction = null,
-                                asNoDiscount = null
-                            )
-                        )
-                    )
-                )
-            ),
-            lastQuoteOfMember = OfferQuery.LastQuoteOfMember(
-                asCompleteQuote = OfferQuery.AsCompleteQuote(
-                    startDate = LocalDate.of(2020, 2, 1),
-                    id = "ea656f5f-40b2-4953-85d9-752b33e69e38",
-                    currentInsurer = OfferQuery.CurrentInsurer(
-                        id = "ea656f5f-40b2-4953-85d9-752b33e69e38",
-                        displayName = "Folksam",
-                        switchable = true
-                    ),
-                    quoteDetails = OfferQuery.QuoteDetails(
-                        asSwedishApartmentQuoteDetails = OfferQuery.AsSwedishApartmentQuoteDetails(
-                            type = ApartmentType.BRF,
-                            street = "Testvägen 1",
-                            zipCode = "12345",
-                            householdSize = 2,
-                            livingSpace = 42
-                        ),
-                        asSwedishHouseQuoteDetails = null
-                    ),
-                    insuranceCost = OfferQuery.InsuranceCost(
-                        fragments = OfferQuery.InsuranceCost.Fragments(
-                            CostFragment(
-                                "InsuranceCost",
-                                CostFragment.MonthlyDiscount(
-                                    fragments = CostFragment.MonthlyDiscount.Fragments(
-                                        MonetaryAmountFragment(
-                                            amount = "50.0",
-                                            currency = "SEK"
-                                        )
-                                    )
-                                ),
-                                CostFragment.MonthlyNet(
-                                    fragments = CostFragment.MonthlyNet.Fragments(
-                                        MonetaryAmountFragment(
-                                            amount = "50.0",
-                                            currency = "SEK"
-                                        )
-                                    )
-                                ),
-                                CostFragment.MonthlyGross(
-                                    fragments = CostFragment.MonthlyGross.Fragments(
-                                        MonetaryAmountFragment(
-                                            amount = "100.0",
-                                            currency = "SEK"
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    ),
-                    perils = PerilBuilder().offerQueryBuild(5),
-                    termsAndConditions = OfferQuery.TermsAndConditions(
-                        displayName = "TermsAndConditions",
-                        url = "https://www.example.com/"
-                    ),
-                    insurableLimits = listOf(),
-                    typeOfContract = TypeOfContract.SE_APARTMENT_BRF,
-                    insuranceTerms = listOf()
-                )
-            ),
-            contracts = listOf()
-        )
-
-        private val UNSIGNED_WITH_HOUSE = OfferQuery.Data(
-            redeemedCampaigns = listOf(
-                OfferQuery.RedeemedCampaign(
-                    fragments = OfferQuery.RedeemedCampaign.Fragments(
-                        IncentiveFragment(
-                            incentive = IncentiveFragment.Incentive(
-                                asPercentageDiscountMonths = IncentiveFragment.AsPercentageDiscountMonths(
-                                    percentageDiscount = 50.0,
-                                    pdmQuantity = 3
-                                ),
-                                asFreeMonths = null,
-                                asMonthlyCostDeduction = null,
-                                asNoDiscount = null
-                            )
-                        )
-                    )
-                )
-            ),
-            lastQuoteOfMember = OfferQuery.LastQuoteOfMember(
-                asCompleteQuote = OfferQuery.AsCompleteQuote(
-                    startDate = LocalDate.of(2020, 2, 1),
-                    id = "ea656f5f-40b2-4953-85d9-752b33e69e38",
-                    currentInsurer = OfferQuery.CurrentInsurer(
-                        id = "ea656f5f-40b2-4953-85d9-752b33e69e38",
-                        displayName = "Folksam",
-                        switchable = true
-                    ),
-                    quoteDetails = OfferQuery.QuoteDetails(
-                        asSwedishApartmentQuoteDetails = null,
-                        asSwedishHouseQuoteDetails = OfferQuery.AsSwedishHouseQuoteDetails(
-                            street = "Testvägen 1",
-                            zipCode = "12345",
-                            householdSize = 2,
-                            livingSpace = 42,
-                            ancillarySpace = 30,
-                            yearOfConstruction = 1992,
-                            numberOfBathrooms = 2,
-                            isSubleted = true,
-                            extraBuildings = emptyList()
-                        )
-                    ),
-                    insuranceCost = OfferQuery.InsuranceCost(
-                        fragments = OfferQuery.InsuranceCost.Fragments(
-                            CostFragment(
-                                monthlyDiscount = CostFragment.MonthlyDiscount(
-                                    fragments = CostFragment.MonthlyDiscount.Fragments(
-                                        MonetaryAmountFragment(
-                                            amount = "50.0",
-                                            currency = "SEK"
-                                        )
-                                    )
-                                ),
-                                monthlyNet = CostFragment.MonthlyNet(
-                                    fragments = CostFragment.MonthlyNet.Fragments(
-                                        MonetaryAmountFragment(
-                                            amount = "50.0",
-                                            currency = "SEK"
-                                        )
-                                    )
-                                ),
-                                monthlyGross = CostFragment.MonthlyGross(
-                                    fragments = CostFragment.MonthlyGross.Fragments(
-                                        MonetaryAmountFragment(
-                                            amount = "100.0",
-                                            currency = "SEK"
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    ),
-                    perils = PerilBuilder().offerQueryBuild(5),
-                    termsAndConditions = OfferQuery.TermsAndConditions(
-                        displayName = "TermsAndConditions",
-                        url = "https://www.example.com/"
-                    ),
-                    insurableLimits = listOf(),
-                    typeOfContract = TypeOfContract.SE_APARTMENT_BRF,
-                    insuranceTerms = listOf()
-                )
-            ),
-            contracts = listOf()
-        )
     }
 }

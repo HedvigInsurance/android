@@ -28,7 +28,7 @@ android {
         applicationId = "com.hedvig"
 
         versionCode = 43
-        versionName = "5.1.7"
+        versionName = "6.0.0"
 
         vectorDrawables.useSupportLibrary = true
 
@@ -124,6 +124,7 @@ dependencies {
 
     implementation(Libs.Coroutines.core)
     implementation(Libs.Coroutines.android)
+    testImplementation(Libs.Coroutines.test)
 
     implementation(Libs.AndroidX.appCompat)
     implementation(Libs.AndroidX.media)
@@ -138,6 +139,7 @@ dependencies {
     implementation(Libs.AndroidX.browser)
     implementation(Libs.AndroidX.Lifecycle.common)
     implementation(Libs.AndroidX.Lifecycle.liveData)
+    implementation(Libs.AndroidX.Lifecycle.runtime)
     implementation(Libs.AndroidX.Lifecycle.viewModel)
     implementation(Libs.AndroidX.workManager)
     debugImplementation(Libs.AndroidX.startup)
@@ -203,12 +205,16 @@ dependencies {
 
     implementation(Libs.shimmer)
 
+    implementation(Libs.concatAdapterExtension)
+
     androidTestImplementation(Libs.Apollo.idlingResource)
 
     testImplementation(Libs.assertK)
     androidTestImplementation(Libs.assertK)
-    androidTestImplementation(Libs.mockK)
     androidTestImplementation(Libs.kaspresso)
+
+    androidTestImplementation(Libs.MockK.android)
+    testImplementation(Libs.MockK.jvm)
 
     debugImplementation(Libs.leakCanary)
     debugImplementation(Libs.shake)

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.core.view.doOnNextLayout
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.EmbarkResponseBinding
@@ -48,8 +49,37 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
                 )
             }
 
+            if (data.actions.size == 1) {
+                bindSingleButton(data.actions.first(), data)
+            } else {
+                bindAdapter(data)
+            }
+
             messages.adapter = MessageAdapter(data.messages)
-            actions.adapter = SelectActionAdapter { selectAction: SelectActionParameter.SelectAction, view: View ->
+            messages.doOnNextLayout {
+                startPostponedEnterTransition()
+            }
+        }
+    }
+
+    private fun FragmentEmbarkSelectActionBinding.bindSingleButton(
+        action: SelectActionParameter.SelectAction,
+        data: SelectActionParameter
+    ) {
+        with(singleActionButton) {
+            isVisible = true
+            hapticClicks()
+                .mapLatest { onActionSelected(action, data, responseContainer) }
+                .onEach { model.navigateToPassage(action.link) }
+                .launchIn(viewLifecycleScope)
+            text = action.label
+        }
+    }
+
+    private fun FragmentEmbarkSelectActionBinding.bindAdapter(data: SelectActionParameter) {
+        with(actions) {
+            isVisible = true
+            adapter = SelectActionAdapter { selectAction: SelectActionParameter.SelectAction, view: View ->
                 view.hapticClicks()
                     .mapLatest { onActionSelected(selectAction, data, responseContainer) }
                     .onEach { model.navigateToPassage(selectAction.link) }
@@ -57,11 +87,7 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
             }.apply {
                 submitList(data.actions)
             }
-            actions.addItemDecoration(SelectActionDecoration())
-
-            messages.doOnNextLayout {
-                startPostponedEnterTransition()
-            }
+            addItemDecoration(SelectActionDecoration())
         }
     }
 

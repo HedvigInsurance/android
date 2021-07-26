@@ -53,6 +53,7 @@ class EmbarkMenuTest : TestCase() {
     }
 
     @Test
+    @Ignore("Flaky")
     fun loginButtonShouldOpenLoginMethod() = run {
         val intent = EmbarkActivity.newInstance(context(), this.javaClass.name, "")
         activityRule.launch(intent)
@@ -102,6 +103,7 @@ class EmbarkMenuTest : TestCase() {
     }
 
     @Test
+    @Ignore("Flaky")
     fun appInfoButtonShouldStartMoreOptionsActivity() = run {
         val intent = EmbarkActivity.newInstance(context(), this.javaClass.name, "")
         activityRule.launch(intent)
@@ -120,6 +122,7 @@ class EmbarkMenuTest : TestCase() {
     }
 
     @Test
+    @Ignore("Flaky")
     fun settingsButtonShouldStartMoreOptionsActivity() = run {
         val intent = EmbarkActivity.newInstance(context(), this.javaClass.name, "")
         activityRule.launch(intent)

@@ -37,7 +37,7 @@ class BinaryExpressionRedirectTest : TestCase() {
         )
 
         onScreen<EmbarkScreen> {
-            selectActions { firstChild<EmbarkScreen.SelectAction> { click() } }
+            singleSelectAction { click() }
             messages {
                 firstChild<EmbarkScreen.MessageRow> {
                     text { hasText("a third message") }

@@ -11,5 +11,5 @@
     android:paddingEnd="@dimen/base_margin_double"
     android:paddingBottom="@dimen/base_margin"
     android:textAppearance="?textAppearanceBody1"
-    android:textColor="?textColorLink"
+    android:textColor="?android:textColorLink"
     tools:text="Select" />

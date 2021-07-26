@@ -30,6 +30,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.hedvig.app.R
 import com.hedvig.app.SplashActivity
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.SettingsActivity
@@ -55,6 +56,16 @@ fun Context.colorAttr(
 ): Int {
     theme.resolveAttribute(color, typedValue, resolveRefs)
     return typedValue.data
+}
+
+@DrawableRes
+fun Context.drawableAttr(
+    @AttrRes drawable: Int,
+    typedValue: TypedValue = TypedValue(),
+    resolveRefs: Boolean = true,
+): Int {
+    theme.resolveAttribute(drawable, typedValue, resolveRefs)
+    return typedValue.resourceId
 }
 
 fun Context.compatFont(@FontRes font: Int) = ResourcesCompat.getFont(this, font)
@@ -169,6 +180,35 @@ fun Context.showAlert(
         }
         .show()
 
+fun Context.showAlert(
+    title: String,
+    message: String? = null,
+    @StringRes positiveLabel: Int = android.R.string.ok,
+    @StringRes negativeLabel: Int = android.R.string.cancel,
+    positiveAction: () -> Unit,
+    negativeAction: (() -> Unit)? = null,
+): androidx.appcompat.app.AlertDialog? =
+    MaterialAlertDialogBuilder(this)
+        .apply {
+            setTitle(title)
+            setPositiveButton(positiveLabel) { _, _ ->
+                positiveAction()
+            }
+            setNegativeButton(negativeLabel) { _, _ ->
+                negativeAction?.let { it() }
+            }
+            message?.let { setMessage(it) }
+        }
+        .show()
+
+fun Context.showErrorDialog(message: String, positiveAction: () -> Unit) {
+    MaterialAlertDialogBuilder(this)
+        .setTitle(R.string.error_dialog_title)
+        .setMessage(message)
+        .setPositiveButton(R.string.ALERT_OK) { _, _ -> positiveAction() }
+        .show()
+}
+
 fun Context.copyToClipboard(
     text: String,
 ) {
@@ -215,4 +255,24 @@ val Context.isDarkThemeActive: Boolean
 tailrec fun Context?.getActivity(): Activity? = when (this) {
     is Activity -> this
     else -> (this as? ContextWrapper)?.baseContext?.getActivity()
+}
+
+fun Context.tryOpenUri(uri: Uri) {
+    fun showError() {
+        showAlert(
+            title = R.string.error_dialog_title,
+            message = R.string.component_error,
+            positiveAction = {}
+        )
+    }
+
+    if (canOpenUri(uri)) {
+        try {
+            openUri(uri)
+        } catch (throwable: Throwable) {
+            showError()
+        }
+    } else {
+        showError()
+    }
 }

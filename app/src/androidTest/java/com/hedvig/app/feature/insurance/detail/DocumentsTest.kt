@@ -2,6 +2,7 @@ package com.hedvig.app.feature.insurance.detail
 
 import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
+import com.hedvig.app.feature.documents.DocumentRecyclerItem
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS
 import com.hedvig.app.util.ApolloCacheClearRule
@@ -45,7 +46,7 @@ class DocumentsTest : TestCase() {
                 childAt<ContractDetailScreen.DocumentsTab>(2) {
                     recycler {
                         hasSize(2)
-                        childAt<ContractDetailScreen.DocumentsTab.Button>(0) {
+                        childAt<DocumentRecyclerItem>(0) {
                             button { click() }
                         }
                     }

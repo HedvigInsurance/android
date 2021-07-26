@@ -6,10 +6,9 @@
     android:layout_height="match_parent"
     android:background="@drawable/bottom_sheet_dialog_no_title_fragment_background"
     android:orientation="vertical"
-    android:paddingStart="@dimen/base_margin_triple"
+    android:paddingHorizontal="@dimen/base_margin_double"
     android:paddingTop="@dimen/base_margin"
-    android:paddingEnd="@dimen/base_margin_triple"
-    android:paddingBottom="@dimen/peril_bottom_extra_spacing"
+    android:paddingBottom="@dimen/base_margin"
     tools:context=".feature.offer.ui.changestartdate.ChangeDateBottomSheet">
 
     <ImageView
@@ -19,45 +18,40 @@
         android:contentDescription="@null"
         app:srcCompat="@drawable/bottom_sheet_handle" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/base_margin_double"
-        android:text="@string/DRAGGABLE_STARTDATE_TITLE"
-        android:textAppearance="?textAppearanceHeadline4" />
-
-    <TextView
-        android:id="@+id/info"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/base_margin"
-        android:text="@string/DRAGGABLE_STARTDATE_DESCRIPTION"
-        android:textAppearance="?textAppearanceBody1" />
-
-
-    <com.hedvig.app.ui.view.DateInputView
-        android:id="@+id/datePickButton"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/base_margin_sextuple"
-        app:dateHintBackground="?colorSurface" />
+        android:layout_height="wrap_content">
 
-    <Button
-        android:id="@+id/chooseDateButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/base_margin_quintuple"
-        android:text="@string/CHOOSE_DATE_BTN" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    <Button
-        android:id="@+id/autoSetDateText"
-        style="?attr/materialButtonTextStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/auto_set_date_text_size"
-        android:textAlignment="center"
-        tools:text="@string/ACTIVATE_INSURANCE_END_BTN" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/base_margin_triple"
+                android:gravity="center"
+                android:text="@string/OFFER_SET_START_DATE"
+                android:textAppearance="?textAppearanceHeadline5" />
+
+            <LinearLayout
+                android:id="@+id/change_date_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+            <Button
+                android:id="@+id/chooseDateButton"
+                style="@style/Hedvig.Button.Large"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/base_margin_double"
+                android:text="@string/general_save_button" />
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>

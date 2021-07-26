@@ -2,7 +2,7 @@ query InsuranceQuery($locale: Locale!) {
   contracts {
     id
     status {
-      ... ContractStatusFragment
+      ...ContractStatusFragment
     }
     displayName
     typeOfContract
@@ -29,6 +29,17 @@ query InsuranceQuery($locale: Locale!) {
         }
         numberCoInsured
         squareMeters
+        ancillaryArea
+        yearOfConstruction
+        numberOfBathrooms
+        isSubleted
+        extraBuildings {
+          ... on ExtraBuildingCore {
+            area
+            displayName
+            hasWaterConnected
+          }
+        }
       }
       ... on NorwegianHomeContentAgreement {
         address {
@@ -38,7 +49,7 @@ query InsuranceQuery($locale: Locale!) {
         squareMeters
         nhcType: type
       }
-      ... on DanishHomeContentAgreement{
+      ... on DanishHomeContentAgreement {
         address {
           ...AddressFragment
         }
@@ -57,15 +68,15 @@ query InsuranceQuery($locale: Locale!) {
       }
     }
     perils(locale: $locale) {
-      ... PerilFragment
+      ...PerilFragment
     }
     insurableLimits(locale: $locale) {
-      ... InsurableLimitsFragment
+      ...InsurableLimitsFragment
     }
     termsAndConditions(locale: $locale) {
       displayName
       url
     }
-    ... UpcomingAgreementFragment
+    ...UpcomingAgreementFragment
   }
 }

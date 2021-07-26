@@ -3,6 +3,7 @@ package com.hedvig.app.testdata.feature.changeaddress
 import com.hedvig.android.owldroid.fragment.UpcomingAgreementFragment
 import com.hedvig.android.owldroid.graphql.ActiveContractBundlesQuery
 import com.hedvig.android.owldroid.graphql.UpcomingAgreementQuery
+import com.hedvig.app.testdata.common.builders.TableFragmentBuilder
 import com.hedvig.app.testdata.feature.changeaddress.builders.ActiveContractBundlesBuilder
 import com.hedvig.app.testdata.feature.changeaddress.builders.UpcomingAgreementBuilder
 
@@ -12,8 +13,9 @@ val UPCOMING_AGREEMENT_NONE = UpcomingAgreementQuery.Data(
             fragments = UpcomingAgreementQuery.Contract.Fragments(
                 upcomingAgreementFragment = UpcomingAgreementFragment(
                     upcomingAgreementDetailsTable = UpcomingAgreementFragment.UpcomingAgreementDetailsTable(
-                        title = "",
-                        sections = listOf()
+                        fragments = UpcomingAgreementFragment.UpcomingAgreementDetailsTable.Fragments(
+                            TableFragmentBuilder().build()
+                        )
                     ),
                     status = UpcomingAgreementFragment.Status(
                         asActiveStatus = null,

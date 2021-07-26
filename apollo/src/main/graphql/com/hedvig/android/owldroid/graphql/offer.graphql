@@ -1,11 +1,12 @@
-query Offer($locale: Locale!) {
-
+query Offer($locale: Locale!, $ids: [ID!]!) {
   redeemedCampaigns {
     ...IncentiveFragment
   }
 
-  lastQuoteOfMember {
-    ... on CompleteQuote {
+  quoteBundle(input: { ids: $ids }) {
+    displayName(locale: $locale)
+    quotes {
+      displayName(locale: $locale)
       startDate
       id
       typeOfContract
@@ -14,44 +15,19 @@ query Offer($locale: Locale!) {
         displayName
         switchable
       }
-      quoteDetails {
-        ... on SwedishApartmentQuoteDetails {
-          type
-          street
-          zipCode
-          householdSize
-          livingSpace
-        }
-        ... on SwedishHouseQuoteDetails {
-          ancillarySpace
-          street
-          zipCode
-          householdSize
-          livingSpace
-          yearOfConstruction
-          isSubleted
-          numberOfBathrooms
-          extraBuildings {
-            ... on ExtraBuildingCore {
-              displayName
-              area
-              hasWaterConnected
-            }
-          }
-        }
+      detailsTable(locale: $locale) {
+        ...TableFragment
       }
-      insuranceCost {
-        ...CostFragment
-      }
+
       perils(locale: $locale) {
-        ... PerilFragment
+        ...PerilFragment
       }
       termsAndConditions(locale: $locale) {
         displayName
         url
       }
       insurableLimits(locale: $locale) {
-        ... InsurableLimitsFragment
+        ...InsurableLimitsFragment
       }
       insuranceTerms(locale: $locale) {
         type
@@ -59,11 +35,62 @@ query Offer($locale: Locale!) {
         url
       }
     }
+    bundleCost {
+      ...CostFragment
+    }
+    frequentlyAskedQuestions(locale: $locale) {
+      id
+      headline
+      body
+    }
+    inception {
+      ... on ConcurrentInception {
+        correspondingQuotes {
+          ... on CompleteQuote {
+            id
+            displayName(locale: $locale)
+          }
+        }
+        startDate
+        currentInsurer {
+          ...CurrentInsurerFragment
+        }
+      }
+      ... on IndependentInceptions {
+        inceptions {
+          correspondingQuote {
+            ... on CompleteQuote {
+              id
+              displayName(locale: $locale)
+            }
+          }
+          startDate
+          currentInsurer {
+            ...CurrentInsurerFragment
+          }
+        }
+      }
+    }
+    appConfiguration {
+      showCampaignManagement
+      showFAQ
+      startDateTerminology
+      title
+      gradientOption
+    }
   }
+
+  signMethodForQuotes(input: $ids)
 
   contracts {
     status {
       __typename
     }
   }
+}
+
+fragment CurrentInsurerFragment on CurrentInsurer {
+  id
+  displayName
+  switchable
 }
