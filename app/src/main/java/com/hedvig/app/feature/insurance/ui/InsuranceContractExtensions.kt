@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.insurance.ui
 
+import android.view.View
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.R
@@ -26,6 +27,7 @@ fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding, market
                     R.string.DASHBOARD_INSURANCE_STATUS_INACTIVE_STARTDATE,
                     dateTimeFormatter.format(activeInFuture.futureInception)
                 )
+                removeBackgroundColor()
             }
             contractStatus.asActiveInFutureAndTerminatedInFutureStatus?.let { activeAndTerminated ->
                 firstStatusPill.show()
@@ -38,6 +40,7 @@ fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding, market
                     R.string.DASHBOARD_INSURANCE_STATUS_ACTIVE_TERMINATIONDATE,
                     dateTimeFormatter.format(activeAndTerminated.futureTermination)
                 )
+                removeBackgroundColor()
             }
             contractStatus.asTerminatedInFutureStatus?.let { terminatedInFuture ->
                 firstStatusPill.show()
@@ -55,6 +58,7 @@ fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding, market
             contractStatus.asTerminatedStatus?.let {
                 firstStatusPill.show()
                 firstStatusPill.setText(R.string.DASHBOARD_INSURANCE_STATUS_TERMINATED)
+                removeBackgroundColor()
             }
             contractStatus.asActiveStatus?.let {
                 it.upcomingAgreementChange?.newAgreement
@@ -112,6 +116,11 @@ fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding, market
         // Alternative implementation path: extend `RecyclerView` and make `onTouchEvent` always return `false`.
         contractPills.suppressLayout(true)
     }
+
+private fun InsuranceContractCardBinding.removeBackgroundColor() {
+    container.setBackgroundColor(container.context.colorAttr(android.R.attr.colorBackground))
+    blur.remove()
+}
 
 private fun TypeOfContract.bindBackgroundColor(
     insuranceContractCardBinding: InsuranceContractCardBinding
