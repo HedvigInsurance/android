@@ -8,6 +8,7 @@ import android.view.Window
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -97,7 +98,11 @@ class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
                 } else {
                     content.show()
                     error.root.remove()
-                    result.getOrNull()?.bindTo(binding.cardContainer, marketManager)
+                    val contract = result.getOrNull()
+                    contract?.bindTo(binding.cardContainer, marketManager)
+                    terminationInfo.isVisible =
+                        contract?.status?.fragments?.contractStatusFragment?.asTerminatedStatus != null ||
+                        contract?.status?.fragments?.contractStatusFragment?.asTerminatedTodayStatus != null
                 }
                 startPostponedEnterTransition()
             }
