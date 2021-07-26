@@ -1341,20 +1341,22 @@ val STORY_WITH_NUMBER_ACTION_SET = EmbarkStoryDataBuilder(
                 action = NumberActionSetBuilder(
                     listOf(
                         NumberActionSetBuilder.NumberAction(
+                            key = "BAR",
                             unit = "other people",
                             placeholder = "1",
-                            label = "Co-insured",
+                            label = "",
                             maxValue = 75,
                             minValue = 1,
-                            title = "BAR",
+                            title = "Co-insured",
                         ),
                         NumberActionSetBuilder.NumberAction(
+                            key = "FOO",
                             unit = "sqm",
                             placeholder = "52",
-                            label = "House size",
+                            label = "",
                             maxValue = 75,
                             minValue = 1,
-                            title = "FOO",
+                            title = "House size",
                         )
                     ),
                     link = STANDARD_FIRST_LINK
@@ -1634,6 +1636,29 @@ val STORY_WITH_GRAPHQL_MUTATION_AND_OFFER_REDIRECT = EmbarkStoryDataBuilder(
             )
             .build(),
         STANDARD_FOURTH_PASSAGE_BUILDER
+            .build()
+    )
+).build()
+
+val STORY_WITH_CLOSE_AND_CHAT = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER
+            .copy(
+                action = SelectActionBuilder(
+                    options = listOf(
+                        SelectOptionBuilder(link = STANDARD_FIRST_LINK.copy(label = "Chat")).build(),
+                        SelectOptionBuilder(link = LINK_TO_THIRD_PASSAGE.copy(label = "Close")).build(),
+                    )
+                ).build()
+            )
+            .build(),
+        STANDARD_SECOND_PASSAGE_BUILDER
+            .copy(
+                externalRedirect = EmbarkExternalRedirectLocation.CHAT
+            )
+            .build(),
+        STANDARD_THIRD_PASSAGE_BUILDER
+            .copy(externalRedirect = EmbarkExternalRedirectLocation.CLOSE)
             .build()
     )
 ).build()

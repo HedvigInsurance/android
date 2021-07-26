@@ -2,7 +2,6 @@ package com.hedvig.app.util.extensions
 
 import android.graphics.Paint
 import android.net.Uri
-import android.text.method.LinkMovementMethod
 import android.view.KeyEvent
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
@@ -11,6 +10,7 @@ import io.noties.markwon.AbstractMarkwonPlugin
 import io.noties.markwon.Markwon
 import io.noties.markwon.MarkwonConfiguration
 import io.noties.markwon.core.CorePlugin
+import io.noties.markwon.core.MarkwonTheme
 import io.noties.markwon.linkify.LinkifyPlugin
 
 fun TextView.setStrikethrough(strikethrough: Boolean) {
@@ -38,6 +38,11 @@ fun TextView.setMarkdownText(text: String) {
                                 }
                             }
                         }
+                    }
+                },
+                object : AbstractMarkwonPlugin() {
+                    override fun configureTheme(builder: MarkwonTheme.Builder) {
+                        builder.isLinkUnderlined(false)
                     }
                 }
             )

@@ -90,6 +90,15 @@ import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.offer.OfferViewModelImpl
+import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
+import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetViewModel
+import com.hedvig.app.feature.offer.ui.changestartdate.EditStartDateUseCase
+import com.hedvig.app.feature.offer.ui.checkout.ApproveQuotesUseCase
+import com.hedvig.app.feature.offer.ui.checkout.CheckoutViewModel
+import com.hedvig.app.feature.offer.ui.checkout.SignQuotesUseCase
+import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
+import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
+import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
 import com.hedvig.app.feature.onboarding.ChoosePlanRepository
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModelImpl
@@ -142,6 +151,7 @@ import com.hedvig.app.service.push.managers.PaymentNotificationManager
 import com.hedvig.app.terminated.TerminatedTracker
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.ApolloTimberLogger
+import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.svg.GlideApp
 import com.hedvig.app.util.svg.SvgSoftwareLayerSetter
@@ -324,7 +334,7 @@ val whatsNewModule = module {
 
 val insuranceModule = module {
     viewModel<InsuranceViewModel> { InsuranceViewModelImpl(get()) }
-    viewModel<ContractDetailViewModel> { ContractDetailViewModelImpl(get(), get()) }
+    viewModel<ContractDetailViewModel> { ContractDetailViewModelImpl(get(), get(), get()) }
 }
 
 val marketingModule = module {
@@ -332,7 +342,9 @@ val marketingModule = module {
 }
 
 val offerModule = module {
-    viewModel<OfferViewModel> { OfferViewModelImpl(get()) }
+    viewModel<OfferViewModel> { (ids: List<String>) ->
+        OfferViewModelImpl(ids, get(), get(), get(), get(), get(), get(), get())
+    }
 }
 
 val profileModule = module {
@@ -356,7 +368,7 @@ val adyenModule = module {
 }
 
 val embarkModule = module {
-    viewModel<EmbarkViewModel> { (storyName: String) -> EmbarkViewModelImpl(get(), get(), get(), storyName) }
+    viewModel<EmbarkViewModel> { (storyName: String) -> EmbarkViewModelImpl(get(), get(), get(), get(), storyName) }
 }
 
 val valueStoreModule = module {
@@ -401,6 +413,14 @@ val changeAddressModule = module {
     viewModel<ChangeAddressViewModel> { ChangeAddressViewModelImpl(get(), get()) }
 }
 
+val changeDateBottomSheetModule = module {
+    viewModel { (data: ChangeDateBottomSheetData) -> ChangeDateBottomSheetViewModel(get(), get(), data) }
+}
+
+val checkoutModule = module {
+    viewModel { (ids: List<String>) -> CheckoutViewModel(ids, get(), get(), get(), get()) }
+}
+
 val serviceModule = module {
     single { FileService(get()) }
     single { LoginStatusService(get(), get()) }
@@ -414,11 +434,7 @@ val repositoriesModule = module {
     single { ClaimsRepository(get(), get()) }
     single { InsuranceRepository(get(), get()) }
     single { ProfileRepository(get()) }
-    single {
-        RedeemReferralCodeRepository(
-            get()
-        )
-    }
+    single { RedeemReferralCodeRepository(get(), get()) }
     single { UserRepository(get()) }
     single { WhatsNewRepository(get(), get(), get()) }
     single { WelcomeRepository(get(), get()) }
@@ -434,7 +450,7 @@ val repositoriesModule = module {
     single { HomeRepository(get(), get()) }
     single { TrustlyRepository(get()) }
     single { MemberIdRepository(get()) }
-    single { PaymentRepository(get()) }
+    single { PaymentRepository(get(), get()) }
     single { ChoosePlanRepository(get(), get()) }
 }
 
@@ -488,6 +504,16 @@ val useCaseModule = module {
     single { StartDanishAuthUseCase(get()) }
     single { StartNorwegianAuthUseCase(get()) }
     single { SubscribeToAuthStatusUseCase(get()) }
+    single { GetQuotesUseCase(get()) }
+    single { GetQuoteUseCase(get()) }
+    single { EditStartDateUseCase(get(), get()) }
+    single { SignQuotesUseCase(get(), get()) }
+    single { ApproveQuotesUseCase(get(), get(), get()) }
+    single { RefreshQuotesUseCase(get()) }
+}
+
+val cacheManagerModule = module {
+    single { CacheManager(get()) }
 }
 
 val pushTokenManagerModule = module {

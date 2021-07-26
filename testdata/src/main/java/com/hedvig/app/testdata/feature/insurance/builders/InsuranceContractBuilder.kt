@@ -10,6 +10,7 @@ import com.hedvig.android.owldroid.type.DanishHomeContentLineOfBusiness
 import com.hedvig.android.owldroid.type.NorwegianHomeContentLineOfBusiness
 import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
 import com.hedvig.android.owldroid.type.TypeOfContract
+import com.hedvig.app.testdata.common.builders.TableFragmentBuilder
 import java.time.LocalDate
 
 class InsuranceContractBuilder(
@@ -21,7 +22,7 @@ class InsuranceContractBuilder(
             draftCertificateUrl = "https://www.example.com"
         ),
     private val agreementStatus: AgreementStatus = AgreementStatus.ACTIVE,
-    private val showUpcomingAgreement: Boolean = false
+    private val showUpcomingAgreement: Boolean = false,
 ) {
 
     fun build() = InsuranceQuery.Contract(
@@ -114,6 +115,26 @@ class InsuranceContractBuilder(
                     ),
                     numberCoInsured = coinsured,
                     squareMeters = 50,
+                    ancillaryArea = 10,
+                    yearOfConstruction = 2012,
+                    numberOfBathrooms = 1,
+                    isSubleted = false,
+                    extraBuildings = listOf(
+                        InsuranceQuery.ExtraBuilding(
+                            asExtraBuildingCore = InsuranceQuery.AsExtraBuildingCore(
+                                area = 12,
+                                displayName = "Friggebod",
+                                hasWaterConnected = true,
+                            )
+                        ),
+                        InsuranceQuery.ExtraBuilding(
+                            asExtraBuildingCore = InsuranceQuery.AsExtraBuildingCore(
+                                area = 10,
+                                displayName = "Garage",
+                                hasWaterConnected = false,
+                            )
+                        ),
+                    )
                 )
             } else {
                 null
@@ -144,14 +165,16 @@ class InsuranceContractBuilder(
             },
             asDanishTravelAgreement = when (type) {
                 TypeOfContract.DK_TRAVEL,
-                TypeOfContract.DK_TRAVEL_STUDENT -> InsuranceQuery.AsDanishTravelAgreement(
+                TypeOfContract.DK_TRAVEL_STUDENT,
+                -> InsuranceQuery.AsDanishTravelAgreement(
                     numberCoInsured = 2
                 )
                 else -> null
             },
             asDanishAccidentAgreement = when (type) {
                 TypeOfContract.DK_ACCIDENT,
-                TypeOfContract.DK_ACCIDENT_STUDENT -> InsuranceQuery.AsDanishAccidentAgreement(
+                TypeOfContract.DK_ACCIDENT_STUDENT,
+                -> InsuranceQuery.AsDanishAccidentAgreement(
                     numberCoInsured = 2
                 )
                 else -> null
@@ -181,8 +204,9 @@ class InsuranceContractBuilder(
                     asTerminatedInFutureStatus = null
                 ),
                 upcomingAgreementDetailsTable = UpcomingAgreementFragment.UpcomingAgreementDetailsTable(
-                    title = "",
-                    sections = emptyList()
+                    fragments = UpcomingAgreementFragment.UpcomingAgreementDetailsTable.Fragments(
+                        TableFragmentBuilder().build()
+                    )
                 )
             )
         )

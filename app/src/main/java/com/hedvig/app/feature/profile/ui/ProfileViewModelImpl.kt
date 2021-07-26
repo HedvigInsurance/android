@@ -9,7 +9,6 @@ import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.util.LiveEvent
 import com.hedvig.app.util.extensions.default
 import e
-import i
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach

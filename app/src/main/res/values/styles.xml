@@ -27,14 +27,6 @@
         <item name="android:windowLightStatusBar">false</item>
     </style>
 
-    <style name="Hedvig.Theme.Offer.V23" parent="Hedvig.Theme">
-        <item name="android:windowBackground">@color/hedvig_black</item>
-        <item name="android:statusBarColor">@color/hedvig_black</item>
-        <item name="android:windowLightStatusBar">false</item>
-    </style>
-
-    <style name="Hedvig.Theme.Offer" parent="Hedvig.Theme.Offer.V23" />
-
     <style name="Hedvig.Theme.Splash.V23" parent="Hedvig.Theme">
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowBackground">@drawable/splash_background</item>
@@ -155,4 +147,5 @@
         <item name="android:clipToPadding">false</item>
         <item name="android:paddingTop">12dp</item>
     </style>
+
 </resources>

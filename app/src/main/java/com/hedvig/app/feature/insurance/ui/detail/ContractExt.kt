@@ -9,7 +9,7 @@ import com.hedvig.app.util.apollo.stringRes
 fun InsuranceQuery.Contract.toModelItems(): List<YourInfoModel> = when {
     currentAgreement.asSwedishApartmentAgreement != null -> currentAgreement.asSwedishApartmentAgreement!!.let {
         listOfNotNull(
-            YourInfoModel.Home(
+            YourInfoModel.Home.Apartment(
                 it.address.fragments.addressFragment.street,
                 it.address.fragments.addressFragment.postalCode,
                 it.saType.stringRes(),
@@ -21,11 +21,20 @@ fun InsuranceQuery.Contract.toModelItems(): List<YourInfoModel> = when {
     }
     currentAgreement.asSwedishHouseAgreement != null -> currentAgreement.asSwedishHouseAgreement!!.let {
         listOfNotNull(
-            YourInfoModel.Home(
-                it.address.fragments.addressFragment.street,
-                it.address.fragments.addressFragment.postalCode,
-                R.string.SWEDISH_HOUSE_LOB,
-                it.squareMeters
+            YourInfoModel.Home.House(
+                street = it.address.fragments.addressFragment.street,
+                postalCode = it.address.fragments.addressFragment.postalCode,
+                type = R.string.SWEDISH_HOUSE_LOB,
+                size = it.squareMeters,
+                ancillaryArea = it.ancillaryArea,
+                yearOfConstruction = it.yearOfConstruction,
+                numberOfBathrooms = it.numberOfBathrooms,
+                isPartlySubleted = it.isSubleted,
+                extraBuildings = it.extraBuildings.mapNotNull { eb ->
+                    eb?.asExtraBuildingCore?.let { ebc ->
+                        Triple(ebc.displayName, ebc.area, ebc.hasWaterConnected)
+                    }
+                }
             ),
             if (FeatureFlag.MOVING_FLOW.enabled) YourInfoModel.ChangeAddressButton else null,
             YourInfoModel.Coinsured(it.numberCoInsured)
@@ -33,7 +42,7 @@ fun InsuranceQuery.Contract.toModelItems(): List<YourInfoModel> = when {
     }
     currentAgreement.asNorwegianHomeContentAgreement != null -> currentAgreement.asNorwegianHomeContentAgreement!!.let {
         listOf(
-            YourInfoModel.Home(
+            YourInfoModel.Home.Apartment(
                 it.address.fragments.addressFragment.street,
                 it.address.fragments.addressFragment.postalCode,
                 it.nhcType?.stringRes(),
@@ -44,7 +53,7 @@ fun InsuranceQuery.Contract.toModelItems(): List<YourInfoModel> = when {
     }
     currentAgreement.asDanishHomeContentAgreement != null -> currentAgreement.asDanishHomeContentAgreement!!.let {
         listOf(
-            YourInfoModel.Home(
+            YourInfoModel.Home.Apartment(
                 it.address.fragments.addressFragment.street,
                 it.address.fragments.addressFragment.postalCode,
                 it.dhcType?.stringRes(),
@@ -53,8 +62,14 @@ fun InsuranceQuery.Contract.toModelItems(): List<YourInfoModel> = when {
             YourInfoModel.Coinsured(it.numberCoInsured)
         )
     }
-    currentAgreement.asNorwegianTravelAgreement != null -> listOf(YourInfoModel.Coinsured(currentAgreement.asNorwegianTravelAgreement!!.numberCoInsured))
-    currentAgreement.asDanishTravelAgreement != null -> listOf(YourInfoModel.Coinsured(currentAgreement.asDanishTravelAgreement!!.numberCoInsured))
-    currentAgreement.asDanishAccidentAgreement != null -> listOf(YourInfoModel.Coinsured(currentAgreement.asDanishAccidentAgreement!!.numberCoInsured))
+    currentAgreement.asNorwegianTravelAgreement != null -> listOf(
+        YourInfoModel.Coinsured(currentAgreement.asNorwegianTravelAgreement!!.numberCoInsured)
+    )
+    currentAgreement.asDanishTravelAgreement != null -> listOf(
+        YourInfoModel.Coinsured(currentAgreement.asDanishTravelAgreement!!.numberCoInsured)
+    )
+    currentAgreement.asDanishAccidentAgreement != null -> listOf(
+        YourInfoModel.Coinsured(currentAgreement.asDanishAccidentAgreement!!.numberCoInsured)
+    )
     else -> throw IllegalArgumentException("No agreement matched when creating contract items for $currentAgreement")
 }

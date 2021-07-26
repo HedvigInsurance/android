@@ -13,6 +13,7 @@ import com.hedvig.app.testdata.feature.embark.data.PROGRESSABLE_STORY
 import com.hedvig.app.testdata.feature.embark.data.STANDARD_STORY
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITCH_DATE_PICKER
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_BINARY_REDIRECT
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_CLOSE_AND_CHAT
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_COMPUTED_VALUE
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_EQUALS_EXPRESSION
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_FOUR_TOOLTIP
@@ -394,6 +395,20 @@ class EmbarkMockActivity : MockActivity() {
                     this@EmbarkMockActivity,
                     this.javaClass.name,
                     "Story with progress",
+                )
+            )
+        }
+        header("External Redirects")
+        clickableItem("Close and Chat") {
+            MockEmbarkViewModel.apply {
+                mockedData = STORY_WITH_CLOSE_AND_CHAT
+                shouldLoad = true
+            }
+            startActivity(
+                EmbarkActivity.newInstance(
+                    this@EmbarkMockActivity,
+                    this.javaClass.name,
+                    "Story with external redirects",
                 )
             )
         }

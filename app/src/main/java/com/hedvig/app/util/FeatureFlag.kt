@@ -12,6 +12,6 @@ enum class FeatureFlag(
         "moving_flow",
         "Moving Flow",
         "Lets a user change their address and get a new offer",
-        isDebug()
+        true
     )
 }

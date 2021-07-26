@@ -1,13 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Button xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/signButton"
-    style="?attr/materialButtonContainedLargeStyle"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="@dimen/base_margin_double"
-    android:layout_marginTop="@dimen/base_margin_quadruple"
-    android:text="@string/OFFER_SIGN_BUTTON"
-    app:icon="@drawable/ic_bank_id"
-    app:iconGravity="textEnd"
-    app:iconPadding="@dimen/base_margin_double" />
+    android:background="?android:colorBackground"
+    android:orientation="vertical"
+    android:paddingHorizontal="@dimen/base_margin_double"
+    android:paddingTop="@dimen/base_margin_sextuple"
+    android:paddingBottom="150dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/OFFER_FOOTER_SUBTITLE"
+        android:textAppearance="?textAppearanceSubtitle2" />
+
+    <Button
+        android:id="@+id/chat_button"
+        style="?materialButtonOutlinedLargeStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_double"
+        android:text="@string/OFFER_FOOTER_BUTTON_TEXT" />
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin_sextuple"
+        android:textAlignment="center"
+        android:textAppearance="?textAppearanceCaption"
+        tools:text="@string/OFFER_FOOTER_GDPR_INFO" />
+
+</LinearLayout>

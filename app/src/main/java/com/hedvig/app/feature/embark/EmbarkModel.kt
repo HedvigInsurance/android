@@ -7,4 +7,6 @@ data class EmbarkModel(
     val passage: EmbarkStoryQuery.Passage?,
     val navigationDirection: NavigationDirection,
     val progress: Percent,
+    val isLoggedIn: Boolean,
+    val hasTooltips: Boolean
 )

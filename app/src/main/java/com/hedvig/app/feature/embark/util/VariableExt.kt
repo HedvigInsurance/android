@@ -5,8 +5,8 @@ import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLSingleVariableCasting
 import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLVariableGeneratedType
 import com.hedvig.app.util.toJsonArray
 import com.hedvig.app.util.toJsonObject
-import java.util.UUID
 import org.json.JSONObject
+import java.util.UUID
 
 fun GraphQLVariablesFragment.Variable.toFragment() = GraphQLVariablesFragment(
     asEmbarkAPIGraphQLSingleVariable = asEmbarkAPIGraphQLSingleVariable1?.let { single ->

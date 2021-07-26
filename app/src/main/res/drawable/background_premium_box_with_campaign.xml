@@ -5,7 +5,7 @@
             <corners
                 android:topLeftRadius="@dimen/background_rounded_corner_radius"
                 android:topRightRadius="@dimen/background_rounded_corner_radius" />
-            <solid android:color="@color/hedvig_dark_gray" />
+            <solid android:color="?colorSurface" />
         </shape>
     </item>
     <item android:top="@dimen/premium_box_campaign_header_height">
@@ -14,6 +14,12 @@
             <corners
                 android:bottomLeftRadius="@dimen/background_rounded_corner_radius"
                 android:bottomRightRadius="@dimen/background_rounded_corner_radius" />
+        </shape>
+    </item>
+    <item android:height="1dp" android:gravity="bottom">
+        <shape android:shape="rectangle">
+            <size android:height="2dp" />
+            <solid android:color="@color/color_divider" />
         </shape>
     </item>
 </layer-list>

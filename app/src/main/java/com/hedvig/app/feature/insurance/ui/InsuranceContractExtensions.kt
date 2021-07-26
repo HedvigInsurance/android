@@ -1,5 +1,7 @@
 package com.hedvig.app.feature.insurance.ui
 
+import android.widget.TextView
+import androidx.core.view.isVisible
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.R
@@ -12,12 +14,16 @@ import com.hedvig.app.util.extensions.view.show
 import e
 import java.time.format.DateTimeFormatter
 
-fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding, marketManager: MarketManager) =
+fun InsuranceQuery.Contract.bindTo(
+    binding: InsuranceContractCardBinding,
+    marketManager: MarketManager
+) =
     binding.apply {
         status.fragments.contractStatusFragment.let { contractStatus ->
             contractStatus.asPendingStatus?.let {
                 firstStatusPill.show()
                 firstStatusPill.setText(R.string.DASHBOARD_INSURANCE_STATUS_INACTIVE_NO_STARTDATE)
+                typeOfContract.bindBackgroundColor(this)
             }
             contractStatus.asActiveInFutureStatus?.let { activeInFuture ->
                 firstStatusPill.show()
@@ -25,6 +31,7 @@ fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding, market
                     R.string.DASHBOARD_INSURANCE_STATUS_INACTIVE_STARTDATE,
                     dateTimeFormatter.format(activeInFuture.futureInception)
                 )
+                removeBackgroundColor()
             }
             contractStatus.asActiveInFutureAndTerminatedInFutureStatus?.let { activeAndTerminated ->
                 firstStatusPill.show()
@@ -37,6 +44,7 @@ fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding, market
                     R.string.DASHBOARD_INSURANCE_STATUS_ACTIVE_TERMINATIONDATE,
                     dateTimeFormatter.format(activeAndTerminated.futureTermination)
                 )
+                removeBackgroundColor()
             }
             contractStatus.asTerminatedInFutureStatus?.let { terminatedInFuture ->
                 firstStatusPill.show()
@@ -44,14 +52,17 @@ fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding, market
                     R.string.DASHBOARD_INSURANCE_STATUS_ACTIVE_TERMINATIONDATE,
                     dateTimeFormatter.format(terminatedInFuture.futureTermination)
                 )
+                typeOfContract.bindBackgroundColor(this)
             }
             contractStatus.asTerminatedTodayStatus?.let {
                 firstStatusPill.show()
                 firstStatusPill.setText(R.string.DASHBOARD_INSURANCE_STATUS_TERMINATED_TODAY)
+                typeOfContract.bindBackgroundColor(this)
             }
             contractStatus.asTerminatedStatus?.let {
                 firstStatusPill.show()
                 firstStatusPill.setText(R.string.DASHBOARD_INSURANCE_STATUS_TERMINATED)
+                removeBackgroundColor()
             }
             contractStatus.asActiveStatus?.let {
                 it.upcomingAgreementChange?.newAgreement
@@ -64,44 +75,7 @@ fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding, market
                             )
                     }
 
-                when (typeOfContract) {
-                    TypeOfContract.SE_APARTMENT_BRF,
-                    TypeOfContract.SE_APARTMENT_RENT,
-                    TypeOfContract.SE_APARTMENT_STUDENT_BRF,
-                    TypeOfContract.SE_APARTMENT_STUDENT_RENT,
-                    TypeOfContract.DK_HOME_CONTENT_STUDENT_OWN,
-                    TypeOfContract.DK_HOME_CONTENT_STUDENT_RENT,
-                    TypeOfContract.NO_HOME_CONTENT_OWN,
-                    TypeOfContract.NO_HOME_CONTENT_RENT,
-                    TypeOfContract.NO_HOME_CONTENT_YOUTH_OWN,
-                    TypeOfContract.NO_HOME_CONTENT_YOUTH_RENT,
-                    TypeOfContract.DK_HOME_CONTENT_OWN,
-                    TypeOfContract.DK_HOME_CONTENT_RENT,
-                    -> {
-                        container.setBackgroundResource(R.drawable.gradient_summer_sky)
-                        blur.setColorFilter(blur.context.compatColor(R.color.blur_summer_sky))
-                    }
-                    TypeOfContract.NO_TRAVEL,
-                    TypeOfContract.NO_TRAVEL_YOUTH,
-                    TypeOfContract.DK_TRAVEL,
-                    TypeOfContract.DK_TRAVEL_STUDENT,
-                    -> {
-                        container.setBackgroundResource(R.drawable.gradient_fall_sunset)
-                        blur.setColorFilter(blur.context.compatColor(R.color.blur_fall_sunset))
-                    }
-                    TypeOfContract.SE_HOUSE,
-                    TypeOfContract.DK_ACCIDENT,
-                    TypeOfContract.DK_ACCIDENT_STUDENT,
-                    -> {
-                        container.setBackgroundResource(R.drawable.gradient_spring_fog)
-                        blur.setColorFilter(blur.context.compatColor(R.color.blur_spring_fog))
-                    }
-                    TypeOfContract.UNKNOWN__ -> {
-                    }
-                }
-            } ?: run {
-                container.setBackgroundColor(container.context.colorAttr(android.R.attr.colorBackground))
-                blur.remove()
+                typeOfContract.bindBackgroundColor(this)
             }
         }
 
@@ -146,6 +120,57 @@ fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding, market
         // Alternative implementation path: extend `RecyclerView` and make `onTouchEvent` always return `false`.
         contractPills.suppressLayout(true)
     }
+
+private fun InsuranceContractCardBinding.removeBackgroundColor() {
+    container.setBackgroundColor(container.context.getColor(R.color.hedvig_light_gray))
+    blur.remove()
+}
+
+private fun TypeOfContract.bindBackgroundColor(
+    insuranceContractCardBinding: InsuranceContractCardBinding
+) {
+    when (this) {
+        TypeOfContract.SE_APARTMENT_BRF,
+        TypeOfContract.SE_APARTMENT_RENT,
+        TypeOfContract.SE_APARTMENT_STUDENT_BRF,
+        TypeOfContract.SE_APARTMENT_STUDENT_RENT,
+        TypeOfContract.DK_HOME_CONTENT_STUDENT_OWN,
+        TypeOfContract.DK_HOME_CONTENT_STUDENT_RENT,
+        TypeOfContract.NO_HOME_CONTENT_OWN,
+        TypeOfContract.NO_HOME_CONTENT_RENT,
+        TypeOfContract.NO_HOME_CONTENT_YOUTH_OWN,
+        TypeOfContract.NO_HOME_CONTENT_YOUTH_RENT,
+        TypeOfContract.DK_HOME_CONTENT_OWN,
+        TypeOfContract.DK_HOME_CONTENT_RENT,
+        -> {
+            insuranceContractCardBinding.container.setBackgroundResource(R.drawable.gradient_summer_sky)
+            insuranceContractCardBinding.blur.setColorFilter(insuranceContractCardBinding.blur.context.compatColor(R.color.blur_summer_sky))
+        }
+        TypeOfContract.NO_TRAVEL,
+        TypeOfContract.NO_TRAVEL_YOUTH,
+        TypeOfContract.DK_TRAVEL,
+        TypeOfContract.DK_TRAVEL_STUDENT,
+        -> {
+            insuranceContractCardBinding.container.setBackgroundResource(R.drawable.gradient_fall_sunset)
+            insuranceContractCardBinding.blur.setColorFilter(insuranceContractCardBinding.blur.context.compatColor(R.color.blur_fall_sunset))
+        }
+        TypeOfContract.SE_HOUSE,
+        TypeOfContract.DK_ACCIDENT,
+        TypeOfContract.DK_ACCIDENT_STUDENT,
+        -> {
+            insuranceContractCardBinding.container.setBackgroundResource(R.drawable.gradient_spring_fog)
+            insuranceContractCardBinding.blur.setColorFilter(insuranceContractCardBinding.blur.context.compatColor(R.color.blur_spring_fog))
+        }
+        TypeOfContract.UNKNOWN__ -> {
+            insuranceContractCardBinding.container.setBackgroundColor(
+                insuranceContractCardBinding.container.context.colorAttr(
+                    android.R.attr.colorBackground
+                )
+            )
+            insuranceContractCardBinding.blur.remove()
+        }
+    }
+}
 
 private val dateTimeFormatter = DateTimeFormatter.ofPattern("d MMM uuuu")
 

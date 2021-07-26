@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/chat"
+        android:icon="@drawable/ic_chat_white"
+        android:title="@string/OFFER_FOOTER_BUTTON_TEXT"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/app_settings"
+        android:icon="@drawable/ic_settings_marketing"
+        android:title="@string/profile.appSettingsSection.title"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/app_info"
+        android:icon="@drawable/ic_info_more_options"
+        android:title="@string/onboarding_contextual_menu.app_info_label"
+        app:showAsAction="never" />
+</menu>
