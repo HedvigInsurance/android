@@ -57,7 +57,7 @@
                         android:layout_height="wrap_content"
                         android:padding="@dimen/base_margin_double"
                         android:text="@string/INSURANCE_DETAILS_TERMINATION_INFO"
-                        android:textSize="13sp"
+                        android:textAppearance="?textAppearanceCaption"
                         android:visibility="gone"
                         tools:visibility="visible" />
 

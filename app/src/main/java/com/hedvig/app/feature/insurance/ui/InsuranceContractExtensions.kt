@@ -122,7 +122,7 @@ fun InsuranceQuery.Contract.bindTo(
     }
 
 private fun InsuranceContractCardBinding.removeBackgroundColor() {
-    container.setBackgroundColor(container.context.colorAttr(android.R.attr.colorBackground))
+    container.setBackgroundColor(container.context.getColor(R.color.hedvig_light_gray))
     blur.remove()
 }
 
