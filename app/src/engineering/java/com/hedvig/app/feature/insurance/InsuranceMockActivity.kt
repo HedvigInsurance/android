@@ -281,6 +281,13 @@ class InsuranceMockActivity : MockActivity() {
             }
             startActivity(ContractDetailActivity.newInstance(context, INSURANCE_DATA_PENDING_CONTRACT.contracts.first().id))
         }
+        clickableItem("Terminated contract") {
+            MockContractDetailViewModel.apply {
+                mockData = INSURANCE_DATA_TERMINATED
+                shouldError = false
+            }
+            startActivity(ContractDetailActivity.newInstance(context, INSURANCE_DATA_TERMINATED.contracts.first().id))
+        }
         header("Terminated Contracts-Screen")
         clickableItem("One Active + One Terminated") {
             MockInsuranceViewModel.apply {

@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.insurance.ui
 
-import android.view.View
+import android.widget.TextView
+import androidx.core.view.isVisible
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.R
@@ -13,7 +14,10 @@ import com.hedvig.app.util.extensions.view.show
 import e
 import java.time.format.DateTimeFormatter
 
-fun InsuranceQuery.Contract.bindTo(binding: InsuranceContractCardBinding, marketManager: MarketManager) =
+fun InsuranceQuery.Contract.bindTo(
+    binding: InsuranceContractCardBinding,
+    marketManager: MarketManager
+) =
     binding.apply {
         status.fragments.contractStatusFragment.let { contractStatus ->
             contractStatus.asPendingStatus?.let {
