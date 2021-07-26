@@ -115,6 +115,26 @@ class InsuranceContractBuilder(
                     ),
                     numberCoInsured = coinsured,
                     squareMeters = 50,
+                    ancillaryArea = 10,
+                    yearOfConstruction = 2012,
+                    numberOfBathrooms = 1,
+                    isSubleted = false,
+                    extraBuildings = listOf(
+                        InsuranceQuery.ExtraBuilding(
+                            asExtraBuildingCore = InsuranceQuery.AsExtraBuildingCore(
+                                area = 12,
+                                displayName = "Friggebod",
+                                hasWaterConnected = true,
+                            )
+                        ),
+                        InsuranceQuery.ExtraBuilding(
+                            asExtraBuildingCore = InsuranceQuery.AsExtraBuildingCore(
+                                area = 10,
+                                displayName = "Garage",
+                                hasWaterConnected = false,
+                            )
+                        ),
+                    )
                 )
             } else {
                 null

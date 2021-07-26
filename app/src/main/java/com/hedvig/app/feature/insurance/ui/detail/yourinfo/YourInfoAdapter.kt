@@ -1,11 +1,15 @@
 package com.hedvig.app.feature.insurance.ui.detail.yourinfo
 
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.StringRes
+import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
+import com.hedvig.app.databinding.AdditionalBuildingsRowBinding
 import com.hedvig.app.databinding.ChangeAddressButtonBinding
 import com.hedvig.app.databinding.ChangeAddressPendingChangeCardBinding
 import com.hedvig.app.databinding.YourInfoChangeBinding
@@ -64,15 +68,109 @@ class YourInfoAdapter(
             private val binding by viewBinding(YourInfoHomeBinding::bind)
             override fun bind(data: YourInfoModel, fragmentManager: FragmentManager) = with(binding) {
                 if (data !is YourInfoModel.Home) {
-                    invalid(data)
-                } else {
-                    addressValue.text = data.street
-                    postcodeValue.text = data.postalCode
-                    typeValue.text = data.type?.let(root.context::getString)
-                    sizeValue.text = root.context.getString(
-                        R.string.CONTRACT_DETAIL_HOME_SIZE_INPUT, data.size
-                    )
+                    return invalid(data)
                 }
+                when (data) {
+                    is YourInfoModel.Home.Apartment -> {
+                        setHouseSectionVisibility(false)
+                        bindCommon(
+                            data.street,
+                            data.postalCode,
+                            data.type,
+                            data.size,
+                        )
+                    }
+                    is YourInfoModel.Home.House -> {
+                        setHouseSectionVisibility(true)
+                        bindCommon(
+                            data.street,
+                            data.postalCode,
+                            data.type,
+                            data.size,
+                        )
+                        bindHouse(
+                            data.ancillaryArea,
+                            data.yearOfConstruction,
+                            data.numberOfBathrooms,
+                            data.isPartlySubleted,
+                            data.extraBuildings,
+                        )
+                    }
+                }
+            }
+
+            private fun bindCommon(
+                address: String,
+                postalCode: String,
+                @StringRes type: Int?,
+                size: Int,
+            ) = with(binding) {
+                addressValue.text = address
+                postcodeValue.text = postalCode
+                typeValue.text = type?.let(root.context::getString)
+                sizeValue.text = root.context.getString(
+                    R.string.CONTRACT_DETAIL_HOME_SIZE_INPUT, size
+                )
+            }
+
+            private fun bindHouse(
+                ancillaryArea: Int,
+                yearBuilt: Int,
+                numberOfBaths: Int,
+                isPartlySubleted: Boolean,
+                extraBuildings: List<Triple<String, Int, Boolean>>,
+            ) = with(binding) {
+                ancillaryAreaValue.text = ancillaryAreaValue.context.getString(
+                    R.string.HOUSE_INFO_BIYTA_SQUAREMETERS,
+                    ancillaryArea,
+                )
+                yearBuiltValue.text = yearBuilt.toString()
+                numberOfBathsValue.text = numberOfBaths.toString()
+                partlySubletedValue.setText(
+                    if (isPartlySubleted) {
+                        R.string.HOUSE_INFO_SUBLETED_TRUE
+                    } else {
+                        R.string.HOUSE_INFO_SUBLETED_FALSE
+                    }
+                )
+                extraBuildingsTitle.isVisible = extraBuildings.isNotEmpty()
+                extraBuildingsContainer.isVisible = extraBuildings.isNotEmpty()
+                extraBuildingsContainer.removeAllViews()
+
+                val inflater = LayoutInflater.from(extraBuildingsContainer.context)
+
+                extraBuildings.forEach { (displayValue, area, hasWaterConnected) ->
+                    val extraBuilding = AdditionalBuildingsRowBinding.inflate(
+                        inflater,
+                        extraBuildingsContainer,
+                        false
+                    )
+
+                    extraBuilding.title.text = displayValue
+                    extraBuilding.body.text = buildString {
+                        append(
+                            extraBuilding.body.context.getString(
+                                R.string.HOUSE_INFO_BOYTA_SQUAREMETERS,
+                                area,
+                            )
+                        )
+
+                        if (hasWaterConnected) {
+                            append(", ")
+                            append(extraBuilding.body.context.getString(R.string.HOUSE_INFO_CONNECTED_WATER))
+                        }
+                    }
+                    extraBuildingsContainer.addView(extraBuilding.root)
+                }
+            }
+
+            private fun setHouseSectionVisibility(visible: Boolean) = with(binding) {
+                ancillaryAreaContainer.isVisible = visible
+                yearBuiltContainer.isVisible = visible
+                numberOfBathsContainer.isVisible = visible
+                partlySubletedContainer.isVisible = visible
+                extraBuildingsTitle.isVisible = visible
+                extraBuildingsContainer.isVisible = visible
             }
         }
 
