@@ -18,9 +18,6 @@ import com.hedvig.app.feature.table.intoTable
 import com.hedvig.app.util.safeLet
 
 object OfferItemsBuilder {
-    // TODO Add extension to BundledQuote and fetch this from BE
-    const val GDPR_LINK = "https://www.hedvig.com/se/personuppgifter"
-
     fun createTopOfferItems(data: OfferQuery.Data): List<OfferModel> = ArrayList<OfferModel>().apply {
         add(
             OfferModel.Header(
@@ -146,7 +143,7 @@ object OfferItemsBuilder {
                 add(OfferModel.AutomaticSwitchCard)
             }
         }
-        add(OfferModel.Footer(data.signMethodForQuotes, GDPR_LINK))
+        add(OfferModel.Footer(data.signMethodForQuotes))
     }
 
     fun createPerilItems(data: List<OfferQuery.Quote>) = if (data.size == 1) {

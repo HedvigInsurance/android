@@ -42,7 +42,6 @@ sealed class OfferModel {
 
     data class Footer(
         val signMethod: SignMethod,
-        val url: String,
     ) : OfferModel()
 
     sealed class Subheading : OfferModel() {

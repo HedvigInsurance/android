@@ -15,7 +15,6 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityCheckoutBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.feature.offer.OfferItemsBuilder
 import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.extensions.setMarkdownText
@@ -47,7 +46,7 @@ class CheckoutActivity : BaseActivity(R.layout.activity_checkout) {
             val link = getString(
                 R.string.OFFER_FOOTER_GDPR_INFO,
                 getString(R.string.CHECKOUT_BUTTON),
-                OfferItemsBuilder.GDPR_LINK
+                getString(R.string.PRIVACY_POLICY_URL),
             )
             text.setMarkdownText(link)
 
