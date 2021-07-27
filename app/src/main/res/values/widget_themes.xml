@@ -20,6 +20,7 @@
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowIsFloating">false</item>
         <item name="materialButtonStyle">@style/Hedvig.Button</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
     </style>
 
     <style name="Hedvig.Theme.BottomSheet" parent="Widget.MaterialComponents.BottomSheet">
