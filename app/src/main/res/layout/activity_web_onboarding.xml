@@ -36,7 +36,7 @@
             android:clickable="true"
             android:contentDescription="@string/DASHBOARD_OPEN_CHAT"
             android:focusable="true"
-            app:srcCompat="@drawable/ic_chat" />
+            app:srcCompat="@drawable/ic_chat_black_ripple" />
 
     </FrameLayout>
 

@@ -6,6 +6,7 @@ import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
 import android.transition.TransitionManager
 import android.view.MenuItem
+import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -262,11 +263,17 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     }
 
     private fun inflateMenu(loginStatus: LoginStatus) {
-        binding.offerToolbar.menu.clear()
+        val menu = binding.offerToolbar.menu
+        menu.clear()
         when (loginStatus) {
             LoginStatus.ONBOARDING,
             LoginStatus.IN_OFFER -> binding.offerToolbar.inflateMenu(R.menu.offer_menu)
-            LoginStatus.LOGGED_IN -> binding.offerToolbar.inflateMenu(R.menu.offer_menu_logged_in)
+            LoginStatus.LOGGED_IN -> {
+                binding.offerToolbar.inflateMenu(R.menu.offer_menu_logged_in)
+                menu.getItem(0).actionView.setOnClickListener {
+                    handleMenuItem(menu[0])
+                }
+            }
         }
     }
 

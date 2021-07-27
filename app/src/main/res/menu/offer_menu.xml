@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/chat"
-        android:icon="@drawable/ic_chat_white"
         android:title="@string/OFFER_FOOTER_BUTTON_TEXT"
         app:showAsAction="never" />
     <item
