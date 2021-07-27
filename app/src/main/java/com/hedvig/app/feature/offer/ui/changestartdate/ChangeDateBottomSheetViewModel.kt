@@ -50,11 +50,7 @@ class ChangeDateBottomSheetViewModel(
     }
 
     fun onChooseDateClicked() {
-        _viewState.value = if (selectedDates.isNotEmpty()) {
-            ViewState.ShowConfirmationDialog
-        } else {
-            ViewState.Dismiss
-        }
+        _viewState.value = ViewState.Dismiss
     }
 
     fun onDialogConfirmed() {
@@ -85,7 +81,6 @@ class ChangeDateBottomSheetViewModel(
         object Dismiss : ViewState()
         data class Loading(val showLoading: Boolean) : ViewState()
         data class Error(val message: String? = null) : ViewState()
-        object ShowConfirmationDialog : ViewState()
         data class Inceptions(
             val inceptions: List<ChangeDateBottomSheetData.Inception>
         ) : ViewState()

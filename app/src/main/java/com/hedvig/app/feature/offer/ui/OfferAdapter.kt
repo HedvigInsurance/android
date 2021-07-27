@@ -26,7 +26,6 @@ import com.hedvig.app.databinding.TextBody2Binding
 import com.hedvig.app.databinding.TextHeadline5Binding
 import com.hedvig.app.databinding.TextSubtitle1Binding
 import com.hedvig.app.databinding.WarningCardBinding
-import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.offer.OfferRedeemCodeBottomSheet
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheet
