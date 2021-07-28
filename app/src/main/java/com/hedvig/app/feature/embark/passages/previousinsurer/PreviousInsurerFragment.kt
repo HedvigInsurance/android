@@ -71,7 +71,7 @@ class PreviousInsurerFragment : Fragment(R.layout.previous_insurer_fragment) {
                     .show()
             } else {
                 model.putInStore(insurerData.storeKey, item.id)
-                model.navigateToPassage(insurerData.next)
+                model.submitAction(insurerData.next)
             }
         }
     }

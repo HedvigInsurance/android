@@ -70,7 +70,7 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
             isVisible = true
             hapticClicks()
                 .mapLatest { onActionSelected(action, data, responseContainer) }
-                .onEach { model.navigateToPassage(action.link) }
+                .onEach { model.submitAction(action.link, 0) }
                 .launchIn(viewLifecycleScope)
             text = action.label
         }
@@ -79,10 +79,12 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
     private fun FragmentEmbarkSelectActionBinding.bindAdapter(data: SelectActionParameter) {
         with(actions) {
             isVisible = true
-            adapter = SelectActionAdapter { selectAction: SelectActionParameter.SelectAction, view: View ->
+            adapter = SelectActionAdapter { selectAction: SelectActionParameter.SelectAction,
+                view: View,
+                position: Int ->
                 view.hapticClicks()
                     .mapLatest { onActionSelected(selectAction, data, responseContainer) }
-                    .onEach { model.navigateToPassage(selectAction.link) }
+                    .onEach { model.submitAction(selectAction.link, position) }
                     .launchIn(viewLifecycleScope)
             }.apply {
                 submitList(data.actions)

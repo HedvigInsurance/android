@@ -1,5 +1,6 @@
 package com.hedvig.app.testdata.feature.embark.builders
 
+import com.hedvig.android.owldroid.fragment.ApiFragment
 import com.hedvig.android.owldroid.fragment.EmbarkLinkFragment
 import com.hedvig.android.owldroid.fragment.MessageFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
@@ -12,7 +13,7 @@ data class PassageBuilder(
     private val response: EmbarkStoryQuery.Response = MessageBuilder(text = "").buildMessageResponse(),
     private val redirects: List<EmbarkStoryQuery.Redirect> = emptyList(),
     private val action: EmbarkStoryQuery.Action,
-    private val api: EmbarkStoryQuery.Api? = null,
+    private val api: ApiFragment? = null,
     private val tooltip: List<EmbarkStoryQuery.Tooltip> = emptyList(),
     private val links: List<EmbarkLinkFragment> = emptyList(),
     private val tracks: List<EmbarkStoryQuery.Track> = emptyList(),
@@ -33,7 +34,7 @@ data class PassageBuilder(
         tooltips = tooltip,
         redirects = redirects,
         action = action,
-        api = api,
+        api = api?.let { EmbarkStoryQuery.Api3(fragments = EmbarkStoryQuery.Api3.Fragments(it)) },
         allLinks = links.map { EmbarkStoryQuery.AllLink(fragments = EmbarkStoryQuery.AllLink.Fragments(it)) },
         tracks = tracks,
         externalRedirect = externalRedirect?.let {

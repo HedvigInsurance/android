@@ -103,7 +103,23 @@ abstract class EmbarkViewModel(
         }.flatten()
     }
 
-    fun navigateToPassage(passageName: String) {
+    fun submitAction(nextPassageName: String, submitIndex: Int = 0) {
+        data.value?.passage?.let { currentPassage ->
+            currentPassage.action?.api(submitIndex)?.let { api ->
+                api.asEmbarkApiGraphQLQuery?.let { graphQLQuery ->
+                    handleGraphQLQuery(graphQLQuery)
+                    return
+                }
+                api.asEmbarkApiGraphQLMutation?.let { graphQLMutation ->
+                    handleGraphQLMutation(graphQLMutation)
+                    return
+                }
+            }
+        }
+        navigateToPassage(nextPassageName)
+    }
+
+    private fun navigateToPassage(passageName: String) {
         storyData.embarkStory?.let { story ->
             val nextPassage = story.passages.find { it.name == passageName }
             if (nextPassage?.redirects?.isNotEmpty() == true) {

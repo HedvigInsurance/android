@@ -1,5 +1,6 @@
 package com.hedvig.app.testdata.feature.embark.builders
 
+import com.hedvig.android.owldroid.fragment.ApiFragment
 import com.hedvig.android.owldroid.fragment.EmbarkLinkFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 
@@ -7,7 +8,9 @@ data class TextActionBuilder(
     private val key: String,
     private val placeholder: String = "",
     private val mask: String? = null,
-    private val link: EmbarkLinkFragment
+    private val link: EmbarkLinkFragment? = null,
+    private val title: String = "",
+    private val api: ApiFragment? = null,
 ) {
     fun build() = EmbarkStoryQuery.Action(
         asEmbarkSelectAction = null,
@@ -17,8 +20,12 @@ data class TextActionBuilder(
                 placeholder = placeholder,
                 mask = mask,
                 link = EmbarkStoryQuery.Link1(
-                    fragments = EmbarkStoryQuery.Link1.Fragments(link)
-                )
+                    fragments = EmbarkStoryQuery.Link1.Fragments(
+                        link
+                            ?: throw IllegalArgumentException("Missing required Link for single text action")
+                    )
+                ),
+                api = api?.let { EmbarkStoryQuery.Api1(fragments = EmbarkStoryQuery.Api1.Fragments(it)) },
             )
         ),
         asEmbarkTextActionSet = null,
@@ -27,6 +34,15 @@ data class TextActionBuilder(
         asEmbarkNumberActionSet = null,
         asEmbarkDatePickerAction = null,
         asEmbarkMultiAction = null,
+    )
+
+    fun buildTextActionSetAction() = EmbarkStoryQuery.TextAction(
+        data = EmbarkStoryQuery.Data3(
+            key = key,
+            placeholder = placeholder,
+            mask = mask,
+            title = title,
+        )
     )
 
     companion object {
