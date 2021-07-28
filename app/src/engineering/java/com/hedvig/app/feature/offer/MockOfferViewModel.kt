@@ -11,9 +11,9 @@ import com.hedvig.app.feature.offer.quotedetail.buildPerils
 import com.hedvig.app.feature.offer.ui.checkout.CheckoutParameter
 import com.hedvig.app.service.LoginStatus
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
+import java.time.LocalDate
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 
 class MockOfferViewModel : OfferViewModel() {
 
@@ -65,6 +65,13 @@ class MockOfferViewModel : OfferViewModel() {
     override fun reload() {
         shouldError = false
         load()
+    }
+
+    override fun onDiscardOffer() {
+        _events.tryEmit(Event.DiscardOffer)
+    }
+
+    override fun onGoToDirectDebit() {
     }
 
     private fun load() {

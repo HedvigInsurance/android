@@ -6,6 +6,7 @@ import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
 import android.transition.TransitionManager
 import android.view.MenuItem
+import androidx.activity.OnBackPressedCallback
 import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.lifecycle.flowWithLifecycle
@@ -20,6 +21,7 @@ import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationTitle
 import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.SplashActivity
 import com.hedvig.app.databinding.ActivityOfferBinding
 import com.hedvig.app.feature.documents.DocumentAdapter
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
@@ -36,6 +38,7 @@ import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.service.LoginStatus
 import com.hedvig.app.util.extensions.insetSystemBottomWithMargin
 import com.hedvig.app.util.extensions.insetSystemTopWithPadding
+import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.showErrorDialog
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.view.hide
@@ -54,7 +57,10 @@ import org.koin.core.parameter.parametersOf
 class OfferActivity : BaseActivity(R.layout.activity_offer) {
     private val quoteIds: List<String>
         get() = intent.getStringArrayExtra(QUOTE_IDS)?.toList() ?: emptyList()
-    private val model: OfferViewModel by viewModel { parametersOf(quoteIds) }
+    private val shouldShowOnNextAppStart: Boolean
+        get() = intent.getBooleanExtra(SHOULD_SHOW_ON_NEXT_APP_START, false)
+
+    private val model: OfferViewModel by viewModel { parametersOf(quoteIds, shouldShowOnNextAppStart) }
     private val binding by viewBinding(ActivityOfferBinding::bind)
     private val requestBuilder: RequestBuilder<PictureDrawable> by inject()
     private val tracker: OfferTracker by inject()
@@ -93,6 +99,21 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             })
 
             offerToolbar.setNavigationOnClickListener { onBackPressed() }
+            onBackPressedDispatcher.addCallback(
+                this@OfferActivity,
+                object : OnBackPressedCallback(true) {
+                    override fun handleOnBackPressed() {
+                        showAlert(
+                            title = R.string.OFFER_QUIT_TITLE,
+                            message = R.string.OFFER_QUIT_MESSAGE,
+                            positiveLabel = R.string.general_back_button,
+                            negativeLabel = R.string.general_discard_button,
+                            positiveAction = {},
+                            negativeAction = { model.onDiscardOffer() }
+                        )
+                    }
+                }
+            )
             offerToolbar.setOnMenuItemClickListener(::handleMenuItem)
 
             val topOfferAdapter = OfferAdapter(
@@ -209,6 +230,16 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                                 )
                             )
                         }
+                        OfferViewModel.Event.DiscardOffer -> {
+                            startActivity(
+                                Intent(
+                                    this@OfferActivity,
+                                    SplashActivity::class.java
+                                )
+                            )
+                        }
+                        OfferViewModel.Event.HasContracts -> {
+                        } // No-op
                     }
                 }
                 .launchIn(lifecycleScope)
@@ -325,9 +356,14 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
     companion object {
         private const val QUOTE_IDS = "QUOTE_IDS"
-        fun newInstance(context: Context, quoteIds: List<String> = emptyList()) =
-            Intent(context, OfferActivity::class.java).apply {
-                putExtra(QUOTE_IDS, quoteIds.toTypedArray())
-            }
+        private const val SHOULD_SHOW_ON_NEXT_APP_START = "SHOULD_SHOW_ON_NEXT_APP_START"
+        fun newInstance(
+            context: Context,
+            quoteIds: List<String> = emptyList(),
+            shouldShowOnNextAppStart: Boolean = false
+        ) = Intent(context, OfferActivity::class.java).apply {
+            putExtra(QUOTE_IDS, quoteIds.toTypedArray())
+            putExtra(SHOULD_SHOW_ON_NEXT_APP_START, shouldShowOnNextAppStart)
+        }
     }
 }

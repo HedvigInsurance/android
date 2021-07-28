@@ -17,7 +17,6 @@ import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticateDialog
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.offer.ui.OfferActivity
-import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.extensions.view.setupToolbar
 import e
 
@@ -126,9 +125,12 @@ private fun Activity.openAppSettings() {
 
 fun AppCompatActivity.handleSingleSelectLink(value: String) = when (value) {
     "message.forslag.dashboard" -> {
-        storeBoolean(IS_VIEWING_OFFER, true)
         startActivity(
-            Intent(this, OfferActivity::class.java).also {
+            OfferActivity.newInstance(
+                context = this,
+                quoteIds = emptyList(),
+                shouldShowOnNextAppStart = true
+            ).also {
                 it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 it.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
             }

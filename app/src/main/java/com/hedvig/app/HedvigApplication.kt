@@ -84,6 +84,7 @@ open class HedvigApplication : Application() {
                     pushTokenManagerModule,
                     checkoutModule,
                     cacheManagerModule,
+                    sharedPreferencesModule
                 )
             )
         }

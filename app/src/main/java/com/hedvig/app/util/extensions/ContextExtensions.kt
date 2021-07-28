@@ -38,7 +38,6 @@ import kotlinx.coroutines.delay
 import kotlin.system.exitProcess
 
 private const val SHARED_PREFERENCE_NAME = "hedvig_shared_preference"
-private const val SHARED_PREFERENCE_IS_LOGGED_IN = "shared_preference_is_logged_in"
 
 private const val SHARED_PREFERENCE_AUTHENTICATION_TOKEN = "shared_preference_authentication_token"
 const val SHARED_PREFERENCE_TRIED_MIGRATION_OF_TOKEN = "shared_preference_tried_migration_of_token"
@@ -120,12 +119,6 @@ fun Context.setAuthenticationToken(token: String?) =
 
 fun Context.getAuthenticationToken(): String? =
     getSharedPreferences().getString(SHARED_PREFERENCE_AUTHENTICATION_TOKEN, null)
-
-fun Context.setIsLoggedIn(isLoggedIn: Boolean) =
-    getSharedPreferences().edit().putBoolean(SHARED_PREFERENCE_IS_LOGGED_IN, isLoggedIn).commit()
-
-fun Context.isLoggedIn(): Boolean =
-    getSharedPreferences().getBoolean(SHARED_PREFERENCE_IS_LOGGED_IN, false)
 
 fun Context.setLastOpen(date: Long) =
     getSharedPreferences().edit().putLong(SHARED_PREFERENCE_LAST_OPEN, date).commit()

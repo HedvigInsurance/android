@@ -26,7 +26,6 @@ import com.hedvig.app.feature.chat.service.ChatTracker
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
 import com.hedvig.app.feature.chat.viewmodel.UserViewModel
 import com.hedvig.app.feature.settings.SettingsActivity
-import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.util.extensions.askForPermissions
 import com.hedvig.app.util.extensions.calculateNonFullscreenHeightDiff
 import com.hedvig.app.util.extensions.handleSingleSelectLink
@@ -43,14 +42,14 @@ import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
+import java.io.File
+import java.io.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.io.File
-import java.io.IOException
 
 class ChatActivity : BaseActivity(R.layout.activity_chat) {
     private val chatViewModel: ChatViewModel by viewModel()
@@ -220,9 +219,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
                     R.string.CHAT_RESET_DIALOG_POSITIVE_BUTTON_LABEL,
                     R.string.CHAT_RESET_DIALOG_NEGATIVE_BUTTON_LABEL,
                     positiveAction = {
-                        storeBoolean(LoginStatusService.IS_VIEWING_OFFER, false)
-                        setAuthenticationToken(null)
-                        userViewModel.logout { triggerRestartActivity(ChatActivity::class.java) }
+                        userViewModel.logout(this) { triggerRestartActivity(ChatActivity::class.java) }
                     }
                 )
             }

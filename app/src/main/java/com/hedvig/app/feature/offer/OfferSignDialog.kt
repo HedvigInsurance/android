@@ -18,7 +18,6 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.DialogSignBinding
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.storeBoolean
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
@@ -121,7 +120,7 @@ class OfferSignDialog : DialogFragment() {
     }
 
     private fun goToDirectDebit() {
-        requireContext().storeBoolean(IS_VIEWING_OFFER, false)
+        model.onGoToDirectDebit()
 
         val market = marketManager.market
         if (market == null) {

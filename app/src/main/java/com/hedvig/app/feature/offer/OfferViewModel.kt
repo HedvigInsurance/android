@@ -26,6 +26,7 @@ import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.service.LoginStatus
 import com.hedvig.app.service.LoginStatusService
 import e
+import java.time.LocalDate
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,7 +36,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 
 abstract class OfferViewModel : ViewModel() {
     protected val _viewState = MutableStateFlow(ViewState(isLoading = true))
@@ -57,6 +57,8 @@ abstract class OfferViewModel : ViewModel() {
         data class ApproveSuccessful(
             val moveDate: LocalDate?
         ) : Event()
+
+        object DiscardOffer : Event()
     }
 
     protected val _events = MutableSharedFlow<Event>(
@@ -102,6 +104,8 @@ abstract class OfferViewModel : ViewModel() {
 
     abstract fun onOpenCheckout()
     abstract fun reload()
+    abstract fun onDiscardOffer()
+    abstract fun onGoToDirectDebit()
 }
 
 class OfferViewModelImpl(
@@ -113,6 +117,7 @@ class OfferViewModelImpl(
     private val approveQuotesUseCase: ApproveQuotesUseCase,
     private val refreshQuotesUseCase: RefreshQuotesUseCase,
     private val tracker: OfferTracker,
+    shouldShowOnNextAppStart: Boolean
 ) : OfferViewModel() {
 
     private lateinit var quoteIds: List<String>
@@ -122,6 +127,8 @@ class OfferViewModelImpl(
     override val signError = MutableLiveData<Boolean>()
 
     init {
+        loginStatusService.isViewingOffer = shouldShowOnNextAppStart
+
         viewModelScope.launch {
             when (val idsResult = getQuotesUseCase(_quoteIds)) {
                 is GetQuotesUseCase.Result.Success -> {
@@ -134,7 +141,7 @@ class OfferViewModelImpl(
                                     _events.tryEmit(Event.Error(response.message))
                                 }
                                 OfferRepository.OfferResult.HasContracts -> {
-                                    _events.tryEmit(Event.HasContracts)
+                                    _events.tryEmit(Event.Error())
                                 }
                                 is OfferRepository.OfferResult.Success -> {
                                     val loginStatus = loginStatusService.getLoginStatus()
@@ -304,5 +311,14 @@ class OfferViewModelImpl(
                 is RefreshQuotesUseCase.Result.Error -> _events.tryEmit(Event.Error(result.message))
             }
         }
+    }
+
+    override fun onDiscardOffer() {
+        loginStatusService.isViewingOffer = false
+        _events.tryEmit(Event.DiscardOffer)
+    }
+
+    override fun onGoToDirectDebit() {
+        loginStatusService.isViewingOffer = false
     }
 }

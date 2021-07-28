@@ -103,8 +103,9 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                         )
                         is EmbarkViewModel.Event.Offer -> startActivity(
                             OfferActivity.newInstance(
-                                this@EmbarkActivity,
-                                event.ids,
+                                context = this@EmbarkActivity,
+                                quoteIds = event.ids,
+                                shouldShowOnNextAppStart = true
                             )
                         )
                         is EmbarkViewModel.Event.Error -> {

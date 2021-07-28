@@ -21,19 +21,20 @@ import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.makeUserAgent
+import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.extensions.getAuthenticationToken
-import com.hedvig.app.util.extensions.setIsLoggedIn
 import com.hedvig.app.util.extensions.toArrayList
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
-import org.koin.android.ext.android.inject
 import java.net.URLEncoder
+import org.koin.android.ext.android.inject
 
 class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
     private val binding by viewBinding(ActivityWebOnboardingBinding::bind)
     private val marketManager: MarketManager by inject()
     private val localeManager: LocaleManager by inject()
+    private val loginStatusService: LoginStatusService by inject()
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,7 +70,7 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
                 ) {
                     if (url?.contains("connect-payment") == true) {
                         view?.stopLoading()
-                        setIsLoggedIn(true)
+                        loginStatusService.isLoggedIn = true
                         marketManager.market?.connectPayin(
                             this@WebOnboardingActivity,
                             isPostSign = true

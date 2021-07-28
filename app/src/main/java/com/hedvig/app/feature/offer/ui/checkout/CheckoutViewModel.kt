@@ -8,6 +8,7 @@ import com.hedvig.app.feature.offer.ui.netMonthlyCost
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.util.ValidationResult
 import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.validateEmail
@@ -29,6 +30,7 @@ class CheckoutViewModel(
     private val signQuotesUseCase: SignQuotesUseCase,
     private val marketManager: MarketManager,
     private val cacheManager: CacheManager,
+    private val loginStatusService: LoginStatusService
 ) : ViewModel() {
 
     init {
@@ -54,7 +56,8 @@ class CheckoutViewModel(
                 _events.tryEmit(Event.Error(response.message))
             }
             OfferRepository.OfferResult.HasContracts -> {
-                _events.tryEmit(Event.HasContracts)
+                loginStatusService.isViewingOffer = false
+                _events.tryEmit(Event.Error())
             }
             is OfferRepository.OfferResult.Success -> {
                 _titleViewState.value = TitleViewState.Loaded(
@@ -183,7 +186,6 @@ class CheckoutViewModel(
 
     sealed class Event {
         data class Error(val message: String? = null) : Event()
-        object HasContracts : Event()
         object CheckoutSuccess : Event()
         object Loading : Event()
     }

@@ -17,14 +17,10 @@ import com.hedvig.app.databinding.ActivitySettingsBinding
 import com.hedvig.app.feature.chat.viewmodel.UserViewModel
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.makeLocaleString
-import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.extensions.compatDrawable
-import com.hedvig.app.util.extensions.setAuthenticationToken
-import com.hedvig.app.util.extensions.setIsLoggedIn
 import com.hedvig.app.util.extensions.showAlert
-import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.triggerRestartActivity
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.extensions.viewLifecycleScope
@@ -96,13 +92,7 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
                         positiveAction = {
                             marketManager.market = null
                             marketManager.hasSelectedMarket = false
-                            userViewModel.logout {
-                                requireContext().storeBoolean(
-                                    LoginStatusService.IS_VIEWING_OFFER,
-                                    false
-                                )
-                                requireContext().setAuthenticationToken(null)
-                                requireContext().setIsLoggedIn(false)
+                            userViewModel.logout(requireContext()) {
                                 viewLifecycleScope.launch {
                                     withContext(Dispatchers.IO) {
                                         runCatching { pushTokenManager.refreshToken() }

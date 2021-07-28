@@ -1,6 +1,8 @@
 package com.hedvig.app
 
 import android.content.Context
+import android.content.Context.MODE_PRIVATE
+import android.content.SharedPreferences
 import android.graphics.drawable.PictureDrawable
 import android.os.Build
 import com.apollographql.apollo.ApolloClient
@@ -297,7 +299,7 @@ val viewModelModule = module {
     viewModel { ClaimsViewModel(get(), get()) }
     viewModel { BaseTabViewModel(get(), get()) }
     viewModel { ChatViewModel(get()) }
-    viewModel { UserViewModel(get(), get()) }
+    viewModel { UserViewModel(get(), get(), get()) }
     viewModel { RedeemCodeViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
     viewModel { SettingsViewModel(get()) }
@@ -342,8 +344,8 @@ val marketingModule = module {
 }
 
 val offerModule = module {
-    viewModel<OfferViewModel> { (ids: List<String>) ->
-        OfferViewModelImpl(ids, get(), get(), get(), get(), get(), get(), get())
+    viewModel<OfferViewModel> { (ids: List<String>, shouldShowOnNextAppStart: Boolean) ->
+        OfferViewModelImpl(ids, get(), get(), get(), get(), get(), get(), get(), shouldShowOnNextAppStart)
     }
 }
 
@@ -418,12 +420,12 @@ val changeDateBottomSheetModule = module {
 }
 
 val checkoutModule = module {
-    viewModel { (ids: List<String>) -> CheckoutViewModel(ids, get(), get(), get(), get()) }
+    viewModel { (ids: List<String>) -> CheckoutViewModel(ids, get(), get(), get(), get(), get()) }
 }
 
 val serviceModule = module {
     single { FileService(get()) }
-    single { LoginStatusService(get(), get()) }
+    single { LoginStatusService(get(), get(), get()) }
     single { TabNotificationService(get()) }
     single { DeviceInformationService(get()) }
 }
@@ -518,4 +520,8 @@ val cacheManagerModule = module {
 
 val pushTokenManagerModule = module {
     single { PushTokenManager(FirebaseMessaging.getInstance()) }
+}
+
+val sharedPreferencesModule = module {
+    single<SharedPreferences> { get<Context>().getSharedPreferences("hedvig_shared_preference", MODE_PRIVATE) }
 }
