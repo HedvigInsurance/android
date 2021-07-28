@@ -49,7 +49,7 @@ class DatePickerFragment : Fragment(R.layout.fragment_embark_date_picker) {
             continueButton
                 .hapticClicks()
                 .mapLatest { saveAndAnimate() }
-                .onEach { model.navigateToPassage(data.link) }
+                .onEach { model.submitAction(data.link) }
                 .launchIn(viewLifecycleScope)
         }
 

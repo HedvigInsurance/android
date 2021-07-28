@@ -76,7 +76,7 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
             textActionSubmit
                 .hapticClicks()
                 .mapLatest { saveAndAnimate(data) }
-                .onEach { model.navigateToPassage(data.link) }
+                .onEach { model.submitAction(data.link) }
                 .launchIn(viewLifecycleScope)
 
             // We need to wait for all input views to be laid out before starting enter transition.
@@ -157,7 +157,7 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
                 if (textActionSetViewModel.isValid.value == true) {
                     viewLifecycleScope.launch {
                         saveAndAnimate(data)
-                        model.navigateToPassage(data.link)
+                        model.submitAction(data.link)
                     }
                 }
             }
