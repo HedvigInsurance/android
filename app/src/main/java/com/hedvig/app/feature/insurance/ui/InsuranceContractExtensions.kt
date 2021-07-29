@@ -1,7 +1,5 @@
 package com.hedvig.app.feature.insurance.ui
 
-import android.widget.TextView
-import androidx.core.view.isVisible
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.R

@@ -19,7 +19,6 @@ import com.hedvig.app.databinding.DialogSignBinding
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.extensions.canOpenUri
-import com.hedvig.app.util.extensions.storeBoolean
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel

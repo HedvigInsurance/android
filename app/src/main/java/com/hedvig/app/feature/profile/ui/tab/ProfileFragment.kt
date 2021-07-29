@@ -29,11 +29,11 @@ import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.triggerRestartActivity
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
-import javax.money.MonetaryAmount
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import javax.money.MonetaryAmount
 
 class ProfileFragment : Fragment(R.layout.profile_fragment) {
     private val binding by viewBinding(ProfileFragmentBinding::bind)

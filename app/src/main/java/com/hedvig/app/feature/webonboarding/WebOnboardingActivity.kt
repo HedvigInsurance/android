@@ -27,8 +27,8 @@ import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.extensions.toArrayList
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
-import java.net.URLEncoder
 import org.koin.android.ext.android.inject
+import java.net.URLEncoder
 
 class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
     private val binding by viewBinding(ActivityWebOnboardingBinding::bind)

@@ -16,13 +16,13 @@ import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
-import java.lang.IllegalArgumentException
-import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.lang.IllegalArgumentException
+import java.time.format.DateTimeFormatter
 
 class DatePickerFragment : Fragment(R.layout.fragment_embark_date_picker) {
     private val model: EmbarkViewModel by sharedViewModel()

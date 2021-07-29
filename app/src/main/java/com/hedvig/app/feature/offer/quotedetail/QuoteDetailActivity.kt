@@ -86,8 +86,8 @@ class QuoteDetailActivity : BaseActivity(R.layout.quote_detail_activity) {
                 .builder()
                 .setOnApplyInsetsListener { view, insets, initialState ->
                     view.updatePadding(
-                        bottom = initialState.paddings.bottom
-                            + insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
+                        bottom = initialState.paddings.bottom +
+                            insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
                     )
                 }
                 .applyToView(recycler)

@@ -7,10 +7,10 @@ import com.hedvig.app.feature.embark.passages.multiaction.MultiActionComponent
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionItem
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionParams
 import com.hedvig.app.util.LiveEvent
-import java.util.UUID
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
+import java.util.UUID
 
 class AddComponentViewModel(
     private val component: MultiActionItem.Component?,
