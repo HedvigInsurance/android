@@ -23,8 +23,8 @@ import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
 import com.hedvig.app.feature.perils.PerilItem
-import com.hedvig.app.service.LoginStatus
-import com.hedvig.app.service.LoginStatusService
+import com.hedvig.app.authenticate.LoginStatus
+import com.hedvig.app.authenticate.LoginStatusService
 import e
 import java.time.LocalDate
 import kotlinx.coroutines.channels.BufferOverflow

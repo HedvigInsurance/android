@@ -34,12 +34,11 @@ import com.hedvig.app.R
 import com.hedvig.app.SplashActivity
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.SettingsActivity
-import kotlinx.coroutines.delay
 import kotlin.system.exitProcess
+import kotlinx.coroutines.delay
 
 private const val SHARED_PREFERENCE_NAME = "hedvig_shared_preference"
 
-private const val SHARED_PREFERENCE_AUTHENTICATION_TOKEN = "shared_preference_authentication_token"
 const val SHARED_PREFERENCE_TRIED_MIGRATION_OF_TOKEN = "shared_preference_tried_migration_of_token"
 const val SHARED_PREFERENCE_ASKED_FOR_PERMISSION_PREFIX_KEY =
     "shared_preference_asked_for_permission_prefix"
@@ -113,12 +112,6 @@ fun Context.triggerRestartActivity(activity: Class<*> = SplashActivity::class.ja
     mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, pendingIntent)
     exitProcess(0)
 }
-
-fun Context.setAuthenticationToken(token: String?) =
-    getSharedPreferences().edit().putString(SHARED_PREFERENCE_AUTHENTICATION_TOKEN, token).commit()
-
-fun Context.getAuthenticationToken(): String? =
-    getSharedPreferences().getString(SHARED_PREFERENCE_AUTHENTICATION_TOKEN, null)
 
 fun Context.setLastOpen(date: Long) =
     getSharedPreferences().edit().putLong(SHARED_PREFERENCE_LAST_OPEN, date).commit()

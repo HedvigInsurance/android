@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.embark
 
-import com.hedvig.app.service.LoginStatus
+import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.testdata.feature.embark.data.STANDARD_STORY
 import com.hedvig.app.util.jsonObjectOf
 import org.json.JSONObject

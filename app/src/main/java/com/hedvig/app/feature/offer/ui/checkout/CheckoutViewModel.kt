@@ -8,7 +8,7 @@ import com.hedvig.app.feature.offer.ui.netMonthlyCost
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.service.LoginStatusService
+import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.util.ValidationResult
 import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.validateEmail

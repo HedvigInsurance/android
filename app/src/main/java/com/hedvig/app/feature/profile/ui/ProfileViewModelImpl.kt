@@ -1,27 +1,24 @@
 package com.hedvig.app.feature.profile.ui
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
+import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.util.LiveEvent
 import com.hedvig.app.util.extensions.default
-import com.hedvig.app.util.extensions.setAuthenticationToken
-import com.hedvig.app.util.extensions.triggerRestartActivity
 import e
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class ProfileViewModelImpl(
     private val profileRepository: ProfileRepository,
     private val chatRepository: ChatRepository,
+    private val logoutUseCase: LogoutUseCase
 ) : ProfileViewModel() {
     override val data = MutableLiveData<Result<ProfileQuery.Data>>()
     override val dirty: MutableLiveData<Boolean> = MutableLiveData<Boolean>().default(false)
@@ -121,5 +118,14 @@ class ProfileViewModelImpl(
 
     override fun updateReferralsInformation(data: RedeemReferralCodeMutation.Data) {
         profileRepository.writeRedeemedCostToCache(data)
+    }
+
+    override fun onLogout() {
+        viewModelScope.launch {
+            when (val result = logoutUseCase.logout()) {
+                is LogoutUseCase.LogoutResult.Error -> _events.tryEmit(Event.Error(result.message))
+                LogoutUseCase.LogoutResult.Success -> _events.tryEmit(Event.Logout)
+            }
+        }
     }
 }

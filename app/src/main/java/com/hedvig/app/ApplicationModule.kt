@@ -14,6 +14,11 @@ import com.apollographql.apollo.subscription.SubscriptionConnectionParams
 import com.apollographql.apollo.subscription.WebSocketSubscriptionTransport
 import com.bumptech.glide.RequestBuilder
 import com.google.firebase.messaging.FirebaseMessaging
+import com.hedvig.app.authenticate.AuthenticationTokenService
+import com.hedvig.app.authenticate.LoginStatusService
+import com.hedvig.app.authenticate.LogoutUseCase
+import com.hedvig.app.authenticate.SharedPreferencesAuthenticationTokenService
+import com.hedvig.app.authenticate.SharedPreferencesLoginStatusService
 import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModel
@@ -147,25 +152,23 @@ import com.hedvig.app.feature.zignsec.usecase.StartDanishAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.StartNorwegianAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthStatusUseCase
 import com.hedvig.app.service.FileService
-import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.app.service.push.managers.PaymentNotificationManager
 import com.hedvig.app.terminated.TerminatedTracker
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.ApolloTimberLogger
 import com.hedvig.app.util.apollo.CacheManager
-import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.svg.GlideApp
 import com.hedvig.app.util.svg.SvgSoftwareLayerSetter
 import com.mixpanel.android.mpmetrics.MixpanelAPI
+import java.time.Clock
+import java.util.Locale
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import timber.log.Timber
-import java.time.Clock
-import java.util.Locale
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APPLICATION_ID == "com.hedvig.test.app"
 
@@ -207,7 +210,7 @@ val applicationModule = module {
                 val builder = original
                     .newBuilder()
                     .method(original.method, original.body)
-                get<Context>().getAuthenticationToken()?.let { token ->
+                get<AuthenticationTokenService>().authenticationToken?.let { token ->
                     builder.header("Authorization", token)
                 }
                 chain.proceed(builder.build())
@@ -237,7 +240,9 @@ val applicationModule = module {
             .serverUrl(get<HedvigApplication>().graphqlUrl)
             .okHttpClient(get())
             .subscriptionConnectionParams {
-                SubscriptionConnectionParams(mapOf("Authorization" to get<Context>().getAuthenticationToken()))
+                SubscriptionConnectionParams(
+                    mapOf("Authorization" to get<AuthenticationTokenService>().authenticationToken)
+                )
             }
             .subscriptionTransportFactory(
                 WebSocketSubscriptionTransport.Factory(
@@ -350,7 +355,7 @@ val offerModule = module {
 }
 
 val profileModule = module {
-    viewModel<ProfileViewModel> { ProfileViewModelImpl(get(), get()) }
+    viewModel<ProfileViewModel> { ProfileViewModelImpl(get(), get(), get()) }
 }
 
 val keyGearModule = module {
@@ -425,7 +430,8 @@ val checkoutModule = module {
 
 val serviceModule = module {
     single { FileService(get()) }
-    single { LoginStatusService(get(), get(), get()) }
+    single<LoginStatusService> { SharedPreferencesLoginStatusService(get(), get(), get()) }
+    single<AuthenticationTokenService> { SharedPreferencesAuthenticationTokenService(get()) }
     single { TabNotificationService(get()) }
     single { DeviceInformationService(get()) }
 }
@@ -512,6 +518,7 @@ val useCaseModule = module {
     single { SignQuotesUseCase(get(), get()) }
     single { ApproveQuotesUseCase(get(), get(), get()) }
     single { RefreshQuotesUseCase(get()) }
+    single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get()) }
 }
 
 val cacheManagerModule = module {

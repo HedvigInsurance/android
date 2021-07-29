@@ -1,4 +1,4 @@
-package com.hedvig.app.service
+package com.hedvig.app.authenticate
 
 enum class LoginStatus {
     ONBOARDING,
