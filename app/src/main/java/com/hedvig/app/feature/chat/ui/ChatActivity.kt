@@ -26,7 +26,6 @@ import com.hedvig.app.feature.chat.ChatInputType
 import com.hedvig.app.feature.chat.ParagraphInput
 import com.hedvig.app.feature.chat.service.ChatTracker
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
-import com.hedvig.app.feature.chat.viewmodel.UserViewModel
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.extensions.askForPermissions
 import com.hedvig.app.util.extensions.calculateNonFullscreenHeightDiff
@@ -56,7 +55,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ChatActivity : BaseActivity(R.layout.activity_chat) {
     private val chatViewModel: ChatViewModel by viewModel()
-    private val userViewModel: UserViewModel by viewModel()
     private val binding by viewBinding(ActivityChatBinding::bind)
 
     private val tracker: ChatTracker by inject()
@@ -88,14 +86,14 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             resources.getDimensionPixelSize(R.dimen.is_keyboard_brake_point_height)
         navHeightDiff = resources.getDimensionPixelSize(R.dimen.nav_height_div)
 
-        userViewModel.events
+        chatViewModel.events
             .flowWithLifecycle(lifecycle)
             .onEach { event ->
                 when (event) {
-                    UserViewModel.Event.Logout -> {
+                    ChatViewModel.Event.Restart -> {
                         triggerRestartActivity(ChatActivity::class.java)
                     }
-                    is UserViewModel.Event.Error -> showAlert(
+                    is ChatViewModel.Event.Error -> showAlert(
                         title = R.string.error_dialog_title,
                         message = R.string.component_error,
                         positiveAction = {}
@@ -238,7 +236,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
                     R.string.CHAT_RESET_DIALOG_POSITIVE_BUTTON_LABEL,
                     R.string.CHAT_RESET_DIALOG_NEGATIVE_BUTTON_LABEL,
                     positiveAction = {
-                        userViewModel.logout()
+                        chatViewModel.restartChat()
                     }
                 )
             }

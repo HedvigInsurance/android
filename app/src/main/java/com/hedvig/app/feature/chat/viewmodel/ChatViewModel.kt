@@ -4,12 +4,15 @@ import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Response
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
 import com.hedvig.android.owldroid.graphql.GifQuery
 import com.hedvig.android.owldroid.graphql.UploadFileMutation
+import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.feature.chat.FileUploadOutcome
 import com.hedvig.app.feature.chat.data.ChatRepository
+import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.util.LiveEvent
 import e
 import io.reactivex.Observable
@@ -17,6 +20,11 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
@@ -25,6 +33,9 @@ import kotlinx.coroutines.launch
 
 class ChatViewModel(
     private val chatRepository: ChatRepository,
+    private val userRepository: UserRepository,
+    private val authenticationTokenService: AuthenticationTokenService,
+    private val apolloClient: ApolloClient
 ) : ViewModel() {
 
     val messages = MutableLiveData<ChatMessagesQuery.Data>()
@@ -42,6 +53,18 @@ class ChatViewModel(
     private var isWaitingForParagraph = false
     private var isSendingMessage = false
     private var loadRetries = 0L
+
+
+    private val _events = MutableSharedFlow<Event>(
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
+    )
+    val events: SharedFlow<Event> = _events
+
+    sealed class Event {
+        object Restart : Event()
+        object Error : Event()
+    }
 
     fun subscribe() {
         viewModelScope.launch {
@@ -293,4 +316,18 @@ class ChatViewModel(
             gifs.postValue(response.getOrNull()?.data)
         }
     }
+
+    fun restartChat() {
+        viewModelScope.launch {
+            authenticationTokenService.authenticationToken = null
+            val response = runCatching { userRepository.logout() }
+            if (response.isFailure) {
+                response.exceptionOrNull()?.let { e { "$it Failed to log out" } }
+                _events.tryEmit(Event.Error)
+            }
+            apolloClient.subscriptionManager.reconnect()
+            _events.tryEmit(Event.Restart)
+        }
+    }
+
 }
