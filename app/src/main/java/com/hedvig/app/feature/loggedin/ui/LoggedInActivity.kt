@@ -13,6 +13,7 @@ import androidx.core.view.updatePaddingRelative
 import androidx.dynamicanimation.animation.FloatValueHolder
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.github.florent37.viewtooltip.ViewTooltip
 import com.hedvig.android.owldroid.type.Feature
@@ -46,6 +47,8 @@ import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -335,11 +338,19 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 ?.let { referralsIncentive = it }
         }
 
-        memberIdViewModel.data.observe(this) { data ->
-            data.getOrNull()?.member?.id?.let { id ->
-                loggedInTracker.setMemberId(id)
+        memberIdViewModel
+            .state
+            .flowWithLifecycle(lifecycle)
+            .onEach { state ->
+                when (state) {
+                    is MemberIdViewModel.State.Success -> {
+                        loggedInTracker.setMemberId(state.id)
+                    }
+                    else -> {
+                    }
+                }
             }
-        }
+            .launchIn(lifecycleScope)
         whatsNewViewModel.fetchNews()
     }
 

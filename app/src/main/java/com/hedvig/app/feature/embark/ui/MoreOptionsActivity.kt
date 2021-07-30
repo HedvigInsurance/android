@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.core.view.updatePaddingRelative
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityMoreOptionsBinding
@@ -11,6 +13,8 @@ import com.hedvig.app.feature.onboarding.MemberIdViewModel
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MoreOptionsActivity : BaseActivity(R.layout.activity_more_options) {
@@ -31,29 +35,39 @@ class MoreOptionsActivity : BaseActivity(R.layout.activity_more_options) {
                 onBackPressed()
             }
 
-            recycler.adapter = MoreOptionsAdapter(model)
+            val adapter = MoreOptionsAdapter(model)
+            recycler.adapter = adapter
 
-            model.data.observe(this@MoreOptionsActivity) { result ->
-                if (result.isFailure) {
-                    (recycler.adapter as MoreOptionsAdapter).submitList(
-                        listOf(
-                            MoreOptionsModel.Header,
-                            MoreOptionsModel.UserId.Error,
-                            MoreOptionsModel.Version,
-                            MoreOptionsModel.Copyright
-                        )
-                    )
-                    return@observe
+            model
+                .state
+                .flowWithLifecycle(lifecycle)
+                .onEach { state ->
+                    when (state) {
+                        MemberIdViewModel.State.Error -> {
+                            adapter.submitList(
+                                listOf(
+                                    MoreOptionsModel.Header,
+                                    MoreOptionsModel.UserId.Error,
+                                    MoreOptionsModel.Version,
+                                    MoreOptionsModel.Copyright
+                                )
+                            )
+                        }
+                        MemberIdViewModel.State.Loading -> {
+                        }
+                        is MemberIdViewModel.State.Success -> {
+                            adapter.submitList(
+                                listOf(
+                                    MoreOptionsModel.Header,
+                                    MoreOptionsModel.UserId.Success(state.id),
+                                    MoreOptionsModel.Version,
+                                    MoreOptionsModel.Copyright,
+                                )
+                            )
+                        }
+                    }
                 }
-                (recycler.adapter as MoreOptionsAdapter).submitList(
-                    listOf(
-                        MoreOptionsModel.Header,
-                        result.getOrNull()?.member?.id?.let { MoreOptionsModel.UserId.Success(it) },
-                        MoreOptionsModel.Version,
-                        MoreOptionsModel.Copyright
-                    )
-                )
-            }
+                .launchIn(lifecycleScope)
         }
     }
 
