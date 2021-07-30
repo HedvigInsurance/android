@@ -12,10 +12,10 @@ class MockInsuranceViewModel : InsuranceViewModel() {
     override fun load() {
         if (shouldError) {
             shouldError = false
-            data.postValue(Result.failure(Error()))
+            _data.value = ViewState.Error
             return
         }
-        data.postValue(Result.success(insuranceMockData))
+        _data.value = ViewState.Success(insuranceMockData)
     }
 
     companion object {

@@ -5,6 +5,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Window
 import androidx.core.view.updatePadding
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
@@ -17,6 +19,8 @@ import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -43,30 +47,32 @@ class TerminatedContractsActivity : BaseActivity(R.layout.terminated_contracts_a
                 view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
             }
             toolbar.setNavigationOnClickListener { onBackPressed() }
-            recycler.adapter = InsuranceAdapter(tracker, marketManager, model::load)
-            model.data.observe(this@TerminatedContractsActivity) { data ->
-                if (data.isFailure) {
-                    (recycler.adapter as? InsuranceAdapter)?.submitList(listOf(InsuranceModel.Error))
-                    return@observe
-                }
+            val adapter = InsuranceAdapter(tracker, marketManager, model::load)
+            recycler.adapter = adapter
+            model
+                .data
+                .flowWithLifecycle(lifecycle)
+                .onEach { viewState ->
+                    when (viewState) {
+                        InsuranceViewModel.ViewState.Error -> {
+                            adapter.submitList(listOf(InsuranceModel.Error))
+                        }
+                        InsuranceViewModel.ViewState.Loading -> {
+                        }
+                        is InsuranceViewModel.ViewState.Success -> {
+                            val terminatedContracts = viewState
+                                .data
+                                .contracts
+                                .filter { it.status.fragments.contractStatusFragment.asTerminatedStatus != null }
 
-                data
-                    .getOrNull()
-                    ?.contracts
-                    ?.filter { it.status.fragments.contractStatusFragment.asTerminatedStatus != null }
-                    ?.let { terminatedContracts ->
-                        (recycler.adapter as? InsuranceAdapter)?.submitList(
-                            terminatedContracts.map {
-                                InsuranceModel.Contract(
-                                    it
-                                )
-                            }
-                        )
-                        recycler.post {
-                            startPostponedEnterTransition()
+                            adapter.submitList(
+                                terminatedContracts.map { InsuranceModel.Contract(it) }
+                            )
+                            recycler.post { startPostponedEnterTransition() }
                         }
                     }
-            }
+                }
+                .launchIn(lifecycleScope)
         }
     }
 
