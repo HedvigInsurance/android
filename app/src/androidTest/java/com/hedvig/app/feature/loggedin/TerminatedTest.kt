@@ -45,7 +45,7 @@ class TerminatedTest : TestCase() {
 
     @Test
     fun shouldOpenWithHomeTabWhenUserIsNotTerminated() = run {
-        every { loginStatusService.isLoggedIn }.returns(true)
+        every { loginStatusService.isLoggedIn }.returns(false)
         activityRule.launch()
 
         onScreen<ForeverDeepLinkTest.SplashScreen> {

@@ -5,9 +5,6 @@ import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.coroutines.await
 import com.hedvig.android.owldroid.graphql.ContractStatusQuery
 
-private const val SHARED_PREFERENCE_IS_LOGGED_IN = "shared_preference_is_logged_in"
-private const val IS_VIEWING_OFFER = "IS_VIEWING_OFFER"
-
 interface LoginStatusService {
     var isViewingOffer: Boolean
     var isLoggedIn: Boolean
@@ -52,5 +49,10 @@ class SharedPreferencesLoginStatusService(
             return true
         }
         return false
+    }
+
+    companion object {
+        private const val SHARED_PREFERENCE_IS_LOGGED_IN = "shared_preference_is_logged_in"
+        private const val IS_VIEWING_OFFER = "IS_VIEWING_OFFER"
     }
 }
