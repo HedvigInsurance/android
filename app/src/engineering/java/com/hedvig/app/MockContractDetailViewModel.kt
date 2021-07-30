@@ -18,12 +18,12 @@ class MockContractDetailViewModel : ContractDetailViewModel() {
     override fun loadContract(id: String) {
         if (shouldError) {
             shouldError = false
-            _data.postValue(Result.failure(Error()))
+            _data.value = ViewState.Error
             return
         } else {
             val contract = mockData.contracts.find { it.id == id }
             contract?.let {
-                _data.value = Result.success(it)
+                _data.value = ViewState.Success(it)
                 _yourInfoList.value = listOf(
                     YourInfoModel.PendingAddressChange(
                         upcomingAgreement = GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement(
@@ -74,20 +74,18 @@ class MockContractDetailViewModel : ContractDetailViewModel() {
                 ) + mockData.contracts[0].toModelItems()
 
                 _documentsList.value = listOfNotNull(
-                    it.currentAgreement.asAgreementCore?.certificateUrl?.let {
+                    it.currentAgreement.asAgreementCore?.certificateUrl?.let { certificateUrl ->
                         DocumentItems.Document(
                             titleRes = R.string.MY_DOCUMENTS_INSURANCE_CERTIFICATE,
                             subTitleRes = R.string.insurance_details_view_documents_full_terms_subtitle,
-                            uri = Uri.parse(it)
+                            uri = Uri.parse(certificateUrl)
                         )
                     },
-                    it.termsAndConditions.url.let {
-                        DocumentItems.Document(
-                            titleRes = R.string.MY_DOCUMENTS_INSURANCE_TERMS,
-                            subTitleRes = R.string.insurance_details_view_documents_insurance_letter_subtitle,
-                            uri = Uri.parse(it)
-                        )
-                    }
+                    DocumentItems.Document(
+                        titleRes = R.string.MY_DOCUMENTS_INSURANCE_TERMS,
+                        subTitleRes = R.string.insurance_details_view_documents_insurance_letter_subtitle,
+                        uri = Uri.parse(it.termsAndConditions.url)
+                    )
                 )
 
                 _coverageViewState.value = CoverageViewState(

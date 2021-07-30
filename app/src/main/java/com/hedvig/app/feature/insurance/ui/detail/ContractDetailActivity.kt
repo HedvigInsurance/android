@@ -11,6 +11,8 @@ import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 import com.hedvig.app.BaseActivity
@@ -22,13 +24,13 @@ import com.hedvig.app.feature.insurance.ui.detail.documents.DocumentsFragment
 import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoFragment
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.extensions.colorAttr
-import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -85,28 +87,34 @@ class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
             error.retry.setHapticClickListener {
                 model.loadContract(id)
             }
+            model
+                .data
+                .flowWithLifecycle(lifecycle)
+                .onEach { viewState ->
+                    when (viewState) {
+                        ContractDetailViewModel.ViewState.Error -> {
+                            content.isVisible = false
+                            error.root.apply {
+                                isVisible = true
+                                setBackgroundColor(context.colorAttr(R.attr.colorSurface))
+                            }
+                        }
+                        ContractDetailViewModel.ViewState.Loading -> {
+                        }
+                        is ContractDetailViewModel.ViewState.Success -> {
+                            content.isVisible = true
+                            val contract = viewState.data
+                            contract.bindTo(cardContainer, marketManager)
+                            terminationInfo.isVisible =
+                                contract.status.fragments.contractStatusFragment.asTerminatedStatus != null ||
+                                contract.status.fragments.contractStatusFragment.asTerminatedTodayStatus != null
+                        }
+                    }
+                    startPostponedEnterTransition()
+                }
+                .launchIn(lifecycleScope)
         }
 
-        model.data.observe(this) { result ->
-            binding.apply {
-                if (result.isFailure) {
-                    content.remove()
-                    error.root.apply {
-                        show()
-                        setBackgroundColor(context.colorAttr(R.attr.colorSurface))
-                    }
-                } else {
-                    content.show()
-                    error.root.remove()
-                    val contract = result.getOrNull()
-                    contract?.bindTo(binding.cardContainer, marketManager)
-                    terminationInfo.isVisible =
-                        contract?.status?.fragments?.contractStatusFragment?.asTerminatedStatus != null ||
-                        contract?.status?.fragments?.contractStatusFragment?.asTerminatedTodayStatus != null
-                }
-                startPostponedEnterTransition()
-            }
-        }
         model.loadContract(id)
     }
 
