@@ -18,16 +18,16 @@ class MockReferralsViewModel : ReferralsViewModel() {
                 {
                     if (!hasLoadedOnce) {
                         hasLoadedOnce = true
-                        _data.postValue(Result.success(referralsData))
+                        _data.value = ViewState.Success(referralsData)
                     } else {
-                        _data.postValue(Result.success(afterRefreshData))
+                        _data.value = ViewState.Error
                     }
                 },
                 1000
             )
         } else {
             shouldSucceed = true
-            _data.postValue(Result.failure(Error("Something went wrong")))
+            _data.value = ViewState.Error
         }
         _isRefreshing.postValue(false)
     }
