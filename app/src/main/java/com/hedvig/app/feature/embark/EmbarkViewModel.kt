@@ -13,9 +13,9 @@ import com.hedvig.android.owldroid.type.EmbarkExpressionTypeBinary
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeMultiple
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeUnary
 import com.hedvig.android.owldroid.type.EmbarkExternalRedirectLocation
+import com.hedvig.app.authenticate.LoginStatus
+import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.embark.util.VariableExtractor
-import com.hedvig.app.service.LoginStatus
-import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.util.Percent
 import com.hedvig.app.util.getWithDotNotation
 import com.hedvig.app.util.plus

@@ -5,11 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.fragment.SignStatusFragment
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SignOfferMutation
+import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.feature.offer.quotedetail.buildDocuments
 import com.hedvig.app.feature.offer.quotedetail.buildInsurableLimits
 import com.hedvig.app.feature.offer.quotedetail.buildPerils
 import com.hedvig.app.feature.offer.ui.checkout.CheckoutParameter
-import com.hedvig.app.service.LoginStatus
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -65,6 +65,13 @@ class MockOfferViewModel : OfferViewModel() {
     override fun reload() {
         shouldError = false
         load()
+    }
+
+    override fun onDiscardOffer() {
+        _events.tryEmit(Event.DiscardOffer)
+    }
+
+    override fun onGoToDirectDebit() {
     }
 
     private fun load() {

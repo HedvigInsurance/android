@@ -15,6 +15,8 @@ import android.provider.MediaStore.MediaColumns
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.FileProvider
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
 import com.hedvig.app.BaseActivity
@@ -24,14 +26,11 @@ import com.hedvig.app.feature.chat.ChatInputType
 import com.hedvig.app.feature.chat.ParagraphInput
 import com.hedvig.app.feature.chat.service.ChatTracker
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
-import com.hedvig.app.feature.chat.viewmodel.UserViewModel
 import com.hedvig.app.feature.settings.SettingsActivity
-import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.util.extensions.askForPermissions
 import com.hedvig.app.util.extensions.calculateNonFullscreenHeightDiff
 import com.hedvig.app.util.extensions.handleSingleSelectLink
 import com.hedvig.app.util.extensions.hasPermissions
-import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.triggerRestartActivity
@@ -45,6 +44,8 @@ import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
@@ -54,7 +55,6 @@ import java.io.IOException
 
 class ChatActivity : BaseActivity(R.layout.activity_chat) {
     private val chatViewModel: ChatViewModel by viewModel()
-    private val userViewModel: UserViewModel by viewModel()
     private val binding by viewBinding(ActivityChatBinding::bind)
 
     private val tracker: ChatTracker by inject()
@@ -85,6 +85,22 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
         isKeyboardBreakPoint =
             resources.getDimensionPixelSize(R.dimen.is_keyboard_brake_point_height)
         navHeightDiff = resources.getDimensionPixelSize(R.dimen.nav_height_div)
+
+        chatViewModel.events
+            .flowWithLifecycle(lifecycle)
+            .onEach { event ->
+                when (event) {
+                    ChatViewModel.Event.Restart -> {
+                        triggerRestartActivity(ChatActivity::class.java)
+                    }
+                    is ChatViewModel.Event.Error -> showAlert(
+                        title = R.string.error_dialog_title,
+                        message = R.string.component_error,
+                        positiveAction = {}
+                    )
+                }
+            }
+            .launchIn(lifecycleScope)
 
         binding.apply {
             val chatInputHeight = input.measureTextInput()
@@ -220,9 +236,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
                     R.string.CHAT_RESET_DIALOG_POSITIVE_BUTTON_LABEL,
                     R.string.CHAT_RESET_DIALOG_NEGATIVE_BUTTON_LABEL,
                     positiveAction = {
-                        storeBoolean(LoginStatusService.IS_VIEWING_OFFER, false)
-                        setAuthenticationToken(null)
-                        userViewModel.logout { triggerRestartActivity(ChatActivity::class.java) }
+                        chatViewModel.restartChat()
                     }
                 )
             }

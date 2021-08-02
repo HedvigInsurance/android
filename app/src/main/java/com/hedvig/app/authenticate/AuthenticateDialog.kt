@@ -17,7 +17,6 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.app.util.QR
 import com.hedvig.app.util.extensions.canOpenUri
-import com.hedvig.app.util.extensions.setIsLoggedIn
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import kotlinx.coroutines.Dispatchers
@@ -83,7 +82,7 @@ class AuthenticateDialog : DialogFragment() {
         }
         AuthState.SUCCESS -> {
             binding.authTitle.setText(R.string.BANK_ID_LOG_IN_TITLE_SUCCESS)
-            requireContext().setIsLoggedIn(true)
+            model.onAuthSuccess()
             viewLifecycleScope.launch {
                 withContext(Dispatchers.IO) {
                     runCatching {

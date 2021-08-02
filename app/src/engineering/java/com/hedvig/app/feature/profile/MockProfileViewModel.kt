@@ -32,6 +32,9 @@ class MockProfileViewModel : ProfileViewModel() {
     override fun phoneNumberChanged(newPhoneNumber: String) = Unit
     override fun updateReferralsInformation(data: RedeemReferralCodeMutation.Data) = Unit
 
+    override fun onLogout() {
+    }
+
     companion object {
         var profileData = PROFILE_DATA
         var shouldError = false

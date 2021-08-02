@@ -24,7 +24,6 @@ import com.hedvig.app.util.extensions.invalid
 import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
-import e
 
 class PerilsAdapter(
     private val requestBuilder: RequestBuilder<PictureDrawable>,

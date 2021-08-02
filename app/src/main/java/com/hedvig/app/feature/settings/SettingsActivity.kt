@@ -7,6 +7,8 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.ListPreference
 import androidx.preference.Preference
@@ -17,21 +19,13 @@ import com.hedvig.app.databinding.ActivitySettingsBinding
 import com.hedvig.app.feature.chat.viewmodel.UserViewModel
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.makeLocaleString
-import com.hedvig.app.service.LoginStatusService
-import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.extensions.compatDrawable
-import com.hedvig.app.util.extensions.setAuthenticationToken
-import com.hedvig.app.util.extensions.setIsLoggedIn
 import com.hedvig.app.util.extensions.showAlert
-import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.triggerRestartActivity
 import com.hedvig.app.util.extensions.viewBinding
-import com.hedvig.app.util.extensions.viewLifecycleScope
-import com.mixpanel.android.mpmetrics.MixpanelAPI
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -53,16 +47,31 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
     }
 
     class PreferenceFragment : PreferenceFragmentCompat() {
-        private val mixpanel: MixpanelAPI by inject()
         private val marketManager: MarketManager by inject()
         private val userViewModel: UserViewModel by sharedViewModel()
         private val model: SettingsViewModel by viewModel()
         private val localeManager: LocaleManager by inject()
-        private val pushTokenManager: PushTokenManager by inject()
 
         @SuppressLint("ApplySharedPref")
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.preferences, rootKey)
+
+            userViewModel.events
+                .flowWithLifecycle(lifecycle)
+                .onEach { event ->
+                    when (event) {
+                        UserViewModel.Event.Logout -> {
+                            requireActivity().triggerRestartActivity(MarketingActivity::class.java)
+                        }
+                        is UserViewModel.Event.Error -> requireContext().showAlert(
+                            title = R.string.error_dialog_title,
+                            message = R.string.component_error,
+                            positiveAction = {}
+                        )
+                    }
+                }
+                .launchIn(lifecycleScope)
+
             val market = marketManager.market
 
             val themePreference = findPreference<ListPreference>(SETTING_THEME)
@@ -93,27 +102,7 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
                         R.string.SETTINGS_ALERT_CHANGE_MARKET_TEXT,
                         positiveLabel = R.string.ALERT_OK,
                         negativeLabel = R.string.SETTINGS_ALERT_CHANGE_MARKET_CANCEL,
-                        positiveAction = {
-                            marketManager.market = null
-                            marketManager.hasSelectedMarket = false
-                            userViewModel.logout {
-                                requireContext().storeBoolean(
-                                    LoginStatusService.IS_VIEWING_OFFER,
-                                    false
-                                )
-                                requireContext().setAuthenticationToken(null)
-                                requireContext().setIsLoggedIn(false)
-                                viewLifecycleScope.launch {
-                                    withContext(Dispatchers.IO) {
-                                        runCatching { pushTokenManager.refreshToken() }
-                                        mixpanel.reset()
-                                        withContext(Dispatchers.Main) {
-                                            requireActivity().triggerRestartActivity(MarketingActivity::class.java)
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        positiveAction = { userViewModel.logout() }
                     )
                     true
                 }

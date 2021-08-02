@@ -15,12 +15,10 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityCheckoutBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.extensions.setMarkdownText
 import com.hedvig.app.util.extensions.setStrikethrough
 import com.hedvig.app.util.extensions.showErrorDialog
-import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
@@ -149,23 +147,13 @@ class CheckoutActivity : BaseActivity(R.layout.activity_checkout) {
                 progressDialog.dismiss()
                 showErrorDialog(event.message ?: getString(R.string.home_tab_error_body)) { }
             }
-            CheckoutViewModel.Event.CheckoutSuccess -> {
-                startActivity(
-                    LoggedInActivity.newInstance(
-                        this,
-                        withoutHistory = true,
-                        isFromOnboarding = true
-                    )
-                )
-            }
-            CheckoutViewModel.Event.HasContracts -> {
-                storeBoolean(LoginStatusService.IS_VIEWING_OFFER, false)
+            CheckoutViewModel.Event.CheckoutSuccess -> startActivity(
                 LoggedInActivity.newInstance(
                     context = this,
                     isFromOnboarding = true,
                     withoutHistory = true
                 )
-            }
+            )
             CheckoutViewModel.Event.Loading -> progressDialog.show()
         }
     }

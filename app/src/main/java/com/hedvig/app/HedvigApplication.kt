@@ -6,6 +6,7 @@ import androidx.preference.PreferenceManager
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.coroutines.await
 import com.hedvig.android.owldroid.graphql.NewSessionMutation
+import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
@@ -13,9 +14,7 @@ import com.hedvig.app.feature.settings.Theme
 import com.hedvig.app.feature.whatsnew.WhatsNewRepository
 import com.hedvig.app.util.FirebaseCrashlyticsLogExceptionTree
 import com.hedvig.app.util.extensions.SHARED_PREFERENCE_TRIED_MIGRATION_OF_TOKEN
-import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.extensions.getStoredBoolean
-import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.storeBoolean
 import e
 import i
@@ -32,6 +31,7 @@ open class HedvigApplication : Application() {
     protected val apolloClient: ApolloClient by inject()
     private val whatsNewRepository: WhatsNewRepository by inject()
     private val marketManager: MarketManager by inject()
+    private val authenticationTokenService: AuthenticationTokenService by inject()
 
     override fun onCreate() {
         super.onCreate()
@@ -84,6 +84,7 @@ open class HedvigApplication : Application() {
                     pushTokenManagerModule,
                     checkoutModule,
                     cacheManagerModule,
+                    sharedPreferencesModule
                 )
             )
         }
@@ -105,14 +106,14 @@ open class HedvigApplication : Application() {
 
         Language.fromSettings(this, marketManager.market).apply(this)
 
-        if (getAuthenticationToken() == null && !getStoredBoolean(
+        if (authenticationTokenService.authenticationToken == null && !getStoredBoolean(
                 SHARED_PREFERENCE_TRIED_MIGRATION_OF_TOKEN
             )
         ) {
             tryToMigrateTokenFromReactDB()
         }
 
-        if (getAuthenticationToken() == null) {
+        if (authenticationTokenService.authenticationToken == null) {
             whatsNewRepository.removeNewsForNewUser()
             CoroutineScope(IO).launch {
                 acquireHedvigToken()
@@ -137,7 +138,7 @@ open class HedvigApplication : Application() {
             return
         }
         response.getOrNull()?.data?.createSessionV2?.token?.let { hedvigToken ->
-            setAuthenticationToken(hedvigToken)
+            authenticationTokenService.authenticationToken = hedvigToken
             apolloClient.subscriptionManager.reconnect()
             i { "Successfully saved hedvig token" }
         } ?: e { "createSession returned no token" }
@@ -146,7 +147,7 @@ open class HedvigApplication : Application() {
     private fun tryToMigrateTokenFromReactDB() {
         val instance = LegacyReactDatabaseSupplier.getInstance(this)
         instance.getTokenIfExists()?.let { token ->
-            setAuthenticationToken(token)
+            authenticationTokenService.authenticationToken = token
             apolloClient.subscriptionManager.reconnect()
         }
         instance.clearAndCloseDatabase()

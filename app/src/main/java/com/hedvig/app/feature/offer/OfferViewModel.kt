@@ -11,6 +11,8 @@ import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationTitle
 import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.android.owldroid.type.SignState
+import com.hedvig.app.authenticate.LoginStatus
+import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.offer.quotedetail.buildDocuments
@@ -23,8 +25,6 @@ import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
 import com.hedvig.app.feature.perils.PerilItem
-import com.hedvig.app.service.LoginStatus
-import com.hedvig.app.service.LoginStatusService
 import e
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -57,6 +57,8 @@ abstract class OfferViewModel : ViewModel() {
         data class ApproveSuccessful(
             val moveDate: LocalDate?
         ) : Event()
+
+        object DiscardOffer : Event()
     }
 
     protected val _events = MutableSharedFlow<Event>(
@@ -102,6 +104,8 @@ abstract class OfferViewModel : ViewModel() {
 
     abstract fun onOpenCheckout()
     abstract fun reload()
+    abstract fun onDiscardOffer()
+    abstract fun onGoToDirectDebit()
 }
 
 class OfferViewModelImpl(
@@ -113,6 +117,7 @@ class OfferViewModelImpl(
     private val approveQuotesUseCase: ApproveQuotesUseCase,
     private val refreshQuotesUseCase: RefreshQuotesUseCase,
     private val tracker: OfferTracker,
+    shouldShowOnNextAppStart: Boolean
 ) : OfferViewModel() {
 
     private lateinit var quoteIds: List<String>
@@ -122,6 +127,8 @@ class OfferViewModelImpl(
     override val signError = MutableLiveData<Boolean>()
 
     init {
+        loginStatusService.isViewingOffer = shouldShowOnNextAppStart
+
         viewModelScope.launch {
             when (val idsResult = getQuotesUseCase(_quoteIds)) {
                 is GetQuotesUseCase.Result.Success -> {
@@ -134,7 +141,7 @@ class OfferViewModelImpl(
                                     _events.tryEmit(Event.Error(response.message))
                                 }
                                 OfferRepository.OfferResult.HasContracts -> {
-                                    _events.tryEmit(Event.HasContracts)
+                                    _events.tryEmit(Event.Error())
                                 }
                                 is OfferRepository.OfferResult.Success -> {
                                     val loginStatus = loginStatusService.getLoginStatus()
@@ -304,5 +311,14 @@ class OfferViewModelImpl(
                 is RefreshQuotesUseCase.Result.Error -> _events.tryEmit(Event.Error(result.message))
             }
         }
+    }
+
+    override fun onDiscardOffer() {
+        loginStatusService.isViewingOffer = false
+        _events.tryEmit(Event.DiscardOffer)
+    }
+
+    override fun onGoToDirectDebit() {
+        loginStatusService.isViewingOffer = false
     }
 }

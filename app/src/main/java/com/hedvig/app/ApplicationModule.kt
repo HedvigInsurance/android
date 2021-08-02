@@ -1,6 +1,8 @@
 package com.hedvig.app
 
 import android.content.Context
+import android.content.Context.MODE_PRIVATE
+import android.content.SharedPreferences
 import android.graphics.drawable.PictureDrawable
 import android.os.Build
 import com.apollographql.apollo.ApolloClient
@@ -12,6 +14,11 @@ import com.apollographql.apollo.subscription.SubscriptionConnectionParams
 import com.apollographql.apollo.subscription.WebSocketSubscriptionTransport
 import com.bumptech.glide.RequestBuilder
 import com.google.firebase.messaging.FirebaseMessaging
+import com.hedvig.app.authenticate.AuthenticationTokenService
+import com.hedvig.app.authenticate.LoginStatusService
+import com.hedvig.app.authenticate.LogoutUseCase
+import com.hedvig.app.authenticate.SharedPreferencesAuthenticationTokenService
+import com.hedvig.app.authenticate.SharedPreferencesLoginStatusService
 import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModel
@@ -145,14 +152,12 @@ import com.hedvig.app.feature.zignsec.usecase.StartDanishAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.StartNorwegianAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthStatusUseCase
 import com.hedvig.app.service.FileService
-import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.app.service.push.managers.PaymentNotificationManager
 import com.hedvig.app.terminated.TerminatedTracker
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.ApolloTimberLogger
 import com.hedvig.app.util.apollo.CacheManager
-import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.svg.GlideApp
 import com.hedvig.app.util.svg.SvgSoftwareLayerSetter
 import com.mixpanel.android.mpmetrics.MixpanelAPI
@@ -205,7 +210,7 @@ val applicationModule = module {
                 val builder = original
                     .newBuilder()
                     .method(original.method, original.body)
-                get<Context>().getAuthenticationToken()?.let { token ->
+                get<AuthenticationTokenService>().authenticationToken?.let { token ->
                     builder.header("Authorization", token)
                 }
                 chain.proceed(builder.build())
@@ -235,7 +240,9 @@ val applicationModule = module {
             .serverUrl(get<HedvigApplication>().graphqlUrl)
             .okHttpClient(get())
             .subscriptionConnectionParams {
-                SubscriptionConnectionParams(mapOf("Authorization" to get<Context>().getAuthenticationToken()))
+                SubscriptionConnectionParams(
+                    mapOf("Authorization" to get<AuthenticationTokenService>().authenticationToken)
+                )
             }
             .subscriptionTransportFactory(
                 WebSocketSubscriptionTransport.Factory(
@@ -296,8 +303,8 @@ fun getLocale(context: Context, market: Market?): Locale {
 val viewModelModule = module {
     viewModel { ClaimsViewModel(get(), get()) }
     viewModel { BaseTabViewModel(get(), get()) }
-    viewModel { ChatViewModel(get()) }
-    viewModel { UserViewModel(get(), get()) }
+    viewModel { ChatViewModel(get(), get(), get(), get()) }
+    viewModel { UserViewModel(get(), get(), get()) }
     viewModel { RedeemCodeViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
     viewModel { SettingsViewModel(get()) }
@@ -342,13 +349,13 @@ val marketingModule = module {
 }
 
 val offerModule = module {
-    viewModel<OfferViewModel> { (ids: List<String>) ->
-        OfferViewModelImpl(ids, get(), get(), get(), get(), get(), get(), get())
+    viewModel<OfferViewModel> { (ids: List<String>, shouldShowOnNextAppStart: Boolean) ->
+        OfferViewModelImpl(ids, get(), get(), get(), get(), get(), get(), get(), shouldShowOnNextAppStart)
     }
 }
 
 val profileModule = module {
-    viewModel<ProfileViewModel> { ProfileViewModelImpl(get(), get()) }
+    viewModel<ProfileViewModel> { ProfileViewModelImpl(get(), get(), get()) }
 }
 
 val keyGearModule = module {
@@ -418,12 +425,13 @@ val changeDateBottomSheetModule = module {
 }
 
 val checkoutModule = module {
-    viewModel { (ids: List<String>) -> CheckoutViewModel(ids, get(), get(), get(), get()) }
+    viewModel { (ids: List<String>) -> CheckoutViewModel(ids, get(), get(), get(), get(), get()) }
 }
 
 val serviceModule = module {
     single { FileService(get()) }
-    single { LoginStatusService(get(), get()) }
+    single<LoginStatusService> { SharedPreferencesLoginStatusService(get(), get(), get()) }
+    single<AuthenticationTokenService> { SharedPreferencesAuthenticationTokenService(get()) }
     single { TabNotificationService(get()) }
     single { DeviceInformationService(get()) }
 }
@@ -510,6 +518,7 @@ val useCaseModule = module {
     single { SignQuotesUseCase(get(), get()) }
     single { ApproveQuotesUseCase(get(), get(), get()) }
     single { RefreshQuotesUseCase(get()) }
+    single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get()) }
 }
 
 val cacheManagerModule = module {
@@ -518,4 +527,8 @@ val cacheManagerModule = module {
 
 val pushTokenManagerModule = module {
     single { PushTokenManager(FirebaseMessaging.getInstance()) }
+}
+
+val sharedPreferencesModule = module {
+    single<SharedPreferences> { get<Context>().getSharedPreferences("hedvig_shared_preference", MODE_PRIVATE) }
 }

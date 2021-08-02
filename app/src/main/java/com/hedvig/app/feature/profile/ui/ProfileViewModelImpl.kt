@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
+import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.util.LiveEvent
@@ -16,7 +17,8 @@ import kotlinx.coroutines.launch
 
 class ProfileViewModelImpl(
     private val profileRepository: ProfileRepository,
-    private val chatRepository: ChatRepository
+    private val chatRepository: ChatRepository,
+    private val logoutUseCase: LogoutUseCase
 ) : ProfileViewModel() {
     override val data = MutableLiveData<Result<ProfileQuery.Data>>()
     override val dirty: MutableLiveData<Boolean> = MutableLiveData<Boolean>().default(false)
@@ -116,5 +118,14 @@ class ProfileViewModelImpl(
 
     override fun updateReferralsInformation(data: RedeemReferralCodeMutation.Data) {
         profileRepository.writeRedeemedCostToCache(data)
+    }
+
+    override fun onLogout() {
+        viewModelScope.launch {
+            when (val result = logoutUseCase.logout()) {
+                is LogoutUseCase.LogoutResult.Error -> _events.tryEmit(Event.Error(result.message))
+                LogoutUseCase.LogoutResult.Success -> _events.tryEmit(Event.Logout)
+            }
+        }
     }
 }

@@ -4,6 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.transition.MaterialFadeThrough
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.graphql.ProfileQuery
@@ -21,11 +23,14 @@ import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
-import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
+import com.hedvig.app.util.extensions.showAlert
+import com.hedvig.app.util.extensions.triggerRestartActivity
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import javax.money.MonetaryAmount
@@ -37,7 +42,6 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
     private var scroll = 0
     private val tracker: ProfileTracker by inject()
     private val marketManager: MarketManager by inject()
-    private val pushTokenManager: PushTokenManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,8 +88,22 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                 updatePadding(bottom = scrollInitialBottomPadding + bottomTabInset)
             }
 
-            adapter = ProfileAdapter(viewLifecycleOwner, model::load, pushTokenManager)
+            adapter = ProfileAdapter(viewLifecycleOwner, model::load, model::onLogout)
         }
+
+        model.events
+            .flowWithLifecycle(lifecycle)
+            .onEach { event ->
+                when (event) {
+                    ProfileViewModel.Event.Logout -> requireContext().triggerRestartActivity()
+                    is ProfileViewModel.Event.Error -> requireContext().showAlert(
+                        title = R.string.error_dialog_title,
+                        message = R.string.component_error,
+                        positiveAction = {}
+                    )
+                }
+            }
+            .launchIn(lifecycleScope)
 
         model.data.observe(viewLifecycleOwner) { data ->
             if (data.isFailure) {
