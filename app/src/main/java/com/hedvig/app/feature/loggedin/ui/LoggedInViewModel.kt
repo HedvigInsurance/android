@@ -14,21 +14,6 @@ abstract class LoggedInViewModel : ViewModel() {
     private val _scroll = MutableLiveData<Int>()
     val scroll: LiveData<Int> = _scroll
 
-    private val _bottomTabInset = MutableLiveData<Int>()
-    val bottomTabInset: LiveData<Int>
-        get() = _bottomTabInset
-
-    private val _toolbarInset = MutableLiveData<Int>()
-    val toolbarInset: LiveData<Int> = _toolbarInset
-
-    fun updateBottomTabInset(newInset: Int) {
-        _bottomTabInset.value = newInset
-    }
-
-    fun updateToolbarInset(newInset: Int) {
-        _toolbarInset.postValue(newInset)
-    }
-
     fun onScroll(scroll: Int) {
         _scroll.postValue(scroll)
     }

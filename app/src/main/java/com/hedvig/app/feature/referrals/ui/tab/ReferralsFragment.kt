@@ -24,6 +24,8 @@ import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.apollo.toWebLocaleTag
 import com.hedvig.app.util.extensions.showShareSheet
+import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
+import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
@@ -68,32 +70,16 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        scroll = 0
-
         with(binding) {
             shareInitialBottomMargin = share.marginBottom
             invitesInitialBottomPadding = invites.paddingBottom
-
-            val scrollInitialTopPadding = invites.paddingTop
-            var hasInsetForToolbar = false
-            loggedInViewModel.toolbarInset.observe(viewLifecycleOwner) { toolbarInsets ->
-                invites.updatePadding(top = scrollInitialTopPadding + toolbarInsets)
-                if (!hasInsetForToolbar) {
-                    hasInsetForToolbar = true
-                    invites.scrollToPosition(0)
-                }
-            }
 
             share.doOnLayout {
                 shareHeight = it.height
                 applyInsets()
             }
 
-            loggedInViewModel.bottomTabInset.observe(viewLifecycleOwner) { bti ->
-                bottomTabInset = bti
-                applyInsets()
-            }
-
+            scroll = 0
             invites.addOnScrollListener(
                 ScrollPositionListener(
                     { scrollPosition ->

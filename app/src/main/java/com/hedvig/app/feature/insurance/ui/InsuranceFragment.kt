@@ -12,7 +12,8 @@ import com.hedvig.app.feature.insurance.service.InsuranceTracker
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
 import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.util.extensions.view.updatePadding
+import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
+import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.viewLifecycle
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
@@ -43,24 +44,12 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        scroll = 0
+
+        binding.insuranceRecycler.applyStatusBarInsets()
+        binding.insuranceRecycler.applyNavigationBarInsets()
+
         binding.insuranceRecycler.apply {
-            val scrollInitialTopPadding = paddingTop
-
-            var hasInsetForToolbar = false
-
-            loggedInViewModel.toolbarInset.observe(viewLifecycleOwner) { toolbarInsets ->
-                updatePadding(top = scrollInitialTopPadding + toolbarInsets)
-                if (!hasInsetForToolbar) {
-                    hasInsetForToolbar = true
-                    scrollToPosition(0)
-                }
-            }
-
-            val scrollInitialBottomPadding = paddingBottom
-            loggedInViewModel.bottomTabInset.observe(viewLifecycleOwner) { bottomTabInset ->
-                updatePadding(bottom = scrollInitialBottomPadding + bottomTabInset)
-            }
+            scroll = 0
             addOnScrollListener(
                 ScrollPositionListener(
                     { scrollPosition ->

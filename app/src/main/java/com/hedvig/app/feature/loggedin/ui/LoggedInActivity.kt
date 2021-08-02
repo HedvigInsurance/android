@@ -85,8 +85,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         with(binding) {
             WindowCompat.setDecorFitsSystemWindows(window, false)
             toolbar.applyStatusBarInsets()
-            bottomNavigation.applyNavigationBarInsets()
             tabContent.applyStatusBarInsets()
+            bottomNavigation.applyNavigationBarInsets()
 
             toolbar.background.alpha = 0
 

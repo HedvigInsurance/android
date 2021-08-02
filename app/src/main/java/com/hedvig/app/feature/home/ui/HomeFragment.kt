@@ -17,7 +17,8 @@ import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
 import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.util.extensions.view.updatePadding
+import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
+import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
@@ -58,24 +59,11 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             tracker,
             marketManager
         )
+
         binding.recycler.apply {
-            val recyclerInitialPaddingBottom = paddingBottom
-            val recyclerInitialPaddingTop = paddingTop
+            applyNavigationBarInsets()
+            applyStatusBarInsets()
 
-            var hasInsetForToolbar = false
-
-            loggedInViewModel.toolbarInset.observe(viewLifecycleOwner) { toolbarInsets ->
-                updatePadding(top = recyclerInitialPaddingTop + toolbarInsets)
-                if (!hasInsetForToolbar) {
-                    hasInsetForToolbar = true
-                    scrollToPosition(0)
-                }
-            }
-
-            loggedInViewModel.bottomTabInset.observe(viewLifecycleOwner) { bottomTabInset ->
-                updatePadding(bottom = recyclerInitialPaddingBottom + bottomTabInset)
-            }
-            this.adapter = adapter
             (layoutManager as? GridLayoutManager)?.spanSizeLookup =
                 object : GridLayoutManager.SpanSizeLookup() {
                     override fun getSpanSize(position: Int): Int {
