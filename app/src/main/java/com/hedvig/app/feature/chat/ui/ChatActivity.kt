@@ -208,7 +208,6 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             },
             tracker = tracker
         )
-        binding.messages.addOnScrollListener(adapter.recyclerViewPreloader)
         binding.messages.adapter = adapter
     }
 

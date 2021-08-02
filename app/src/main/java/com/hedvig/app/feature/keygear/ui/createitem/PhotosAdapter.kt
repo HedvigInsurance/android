@@ -8,9 +8,9 @@ import android.widget.FrameLayout
 import android.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import coil.load
+import coil.size.Scale
+import coil.transform.RoundedCornersTransformation
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.R
 import com.hedvig.app.databinding.CreateKeyGearItemNewPhotoBinding
@@ -106,11 +106,10 @@ class PhotosAdapter(
                 deletePhoto: (photo: com.hedvig.app.feature.keygear.ui.createitem.Photo) -> Unit
             ) {
                 binding.apply {
-                    Glide
-                        .with(photo)
-                        .load(data.uri)
-                        .transform(CenterCrop(), RoundedCorners(BASE_MARGIN))
-                        .into(photo)
+                    photo.load(data.uri) {
+                        transformations(RoundedCornersTransformation(BASE_MARGIN.toFloat()))
+                        scale(Scale.FILL)
+                    }
 
                     photo.setOnCreateContextMenuListener { _, v, _ ->
                         v.performOnLongPressHapticFeedback()

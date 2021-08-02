@@ -2,7 +2,6 @@ package com.hedvig.app.feature.offer.ui
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
 import android.transition.TransitionManager
 import android.view.MenuItem
@@ -14,7 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.RequestBuilder
+import coil.ImageLoader
 import com.carousell.concatadapterextension.ConcatItemDecoration
 import com.carousell.concatadapterextension.ConcatSpanSizeLookup
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationTitle
@@ -62,7 +61,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
     private val model: OfferViewModel by viewModel { parametersOf(quoteIds, shouldShowOnNextAppStart) }
     private val binding by viewBinding(ActivityOfferBinding::bind)
-    private val requestBuilder: RequestBuilder<PictureDrawable> by inject()
+    private val imageLoader: ImageLoader by inject()
     private val tracker: OfferTracker by inject()
     private val marketManager: MarketManager by inject()
 
@@ -128,7 +127,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             )
             val perilsAdapter = PerilsAdapter(
                 fragmentManager = supportFragmentManager,
-                requestBuilder = requestBuilder,
+                imageLoader = imageLoader
             )
             val insurableLimitsAdapter = InsurableLimitsAdapter(
                 fragmentManager = supportFragmentManager

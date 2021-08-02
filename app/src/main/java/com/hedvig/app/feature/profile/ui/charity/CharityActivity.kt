@@ -4,9 +4,7 @@ import android.os.Bundle
 import androidx.core.view.isVisible
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.Target
+import coil.load
 import com.hedvig.android.owldroid.fragment.CashbackFragment
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.app.BaseActivity
@@ -69,17 +67,7 @@ class CharityActivity : BaseActivity(R.layout.activity_charity) {
         binding.apply {
             selectedCharityContainer.show()
             selectCharityContainer.remove()
-
-            Glide
-                .with(selectedCharityBanner)
-                .load(cashback.imageUrl)
-                .apply(
-                    RequestOptions().override(
-                        Target.SIZE_ORIGINAL,
-                        CASH_BACK_IMAGE_HEIGHT
-                    )
-                )
-                .into(selectedCharityBanner)
+            selectedCharityBanner.load(cashback.imageUrl)
 
             selectedCharityCardTitle.text = cashback.name
             selectedCharityCardParagraph.text = cashback.description
@@ -104,9 +92,5 @@ class CharityActivity : BaseActivity(R.layout.activity_charity) {
                     .show(supportFragmentManager, CharityExplanationBottomSheet.TAG)
             }
         }
-    }
-
-    companion object {
-        private const val CASH_BACK_IMAGE_HEIGHT = 200
     }
 }

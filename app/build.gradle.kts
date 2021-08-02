@@ -184,11 +184,8 @@ dependencies {
 
     implementation(Libs.svg)
 
-    implementation(Libs.Glide.base)
-    kapt(Libs.Glide.compiler)
-    implementation(Libs.Glide.recyclerView) {
-        isTransitive = false
-    }
+    implementation(Libs.Coil.coil)
+    implementation(Libs.Coil.svg)
 
     implementation(Libs.tooltip)
 

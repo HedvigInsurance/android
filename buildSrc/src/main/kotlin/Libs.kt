@@ -87,11 +87,10 @@ object Libs {
 
     const val svg = "com.caverock:androidsvg-aar:1.4"
 
-    object Glide {
-        private const val version = "4.12.0"
-        const val base = "com.github.bumptech.glide:glide:$version"
-        const val compiler = "com.github.bumptech.glide:compiler:$version"
-        const val recyclerView = "com.github.bumptech.glide:recyclerview-integration:$version"
+    object Coil {
+        private const val version = "1.3.1"
+        const val svg = "io.coil-kt:coil-svg:$version"
+        const val coil = "io.coil-kt:coil:$version"
     }
 
     const val tooltip = "com.github.hansemannn:viewtooltip:1.2.2"

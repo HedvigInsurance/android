@@ -1,11 +1,10 @@
 package com.hedvig.app.feature.home.ui
 
-import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
-import com.bumptech.glide.RequestBuilder
+import coil.ImageLoader
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.type.PayinMethodStatus
 import com.hedvig.app.R
@@ -31,8 +30,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     private val binding by viewBinding(HomeFragmentBinding::bind)
     private var scroll = 0
     private val tracker: HomeTracker by inject()
-
-    private val requestBuilder: RequestBuilder<PictureDrawable> by inject()
+    private val imageLoader: ImageLoader by inject()
     private val marketManager: MarketManager by inject()
     private val featureRuntimeBehavior: FeatureManager by inject()
 
@@ -47,7 +45,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
         val adapter = HomeAdapter(
             parentFragmentManager,
             model::load,
-            requestBuilder,
+            imageLoader,
             tracker,
             marketManager
         )

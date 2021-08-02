@@ -1,11 +1,11 @@
 package com.hedvig.app.feature.insurance.ui.detail.coverage
 
-import android.graphics.drawable.PictureDrawable
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.RequestBuilder
+import coil.ImageLoader
+import coil.load
 import com.hedvig.app.R
 import com.hedvig.app.databinding.CoveredAndExceptionHeaderBinding
 import com.hedvig.app.databinding.CoveredAndExceptionItemBinding
@@ -20,14 +20,14 @@ import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.viewBinding
 
 class PerilAdapter(
-    private val requestBuilder: RequestBuilder<PictureDrawable>,
+    private val imageLoader: ImageLoader
 ) : ListAdapter<PerilModel, PerilAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.covered_and_exception_item -> ViewHolder.CoveredAndException(parent)
         R.layout.covered_and_exception_header -> ViewHolder.Header(parent)
         R.layout.peril_paragraph -> ViewHolder.Paragraph(parent)
-        R.layout.peril_icon -> ViewHolder.Icon(parent)
+        R.layout.peril_icon -> ViewHolder.Icon(parent, imageLoader)
         R.layout.expandable_bottom_sheet_title -> ViewHolder.Title(parent)
         R.layout.peril_description -> ViewHolder.Description(parent)
         else -> {
@@ -36,7 +36,7 @@ class PerilAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position), requestBuilder)
+        holder.bind(getItem(position))
     }
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
@@ -52,18 +52,12 @@ class PerilAdapter(
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        abstract fun bind(
-            item: PerilModel,
-            requestBuilder: RequestBuilder<PictureDrawable>,
-        )
+        abstract fun bind(item: PerilModel)
 
         class CoveredAndException(parent: ViewGroup) :
             ViewHolder(parent.inflate(R.layout.covered_and_exception_item)) {
             private val binding by viewBinding(CoveredAndExceptionItemBinding::bind)
-            override fun bind(
-                item: PerilModel,
-                requestBuilder: RequestBuilder<PictureDrawable>,
-            ) {
+            override fun bind(item: PerilModel) {
                 if (item !is PerilModel.PerilList) {
                     invalid(item)
                     return
@@ -86,10 +80,7 @@ class PerilAdapter(
         class Header(parent: ViewGroup) :
             ViewHolder(parent.inflate(R.layout.covered_and_exception_header)) {
             private val binding by viewBinding(CoveredAndExceptionHeaderBinding::bind)
-            override fun bind(
-                item: PerilModel,
-                requestBuilder: RequestBuilder<PictureDrawable>,
-            ) {
+            override fun bind(item: PerilModel) {
                 if (item !is PerilModel.Header) {
                     invalid(item)
                     return
@@ -114,10 +105,7 @@ class PerilAdapter(
 
         class Paragraph(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.peril_paragraph)) {
             private val binding by viewBinding(PerilParagraphBinding::bind)
-            override fun bind(
-                item: PerilModel,
-                requestBuilder: RequestBuilder<PictureDrawable>,
-            ) {
+            override fun bind(item: PerilModel) {
                 if (item !is PerilModel.Paragraph) {
                     invalid(item)
                     return
@@ -126,12 +114,10 @@ class PerilAdapter(
             }
         }
 
-        class Icon(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.peril_icon)) {
+        class Icon(parent: ViewGroup, private val imageLoader: ImageLoader) :
+            ViewHolder(parent.inflate(R.layout.peril_icon)) {
             private val binding by viewBinding(PerilIconBinding::bind)
-            override fun bind(
-                item: PerilModel,
-                requestBuilder: RequestBuilder<PictureDrawable>,
-            ) {
+            override fun bind(item: PerilModel) {
                 if (item !is PerilModel.Icon) {
                     invalid(item)
                     return
@@ -144,17 +130,14 @@ class PerilAdapter(
                         item.lightUrl
                     }
                     }"
-                    requestBuilder.load(link).into(this)
+                    this.load(link, imageLoader)
                 }
             }
         }
 
         class Title(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.expandable_bottom_sheet_title)) {
             private val binding by viewBinding(ExpandableBottomSheetTitleBinding::bind)
-            override fun bind(
-                item: PerilModel,
-                requestBuilder: RequestBuilder<PictureDrawable>,
-            ) {
+            override fun bind(item: PerilModel) {
                 if (item !is PerilModel.Title) {
                     invalid(item)
                     return
@@ -166,10 +149,7 @@ class PerilAdapter(
         class Description(parent: ViewGroup) :
             ViewHolder(parent.inflate(R.layout.peril_description)) {
             private val binding by viewBinding(PerilDescriptionBinding::bind)
-            override fun bind(
-                item: PerilModel,
-                requestBuilder: RequestBuilder<PictureDrawable>,
-            ) {
+            override fun bind(item: PerilModel) {
                 if (item !is PerilModel.Description) {
                     invalid(item)
                     return

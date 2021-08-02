@@ -1,20 +1,20 @@
 package com.hedvig.app.feature.dismissiblepager
 
-import android.graphics.drawable.PictureDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import com.bumptech.glide.RequestBuilder
+import coil.ImageLoader
+import coil.load
 import com.hedvig.app.R
 import com.hedvig.app.databinding.DismissiblePageTitleFragmentBinding
-import com.hedvig.app.util.svg.buildRequestBuilder
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import e
+import org.koin.android.ext.android.inject
 
 class DismissiblePageTitleFragment : Fragment(R.layout.dismissible_page_title_fragment) {
-    private val requestBuilder: RequestBuilder<PictureDrawable> by lazy { buildRequestBuilder() }
+    private val imageLoader: ImageLoader by inject()
     private val binding by viewBinding(DismissiblePageTitleFragmentBinding::bind)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -28,14 +28,11 @@ class DismissiblePageTitleFragment : Fragment(R.layout.dismissible_page_title_fr
         }
 
         binding.apply {
-            requestBuilder
-                .load(
-                    Uri.parse(
-                        requireContext().getString(R.string.BASE_URL) +
-                            model.imageUrls.iconByTheme(requireContext())
-                    )
-                )
-                .into(illustration)
+            val url = Uri.parse(
+                requireContext().getString(R.string.BASE_URL) +
+                    model.imageUrls.iconByTheme(requireContext())
+            )
+            illustration.load(url, imageLoader)
             title.text = model.title
             paragraph.text = model.paragraph
         }

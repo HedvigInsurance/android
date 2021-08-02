@@ -3,8 +3,9 @@ package com.hedvig.app
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
-import android.graphics.drawable.PictureDrawable
 import android.os.Build
+import coil.ImageLoader
+import coil.decode.SvgDecoder
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.NormalizedCacheFactory
 import com.apollographql.apollo.cache.normalized.lru.EvictionPolicy
@@ -12,7 +13,6 @@ import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCache
 import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCacheFactory
 import com.apollographql.apollo.subscription.SubscriptionConnectionParams
 import com.apollographql.apollo.subscription.WebSocketSubscriptionTransport
-import com.bumptech.glide.RequestBuilder
 import com.google.firebase.messaging.FirebaseMessaging
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.authenticate.LoginStatusService
@@ -159,8 +159,6 @@ import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.ApolloTimberLogger
 import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.featureflags.FeatureManager
-import com.hedvig.app.util.svg.GlideApp
-import com.hedvig.app.util.svg.SvgSoftwareLayerSetter
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -259,11 +257,6 @@ val applicationModule = module {
             builder.logger(ApolloTimberLogger())
         }
         builder.build()
-    }
-    single<RequestBuilder<PictureDrawable>> {
-        GlideApp.with(get<Context>())
-            .`as`(PictureDrawable::class.java)
-            .listener(SvgSoftwareLayerSetter())
     }
 }
 
@@ -536,4 +529,14 @@ val sharedPreferencesModule = module {
 
 val featureRuntimeBehaviorModule = module {
     single { FeatureManager(get(), isDebug()) }
+}
+
+val coilModule = module {
+    single {
+        ImageLoader.Builder(get())
+            .componentRegistry {
+                add(SvgDecoder(get()))
+            }
+            .build()
+    }
 }

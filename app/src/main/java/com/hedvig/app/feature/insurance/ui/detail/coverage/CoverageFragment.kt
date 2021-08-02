@@ -1,12 +1,11 @@
 package com.hedvig.app.feature.insurance.ui.detail.coverage
 
-import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
-import com.bumptech.glide.RequestBuilder
+import coil.ImageLoader
 import com.carousell.concatadapterextension.ConcatItemDecoration
 import com.carousell.concatadapterextension.ConcatSpanSizeLookup
 import com.hedvig.app.R
@@ -22,10 +21,10 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 class CoverageFragment : Fragment(R.layout.contract_detail_coverage_fragment) {
     private val binding by viewBinding(ContractDetailCoverageFragmentBinding::bind)
     private val model: ContractDetailViewModel by sharedViewModel()
-    private val requestBuilder: RequestBuilder<PictureDrawable> by inject()
+    private val imageLoader: ImageLoader by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val perilsAdapter = PerilsAdapter(requestBuilder, parentFragmentManager)
+        val perilsAdapter = PerilsAdapter(parentFragmentManager, imageLoader)
         val insurableLimitsAdapter = InsurableLimitsAdapter(parentFragmentManager)
         val concatAdapter = ConcatAdapter(perilsAdapter, insurableLimitsAdapter)
         binding.root.apply {

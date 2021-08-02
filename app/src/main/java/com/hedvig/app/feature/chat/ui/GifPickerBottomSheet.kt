@@ -55,14 +55,10 @@ class GifPickerBottomSheet : BottomSheetDialogFragment() {
                     },
                     { e(it) }
                 )
-            val adapter = GifAdapter(
-                requireContext(),
-                sendGif = { url ->
-                    onSelectGif(url)
-                    dismiss()
-                }
-            )
-            gifRecyclerView.addOnScrollListener(adapter.recyclerViewPreloader)
+            val adapter = GifAdapter { url ->
+                onSelectGif(url)
+                dismiss()
+            }
             gifRecyclerView.adapter = adapter
 
             model.gifs.observe(viewLifecycleOwner) { data ->
