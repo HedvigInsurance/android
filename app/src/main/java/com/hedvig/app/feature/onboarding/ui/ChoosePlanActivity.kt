@@ -65,6 +65,18 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
                     ?: throw IllegalArgumentException("No story title found")
                 startActivity(EmbarkActivity.newInstance(this@ChoosePlanActivity, storyName, storyTitle))
             }
+            model.selectedQuoteType.observe(this@ChoosePlanActivity) { selected ->
+                val data = (model.data.value as? ChoosePlanViewModel.ViewState.Success ?: return@observe)
+                val bundles = data.data.map {
+                    OnboardingModel.Bundle(
+                        selected = it.name == selected.embarkStory.name,
+                        embarkStory = it
+                    )
+                }
+                adapter.submitList(
+                    bundles
+                )
+            }
             model
                 .data
                 .flowWithLifecycle(lifecycle)
