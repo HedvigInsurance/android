@@ -5,7 +5,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.core.view.isVisible
 import androidx.core.view.updatePaddingRelative
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.hedvig.android.owldroid.graphql.ChoosePlanQuery
 import com.hedvig.android.owldroid.type.EmbarkStoryType
 import com.hedvig.app.BaseActivity
@@ -18,16 +21,15 @@ import com.hedvig.app.feature.onboarding.OnboardingModel
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
-import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.lang.IllegalArgumentException
 
 class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
     private val binding by viewBinding(ActivityChoosePlanBinding::bind)
@@ -53,45 +55,43 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
             toolbar.setNavigationOnClickListener { onBackPressed() }
 
             recycler.itemAnimator = ViewHolderReusingDefaultItemAnimator()
-            recycler.adapter = OnboardingAdapter(model, marketProvider)
+            val adapter = OnboardingAdapter(model, marketProvider)
+            recycler.adapter = adapter
 
             continueButton.setHapticClickListener {
-                val storyName = model.selectedQuoteType.value?.embarkStory?.name ?: throw IllegalArgumentException("No story name found")
-                val storyTitle = model.selectedQuoteType.value?.embarkStory?.title ?: throw IllegalArgumentException("No story title found")
+                val storyName = model.selectedQuoteType.value?.embarkStory?.name
+                    ?: throw IllegalArgumentException("No story name found")
+                val storyTitle = model.selectedQuoteType.value?.embarkStory?.title
+                    ?: throw IllegalArgumentException("No story title found")
                 startActivity(EmbarkActivity.newInstance(this@ChoosePlanActivity, storyName, storyTitle))
             }
-            model.data.observe(this@ChoosePlanActivity) { response ->
-                val bundles = response.getOrNull()
-                if (response.isFailure || bundles == null) {
-                    (recycler.adapter as OnboardingAdapter).submitList(listOf(OnboardingModel.Error))
-                    continueButton.remove()
-                    return@observe
-                }
-                continueButton.show()
-                getMobileTypesNew(bundles).find { it.selected }?.let {
-                    model.setSelectedQuoteType(it)
-                }
-                (recycler.adapter as OnboardingAdapter).submitList(
-                    listOfNotNull(
-                        *getMobileTypesNew(bundles).toTypedArray()
-                    )
-                )
-            }
-            model.load()
-            model.selectedQuoteType.observe(this@ChoosePlanActivity) { selected ->
-                val data = model.data.value?.getOrNull()
-                val bundles = data?.map {
-                    OnboardingModel.Bundle(
-                        selected = it.name == selected.embarkStory.name,
-                        embarkStory = it
-                    )
-                }
-                (recycler.adapter as OnboardingAdapter).submitList(
-                    bundles?.let {
-                        listOfNotNull(*it.toTypedArray())
+            model
+                .data
+                .flowWithLifecycle(lifecycle)
+                .onEach { viewState ->
+                    continueButton.isVisible = viewState is ChoosePlanViewModel.ViewState.Success
+                    when (viewState) {
+                        ChoosePlanViewModel.ViewState.Error -> {
+                            adapter.submitList(
+                                listOf(
+                                    OnboardingModel.Error
+                                )
+                            )
+                        }
+                        ChoosePlanViewModel.ViewState.Loading -> {
+                        }
+                        is ChoosePlanViewModel.ViewState.Success -> {
+                            val bundles = viewState.data
+                            getMobileTypesNew(bundles).find { it.selected }?.let {
+                                model.setSelectedQuoteType(it)
+                            }
+                            adapter.submitList(
+                                getMobileTypesNew(bundles)
+                            )
+                        }
                     }
-                )
-            }
+                }
+                .launchIn(lifecycleScope)
         }
     }
 
@@ -117,13 +117,9 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
     }
 
     companion object {
-
         const val COMBO = "Combo"
         const val CONTENTS = "Contents"
         const val TRAVEL = "Travel"
-
-        internal const val NO_ENGLISH_TRAVEL_STORY_NAME = "Web Onboarding NO - English Travel"
-        internal const val NO_NORWEGIAN_TRAVEL_STORY_NAME = "Web Onboarding NO - Norwegian Travel"
 
         fun newInstance(context: Context) = Intent(context, ChoosePlanActivity::class.java)
 

@@ -8,7 +8,7 @@ class MockChoosePlanViewModel : ChoosePlanViewModel() {
     }
 
     override fun load() {
-        _data.postValue(Result.success(mockData))
+        _data.value = ViewState.Success(mockData)
     }
 
     companion object {
