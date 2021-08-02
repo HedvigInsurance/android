@@ -1,5 +1,5 @@
 object BuildLibs {
-    const val AndroidGradlePlugin = "com.android.tools.build:gradle:4.2.2"
+    const val AndroidGradlePlugin = "com.android.tools.build:gradle:7.0.0"
     const val GoogleServicesPlugin = "com.google.gms:google-services:4.3.8"
     const val CrashlyticsPlugin = "com.google.firebase:firebase-crashlytics-gradle:2.7.1"
     const val KotlinPlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${CommonVersions.kotlin}"
