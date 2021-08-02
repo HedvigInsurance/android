@@ -7,8 +7,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.Menu
 import android.view.MenuItem
-import android.view.Window
-import androidx.core.view.WindowCompat
 import androidx.dynamicanimation.animation.FloatValueHolder
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
@@ -47,10 +45,10 @@ import com.hedvig.app.util.extensions.view.performOnTapHapticFeedback
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import e
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import java.time.LocalDate
 import javax.money.MonetaryAmount
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -74,8 +72,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     private lateinit var referralsIncentive: MonetaryAmount
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        window.requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
-        window.allowReturnTransitionOverlap = true
         super.onCreate(savedInstanceState)
 
         savedTab = savedInstanceState?.getSerializable("tab") as? LoggedInTabs
@@ -117,7 +113,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 supportFragmentManager
                     .beginTransaction()
                     .replace(R.id.tabContent, id.fragment)
-                    .commitAllowingStateLoss()
+                    .commit()
 
                 setupToolBar()
                 animateGradient(id)

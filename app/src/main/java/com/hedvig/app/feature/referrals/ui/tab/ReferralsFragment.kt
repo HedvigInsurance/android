@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.doOnLayout
+import androidx.core.view.doOnNextLayout
 import androidx.core.view.marginBottom
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.flowWithLifecycle
@@ -54,13 +55,6 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
     private var shareInitialBottomMargin = 0
     private var invitesInitialBottomPadding = 0
     private var scroll = 0
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        enterTransition = MaterialFadeThrough()
-        exitTransition = MaterialFadeThrough()
-    }
 
     override fun onResume() {
         super.onResume()
