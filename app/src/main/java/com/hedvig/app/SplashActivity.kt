@@ -4,6 +4,9 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.Window
+import android.view.WindowInsets
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
@@ -20,7 +23,6 @@ import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.extensions.avdDoOnEnd
 import com.hedvig.app.util.extensions.avdStart
 import com.hedvig.app.util.extensions.viewBinding
-import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
@@ -33,7 +35,7 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding.root.setEdgeToEdgeSystemUiFlags(true)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
     }
 
     override fun onStart() {

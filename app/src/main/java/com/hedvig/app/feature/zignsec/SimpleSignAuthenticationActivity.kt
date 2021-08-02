@@ -3,7 +3,7 @@ package com.hedvig.app.feature.zignsec
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.core.view.updatePadding
+import androidx.core.view.WindowCompat
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
 import com.hedvig.android.owldroid.type.AuthState
@@ -16,9 +16,9 @@ import com.hedvig.app.feature.zignsec.ui.ErrorFragment
 import com.hedvig.app.feature.zignsec.ui.IdentityInputFragment
 import com.hedvig.app.feature.zignsec.ui.ZignSecWebViewFragment
 import com.hedvig.app.util.extensions.addToBackStack
+import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
+import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.viewBinding
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
-import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -34,16 +34,12 @@ class SimpleSignAuthenticationActivity : BaseActivity(R.layout.simple_sign_authe
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding.root.setEdgeToEdgeSystemUiFlags(true)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         binding.toolbar.apply {
-            doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
-            }
+            applyStatusBarInsets()
             setNavigationOnClickListener { finish() }
         }
-        binding.container.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
-        }
+        binding.container.applyNavigationBarInsets()
         if (savedInstanceState == null) {
             supportFragmentManager.commit {
                 replace(R.id.container, IdentityInputFragment.newInstance(data))

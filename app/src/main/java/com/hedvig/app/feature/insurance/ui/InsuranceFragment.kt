@@ -2,7 +2,6 @@ package com.hedvig.app.feature.insurance.ui
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.flowWithLifecycle
 import com.google.android.material.transition.MaterialFadeThrough
@@ -45,7 +44,6 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         scroll = 0
-
         binding.insuranceRecycler.apply {
             val scrollInitialTopPadding = paddingTop
 

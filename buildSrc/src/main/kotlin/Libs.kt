@@ -96,7 +96,7 @@ object Libs {
 
     const val tooltip = "com.github.hansemannn:viewtooltip:1.2.2"
     const val ZXing = "com.google.zxing:core:3.4.1"
-    const val insetter = "dev.chrisbanes:insetter-ktx:0.3.1"
+    const val insetter = "dev.chrisbanes.insetter:insetter:0.6.0"
 
     object Markwon {
         private const val version = "4.6.2"

@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
@@ -12,16 +13,15 @@ import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.util.extensions.makeACall
 import com.hedvig.app.util.extensions.startClosableChat
+import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
+import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.disable
 import com.hedvig.app.util.extensions.view.enable
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
-import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.svg.buildRequestBuilder
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
-import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
@@ -45,13 +45,9 @@ class EmergencyActivity : BaseActivity(R.layout.activity_emergency) {
         }
 
         binding.apply {
-            root.setEdgeToEdgeSystemUiFlags(true)
-            scrollView.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
-            }
-            toolbar.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
-            }
+            WindowCompat.setDecorFitsSystemWindows(window, false)
+            toolbar.applyStatusBarInsets()
+            scrollView.applyNavigationBarInsets()
 
             toolbar.title = data.title
             toolbar.setNavigationOnClickListener {

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import com.bumptech.glide.Glide
@@ -20,7 +21,6 @@ import com.hedvig.app.feature.marketpicker.MarketPickerFragment
 import com.hedvig.app.feature.marketpicker.MarketSelectedFragment
 import com.hedvig.app.util.BlurHashDecoder
 import com.hedvig.app.util.extensions.viewBinding
-import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MarketingActivity : BaseActivity(R.layout.activity_marketing) {
@@ -38,7 +38,7 @@ class MarketingActivity : BaseActivity(R.layout.activity_marketing) {
         }
 
         binding.apply {
-            root.setEdgeToEdgeSystemUiFlags(true)
+            WindowCompat.setDecorFitsSystemWindows(window, false)
 
             model
                 .marketingBackground

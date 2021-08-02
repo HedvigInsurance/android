@@ -11,7 +11,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import androidx.core.content.FileProvider
-import androidx.core.view.updatePadding
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
@@ -25,12 +25,11 @@ import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.service.FileService
 import com.hedvig.app.util.extensions.askForPermissions
 import com.hedvig.app.util.extensions.hasPermissions
+import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
-import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -48,11 +47,8 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
         super.onCreate(savedInstanceState)
 
         binding.apply {
-            root.setEdgeToEdgeSystemUiFlags(true)
-
-            topBar.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(top = insets.systemWindowInsetTop + initialState.paddings.top)
-            }
+            WindowCompat.setDecorFitsSystemWindows(window, false)
+            topBar.applyStatusBarInsets()
 
             val fileUrl = intent.getStringExtra(RECEIPT_URL)
             if (fileUrl == null) {

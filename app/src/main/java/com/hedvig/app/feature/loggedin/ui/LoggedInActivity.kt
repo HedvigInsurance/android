@@ -8,6 +8,7 @@ import android.os.Handler
 import android.view.Menu
 import android.view.MenuItem
 import android.view.Window
+import androidx.core.view.WindowCompat
 import androidx.core.view.doOnLayout
 import androidx.core.view.updatePaddingRelative
 import androidx.dynamicanimation.animation.FloatValueHolder
@@ -41,11 +42,12 @@ import com.hedvig.app.util.extensions.getLastOpen
 import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.setLastOpen
 import com.hedvig.app.util.extensions.startClosableChat
+import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
+import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.performOnTapHapticFeedback
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
-import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
+import dev.chrisbanes.insetter.applyInsetter
 import e
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -81,25 +83,12 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         savedTab = savedInstanceState?.getSerializable("tab") as? LoggedInTabs
 
         with(binding) {
-            loggedInRoot.setEdgeToEdgeSystemUiFlags(true)
+            WindowCompat.setDecorFitsSystemWindows(window, false)
+            toolbar.applyStatusBarInsets()
+            bottomNavigation.applyNavigationBarInsets()
+            tabContent.applyStatusBarInsets()
 
             toolbar.background.alpha = 0
-            toolbar.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePaddingRelative(top = initialState.paddings.top + insets.systemWindowInsetTop)
-                loggedInViewModel.updateToolbarInset(view.measuredHeight)
-            }
-            toolbar.doOnLayout { view ->
-                loggedInViewModel.updateToolbarInset(view.measuredHeight)
-            }
-
-            bottomNavigation.doOnApplyWindowInsets { view, insets, initialState ->
-                view.post {
-                    view.updatePaddingRelative(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
-                    view.doOnLayout {
-                        loggedInViewModel.updateBottomTabInset(view.measuredHeight)
-                    }
-                }
-            }
 
             val isDarkTheme = isDarkThemeActive
 

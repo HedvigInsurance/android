@@ -3,9 +3,9 @@ package com.hedvig.app.feature.embark.ui
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -36,11 +36,9 @@ import com.hedvig.app.feature.embark.passages.textaction.TextActionFragment
 import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.remove
-import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
-import com.hedvig.app.util.whenApiVersion
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
@@ -67,14 +65,8 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         super.onCreate(savedInstanceState)
 
         binding.apply {
-
-            whenApiVersion(Build.VERSION_CODES.R) {
-                window.setDecorFitsSystemWindows(false)
-                progressToolbar.toolbar.doOnApplyWindowInsets { view, insets, initialState ->
-                    view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
-                }
-            }
-
+            WindowCompat.setDecorFitsSystemWindows(window, false)
+            progressToolbar.applyStatusBarInsets()
             progressToolbar.toolbar.title = storyTitle
 
             model.data.observe(this@EmbarkActivity) { embarkData ->

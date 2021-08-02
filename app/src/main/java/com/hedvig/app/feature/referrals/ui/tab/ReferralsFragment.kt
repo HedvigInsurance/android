@@ -31,7 +31,6 @@ import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewLifecycle
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import e
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -113,12 +112,13 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
             )
             invites.adapter = adapter
 
-            swipeToRefresh.doOnApplyWindowInsets { _, insets, _ ->
+            swipeToRefresh.setOnApplyWindowInsetsListener { v, insets ->
                 swipeToRefresh.setProgressViewOffset(
                     false,
                     0,
                     insets.systemWindowInsetTop + BASE_MARGIN_DOUBLE
                 )
+                insets
             }
 
             swipeToRefresh.setOnRefreshListener {

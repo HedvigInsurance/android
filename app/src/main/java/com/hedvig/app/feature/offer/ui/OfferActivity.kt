@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.transition.TransitionManager
 import android.view.MenuItem
 import androidx.activity.OnBackPressedCallback
+import androidx.core.view.WindowCompat
 import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.lifecycle.flowWithLifecycle
@@ -45,7 +46,6 @@ import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
-import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -70,7 +70,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         super.onCreate(savedInstanceState)
 
         binding.apply {
-            offerRoot.setEdgeToEdgeSystemUiFlags(true)
+            WindowCompat.setDecorFitsSystemWindows(window, false)
             offerToolbar.insetSystemTopWithPadding()
             signButton.insetSystemBottomWithMargin()
 

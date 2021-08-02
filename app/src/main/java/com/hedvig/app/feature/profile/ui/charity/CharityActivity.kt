@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.profile.ui.charity
 
 import android.os.Bundle
+import androidx.core.view.WindowCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -19,7 +20,6 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
-import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
@@ -34,7 +34,7 @@ class CharityActivity : BaseActivity(R.layout.activity_charity) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding.root.setEdgeToEdgeSystemUiFlags(true)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setupToolbar(R.id.toolbar, R.drawable.ic_back, true) {
             onBackPressed()

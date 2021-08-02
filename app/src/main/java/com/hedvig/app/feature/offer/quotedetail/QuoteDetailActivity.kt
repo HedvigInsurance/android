@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.ConcatAdapter
@@ -45,7 +46,7 @@ class QuoteDetailActivity : BaseActivity(R.layout.quote_detail_activity) {
         }
 
         with(binding) {
-            Insetter.setEdgeToEdgeSystemUiFlags(root, true)
+            WindowCompat.setDecorFitsSystemWindows(window, false)
 
             Insetter.builder()
                 .setOnApplyInsetsListener { view, insets, initialState ->

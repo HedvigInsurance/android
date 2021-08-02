@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.Window
-import androidx.core.view.updatePadding
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.transition.platform.MaterialSharedAxis
@@ -16,9 +16,9 @@ import com.hedvig.app.feature.insurance.ui.InsuranceAdapter
 import com.hedvig.app.feature.insurance.ui.InsuranceModel
 import com.hedvig.app.feature.insurance.ui.InsuranceViewModel
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
+import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.viewBinding
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
-import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
@@ -39,13 +39,9 @@ class TerminatedContractsActivity : BaseActivity(R.layout.terminated_contracts_a
         super.onCreate(savedInstanceState)
 
         binding.apply {
-            root.setEdgeToEdgeSystemUiFlags(true)
-            toolbar.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
-            }
-            recycler.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
-            }
+            WindowCompat.setDecorFitsSystemWindows(window, false)
+            toolbar.applyStatusBarInsets()
+            recycler.applyNavigationBarInsets()
             toolbar.setNavigationOnClickListener { onBackPressed() }
             val adapter = InsuranceAdapter(tracker, marketManager, model::load)
             recycler.adapter = adapter

@@ -4,20 +4,20 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import androidx.core.view.WindowCompat
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityCommonClaimBinding
 import com.hedvig.app.feature.claims.ui.commonclaim.bulletpoint.BulletPointsAdapter
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
+import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
+import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.disable
 import com.hedvig.app.util.extensions.view.enable
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
-import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.svg.buildRequestBuilder
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
-import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 
 class CommonClaimActivity : BaseActivity(R.layout.activity_common_claim) {
 
@@ -30,13 +30,9 @@ class CommonClaimActivity : BaseActivity(R.layout.activity_common_claim) {
         val data = intent.getParcelableExtra<CommonClaimsData>(CLAIMS_DATA) ?: return
 
         binding.apply {
-            root.setEdgeToEdgeSystemUiFlags(true)
-            root.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
-            }
-            toolbar.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
-            }
+            WindowCompat.setDecorFitsSystemWindows(window, false)
+            root.applyNavigationBarInsets()
+            toolbar.applyStatusBarInsets()
 
             toolbar.setNavigationOnClickListener {
                 onBackPressed()

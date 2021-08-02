@@ -15,6 +15,7 @@ import android.provider.MediaStore.MediaColumns
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.FileProvider
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -34,14 +35,16 @@ import com.hedvig.app.util.extensions.hasPermissions
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.triggerRestartActivity
+import com.hedvig.app.util.extensions.view.applyNavigationBarInsetsMargin
+import com.hedvig.app.util.extensions.view.applyStatusBarAndNavigationBarInsets
+import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
-import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
+import java.io.File
+import java.io.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.launchIn
@@ -50,8 +53,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.io.File
-import java.io.IOException
 
 class ChatActivity : BaseActivity(R.layout.activity_chat) {
     private val chatViewModel: ChatViewModel by viewModel()
@@ -111,22 +112,12 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             )
             initialChatPadding = messages.paddingBottom
 
-            chatRoot.setEdgeToEdgeSystemUiFlags(true)
+            WindowCompat.setDecorFitsSystemWindows(window, false)
 
-            input.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
-            }
-
-            toolbar.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
-            }
-
-            messages.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(
-                    top = initialState.paddings.top + insets.systemWindowInsetTop,
-                    bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom
-                )
-            }
+            input.applyNavigationBarInsetsMargin()
+            toolbar.applyStatusBarInsets()
+            messages.applyStatusBarInsets()
+            messages.applyStatusBarAndNavigationBarInsets()
         }
 
         initializeToolbarButtons()
