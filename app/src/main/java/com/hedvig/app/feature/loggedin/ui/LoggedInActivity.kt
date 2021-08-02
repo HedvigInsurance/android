@@ -9,8 +9,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.Window
 import androidx.core.view.WindowCompat
-import androidx.core.view.doOnLayout
-import androidx.core.view.updatePaddingRelative
 import androidx.dynamicanimation.animation.FloatValueHolder
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
@@ -47,15 +45,14 @@ import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.performOnTapHapticFeedback
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
-import dev.chrisbanes.insetter.applyInsetter
 import e
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import java.time.LocalDate
+import javax.money.MonetaryAmount
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.time.LocalDate
-import javax.money.MonetaryAmount
 
 class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     private val claimsViewModel: ClaimsViewModel by viewModel()

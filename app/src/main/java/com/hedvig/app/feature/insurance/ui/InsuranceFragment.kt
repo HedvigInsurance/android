@@ -44,10 +44,7 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding.insuranceRecycler.applyStatusBarInsets()
-        binding.insuranceRecycler.applyNavigationBarInsets()
-
+        
         binding.insuranceRecycler.apply {
             scroll = 0
             addOnScrollListener(

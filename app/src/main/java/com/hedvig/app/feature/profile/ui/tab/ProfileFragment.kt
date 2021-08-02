@@ -63,6 +63,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
 
         val adapter = ProfileAdapter(viewLifecycleOwner, model::load, model::onLogout)
         binding.recycler.apply {
+
             scroll = 0
             addOnScrollListener(
                 ScrollPositionListener(
