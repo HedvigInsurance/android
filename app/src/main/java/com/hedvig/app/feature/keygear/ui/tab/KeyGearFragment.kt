@@ -27,6 +27,7 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.updatePadding
+import com.hedvig.app.util.extensions.viewLifecycle
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.hedvig.app.util.transitionPair
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
@@ -112,7 +113,7 @@ class KeyGearFragment : Fragment(R.layout.fragment_key_gear) {
 
             model
                 .data
-                .flowWithLifecycle(viewLifecycleOwner.lifecycle)
+                .flowWithLifecycle(viewLifecycle)
                 .onEach { viewState ->
                     when (viewState) {
                         KeyGearViewModel.ViewState.Loading -> {

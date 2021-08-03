@@ -6,6 +6,9 @@ import android.view.HapticFeedbackConstants
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.view.menu.ActionMenuItemView
+import androidx.core.view.isVisible
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityMyInfoBinding
@@ -13,14 +16,14 @@ import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.setupToolbar
 import com.hedvig.app.util.extensions.view.dismissKeyboard
-import com.hedvig.app.util.extensions.view.remove
-import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.validateEmail
 import com.hedvig.app.util.validatePhoneNumber
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MyInfoActivity : BaseActivity(R.layout.activity_my_info) {
@@ -61,8 +64,12 @@ class MyInfoActivity : BaseActivity(R.layout.activity_my_info) {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val prevEmail = profileViewModel.data.value?.getOrNull()?.member?.email ?: ""
-        val prevPhoneNumber = profileViewModel.data.value?.getOrNull()?.member?.phoneNumber ?: ""
+        val prevEmail = (profileViewModel.data.value as? ProfileViewModel.ViewState.Success)?.data?.member?.email ?: ""
+        val prevPhoneNumber = (profileViewModel.data.value as? ProfileViewModel.ViewState.Success)
+            ?.data
+            ?.member
+            ?.phoneNumber
+            ?: ""
 
         binding.apply {
             val newEmail = emailInput.text.toString()
@@ -107,16 +114,21 @@ class MyInfoActivity : BaseActivity(R.layout.activity_my_info) {
         findViewById<ActionMenuItemView>(R.id.save)?.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
 
     private fun loadData() {
-        profileViewModel.data.observe(this) { profileData ->
-            binding.apply {
-                spinner.loadingSpinner.remove()
-                contactDetailsContainer.show()
-                profileData?.let { data ->
-                    setupEmailInput(data.getOrNull()?.member?.email ?: "")
-                    setupPhoneNumberInput(data.getOrNull()?.member?.phoneNumber ?: "")
+        profileViewModel
+            .data
+            .flowWithLifecycle(lifecycle)
+            .onEach { viewState ->
+                binding.apply {
+                    spinner.loadingSpinner.isVisible = viewState is ProfileViewModel.ViewState.Loading
+                    contactDetailsContainer.isVisible = viewState !is ProfileViewModel.ViewState.Loading
+
+                    if (viewState is ProfileViewModel.ViewState.Success) {
+                        setupEmailInput(viewState.data.member.email ?: "")
+                        setupPhoneNumberInput(viewState.data.member.phoneNumber ?: "")
+                    }
                 }
             }
-        }
+            .launchIn(lifecycleScope)
         profileViewModel.dirty.observe(this) {
             invalidateOptionsMenu()
         }

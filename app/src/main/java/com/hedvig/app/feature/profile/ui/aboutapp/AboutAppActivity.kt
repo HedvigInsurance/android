@@ -2,12 +2,14 @@ package com.hedvig.app.feature.profile.ui.aboutapp
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityAboutAppBinding
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
-import com.hedvig.app.feature.profile.ui.ProfileViewModel
+import com.hedvig.app.feature.onboarding.MemberIdViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewDialog
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.util.apollo.ThemedIconUrls
@@ -15,11 +17,13 @@ import com.hedvig.app.util.extensions.setupToolbar
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AboutAppActivity : BaseActivity(R.layout.activity_about_app) {
     private val binding by viewBinding(ActivityAboutAppBinding::bind)
-    private val profileViewModel: ProfileViewModel by viewModel()
+    private val memberIdViewModel: MemberIdViewModel by viewModel()
     private val whatsNewViewModel: WhatsNewViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,11 +67,17 @@ class AboutAppActivity : BaseActivity(R.layout.activity_about_app) {
             versionNumber.text =
                 resources.getString(R.string.PROFILE_ABOUT_APP_VERSION, BuildConfig.VERSION_NAME)
 
-            profileViewModel.data.observe(this@AboutAppActivity) { data ->
-                data.getOrNull()?.member?.id?.let { id ->
-                    memberId.text = resources.getString(R.string.PROFILE_ABOUT_APP_MEMBER_ID, id)
+            memberIdViewModel
+                .state
+                .flowWithLifecycle(lifecycle)
+                .onEach { state ->
+                    when (state) {
+                        is MemberIdViewModel.State.Success -> memberId.text = state.id
+                        else -> {
+                        }
+                    }
                 }
-            }
+                .launchIn(lifecycleScope)
         }
     }
 

@@ -13,6 +13,7 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.DialogChangeStartDateBinding
 import com.hedvig.app.util.extensions.epochMillisToLocalDate
 import com.hedvig.app.util.extensions.showAlert
+import com.hedvig.app.util.extensions.viewLifecycle
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import kotlinx.coroutines.flow.launchIn
@@ -38,7 +39,7 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         changeDateBottomSheetViewModel
             .viewState
-            .flowWithLifecycle(viewLifecycleOwner.lifecycle)
+            .flowWithLifecycle(viewLifecycle)
             .onEach { viewState ->
                 when (viewState) {
                     ChangeDateBottomSheetViewModel.ViewState.Dismiss -> dismiss()

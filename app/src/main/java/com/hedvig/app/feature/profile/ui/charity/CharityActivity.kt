@@ -1,6 +1,9 @@
 package com.hedvig.app.feature.profile.ui.charity
 
 import android.os.Bundle
+import androidx.core.view.isVisible
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
@@ -17,6 +20,8 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -39,14 +44,26 @@ class CharityActivity : BaseActivity(R.layout.activity_charity) {
     }
 
     private fun loadData() {
-        profileViewModel.data.observe(this) { profileData ->
-            binding.loadingSpinner.loadingSpinner.remove()
+        profileViewModel
+            .data
+            .flowWithLifecycle(lifecycle)
+            .onEach { viewState ->
+                binding.loadingSpinner.loadingSpinner.isVisible = viewState is ProfileViewModel.ViewState.Loading
 
-            profileData?.let { data ->
-                data.getOrNull()?.cashback?.fragments?.cashbackFragment?.let { showSelectedCharity(it) }
-                    ?: data.getOrNull()?.cashbackOptions?.filterNotNull()?.let { showCharityPicker(it) }
+                when (viewState) {
+                    is ProfileViewModel.ViewState.Success -> {
+                        val selectedCharity = viewState.data.cashback?.fragments?.cashbackFragment
+                        if (selectedCharity != null) {
+                            showSelectedCharity(selectedCharity)
+                        } else {
+                            showCharityPicker(viewState.data.cashbackOptions.filterNotNull())
+                        }
+                    }
+                    else -> {
+                    }
+                }
             }
-        }
+            .launchIn(lifecycleScope)
     }
 
     private fun showSelectedCharity(cashback: CashbackFragment) {

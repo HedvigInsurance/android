@@ -17,6 +17,7 @@ import com.hedvig.app.feature.embark.passages.multiaction.add.AddComponentBottom
 import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_MILLIS
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.view.updateMargin
+import com.hedvig.app.util.extensions.viewLifecycle
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import dev.chrisbanes.insetter.Insetter
@@ -71,12 +72,12 @@ class MultiActionFragment : Fragment(R.layout.fragment_embark_multi_action) {
 
         multiActionViewModel
             .components
-            .flowWithLifecycle(viewLifecycleOwner.lifecycle)
+            .flowWithLifecycle(viewLifecycle)
             .onEach(adapter::submitList)
             .launchIn(viewLifecycleScope)
         multiActionViewModel
             .newComponent
-            .flowWithLifecycle(viewLifecycleOwner.lifecycle)
+            .flowWithLifecycle(viewLifecycle)
             .onEach(::showAddBuildingSheet)
             .launchIn(viewLifecycleScope)
 
