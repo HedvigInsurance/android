@@ -38,12 +38,8 @@ allprojects {
         mavenCentral()
         mavenLocal()
         maven(
-            "https://maven.google.com"
-        )
-        maven(
             "https://jitpack.io"
         )
-        jcenter()
     }
 }
 

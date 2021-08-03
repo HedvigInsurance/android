@@ -49,7 +49,7 @@ object Libs {
     }
 
     const val materialComponents = "com.google.android.material:material:1.4.0"
-    const val flexbox = "com.google.android:flexbox:2.0.1"
+    const val flexbox = "com.google.android.flexbox:flexbox:3.0.0"
     const val combineTuple = "com.github.Zhuinden:livedata-combinetuple-kt:1.2.1"
     const val fragmentViewBindingDelegate = "com.github.Zhuinden:fragmentviewbindingdelegate-kt:1.0.0"
 
@@ -94,7 +94,7 @@ object Libs {
         const val recyclerView = "com.github.bumptech.glide:recyclerview-integration:$version"
     }
 
-    const val tooltip = "com.github.florent37:viewtooltip:1.2.2"
+    const val tooltip = "com.github.hansemannn:viewtooltip:1.2.2"
     const val ZXing = "com.google.zxing:core:3.4.1"
     const val insetter = "dev.chrisbanes:insetter-ktx:0.3.1"
 
