@@ -109,6 +109,7 @@
     </style>
 
     <!-- Adyen Compatibility fixes -->
+    <!--
     <style name="AdyenCheckout.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="boxStrokeColor">?colorPrimary</item>
         <item name="hintTextAppearance">@style/AdyenCheckout.HintTextStyle</item>
@@ -137,6 +138,7 @@
         <item name="android:textColor">@color/colorOnPrimary</item>
         <item name="android:theme">@style/AdyenCheckout.PrimaryFlatButton</item>
     </style>
+    -->
 
     <style name="Hedvig.Theme.EmbarkList">
         <item name="android:layout_width">0dp</item>

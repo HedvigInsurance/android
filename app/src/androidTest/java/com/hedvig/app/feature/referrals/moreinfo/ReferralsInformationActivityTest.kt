@@ -1,11 +1,6 @@
 package com.hedvig.app.feature.referrals.moreinfo
 
 import android.content.Intent
-import com.agoda.kakao.intent.KIntent
-import com.agoda.kakao.screen.Screen
-import com.agoda.kakao.screen.Screen.Companion.onScreen
-import com.agoda.kakao.text.KButton
-import com.agoda.kakao.text.KTextView
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
@@ -21,6 +16,11 @@ import com.hedvig.app.util.context
 import com.hedvig.app.util.market
 import com.hedvig.app.util.stubExternalIntents
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import io.github.kakaocup.kakao.intent.KIntent
+import io.github.kakaocup.kakao.screen.Screen
+import io.github.kakaocup.kakao.screen.Screen.Companion.onScreen
+import io.github.kakaocup.kakao.text.KButton
+import io.github.kakaocup.kakao.text.KTextView
 import org.javamoney.moneta.Money
 import org.junit.Rule
 import org.junit.Test

@@ -6,14 +6,23 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.app.feature.referrals.data.ReferralsRepository
+import e
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 abstract class ReferralsViewModel : ViewModel() {
-    protected val _data = MutableLiveData<Result<ReferralsQuery.Data>>()
-    val data: LiveData<Result<ReferralsQuery.Data>> = _data
+    sealed class ViewState {
+        data class Success(val data: ReferralsQuery.Data) : ViewState()
+        object Loading : ViewState()
+        object Error : ViewState()
+    }
+
+    protected val _data = MutableStateFlow<ViewState>(ViewState.Loading)
+    val data = _data.asStateFlow()
 
     protected val _isRefreshing = MutableLiveData<Boolean>()
 
@@ -39,13 +48,14 @@ class ReferralsViewModelImpl(
                 .referrals()
                 .onEach { response ->
                     if (response.errors?.isNotEmpty() == true) {
-                        _data.postValue(Result.failure(Error()))
+                        _data.value = ViewState.Error
                         return@onEach
                     }
-                    response.data?.let { _data.postValue(Result.success(it)) }
+                    response.data?.let { _data.value = ViewState.Success(it) }
                 }
                 .catch { e ->
-                    _data.postValue(Result.failure(e))
+                    e(e)
+                    _data.value = ViewState.Error
                 }
                 .launchIn(this)
         }

@@ -1,14 +1,12 @@
 package com.hedvig.app.feature.profile
 
 import androidx.lifecycle.MutableLiveData
-import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.testdata.feature.profile.PROFILE_DATA
 import com.hedvig.app.util.LiveEvent
 
 class MockProfileViewModel : ProfileViewModel() {
-    override val data = MutableLiveData<Result<ProfileQuery.Data>>()
     override val dirty = MutableLiveData<Boolean>()
     override val trustlyUrl = LiveEvent<String>()
 
@@ -18,9 +16,9 @@ class MockProfileViewModel : ProfileViewModel() {
 
     override fun load() {
         if (!shouldError) {
-            data.postValue(Result.success(profileData))
+            _data.value = ViewState.Success(profileData)
         } else {
-            data.postValue(Result.failure(Error()))
+            _data.value = ViewState.Error
             shouldError = false
         }
     }

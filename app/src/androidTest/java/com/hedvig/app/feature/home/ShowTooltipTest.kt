@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.home
 
 import android.content.Context
-import com.agoda.kakao.screen.Screen
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.app.feature.home.screens.LoggedInScreen
@@ -14,6 +13,7 @@ import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import io.github.kakaocup.kakao.screen.Screen
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule

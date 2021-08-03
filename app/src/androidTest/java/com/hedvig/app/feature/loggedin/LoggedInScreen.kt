@@ -1,11 +1,11 @@
 package com.hedvig.app.feature.loggedin
 
-import com.agoda.kakao.bottomnav.KBottomNavigationView
-import com.agoda.kakao.common.views.KView
-import com.agoda.kakao.intent.KIntent
-import com.agoda.kakao.screen.Screen
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.ui.ChatActivity
+import io.github.kakaocup.kakao.bottomnav.KBottomNavigationView
+import io.github.kakaocup.kakao.common.views.KView
+import io.github.kakaocup.kakao.intent.KIntent
+import io.github.kakaocup.kakao.screen.Screen
 
 class LoggedInScreen : Screen<LoggedInScreen>() {
     val root = KView { withId(R.id.loggedInRoot) }

@@ -1,20 +1,27 @@
 package com.hedvig.app.feature.keygear.ui.tab
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
 import com.hedvig.app.feature.keygear.data.DeviceInformationService
 import com.hedvig.app.feature.keygear.data.KeyGearItemsRepository
 import e
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 abstract class KeyGearViewModel : ViewModel() {
-    abstract val data: LiveData<Result<KeyGearItemsQuery.Data>>
+    sealed class ViewState {
+        data class Success(val data: KeyGearItemsQuery.Data) : ViewState()
+        object Loading : ViewState()
+        object Error : ViewState()
+    }
+
+    protected val _data = MutableStateFlow<ViewState>(ViewState.Loading)
+    val data = _data.asStateFlow()
 
     abstract fun sendAutoAddedItems()
     abstract fun load()
@@ -24,8 +31,6 @@ class KeyGearViewModelImpl(
     private val repository: KeyGearItemsRepository,
     private val deviceInformationService: DeviceInformationService
 ) : KeyGearViewModel() {
-    override val data = MutableLiveData<Result<KeyGearItemsQuery.Data>>()
-
     init {
         load()
     }
@@ -36,14 +41,14 @@ class KeyGearViewModelImpl(
                 .keyGearItems()
                 .onEach { response ->
                     response.errors?.let {
-                        data.postValue(Result.failure(Error()))
+                        _data.value = ViewState.Error
                         return@onEach
                     }
-                    response.data?.let { data.postValue(Result.success(it)) }
+                    response.data?.let { _data.value = ViewState.Success(it) }
                 }
                 .catch { e ->
                     e(e)
-                    data.postValue(Result.failure(e))
+                    _data.value = ViewState.Error
                 }
                 .collect()
         }

@@ -1,9 +1,9 @@
 package com.hedvig.app.feature.home.screens
 
-import com.agoda.kakao.screen.Screen
-import com.agoda.kakao.text.KButton
-import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
+import io.github.kakaocup.kakao.screen.Screen
+import io.github.kakaocup.kakao.text.KButton
+import io.github.kakaocup.kakao.text.KTextView
 
 class HowClaimsWorkScreen : Screen<HowClaimsWorkScreen>() {
     val button = KButton { withId(R.id.proceed) }

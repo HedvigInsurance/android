@@ -3,13 +3,11 @@ import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
 import org.gradle.api.JavaVersion
 
 fun LibraryExtension.commonConfig() {
-    compileSdkVersion(AndroidVersions.compileSdkVersion)
+    compileSdk = AndroidVersions.compileSdkVersion
 
     defaultConfig {
-        minSdkVersion(AndroidVersions.minSdkVersion)
-        targetSdkVersion(AndroidVersions.compileSdkVersion)
-        versionCode = 1
-        versionName = "1.0"
+        minSdk = AndroidVersions.minSdkVersion
+        targetSdk = AndroidVersions.compileSdkVersion
     }
 
     compileOptions {
@@ -28,11 +26,11 @@ fun LibraryExtension.commonConfig() {
 }
 
 fun BaseAppModuleExtension.commonConfig() {
-    compileSdkVersion(AndroidVersions.compileSdkVersion)
+    compileSdk = AndroidVersions.compileSdkVersion
 
     defaultConfig {
-        minSdkVersion(AndroidVersions.minSdkVersion)
-        targetSdkVersion(AndroidVersions.compileSdkVersion)
+        minSdk = AndroidVersions.minSdkVersion
+        targetSdk = AndroidVersions.compileSdkVersion
     }
 
     compileOptions {

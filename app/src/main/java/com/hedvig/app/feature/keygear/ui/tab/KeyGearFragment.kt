@@ -4,9 +4,11 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.util.Pair
+import androidx.core.view.isVisible
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
 import com.google.android.material.transition.MaterialFadeThrough
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
 import com.hedvig.app.BASE_MARGIN
@@ -25,14 +27,17 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.updatePadding
+import com.hedvig.app.util.extensions.viewLifecycle
+import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.hedvig.app.util.transitionPair
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class KeyGearFragment : Fragment(R.layout.fragment_key_gear) {
-
-    private val viewModel: KeyGearViewModel by sharedViewModel()
+    private val model: KeyGearViewModel by sharedViewModel()
     private val tracker: KeyGearTracker by inject()
     private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
     private val binding by viewBinding(FragmentKeyGearBinding::bind)
@@ -75,7 +80,7 @@ class KeyGearFragment : Fragment(R.layout.fragment_key_gear) {
             }
 
             errorContainer.retry.setHapticClickListener {
-                viewModel.load()
+                model.load()
             }
 
             items.adapter =
@@ -106,20 +111,29 @@ class KeyGearFragment : Fragment(R.layout.fragment_key_gear) {
             items.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN))
             items.itemAnimator = SlideInItemAnimator()
 
-            viewModel.data.observe(viewLifecycleOwner) { data ->
-                if (data.isFailure) {
-                    errorContainer.root.show()
-                    contentContainer.remove()
-                    return@observe
+            model
+                .data
+                .flowWithLifecycle(viewLifecycle)
+                .onEach { viewState ->
+                    when (viewState) {
+                        KeyGearViewModel.ViewState.Loading -> {
+                        }
+                        KeyGearViewModel.ViewState.Error -> {
+                            errorContainer.root.isVisible = true
+                            contentContainer.isVisible = false
+                        }
+                        is KeyGearViewModel.ViewState.Success -> {
+                            errorContainer.root.isVisible = false
+                            contentContainer.isVisible = true
+                            bind(viewState.data)
+                        }
+                    }
+                    if (!hasSentAutoAddedItems) {
+                        hasSentAutoAddedItems = true
+                        model.sendAutoAddedItems()
+                    }
                 }
-                errorContainer.root.remove()
-                contentContainer.show()
-                data.getOrNull()?.let { bind(it) }
-                if (!hasSentAutoAddedItems) {
-                    hasSentAutoAddedItems = true
-                    viewModel.sendAutoAddedItems()
-                }
-            }
+                .launchIn(viewLifecycleScope)
         }
     }
 

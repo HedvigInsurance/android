@@ -2,7 +2,6 @@ package com.hedvig.app.feature.profile.ui
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.feature.chat.data.ChatRepository
@@ -20,7 +19,6 @@ class ProfileViewModelImpl(
     private val chatRepository: ChatRepository,
     private val logoutUseCase: LogoutUseCase
 ) : ProfileViewModel() {
-    override val data = MutableLiveData<Result<ProfileQuery.Data>>()
     override val dirty: MutableLiveData<Boolean> = MutableLiveData<Boolean>().default(false)
     override val trustlyUrl: LiveEvent<String> = LiveEvent()
 
@@ -29,8 +27,9 @@ class ProfileViewModelImpl(
     }
 
     override fun saveInputs(emailInput: String, phoneNumberInput: String) {
-        var email = data.value?.getOrNull()?.member?.email
-        var phoneNumber = data.value?.getOrNull()?.member?.phoneNumber
+        var (email, phoneNumber) =
+            (data.value as? ViewState.Success)?.data?.member?.let { Pair(it.email, it.phoneNumber) }
+                ?: Pair(null, null)
         viewModelScope.launch {
             if (email != emailInput) {
                 val response =
@@ -67,28 +66,30 @@ class ProfileViewModelImpl(
                 .profile()
                 .onEach { response ->
                     response.errors?.let {
-                        data.postValue(Result.failure(Error()))
+                        _data.value = ViewState.Error
                         return@onEach
                     }
-                    response.data?.let { data.postValue(Result.success(it)) }
+                    response.data?.let { _data.value = ViewState.Success(it) }
                 }
-                .catch { e ->
-                    data.postValue(Result.failure(e))
+                .catch { exception ->
+                    e(exception)
+                    _data.value = ViewState.Error
                 }
                 .launchIn(this)
         }
     }
 
     override fun emailChanged(newEmail: String) {
-        val currentEmail = data.value?.getOrNull()?.member?.email ?: ""
-        if (currentEmail != newEmail && dirty.value != true) {
+        if (currentEmailOrEmpty() != newEmail && dirty.value != true) {
             dirty.value = true
         }
     }
 
+    private fun currentEmailOrEmpty() = (data.value as? ViewState.Success)?.data?.member?.email ?: ""
+    private fun currentPhoneNumberOrEmpty() = (data.value as? ViewState.Success)?.data?.member?.phoneNumber ?: ""
+
     override fun phoneNumberChanged(newPhoneNumber: String) {
-        val currentPhoneNumber = data.value?.getOrNull()?.member?.phoneNumber ?: ""
-        if (currentPhoneNumber != newPhoneNumber && dirty.value != true) {
+        if (currentPhoneNumberOrEmpty() != newPhoneNumber && dirty.value != true) {
             dirty.value = true
         }
     }

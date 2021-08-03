@@ -6,11 +6,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.UpdateReferralCampaignCodeMutation
 import com.hedvig.app.feature.referrals.data.ReferralsRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 abstract class ReferralsEditCodeViewModel : ViewModel() {
-    protected val _data = MutableLiveData<Result<UpdateReferralCampaignCodeMutation.Data>>()
-    val data: LiveData<Result<UpdateReferralCampaignCodeMutation.Data>> = _data
+    sealed class ViewState {
+        data class Success(val data: UpdateReferralCampaignCodeMutation.Data) : ViewState()
+        object NotSubmitted : ViewState()
+        object Error : ViewState()
+    }
+
+    protected val _data = MutableStateFlow<ViewState>(ViewState.NotSubmitted)
+    val data = _data.asStateFlow()
 
     protected val _isSubmitting = MutableLiveData<Boolean>()
     val isSubmitting: LiveData<Boolean> = _isSubmitting
@@ -36,18 +44,18 @@ class ReferralsEditCodeViewModelImpl(
             _isSubmitting.postValue(false)
 
             if (response.isFailure) {
-                response.exceptionOrNull()?.let { _data.postValue(Result.failure(it)) }
+                response.exceptionOrNull()?.let { _data.value = ViewState.Error }
                 return@launch
             }
 
             if (response.getOrNull()?.hasErrors() == true) {
-                _data.postValue(Result.failure(Error()))
+                _data.value = ViewState.Error
                 return@launch
             }
 
             val data = response.getOrNull()?.data ?: return@launch
 
-            _data.postValue(Result.success(data))
+            _data.value = ViewState.Success(data)
         }
     }
 }

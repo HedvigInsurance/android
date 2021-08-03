@@ -7,6 +7,7 @@ import android.view.View
 import androidx.core.view.doOnLayout
 import androidx.core.view.marginBottom
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.flowWithLifecycle
 import com.google.android.material.transition.MaterialFadeThrough
 import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.R
@@ -14,6 +15,7 @@ import com.hedvig.app.databinding.FragmentReferralsBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
 import com.hedvig.app.feature.referrals.service.ReferralsTracker
+import com.hedvig.app.feature.referrals.ui.tab.ReferralsAdapter.Companion.ERROR_STATE
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsAdapter.Companion.LOADING_STATE
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
@@ -26,9 +28,13 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.updatePadding
+import com.hedvig.app.util.extensions.viewLifecycle
+import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import e
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -100,13 +106,12 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
             )
 
             invites.itemAnimator = ViewHolderReusingDefaultItemAnimator()
-            invites.adapter = ReferralsAdapter(
+            val adapter = ReferralsAdapter(
                 referralsViewModel::load,
                 tracker,
                 marketManager
-            ).also {
-                it.submitList(LOADING_STATE)
-            }
+            )
+            invites.adapter = adapter
 
             swipeToRefresh.doOnApplyWindowInsets { _, insets, _ ->
                 swipeToRefresh.setProgressViewOffset(
@@ -125,103 +130,108 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                 swipeToRefresh.isRefreshing = isRefreshing
             }
 
-            referralsViewModel.data.observe(viewLifecycleOwner) { data ->
-                if (data.isFailure) {
-                    (invites.adapter as? ReferralsAdapter)?.submitList(
-                        listOf(
-                            ReferralsModel.Title,
-                            ReferralsModel.Error
-                        )
-                    )
-                }
+            referralsViewModel
+                .data
+                .flowWithLifecycle(viewLifecycle)
+                .onEach { viewState ->
+                    when (viewState) {
+                        ReferralsViewModel.ViewState.Error -> {
+                            adapter.submitList(ERROR_STATE)
+                        }
+                        ReferralsViewModel.ViewState.Loading -> {
+                            adapter.submitList(LOADING_STATE)
+                        }
+                        is ReferralsViewModel.ViewState.Success -> {
 
-                val successData = data.getOrNull() ?: return@observe
+                            val incentive =
+                                viewState
+                                    .data
+                                    .referralInformation
+                                    .campaign
+                                    .incentive
+                                    ?.asMonthlyCostDeduction
+                                    ?.amount
+                                    ?.fragments
+                                    ?.monetaryAmountFragment
+                                    ?.toMonetaryAmount()
+                            if (incentive == null) {
+                                e { "Invariant detected: referralInformation.campaign.incentive is null" }
+                            } else {
+                                val code = viewState.data.referralInformation.campaign.code
+                                share.setHapticClickListener {
+                                    tracker.share()
+                                    requireContext().showShareSheet(R.string.REFERRALS_SHARE_SHEET_TITLE) { intent ->
+                                        intent.putExtra(
+                                            Intent.EXTRA_TEXT,
+                                            requireContext().getString(
+                                                R.string.REFERRAL_SMS_MESSAGE,
+                                                incentive.format(requireContext(), marketManager.market),
+                                                "${
+                                                requireContext().getString(R.string.WEB_BASE_URL)
+                                                }/${
+                                                localeManager.defaultLocale().toWebLocaleTag()
+                                                }/forever/${
+                                                Uri.encode(
+                                                    code
+                                                )
+                                                }"
+                                            )
+                                        )
+                                        intent.type = "text/plain"
+                                    }
+                                }
+                                share.show()
+                                share
+                                    .animate()
+                                    .alpha(1f)
+                                    .scaleX(1f)
+                                    .scaleY(1f)
+                                    .setDuration(150)
+                                    .start()
+                            }
 
-                val incentive =
-                    successData
-                        .referralInformation
-                        .campaign
-                        .incentive
-                        ?.asMonthlyCostDeduction
-                        ?.amount
-                        ?.fragments
-                        ?.monetaryAmountFragment
-                        ?.toMonetaryAmount()
-                if (incentive == null) {
-                    e { "Invariant detected: referralInformation.campaign.incentive is null" }
-                } else {
-                    val code = successData.referralInformation.campaign.code
-                    share.setHapticClickListener {
-                        tracker.share()
-                        requireContext().showShareSheet(R.string.REFERRALS_SHARE_SHEET_TITLE) { intent ->
-                            intent.putExtra(
-                                Intent.EXTRA_TEXT,
-                                requireContext().getString(
-                                    R.string.REFERRAL_SMS_MESSAGE,
-                                    incentive.format(requireContext(), marketManager.market),
-                                    "${
-                                    requireContext().getString(R.string.WEB_BASE_URL)
-                                    }/${
-                                    localeManager.defaultLocale().toWebLocaleTag()
-                                    }/forever/${
-                                    Uri.encode(
-                                        code
+                            if (
+                                viewState.data.referralInformation.invitations.isEmpty() &&
+                                viewState.data.referralInformation.referredBy == null
+                            ) {
+                                (invites.adapter as? ReferralsAdapter)?.submitList(
+                                    listOf(
+                                        ReferralsModel.Title,
+                                        ReferralsModel.Header.LoadedEmptyHeader(viewState.data),
+                                        ReferralsModel.Code.LoadedCode(viewState.data)
                                     )
-                                    }"
                                 )
+                                return@onEach
+                            }
+
+                            val items = mutableListOf(
+                                ReferralsModel.Title,
+                                ReferralsModel.Header.LoadedHeader(viewState.data),
+                                ReferralsModel.Code.LoadedCode(viewState.data),
+                                ReferralsModel.InvitesHeader
                             )
-                            intent.type = "text/plain"
+
+                            items += viewState.data.referralInformation.invitations
+                                .filter {
+                                    it.fragments.referralFragment.asActiveReferral != null ||
+                                        it.fragments.referralFragment.asInProgressReferral != null ||
+                                        it.fragments.referralFragment.asTerminatedReferral != null
+                                }
+                                .map {
+                                    ReferralsModel.Referral.LoadedReferral(
+                                        it.fragments.referralFragment
+                                    )
+                                }
+
+                            viewState.data.referralInformation.referredBy?.let {
+                                items.add(ReferralsModel.Referral.Referee(it.fragments.referralFragment))
+                            }
+
+                            adapter.submitList(items)
                         }
                     }
-                    share.show()
-                    share
-                        .animate()
-                        .alpha(1f)
-                        .scaleX(1f)
-                        .scaleY(1f)
-                        .setDuration(150)
-                        .start()
                 }
-
-                if (
-                    successData.referralInformation.invitations.isEmpty() &&
-                    successData.referralInformation.referredBy == null
-                ) {
-                    (invites.adapter as? ReferralsAdapter)?.submitList(
-                        listOf(
-                            ReferralsModel.Title,
-                            ReferralsModel.Header.LoadedEmptyHeader(successData),
-                            ReferralsModel.Code.LoadedCode(successData)
-                        )
-                    )
-                    return@observe
-                }
-
-                val items = mutableListOf(
-                    ReferralsModel.Title,
-                    ReferralsModel.Header.LoadedHeader(successData),
-                    ReferralsModel.Code.LoadedCode(successData),
-                    ReferralsModel.InvitesHeader
-                )
-
-                items += successData.referralInformation.invitations
-                    .filter {
-                        it.fragments.referralFragment.asActiveReferral != null ||
-                            it.fragments.referralFragment.asInProgressReferral != null ||
-                            it.fragments.referralFragment.asTerminatedReferral != null
-                    }
-                    .map {
-                        ReferralsModel.Referral.LoadedReferral(
-                            it.fragments.referralFragment
-                        )
-                    }
-
-                successData.referralInformation.referredBy?.let {
-                    items.add(ReferralsModel.Referral.Referee(it.fragments.referralFragment))
-                }
-
-                (invites.adapter as? ReferralsAdapter)?.submitList(items)
-            }
+                .launchIn(viewLifecycleScope)
         }
     }
 

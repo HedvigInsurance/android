@@ -50,6 +50,13 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         scroll = 0
 
+        val adapter = HomeAdapter(
+            parentFragmentManager,
+            model::load,
+            requestBuilder,
+            tracker,
+            marketManager
+        )
         binding.recycler.apply {
             val recyclerInitialPaddingBottom = paddingBottom
             val recyclerInitialPaddingTop = paddingTop
@@ -67,13 +74,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             loggedInViewModel.bottomTabInset.observe(viewLifecycleOwner) { bottomTabInset ->
                 updatePadding(bottom = recyclerInitialPaddingBottom + bottomTabInset)
             }
-            adapter = HomeAdapter(
-                parentFragmentManager,
-                model::load,
-                requestBuilder,
-                tracker,
-                marketManager
-            )
+            this.adapter = adapter
             (layoutManager as? GridLayoutManager)?.spanSizeLookup =
                 object : GridLayoutManager.SpanSizeLookup() {
                     override fun getSpanSize(position: Int): Int {
@@ -98,24 +99,23 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                 )
             )
         }
-
         model.data.observe(viewLifecycleOwner) { (homeData, payinStatusData, pendingAddress) ->
             if (homeData == null) {
                 return@observe
             }
-            if (homeData.isFailure) {
-                (binding.recycler.adapter as? HomeAdapter)?.submitList(listOf(HomeModel.Error))
+            if (homeData is HomeViewModel.ViewState.Error) {
+                adapter.submitList(listOf(HomeModel.Error))
                 return@observe
             }
 
-            val successData = homeData.getOrNull() ?: return@observe
+            val successData = (homeData as? HomeViewModel.ViewState.Success)?.homeData ?: return@observe
             val firstName = successData.member.firstName
             if (firstName == null) {
-                (binding.recycler.adapter as? HomeAdapter)?.submitList(listOf(HomeModel.Error))
+                adapter.submitList(listOf(HomeModel.Error))
                 return@observe
             }
             if (isPending(successData.contracts)) {
-                (binding.recycler.adapter as? HomeAdapter)?.submitList(
+                adapter.submitList(
                     listOf(
                         HomeModel.BigText.Pending(
                             firstName
@@ -134,11 +134,11 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     .minOrNull()
 
                 if (firstInceptionDate == null) {
-                    (binding.recycler.adapter as? HomeAdapter)?.submitList(listOf(HomeModel.Error))
+                    adapter.submitList(listOf(HomeModel.Error))
                     return@observe
                 }
 
-                (binding.recycler.adapter as? HomeAdapter)?.submitList(
+                adapter.submitList(
                     listOf(
                         HomeModel.BigText.ActiveInFuture(
                             firstName,
@@ -159,7 +159,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                         add(HomeModel.PendingAddressChange(pendingAddress))
                     }
                 }
-                (binding.recycler.adapter as? HomeAdapter)?.submitList(items)
+                adapter.submitList(items)
             }
 
             if (isActive(successData.contracts)) {
@@ -189,7 +189,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                         add(HomeModel.ChangeAddress(pendingAddress))
                     }
                 }
-                (binding.recycler.adapter as? HomeAdapter)?.submitList(items)
+                adapter.submitList(items)
             }
         }
     }

@@ -2,7 +2,9 @@ package com.hedvig.app.feature.insurance.ui
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.flowWithLifecycle
 import com.google.android.material.transition.MaterialFadeThrough
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.R
@@ -11,9 +13,12 @@ import com.hedvig.app.feature.insurance.service.InsuranceTracker
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
 import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.updatePadding
+import com.hedvig.app.util.extensions.viewLifecycle
+import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
@@ -69,47 +74,54 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
             )
             adapter = InsuranceAdapter(tracker, marketManager, insuranceViewModel::load)
         }
-        insuranceViewModel.data.observe(viewLifecycleOwner) { data ->
-            bind(data)
-        }
+        insuranceViewModel
+            .data
+            .flowWithLifecycle(viewLifecycle)
+            .onEach { bind(it) }
+            .launchIn(viewLifecycleScope)
     }
 
-    private fun bind(data: Result<InsuranceQuery.Data>) {
-        binding.loadSpinner.root.remove()
+    private fun bind(viewState: InsuranceViewModel.ViewState) {
+        val adapter = binding.insuranceRecycler.adapter as? InsuranceAdapter ?: return
+        binding.loadSpinner.loadingSpinner.isVisible = viewState is InsuranceViewModel.ViewState.Loading
 
-        if (data.isFailure) {
-            (binding.insuranceRecycler.adapter as? InsuranceAdapter)?.submitList(
-                listOf(
-                    InsuranceModel.Header,
-                    InsuranceModel.Error
+        when (viewState) {
+            InsuranceViewModel.ViewState.Error -> {
+                adapter.submitList(
+                    listOf(
+                        InsuranceModel.Header,
+                        InsuranceModel.Error
+                    )
                 )
-            )
-            return
-        }
+            }
+            InsuranceViewModel.ViewState.Loading -> {
+            }
+            is InsuranceViewModel.ViewState.Success -> {
+                val contracts = viewState.data.contracts.map(InsuranceModel::Contract).let { contractModels ->
+                    if (hasNotOnlyTerminatedContracts(viewState.data.contracts)) {
+                        contractModels.filter {
+                            it.inner.status.fragments.contractStatusFragment.asTerminatedStatus == null
+                        }
+                    } else {
+                        contractModels
+                    }
+                }
 
-        val successData = data.getOrNull() ?: return
+                val upsells = mutableListOf<InsuranceModel.Upsell>()
 
-        val contracts = successData.contracts.map(InsuranceModel::Contract).let { contractModels ->
-            if (hasNotOnlyTerminatedContracts(successData.contracts)) {
-                contractModels.filter { it.inner.status.fragments.contractStatusFragment.asTerminatedStatus == null }
-            } else {
-                contractModels
+                if (isNorway(viewState.data.contracts)) {
+                    if (doesNotHaveHomeContents(viewState.data.contracts)) {
+                        upsells.add(UPSELL_HOME_CONTENTS)
+                    } else if (doesNotHaveTravelInsurance(viewState.data.contracts)) {
+                        upsells.add(UPSELL_TRAVEL)
+                    }
+                }
+
+                adapter.submitList(
+                    listOf(InsuranceModel.Header) + contracts + terminatedRow(viewState.data.contracts) + upsells
+                )
             }
         }
-
-        val upsells = mutableListOf<InsuranceModel.Upsell>()
-
-        if (isNorway(successData.contracts)) {
-            if (doesNotHaveHomeContents(successData.contracts)) {
-                upsells.add(UPSELL_HOME_CONTENTS)
-            } else if (doesNotHaveTravelInsurance(successData.contracts)) {
-                upsells.add(UPSELL_TRAVEL)
-            }
-        }
-
-        (binding.insuranceRecycler.adapter as? InsuranceAdapter)?.submitList(
-            listOf(InsuranceModel.Header) + contracts + terminatedRow(successData.contracts) + upsells
-        )
     }
 
     private fun terminatedRow(contracts: List<InsuranceQuery.Contract>): List<InsuranceModel> {

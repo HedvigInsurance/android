@@ -6,11 +6,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.ChoosePlanQuery
 import com.hedvig.android.owldroid.type.EmbarkStoryType
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 abstract class ChoosePlanViewModel : ViewModel() {
-    protected val _data = MutableLiveData<Result<List<ChoosePlanQuery.EmbarkStory>>>()
-    val data: LiveData<Result<List<ChoosePlanQuery.EmbarkStory>>> = _data
+    sealed class ViewState {
+        data class Success(val data: List<ChoosePlanQuery.EmbarkStory>) : ViewState()
+        object Loading : ViewState()
+        object Error : ViewState()
+    }
+
+    protected val _data = MutableStateFlow<ViewState>(ViewState.Loading)
+    val data = _data.asStateFlow()
 
     abstract fun load()
 
@@ -20,11 +28,6 @@ abstract class ChoosePlanViewModel : ViewModel() {
     fun setSelectedQuoteType(type: OnboardingModel.Bundle) {
         _selectedQuoteType.postValue(type)
     }
-
-    fun getWebPath() =
-        _selectedQuoteType.value?.embarkStory?.metadata?.find { metadata ->
-            metadata.asEmbarkStoryMetaDataEntryWebUrlPath != null
-        }?.asEmbarkStoryMetaDataEntryWebUrlPath?.path
 }
 
 class ChoosePlanViewModelImpl(
@@ -38,18 +41,18 @@ class ChoosePlanViewModelImpl(
         viewModelScope.launch {
             val response = runCatching { repository.bundles() }
             if (response.isFailure) {
-                response.exceptionOrNull()?.let { exception ->
-                    _data.postValue(Result.failure(exception))
+                response.exceptionOrNull()?.let {
+                    _data.value = ViewState.Error
                 }
                 return@launch
             }
             if (response.getOrNull()?.hasErrors() == true) {
-                _data.postValue(Result.failure(Error()))
+                _data.value = ViewState.Error
                 return@launch
             }
             val onlyAppStories =
                 response.getOrNull()?.data?.embarkStories?.filter { it.type == EmbarkStoryType.APP_ONBOARDING }
-            onlyAppStories?.let { _data.postValue(Result.success(it)) }
+            onlyAppStories?.let { _data.value = ViewState.Success(it) }
         }
     }
 }

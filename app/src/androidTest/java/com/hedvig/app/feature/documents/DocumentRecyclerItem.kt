@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.documents
 
 import android.view.View
-import com.agoda.kakao.recycler.KRecyclerItem
-import com.agoda.kakao.text.KButton
+import io.github.kakaocup.kakao.recycler.KRecyclerItem
+import io.github.kakaocup.kakao.text.KButton
 import org.hamcrest.Matcher
 
 class DocumentRecyclerItem(parent: Matcher<View>) : KRecyclerItem<DocumentRecyclerItem>(parent) {

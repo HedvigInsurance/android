@@ -1,11 +1,11 @@
 package com.hedvig.app.feature.embark.screens
 
-import com.agoda.kakao.edit.KTextInputLayout
-import com.agoda.kakao.text.KButton
 import com.hedvig.app.R
 import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionFragment
 import com.hedvig.app.util.withParentIndex
 import com.kaspersky.kaspresso.screens.KScreen
+import io.github.kakaocup.kakao.edit.KTextInputLayout
+import io.github.kakaocup.kakao.text.KButton
 
 object NumberActionScreen : KScreen<NumberActionScreen>() {
     override val layoutId = R.layout.number_action_set_fragment
