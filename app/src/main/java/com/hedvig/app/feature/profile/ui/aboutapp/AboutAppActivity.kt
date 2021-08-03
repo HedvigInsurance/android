@@ -72,7 +72,9 @@ class AboutAppActivity : BaseActivity(R.layout.activity_about_app) {
                 .flowWithLifecycle(lifecycle)
                 .onEach { state ->
                     when (state) {
-                        is MemberIdViewModel.State.Success -> memberId.text = state.id
+                        is MemberIdViewModel.State.Success ->
+                            memberId.text =
+                                getString(R.string.PROFILE_ABOUT_APP_MEMBER_ID, state.id)
                         else -> {
                         }
                     }
