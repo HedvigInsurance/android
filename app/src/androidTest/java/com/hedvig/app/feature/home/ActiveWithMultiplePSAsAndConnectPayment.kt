@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.home
 
 import androidx.test.espresso.intent.Intents.times
-import com.agoda.kakao.screen.Screen
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
@@ -21,6 +20,7 @@ import com.hedvig.app.util.context
 import com.hedvig.app.util.stub
 import com.hedvig.app.util.stubExternalIntents
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import io.github.kakaocup.kakao.screen.Screen
 import org.junit.Rule
 import org.junit.Test
 

@@ -4,9 +4,9 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import com.adyen.checkout.base.model.PaymentMethodsApiResponse
-import com.adyen.checkout.base.model.payments.Amount
 import com.adyen.checkout.card.CardConfiguration
+import com.adyen.checkout.components.model.PaymentMethodsApiResponse
+import com.adyen.checkout.components.model.payments.Amount
 import com.adyen.checkout.core.api.Environment
 import com.adyen.checkout.dropin.DropIn
 import com.adyen.checkout.dropin.DropInConfiguration
@@ -123,7 +123,8 @@ class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activ
         val dropInConfiguration = DropInConfiguration
             .Builder(
                 this,
-                intent, AdyenPayinDropInService::class.java
+                AdyenPayinDropInService::class.java,
+                getString(R.string.ADYEN_PUBLIC_KEY)
             )
             .addCardConfiguration(cardConfig)
             .addGooglePayConfiguration(googlePayConfig)

@@ -9,7 +9,6 @@ import androidx.test.espresso.action.Tap
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.withText
-import com.agoda.kakao.screen.Screen
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.app.R
@@ -24,6 +23,7 @@ import com.hedvig.app.util.LazyIntentsActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import io.github.kakaocup.kakao.screen.Screen
 import org.junit.Rule
 import org.junit.Test
 
@@ -49,7 +49,9 @@ class ChangeAddressButton : TestCase() {
             recycler {
                 perform {
                     RecyclerViewActions.actionOnItem<HomeAdapter.ViewHolder.ChangeAddress>(
-                        hasDescendant(withText(context().getString(R.string.home_tab_editing_section_change_address_label))),
+                        hasDescendant(
+                            withText(context().getString(R.string.home_tab_editing_section_change_address_label))
+                        ),
                         GeneralClickAction(
                             Tap.SINGLE, GeneralLocation.VISIBLE_CENTER, Press.FINGER,
                             InputDevice.SOURCE_UNKNOWN, MotionEvent.BUTTON_PRIMARY

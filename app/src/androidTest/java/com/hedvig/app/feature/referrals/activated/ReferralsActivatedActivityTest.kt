@@ -1,10 +1,6 @@
 package com.hedvig.app.feature.referrals.activated
 
 import androidx.test.rule.ActivityTestRule
-import com.agoda.kakao.screen.Screen
-import com.agoda.kakao.screen.Screen.Companion.onScreen
-import com.agoda.kakao.text.KButton
-import com.agoda.kakao.text.KTextView
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedActivity
@@ -16,6 +12,10 @@ import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.market
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import io.github.kakaocup.kakao.screen.Screen
+import io.github.kakaocup.kakao.screen.Screen.Companion.onScreen
+import io.github.kakaocup.kakao.text.KButton
+import io.github.kakaocup.kakao.text.KTextView
 import org.javamoney.moneta.Money
 import org.junit.Assert.assertTrue
 import org.junit.Rule

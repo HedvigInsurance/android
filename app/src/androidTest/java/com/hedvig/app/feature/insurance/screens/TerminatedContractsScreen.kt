@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.insurance.screens
 
-import com.agoda.kakao.recycler.KRecyclerView
-import com.agoda.kakao.screen.Screen
 import com.hedvig.app.R
+import io.github.kakaocup.kakao.recycler.KRecyclerView
+import io.github.kakaocup.kakao.screen.Screen
 
 class TerminatedContractsScreen : Screen<TerminatedContractsScreen>() {
     val recycler =

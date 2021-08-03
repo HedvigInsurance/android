@@ -3,7 +3,7 @@ package com.hedvig.app.feature.adyen.payout
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.adyen.checkout.base.model.PaymentMethodsApiResponse
+import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.hedvig.app.util.LiveEvent
 
 abstract class AdyenConnectPayoutViewModel : ViewModel() {

@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import com.adyen.checkout.base.model.payments.Amount
+import com.adyen.checkout.components.model.payments.Amount
 import com.adyen.checkout.core.api.Environment
 import com.adyen.checkout.dropin.DropIn
 import com.adyen.checkout.dropin.DropInConfiguration
@@ -40,7 +40,8 @@ class AdyenConnectPayoutActivity : BaseActivity(R.layout.fragment_container_acti
             val dropInConfiguration = DropInConfiguration
                 .Builder(
                     this,
-                    intent, AdyenPayoutDropInService::class.java
+                    AdyenPayoutDropInService::class.java,
+                    getString(R.string.ADYEN_PUBLIC_KEY),
                 )
                 .setShopperLocale(getLocale(this, marketManager.market))
                 .setEnvironment(

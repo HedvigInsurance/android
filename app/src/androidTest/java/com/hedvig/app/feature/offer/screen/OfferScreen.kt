@@ -1,16 +1,16 @@
 package com.hedvig.app.feature.offer.screen
 
 import android.view.View
-import com.agoda.kakao.common.views.KView
-import com.agoda.kakao.recycler.KRecyclerItem
-import com.agoda.kakao.recycler.KRecyclerView
-import com.agoda.kakao.text.KButton
-import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
 import com.hedvig.app.common.ErrorItem
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.util.withParentIndex
 import com.kaspersky.kaspresso.screens.KScreen
+import io.github.kakaocup.kakao.common.views.KView
+import io.github.kakaocup.kakao.recycler.KRecyclerItem
+import io.github.kakaocup.kakao.recycler.KRecyclerView
+import io.github.kakaocup.kakao.text.KButton
+import io.github.kakaocup.kakao.text.KTextView
 import org.hamcrest.Matcher
 
 object OfferScreen : KScreen<OfferScreen>() {

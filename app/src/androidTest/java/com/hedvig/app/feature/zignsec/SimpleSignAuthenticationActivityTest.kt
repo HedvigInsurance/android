@@ -1,7 +1,5 @@
 package com.hedvig.app.feature.zignsec
 
-import com.agoda.kakao.edit.KTextInputLayout
-import com.agoda.kakao.text.KButton
 import com.hedvig.app.R
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.util.ApolloMockServerRule
@@ -10,6 +8,8 @@ import com.hedvig.app.util.context
 import com.hedvig.app.util.hasHelperText
 import com.kaspersky.kaspresso.screens.KScreen
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import io.github.kakaocup.kakao.edit.KTextInputLayout
+import io.github.kakaocup.kakao.text.KButton
 import org.junit.Rule
 import org.junit.Test
 

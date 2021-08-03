@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.loggedin
 
-import com.agoda.kakao.image.KImageView
-import com.agoda.kakao.screen.Screen
 import com.hedvig.app.R
+import io.github.kakaocup.kakao.image.KImageView
+import io.github.kakaocup.kakao.screen.Screen
 
 class WelcomeScreen : Screen<WelcomeScreen>() {
     val close = KImageView { withId(R.id.close) }

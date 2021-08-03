@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.home
 
-import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
@@ -20,6 +19,7 @@ import com.hedvig.app.util.context
 import com.hedvig.app.util.hasText
 import com.hedvig.app.util.stub
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import io.github.kakaocup.kakao.screen.Screen.Companion.onScreen
 import org.junit.Rule
 import org.junit.Test
 

@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.adyen.payin
 
-import com.adyen.checkout.dropin.service.CallResult
 import com.adyen.checkout.dropin.service.DropInService
+import com.adyen.checkout.dropin.service.DropInServiceResult
 import com.hedvig.app.feature.adyen.AdyenRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,44 +23,44 @@ class AdyenPayinDropInService : DropInService(), CoroutineScope {
         coroutineJob.cancel()
     }
 
-    override fun makeDetailsCall(actionComponentData: JSONObject) = runBlocking(coroutineContext) {
+    override fun makeDetailsCall(actionComponentJson: JSONObject) = runBlocking(coroutineContext) {
         val response = runCatching {
             adyenRepository
-                .submitAdditionalPaymentDetails(actionComponentData)
+                .submitAdditionalPaymentDetails(actionComponentJson)
         }
 
         val result = response.getOrNull()?.data?.submitAdditionalPaymentDetails
-            ?: return@runBlocking CallResult(CallResult.ResultType.ERROR, "Error")
+            ?: return@runBlocking DropInServiceResult.Error("Error")
 
         result.asAdditionalPaymentsDetailsResponseAction?.action?.let { action ->
-            return@runBlocking CallResult(CallResult.ResultType.ACTION, action)
+            return@runBlocking DropInServiceResult.Action(action)
         }
 
         result.asAdditionalPaymentsDetailsResponseFinished?.resultCode?.let { resultCode ->
-            return@runBlocking CallResult(CallResult.ResultType.FINISHED, resultCode)
+            return@runBlocking DropInServiceResult.Finished(resultCode)
         }
 
-        CallResult(CallResult.ResultType.ERROR, "Unknown error")
+        DropInServiceResult.Error("Unknown error")
     }
 
-    override fun makePaymentsCall(paymentComponentData: JSONObject) =
+    override fun makePaymentsCall(paymentComponentJson: JSONObject) =
         runBlocking(coroutineContext) {
             val response = runCatching {
                 adyenRepository
-                    .tokenizePaymentDetails(paymentComponentData)
+                    .tokenizePaymentDetails(paymentComponentJson)
             }
 
             val result = response.getOrNull()?.data?.tokenizePaymentDetails
-                ?: return@runBlocking CallResult(CallResult.ResultType.ERROR, "Error")
+                ?: return@runBlocking DropInServiceResult.Error("Error")
 
             result.asTokenizationResponseAction?.action?.let { action ->
-                return@runBlocking CallResult(CallResult.ResultType.ACTION, action)
+                return@runBlocking DropInServiceResult.Action(action)
             }
 
             result.asTokenizationResponseFinished?.resultCode?.let { resultCode ->
-                return@runBlocking CallResult(CallResult.ResultType.FINISHED, resultCode)
+                return@runBlocking DropInServiceResult.Finished(resultCode)
             }
 
-            CallResult(CallResult.ResultType.ERROR, "Unknown error")
+            DropInServiceResult.Error("Unknown error")
         }
 }

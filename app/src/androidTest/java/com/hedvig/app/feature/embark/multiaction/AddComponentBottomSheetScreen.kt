@@ -2,13 +2,13 @@ package com.hedvig.app.feature.embark.multiaction
 
 import android.widget.ListView
 import androidx.test.espresso.DataInteraction
-import com.agoda.kakao.edit.KEditText
-import com.agoda.kakao.list.KAbsListView
-import com.agoda.kakao.list.KAdapterItem
-import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
 import com.hedvig.app.feature.embark.passages.multiaction.add.AddComponentBottomSheet
 import com.kaspersky.kaspresso.screens.KScreen
+import io.github.kakaocup.kakao.edit.KEditText
+import io.github.kakaocup.kakao.list.KAbsListView
+import io.github.kakaocup.kakao.list.KAdapterItem
+import io.github.kakaocup.kakao.text.KTextView
 
 object AddComponentBottomSheetScreen : KScreen<AddComponentBottomSheetScreen>() {
     override val layoutId = R.layout.add_component_bottom_sheet

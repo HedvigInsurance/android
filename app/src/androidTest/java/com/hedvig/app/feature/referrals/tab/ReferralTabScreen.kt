@@ -1,16 +1,16 @@
 package com.hedvig.app.feature.referrals.tab
 
 import android.view.View
-import com.agoda.kakao.common.views.KView
-import com.agoda.kakao.image.KImageView
-import com.agoda.kakao.recycler.KRecyclerItem
-import com.agoda.kakao.recycler.KRecyclerView
-import com.agoda.kakao.screen.Screen
-import com.agoda.kakao.swiperefresh.KSwipeRefreshLayout
-import com.agoda.kakao.text.KButton
-import com.agoda.kakao.text.KSnackbar
-import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
+import io.github.kakaocup.kakao.common.views.KView
+import io.github.kakaocup.kakao.image.KImageView
+import io.github.kakaocup.kakao.recycler.KRecyclerItem
+import io.github.kakaocup.kakao.recycler.KRecyclerView
+import io.github.kakaocup.kakao.screen.Screen
+import io.github.kakaocup.kakao.swiperefresh.KSwipeRefreshLayout
+import io.github.kakaocup.kakao.text.KButton
+import io.github.kakaocup.kakao.text.KSnackbar
+import io.github.kakaocup.kakao.text.KTextView
 import org.hamcrest.Matcher
 
 class ReferralTabScreen : Screen<ReferralTabScreen>() {
