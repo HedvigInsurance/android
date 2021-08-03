@@ -480,6 +480,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
 
     override fun finish() {
         super.finish()
+        chatViewModel.onChatClosed()
         if (intent.getBooleanExtra(EXTRA_SHOW_CLOSE, false)) {
             overridePendingTransition(R.anim.stay_in_place, R.anim.activity_slide_down_out)
         }

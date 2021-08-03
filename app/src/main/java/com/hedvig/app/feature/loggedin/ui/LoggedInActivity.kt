@@ -99,6 +99,14 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 }
             }
 
+            loggedInViewModel.shouldOpenReviewDialog.observe(this@LoggedInActivity) { shouldOpenReviewDialog ->
+                if (shouldOpenReviewDialog) {
+                    lifecycleScope.launch {
+                        showReviewDialog(ratingsTracker)
+                    }
+                }
+            }
+
             setSupportActionBar(toolbar)
             supportActionBar?.setDisplayShowTitleEnabled(false)
 

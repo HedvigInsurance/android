@@ -30,6 +30,11 @@ object Libs {
             const val core = "androidx.datastore:datastore-core:1.0.0"
         }
 
+        object DataStore {
+            const val preferences = "androidx.datastore:datastore-preferences:1.0.0-rc02"
+            const val core = "androidx.datastore:datastore-core:1.0.0-rc02"
+        }
+
         object Lifecycle {
             private const val version = "2.3.1"
             private const val runtimeVersion = "2.4.0-alpha01"
