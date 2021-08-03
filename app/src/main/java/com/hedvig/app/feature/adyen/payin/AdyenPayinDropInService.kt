@@ -20,7 +20,7 @@ class AdyenPayinDropInService : DropInService(), CoroutineScope {
 
     override fun onDestroy() {
         super.onDestroy()
-        coroutineJob.cancel()
+        // coroutineJob.cancel() // Cannot cancel this job due to https://github.com/Adyen/adyen-android/issues/447
     }
 
     override fun makeDetailsCall(actionComponentJson: JSONObject) = runBlocking(coroutineContext) {

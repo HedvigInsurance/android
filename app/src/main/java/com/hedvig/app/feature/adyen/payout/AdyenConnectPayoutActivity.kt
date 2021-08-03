@@ -1,14 +1,13 @@
 package com.hedvig.app.feature.adyen.payout
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
 import com.adyen.checkout.components.model.payments.Amount
 import com.adyen.checkout.core.api.Environment
 import com.adyen.checkout.dropin.DropIn
 import com.adyen.checkout.dropin.DropInConfiguration
+import com.adyen.checkout.dropin.DropInResult
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.adyen.AdyenCurrency
@@ -22,8 +21,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class AdyenConnectPayoutActivity : BaseActivity(R.layout.fragment_container_activity) {
     private val model: AdyenConnectPayoutViewModel by viewModel()
     private val marketManager: MarketManager by inject()
-
-    private var hasConnected = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,7 +38,7 @@ class AdyenConnectPayoutActivity : BaseActivity(R.layout.fragment_container_acti
                 .Builder(
                     this,
                     AdyenPayoutDropInService::class.java,
-                    getString(R.string.ADYEN_PUBLIC_KEY),
+                    getString(R.string.ADYEN_CLIENT_KEY),
                 )
                 .setShopperLocale(getLocale(this, marketManager.market))
                 .setEnvironment(
@@ -69,38 +66,23 @@ class AdyenConnectPayoutActivity : BaseActivity(R.layout.fragment_container_acti
         }
     }
 
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-        when (intent?.getStringExtra(DropIn.RESULT_KEY)) {
-            ADYEN_RESULT_CODE_RECEIVED -> {
-                hasConnected = true
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        when (DropIn.handleActivityResult(requestCode, resultCode, data)) {
+            is DropInResult.CancelledByUser -> finish()
+            is DropInResult.Error -> {
+            }
+            is DropInResult.Finished -> {
                 supportFragmentManager
                     .beginTransaction()
                     .replace(R.id.container, ConnectPayoutResultFragment.newInstance())
                     .commitAllowingStateLoss()
             }
-            ADYEN_RESULT_CODE_CANCELLED -> finish()
-            else -> {
-            }
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        Handler(mainLooper).postDelayed(
-            {
-                if (!hasConnected && resultCode == Activity.RESULT_CANCELED) {
-                    finish()
-                }
-            },
-            10
-        ) // Needed in order to allow the new intent to arrive in the activity
-    }
-
     companion object {
-        private const val ADYEN_RESULT_CODE_RECEIVED = "Received"
-        private const val ADYEN_RESULT_CODE_CANCELLED = "Cancelled"
-
         private const val CURRENCY = "CURRENCY"
         fun newInstance(context: Context, currency: AdyenCurrency) =
             Intent(context, AdyenConnectPayoutActivity::class.java).apply {
