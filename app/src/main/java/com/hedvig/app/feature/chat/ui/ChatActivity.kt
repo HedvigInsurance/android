@@ -504,7 +504,8 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             REQUEST_AUDIO_PERMISSION ->
                 if ((grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }))
                     binding.input.audioRecorderPermissionGranted()
-            else -> { // Ignore all other requests.
+            else -> {
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults)
             }
         }
     }

@@ -26,12 +26,10 @@ jobs:
           <?xml version="1.0" encoding="utf-8"?>
           <resources>
               <string name="ADYEN_CLIENT_KEY" translatable="false">${ADYEN_CLIENT_KEY}</string>
-              <string name="ADYEN_MERCHANT_ACCOUNT" translatable="false">${ADYEN_MERCHANT_ACCOUNT}</string>
           </resources>
           EOT
         env:
           ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_CLIENT_KEY_TEST }}
-          ADYEN_MERCHANT_ACCOUNT: ${{ secrets.ADYEN_MERCHANT_ACCOUNT_TEST }}
       - name: Create Mixpanel secret
         run: |
           cat <<EOT > app/src/debug/res/values/mixpanel.xml
@@ -101,12 +99,10 @@ jobs:
           <?xml version="1.0" encoding="utf-8"?>
           <resources>
               <string name="ADYEN_CLIENT_KEY" translatable="false">${ADYEN_CLIENT_KEY}</string>
-              <string name="ADYEN_MERCHANT_ACCOUNT" translatable="false">${ADYEN_MERCHANT_ACCOUNT}</string>
           </resources>
           EOT
         env:
           ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_CLIENT_KEY_TEST }}
-          ADYEN_MERCHANT_ACCOUNT: ${{ secrets.ADYEN_MERCHANT_ACCOUNT_TEST }}
       - name: Create Mixpanel secret
         run: |
           cat <<EOT > app/src/debug/res/values/mixpanel.xml
@@ -164,12 +160,10 @@ jobs:
           <?xml version="1.0" encoding="utf-8"?>
           <resources>
               <string name="ADYEN_CLIENT_KEY" translatable="false">${ADYEN_CLIENT_KEY}</string>
-              <string name="ADYEN_MERCHANT_ACCOUNT" translatable="false">${ADYEN_MERCHANT_ACCOUNT}</string>
           </resources>
           EOT
         env:
           ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_CLIENT_KEY_TEST }}
-          ADYEN_MERCHANT_ACCOUNT: ${{ secrets.ADYEN_MERCHANT_ACCOUNT_TEST }}
       - name: Create Mixpanel secret
         run: |
           cat <<EOT > app/src/debug/res/values/mixpanel.xml

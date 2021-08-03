@@ -7,9 +7,9 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.MotionEvent
-import android.widget.EditText
+import androidx.appcompat.widget.AppCompatEditText
 
-class ChatTextInput : EditText {
+class ChatTextInput : AppCompatEditText {
 
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)

@@ -301,6 +301,8 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
             if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
                 takePhoto()
             }
+        } else {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         }
     }
 
