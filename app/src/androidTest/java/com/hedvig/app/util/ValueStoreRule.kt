@@ -9,7 +9,10 @@ import org.koin.core.context.loadKoinModules
 import org.koin.core.context.unloadKoinModules
 import org.koin.dsl.module
 
-class ValueStoreRule(private val key: String, private val value: String) : ExternalResource() {
+class ValueStoreRule(
+    private val key: String,
+    private val value: String,
+) : ExternalResource() {
 
     private val valueStore = mockk<ValueStore>(relaxed = true)
 

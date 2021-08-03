@@ -40,8 +40,9 @@ class PreviousInsurerBottomSheet : ExpandableBottomSheet() {
         val TAG: String = PreviousInsurerBottomSheet::class.java.name
         private const val PREVIOUS_INSURERS = "PREVIOUS_INSURERS"
 
-        fun newInstance(previousInsurers: List<PreviousInsurerParameter.PreviousInsurer>) = PreviousInsurerBottomSheet().apply {
-            arguments = bundleOf(PREVIOUS_INSURERS to previousInsurers)
-        }
+        fun newInstance(previousInsurers: List<PreviousInsurerParameter.PreviousInsurer>) =
+            PreviousInsurerBottomSheet().apply {
+                arguments = bundleOf(PREVIOUS_INSURERS to previousInsurers)
+            }
     }
 }
