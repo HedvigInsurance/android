@@ -23,6 +23,7 @@ import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.feature.ratings.RatingsTracker
 import com.hedvig.app.util.extensions.view.setupToolbar
 import e
+import kotlinx.coroutines.delay
 
 val Activity.screenWidth: Int
     get() = window.decorView.measuredWidth
@@ -168,7 +169,11 @@ fun Activity.makeACall(uri: Uri) {
     startActivity(intent)
 }
 
-fun Activity.showReviewDialog(ratingsTracker: RatingsTracker) {
+suspend fun Activity.showReviewDialog(
+    ratingsTracker: RatingsTracker,
+    delayMillis: Long = 2000
+) {
+    delay(delayMillis)
     val manager = ReviewManagerFactory.create(this)
     val request = manager.requestReviewFlow()
     request.addOnCompleteListener { task ->

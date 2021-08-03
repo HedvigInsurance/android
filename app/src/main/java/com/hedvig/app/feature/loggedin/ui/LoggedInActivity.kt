@@ -158,7 +158,9 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             setupToolBar()
 
             if (intent.getBooleanExtra(SHOW_RATING_DIALOG, false)) {
-                showReviewDialog(ratingsTracker)
+                lifecycleScope.launch {
+                    showReviewDialog(ratingsTracker)
+                }
             }
         }
     }
