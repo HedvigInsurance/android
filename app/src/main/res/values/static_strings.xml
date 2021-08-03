@@ -4,13 +4,6 @@
     <string name="bug_report_mail" translatable="false">android@hedvig.com</string>
     <string name="rate_us_link" translatable="false">Google Play</string>
 
-    <string name="select_language_title" translatable="false">Pick language</string>
-    <string name="select_language_paragraph" translatable="false">You can change this later in settings.</string>
-    <string name="select_country" translatable="false">Select your country of residence</string>
-    <string name="select_language_title_market" translatable="false">Select language</string>
-    <string name="select_language_paragraph_market" translatable="false">You can change this later in app.</string>
-    <string name="continue_market" translatable="false">Continue</string>
-    <string name="sweden" translatable="false">Sverige</string>
     <string name="swedish" translatable="false">Svenska</string>
     <string name="english_swedish" translatable="false">English</string>
     <string name="norway" translatable="false">Norge</string>
@@ -19,9 +12,5 @@
     <string name="danish" translatable="false">Dansk</string>
     <string name="english_norwegian" translatable="false">English</string>
     <string name="english_danish" translatable="false">English</string>
-    <string name="system_default" translatable="false">System default</string>
 
-    <string name="one" translatable="false">1</string>
-    <string name="two" translatable="false">2</string>
-    <string name="three" translatable="false">3</string>
 </resources>
