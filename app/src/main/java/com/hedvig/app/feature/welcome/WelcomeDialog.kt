@@ -4,7 +4,6 @@ import android.os.Bundle
 import com.hedvig.app.R
 import com.hedvig.app.feature.dismissiblepager.DismissiblePager
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
-import com.hedvig.app.feature.ratings.RatingsDialog
 import org.koin.android.ext.android.inject
 
 class WelcomeDialog : DismissiblePager() {
@@ -18,26 +17,6 @@ class WelcomeDialog : DismissiblePager() {
     override val tracker: WelcomeTracker by inject()
     override val items: List<DismissiblePagerModel>
         get() = requireArguments().getParcelableArrayList<DismissiblePagerModel>(ITEMS).orEmpty()
-
-    override fun onDismiss() {
-        RatingsDialog
-            .newInstance()
-            .show(parentFragmentManager, RatingsDialog.TAG)
-    }
-
-    override fun onLastSwipe() {
-        dismiss()
-        RatingsDialog
-            .newInstance()
-            .show(parentFragmentManager, RatingsDialog.TAG)
-    }
-
-    override fun onLastPageButton() {
-        dismiss()
-        RatingsDialog
-            .newInstance()
-            .show(parentFragmentManager, RatingsDialog.TAG)
-    }
 
     companion object {
         const val TAG = "WelcomeDialog"

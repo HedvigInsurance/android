@@ -30,12 +30,14 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.play.core.review.ReviewManagerFactory
 import com.hedvig.app.R
 import com.hedvig.app.SplashActivity
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.SettingsActivity
-import kotlinx.coroutines.delay
 import kotlin.system.exitProcess
+import kotlinx.coroutines.delay
+import timber.log.Timber
 
 private const val SHARED_PREFERENCE_NAME = "hedvig_shared_preference"
 
@@ -148,19 +150,23 @@ fun Context.showShareSheet(title: String, configureClosure: ((Intent) -> Unit)?)
 fun Context.showAlert(
     @StringRes title: Int,
     @StringRes message: Int? = null,
-    @StringRes positiveLabel: Int = android.R.string.ok,
-    @StringRes negativeLabel: Int = android.R.string.cancel,
+    @StringRes positiveLabel: Int? = android.R.string.ok,
+    @StringRes negativeLabel: Int? = android.R.string.cancel,
     positiveAction: () -> Unit,
     negativeAction: (() -> Unit)? = null,
 ): androidx.appcompat.app.AlertDialog? =
     MaterialAlertDialogBuilder(this)
         .apply {
             setTitle(resources.getString(title))
-            setPositiveButton(resources.getString(positiveLabel)) { _, _ ->
-                positiveAction()
+            if (positiveLabel != null) {
+                setPositiveButton(resources.getString(positiveLabel)) { _, _ ->
+                    positiveAction()
+                }
             }
-            setNegativeButton(resources.getString(negativeLabel)) { _, _ ->
-                negativeAction?.let { it() }
+            if (negativeLabel != null) {
+                setNegativeButton(resources.getString(negativeLabel)) { _, _ ->
+                    negativeAction?.let { it() }
+                }
             }
             message?.let { setMessage(it) }
         }
@@ -169,19 +175,23 @@ fun Context.showAlert(
 fun Context.showAlert(
     title: String,
     message: String? = null,
-    @StringRes positiveLabel: Int = android.R.string.ok,
-    @StringRes negativeLabel: Int = android.R.string.cancel,
+    @StringRes positiveLabel: Int? = android.R.string.ok,
+    @StringRes negativeLabel: Int? = android.R.string.cancel,
     positiveAction: () -> Unit,
     negativeAction: (() -> Unit)? = null,
 ): androidx.appcompat.app.AlertDialog? =
     MaterialAlertDialogBuilder(this)
         .apply {
             setTitle(title)
-            setPositiveButton(positiveLabel) { _, _ ->
-                positiveAction()
+            if (positiveLabel != null) {
+                setPositiveButton(positiveLabel) { _, _ ->
+                    positiveAction()
+                }
             }
-            setNegativeButton(negativeLabel) { _, _ ->
-                negativeAction?.let { it() }
+            if (negativeLabel != null) {
+                setNegativeButton(negativeLabel) { _, _ ->
+                    negativeAction?.let { it() }
+                }
             }
             message?.let { setMessage(it) }
         }

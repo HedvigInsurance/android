@@ -83,7 +83,8 @@ class ChangeAddressResultActivity : BaseActivity(R.layout.change_address_result_
         startActivity(
             LoggedInActivity.newInstance(
                 this@ChangeAddressResultActivity,
-                withoutHistory = true
+                withoutHistory = true,
+                showRatingDialog = true
             )
         )
     }
