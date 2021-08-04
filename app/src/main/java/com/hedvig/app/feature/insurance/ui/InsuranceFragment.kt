@@ -29,13 +29,6 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
     private val binding by viewBinding(FragmentInsuranceBinding::bind)
     private var scroll = 0
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        enterTransition = MaterialFadeThrough()
-        exitTransition = MaterialFadeThrough()
-    }
-
     override fun onResume() {
         super.onResume()
         loggedInViewModel.onScroll(scroll)

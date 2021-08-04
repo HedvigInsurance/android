@@ -47,13 +47,6 @@ class KeyGearFragment : Fragment(R.layout.fragment_key_gear) {
 
     private var hasSentAutoAddedItems = false
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        enterTransition = MaterialFadeThrough()
-        exitTransition = MaterialFadeThrough()
-    }
-
     override fun onResume() {
         super.onResume()
         loggedInViewModel.onScroll(scroll)

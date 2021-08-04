@@ -6,7 +6,6 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.RequestBuilder
-import com.google.android.material.transition.MaterialFadeThrough
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.type.PayinMethodStatus
 import com.hedvig.app.R
@@ -36,13 +35,6 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     private val requestBuilder: RequestBuilder<PictureDrawable> by inject()
     private val marketManager: MarketManager by inject()
     private val featureRuntimeBehavior: FeatureManager by inject()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        enterTransition = MaterialFadeThrough()
-        exitTransition = MaterialFadeThrough()
-    }
 
     override fun onResume() {
         super.onResume()
