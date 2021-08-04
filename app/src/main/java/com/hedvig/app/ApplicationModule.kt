@@ -4,8 +4,13 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.os.Build
+import android.util.Log
+import coil.Coil
 import coil.ImageLoader
+import coil.decode.GifDecoder
+import coil.decode.ImageDecoderDecoder
 import coil.decode.SvgDecoder
+import coil.util.DebugLogger
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.NormalizedCacheFactory
 import com.apollographql.apollo.cache.normalized.lru.EvictionPolicy
@@ -536,6 +541,11 @@ val coilModule = module {
         ImageLoader.Builder(get())
             .componentRegistry {
                 add(SvgDecoder(get()))
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    add(ImageDecoderDecoder(get()))
+                } else {
+                    add(GifDecoder())
+                }
             }
             .build()
     }

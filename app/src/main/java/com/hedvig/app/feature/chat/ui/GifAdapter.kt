@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import coil.ImageLoader
 import coil.clear
 import coil.load
 import coil.size.Scale
@@ -18,19 +19,20 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 
 class GifAdapter(
+    private val imageLoader: ImageLoader,
     private val sendGif: (String) -> Unit
 ) : ListAdapter<GifQuery.Gif, GifAdapter.GifViewHolder>(GenericDiffUtilItemCallback()) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-        GifViewHolder(
-            LayoutInflater
-                .from(parent.context)
-                .inflate(
-                    R.layout.gif_item,
-                    parent,
-                    false
-                )
-        )
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = GifViewHolder(
+        imageLoader,
+        LayoutInflater
+            .from(parent.context)
+            .inflate(
+                R.layout.gif_item,
+                parent,
+                false
+            )
+    )
 
     override fun onBindViewHolder(holder: GifViewHolder, position: Int) {
         holder.bind(getItem(position), sendGif)
@@ -40,16 +42,15 @@ class GifAdapter(
         holder.binding.gifImage.clear()
     }
 
-    class GifViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class GifViewHolder(
+        private val imageLoader: ImageLoader,
+        view: View
+    ) : RecyclerView.ViewHolder(view) {
         val binding by viewBinding(GifItemBinding::bind)
         fun bind(item: GifQuery.Gif, sendGif: (String) -> Unit) {
             binding.apply {
                 item.url?.let { url ->
-                    gifImage.load(Uri.parse(url)) {
-                        transformations(RoundedCornersTransformation(40f))
-                        scale(Scale.FILL)
-                    }
-
+                    gifImage.load(Uri.parse(url), imageLoader)
                     gifImage.setHapticClickListener {
                         sendGif(url)
                     }

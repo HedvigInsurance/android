@@ -7,9 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import coil.ImageLoader
 import coil.clear
 import coil.load
-import coil.size.Scale
 import coil.transform.RoundedCornersTransformation
 import com.hedvig.android.owldroid.fragment.ChatMessageFragment
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
@@ -32,6 +32,7 @@ class ChatAdapter(
     context: Context,
     private val onPressEdit: () -> Unit,
     private val tracker: ChatTracker,
+    private val imageLoader: ImageLoader
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val doubleMargin = context.resources.getDimensionPixelSize(R.dimen.base_margin_double)
@@ -246,10 +247,7 @@ class ChatAdapter(
     inner class HedvigGiphyMessage(view: View) : RecyclerView.ViewHolder(view) {
         val binding by viewBinding(ChatMessageUserGiphyBinding::bind)
         fun bind(url: String?) {
-            binding.messageImage.load(url) {
-                transformations(RoundedCornersTransformation(40f))
-                scale(Scale.FIT)
-            }
+            binding.messageImage.load(url, imageLoader)
         }
     }
 
@@ -283,10 +281,7 @@ class ChatAdapter(
     inner class GiphyUserMessage(view: View) : RecyclerView.ViewHolder(view) {
         val binding by viewBinding(ChatMessageUserGiphyBinding::bind)
         fun bind(url: String?) {
-            binding.messageImage.load(url) {
-                transformations(RoundedCornersTransformation(40f))
-                scale(Scale.FIT)
-            }
+            binding.messageImage.load(url, imageLoader)
         }
     }
 
@@ -302,10 +297,7 @@ class ChatAdapter(
         val binding by viewBinding(ChatMessageUserImageBinding::bind)
 
         fun bind(url: String?) {
-            binding.uploadedImage.load(url) {
-                transformations(RoundedCornersTransformation(40f))
-                scale(Scale.FIT)
-            }
+            binding.uploadedImage.load(url, imageLoader)
         }
     }
 

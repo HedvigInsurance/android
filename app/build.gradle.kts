@@ -186,6 +186,7 @@ dependencies {
 
     implementation(Libs.Coil.coil)
     implementation(Libs.Coil.svg)
+    implementation(Libs.Coil.gif)
 
     implementation(Libs.tooltip)
 

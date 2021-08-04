@@ -18,6 +18,7 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import coil.ImageLoader
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
@@ -59,6 +60,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
     private val binding by viewBinding(ActivityChatBinding::bind)
 
     private val tracker: ChatTracker by inject()
+    private val imageLoader: ImageLoader by inject()
 
     private var keyboardHeight = 0
     private var systemNavHeight = 0
@@ -206,7 +208,8 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
                     }
                 )
             },
-            tracker = tracker
+            tracker = tracker,
+            imageLoader = imageLoader
         )
         binding.messages.adapter = adapter
     }
