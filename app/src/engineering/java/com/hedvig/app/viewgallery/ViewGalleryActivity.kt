@@ -4,13 +4,14 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.updatePadding
+import androidx.core.view.WindowCompat
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityViewGalleryBinding
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
+import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
+import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
-import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 
 class ViewGalleryActivity : AppCompatActivity(R.layout.activity_view_gallery) {
     private val binding by viewBinding(ActivityViewGalleryBinding::bind)
@@ -18,16 +19,10 @@ class ViewGalleryActivity : AppCompatActivity(R.layout.activity_view_gallery) {
         super.onCreate(savedInstanceState)
 
         with(binding) {
-            root.setEdgeToEdgeSystemUiFlags(true)
-            toolbar.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
-            }
-            scrollView.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
-            }
-            scrollViewContent.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
-            }
+            window.compatSetDecorFitsSystemWindows(false)
+            toolbar.applyStatusBarInsets()
+            scrollView.applyStatusBarInsets()
+            scrollViewContent.applyNavigationBarInsets()
 
             toolbar.setNavigationOnClickListener {
                 onBackPressed()

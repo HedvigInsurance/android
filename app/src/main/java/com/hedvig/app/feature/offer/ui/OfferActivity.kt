@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.transition.TransitionManager
 import android.view.MenuItem
 import androidx.activity.OnBackPressedCallback
+import androidx.core.view.WindowCompat
 import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.lifecycle.flowWithLifecycle
@@ -36,6 +37,7 @@ import com.hedvig.app.feature.offer.ui.checkout.CheckoutActivity
 import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.insetSystemBottomWithMargin
 import com.hedvig.app.util.extensions.insetSystemTopWithPadding
 import com.hedvig.app.util.extensions.showAlert
@@ -45,7 +47,6 @@ import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
-import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -70,7 +71,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         super.onCreate(savedInstanceState)
 
         binding.apply {
-            offerRoot.setEdgeToEdgeSystemUiFlags(true)
+            window.compatSetDecorFitsSystemWindows(false)
             offerToolbar.insetSystemTopWithPadding()
             signButton.insetSystemBottomWithMargin()
 

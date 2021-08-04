@@ -3,7 +3,7 @@ package com.hedvig.app.feature.profile.ui.payment
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.core.view.updatePadding
+import androidx.core.view.WindowCompat
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.graphql.PaymentQuery
 import com.hedvig.android.owldroid.type.PayinMethodStatus
@@ -12,10 +12,11 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityPaymentBinding
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
+import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
+import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.safeLet
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
-import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -32,16 +33,11 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
         super.onCreate(savedInstanceState)
 
         binding.apply {
-            root.setEdgeToEdgeSystemUiFlags(true)
-
-            toolbar.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
-            }
+            window.compatSetDecorFitsSystemWindows(false)
+            toolbar.applyStatusBarInsets()
             toolbar.setNavigationOnClickListener { onBackPressed() }
 
-            recycler.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
-            }
+            recycler.applyNavigationBarInsets()
             recycler.adapter = PaymentAdapter(marketManager, supportFragmentManager, tracker)
 
             model.data.observe(this@PaymentActivity) { (paymentData, payinStatusData) ->

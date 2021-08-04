@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.WindowCompat
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityReferralsActivatedBinding
@@ -11,14 +12,14 @@ import com.hedvig.app.feature.referrals.service.ReferralsTracker
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
+import com.hedvig.app.util.extensions.view.applyNavigationBarInsetsMargin
+import com.hedvig.app.util.extensions.view.applyStatusBarAndNavigationBarInsets
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
-import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -38,19 +39,11 @@ class ReferralsActivatedActivity : BaseActivity(R.layout.activity_referrals_acti
             )
 
             scrollView.updatePadding(bottom = scrollView.paddingBottom + close.measuredHeight)
-            root.setEdgeToEdgeSystemUiFlags(true)
+            window.compatSetDecorFitsSystemWindows(false)
 
-            scrollView.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(
-                    bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom,
-                    top = initialState.paddings.top + insets.systemWindowInsetTop
-                )
-            }
+            scrollView.applyStatusBarAndNavigationBarInsets()
 
-            close.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
-            }
-
+            close.applyNavigationBarInsetsMargin()
             close.setHapticClickListener {
                 tracker.closeActivated()
                 finish()

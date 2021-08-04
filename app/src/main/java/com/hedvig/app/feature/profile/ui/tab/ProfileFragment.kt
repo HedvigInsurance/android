@@ -27,15 +27,14 @@ import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.triggerRestartActivity
-import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewLifecycle
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
+import javax.money.MonetaryAmount
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
-import javax.money.MonetaryAmount
 
 class ProfileFragment : Fragment(R.layout.profile_fragment) {
     private val binding by viewBinding(ProfileFragmentBinding::bind)
@@ -64,19 +63,8 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
 
         val adapter = ProfileAdapter(viewLifecycleOwner, model::load, model::onLogout)
         binding.recycler.apply {
-            val scrollInitialBottomPadding = paddingBottom
-            val scrollInitialTopPadding = paddingTop
 
-            var hasInsetForToolbar = false
-
-            loggedInViewModel.toolbarInset.observe(viewLifecycleOwner) { toolbarInset ->
-                updatePadding(top = scrollInitialTopPadding + toolbarInset)
-                if (!hasInsetForToolbar) {
-                    hasInsetForToolbar = true
-                    scrollToPosition(0)
-                }
-            }
-
+            scroll = 0
             addOnScrollListener(
                 ScrollPositionListener(
                     { scrollPosition ->
@@ -86,11 +74,6 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                     viewLifecycleOwner
                 )
             )
-
-            loggedInViewModel.bottomTabInset.observe(viewLifecycleOwner) { bottomTabInset ->
-                updatePadding(bottom = scrollInitialBottomPadding + bottomTabInset)
-            }
-
             this.adapter = adapter
         }
 
