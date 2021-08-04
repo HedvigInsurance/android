@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.ConcatAdapter
@@ -21,6 +22,7 @@ import com.hedvig.app.feature.insurablelimits.InsurableLimitsAdapter
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.feature.perils.PerilsAdapter
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.toArrayList
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.Insetter
@@ -45,7 +47,7 @@ class QuoteDetailActivity : BaseActivity(R.layout.quote_detail_activity) {
         }
 
         with(binding) {
-            Insetter.setEdgeToEdgeSystemUiFlags(root, true)
+            window.compatSetDecorFitsSystemWindows(false)
 
             Insetter.builder()
                 .setOnApplyInsetsListener { view, insets, initialState ->

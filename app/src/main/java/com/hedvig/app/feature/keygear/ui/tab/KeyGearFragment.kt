@@ -22,6 +22,8 @@ import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.ui.animator.SlideInItemAnimator
 import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
+import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
+import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
@@ -45,13 +47,6 @@ class KeyGearFragment : Fragment(R.layout.fragment_key_gear) {
 
     private var hasSentAutoAddedItems = false
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        enterTransition = MaterialFadeThrough()
-        exitTransition = MaterialFadeThrough()
-    }
-
     override fun onResume() {
         super.onResume()
         loggedInViewModel.onScroll(scroll)
@@ -60,18 +55,9 @@ class KeyGearFragment : Fragment(R.layout.fragment_key_gear) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        scroll = 0
-
         with(binding) {
-            val scrollInitialTopPadding = keyGearRoot.paddingTop
-            loggedInViewModel.toolbarInset.observe(viewLifecycleOwner) { toolbarInsets ->
-                keyGearRoot.updatePadding(top = scrollInitialTopPadding + toolbarInsets)
-            }
 
-            val scrollInitialBottomPadding = keyGearRoot.paddingBottom
-            loggedInViewModel.bottomTabInset.observe(viewLifecycleOwner) { bottomTabInset ->
-                keyGearRoot.updatePadding(bottom = scrollInitialBottomPadding + bottomTabInset)
-            }
+            scroll = 0
             keyGearRoot.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, _: Int ->
                 scroll = scrollY
                 if (viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED) {

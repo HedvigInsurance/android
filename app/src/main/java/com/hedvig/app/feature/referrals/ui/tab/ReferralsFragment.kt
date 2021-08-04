@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.doOnLayout
+import androidx.core.view.doOnNextLayout
 import androidx.core.view.marginBottom
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.flowWithLifecycle
@@ -24,6 +25,8 @@ import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.apollo.toWebLocaleTag
 import com.hedvig.app.util.extensions.showShareSheet
+import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
+import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
@@ -31,7 +34,6 @@ import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewLifecycle
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import e
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -54,13 +56,6 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
     private var invitesInitialBottomPadding = 0
     private var scroll = 0
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        enterTransition = MaterialFadeThrough()
-        exitTransition = MaterialFadeThrough()
-    }
-
     override fun onResume() {
         super.onResume()
         loggedInViewModel.onScroll(scroll)
@@ -69,32 +64,16 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        scroll = 0
-
         with(binding) {
             shareInitialBottomMargin = share.marginBottom
             invitesInitialBottomPadding = invites.paddingBottom
-
-            val scrollInitialTopPadding = invites.paddingTop
-            var hasInsetForToolbar = false
-            loggedInViewModel.toolbarInset.observe(viewLifecycleOwner) { toolbarInsets ->
-                invites.updatePadding(top = scrollInitialTopPadding + toolbarInsets)
-                if (!hasInsetForToolbar) {
-                    hasInsetForToolbar = true
-                    invites.scrollToPosition(0)
-                }
-            }
 
             share.doOnLayout {
                 shareHeight = it.height
                 applyInsets()
             }
 
-            loggedInViewModel.bottomTabInset.observe(viewLifecycleOwner) { bti ->
-                bottomTabInset = bti
-                applyInsets()
-            }
-
+            scroll = 0
             invites.addOnScrollListener(
                 ScrollPositionListener(
                     { scrollPosition ->
@@ -113,12 +92,13 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
             )
             invites.adapter = adapter
 
-            swipeToRefresh.doOnApplyWindowInsets { _, insets, _ ->
+            swipeToRefresh.setOnApplyWindowInsetsListener { v, insets ->
                 swipeToRefresh.setProgressViewOffset(
                     false,
                     0,
                     insets.systemWindowInsetTop + BASE_MARGIN_DOUBLE
                 )
+                insets
             }
 
             swipeToRefresh.setOnRefreshListener {

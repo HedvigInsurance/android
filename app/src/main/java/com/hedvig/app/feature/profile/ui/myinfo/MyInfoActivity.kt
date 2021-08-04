@@ -6,6 +6,7 @@ import android.view.HapticFeedbackConstants
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.view.menu.ActionMenuItemView
+import androidx.core.view.WindowCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -13,15 +14,14 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityMyInfoBinding
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.setupToolbar
+import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.dismissKeyboard
-import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.validateEmail
 import com.hedvig.app.util.validatePhoneNumber
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
-import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -38,12 +38,10 @@ class MyInfoActivity : BaseActivity(R.layout.activity_my_info) {
         super.onCreate(savedInstanceState)
 
         binding.apply {
-            myInfoRoot.setEdgeToEdgeSystemUiFlags(true)
+            window.compatSetDecorFitsSystemWindows(false)
+            scrollView.applyNavigationBarInsets()
             setupToolbar(R.id.toolbar, R.drawable.ic_back, true) {
                 onBackPressed()
-            }
-            scrollView.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
             }
             toolbar.title = getString(R.string.PROFILE_MY_INFO_TITLE)
         }

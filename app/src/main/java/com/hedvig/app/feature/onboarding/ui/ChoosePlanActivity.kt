@@ -5,8 +5,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.core.view.WindowCompat
 import androidx.core.view.isVisible
-import androidx.core.view.updatePaddingRelative
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.hedvig.android.owldroid.graphql.ChoosePlanQuery
@@ -21,11 +21,11 @@ import com.hedvig.app.feature.onboarding.OnboardingModel
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
+import com.hedvig.app.util.extensions.view.applyNavigationBarInsetsMargin
+import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
-import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
@@ -41,16 +41,11 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
         super.onCreate(savedInstanceState)
 
         binding.apply {
-            root.setEdgeToEdgeSystemUiFlags(true)
-            toolbar.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePaddingRelative(top = initialState.paddings.top + insets.systemWindowInsetTop)
-            }
-            continueButton.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
-            }
-            recycler.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePaddingRelative(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
-            }
+            window.compatSetDecorFitsSystemWindows(false)
+            toolbar.applyStatusBarInsets()
+            continueButton.applyNavigationBarInsetsMargin()
+            recycler.applyNavigationBarInsetsMargin()
+
             setSupportActionBar(toolbar)
             toolbar.setNavigationOnClickListener { onBackPressed() }
 

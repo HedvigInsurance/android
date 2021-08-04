@@ -22,7 +22,7 @@ import com.hedvig.app.util.ControlFocusInsetsAnimationCallback
 import com.hedvig.app.util.RootViewDeferringInsetsCallback
 import com.hedvig.app.util.TranslateDeferringInsetsAnimationCallback
 import com.hedvig.app.util.extensions.compatDrawable
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
+import dev.chrisbanes.insetter.applyInsetter
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -159,16 +159,10 @@ fun Toolbar.setupToolbar(
         this.setNavigationOnClickListener { it() }
     }
     if (usingEdgeToEdge) {
-        this.doOnApplyWindowInsets { view, insets, initialState ->
-            view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
-        }
+        applyStatusBarInsets()
         rootLayout?.let { root ->
-            root.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(
-                    top = initialState.paddings.top + this.measuredHeight,
-                    bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom
-                )
-            }
+            root.applyStatusBarInsets()
+            root.applyNavigationBarInsets()
 
             if (root is NestedScrollView) {
                 root.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
@@ -332,3 +326,35 @@ fun View.setupInsetsForIme(root: View, vararg translatableViews: View) {
         ControlFocusInsetsAnimationCallback(this)
     )
 }
+
+fun View.applyStatusBarInsets() = applyInsetter {
+    type(statusBars = true) {
+        padding()
+    }
+}
+
+fun View.applyStatusBarInsetsMargin() = applyInsetter {
+    type(statusBars = true) {
+        margin()
+    }
+}
+
+
+fun View.applyNavigationBarInsets() = applyInsetter {
+    type(navigationBars = true) {
+        padding()
+    }
+}
+
+fun View.applyNavigationBarInsetsMargin() = applyInsetter {
+    type(navigationBars = true) {
+        margin()
+    }
+}
+
+fun View.applyStatusBarAndNavigationBarInsets() = applyInsetter {
+    type(statusBars = true, navigationBars = true) {
+        padding()
+    }
+}
+
