@@ -24,6 +24,7 @@ import com.hedvig.app.databinding.ActivityReceiptBinding
 import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.service.FileService
 import com.hedvig.app.util.extensions.askForPermissions
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.hasPermissions
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.remove
@@ -47,7 +48,7 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
         super.onCreate(savedInstanceState)
 
         binding.apply {
-            WindowCompat.setDecorFitsSystemWindows(window, false)
+            window.compatSetDecorFitsSystemWindows(false)
             topBar.applyStatusBarInsets()
 
             val fileUrl = intent.getStringExtra(RECEIPT_URL)

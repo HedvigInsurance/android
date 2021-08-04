@@ -9,7 +9,6 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
-import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -24,10 +23,10 @@ import com.hedvig.app.feature.insurance.ui.detail.documents.DocumentsFragment
 import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoFragment
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.extensions.colorAttr
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
+import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
-import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -56,14 +55,10 @@ class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
         }
 
         binding.apply {
-            root.setEdgeToEdgeSystemUiFlags(true)
-            toolbar.apply {
-                doOnApplyWindowInsets { view, insets, initialState ->
-                    view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
-                }
-                setNavigationOnClickListener {
-                    onBackPressed()
-                }
+            window.compatSetDecorFitsSystemWindows(false)
+            toolbar.applyStatusBarInsets()
+            toolbar.setNavigationOnClickListener {
+                onBackPressed()
             }
             tabContent.adapter = ContractDetailTabAdapter(this@ContractDetailActivity)
             TabLayoutMediator(tabContainer, tabContent) { tab, position ->

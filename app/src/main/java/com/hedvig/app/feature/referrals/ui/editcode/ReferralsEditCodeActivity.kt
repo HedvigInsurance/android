@@ -14,6 +14,7 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityReferralsEditCodeBinding
 import com.hedvig.app.feature.referrals.service.ReferralsTracker
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
@@ -39,7 +40,7 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
         super.onCreate(savedInstanceState)
 
         binding.apply {
-            WindowCompat.setDecorFitsSystemWindows(window, false)
+            window.compatSetDecorFitsSystemWindows(false)
 
             toolbar.doOnLayout { applyInsets(it.height) }
             toolbar.applyStatusBarInsets()

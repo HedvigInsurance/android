@@ -34,6 +34,7 @@ import com.hedvig.app.ui.animator.SlideInItemAnimator
 import com.hedvig.app.ui.decoration.CenterItemDecoration
 import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
 import com.hedvig.app.util.extensions.askForPermissions
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.doOnEnd
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsetsMargin
@@ -68,7 +69,7 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
 
         supportPostponeEnterTransition()
         binding.apply {
-            WindowCompat.setDecorFitsSystemWindows(window, false)
+            window.compatSetDecorFitsSystemWindows(false)
             topBar.applyStatusBarInsets()
             saveContainer.applyNavigationBarInsetsMargin()
 

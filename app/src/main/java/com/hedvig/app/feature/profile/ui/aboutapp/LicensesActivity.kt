@@ -5,6 +5,7 @@ import androidx.core.view.WindowCompat
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityLicensesBinding
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
@@ -16,7 +17,7 @@ class LicensesActivity : BaseActivity(R.layout.activity_licenses) {
         super.onCreate(savedInstanceState)
 
         binding.apply {
-            WindowCompat.setDecorFitsSystemWindows(window, false)
+            window.compatSetDecorFitsSystemWindows(false)
 
             root.applyNavigationBarInsets()
             toolbar.applyStatusBarInsets()

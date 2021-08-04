@@ -22,6 +22,7 @@ import com.hedvig.app.feature.home.ui.changeaddress.ViewState.SelfChangeAddress
 import com.hedvig.app.feature.home.ui.changeaddress.ViewState.SelfChangeError
 import com.hedvig.app.feature.home.ui.changeaddress.ViewState.UpcomingAgreementError
 import com.hedvig.app.util.extensions.compatDrawable
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsetsMargin
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.remove
@@ -39,7 +40,7 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
         super.onCreate(savedInstanceState)
 
         with(binding) {
-            WindowCompat.setDecorFitsSystemWindows(window, false)
+            window.compatSetDecorFitsSystemWindows(false)
             toolbar.applyStatusBarInsets()
             continueButton.applyNavigationBarInsetsMargin()
 

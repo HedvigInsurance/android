@@ -22,6 +22,7 @@ import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.extensions.avdDoOnEnd
 import com.hedvig.app.util.extensions.avdStart
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.viewBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
@@ -35,7 +36,7 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.compatSetDecorFitsSystemWindows(false)
     }
 
     override fun onStart() {

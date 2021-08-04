@@ -36,6 +36,7 @@ import com.hedvig.app.feature.embark.passages.textaction.TextActionFragment
 import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.viewBinding
@@ -65,7 +66,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         super.onCreate(savedInstanceState)
 
         binding.apply {
-            WindowCompat.setDecorFitsSystemWindows(window, false)
+            window.compatSetDecorFitsSystemWindows(false)
             progressToolbar.applyStatusBarInsets()
             progressToolbar.toolbar.title = storyTitle
 

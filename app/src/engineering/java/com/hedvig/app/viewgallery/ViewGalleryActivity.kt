@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityViewGalleryBinding
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -18,7 +19,7 @@ class ViewGalleryActivity : AppCompatActivity(R.layout.activity_view_gallery) {
         super.onCreate(savedInstanceState)
 
         with(binding) {
-            WindowCompat.setDecorFitsSystemWindows(window, false)
+            window.compatSetDecorFitsSystemWindows(false)
             toolbar.applyStatusBarInsets()
             scrollView.applyStatusBarInsets()
             scrollViewContent.applyNavigationBarInsets()

@@ -11,6 +11,7 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityEmergencyBinding
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.makeACall
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
@@ -45,7 +46,7 @@ class EmergencyActivity : BaseActivity(R.layout.activity_emergency) {
         }
 
         binding.apply {
-            WindowCompat.setDecorFitsSystemWindows(window, false)
+            window.compatSetDecorFitsSystemWindows(false)
             toolbar.applyStatusBarInsets()
             scrollView.applyNavigationBarInsets()
 

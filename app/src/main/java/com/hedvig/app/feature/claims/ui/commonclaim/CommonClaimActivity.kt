@@ -10,6 +10,7 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityCommonClaimBinding
 import com.hedvig.app.feature.claims.ui.commonclaim.bulletpoint.BulletPointsAdapter
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.disable
@@ -30,7 +31,7 @@ class CommonClaimActivity : BaseActivity(R.layout.activity_common_claim) {
         val data = intent.getParcelableExtra<CommonClaimsData>(CLAIMS_DATA) ?: return
 
         binding.apply {
-            WindowCompat.setDecorFitsSystemWindows(window, false)
+            window.compatSetDecorFitsSystemWindows(false)
             root.applyNavigationBarInsets()
             toolbar.applyStatusBarInsets()
 

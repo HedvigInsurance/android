@@ -12,6 +12,7 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityPaymentBinding
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.viewBinding
@@ -32,8 +33,7 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
         super.onCreate(savedInstanceState)
 
         binding.apply {
-            WindowCompat.setDecorFitsSystemWindows(window, false)
-
+            window.compatSetDecorFitsSystemWindows(false)
             toolbar.applyStatusBarInsets()
             toolbar.setNavigationOnClickListener { onBackPressed() }
 

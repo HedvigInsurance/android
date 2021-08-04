@@ -16,6 +16,7 @@ import com.hedvig.app.feature.insurance.ui.InsuranceAdapter
 import com.hedvig.app.feature.insurance.ui.InsuranceModel
 import com.hedvig.app.feature.insurance.ui.InsuranceViewModel
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.viewBinding
@@ -39,7 +40,7 @@ class TerminatedContractsActivity : BaseActivity(R.layout.terminated_contracts_a
         super.onCreate(savedInstanceState)
 
         binding.apply {
-            WindowCompat.setDecorFitsSystemWindows(window, false)
+            window.compatSetDecorFitsSystemWindows(false)
             toolbar.applyStatusBarInsets()
             recycler.applyNavigationBarInsets()
             toolbar.setNavigationOnClickListener { onBackPressed() }

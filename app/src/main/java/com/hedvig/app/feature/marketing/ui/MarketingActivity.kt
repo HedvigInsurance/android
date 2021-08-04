@@ -20,6 +20,7 @@ import com.hedvig.app.feature.marketpicker.CurrentFragment.MARKET_PICKER
 import com.hedvig.app.feature.marketpicker.MarketPickerFragment
 import com.hedvig.app.feature.marketpicker.MarketSelectedFragment
 import com.hedvig.app.util.BlurHashDecoder
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -38,7 +39,7 @@ class MarketingActivity : BaseActivity(R.layout.activity_marketing) {
         }
 
         binding.apply {
-            WindowCompat.setDecorFitsSystemWindows(window, false)
+            window.compatSetDecorFitsSystemWindows(false)
 
             model
                 .marketingBackground

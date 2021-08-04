@@ -16,6 +16,7 @@ import com.hedvig.app.feature.zignsec.ui.ErrorFragment
 import com.hedvig.app.feature.zignsec.ui.IdentityInputFragment
 import com.hedvig.app.feature.zignsec.ui.ZignSecWebViewFragment
 import com.hedvig.app.util.extensions.addToBackStack
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.viewBinding
@@ -33,8 +34,7 @@ class SimpleSignAuthenticationActivity : BaseActivity(R.layout.simple_sign_authe
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.compatSetDecorFitsSystemWindows(false)
         binding.toolbar.apply {
             applyStatusBarInsets()
             setNavigationOnClickListener { finish() }

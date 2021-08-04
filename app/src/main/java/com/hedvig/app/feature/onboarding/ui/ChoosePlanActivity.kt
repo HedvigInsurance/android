@@ -21,6 +21,7 @@ import com.hedvig.app.feature.onboarding.OnboardingModel
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsetsMargin
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -40,7 +41,7 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
         super.onCreate(savedInstanceState)
 
         binding.apply {
-            WindowCompat.setDecorFitsSystemWindows(window, false)
+            window.compatSetDecorFitsSystemWindows(false)
             toolbar.applyStatusBarInsets()
             continueButton.applyNavigationBarInsetsMargin()
             recycler.applyNavigationBarInsetsMargin()

@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import com.hedvig.app.databinding.ActivityGenericDevelopmentBinding
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.applyInsetter
 import org.koin.core.context.loadKoinModules
@@ -29,7 +30,7 @@ abstract class MockActivity : AppCompatActivity(R.layout.activity_generic_develo
         loadKoinModules(mocks)
 
         binding.root.apply {
-            WindowCompat.setDecorFitsSystemWindows(window, false)
+            window.compatSetDecorFitsSystemWindows(false)
             applyInsetter {
                 type(navigationBars = true, statusBars = true) {
                     padding()

@@ -12,6 +12,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.viewpager.widget.ViewPager
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentDismissablePagerBinding
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.screenWidth
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
@@ -68,7 +69,7 @@ abstract class DismissiblePager : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.apply {
-            WindowCompat.setDecorFitsSystemWindows(requireActivity().window, false)
+            requireActivity().window.compatSetDecorFitsSystemWindows(false)
             proceed.applyNavigationBarInsets()
             topBar.applyStatusBarInsets()
 

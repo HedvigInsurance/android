@@ -12,6 +12,7 @@ import com.hedvig.app.feature.referrals.service.ReferralsTracker
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsetsMargin
 import com.hedvig.app.util.extensions.view.applyStatusBarAndNavigationBarInsets
 import com.hedvig.app.util.extensions.view.remove
@@ -38,7 +39,7 @@ class ReferralsActivatedActivity : BaseActivity(R.layout.activity_referrals_acti
             )
 
             scrollView.updatePadding(bottom = scrollView.paddingBottom + close.measuredHeight)
-            WindowCompat.setDecorFitsSystemWindows(window, false)
+            window.compatSetDecorFitsSystemWindows(false)
 
             scrollView.applyStatusBarAndNavigationBarInsets()
 

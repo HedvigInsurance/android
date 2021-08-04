@@ -9,6 +9,7 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityPaymentHistoryBinding
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
@@ -25,7 +26,7 @@ class PaymentHistoryActivity : BaseActivity(R.layout.activity_payment_history) {
         super.onCreate(savedInstanceState)
 
         binding.apply {
-            WindowCompat.setDecorFitsSystemWindows(window, false)
+            window.compatSetDecorFitsSystemWindows(false)
             paymentHistory.applyNavigationBarInsets()
             toolbar.applyStatusBarInsets()
             toolbar.setNavigationOnClickListener {

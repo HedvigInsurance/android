@@ -14,6 +14,7 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityMyInfoBinding
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.setupToolbar
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
@@ -37,7 +38,7 @@ class MyInfoActivity : BaseActivity(R.layout.activity_my_info) {
         super.onCreate(savedInstanceState)
 
         binding.apply {
-            WindowCompat.setDecorFitsSystemWindows(window, false)
+            window.compatSetDecorFitsSystemWindows(false)
             scrollView.applyNavigationBarInsets()
             setupToolbar(R.id.toolbar, R.drawable.ic_back, true) {
                 onBackPressed()

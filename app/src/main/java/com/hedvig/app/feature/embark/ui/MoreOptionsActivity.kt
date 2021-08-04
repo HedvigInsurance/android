@@ -10,6 +10,7 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityMoreOptionsBinding
 import com.hedvig.app.feature.onboarding.MemberIdViewModel
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.viewBinding
 import kotlinx.coroutines.flow.launchIn
@@ -24,7 +25,7 @@ class MoreOptionsActivity : BaseActivity(R.layout.activity_more_options) {
         super.onCreate(savedInstanceState)
 
         binding.apply {
-            WindowCompat.setDecorFitsSystemWindows(window, false)
+            window.compatSetDecorFitsSystemWindows(false)
             toolbar.applyStatusBarInsets()
 
             setSupportActionBar(toolbar)

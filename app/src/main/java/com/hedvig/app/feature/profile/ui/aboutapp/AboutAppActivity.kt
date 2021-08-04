@@ -14,6 +14,7 @@ import com.hedvig.app.feature.onboarding.MemberIdViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewDialog
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.util.apollo.ThemedIconUrls
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.setupToolbar
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
@@ -30,7 +31,7 @@ class AboutAppActivity : BaseActivity(R.layout.activity_about_app) {
         super.onCreate(savedInstanceState)
 
         binding.apply {
-            WindowCompat.setDecorFitsSystemWindows(window, false)
+            window.compatSetDecorFitsSystemWindows(false)
 
             setupToolbar(R.id.toolbar, R.drawable.ic_back, true, root) {
                 onBackPressed()

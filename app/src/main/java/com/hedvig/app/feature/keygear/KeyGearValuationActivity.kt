@@ -22,6 +22,7 @@ import com.hedvig.app.databinding.ActivityKeyGearValuationBinding
 import com.hedvig.app.feature.keygear.ui.ValuationData
 import com.hedvig.app.feature.keygear.ui.createitem.label
 import com.hedvig.app.util.extensions.colorAttr
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsetsMargin
@@ -58,7 +59,7 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
         var maxInsurableAmount = 0
 
         binding.apply {
-            WindowCompat.setDecorFitsSystemWindows(window, false)
+            window.compatSetDecorFitsSystemWindows(false)
             topBar.applyStatusBarInsets()
             scrollView.applyNavigationBarInsets()
             saveContainer.applyNavigationBarInsetsMargin()

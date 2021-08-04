@@ -30,6 +30,7 @@ import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.extensions.askForPermissions
 import com.hedvig.app.util.extensions.calculateNonFullscreenHeightDiff
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.handleSingleSelectLink
 import com.hedvig.app.util.extensions.hasPermissions
 import com.hedvig.app.util.extensions.showAlert
@@ -112,7 +113,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             )
             initialChatPadding = messages.paddingBottom
 
-            WindowCompat.setDecorFitsSystemWindows(window, false)
+            window.compatSetDecorFitsSystemWindows(false)
 
             input.applyNavigationBarInsetsMargin()
             toolbar.applyStatusBarInsets()

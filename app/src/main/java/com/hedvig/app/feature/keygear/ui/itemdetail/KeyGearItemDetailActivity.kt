@@ -26,6 +26,7 @@ import com.hedvig.app.util.boundedColorLerp
 import com.hedvig.app.util.boundedProgress
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatDrawable
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.show
@@ -53,7 +54,7 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
         supportPostponeEnterTransition()
 
         binding.apply {
-            WindowCompat.setDecorFitsSystemWindows(window, false)
+            window.compatSetDecorFitsSystemWindows(false)
             scrollViewContent.applyNavigationBarInsets()
 
             initializeToolbar()

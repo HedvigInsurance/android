@@ -37,6 +37,7 @@ import com.hedvig.app.feature.offer.ui.checkout.CheckoutActivity
 import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.insetSystemBottomWithMargin
 import com.hedvig.app.util.extensions.insetSystemTopWithPadding
 import com.hedvig.app.util.extensions.showAlert
@@ -70,7 +71,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         super.onCreate(savedInstanceState)
 
         binding.apply {
-            WindowCompat.setDecorFitsSystemWindows(window, false)
+            window.compatSetDecorFitsSystemWindows(false)
             offerToolbar.insetSystemTopWithPadding()
             signButton.insetSystemBottomWithMargin()
 

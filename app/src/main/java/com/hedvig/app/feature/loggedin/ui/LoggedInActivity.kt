@@ -35,6 +35,7 @@ import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.boundedLerp
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatColor
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.getLastOpen
 import com.hedvig.app.util.extensions.isDarkThemeActive
@@ -80,7 +81,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         savedTab = savedInstanceState?.getSerializable("tab") as? LoggedInTabs
 
         with(binding) {
-            WindowCompat.setDecorFitsSystemWindows(window, false)
+            window.compatSetDecorFitsSystemWindows(false)
             toolbar.applyStatusBarInsets()
             tabContent.applyStatusBarInsets()
             bottomNavigation.applyNavigationBarInsets()

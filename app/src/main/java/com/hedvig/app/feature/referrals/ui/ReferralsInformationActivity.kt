@@ -12,6 +12,7 @@ import com.hedvig.app.feature.referrals.service.ReferralsTracker
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.extensions.canOpenUri
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.openUri
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
@@ -46,7 +47,7 @@ class ReferralsInformationActivity : BaseActivity(R.layout.activity_referrals_in
         }
 
         binding.apply {
-            WindowCompat.setDecorFitsSystemWindows(window, false)
+            window.compatSetDecorFitsSystemWindows(false)
 
             toolbar.applyStatusBarInsets()
             toolbar.setNavigationOnClickListener { onBackPressed() }
