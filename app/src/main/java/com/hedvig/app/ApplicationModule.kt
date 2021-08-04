@@ -158,7 +158,7 @@ import com.hedvig.app.terminated.TerminatedTracker
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.ApolloTimberLogger
 import com.hedvig.app.util.apollo.CacheManager
-import com.hedvig.app.util.featureflags.FeatureRuntimeBehavior
+import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.app.util.svg.GlideApp
 import com.hedvig.app.util.svg.SvgSoftwareLayerSetter
 import com.mixpanel.android.mpmetrics.MixpanelAPI
@@ -535,5 +535,5 @@ val sharedPreferencesModule = module {
 }
 
 val featureRuntimeBehaviorModule = module {
-    single { FeatureRuntimeBehavior(get(), isDebug()) }
+    single { FeatureManager(get(), isDebug()) }
 }

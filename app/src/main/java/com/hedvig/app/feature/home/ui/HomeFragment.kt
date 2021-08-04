@@ -19,7 +19,7 @@ import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.featureflags.Feature
-import com.hedvig.app.util.featureflags.FeatureRuntimeBehavior
+import com.hedvig.app.util.featureflags.FeatureManager
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
@@ -34,7 +34,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
 
     private val requestBuilder: RequestBuilder<PictureDrawable> by inject()
     private val marketManager: MarketManager by inject()
-    private val featureRuntimeBehavior: FeatureRuntimeBehavior by inject()
+    private val featureRuntimeBehavior: FeatureManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

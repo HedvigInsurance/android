@@ -4,8 +4,6 @@ import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoModel
 import com.hedvig.app.util.apollo.stringRes
-import com.hedvig.app.util.featureflags.Feature
-import com.hedvig.app.util.featureflags.FeatureRuntimeBehavior
 
 fun InsuranceQuery.Contract.toModelItems(
     includeMovingFlowItems: Boolean

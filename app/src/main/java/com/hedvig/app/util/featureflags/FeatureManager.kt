@@ -4,7 +4,7 @@ import androidx.annotation.VisibleForTesting
 import com.hedvig.app.feature.settings.MarketManager
 import java.util.concurrent.CopyOnWriteArrayList
 
-class FeatureRuntimeBehavior(
+class FeatureManager(
     val marketManager: MarketManager,
     isDebugBuild: Boolean
 ) {
