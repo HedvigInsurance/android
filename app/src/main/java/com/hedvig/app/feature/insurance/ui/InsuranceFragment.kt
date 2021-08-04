@@ -2,6 +2,7 @@ package com.hedvig.app.feature.insurance.ui
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.flowWithLifecycle
 import com.google.android.material.transition.MaterialFadeThrough
@@ -12,8 +13,6 @@ import com.hedvig.app.feature.insurance.service.InsuranceTracker
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
 import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
-import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.viewLifecycle
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
