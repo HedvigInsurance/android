@@ -16,10 +16,10 @@ import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
 import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
-import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.util.FeatureFlag
 import com.hedvig.app.util.extensions.view.updatePadding
+import com.hedvig.app.util.featureflags.Feature
+import com.hedvig.app.util.featureflags.FeatureManager
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
@@ -34,6 +34,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
 
     private val requestBuilder: RequestBuilder<PictureDrawable> by inject()
     private val marketManager: MarketManager by inject()
+    private val featureRuntimeBehavior: FeatureManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -158,6 +159,10 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     if (pendingAddress != null && pendingAddress.isNotBlank()) {
                         add(HomeModel.PendingAddressChange(pendingAddress))
                     }
+                    if (featureRuntimeBehavior.isFeatureEnabled(Feature.MOVING_FLOW)) {
+                        add(HomeModel.Header(getString(R.string.home_tab_editing_section_title)))
+                        add(HomeModel.ChangeAddress(pendingAddress))
+                    }
                 }
                 adapter.submitList(items)
             }
@@ -184,7 +189,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                             ).toTypedArray()
                         )
                     )
-                    if (FeatureFlag.MOVING_FLOW.enabled && marketManager.market == Market.SE) {
+                    if (featureRuntimeBehavior.isFeatureEnabled(Feature.MOVING_FLOW)) {
                         add(HomeModel.Header(getString(R.string.home_tab_editing_section_title)))
                         add(HomeModel.ChangeAddress(pendingAddress))
                     }

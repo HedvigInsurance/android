@@ -18,6 +18,8 @@ import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoModel
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.apollo.toUpcomingAgreementResult
+import com.hedvig.app.util.featureflags.Feature
+import com.hedvig.app.util.featureflags.FeatureManager
 import e
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -50,6 +52,7 @@ class ContractDetailViewModelImpl(
     private val insuranceRepository: InsuranceRepository,
     private val chatRepository: ChatRepository,
     private val marketManager: MarketManager,
+    private val featureRuntimeBehavior: FeatureManager
 ) : ContractDetailViewModel() {
 
     override fun loadContract(id: String) {
@@ -78,7 +81,9 @@ class ContractDetailViewModelImpl(
     }
 
     private fun createContractItems(contract: InsuranceQuery.Contract): List<YourInfoModel> {
-        val contractItems = contract.toModelItems()
+        val contractItems = contract.toModelItems(
+            includeMovingFlowItems = featureRuntimeBehavior.isFeatureEnabled(Feature.MOVING_FLOW)
+        )
         val upcomingAgreement = contract.fragments.upcomingAgreementFragment.toUpcomingAgreementResult()
         val upcomingAgreementItem = upcomingAgreement?.let { YourInfoModel.PendingAddressChange(it) }
         return listOfNotNull(upcomingAgreementItem) + contractItems + listOf(YourInfoModel.Change)

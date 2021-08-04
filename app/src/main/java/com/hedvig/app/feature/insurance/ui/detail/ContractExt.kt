@@ -3,10 +3,11 @@ package com.hedvig.app.feature.insurance.ui.detail
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoModel
-import com.hedvig.app.util.FeatureFlag
 import com.hedvig.app.util.apollo.stringRes
 
-fun InsuranceQuery.Contract.toModelItems(): List<YourInfoModel> = when {
+fun InsuranceQuery.Contract.toModelItems(
+    includeMovingFlowItems: Boolean
+): List<YourInfoModel> = when {
     currentAgreement.asSwedishApartmentAgreement != null -> currentAgreement.asSwedishApartmentAgreement!!.let {
         listOfNotNull(
             YourInfoModel.Home.Apartment(
@@ -15,7 +16,11 @@ fun InsuranceQuery.Contract.toModelItems(): List<YourInfoModel> = when {
                 it.saType.stringRes(),
                 it.squareMeters
             ),
-            if (FeatureFlag.MOVING_FLOW.enabled) YourInfoModel.ChangeAddressButton else null,
+            if (includeMovingFlowItems) {
+                YourInfoModel.ChangeAddressButton
+            } else {
+                null
+            },
             YourInfoModel.Coinsured(it.numberCoInsured)
         )
     }
@@ -36,7 +41,11 @@ fun InsuranceQuery.Contract.toModelItems(): List<YourInfoModel> = when {
                     }
                 }
             ),
-            if (FeatureFlag.MOVING_FLOW.enabled) YourInfoModel.ChangeAddressButton else null,
+            if (includeMovingFlowItems) {
+                YourInfoModel.ChangeAddressButton
+            } else {
+                null
+            },
             YourInfoModel.Coinsured(it.numberCoInsured)
         )
     }

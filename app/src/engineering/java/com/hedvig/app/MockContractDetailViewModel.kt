@@ -71,7 +71,7 @@ class MockContractDetailViewModel : ContractDetailViewModel() {
                             )
                         )
                     )
-                ) + mockData.contracts[0].toModelItems()
+                ) + mockData.contracts[0].toModelItems(includeMovingFlowItems = true)
 
                 _documentsList.value = listOfNotNull(
                     it.currentAgreement.asAgreementCore?.certificateUrl?.let { certificateUrl ->
