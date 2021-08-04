@@ -209,7 +209,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: Homebrew/actions/setup-homebrew@master
-      - run: brew install xmlstarlet ktlint --build-from-source ktlint
+      - run: sudo apt-get install libxml2-utils
+      - run: brew install ktlint --build-from-source ktlint
       - name: run ktlint
         continue-on-error: true
         run: |
