@@ -339,7 +339,6 @@ fun View.applyStatusBarInsetsMargin() = applyInsetter {
     }
 }
 
-
 fun View.applyNavigationBarInsets() = applyInsetter {
     type(navigationBars = true) {
         padding()
@@ -357,4 +356,3 @@ fun View.applyStatusBarAndNavigationBarInsets() = applyInsetter {
         padding()
     }
 }
-

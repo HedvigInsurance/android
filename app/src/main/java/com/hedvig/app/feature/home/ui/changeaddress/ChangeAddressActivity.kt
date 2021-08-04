@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.transition.TransitionManager
 import androidx.annotation.DrawableRes
-import androidx.core.view.WindowCompat
 import androidx.core.view.isVisible
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R

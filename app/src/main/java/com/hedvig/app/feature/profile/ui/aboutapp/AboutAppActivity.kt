@@ -2,7 +2,6 @@ package com.hedvig.app.feature.profile.ui.aboutapp
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.core.view.WindowCompat
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.hedvig.app.BaseActivity

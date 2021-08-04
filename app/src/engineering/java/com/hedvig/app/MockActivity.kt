@@ -3,7 +3,6 @@ package com.hedvig.app
 import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.WindowCompat
 import com.hedvig.app.databinding.ActivityGenericDevelopmentBinding
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.viewBinding
