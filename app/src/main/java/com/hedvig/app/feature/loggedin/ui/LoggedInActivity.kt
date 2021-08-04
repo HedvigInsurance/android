@@ -113,7 +113,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 supportFragmentManager
                     .beginTransaction()
                     .replace(R.id.tabContent, id.fragment)
-                    .commit()
+                    .commitNowAllowingStateLoss()
 
                 setupToolBar()
                 animateGradient(id)
