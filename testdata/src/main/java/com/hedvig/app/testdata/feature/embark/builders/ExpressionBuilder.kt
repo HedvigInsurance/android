@@ -28,7 +28,15 @@ data class ExpressionBuilder(
                 } else {
                     null
                 },
-                asEmbarkExpressionBinary = if (type == ExpressionType.EQUALS || type == ExpressionType.NOT_EQUALS || type == ExpressionType.GREATER_THAN || type == ExpressionType.GREATER_THAN_OR_EQUALS || type == ExpressionType.LESS_THAN || type == ExpressionType.LESS_THAN_OR_EQUALS || type == ExpressionType.NOT_EQUALS) {
+                asEmbarkExpressionBinary = if (
+                    type == ExpressionType.EQUALS ||
+                    type == ExpressionType.NOT_EQUALS ||
+                    type == ExpressionType.GREATER_THAN ||
+                    type == ExpressionType.GREATER_THAN_OR_EQUALS ||
+                    type == ExpressionType.LESS_THAN ||
+                    type == ExpressionType.LESS_THAN_OR_EQUALS ||
+                    type == ExpressionType.NOT_EQUALS
+                ) {
                     BasicExpressionFragment.AsEmbarkExpressionBinary(
                         binaryType = when (type) {
                             ExpressionType.EQUALS -> EmbarkExpressionTypeBinary.EQUALS
@@ -58,25 +66,33 @@ data class ExpressionBuilder(
                 text = text,
                 subExpressions = subExpressions.map { subEx ->
                     ExpressionFragment.SubExpression2(
-                        fragments = ExpressionFragment.SubExpression2.Fragments(subEx.fragments.basicExpressionFragment),
+                        fragments = ExpressionFragment.SubExpression2.Fragments(
+                            subEx.fragments.basicExpressionFragment
+                        ),
                         asEmbarkExpressionMultiple1 = subEx.asEmbarkExpressionMultiple?.let { asMulti ->
                             ExpressionFragment.AsEmbarkExpressionMultiple1(
                                 multipleType = asMulti.multipleType,
                                 text = asMulti.text,
                                 subExpressions = asMulti.subExpressions.map { subEx2 ->
                                     ExpressionFragment.SubExpression1(
-                                        fragments = ExpressionFragment.SubExpression1.Fragments(subEx2.fragments.basicExpressionFragment),
-                                        asEmbarkExpressionMultiple2 = subEx2.asEmbarkExpressionMultiple1?.let { asMulti2 ->
-                                            ExpressionFragment.AsEmbarkExpressionMultiple2(
-                                                multipleType = asMulti2.multipleType,
-                                                text = asMulti2.text,
-                                                subExpressions = asMulti2.subExpressions.map { subEx3 ->
-                                                    ExpressionFragment.SubExpression(
-                                                        fragments = ExpressionFragment.SubExpression.Fragments(subEx3.fragments.basicExpressionFragment)
-                                                    )
-                                                }
-                                            )
-                                        }
+                                        fragments = ExpressionFragment.SubExpression1.Fragments(
+                                            subEx2.fragments.basicExpressionFragment
+                                        ),
+                                        asEmbarkExpressionMultiple2 = subEx2
+                                            .asEmbarkExpressionMultiple1
+                                            ?.let { asMulti2 ->
+                                                ExpressionFragment.AsEmbarkExpressionMultiple2(
+                                                    multipleType = asMulti2.multipleType,
+                                                    text = asMulti2.text,
+                                                    subExpressions = asMulti2.subExpressions.map { subEx3 ->
+                                                        ExpressionFragment.SubExpression(
+                                                            fragments = ExpressionFragment.SubExpression.Fragments(
+                                                                subEx3.fragments.basicExpressionFragment
+                                                            )
+                                                        )
+                                                    }
+                                                )
+                                            }
                                     )
                                 }
                             )
