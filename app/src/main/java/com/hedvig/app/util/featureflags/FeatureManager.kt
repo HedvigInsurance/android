@@ -14,7 +14,6 @@ class FeatureManager(
 
     init {
         if (isDebugBuild) {
-            addProvider(TestFeatureFlagProvider)
             addProvider(DebugFeatureFlagProvider(marketManager))
         } else {
             addProvider(ProductionFeatureFlagProvider(marketManager))
