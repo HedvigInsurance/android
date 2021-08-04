@@ -38,12 +38,13 @@ class KeyGearDataBuilder {
                         fragments = KeyGearItemFragment.Fragments(
                             KeyGearItemValuationFragment(
                                 valuation = KeyGearItemValuationFragment.Valuation1(
-                                    asKeyGearItemValuationFixed = KeyGearItemValuationFragment.AsKeyGearItemValuationFixed(
-                                        ratio = 31,
-                                        valuation = KeyGearItemValuationFragment.Valuation(
-                                            amount = "1234.00"
-                                        )
-                                    ),
+                                    asKeyGearItemValuationFixed = KeyGearItemValuationFragment
+                                        .AsKeyGearItemValuationFixed(
+                                            ratio = 31,
+                                            valuation = KeyGearItemValuationFragment.Valuation(
+                                                amount = "1234.00"
+                                            )
+                                        ),
                                     asKeyGearItemValuationMarketValue = null
                                 )
                             )
@@ -80,12 +81,13 @@ class KeyGearDataBuilder {
                         fragments = KeyGearItemFragment.Fragments(
                             KeyGearItemValuationFragment(
                                 valuation = KeyGearItemValuationFragment.Valuation1(
-                                    asKeyGearItemValuationFixed = KeyGearItemValuationFragment.AsKeyGearItemValuationFixed(
-                                        ratio = 31,
-                                        valuation = KeyGearItemValuationFragment.Valuation(
-                                            amount = "1234.00"
-                                        )
-                                    ),
+                                    asKeyGearItemValuationFixed = KeyGearItemValuationFragment
+                                        .AsKeyGearItemValuationFixed(
+                                            ratio = 31,
+                                            valuation = KeyGearItemValuationFragment.Valuation(
+                                                amount = "1234.00"
+                                            )
+                                        ),
                                     asKeyGearItemValuationMarketValue = null
                                 )
                             )
@@ -117,12 +119,13 @@ class KeyGearDataBuilder {
                         fragments = KeyGearItemFragment.Fragments(
                             KeyGearItemValuationFragment(
                                 valuation = KeyGearItemValuationFragment.Valuation1(
-                                    asKeyGearItemValuationFixed = KeyGearItemValuationFragment.AsKeyGearItemValuationFixed(
-                                        ratio = 31,
-                                        valuation = KeyGearItemValuationFragment.Valuation(
-                                            amount = "1234.00"
-                                        )
-                                    ),
+                                    asKeyGearItemValuationFixed = KeyGearItemValuationFragment
+                                        .AsKeyGearItemValuationFixed(
+                                            ratio = 31,
+                                            valuation = KeyGearItemValuationFragment.Valuation(
+                                                amount = "1234.00"
+                                            )
+                                        ),
                                     asKeyGearItemValuationMarketValue = null
                                 )
                             )

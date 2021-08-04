@@ -3,7 +3,6 @@ package com.hedvig.app.feature.zignsec
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.core.view.WindowCompat
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
 import com.hedvig.android.owldroid.type.AuthState

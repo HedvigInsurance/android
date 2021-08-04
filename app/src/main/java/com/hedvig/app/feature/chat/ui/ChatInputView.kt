@@ -160,7 +160,7 @@ class ChatInputView : FrameLayout {
     }
 
     fun clearInput() {
-        binding.inputText.text.clear()
+        binding.inputText.text?.clear()
     }
 
     fun audioRecorderPermissionGranted() = binding.audioRecorder.permissionGranted()

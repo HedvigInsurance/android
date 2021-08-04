@@ -94,7 +94,7 @@ object ChatNotificationManager {
                     CHAT_NOTIFICATION_ID
                 )
             },
-            PendingIntent.FLAG_UPDATE_CURRENT
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
         val replyAction = NotificationCompat.Action.Builder(
@@ -166,7 +166,7 @@ object ChatNotificationManager {
             context,
             0,
             Intent(context, SplashActivity::class.java),
-            PendingIntent.FLAG_ONE_SHOT
+            PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
         )
 
         val notification = NotificationCompat

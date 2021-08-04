@@ -1,5 +1,6 @@
 package com.hedvig.app
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
@@ -97,6 +98,7 @@ class LegacyReactDatabaseSupplier private constructor(private val context: Conte
         }
     }
 
+    @SuppressLint("Recycle") // We already recycle this cursor
     fun getTokenIfExists(): String? {
         ensureDatabase()
 

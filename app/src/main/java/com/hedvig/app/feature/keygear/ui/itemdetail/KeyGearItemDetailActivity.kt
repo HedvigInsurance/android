@@ -6,8 +6,6 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import androidx.core.view.WindowCompat
-import androidx.core.view.updatePadding
 import androidx.core.widget.NestedScrollView
 import androidx.dynamicanimation.animation.SpringAnimation
 import com.hedvig.android.owldroid.fragment.KeyGearItemFragment

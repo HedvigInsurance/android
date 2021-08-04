@@ -45,15 +45,19 @@ data class GraphQLVariableBuilder(
                 key = key,
                 variables = listOf(
                     GraphQLVariablesFragment.Variable(
-                        asEmbarkAPIGraphQLGeneratedVariable1 = GraphQLVariablesFragment.AsEmbarkAPIGraphQLGeneratedVariable1(
-                            key = key,
-                            storeAs = if (storeAs.isEmpty()) {
-                                throw Error("Programmer error: attempted to build GeneratedVariable without providing `storeAs`")
-                            } else {
-                                storeAs
-                            },
-                            type = generatedType
-                        ),
+                        asEmbarkAPIGraphQLGeneratedVariable1 = GraphQLVariablesFragment
+                            .AsEmbarkAPIGraphQLGeneratedVariable1(
+                                key = key,
+                                storeAs = if (storeAs.isEmpty()) {
+                                    throw Error(
+                                        "Programmer error: attempted to build" +
+                                            " GeneratedVariable without providing `storeAs`"
+                                    )
+                                } else {
+                                    storeAs
+                                },
+                                type = generatedType
+                            ),
                         asEmbarkAPIGraphQLSingleVariable1 = null
                     )
                 )

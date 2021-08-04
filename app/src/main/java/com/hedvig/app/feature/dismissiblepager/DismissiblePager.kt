@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.annotation.StringRes
 import androidx.annotation.StyleRes
-import androidx.core.view.WindowCompat
 import androidx.fragment.app.DialogFragment
 import androidx.viewpager.widget.ViewPager
 import com.hedvig.app.R

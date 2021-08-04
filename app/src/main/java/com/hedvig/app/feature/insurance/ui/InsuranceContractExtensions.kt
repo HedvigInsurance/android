@@ -142,7 +142,9 @@ private fun TypeOfContract.bindBackgroundColor(
         TypeOfContract.DK_HOME_CONTENT_RENT,
         -> {
             insuranceContractCardBinding.container.setBackgroundResource(R.drawable.gradient_summer_sky)
-            insuranceContractCardBinding.blur.setColorFilter(insuranceContractCardBinding.blur.context.compatColor(R.color.blur_summer_sky))
+            insuranceContractCardBinding.blur.setColorFilter(
+                insuranceContractCardBinding.blur.context.compatColor(R.color.blur_summer_sky)
+            )
         }
         TypeOfContract.NO_TRAVEL,
         TypeOfContract.NO_TRAVEL_YOUTH,
@@ -150,14 +152,18 @@ private fun TypeOfContract.bindBackgroundColor(
         TypeOfContract.DK_TRAVEL_STUDENT,
         -> {
             insuranceContractCardBinding.container.setBackgroundResource(R.drawable.gradient_fall_sunset)
-            insuranceContractCardBinding.blur.setColorFilter(insuranceContractCardBinding.blur.context.compatColor(R.color.blur_fall_sunset))
+            insuranceContractCardBinding.blur.setColorFilter(
+                insuranceContractCardBinding.blur.context.compatColor(R.color.blur_fall_sunset)
+            )
         }
         TypeOfContract.SE_HOUSE,
         TypeOfContract.DK_ACCIDENT,
         TypeOfContract.DK_ACCIDENT_STUDENT,
         -> {
             insuranceContractCardBinding.container.setBackgroundResource(R.drawable.gradient_spring_fog)
-            insuranceContractCardBinding.blur.setColorFilter(insuranceContractCardBinding.blur.context.compatColor(R.color.blur_spring_fog))
+            insuranceContractCardBinding.blur.setColorFilter(
+                insuranceContractCardBinding.blur.context.compatColor(R.color.blur_spring_fog)
+            )
         }
         TypeOfContract.UNKNOWN__ -> {
             insuranceContractCardBinding.container.setBackgroundColor(

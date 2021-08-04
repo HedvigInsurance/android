@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.profile.ui.aboutapp
 
 import android.os.Bundle
-import androidx.core.view.WindowCompat
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityLicensesBinding

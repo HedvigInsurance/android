@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.profile.ui.charity
 
 import android.os.Bundle
-import androidx.core.view.WindowCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope

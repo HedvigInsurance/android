@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.transition.TransitionManager
 import android.view.MenuItem
 import androidx.activity.OnBackPressedCallback
-import androidx.core.view.WindowCompat
 import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.lifecycle.flowWithLifecycle

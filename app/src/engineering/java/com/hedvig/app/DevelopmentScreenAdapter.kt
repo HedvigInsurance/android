@@ -19,7 +19,9 @@ import com.hedvig.app.util.extensions.viewBinding
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.unloadKoinModules
 
-class DevelopmentScreenAdapter(private val authenticationTokenService: AuthenticationTokenService) : ListAdapter<DevelopmentScreenAdapter.DevelopmentScreenItem, DevelopmentScreenAdapter.ViewHolder>(
+class DevelopmentScreenAdapter(
+    private val authenticationTokenService: AuthenticationTokenService
+) : ListAdapter<DevelopmentScreenAdapter.DevelopmentScreenItem, DevelopmentScreenAdapter.ViewHolder>(
     GenericDiffUtilItemCallback()
 ) {
     override fun getItemViewType(position: Int) = when (getItem(position)) {
@@ -131,7 +133,10 @@ class DevelopmentScreenAdapter(private val authenticationTokenService: Authentic
             }
         }
 
-        class Footer(parent: ViewGroup, private val authenticationTokenService: AuthenticationTokenService) : ViewHolder(parent.inflate(R.layout.development_footer)) {
+        class Footer(
+            parent: ViewGroup,
+            private val authenticationTokenService: AuthenticationTokenService
+        ) : ViewHolder(parent.inflate(R.layout.development_footer)) {
             private val binding by viewBinding(DevelopmentFooterBinding::bind)
             override fun bind(data: DevelopmentScreenItem) {
                 with(binding) {

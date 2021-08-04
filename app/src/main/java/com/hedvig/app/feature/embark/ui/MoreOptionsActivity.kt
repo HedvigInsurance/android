@@ -3,7 +3,6 @@ package com.hedvig.app.feature.embark.ui
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.core.view.WindowCompat
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.hedvig.app.BaseActivity

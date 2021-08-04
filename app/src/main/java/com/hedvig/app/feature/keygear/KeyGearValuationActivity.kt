@@ -10,7 +10,6 @@ import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.core.view.WindowCompat
 import androidx.core.view.updateLayoutParams
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
@@ -35,11 +34,11 @@ import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.safeLet
 import com.hedvig.app.util.spring
 import e
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.DateFormatSymbols
 import java.time.LocalDate
 import java.util.Calendar
 import java.util.Locale
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuation) {
     private val model: KeyGearValuationViewModel by viewModel()

@@ -181,7 +181,8 @@ class CheckoutViewModel(
     }
 
     private fun InputViewState.canSign(): Boolean {
-        return emailInputState is InputViewState.InputState.Valid && identityInputState is InputViewState.InputState.Valid
+        return emailInputState is InputViewState.InputState.Valid &&
+            identityInputState is InputViewState.InputState.Valid
     }
 
     sealed class Event {

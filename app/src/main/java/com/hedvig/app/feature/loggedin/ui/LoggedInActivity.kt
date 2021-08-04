@@ -45,13 +45,13 @@ import com.hedvig.app.util.extensions.view.performOnTapHapticFeedback
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import e
-import java.time.LocalDate
-import javax.money.MonetaryAmount
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.time.LocalDate
+import javax.money.MonetaryAmount
 
 class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     private val claimsViewModel: ClaimsViewModel by viewModel()

@@ -26,7 +26,7 @@ class WhatsNewViewModelImpl(
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch
             }
-            response.getOrNull()?.let { news.postValue(it.data) }
+            response.getOrNull()?.data?.let { news.postValue(it) }
         }
     }
 

@@ -6,11 +6,12 @@
 
     <application
         android:usesCleartextTraffic="true"
-        tools:ignore="AllowBackup,GoogleAppIndexingWarning"
+        tools:ignore="AllowBackup,GoogleAppIndexingWarning,MissingApplicationIcon"
         tools:targetApi="28">
 
         <activity
             android:name=".DevelopmentActivity"
+            android:exported="true"
             android:label="Engineering Mode"
             android:theme="@style/Hedvig.Theme">
             <intent-filter>

@@ -27,7 +27,7 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import e
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 class TooltipBottomSheet(private val windowManager: WindowManager) : BottomSheetDialogFragment() {
     private val binding by viewBinding(TooltipBottomSheetBinding::bind)
@@ -76,7 +76,9 @@ class TooltipBottomSheet(private val windowManager: WindowManager) : BottomSheet
                         FrameLayout.LayoutParams.MATCH_PARENT
                     )
                     val sheetContentHeight =
-                        recycler.measuredHeight + recycler.marginTop + recycler.marginBottom + resources.getDimension(R.dimen.peril_bottom_sheet_close_icon_size)
+                        recycler.measuredHeight + recycler.marginTop + recycler.marginBottom + resources.getDimension(
+                            R.dimen.peril_bottom_sheet_close_icon_size
+                        )
                             .toInt().dp
                     val shouldPeekAtContentHeight = sheetContentHeight < windowHeight
                     val defaultPeekHeight = 295.dp
@@ -148,14 +150,6 @@ class TooltipBottomSheet(private val windowManager: WindowManager) : BottomSheet
                 this@TooltipBottomSheet.dismiss()
             }
         }
-    }
-
-    private fun getNavBarHeight(): Int {
-        val resources = requireContext().resources
-        val resourceId: Int = resources.getIdentifier("navigation_bar_height", "dimen", "android")
-        return if (resourceId > 0) {
-            resources.getDimensionPixelSize(resourceId)
-        } else 0
     }
 
     companion object {

@@ -76,6 +76,8 @@ abstract class ExpandableBottomSheet : BottomSheetDialogFragment() {
                                 BottomSheetBehavior.STATE_COLLAPSED -> {
                                     close.remove()
                                 }
+                                else -> {
+                                }
                             }
                         }
 

@@ -198,8 +198,7 @@ class ChatViewModel(
     }
 
     private fun postResponseValue(response: Response<ChatMessagesQuery.Data>) {
-        val data = response.data
-        messages.postValue(data)
+        response.data?.let { messages.postValue(it) }
     }
 
     fun respondToLastMessage(message: String) {
@@ -310,7 +309,7 @@ class ChatViewModel(
                 response.exceptionOrNull()?.let { e(it) }
                 return@launch
             }
-            gifs.postValue(response.getOrNull()?.data)
+            response.getOrNull()?.data?.let { gifs.postValue(it) }
         }
     }
 

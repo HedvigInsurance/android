@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.WindowCompat
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityViewGalleryBinding
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows

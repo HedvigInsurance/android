@@ -75,10 +75,18 @@ class AddComponentBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun createDropDownComponent(dropdown: MultiActionComponent.Dropdown): TextInputLayout {
-        return LayoutComponentDropdownBinding.inflate(LayoutInflater.from(requireContext()), binding.componentContainer, false).apply {
+        return LayoutComponentDropdownBinding.inflate(
+            LayoutInflater.from(requireContext()),
+            binding.componentContainer,
+            false
+        ).apply {
             val dropDownText = dropdown.options.map { it.text }
             val dropdownValues = dropdown.options.map { it.value }
-            val adapter = ArrayAdapter(requireContext(), R.layout.dropdown_menu_popup_item, R.id.dropdown_popup, dropDownText)
+            val adapter = ArrayAdapter(
+                requireContext(),
+                R.layout.dropdown_menu_popup_item,
+                R.id.dropdown_popup, dropDownText
+            )
 
             dropdownLayout.hint = dropdown.label
             dropdownInput.setAdapter(adapter)
@@ -94,7 +102,11 @@ class AddComponentBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun createNumberComponent(number: MultiActionComponent.Number): TextInputLayout {
-        return LayoutComponentNumberBinding.inflate(LayoutInflater.from(requireContext()), binding.componentContainer, false).apply {
+        return LayoutComponentNumberBinding.inflate(
+            LayoutInflater.from(requireContext()),
+            binding.componentContainer,
+            false
+        ).apply {
             numberLayout.hint = number.label
             numberLayout.placeholderText = number.placeholder
 
@@ -113,7 +125,11 @@ class AddComponentBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun createSwitchComponent(switch: MultiActionComponent.Switch): SwitchCompat {
-        return LayoutComponentSwitchBinding.inflate(LayoutInflater.from(requireContext()), binding.componentContainer, false).apply {
+        return LayoutComponentSwitchBinding.inflate(
+            LayoutInflater.from(requireContext()),
+            binding.componentContainer,
+            false
+        ).apply {
             componentSwitch.text = switch.label
             componentSwitch.isChecked = switch.defaultValue
             componentSwitch.setOnCheckedChangeListener { _, isChecked ->

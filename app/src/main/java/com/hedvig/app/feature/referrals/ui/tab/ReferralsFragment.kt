@@ -5,11 +5,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.doOnLayout
-import androidx.core.view.doOnNextLayout
 import androidx.core.view.marginBottom
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.flowWithLifecycle
-import com.google.android.material.transition.MaterialFadeThrough
 import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentReferralsBinding
@@ -25,8 +23,6 @@ import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.apollo.toWebLocaleTag
 import com.hedvig.app.util.extensions.showShareSheet
-import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
-import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
