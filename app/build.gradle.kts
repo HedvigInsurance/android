@@ -3,6 +3,7 @@ import java.util.Properties
 
 plugins {
     id("com.android.application")
+    id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
     id("kotlin-android")
     id("kotlin-parcelize")
@@ -41,7 +42,7 @@ android {
         jvmTarget = "1.8"
     }
 
-    lintOptions {
+    lint {
         isAbortOnError = false
     }
 
@@ -218,8 +219,6 @@ dependencies {
     debugImplementation(Libs.shake)
     "stagingImplementation"(Libs.shake)
 }
-
-apply(plugin = "com.google.gms.google-services")
 
 val lokaliseProperties = Properties()
 lokaliseProperties.load(FileInputStream(rootProject.file("lokalise.properties")))
