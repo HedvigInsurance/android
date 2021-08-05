@@ -1,10 +1,9 @@
 package com.hedvig.app.feature.embark.passages.previousinsurer
 
-import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
-import com.bumptech.glide.RequestBuilder
+import coil.ImageLoader
 import com.hedvig.app.ui.view.ExpandableBottomSheet
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
@@ -12,7 +11,7 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 class PreviousInsurerBottomSheet : ExpandableBottomSheet() {
 
     private val viewModel: PreviousInsurerViewModel by sharedViewModel()
-    private val requestBuilder: RequestBuilder<PictureDrawable> by inject()
+    private val imageLoader: ImageLoader by inject()
 
     private val insurers by lazy {
         requireArguments()
@@ -25,7 +24,7 @@ class PreviousInsurerBottomSheet : ExpandableBottomSheet() {
         binding.recycler.adapter = PreviousInsurerAdapter(
             context = requireContext(),
             previousInsurers = insurers,
-            requestBuilder = requestBuilder,
+            imageLoader,
             onInsurerClicked = ::onInsurerSelected
         )
     }

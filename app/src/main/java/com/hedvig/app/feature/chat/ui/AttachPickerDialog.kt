@@ -141,7 +141,6 @@ class AttachPickerDialog(context: Context) : Dialog(context, R.style.Transparent
             uploadFileCallback
         )
         binding.apply {
-            attachFileRecyclerView.addOnScrollListener(adapter.recyclerViewPreloader)
             attachFileRecyclerView.adapter = adapter
             attachFileRecyclerView.fadeIn()
             loadingSpinner.loadingSpinner.remove()

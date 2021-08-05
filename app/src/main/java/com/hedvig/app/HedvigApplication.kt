@@ -85,7 +85,8 @@ open class HedvigApplication : Application() {
                     checkoutModule,
                     cacheManagerModule,
                     sharedPreferencesModule,
-                    featureRuntimeBehaviorModule
+                    featureRuntimeBehaviorModule,
+                    coilModule
                 )
             )
         }

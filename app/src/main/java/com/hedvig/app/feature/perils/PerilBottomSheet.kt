@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.core.view.updatePadding
-import com.bumptech.glide.RequestBuilder
+import coil.ImageLoader
 import com.hedvig.app.feature.insurance.ui.detail.coverage.PerilAdapter
 import com.hedvig.app.feature.insurance.ui.detail.coverage.PerilModel
 import com.hedvig.app.ui.view.ExpandableBottomSheet
@@ -14,7 +14,8 @@ import e
 import org.koin.android.ext.android.inject
 
 class PerilBottomSheet : ExpandableBottomSheet() {
-    private val requestBuilder: RequestBuilder<PictureDrawable> by inject()
+
+    private val imageLoader: ImageLoader by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -26,7 +27,7 @@ class PerilBottomSheet : ExpandableBottomSheet() {
         }
 
         binding.recycler.updatePadding(bottom = binding.recycler.paddingBottom + 56.dp)
-        binding.recycler.adapter = PerilAdapter(requestBuilder).also { adapter ->
+        binding.recycler.adapter = PerilAdapter(imageLoader).also { adapter ->
             adapter.submitList(
                 expandedList(
                     peril.title,

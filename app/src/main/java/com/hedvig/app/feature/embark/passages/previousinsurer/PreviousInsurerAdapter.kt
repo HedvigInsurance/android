@@ -1,13 +1,13 @@
 package com.hedvig.app.feature.embark.passages.previousinsurer
 
 import android.content.Context
-import android.graphics.drawable.PictureDrawable
 import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.RequestBuilder
+import coil.ImageLoader
+import coil.load
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ExpandableBottomSheetTitleBinding
 import com.hedvig.app.databinding.PreviousInsurerItemBinding
@@ -19,7 +19,7 @@ import com.hedvig.app.util.extensions.viewBinding
 class PreviousInsurerAdapter(
     context: Context,
     previousInsurers: List<PreviousInsurerParameter.PreviousInsurer>,
-    private val requestBuilder: RequestBuilder<PictureDrawable>,
+    private val imageLoader: ImageLoader,
     private val onInsurerClicked: (PreviousInsurerItem.Insurer) -> Unit,
 ) : ListAdapter<PreviousInsurerItem, PreviousInsurerAdapter.PreviousInsurerViewHolder>(GenericDiffUtilItemCallback()) {
 
@@ -37,7 +37,7 @@ class PreviousInsurerAdapter(
         R.layout.expandable_bottom_sheet_title -> PreviousInsurerViewHolder.Header(parent)
         R.layout.previous_insurer_item -> PreviousInsurerViewHolder.InsurerViewHolder(
             parent,
-            requestBuilder,
+            imageLoader,
             onInsurerClicked
         )
         else -> throw Error("No view type found for: $viewType")
@@ -58,7 +58,7 @@ class PreviousInsurerAdapter(
 
         class InsurerViewHolder(
             parent: ViewGroup,
-            val requestBuilder: RequestBuilder<PictureDrawable>,
+            val imageLoader: ImageLoader,
             val onInsurerClicked: (PreviousInsurerItem.Insurer) -> Unit,
         ) : PreviousInsurerViewHolder(parent.inflate(R.layout.previous_insurer_item)) {
 
@@ -67,11 +67,9 @@ class PreviousInsurerAdapter(
             override fun bind(item: PreviousInsurerItem) {
                 (item as? PreviousInsurerItem.Insurer)?.let {
                     item.icon?.let { iconUrl ->
-                        requestBuilder
-                            .load(Uri.parse(binding.icon.context.getString(R.string.BASE_URL) + iconUrl))
-                            .into(binding.icon)
+                        val url = Uri.parse(binding.icon.context.getString(R.string.BASE_URL) + iconUrl)
+                        binding.icon.load(url, imageLoader)
                     }
-
                     binding.text.text = item.name
                     binding.root.setHapticClickListener {
                         onInsurerClicked(item)

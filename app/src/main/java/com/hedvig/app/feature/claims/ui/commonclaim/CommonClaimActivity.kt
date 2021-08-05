@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import coil.ImageLoader
+import coil.load
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityCommonClaimBinding
@@ -17,11 +19,11 @@ import com.hedvig.app.util.extensions.view.enable
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
 import com.hedvig.app.util.extensions.viewBinding
-import com.hedvig.app.util.svg.buildRequestBuilder
+import org.koin.android.ext.android.inject
 
 class CommonClaimActivity : BaseActivity(R.layout.activity_common_claim) {
 
-    private val requestBuilder by lazy { buildRequestBuilder() }
+    private val imageLoader: ImageLoader by inject()
     private val binding by viewBinding(ActivityCommonClaimBinding::bind)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,20 +43,14 @@ class CommonClaimActivity : BaseActivity(R.layout.activity_common_claim) {
             toolbar.title = data.title
 
             bulletPointsRecyclerView.adapter =
-                BulletPointsAdapter(getString(R.string.BASE_URL), requestBuilder).also {
+                BulletPointsAdapter(getString(R.string.BASE_URL), imageLoader).also {
                     it.submitList(data.bulletPoints)
                 }
         }
 
         binding.apply {
-            requestBuilder
-                .load(
-                    Uri.parse(
-                        getString(R.string.BASE_URL) +
-                            data.iconUrls.iconByTheme(this@CommonClaimActivity)
-                    )
-                )
-                .into(firstMessage.commonClaimFirstMessageIcon)
+            val url = Uri.parse(getString(R.string.BASE_URL) + data.iconUrls.iconByTheme(this@CommonClaimActivity))
+            firstMessage.commonClaimFirstMessageIcon.load(url, imageLoader)
 
             firstMessage.commonClaimFirstMessage.text = data.layoutTitle
             firstMessage.commonClaimCreateClaimButton.text = data.buttonText
