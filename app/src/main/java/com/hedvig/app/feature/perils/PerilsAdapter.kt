@@ -123,7 +123,9 @@ class PerilsAdapter(
                     data.inner.lightUrl
                 }
                 }"
-                icon.load(iconUrl, imageLoader)
+                icon.load(iconUrl, imageLoader) {
+                    crossfade(true)
+                }
 
                 root.setHapticClickListener {
                     PerilBottomSheet

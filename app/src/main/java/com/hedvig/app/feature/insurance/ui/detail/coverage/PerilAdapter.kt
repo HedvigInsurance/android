@@ -130,7 +130,9 @@ class PerilAdapter(
                         item.lightUrl
                     }
                     }"
-                    this.load(link, imageLoader)
+                    this.load(link, imageLoader) {
+                        crossfade(true)
+                    }
                 }
             }
         }
