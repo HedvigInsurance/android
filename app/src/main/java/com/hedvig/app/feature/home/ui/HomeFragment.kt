@@ -53,7 +53,8 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
         binding.recycler.apply {
             applyNavigationBarInsets()
             applyStatusBarInsets()
-
+            
+            this.adapter = adapter
             (layoutManager as? GridLayoutManager)?.spanSizeLookup =
                 object : GridLayoutManager.SpanSizeLookup() {
                     override fun getSpanSize(position: Int): Int {
