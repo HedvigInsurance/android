@@ -62,7 +62,7 @@ class VariableExtractorTest {
         valueStore.put("extraBuildings[0]hasWaterConnected", "true")
 
         valueStore.put("extraBuildings[1]type", "Guest house")
-        valueStore.put("extraBuildings[1]area", "5")
+        valueStore.put("extraBuildings[1]area", "5.0")
         valueStore.put("extraBuildings[1]hasWaterConnected", "false")
         valueStore.commitVersion()
         return valueStore

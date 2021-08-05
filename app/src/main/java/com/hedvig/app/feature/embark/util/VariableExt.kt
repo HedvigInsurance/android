@@ -5,8 +5,8 @@ import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLSingleVariableCasting
 import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLVariableGeneratedType
 import com.hedvig.app.util.toJsonArray
 import com.hedvig.app.util.toJsonObject
-import org.json.JSONObject
 import java.util.UUID
+import org.json.JSONObject
 
 fun GraphQLVariablesFragment.Variable.toFragment() = GraphQLVariablesFragment(
     asEmbarkAPIGraphQLSingleVariable = asEmbarkAPIGraphQLSingleVariable1?.let { single ->
@@ -42,7 +42,13 @@ fun GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable.createSingleVariab
 ): Pair<String, Any>? {
     val value = when (as_) {
         EmbarkAPIGraphQLSingleVariableCasting.STRING -> storeValue
-        EmbarkAPIGraphQLSingleVariableCasting.INT -> storeValue.toInt()
+        EmbarkAPIGraphQLSingleVariableCasting.INT -> {
+            try {
+                storeValue.toInt()
+            } catch (exception: NumberFormatException) {
+                storeValue.toFloat()
+            }
+        }
         EmbarkAPIGraphQLSingleVariableCasting.BOOLEAN -> storeValue.toBoolean()
         // Unsupported generated types are ignored for now.
         EmbarkAPIGraphQLSingleVariableCasting.UNKNOWN__ -> null
