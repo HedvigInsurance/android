@@ -11,6 +11,9 @@ import android.webkit.WebViewClient
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.withStateAtLeast
 import androidx.transition.TransitionManager
 import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
@@ -22,10 +25,13 @@ import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
 import com.hedvig.app.feature.connectpayin.TransitionType
 import com.hedvig.app.feature.connectpayin.showConfirmCloseDialog
 import com.hedvig.app.util.onBackPressedCallback
+import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class TrustlyConnectFragment : Fragment(R.layout.trustly_connect_fragment) {
+    private val binding by viewBinding(TrustlyConnectFragmentBinding::bind)
     private val trustlyViewModel: TrustlyViewModel by viewModel()
     private val connectPaymentViewModel: ConnectPaymentViewModel by sharedViewModel()
 
@@ -64,8 +70,6 @@ class TrustlyConnectFragment : Fragment(R.layout.trustly_connect_fragment) {
                 })
             )
         }
-
-        val binding = TrustlyConnectFragmentBinding.bind(view)
 
         binding.apply {
             toolbar.apply {
@@ -107,14 +111,19 @@ class TrustlyConnectFragment : Fragment(R.layout.trustly_connect_fragment) {
                 webViewClient = object : WebViewClient() {
                     override fun onPageFinished(view: WebView?, url: String?) {
                         super.onPageFinished(view, url)
-                        if (!hasLoadedWebView) {
-                            TransitionManager.beginDelayedTransition(
-                                binding.root,
-                                MaterialFadeThrough()
-                            )
-                            loadingContainer.isVisible = false
-                            trustly.isVisible = true
-                            hasLoadedWebView = true
+                        lifecycleScope.launch {
+                            // Need to check lifecycle here since we are starting other activities in onPageStarted
+                            viewLifecycleOwner.withStateAtLeast(Lifecycle.State.CREATED) {
+                                if (!hasLoadedWebView) {
+                                    TransitionManager.beginDelayedTransition(
+                                        binding.root,
+                                        MaterialFadeThrough()
+                                    )
+                                    loadingContainer.isVisible = false
+                                    trustly.isVisible = true
+                                    hasLoadedWebView = true
+                                }
+                            }
                         }
                     }
 
