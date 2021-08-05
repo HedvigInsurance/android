@@ -528,7 +528,7 @@ val useCaseModule = module {
     single { SignQuotesUseCase(get(), get()) }
     single { ApproveQuotesUseCase(get(), get(), get()) }
     single { RefreshQuotesUseCase(get()) }
-    single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get()) }
+    single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
 }
 
 val cacheManagerModule = module {

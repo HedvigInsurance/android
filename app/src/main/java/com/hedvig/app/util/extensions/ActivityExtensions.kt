@@ -169,11 +169,9 @@ fun Activity.makeACall(uri: Uri) {
     startActivity(intent)
 }
 
-suspend fun Activity.showReviewDialog(
-    ratingsTracker: RatingsTracker,
-    delayMillis: Long = 2000
+fun Activity.showReviewDialog(
+    onComplete: () -> Unit
 ) {
-    delay(delayMillis)
     val manager = ReviewManagerFactory.create(this)
     val request = manager.requestReviewFlow()
     request.addOnCompleteListener { task ->
@@ -181,7 +179,7 @@ suspend fun Activity.showReviewDialog(
             val reviewInfo = task.result
             val flow = manager.launchReviewFlow(this, reviewInfo)
             flow.addOnCompleteListener {
-                ratingsTracker.rate()
+                onComplete()
             }
         }
     }

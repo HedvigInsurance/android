@@ -74,7 +74,6 @@ object Libs {
     const val combineTuple = "com.github.Zhuinden:livedata-combinetuple-kt:1.2.1"
     const val fragmentViewBindingDelegate = "com.github.Zhuinden:fragmentviewbindingdelegate-kt:1.0.0"
 
-    const val playCore = "com.google.android.play:core:1.10.0"
     const val playKtx = "com.google.android.play:core-ktx:1.8.1"
 
     object OkHttp {

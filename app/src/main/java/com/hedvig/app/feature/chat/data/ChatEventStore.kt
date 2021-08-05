@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.map
 
 interface ChatEventStore {
     suspend fun increaseChatClosedCounter()
+    suspend fun resetChatClosedCounter()
     fun observeChatClosedCounter(): Flow<Int>
 }
 
@@ -21,6 +22,12 @@ class ChatEventDataStore(
     override suspend fun increaseChatClosedCounter() {
         dataStore.edit {
             it[CHAT_CLOSED_COUNTER] = (it[CHAT_CLOSED_COUNTER] ?: 0) + 1
+        }
+    }
+
+    override suspend fun resetChatClosedCounter() {
+        dataStore.edit {
+            it[CHAT_CLOSED_COUNTER] = 0
         }
     }
 

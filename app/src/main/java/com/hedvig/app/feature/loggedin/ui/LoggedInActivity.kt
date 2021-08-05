@@ -47,6 +47,7 @@ import com.hedvig.app.util.extensions.view.performOnTapHapticFeedback
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import e
+import kotlinx.coroutines.delay
 import java.time.LocalDate
 import javax.money.MonetaryAmount
 import kotlinx.coroutines.flow.launchIn
@@ -99,13 +100,14 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 }
             }
 
-            loggedInViewModel.shouldOpenReviewDialog.observe(this@LoggedInActivity) { shouldOpenReviewDialog ->
-                if (shouldOpenReviewDialog) {
-                    lifecycleScope.launch {
-                        showReviewDialog(ratingsTracker)
+            loggedInViewModel.shouldOpenReviewDialog
+                .flowWithLifecycle(lifecycle)
+                .onEach { shouldOpenReviewDialog ->
+                    if (shouldOpenReviewDialog) {
+                        showReviewWithDelay()
                     }
                 }
-            }
+                .launchIn(lifecycleScope)
 
             setSupportActionBar(toolbar)
             supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -167,9 +169,16 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
             if (intent.getBooleanExtra(SHOW_RATING_DIALOG, false)) {
                 lifecycleScope.launch {
-                    showReviewDialog(ratingsTracker)
+                    showReviewWithDelay()
                 }
             }
+        }
+    }
+
+    private suspend fun showReviewWithDelay() {
+        delay(REVIEW_DIALOG_DELAY_MILLIS)
+        showReviewDialog {
+            ratingsTracker.rate()
         }
     }
 
@@ -414,6 +423,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
         private const val INITIAL_TAB = "INITIAL_TAB"
         private const val SHOW_RATING_DIALOG = "SHOW_RATING_DIALOG"
+        private const val REVIEW_DIALOG_DELAY_MILLIS = 2000L
         private val evaluator = ArgbEvaluator()
 
         fun newInstance(

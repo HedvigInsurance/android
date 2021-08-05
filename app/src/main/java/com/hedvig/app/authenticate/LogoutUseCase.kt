@@ -1,6 +1,7 @@
 package com.hedvig.app.authenticate
 
 import com.apollographql.apollo.ApolloClient
+import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.service.push.PushTokenManager
@@ -14,7 +15,8 @@ class LogoutUseCase(
     private val loginStatusService: LoginStatusService,
     private val apolloClient: ApolloClient,
     private val userRepository: UserRepository,
-    private val authenticationTokenManager: AuthenticationTokenService
+    private val authenticationTokenManager: AuthenticationTokenService,
+    private val chatEventStore: ChatEventStore,
 ) {
 
     sealed class LogoutResult {
@@ -31,6 +33,7 @@ class LogoutUseCase(
             apolloClient.subscriptionManager.reconnect()
             runCatching { pushTokenManager.refreshToken() }
             mixpanel.reset()
+            chatEventStore.resetChatClosedCounter()
             LogoutResult.Success
         }
     }
