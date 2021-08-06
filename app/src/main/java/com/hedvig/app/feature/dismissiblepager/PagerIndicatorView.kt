@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.view.Gravity
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.viewpager2.widget.ViewPager2
 import com.hedvig.app.R
 import com.hedvig.app.util.boundedColorLerp
 import com.hedvig.app.util.extensions.compatColor
@@ -44,19 +45,19 @@ class PagerIndicatorView : LinearLayout {
             }
         }
 
-    var pager: androidx.viewpager.widget.ViewPager? = null
+    var pager: ViewPager2? = null
         set(value) {
             field = value
-            value?.addOnPageChangeListener(PageChangeListener())
+            value?.registerOnPageChangeCallback(PageChangeListener())
         }
 
-    inner class PageChangeListener : androidx.viewpager.widget.ViewPager.OnPageChangeListener {
+    inner class PageChangeListener : ViewPager2.OnPageChangeCallback() {
         override fun onPageScrollStateChanged(p0: Int) {}
 
         override fun onPageScrolled(position: Int, offsetPercentage: Float, offsetPixels: Int) {
             safeLet<Int, Int, Unit>(
                 pager?.currentItem,
-                pager?.adapter?.count
+                pager?.adapter?.itemCount
             ) { currentItem, count ->
                 if (position == currentItem) {
                     when (items.last()) {
@@ -125,7 +126,7 @@ class PagerIndicatorView : LinearLayout {
         }
 
         override fun onPageSelected(position: Int) {
-            pager?.adapter?.count?.let { count ->
+            pager?.adapter?.itemCount?.let { count ->
                 if (position != count - 1) {
                     (getChildAt(position) as? ImageView)?.drawable?.mutate()?.state =
                         intArrayOf(android.R.attr.state_active)
