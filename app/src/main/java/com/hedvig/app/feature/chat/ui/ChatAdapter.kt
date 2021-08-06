@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
 import coil.clear
 import coil.load
-import coil.transform.RoundedCornersTransformation
 import com.hedvig.android.owldroid.fragment.ChatMessageFragment
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
 import com.hedvig.app.R

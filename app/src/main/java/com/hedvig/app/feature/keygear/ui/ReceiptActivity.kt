@@ -32,12 +32,12 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import e
-import java.io.File
-import java.io.FileOutputStream
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
+import java.io.File
+import java.io.FileOutputStream
 
 class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
     private val binding by viewBinding(ActivityReceiptBinding::bind)

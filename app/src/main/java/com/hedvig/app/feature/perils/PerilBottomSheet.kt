@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.perils
 
-import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf

@@ -80,7 +80,7 @@ class AttachFileAdapter(
         if (position == 0) CAMERA_AND_MISC_VIEW_TYPE else IMAGE_VIEW_TYPE
 
     override fun onViewRecycled(holder: ViewHolder) {
-        when     (holder) {
+        when (holder) {
             is ViewHolder.ImageViewHolder -> holder.binding.attachFileImage.clear()
         }
     }
