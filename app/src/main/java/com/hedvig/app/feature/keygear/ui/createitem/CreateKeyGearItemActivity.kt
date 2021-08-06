@@ -46,11 +46,11 @@ import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.spring
 import e
-import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 import java.io.IOException
 import kotlin.math.max
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear_item) {
     private val model: CreateKeyGearItemViewModel by viewModel()
@@ -72,13 +72,7 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
             saveContainer.applyNavigationBarInsetsMargin()
 
             topBar.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-            val topBarHeight = topBar.measuredHeight
 
-            /*
-            scrollViewContent.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop + topBarHeight)
-            }
-             */
             scrollViewContent.applyStatusBarInsets()
             topBar.applyStatusBarInsets()
             saveContainer.applyNavigationBarInsetsMargin()

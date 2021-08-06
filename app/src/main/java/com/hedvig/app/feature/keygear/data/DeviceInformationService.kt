@@ -6,9 +6,10 @@ import android.content.Context
 import android.content.res.Configuration
 import android.os.Build
 import android.provider.Settings
-import android.util.DisplayMetrics
-import android.view.WindowManager
 import com.hedvig.android.owldroid.type.KeyGearItemCategory
+import com.hedvig.app.util.extensions.getActivity
+import com.hedvig.app.util.extensions.windowHeight
+import com.hedvig.app.util.extensions.windowWidth
 import java.math.BigInteger
 import java.security.MessageDigest
 import kotlin.math.pow
@@ -36,13 +37,8 @@ class DeviceInformationService(
             Configuration.UI_MODE_TYPE_WATCH -> return DeviceType.WATCH
         }
 
-        val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        val displayMetrics = DisplayMetrics()
-
-        windowManager.defaultDisplay.getRealMetrics(displayMetrics)
-
-        val widthInches = displayMetrics.widthPixels / displayMetrics.xdpi
-        val heightInches = displayMetrics.heightPixels / displayMetrics.xdpi
+        val widthInches = (context.getActivity()?.windowWidth ?: 0).toFloat()
+        val heightInches = (context.getActivity()?.windowHeight ?: 0).toFloat()
 
         val diagonalInches = sqrt(widthInches.pow(2) + heightInches.pow(2))
 

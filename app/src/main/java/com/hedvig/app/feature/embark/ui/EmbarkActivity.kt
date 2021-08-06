@@ -132,7 +132,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         }
         R.id.tooltip -> {
             model.data.value?.passage?.tooltips?.let {
-                TooltipBottomSheet.newInstance(it, windowManager).show(
+                TooltipBottomSheet.newInstance(it).show(
                     supportFragmentManager, TooltipBottomSheet.TAG
                 )
             }

@@ -22,7 +22,7 @@ class PushNotificationService : FirebaseMessagingService() {
     private val marketManager: MarketManager by inject()
 
     override fun attachBaseContext(base: Context) {
-        super.attachBaseContext(Language.fromSettings(base, marketManager.market)?.apply(base))
+        super.attachBaseContext(Language.fromSettings(base, marketManager.market).apply(base))
     }
 
     override fun onCreate() {

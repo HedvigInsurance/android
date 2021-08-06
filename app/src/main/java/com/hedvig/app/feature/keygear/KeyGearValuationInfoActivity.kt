@@ -29,7 +29,7 @@ class KeyGearValuationInfoActivity : BaseActivity(R.layout.activity_key_gear_val
                 binding.body.setMarkdownText(
                     getString(
                         R.string.KEY_GEAR_ITEM_VIEW_VALUATION_BODY,
-                        getString(c.label).toLowerCase(Locale.getDefault()),
+                        getString(c.label).lowercase(Locale.getDefault()),
                         vd.ratio,
                         vd.purchasePrice.toBigDecimal().toInt(),
                         vd.valuationAmount?.toBigDecimal()?.toInt()

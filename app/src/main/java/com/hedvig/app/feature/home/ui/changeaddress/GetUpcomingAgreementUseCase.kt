@@ -10,8 +10,8 @@ import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
 import com.hedvig.app.util.apollo.toUpcomingAgreementResult
-import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
+import kotlinx.parcelize.Parcelize
 
 class GetUpcomingAgreementUseCase(
     private val apolloClient: ApolloClient,
@@ -30,7 +30,12 @@ class GetUpcomingAgreementUseCase(
                     Error.NoContractsError
                 } else {
                     contracts.firstOrNull {
-                        it.fragments.upcomingAgreementFragment.upcomingAgreementDetailsTable != null
+                        it.fragments.upcomingAgreementFragment
+                            .upcomingAgreementDetailsTable
+                            .fragments
+                            .tableFragment
+                            .sections
+                            .isNotEmpty()
                     }
                         ?.fragments
                         ?.upcomingAgreementFragment
