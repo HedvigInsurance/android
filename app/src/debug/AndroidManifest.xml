@@ -95,6 +95,8 @@
 
         <activity android:name=".feature.changeaddress.ChangeAddressMockActivity" />
 
+        <activity android:name=".feature.tracking.TrackingLogActivity" />
+
         <meta-data
             android:name="com.mixpanel.android.MPConfig.DisableEmulatorBindingUI"
             android:value="true" />
@@ -107,6 +109,10 @@
 
             <meta-data
                 android:name="com.hedvig.app.ShakeInitializer"
+                android:value="androidx.startup" />
+
+            <meta-data
+                android:name="com.hedvig.app.feature.tracking.TrackingInitializer"
                 android:value="androidx.startup" />
         </provider>
 

@@ -1,10 +1,10 @@
 package com.hedvig.app.feature.marketing.service
 
-import com.mixpanel.android.mpmetrics.MixpanelAPI
+import com.hedvig.app.feature.tracking.TrackingFacade
 
 class MarketingTracker(
-    private val mixpanel: MixpanelAPI
+    private val trackingFacade: TrackingFacade,
 ) {
-    fun signUp() = mixpanel.track("MARKETING_GET_HEDVIG")
-    fun logIn() = mixpanel.track("MARKETING_SCREEN_LOGIN")
+    fun signUp() = trackingFacade.track("MARKETING_GET_HEDVIG")
+    fun logIn() = trackingFacade.track("MARKETING_SCREEN_LOGIN")
 }

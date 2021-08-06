@@ -78,6 +78,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     viewLifecycleOwner
                 )
             )
+            this.adapter = adapter
         }
         model.data.observe(viewLifecycleOwner) { (homeData, payinStatusData, pendingAddress) ->
             if (homeData == null) {

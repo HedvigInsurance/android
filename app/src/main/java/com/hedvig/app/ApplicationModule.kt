@@ -38,7 +38,6 @@ import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
 import com.hedvig.app.feature.embark.EmbarkRepository
 import com.hedvig.app.feature.embark.EmbarkTracker
-import com.hedvig.app.feature.embark.EmbarkTrackerImpl
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.EmbarkViewModelImpl
 import com.hedvig.app.feature.embark.ValueStore
@@ -138,6 +137,9 @@ import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.MarketManagerImpl
 import com.hedvig.app.feature.settings.SettingsViewModel
+import com.hedvig.app.feature.tracking.MixpanelTracker
+import com.hedvig.app.feature.tracking.TrackerSink
+import com.hedvig.app.feature.tracking.TrackingFacade
 import com.hedvig.app.feature.trustly.TrustlyRepository
 import com.hedvig.app.feature.trustly.TrustlyTracker
 import com.hedvig.app.feature.trustly.TrustlyViewModel
@@ -166,7 +168,9 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.dsl.bind
 import org.koin.dsl.module
+import org.koin.dsl.single
 import timber.log.Timber
 import java.time.Clock
 import java.util.Locale
@@ -476,6 +480,12 @@ val trackerModule = module {
     single { MarketingTracker(get()) }
     single { HomeTracker(get()) }
     single { ScreenTracker(get()) }
+    single<EmbarkTracker>()
+    single {
+        // Workaround for https://github.com/InsertKoinIO/koin/issues/1146
+        TrackingFacade(getAll<TrackerSink>().distinct())
+    }
+    single<MixpanelTracker>() bind TrackerSink::class
 }
 
 val localeBroadcastManagerModule = module {
@@ -495,8 +505,6 @@ val notificationModule = module {
 }
 
 val clockModule = module { single { Clock.systemDefaultZone() } }
-
-val embarkTrackerModule = module { single<EmbarkTracker> { EmbarkTrackerImpl(get()) } }
 
 val localeManagerModule = module {
     single { LocaleManager(get(), get()) }

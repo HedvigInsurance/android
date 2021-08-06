@@ -1,10 +1,10 @@
 package com.hedvig.app.feature.whatsnew
 
 import com.hedvig.app.feature.dismissiblepager.DismissablePageTracker
-import com.mixpanel.android.mpmetrics.MixpanelAPI
+import com.hedvig.app.feature.tracking.TrackingFacade
 
 class WhatsNewTracker(
-    private val mixpanel: MixpanelAPI
+    private val trackingFacade: TrackingFacade,
 ) : DismissablePageTracker {
-    override fun clickProceed() = mixpanel.track("NEWS_PROCEED")
+    override fun clickProceed() = trackingFacade.track("NEWS_PROCEED")
 }

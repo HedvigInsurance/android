@@ -335,6 +335,18 @@
         <service
             android:name=".feature.adyen.payout.AdyenPayoutDropInService"
             android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+
+            <meta-data
+                android:name="com.hedvig.app.feature.di.KoinInitializer"
+                android:value="androidx.startup" />
+
+        </provider>
     </application>
 
     <queries>

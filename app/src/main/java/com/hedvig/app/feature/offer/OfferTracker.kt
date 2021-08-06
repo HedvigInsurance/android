@@ -1,29 +1,29 @@
 package com.hedvig.app.feature.offer
 
+import com.hedvig.app.feature.tracking.TrackingFacade
 import com.hedvig.app.util.jsonObjectOf
-import com.mixpanel.android.mpmetrics.MixpanelAPI
 
 class OfferTracker(
-    private val mixpanel: MixpanelAPI
+    private val trackingFacade: TrackingFacade
 ) {
-    fun signQuotes(quoteIds: List<String>) = mixpanel.track(
+    fun signQuotes(quoteIds: List<String>) = trackingFacade.track(
         "QUOTES_SIGNED",
         jsonObjectOf("quoteIds" to quoteIds),
     )
 
-    fun openChat() = mixpanel.track("OFFER_OPEN_CHAT")
-    fun openOfferLink(displayName: String) = mixpanel.track(
+    fun openChat() = trackingFacade.track("OFFER_OPEN_CHAT")
+    fun openOfferLink(displayName: String) = trackingFacade.track(
         "OFFER_OPEN_LINK",
         jsonObjectOf("link_label" to displayName)
     )
 
-    fun floatingSign() = mixpanel.track("OFFER_SIGN_BUTTON")
-    fun removeDiscount() = mixpanel.track("OFFER_REMOVE_DISCOUNT_BUTTON")
-    fun addDiscount() = mixpanel.track("OFFER_ADD_DISCOUNT_BUTTON")
-    fun terms() = mixpanel.track("OFFER_TERMS")
+    fun floatingSign() = trackingFacade.track("OFFER_SIGN_BUTTON")
+    fun removeDiscount() = trackingFacade.track("OFFER_REMOVE_DISCOUNT_BUTTON")
+    fun addDiscount() = trackingFacade.track("OFFER_ADD_DISCOUNT_BUTTON")
+    fun terms() = trackingFacade.track("OFFER_TERMS")
 
-    fun chooseStartDate() = mixpanel.track("START_DATE_BTN")
-    fun activateOnInsuranceEnd() = mixpanel.track("ACTIVATE_INSURANCE_END_BTN")
-    fun changeDateContinue() = mixpanel.track("ALERT_CONTINUE")
-    fun settings() = mixpanel.track("SETTINGS_ACCESSIBILITY_HINT")
+    fun chooseStartDate() = trackingFacade.track("START_DATE_BTN")
+    fun activateOnInsuranceEnd() = trackingFacade.track("ACTIVATE_INSURANCE_END_BTN")
+    fun changeDateContinue() = trackingFacade.track("ALERT_CONTINUE")
+    fun settings() = trackingFacade.track("SETTINGS_ACCESSIBILITY_HINT")
 }
