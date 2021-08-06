@@ -5,4 +5,5 @@
     <string name="event_detail_timestamp" translatable="false">Timestamp</string>
     <string name="event_detail_properties" translatable="false">Properties</string>
     <string name="event_detail_properties_none" translatable="false">None</string>
+    <string name="tracking_show_notification" translatable="false">Show Notification</string>
 </resources>

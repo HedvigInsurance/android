@@ -3,6 +3,7 @@
     package="com.hedvig.app">
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:usesCleartextTraffic="true"
@@ -95,7 +96,9 @@
 
         <activity android:name=".feature.changeaddress.ChangeAddressMockActivity" />
 
-        <activity android:name=".feature.tracking.TrackingLogActivity" />
+        <activity
+            android:name=".feature.tracking.TrackingLogActivity"
+            android:launchMode="singleTop" />
 
         <meta-data
             android:name="com.mixpanel.android.MPConfig.DisableEmulatorBindingUI"
@@ -115,6 +118,8 @@
                 android:name="com.hedvig.app.feature.tracking.TrackingInitializer"
                 android:value="androidx.startup" />
         </provider>
+
+        <service android:name=".feature.tracking.TrackingShortcutService" />
 
     </application>
 

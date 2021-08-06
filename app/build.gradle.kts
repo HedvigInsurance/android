@@ -143,6 +143,8 @@ dependencies {
     implementation(Libs.AndroidX.Lifecycle.runtime)
     implementation(Libs.AndroidX.Lifecycle.viewModel)
     implementation(Libs.AndroidX.workManager)
+    implementation(Libs.AndroidX.DataStore.core)
+    implementation(Libs.AndroidX.DataStore.preferences)
     debugImplementation(Libs.AndroidX.startup)
     "stagingImplementation"(Libs.AndroidX.startup)
     androidTestImplementation(Libs.AndroidX.Espresso.core)
