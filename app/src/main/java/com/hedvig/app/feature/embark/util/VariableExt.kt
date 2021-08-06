@@ -42,7 +42,14 @@ fun GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable.createSingleVariab
 ): Pair<String, Any>? {
     val value = when (as_) {
         EmbarkAPIGraphQLSingleVariableCasting.STRING -> storeValue
-        EmbarkAPIGraphQLSingleVariableCasting.INT -> storeValue.toInt()
+        EmbarkAPIGraphQLSingleVariableCasting.INT -> {
+            try {
+                storeValue.toInt()
+            } catch (exception: NumberFormatException) {
+                // The stored value can in some cases be floats, eg. for computed store values
+                storeValue.toFloat().toInt()
+            }
+        }
         EmbarkAPIGraphQLSingleVariableCasting.BOOLEAN -> storeValue.toBoolean()
         // Unsupported generated types are ignored for now.
         EmbarkAPIGraphQLSingleVariableCasting.UNKNOWN__ -> null
