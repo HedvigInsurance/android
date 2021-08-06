@@ -36,11 +36,11 @@ import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
-import com.hedvig.app.util.extensions.insetSystemBottomWithMargin
-import com.hedvig.app.util.extensions.insetSystemTopWithPadding
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.showErrorDialog
 import com.hedvig.app.util.extensions.startClosableChat
+import com.hedvig.app.util.extensions.view.applyNavigationBarInsetsMargin
+import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
@@ -70,8 +70,8 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
         binding.apply {
             window.compatSetDecorFitsSystemWindows(false)
-            offerToolbar.insetSystemTopWithPadding()
-            signButton.insetSystemBottomWithMargin()
+            offerToolbar.applyStatusBarInsets()
+            signButton.applyNavigationBarInsetsMargin()
 
             appbar.background.alpha = 0
             offerScroll.addOnScrollListener(object : RecyclerView.OnScrollListener() {
