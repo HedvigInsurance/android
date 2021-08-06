@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.home.ui
 
 import android.content.Context
-import android.graphics.drawable.PictureDrawable
 import android.net.Uri
 import android.view.View
 import android.view.ViewGroup

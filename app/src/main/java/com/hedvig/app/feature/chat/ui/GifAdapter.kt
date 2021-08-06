@@ -9,8 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
 import coil.clear
 import coil.load
-import coil.size.Scale
-import coil.transform.RoundedCornersTransformation
 import com.hedvig.android.owldroid.graphql.GifQuery
 import com.hedvig.app.R
 import com.hedvig.app.databinding.GifItemBinding
