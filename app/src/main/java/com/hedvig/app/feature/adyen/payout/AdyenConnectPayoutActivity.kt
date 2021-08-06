@@ -67,6 +67,7 @@ class AdyenConnectPayoutActivity : BaseActivity(R.layout.fragment_container_acti
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        // Replace with new result API when adyens handleActivityResult is updated
         super.onActivityResult(requestCode, resultCode, data)
 
         when (DropIn.handleActivityResult(requestCode, resultCode, data)) {

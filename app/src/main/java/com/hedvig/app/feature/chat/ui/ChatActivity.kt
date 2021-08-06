@@ -13,6 +13,7 @@ import android.os.Looper
 import android.provider.MediaStore
 import android.provider.MediaStore.MediaColumns
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.FileProvider
 import androidx.lifecycle.flowWithLifecycle
@@ -44,6 +45,8 @@ import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
 import e
+import java.io.File
+import java.io.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.launchIn
@@ -52,8 +55,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.io.File
-import java.io.IOException
+import timber.log.Timber
 
 class ChatActivity : BaseActivity(R.layout.activity_chat) {
     private val chatViewModel: ChatViewModel by viewModel()
@@ -384,9 +386,9 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
         }
         attachPickerDialog.show()
 
-        GlobalScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch(Dispatchers.IO) {
             val images = getImagesPath()
-            GlobalScope.launch(Dispatchers.Main) {
+            launch(Dispatchers.Main) {
                 attachPickerDialog.setImages(images)
             }
         }
@@ -462,7 +464,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
         val listOfAllImages = ArrayList<String>()
         val columnIndexData: Int
 
-        val projection = arrayOf(MediaColumns.DATA, MediaStore.Images.Media.BUCKET_DISPLAY_NAME)
+        val projection = arrayOf(MediaColumns.DISPLAY_NAME, MediaStore.Images.Media.BUCKET_DISPLAY_NAME)
         val cursor = this@ChatActivity.contentResolver.query(
             uri,
             projection,
@@ -472,7 +474,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
         )
 
         cursor?.let {
-            columnIndexData = cursor.getColumnIndexOrThrow(MediaColumns.DATA)
+            columnIndexData = cursor.getColumnIndexOrThrow(MediaColumns.DISPLAY_NAME)
             while (it.moveToNext()) {
                 listOfAllImages.add(it.getString(columnIndexData))
             }

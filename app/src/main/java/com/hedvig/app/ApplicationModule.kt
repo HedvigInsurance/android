@@ -198,7 +198,7 @@ val applicationModule = module {
     single<NormalizedCacheFactory<LruNormalizedCache>> {
         LruNormalizedCacheFactory(
             EvictionPolicy.builder().maxSizeBytes(
-                1000 * 1024
+                (1000 * 1024).toLong()
             ).build()
         )
     }
