@@ -11,6 +11,7 @@ import android.webkit.WebViewClient
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.transition.TransitionManager
 import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
@@ -107,14 +108,16 @@ class TrustlyConnectFragment : Fragment(R.layout.trustly_connect_fragment) {
                 webViewClient = object : WebViewClient() {
                     override fun onPageFinished(view: WebView?, url: String?) {
                         super.onPageFinished(view, url)
-                        if (!hasLoadedWebView) {
-                            TransitionManager.beginDelayedTransition(
-                                binding.root,
-                                MaterialFadeThrough()
-                            )
-                            loadingContainer.isVisible = false
-                            trustly.isVisible = true
-                            hasLoadedWebView = true
+                        if (viewLifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
+                            if (!hasLoadedWebView) {
+                                TransitionManager.beginDelayedTransition(
+                                    binding.root,
+                                    MaterialFadeThrough()
+                                )
+                                loadingContainer.isVisible = false
+                                trustly.isVisible = true
+                                hasLoadedWebView = true
+                            }
                         }
                     }
 
