@@ -47,7 +47,7 @@ fun GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable.createSingleVariab
                 storeValue.toInt()
             } catch (exception: NumberFormatException) {
                 // The stored value can in some cases be floats, eg. for computed store values
-                storeValue.toFloat()
+                storeValue.toFloat().toInt()
             }
         }
         EmbarkAPIGraphQLSingleVariableCasting.BOOLEAN -> storeValue.toBoolean()
