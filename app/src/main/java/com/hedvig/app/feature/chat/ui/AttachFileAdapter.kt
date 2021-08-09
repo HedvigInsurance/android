@@ -132,7 +132,7 @@ class AttachFileAdapter(
                 uploadFile: (Uri) -> Unit
             ) {
                 binding.apply {
-                    val image = attachImageData[absoluteAdapterPosition - 1]
+                    val image = attachImageData[bindingAdapterPosition - 1]
                     val params = attachFileImage.layoutParams
                     val margin =
                         attachFileImage.context.resources.getDimensionPixelSize(R.dimen.base_margin_double) * 2
