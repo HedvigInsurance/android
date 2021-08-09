@@ -3,10 +3,12 @@ package com.hedvig.app.feature.insurance.detail
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
+import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_HOUSE
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
+import com.hedvig.app.util.MarketRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.hasText
@@ -26,6 +28,9 @@ class SwedishHouseTest : TestCase() {
 
     @get:Rule
     val apolloCacheClearRule = ApolloCacheClearRule()
+
+    @get:Rule
+    val marketRule = MarketRule(Market.SE)
 
     @Test
     fun shouldShowCoinsuredForSwedishHouseContract() = run {
