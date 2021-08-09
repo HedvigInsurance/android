@@ -36,6 +36,7 @@ import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
+import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.viewBinding
@@ -81,7 +82,15 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 val passage = embarkData.passage
                 actionBar?.title = passage?.name
 
-                transitionToNextPassage(embarkData.navigationDirection, passage)
+                if (passage?.action == null && passage?.messages?.isNotEmpty() == true) {
+                    showAlert(
+                        title = getString(R.string.error_dialog_title),
+                        message = passage.messages.joinToString { it.fragments.messageFragment.text },
+                        positiveAction = {}
+                    )
+                } else {
+                    transitionToNextPassage(embarkData.navigationDirection, passage)
+                }
             }
 
             model

@@ -21,6 +21,8 @@ import com.hedvig.app.util.getWithDotNotation
 import com.hedvig.app.util.plus
 import com.hedvig.app.util.safeLet
 import com.hedvig.app.util.toStringArray
+import java.util.Stack
+import kotlin.math.max
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -29,8 +31,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
-import java.util.Stack
-import kotlin.math.max
 
 abstract class EmbarkViewModel(
     private val tracker: EmbarkTracker,
@@ -95,9 +95,9 @@ abstract class EmbarkViewModel(
 
     fun getPrefillFromStore(key: String) = valueStore.prefill.get(key)
 
-    fun getFromStore(key: String) = valueStore.get(key)
+    private fun getFromStore(key: String) = valueStore.get(key)
 
-    fun getListFromStore(keys: List<String>): List<String> {
+    private fun getListFromStore(keys: List<String>): List<String> {
         return keys.map {
             valueStore.getList(it) ?: listOfNotNull(valueStore.get(it))
         }.flatten()
