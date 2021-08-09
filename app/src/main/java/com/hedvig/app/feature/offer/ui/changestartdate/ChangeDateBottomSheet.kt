@@ -64,7 +64,7 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
             .launchIn(viewLifecycleScope)
 
         binding.chooseDateButton.setOnClickListener {
-            changeDateBottomSheetViewModel.onChooseDateClicked()
+            changeDateBottomSheetViewModel.setNewDateAndDismiss()
         }
     }
 
