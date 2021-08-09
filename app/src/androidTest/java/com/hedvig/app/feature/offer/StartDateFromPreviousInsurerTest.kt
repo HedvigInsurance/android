@@ -60,4 +60,25 @@ class StartDateFromPreviousInsurerTest : TestCase() {
             }
         }
     }
+
+    @Test
+    fun previousInsurerNameShouldShowInSwitch() = run {
+        activityRule.launch(OfferActivity.newInstance(context(), listOf("123")))
+        OfferScreen {
+            scroll {
+                childAt<OfferScreen.HeaderItem>(0) {
+                    startDate {
+                        click()
+                    }
+                }
+            }
+        }
+        val text = context().getString(R.string.OFFER_PLAN_EXIRES_TEXT, "Test current insurer")
+
+        ChangeDateView {
+            switches {
+                hasText(text)
+            }
+        }
+    }
 }

@@ -74,6 +74,7 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
             title = if (!inception.isConcurrent) {
                 inception.title
             } else null,
+            currentInsurerDisplayName = inception.currentInsurer?.displayName,
             startDate = inception.startDate,
             switchable = inception.currentInsurer?.switchable ?: false,
             datePickerListener = {
