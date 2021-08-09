@@ -49,15 +49,11 @@ class ChangeDateBottomSheetViewModel(
         }
     }
 
-    fun onChooseDateClicked() {
-        _viewState.value = ViewState.Dismiss
-    }
-
     fun onDialogConfirmed() {
         setNewDateAndDismiss()
     }
 
-    private fun setNewDateAndDismiss() {
+    fun setNewDateAndDismiss() {
         viewModelScope.launch {
             tracker.changeDateContinue()
             _viewState.value = ViewState.Loading(true)
