@@ -88,7 +88,7 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
             )
             invites.adapter = adapter
 
-            swipeToRefresh.setOnApplyWindowInsetsListener { v, insets ->
+            swipeToRefresh.setOnApplyWindowInsetsListener { _, insets ->
                 swipeToRefresh.setProgressViewOffset(
                     false,
                     0,

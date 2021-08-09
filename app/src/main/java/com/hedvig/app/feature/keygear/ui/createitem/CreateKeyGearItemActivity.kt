@@ -72,13 +72,7 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
             saveContainer.applyNavigationBarInsetsMargin()
 
             topBar.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-            val topBarHeight = topBar.measuredHeight
 
-            /*
-            scrollViewContent.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop + topBarHeight)
-            }
-             */
             scrollViewContent.applyStatusBarInsets()
             topBar.applyStatusBarInsets()
             saveContainer.applyNavigationBarInsetsMargin()

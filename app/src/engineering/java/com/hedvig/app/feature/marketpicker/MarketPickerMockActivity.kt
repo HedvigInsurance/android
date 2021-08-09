@@ -35,7 +35,6 @@ class MarketPickerMockActivity : MockActivity() {
 
     @SuppressLint("ApplySharedPref") // Needed
     override fun adapter() = genericDevelopmentAdapter {
-        val pref = this@MarketPickerMockActivity.getSharedPreferences("hedvig_shared_preference", MODE_PRIVATE)
         header("Market Picker")
         clickableItem("Market: SE /w Swedish") {
             marketManager.market = Market.SE

@@ -38,7 +38,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.DateFormatSymbols
 import java.time.LocalDate
 import java.util.Calendar
-import java.util.Locale
 
 class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuation) {
     private val model: KeyGearValuationViewModel by viewModel()
@@ -82,8 +81,7 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
                 ) { d, amount ->
                     maxInsurableAmount = amount.toBigDecimal().toInt()
                     val category =
-                        resources.getString(d.fragments.keyGearItemFragment.category.label)
-                            .toLowerCase(Locale.ROOT)
+                        resources.getString(d.fragments.keyGearItemFragment.category.label).lowercase()
                     noCoverage.text = getString(R.string.KEY_GEAR_NOT_COVERED, category)
                     body.text =
                         getString(R.string.KEY_GEAR_ITEM_VIEW_ADD_PURCHASE_DATE_BODY, category)

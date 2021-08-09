@@ -4,7 +4,7 @@ import android.content.Context
 import android.os.Parcelable
 import com.hedvig.android.owldroid.fragment.IconVariantsFragment
 import com.hedvig.app.util.extensions.isDarkThemeActive
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class ThemedIconUrls(

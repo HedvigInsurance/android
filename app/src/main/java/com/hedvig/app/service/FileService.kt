@@ -44,7 +44,7 @@ class FileService(
     fun getMimeType(path: String): String {
         val fileExtension = getFileExtension(path)
         return MimeTypeMap.getSingleton()
-            .getMimeTypeFromExtension(fileExtension.toLowerCase(Locale.getDefault()))
+            .getMimeTypeFromExtension(fileExtension.lowercase(Locale.getDefault()))
             ?: ""
     }
 

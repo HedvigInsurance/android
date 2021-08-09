@@ -295,7 +295,7 @@ val View.centerY: Int
 fun View.hapticClicks(): Flow<Unit> = callbackFlow {
     setOnClickListener {
         performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-        runCatching { offer(Unit) }.getOrDefault(false)
+        runCatching { trySend(Unit) }.getOrDefault(false)
     }
     awaitClose { setOnClickListener(null) }
 }.conflate()

@@ -53,6 +53,7 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
     private fun handleFirebaseDynamicLink(intent: Intent, loginStatus: LoginStatus?) {
         FirebaseDynamicLinks.getInstance().getDynamicLink(intent)
             .addOnSuccessListener { pendingDynamicLinkData ->
+                // This will actually be null in some cases
                 if (pendingDynamicLinkData != null && pendingDynamicLinkData.link != null) {
                     val link = pendingDynamicLinkData.link
                     when (link?.pathSegments?.getOrNull(0)) {
