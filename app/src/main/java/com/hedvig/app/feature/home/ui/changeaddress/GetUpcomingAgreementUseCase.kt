@@ -10,8 +10,8 @@ import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
 import com.hedvig.app.util.apollo.toUpcomingAgreementResult
-import java.time.LocalDate
 import kotlinx.parcelize.Parcelize
+import java.time.LocalDate
 
 class GetUpcomingAgreementUseCase(
     private val apolloClient: ApolloClient,

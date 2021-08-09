@@ -34,7 +34,7 @@ class AttachPickerDialog(context: Context) : Dialog(context, R.style.Transparent
 
     init {
         window?.addFlags(
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+            WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
                 WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
         )
     }
