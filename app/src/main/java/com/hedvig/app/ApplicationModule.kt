@@ -506,6 +506,10 @@ val notificationModule = module {
 
 val clockModule = module { single { Clock.systemDefaultZone() } }
 
+val embarkTrackerModule = module {
+    single<EmbarkTracker>()
+}
+
 val localeManagerModule = module {
     single { LocaleManager(get(), get()) }
 }
