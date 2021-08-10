@@ -1,9 +1,9 @@
 package com.hedvig.app.terminated
 
-import com.mixpanel.android.mpmetrics.MixpanelAPI
+import com.hedvig.app.feature.tracking.TrackingFacade
 
 class TerminatedTracker(
-    private val mixpanel: MixpanelAPI
+    private val trackingFacade: TrackingFacade,
 ) {
-    fun openChat() = mixpanel.track("INSURANCE_STATUS_TERMINATED_ALERT_CTA")
+    fun openChat() = trackingFacade.track("INSURANCE_STATUS_TERMINATED_ALERT_CTA")
 }

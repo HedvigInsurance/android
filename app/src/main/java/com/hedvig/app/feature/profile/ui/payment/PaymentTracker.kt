@@ -1,9 +1,9 @@
 package com.hedvig.app.feature.profile.ui.payment
 
-import com.mixpanel.android.mpmetrics.MixpanelAPI
+import com.hedvig.app.feature.tracking.TrackingFacade
 
 class PaymentTracker(
-    private val mixpanel: MixpanelAPI
+    private val trackingFacade: TrackingFacade,
 ) {
-    fun clickRedeemCode() = mixpanel.track("REFERRAL_ADDCOUPON_HEADLINE")
+    fun clickRedeemCode() = trackingFacade.track("REFERRAL_ADDCOUPON_HEADLINE")
 }

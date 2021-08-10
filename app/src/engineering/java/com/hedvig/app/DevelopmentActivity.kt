@@ -20,6 +20,7 @@ import com.hedvig.app.feature.onboarding.OnboardingMockActivity
 import com.hedvig.app.feature.payment.PaymentMockActivity
 import com.hedvig.app.feature.profile.ProfileMockActivity
 import com.hedvig.app.feature.referrals.ReferralsMockActivity
+import com.hedvig.app.feature.tracking.TrackingLogActivity
 import com.hedvig.app.feature.trustly.TrustlyMockActivity
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.viewgallery.ViewGalleryActivity
@@ -36,6 +37,9 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
             it.submitList(
                 listOf(
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Header,
+                    DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Tracking") {
+                        startActivity(TrackingLogActivity.newInstance(this))
+                    },
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Change address intro") {
                         startActivity(Intent(this, ChangeAddressMockActivity::class.java))
                     },

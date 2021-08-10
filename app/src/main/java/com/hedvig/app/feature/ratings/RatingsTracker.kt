@@ -1,39 +1,39 @@
 package com.hedvig.app.feature.ratings
 
+import com.hedvig.app.feature.tracking.TrackingFacade
 import com.hedvig.app.util.jsonObjectOf
-import com.mixpanel.android.mpmetrics.MixpanelAPI
 
 class RatingsTracker(
-    private val mixpanel: MixpanelAPI
+    private val trackingFacade: TrackingFacade
 ) {
-    fun doNotLikeApp() = mixpanel.track(
+    fun doNotLikeApp() = trackingFacade.track(
         "RATINGS_DIALOG_NO",
         jsonObjectOf(
             "question" to "RATINGS_DIALOG_BODY"
         )
     )
 
-    fun likeApp() = mixpanel.track(
+    fun likeApp() = trackingFacade.track(
         "RATINGS_DIALOG_YES",
         jsonObjectOf(
             "question" to "RATINGS_DIALOG_BODY"
         )
     )
 
-    fun noToFeedback() = mixpanel.track(
+    fun noToFeedback() = trackingFacade.track(
         "RATINGS_DIALOG_NO",
         jsonObjectOf(
             "question" to "RATINGS_DIALOG_BODY_FEEDBACK"
         )
     )
 
-    fun yesToFeedback() = mixpanel.track(
+    fun yesToFeedback() = trackingFacade.track(
         "RATINGS_DIALOG_YES",
         jsonObjectOf(
             "question" to "RATINGS_DIALOG_BODY_FEEDBACK"
         )
     )
 
-    fun rate() = mixpanel.track("RATINGS_DIALOG_BODY_RATE_YES")
-    fun doNotRate() = mixpanel.track("RATINGS_DIALOG_BODY_RATE_NO")
+    fun rate() = trackingFacade.track("RATINGS_DIALOG_BODY_RATE_YES")
+    fun doNotRate() = trackingFacade.track("RATINGS_DIALOG_BODY_RATE_NO")
 }
