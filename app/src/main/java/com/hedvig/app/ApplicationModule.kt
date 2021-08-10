@@ -170,7 +170,6 @@ import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.koin.dsl.single
 import timber.log.Timber
 import java.time.Clock
 import java.util.Locale
@@ -480,12 +479,11 @@ val trackerModule = module {
     single { MarketingTracker(get()) }
     single { HomeTracker(get()) }
     single { ScreenTracker(get()) }
-    single<EmbarkTracker>()
     single {
         // Workaround for https://github.com/InsertKoinIO/koin/issues/1146
         TrackingFacade(getAll<TrackerSink>().distinct())
     }
-    single<MixpanelTracker>() bind TrackerSink::class
+    single { MixpanelTracker(get()) } bind TrackerSink::class
 }
 
 val localeBroadcastManagerModule = module {
@@ -507,7 +505,7 @@ val notificationModule = module {
 val clockModule = module { single { Clock.systemDefaultZone() } }
 
 val embarkTrackerModule = module {
-    single<EmbarkTracker>()
+    single { EmbarkTracker(get()) }
 }
 
 val localeManagerModule = module {
