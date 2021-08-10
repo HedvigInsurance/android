@@ -6,6 +6,7 @@ import com.hedvig.app.feature.offer.screen.ChangeDateView
 import com.hedvig.app.feature.offer.screen.OfferScreen
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.testdata.feature.offer.BUNDLE_WITH_START_DATE_FROM_PREVIOUS_INSURER
+import com.hedvig.app.testdata.feature.offer.TEST_INSURER_DISPLAY_NAME
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
@@ -73,7 +74,7 @@ class StartDateFromPreviousInsurerTest : TestCase() {
                 }
             }
         }
-        val text = context().getString(R.string.OFFER_PLAN_EXIRES_TEXT, "Test current insurer")
+        val text = context().getString(R.string.OFFER_PLAN_EXIRES_TEXT, TEST_INSURER_DISPLAY_NAME)
 
         ChangeDateView {
             switches {
