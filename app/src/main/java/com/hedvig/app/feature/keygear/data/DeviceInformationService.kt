@@ -29,7 +29,7 @@ class DeviceInformationService(
         return result.toHexString()
     }
 
-    fun getDeviceType(): DeviceType {
+    fun getDeviceType(viewContext: Context): DeviceType {
         val uiModeManager = context.getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
         when (uiModeManager.currentModeType) {
             Configuration.UI_MODE_TYPE_TELEVISION -> return DeviceType.TV
@@ -39,7 +39,7 @@ class DeviceInformationService(
         val displayMetrics = DisplayMetrics()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            context.display?.getRealMetrics(displayMetrics)
+            viewContext.display?.getRealMetrics(displayMetrics)
         } else {
             @Suppress("DEPRECATION")
             windowManager.defaultDisplay.getRealMetrics(displayMetrics)
