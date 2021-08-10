@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.transition.TransitionManager
 import android.view.MenuItem
-import androidx.activity.OnBackPressedCallback
 import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.lifecycle.flowWithLifecycle
@@ -98,21 +97,6 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             })
 
             offerToolbar.setNavigationOnClickListener { onBackPressed() }
-            onBackPressedDispatcher.addCallback(
-                this@OfferActivity,
-                object : OnBackPressedCallback(true) {
-                    override fun handleOnBackPressed() {
-                        showAlert(
-                            title = R.string.OFFER_QUIT_TITLE,
-                            message = R.string.OFFER_QUIT_MESSAGE,
-                            positiveLabel = R.string.general_back_button,
-                            negativeLabel = R.string.general_discard_button,
-                            positiveAction = {},
-                            negativeAction = { model.onDiscardOffer() }
-                        )
-                    }
-                }
-            )
             offerToolbar.setOnMenuItemClickListener(::handleMenuItem)
 
             val topOfferAdapter = OfferAdapter(
@@ -348,6 +332,17 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         }
         R.id.login -> {
             marketManager.market?.openAuth(this, supportFragmentManager)
+            true
+        }
+        R.id.discard_offer -> {
+            showAlert(
+                title = R.string.OFFER_QUIT_TITLE,
+                message = R.string.OFFER_QUIT_MESSAGE,
+                positiveLabel = R.string.general_back_button,
+                negativeLabel = R.string.general_discard_button,
+                positiveAction = {},
+                negativeAction = { model.onDiscardOffer() }
+            )
             true
         }
         else -> false
