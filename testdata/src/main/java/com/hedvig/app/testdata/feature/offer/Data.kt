@@ -283,6 +283,7 @@ val BUNDLE_WITH_INDEPENDENT_INCEPTION_DATES = OfferDataBuilder(
     inceptions = IndependentInceptionBuilder(withCurrentInsurer = false).build(),
 ).build()
 
+val TEST_INSURER_DISPLAY_NAME = "Test current insurer"
 val BUNDLE_WITH_START_DATE_FROM_PREVIOUS_INSURER = OfferDataBuilder(
     quotes = listOf(
         QuoteBuilder(
@@ -356,7 +357,7 @@ val BUNDLE_WITH_START_DATE_FROM_PREVIOUS_INSURER = OfferDataBuilder(
                         fragments = OfferQuery.CurrentInsurer2.Fragments(
                             CurrentInsurerFragment(
                                 id = "currentinsurerid",
-                                displayName = "Test current insurer",
+                                displayName = TEST_INSURER_DISPLAY_NAME,
                                 switchable = true
                             )
                         )
