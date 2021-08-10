@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.keygear.ui.tab
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
@@ -23,7 +24,7 @@ abstract class KeyGearViewModel : ViewModel() {
     protected val _data = MutableStateFlow<ViewState>(ViewState.Loading)
     val data = _data.asStateFlow()
 
-    abstract fun sendAutoAddedItems()
+    abstract fun sendAutoAddedItems(viewContext: Context)
     abstract fun load()
 }
 
@@ -54,10 +55,10 @@ class KeyGearViewModelImpl(
         }
     }
 
-    override fun sendAutoAddedItems() {
+    override fun sendAutoAddedItems(viewContext: Context) {
         viewModelScope.launch {
             val deviceFingerprint = deviceInformationService.getDeviceFingerprint()
-            val deviceType = deviceInformationService.getDeviceType()
+            val deviceType = deviceInformationService.getDeviceType(viewContext)
             val deviceName = deviceInformationService.getDeviceName()
 
             val result = runCatching {
