@@ -67,7 +67,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         super.onCreate(savedInstanceState)
 
         binding.apply {
-            whenApiVersion(Build.VERSION_CODES.R){
+            whenApiVersion(Build.VERSION_CODES.R) {
                 window.compatSetDecorFitsSystemWindows(false)
                 progressToolbar.applyStatusBarInsets()
             }
