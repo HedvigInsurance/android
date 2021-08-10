@@ -23,6 +23,11 @@ android {
         viewBinding = true
         aidl = false
         renderScript = false
+        compose = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.0.1"
     }
 
     defaultConfig {
@@ -220,6 +225,13 @@ dependencies {
     debugImplementation(Libs.leakCanary)
     debugImplementation(Libs.shake)
     "stagingImplementation"(Libs.shake)
+
+    implementation(Libs.AndroidX.activityCompose)
+    implementation(Libs.AndroidX.Compose.material)
+    implementation(Libs.AndroidX.Compose.animation)
+    implementation(Libs.AndroidX.Compose.uiTooling)
+    implementation(Libs.AndroidX.Lifecycle.compose)
+    androidTestImplementation(Libs.AndroidX.Compose.uiTestJunit)
 }
 
 val lokaliseProperties = Properties()
