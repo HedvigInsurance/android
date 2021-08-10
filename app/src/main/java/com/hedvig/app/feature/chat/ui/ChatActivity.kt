@@ -12,8 +12,6 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
 import android.provider.MediaStore.MediaColumns
-import android.view.View
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.FileProvider
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -37,13 +35,14 @@ import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.storeBoolean
 import com.hedvig.app.util.extensions.triggerRestartActivity
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsetsMargin
-import com.hedvig.app.util.extensions.view.applyStatusBarAndNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
+import dev.chrisbanes.insetter.applyInsetter
 import e
+import java.io.File
+import java.io.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -51,8 +50,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.io.File
-import java.io.IOException
 
 class ChatActivity : BaseActivity(R.layout.activity_chat) {
     private val chatViewModel: ChatViewModel by viewModel()
@@ -65,7 +62,6 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
     private var systemNavHeight = 0
     private var navHeightDiff = 0
     private var isKeyboardBreakPoint = 0
-    private var initialChatPadding = 0
 
     private var isKeyboardShown = false
     private var preventOpenAttachFile = false
@@ -105,20 +101,15 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             .launchIn(lifecycleScope)
 
         binding.apply {
-            val chatInputHeight = input.measureTextInput()
-            val toolbarHeight = getViewHeight(toolbar)
-            messages.updatePadding(
-                top = messages.paddingTop + toolbarHeight,
-                bottom = messages.paddingBottom + chatInputHeight
-            )
-            initialChatPadding = messages.paddingBottom
-
             window.compatSetDecorFitsSystemWindows(false)
-
-            input.applyNavigationBarInsetsMargin()
             toolbar.applyStatusBarInsets()
             messages.applyStatusBarInsets()
-            messages.applyStatusBarAndNavigationBarInsets()
+            input.applyInsetter {
+                type(navigationBars = true, ime = true) {
+                    padding(animated = true)
+                }
+                syncTranslationTo(binding.messages)
+            }
         }
 
         initializeToolbarButtons()
@@ -137,14 +128,6 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
     override fun onPause() {
         storeBoolean(ACTIVITY_IS_IN_FOREGROUND, false)
         super.onPause()
-    }
-
-    private fun getViewHeight(view: View): Int {
-        view.measure(
-            ConstraintLayout.LayoutParams.MATCH_PARENT,
-            ConstraintLayout.LayoutParams.WRAP_CONTENT
-        )
-        return view.measuredHeight
     }
 
     private fun initializeInput() {
@@ -190,7 +173,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             },
             tracker = tracker,
             chatRecyclerView = binding.messages,
-            chatRecyclerViewInitialPadding = initialChatPadding
+            chatRecyclerViewInitialPadding = 0
         )
     }
 
@@ -363,9 +346,6 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
                 }
 
                 binding.input.rotateFileUploadIcon(false)
-                if (!isKeyboardShown) {
-                    binding.input.updatePadding(bottom = 0)
-                }
                 this.attachPickerDialog = null
             },
             uploadFileCallback = { uri ->
@@ -378,9 +358,6 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             }
         }
         attachPickerDialog.pickerHeight = keyboardHeight
-        if (!isKeyboardShown) {
-            binding.input.updatePadding(bottom = keyboardHeight)
-        }
         attachPickerDialog.show()
 
         lifecycleScope.launch(Dispatchers.IO) {

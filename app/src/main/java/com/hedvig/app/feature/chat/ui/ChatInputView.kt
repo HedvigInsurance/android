@@ -34,7 +34,6 @@ import com.hedvig.app.util.extensions.view.fadeOut
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
 
 class ChatInputView : FrameLayout {
@@ -145,8 +144,7 @@ class ChatInputView : FrameLayout {
         uploadRecording: (String) -> Unit,
         tracker: ChatTracker,
         openSendGif: () -> Unit,
-        chatRecyclerView: RecyclerView,
-        chatRecyclerViewInitialPadding: Int,
+        chatRecyclerView: RecyclerView
     ) {
         this.sendTextMessage = sendTextMessage
         this.sendSingleSelect = sendSingleSelect
@@ -171,7 +169,6 @@ class ChatInputView : FrameLayout {
                 is TextInput -> textInputContainer.fadeOut(fadeIn)
                 is SingleSelect -> {
                     singleSelectContainer.fadeOut(fadeIn)
-                    chatRecyclerView.updatePadding(bottom = singleSelectContainer.measuredHeight)
                 }
                 is ParagraphInput -> {
                     paragraphView.fadeOut(
@@ -221,7 +218,6 @@ class ChatInputView : FrameLayout {
                 KeyboardType.DECIMALPAD -> InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
                 else -> InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
             }
-            chatRecyclerView.updatePadding(bottom = chatRecyclerViewInitialPadding + measureTextInput())
             inputText.requestFocus()
         }
     }
@@ -277,9 +273,6 @@ class ChatInputView : FrameLayout {
         binding.singleSelectContainer.addView(singleSelectButton)
 
         binding.singleSelectContainer.measure(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-        chatRecyclerView.updatePadding(
-            bottom = chatRecyclerViewInitialPadding + binding.singleSelectContainer.measuredHeight
-        )
     }
 
     private fun bindAudio() {
@@ -289,9 +282,6 @@ class ChatInputView : FrameLayout {
                 MeasureSpec.makeMeasureSpec(binding.root.height, MeasureSpec.UNSPECIFIED),
             )
         }
-        chatRecyclerView.updatePadding(
-            bottom = chatRecyclerViewInitialPadding + binding.audioRecorder.measuredHeight
-        )
     }
 
     private fun disableSingleButtons() {
