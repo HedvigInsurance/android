@@ -17,7 +17,9 @@ class TrackingInitializer : Initializer<Unit> {
                 .trackingPreferences
                 .data
                 .first()[SHOULD_SHOW_NOTIFICATION] ?: false
-            context.startService(TrackingShortcutService.newInstance(context, shouldShowNotification))
+            runCatching { // Ignore if the service can't start due to launch restrictions.
+                context.startService(TrackingShortcutService.newInstance(context, shouldShowNotification))
+            }
         }
     }
 
