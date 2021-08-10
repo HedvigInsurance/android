@@ -13,6 +13,7 @@ import com.hedvig.app.clockModule
 import com.hedvig.app.coilModule
 import com.hedvig.app.connectPaymentModule
 import com.hedvig.app.embarkModule
+import com.hedvig.app.embarkTrackerModule
 import com.hedvig.app.featureRuntimeBehaviorModule
 import com.hedvig.app.homeModule
 import com.hedvig.app.insuranceModule
@@ -95,6 +96,7 @@ class KoinInitializer : Initializer<KoinApplication> {
                 sharedPreferencesModule,
                 featureRuntimeBehaviorModule,
                 coilModule,
+                embarkTrackerModule,
             )
         )
     }
