@@ -1,5 +1,6 @@
 package com.hedvig.app.mocks
 
+import android.content.Context
 import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
 import com.hedvig.android.owldroid.fragment.KeyGearItemValuationFragment
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
@@ -7,7 +8,7 @@ import com.hedvig.android.owldroid.type.KeyGearItemCategory
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModel
 
 class MockKeyGearViewModel : KeyGearViewModel() {
-    override fun sendAutoAddedItems() = Unit
+    override fun sendAutoAddedItems(viewContext: Context) = Unit
     override fun load() = Unit
 
     init {

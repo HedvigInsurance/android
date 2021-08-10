@@ -112,7 +112,7 @@ class KeyGearFragment : Fragment(R.layout.fragment_key_gear) {
                     }
                     if (!hasSentAutoAddedItems) {
                         hasSentAutoAddedItems = true
-                        model.sendAutoAddedItems()
+                        model.sendAutoAddedItems(requireContext())
                     }
                 }
                 .launchIn(viewLifecycleScope)
