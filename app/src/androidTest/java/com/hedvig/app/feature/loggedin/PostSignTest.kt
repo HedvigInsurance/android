@@ -44,13 +44,9 @@ class PostSignTest : TestCase() {
         )
 
         onScreen<WelcomeScreen> {
-            close {
-                isVisible()
-                click()
-            }
+            pressBack()
         }
         onScreen<LoggedInScreen> {
-            pressBack()
             root { isVisible() }
             bottomTabs {
                 hasSelectedItem(R.id.home)

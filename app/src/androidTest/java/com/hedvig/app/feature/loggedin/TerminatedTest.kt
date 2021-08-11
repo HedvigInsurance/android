@@ -6,6 +6,7 @@ import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.app.R
 import com.hedvig.app.SplashActivity
 import com.hedvig.app.authenticate.LoginStatusService
+import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.referrals.deeplinks.ForeverDeepLinkTest
 import com.hedvig.app.testdata.feature.home.HOME_DATA_TERMINATED
 import com.hedvig.app.testdata.feature.loggedin.CONTRACT_STATUS_DATA_ONE_TERMINATED_CONTRACT
@@ -23,7 +24,7 @@ import org.junit.Test
 
 class TerminatedTest : TestCase() {
     @get:Rule
-    val activityRule = LazyActivityScenarioRule(SplashActivity::class.java)
+    val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
@@ -48,9 +49,6 @@ class TerminatedTest : TestCase() {
         every { loginStatusService.isLoggedIn }.returns(false)
         activityRule.launch()
 
-        onScreen<ForeverDeepLinkTest.SplashScreen> {
-            animation { doesNotExist() }
-        }
         onScreen<LoggedInScreen> {
             root { isVisible() }
             bottomTabs { hasSelectedItem(R.id.home) }

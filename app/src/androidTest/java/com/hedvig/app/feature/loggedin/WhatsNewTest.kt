@@ -40,10 +40,7 @@ class WhatsNewTest : TestCase() {
         activityRule.launch(LoggedInActivity.newInstance(context()))
 
         onScreen<WelcomeScreen> {
-            close {
-                isVisible()
-                click()
-            }
+            pressBack()
         }
         onScreen<LoggedInScreen> {
             root { isVisible() }
