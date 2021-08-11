@@ -20,11 +20,12 @@
 -keepnames class com.hedvig.app.react.data.** { *; }
 
 # Adyen
--keep class com.adyen.checkout.base.model.** { *; }
+-keep class com.adyen.checkout.core.model.** { * ;}
+-keep class com.adyen.checkout.components.model.** { *; }
 -keep class com.adyen.threeds2.** { *; }
--keepclassmembers public class * implements com.adyen.checkout.base.PaymentComponent {
+-keepclassmembers public class * implements com.adyen.checkout.components.PaymentComponent {
    public <init>(...);
 }
--keepclassmembers public class * implements com.adyen.checkout.base.ActionComponent {
+-keepclassmembers public class * implements com.adyen.checkout.components.ActionComponent {
    public <init>(...);
 }
