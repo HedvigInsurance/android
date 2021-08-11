@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.inputmethod.EditorInfo
 import android.widget.FrameLayout
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.recyclerview.widget.RecyclerView
@@ -53,7 +52,6 @@ class ChatInputView : FrameLayout {
     private lateinit var singleSelectLink: ((String) -> Unit)
     private lateinit var openAttachFile: (() -> Unit)
     private lateinit var openSendGif: (() -> Unit)
-    private var chatRecyclerViewInitialPadding = 0
     private lateinit var chatRecyclerView: RecyclerView
 
     private var currentlyDisplaying: ChatInputType = NullInput
@@ -112,20 +110,6 @@ class ChatInputView : FrameLayout {
         hideAllViews()
     }
 
-    fun measureTextInput(): Int {
-        binding.apply {
-            val startVisibility = textInputContainer.visibility
-            this.textInputContainer.show()
-            this.textInputContainer.measure(
-                ConstraintLayout.LayoutParams.MATCH_PARENT,
-                ConstraintLayout.LayoutParams.WRAP_CONTENT
-            )
-            val height = this.textInputContainer.measuredHeight
-            this.textInputContainer.visibility = startVisibility
-            return height
-        }
-    }
-
     private fun hideAllViews() {
         binding.apply {
             textInputContainer.remove()
@@ -154,7 +138,6 @@ class ChatInputView : FrameLayout {
         this.tracker = tracker
         this.openSendGif = openSendGif
         this.chatRecyclerView = chatRecyclerView
-        this.chatRecyclerViewInitialPadding = chatRecyclerViewInitialPadding
     }
 
     fun clearInput() {
@@ -271,7 +254,6 @@ class ChatInputView : FrameLayout {
         }
 
         binding.singleSelectContainer.addView(singleSelectButton)
-
         binding.singleSelectContainer.measure(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
     }
 

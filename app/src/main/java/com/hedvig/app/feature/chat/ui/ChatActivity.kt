@@ -173,7 +173,6 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             },
             tracker = tracker,
             chatRecyclerView = binding.messages,
-            chatRecyclerViewInitialPadding = 0
         )
     }
 
