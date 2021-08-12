@@ -33,8 +33,4 @@
 
     <item name="colorTooltip" type="color">@color/lavender_300</item>
 
-    <!-- Compatibility with Adyen -->
-    <item name="primaryColor" type="color">@color/colorPrimary</item>
-    <item name="textColor" type="color">@color/textColorPrimary</item>
-    <item name="indicator_color" type="color">@color/colorPrimaryVariant</item>
 </resources>
