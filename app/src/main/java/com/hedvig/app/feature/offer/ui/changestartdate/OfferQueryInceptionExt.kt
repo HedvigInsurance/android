@@ -54,7 +54,7 @@ fun OfferQuery.Inception1.toChangeDateBottomSheetData() = ChangeDateBottomSheetD
 
 fun OfferQuery.Inception1.getStartDate(): OfferStartDate {
     return when {
-        isSwitcher() -> OfferStartDate.WhenCurrentPlanExpires
+        isSwitcher() && hasNoDate() -> OfferStartDate.WhenCurrentPlanExpires
         hasNoDate() -> OfferStartDate.AtDate(LocalDate.now())
         asConcurrentInception != null -> OfferStartDate.AtDate(asConcurrentInception?.startDate ?: LocalDate.now())
         asIndependentInceptions != null -> {
