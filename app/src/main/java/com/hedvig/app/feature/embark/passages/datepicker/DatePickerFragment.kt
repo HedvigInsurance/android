@@ -11,18 +11,17 @@ import com.hedvig.app.feature.embark.Response
 import com.hedvig.app.feature.embark.masking.SHORT_DATE
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.animateResponse
+import com.hedvig.app.util.extensions.view.applyNavigationBarInsetsMargin
 import com.hedvig.app.util.extensions.view.hapticClicks
-import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
-import java.lang.IllegalArgumentException
-import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.lang.IllegalArgumentException
+import java.time.format.DateTimeFormatter
 
 class DatePickerFragment : Fragment(R.layout.fragment_embark_date_picker) {
     private val model: EmbarkViewModel by sharedViewModel()
@@ -42,14 +41,12 @@ class DatePickerFragment : Fragment(R.layout.fragment_embark_date_picker) {
                 datePickerViewModel.onShowDatePicker()
             }
 
-            continueButton.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
-            }
+            continueButton.applyNavigationBarInsetsMargin()
 
             continueButton
                 .hapticClicks()
                 .mapLatest { saveAndAnimate() }
-                .onEach { model.navigateToPassage(data.link) }
+                .onEach { model.submitAction(data.link) }
                 .launchIn(viewLifecycleScope)
         }
 

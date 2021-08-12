@@ -3,18 +3,18 @@ package com.hedvig.app.feature.onboarding.screens
 import android.content.Intent
 import android.view.View
 import androidx.test.espresso.intent.matcher.IntentMatchers
-import com.agoda.kakao.check.KCheckBox
-import com.agoda.kakao.intent.KIntent
-import com.agoda.kakao.recycler.KRecyclerItem
-import com.agoda.kakao.recycler.KRecyclerView
-import com.agoda.kakao.text.KButton
-import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.onboarding.ui.ChoosePlanActivity
 import com.hedvig.app.testdata.feature.onboarding.builders.EmbarkStoryBuilder.Companion.ENGLISH_CONTENTS
 import com.hedvig.app.testdata.feature.onboarding.builders.EmbarkStoryBuilder.Companion.ENGLISH_TRAVEL
 import com.kaspersky.kaspresso.screens.KScreen
+import io.github.kakaocup.kakao.check.KCheckBox
+import io.github.kakaocup.kakao.intent.KIntent
+import io.github.kakaocup.kakao.recycler.KRecyclerItem
+import io.github.kakaocup.kakao.recycler.KRecyclerView
+import io.github.kakaocup.kakao.text.KButton
+import io.github.kakaocup.kakao.text.KTextView
 import org.hamcrest.Matcher
 
 object ChoosePlanScreen : KScreen<ChoosePlanScreen>() {

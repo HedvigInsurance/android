@@ -11,13 +11,13 @@ import com.hedvig.app.feature.referrals.service.ReferralsTracker
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.extensions.canOpenUri
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.openUri
+import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
+import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
-import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
-import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
 import org.javamoney.moneta.Money
 import org.koin.android.ext.android.inject
@@ -46,18 +46,12 @@ class ReferralsInformationActivity : BaseActivity(R.layout.activity_referrals_in
         }
 
         binding.apply {
-            root.setEdgeToEdgeSystemUiFlags(true)
+            window.compatSetDecorFitsSystemWindows(false)
 
-            toolbar.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
-            }
-
+            toolbar.applyStatusBarInsets()
             toolbar.setNavigationOnClickListener { onBackPressed() }
 
-            scrollView.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
-            }
-
+            scrollView.applyNavigationBarInsets()
             scrollView.setupToolbarScrollListener(toolbar)
 
             val incentive = Money.of(incentiveAmount, incentiveCurrency)

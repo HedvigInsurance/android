@@ -1,0 +1,9 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/ic_chat_background" />
+    <item
+        android:bottom="8dp"
+        android:drawable="@drawable/ic_chat_black"
+        android:end="8dp"
+        android:start="8dp"
+        android:top="8dp" />
+</layer-list>

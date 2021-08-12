@@ -1,14 +1,14 @@
 package com.hedvig.app.feature.insurance.screens
 
 import android.view.View
-import com.agoda.kakao.intent.KIntent
-import com.agoda.kakao.recycler.KRecyclerItem
-import com.agoda.kakao.recycler.KRecyclerView
-import com.agoda.kakao.screen.Screen
-import com.agoda.kakao.text.KButton
-import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
 import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsActivity
+import io.github.kakaocup.kakao.intent.KIntent
+import io.github.kakaocup.kakao.recycler.KRecyclerItem
+import io.github.kakaocup.kakao.recycler.KRecyclerView
+import io.github.kakaocup.kakao.screen.Screen
+import io.github.kakaocup.kakao.text.KButton
+import io.github.kakaocup.kakao.text.KTextView
 import org.hamcrest.Matcher
 
 class InsuranceScreen : Screen<InsuranceScreen>() {

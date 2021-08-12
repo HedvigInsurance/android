@@ -9,9 +9,7 @@ class MockMarketManager : MarketManager {
 
     override var market: Market? = mockedMarket
 
-    override var hasSelectedMarket: Boolean
-        get() = true
-        set(value) {}
+    override var hasSelectedMarket: Boolean = true
 
     companion object {
         var mockedMarket: Market? = null

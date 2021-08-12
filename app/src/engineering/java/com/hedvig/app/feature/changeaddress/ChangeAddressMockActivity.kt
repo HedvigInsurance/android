@@ -31,7 +31,8 @@ class ChangeAddressMockActivity : MockActivity() {
             MockChangeAddressViewModel.mockedState = MutableLiveData(
                 ViewState.SelfChangeError(
                     GetAddressChangeStoryIdUseCase.SelfChangeEligibilityResult.Error(
-                        message = "Test error message, this can happen because of no internet connection, backend errors etc."
+                        message = "Test error message, this can happen" +
+                            " because of no internet connection, backend errors etc."
                     )
                 )
             )

@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.home.ui
 
 import android.content.Context
-import android.graphics.drawable.PictureDrawable
 import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +8,8 @@ import android.widget.Toast
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.RequestBuilder
+import coil.ImageLoader
+import coil.load
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ChangeAddressPendingChangeCardBinding
@@ -48,7 +48,7 @@ import java.time.temporal.ChronoUnit
 class HomeAdapter(
     private val fragmentManager: FragmentManager,
     private val retry: () -> Unit,
-    private val requestBuilder: RequestBuilder<PictureDrawable>,
+    private val imageLoader: ImageLoader,
     private val tracker: HomeTracker,
     private val marketManager: MarketManager,
 ) : ListAdapter<HomeModel, HomeAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
@@ -60,7 +60,7 @@ class HomeAdapter(
         R.layout.home_start_claim_outlined -> ViewHolder.StartClaimOutlined(parent)
         R.layout.home_start_claim_contained -> ViewHolder.StartClaimContained(parent)
         R.layout.home_info_card -> ViewHolder.InfoCard(parent)
-        R.layout.home_common_claim -> ViewHolder.CommonClaim(parent)
+        R.layout.home_common_claim -> ViewHolder.CommonClaim(parent, imageLoader)
         R.layout.generic_error -> ViewHolder.Error(parent)
         R.layout.how_claims_work_button -> ViewHolder.HowClaimsWorkButton(parent)
         R.layout.upcoming_renewal_card -> ViewHolder.UpcomingRenewal(parent)
@@ -91,7 +91,6 @@ class HomeAdapter(
             getItem(position),
             fragmentManager,
             retry,
-            requestBuilder,
             tracker,
             marketManager
         )
@@ -102,7 +101,6 @@ class HomeAdapter(
             data: HomeModel,
             fragmentManager: FragmentManager,
             retry: () -> Unit,
-            requestBuilder: RequestBuilder<PictureDrawable>,
             tracker: HomeTracker,
             marketManager: MarketManager,
         ): Any?
@@ -122,7 +120,6 @@ class HomeAdapter(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
-                requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
@@ -166,7 +163,6 @@ class HomeAdapter(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
-                requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
@@ -195,7 +191,6 @@ class HomeAdapter(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
-                requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
             ): Any? = with(binding) {
@@ -217,7 +212,6 @@ class HomeAdapter(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
-                requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
@@ -239,7 +233,6 @@ class HomeAdapter(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
-                requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
@@ -276,7 +269,6 @@ class HomeAdapter(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
-                requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
@@ -302,7 +294,6 @@ class HomeAdapter(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
-                requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
@@ -319,14 +310,13 @@ class HomeAdapter(
             }
         }
 
-        class CommonClaim(parent: ViewGroup) :
+        class CommonClaim(parent: ViewGroup, private val imageLoader: ImageLoader) :
             ViewHolder(parent.inflate(R.layout.home_common_claim)) {
             private val binding by viewBinding(HomeCommonClaimBinding::bind)
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
-                requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
@@ -337,9 +327,7 @@ class HomeAdapter(
                 when (data) {
                     is HomeModel.CommonClaim.Emergency -> {
                         label.text = data.inner.title
-                        requestBuilder
-                            .load(requestUri(icon.context, data.inner.iconUrls))
-                            .into(icon)
+                        icon.load(requestUri(icon.context, data.inner.iconUrls), imageLoader)
                         root.setHapticClickListener {
                             root.context.startActivity(
                                 EmergencyActivity.newInstance(
@@ -351,9 +339,7 @@ class HomeAdapter(
                     }
                     is HomeModel.CommonClaim.TitleAndBulletPoints -> {
                         label.text = data.inner.title
-                        requestBuilder
-                            .load(requestUri(icon.context, data.inner.iconUrls))
-                            .into(icon)
+                        icon.load(requestUri(icon.context, data.inner.iconUrls), imageLoader)
                         root.setHapticClickListener {
                             root.context.startActivity(
                                 CommonClaimActivity.newInstance(
@@ -378,7 +364,6 @@ class HomeAdapter(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
-                requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
@@ -411,7 +396,6 @@ class HomeAdapter(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
-                requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
@@ -428,7 +412,6 @@ class HomeAdapter(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
-                requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
@@ -476,7 +459,6 @@ class HomeAdapter(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
-                requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
@@ -499,7 +481,6 @@ class HomeAdapter(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
                 retry: () -> Unit,
-                requestBuilder: RequestBuilder<PictureDrawable>,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {

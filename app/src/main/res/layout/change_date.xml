@@ -37,7 +37,8 @@
             android:editable="false"
             android:focusable="false"
             android:textAppearance="?textAppearanceBody1"
-            android:textColor="@color/textColorSecondary" />
+            android:textColor="@color/textColorSecondary"
+            tools:ignore="Deprecated" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -54,9 +55,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/base_margin_half"
+        android:text="@string/OFFER_PLAN_EXIRES_TEXT"
         android:textColor="@color/textColorPrimary"
         app:switchPadding="@dimen/base_margin_triple"
-        app:switchTextAppearance="?textAppearanceBody2"
-        android:text="@string/OFFER_PLAN_EXIRES_TEXT" />
+        app:switchTextAppearance="?textAppearanceBody2" />
 
 </LinearLayout>

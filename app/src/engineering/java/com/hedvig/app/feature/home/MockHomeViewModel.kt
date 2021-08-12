@@ -12,10 +12,10 @@ class MockHomeViewModel : HomeViewModel() {
     override fun load() {
         if (shouldError) {
             shouldError = false
-            _homeData.postValue(Result.failure(Error()))
+            _homeData.postValue(ViewState.Error)
             return
         }
-        _homeData.postValue(Result.success(homeMockData))
+        _homeData.postValue(ViewState.Success(homeMockData))
         _payinStatusData.postValue(payinStatusData)
     }
 

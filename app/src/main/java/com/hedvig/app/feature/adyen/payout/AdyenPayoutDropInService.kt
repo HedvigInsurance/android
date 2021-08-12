@@ -1,7 +1,9 @@
 package com.hedvig.app.feature.adyen.payout
 
-import com.adyen.checkout.dropin.service.CallResult
+import com.adyen.checkout.components.ActionComponentData
+import com.adyen.checkout.components.PaymentComponentState
 import com.adyen.checkout.dropin.service.DropInService
+import com.adyen.checkout.dropin.service.DropInServiceResult
 import com.hedvig.android.owldroid.type.PayoutMethodStatus
 import com.hedvig.android.owldroid.type.TokenizationResultType
 import com.hedvig.app.feature.adyen.AdyenRepository
@@ -9,7 +11,7 @@ import com.hedvig.app.feature.profile.ui.payment.PaymentRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 import org.koin.android.ext.android.inject
 import kotlin.coroutines.CoroutineContext
@@ -24,55 +26,73 @@ class AdyenPayoutDropInService : DropInService(), CoroutineScope {
 
     override fun onDestroy() {
         super.onDestroy()
-        coroutineJob.cancel()
+        // coroutineJob.cancel() // Cannot cancel this job due to https://github.com/Adyen/adyen-android/issues/447
     }
 
-    override fun makeDetailsCall(actionComponentData: JSONObject) = runBlocking(coroutineContext) {
-        val response = runCatching {
-            adyenRepository
-                .submitAdditionalPaymentDetails(actionComponentData)
-        }
-
-        val result = response.getOrNull()?.data?.submitAdditionalPaymentDetails
-            ?: return@runBlocking CallResult(CallResult.ResultType.ERROR, "Error")
-
-        result.asAdditionalPaymentsDetailsResponseAction?.action?.let { action ->
-            return@runBlocking CallResult(CallResult.ResultType.ACTION, action)
-        }
-
-        result.asAdditionalPaymentsDetailsResponseFinished?.let { finishedResponse ->
-            finishedResponse.tokenizationResult.toPayoutMethodStatusOrNull()?.let { payoutMethodStatus ->
-                runCatching { paymentRepository.writeActivePayoutMethodStatus(payoutMethodStatus) }
-            }
-            return@runBlocking CallResult(CallResult.ResultType.FINISHED, finishedResponse.resultCode)
-        }
-
-        CallResult(CallResult.ResultType.ERROR, "Unknown error")
-    }
-
-    override fun makePaymentsCall(paymentComponentData: JSONObject) =
-        runBlocking(coroutineContext) {
+    override fun onDetailsCallRequested(actionComponentData: ActionComponentData, actionComponentJson: JSONObject) {
+        launch(coroutineContext) {
             val response = runCatching {
                 adyenRepository
-                    .tokenizePayoutDetails(paymentComponentData)
+                    .submitAdditionalPaymentDetails(actionComponentJson)
+            }
+
+            val result = response.getOrNull()?.data?.submitAdditionalPaymentDetails
+
+            if (result == null) {
+                sendResult(DropInServiceResult.Error("Error"))
+                return@launch
+            }
+
+            result.asAdditionalPaymentsDetailsResponseAction?.action?.let { action ->
+                sendResult(DropInServiceResult.Action(action))
+                return@launch
+            }
+
+            result.asAdditionalPaymentsDetailsResponseFinished?.let { finishedResponse ->
+                finishedResponse.tokenizationResult.toPayoutMethodStatusOrNull()?.let { payoutMethodStatus ->
+                    runCatching { paymentRepository.writeActivePayoutMethodStatus(payoutMethodStatus) }
+                }
+                sendResult(DropInServiceResult.Finished(finishedResponse.resultCode))
+                return@launch
+            }
+
+            sendResult(DropInServiceResult.Error("Unknown error"))
+        }
+    }
+
+    override fun onPaymentsCallRequested(
+        paymentComponentState: PaymentComponentState<*>,
+        paymentComponentJson: JSONObject
+    ) {
+        launch(coroutineContext) {
+            val response = runCatching {
+                adyenRepository
+                    .tokenizePayoutDetails(paymentComponentJson)
             }
 
             val result = response.getOrNull()?.data?.tokenizePayoutDetails
-                ?: return@runBlocking CallResult(CallResult.ResultType.ERROR, "Error")
+
+            if (result == null) {
+                sendResult(DropInServiceResult.Error("Error"))
+                return@launch
+            }
 
             result.asTokenizationResponseAction?.action?.let { action ->
-                return@runBlocking CallResult(CallResult.ResultType.ACTION, action)
+                sendResult(DropInServiceResult.Action(action))
+                return@launch
             }
 
             result.asTokenizationResponseFinished?.let { finishedResponse ->
                 finishedResponse.tokenizationResult.toPayoutMethodStatusOrNull()?.let { payoutMethodStatus ->
                     runCatching { paymentRepository.writeActivePayoutMethodStatus(payoutMethodStatus) }
                 }
-                return@runBlocking CallResult(CallResult.ResultType.FINISHED, finishedResponse.resultCode)
+                sendResult(DropInServiceResult.Finished(finishedResponse.resultCode))
+                return@launch
             }
 
-            CallResult(CallResult.ResultType.ERROR, "Unknown error")
+            sendResult(DropInServiceResult.Error("Unknown error"))
         }
+    }
 
     private fun TokenizationResultType.toPayoutMethodStatusOrNull() = when (this) {
         TokenizationResultType.COMPLETED -> PayoutMethodStatus.ACTIVE

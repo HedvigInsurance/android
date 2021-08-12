@@ -7,13 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.ListPreloader
-import com.bumptech.glide.RequestBuilder
-import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader
-import com.bumptech.glide.load.resource.bitmap.FitCenter
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.bumptech.glide.util.ViewPreloadSizeProvider
+import coil.ImageLoader
+import coil.clear
+import coil.load
 import com.hedvig.android.owldroid.fragment.ChatMessageFragment
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
 import com.hedvig.app.R
@@ -32,21 +28,14 @@ import com.hedvig.app.util.extensions.viewBinding
 import e
 
 class ChatAdapter(
-    private val context: Context,
+    context: Context,
     private val onPressEdit: () -> Unit,
     private val tracker: ChatTracker,
+    private val imageLoader: ImageLoader
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val doubleMargin = context.resources.getDimensionPixelSize(R.dimen.base_margin_double)
     private val baseMargin = context.resources.getDimensionPixelSize(R.dimen.base_margin)
-
-    val recyclerViewPreloader =
-        RecyclerViewPreloader(
-            Glide.with(context),
-            ChatPreloadModelProvider(),
-            ViewPreloadSizeProvider(),
-            10
-        )
 
     var messages: List<ChatMessagesQuery.Message> = listOf()
         set(value) {
@@ -226,21 +215,9 @@ class ChatAdapter(
 
     override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
         when (holder) {
-            is HedvigGiphyMessage -> {
-                Glide
-                    .with(holder.binding.messageImage)
-                    .clear(holder.binding.messageImage)
-            }
-            is GiphyUserMessage -> {
-                Glide
-                    .with(holder.binding.messageImage)
-                    .clear(holder.binding.messageImage)
-            }
-            is ImageUploadUserMessage -> {
-                Glide
-                    .with(holder.binding.uploadedImage)
-                    .clear(holder.binding.uploadedImage)
-            }
+            is HedvigGiphyMessage -> holder.binding.messageImage.clear()
+            is GiphyUserMessage -> holder.binding.messageImage.clear()
+            is ImageUploadUserMessage -> holder.binding.uploadedImage.clear()
         }
     }
 
@@ -269,14 +246,7 @@ class ChatAdapter(
     inner class HedvigGiphyMessage(view: View) : RecyclerView.ViewHolder(view) {
         val binding by viewBinding(ChatMessageUserGiphyBinding::bind)
         fun bind(url: String?) {
-            binding.apply {
-                Glide
-                    .with(messageImage)
-                    .load(url)
-                    .transform(FitCenter(), RoundedCorners(40))
-                    .into(messageImage)
-                    .clearOnDetach()
-            }
+            binding.messageImage.load(url, imageLoader)
         }
     }
 
@@ -310,14 +280,7 @@ class ChatAdapter(
     inner class GiphyUserMessage(view: View) : RecyclerView.ViewHolder(view) {
         val binding by viewBinding(ChatMessageUserGiphyBinding::bind)
         fun bind(url: String?) {
-            binding.apply {
-                Glide
-                    .with(messageImage)
-                    .load(url)
-                    .transform(FitCenter(), RoundedCorners(40))
-                    .into(messageImage)
-                    .clearOnDetach()
-            }
+            binding.messageImage.load(url, imageLoader)
         }
     }
 
@@ -333,14 +296,7 @@ class ChatAdapter(
         val binding by viewBinding(ChatMessageUserImageBinding::bind)
 
         fun bind(url: String?) {
-            binding.apply {
-                Glide
-                    .with(uploadedImage)
-                    .load(url)
-                    .transform(FitCenter(), RoundedCorners(40))
-                    .into(uploadedImage)
-                    .clearOnDetach()
-            }
+            binding.uploadedImage.load(url, imageLoader)
         }
     }
 
@@ -362,38 +318,6 @@ class ChatAdapter(
     }
 
     inner class NullMessage(view: View) : RecyclerView.ViewHolder(view)
-
-    inner class ChatPreloadModelProvider :
-        ListPreloader.PreloadModelProvider<ChatMessagesQuery.Message> {
-        override fun getPreloadItems(position: Int): List<ChatMessagesQuery.Message> =
-            messages.getOrNull(position)?.let { message ->
-                when {
-                    isGiphyMessage(message.fragments.chatMessageFragment.body.asMessageBodyCore?.text) -> listOf(
-                        message
-                    )
-                    isImageUploadMessage(message.fragments.chatMessageFragment.body) -> listOf(
-                        message
-                    )
-                    else -> emptyList()
-                }
-            } ?: emptyList()
-
-        override fun getPreloadRequestBuilder(item: ChatMessagesQuery.Message): RequestBuilder<*>? {
-            val url = when {
-                isGiphyMessage(
-                    item.fragments.chatMessageFragment.body.asMessageBodyCore?.text
-                ) -> item.fragments.chatMessageFragment.body.asMessageBodyCore?.text
-                isImageUploadMessage(
-                    item.fragments.chatMessageFragment.body
-                ) -> item.fragments.chatMessageFragment.body.asMessageBodyFile?.file?.signedUrl
-                else -> null
-            }
-            return Glide
-                .with(context)
-                .load(url)
-                .transform(FitCenter(), RoundedCorners(40))
-        }
-    }
 
     companion object {
         private const val FROM_HEDVIG = 0

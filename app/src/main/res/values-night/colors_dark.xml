@@ -25,7 +25,6 @@
     <item name="textColorLink" type="color">@color/colorSecondary</item>
     <item name="textColorLargeButton" type="color">@color/colorOnPrimary</item>
 
-    <item name="colorBackgroundChat" type="color">@color/hedvig_off_black</item>
     <item name="colorChatUserBackground" type="color">@color/hedvig_off_black</item>
     <item name="colorChatInputButton" type="color">@color/button_background_dark</item>
     <item name="colorChatHedvigBackground" type="color">@color/button_background_dark</item>
@@ -38,8 +37,4 @@
     <item name="blur_fall_sunset" type="color">#c6ad8a</item>
     <item name="blur_spring_fog" type="color">#ec955f</item>
 
-    <!-- Compatibility with Adyen -->
-    <item name="primaryColor" type="color">@color/colorPrimary</item>
-    <item name="textColor" type="color">@color/textColorPrimary</item>
-    <item name="indicator_color" type="color">@color/colorPrimaryVariant</item>
 </resources>

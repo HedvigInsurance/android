@@ -123,33 +123,42 @@ object TemplateExpressionCalculator {
             ?: throw NoExpressionMatch("Could not create an abstract expression from $tokenStream")
     }
 
-    private fun evaluateAbstractExpression(expression: Expression, store: HashMap<String, String>): String = when (expression) {
-        is Expression.StoreKeyExpression -> store[expression.key] ?: ""
-        is Expression.NumberConstantExpression -> expression.constant.toBigDecimal().stripTrailingZeros().toString()
-        is Expression.StringConstantExpression -> expression.constant.replace("'", "")
-        is Expression.BinaryOperatorExpression -> {
-            if (expression.left == null || expression.right == null) {
-                throw InvalidOperator("Invalid use of operator \"${expression.operatorField}\", must have expressions on both sides")
-            } else {
-                val left: Expression = expression.left
-                val right: Expression = expression.right
-                when (expression.operatorField) {
-                    "+" -> (evaluateAbstractExpression(left, store).toFloat() + evaluateAbstractExpression(right, store).toFloat())
-                        .toBigDecimal()
-                        .stripTrailingZeros()
-                        .toString()
-                    "-" -> (evaluateAbstractExpression(left, store).toFloat() - evaluateAbstractExpression(right, store).toFloat())
-                        .toBigDecimal()
-                        .stripTrailingZeros()
-                        .toString()
-                    "++" -> (evaluateAbstractExpression(left, store) + evaluateAbstractExpression(right, store))
-                        .replace("\"", "")
-                        .replace("\'", "")
-                    else -> throw InvalidOperator(expression.operatorField)
+    private fun evaluateAbstractExpression(expression: Expression, store: HashMap<String, String>): String =
+        when (expression) {
+            is Expression.StoreKeyExpression -> store[expression.key] ?: ""
+            is Expression.NumberConstantExpression -> expression.constant.toBigDecimal().stripTrailingZeros().toString()
+            is Expression.StringConstantExpression -> expression.constant.replace("'", "")
+            is Expression.BinaryOperatorExpression -> {
+                if (expression.left == null || expression.right == null) {
+                    throw InvalidOperator(
+                        "Invalid use of operator \"${expression.operatorField}\", must have expressions on both sides"
+                    )
+                } else {
+                    val left: Expression = expression.left
+                    val right: Expression = expression.right
+                    when (expression.operatorField) {
+                        "+" -> (
+                            evaluateAbstractExpression(left, store).toFloat() +
+                                evaluateAbstractExpression(right, store).toFloat()
+                            )
+                            .toBigDecimal()
+                            .stripTrailingZeros()
+                            .toString()
+                        "-" -> (
+                            evaluateAbstractExpression(left, store).toFloat() -
+                                evaluateAbstractExpression(right, store).toFloat()
+                            )
+                            .toBigDecimal()
+                            .stripTrailingZeros()
+                            .toString()
+                        "++" -> (evaluateAbstractExpression(left, store) + evaluateAbstractExpression(right, store))
+                            .replace("\"", "")
+                            .replace("\'", "")
+                        else -> throw InvalidOperator(expression.operatorField)
+                    }
                 }
             }
         }
-    }
 
     enum class TokenType {
         BINARY_OPERATOR, STORE_KEY, STRING_CONSTANT, NUMBER_CONSTANT

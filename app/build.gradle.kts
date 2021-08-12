@@ -3,6 +3,7 @@ import java.util.Properties
 
 plugins {
     id("com.android.application")
+    id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
     id("kotlin-android")
     id("kotlin-parcelize")
@@ -41,7 +42,7 @@ android {
         jvmTarget = "1.8"
     }
 
-    lintOptions {
+    lint {
         isAbortOnError = false
     }
 
@@ -142,6 +143,8 @@ dependencies {
     implementation(Libs.AndroidX.Lifecycle.runtime)
     implementation(Libs.AndroidX.Lifecycle.viewModel)
     implementation(Libs.AndroidX.workManager)
+    implementation(Libs.AndroidX.DataStore.core)
+    implementation(Libs.AndroidX.DataStore.preferences)
     debugImplementation(Libs.AndroidX.startup)
     "stagingImplementation"(Libs.AndroidX.startup)
     androidTestImplementation(Libs.AndroidX.Espresso.core)
@@ -184,11 +187,9 @@ dependencies {
 
     implementation(Libs.svg)
 
-    implementation(Libs.Glide.base)
-    kapt(Libs.Glide.compiler)
-    implementation(Libs.Glide.recyclerView) {
-        isTransitive = false
-    }
+    implementation(Libs.Coil.coil)
+    implementation(Libs.Coil.svg)
+    implementation(Libs.Coil.gif)
 
     implementation(Libs.tooltip)
 
@@ -221,8 +222,6 @@ dependencies {
     "stagingImplementation"(Libs.shake)
 }
 
-apply(plugin = "com.google.gms.google-services")
-
 val lokaliseProperties = Properties()
 lokaliseProperties.load(FileInputStream(rootProject.file("lokalise.properties")))
 
@@ -231,4 +230,8 @@ lokalise {
     token = lokaliseProperties.getProperty("token")
 
     downloadConfig = com.likandr.gradle.config.DownloadConfig()
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
 }

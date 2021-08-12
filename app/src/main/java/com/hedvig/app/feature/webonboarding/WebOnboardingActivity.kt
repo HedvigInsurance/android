@@ -15,6 +15,8 @@ import com.google.android.material.transition.MaterialFadeThrough
 import com.hedvig.android.owldroid.type.Locale
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.authenticate.AuthenticationTokenService
+import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.databinding.ActivityWebOnboardingBinding
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.settings.Market
@@ -22,8 +24,6 @@ import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.makeUserAgent
 import com.hedvig.app.util.LocaleManager
-import com.hedvig.app.util.extensions.getAuthenticationToken
-import com.hedvig.app.util.extensions.setIsLoggedIn
 import com.hedvig.app.util.extensions.toArrayList
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
@@ -34,6 +34,8 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
     private val binding by viewBinding(ActivityWebOnboardingBinding::bind)
     private val marketManager: MarketManager by inject()
     private val localeManager: LocaleManager by inject()
+    private val loginStatusService: LoginStatusService by inject()
+    private val authenticationTokenService: AuthenticationTokenService by inject()
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,7 +71,7 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
                 ) {
                     if (url?.contains("connect-payment") == true) {
                         view?.stopLoading()
-                        setIsLoggedIn(true)
+                        loginStatusService.isLoggedIn = true
                         marketManager.market?.connectPayin(
                             this@WebOnboardingActivity,
                             isPostSign = true
@@ -120,7 +122,7 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
             else -> "/no"
         }
 
-        val encodedToken = URLEncoder.encode(getAuthenticationToken(), UTF_8)
+        val encodedToken = URLEncoder.encode(authenticationTokenService.authenticationToken, UTF_8)
 
         val webBaseUrl = getString(R.string.WEB_BASE_URL)
 

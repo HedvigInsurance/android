@@ -30,27 +30,27 @@ class ContractPillAdapter(
                 when (item) {
                     is ContractModel.Address -> {
                         item.currentAgreement.asDanishHomeContentAgreement?.let {
-                            text.text = it.address.fragments.addressFragment.street.toUpperCase(
+                            text.text = it.address.fragments.addressFragment.street.uppercase(
                                 getLocale(text.context, marketManager.market)
                             )
                         }
                         item.currentAgreement.asNorwegianHomeContentAgreement?.let {
-                            text.text = it.address.fragments.addressFragment.street.toUpperCase(
+                            text.text = it.address.fragments.addressFragment.street.uppercase(
                                 getLocale(text.context, marketManager.market)
                             )
                         }
                         item.currentAgreement.asSwedishApartmentAgreement?.let {
-                            text.text = it.address.fragments.addressFragment.street.toUpperCase(
+                            text.text = it.address.fragments.addressFragment.street.uppercase(
                                 getLocale(text.context, marketManager.market)
                             )
                         }
                         item.currentAgreement.asSwedishHouseAgreement?.let {
-                            text.text = it.address.fragments.addressFragment.street.toUpperCase(
+                            text.text = it.address.fragments.addressFragment.street.uppercase(
                                 getLocale(text.context, marketManager.market)
                             )
                         }
                         item.currentAgreement.asDanishHomeContentAgreement?.let {
-                            text.text = it.address.fragments.addressFragment.street.toUpperCase(
+                            text.text = it.address.fragments.addressFragment.street.uppercase(
                                 getLocale(text.context, marketManager.market)
                             )
                         }

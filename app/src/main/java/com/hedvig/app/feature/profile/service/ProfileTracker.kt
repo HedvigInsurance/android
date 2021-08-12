@@ -1,20 +1,14 @@
 package com.hedvig.app.feature.profile.service
 
-import com.mixpanel.android.mpmetrics.MixpanelAPI
+import com.hedvig.app.feature.tracking.TrackingFacade
 
 class ProfileTracker(
-    private val mixpanel: MixpanelAPI
+    private val trackingFacade: TrackingFacade
 ) {
-    fun howDoesItWorkClick() = mixpanel.track("CHARITY_INFO_BUTTON_LABEL")
-    fun logout() {
-        mixpanel.track("PROFILE_LOGOUT_BUTTON")
-        mixpanel.reset()
-    }
-
-    fun charityRow() = mixpanel.track("PROFILE_MY_CHARITY_ROW_TITLE")
-    fun paymentRow() = mixpanel.track("PROFILE_ROW_PAYMENT_TITLE")
-    fun myInfoRow() = mixpanel.track("PROFILE_MY_INFO_ROW_TITLE")
-    fun feedbackRow() = mixpanel.track("PROFILE_ROW_FEEDBACK_TITLE")
-    fun aboutAppRow() = mixpanel.track("PROFILE_ABOUT_ROW")
-    fun settings() = mixpanel.track("profile_appSettingsSection_row_headline")
+    fun howDoesItWorkClick() = trackingFacade.track("CHARITY_INFO_BUTTON_LABEL")
+    fun charityRow() = trackingFacade.track("PROFILE_MY_CHARITY_ROW_TITLE")
+    fun paymentRow() = trackingFacade.track("PROFILE_ROW_PAYMENT_TITLE")
+    fun myInfoRow() = trackingFacade.track("PROFILE_MY_INFO_ROW_TITLE")
+    fun aboutAppRow() = trackingFacade.track("PROFILE_ABOUT_ROW")
+    fun settings() = trackingFacade.track("profile_appSettingsSection_row_headline")
 }

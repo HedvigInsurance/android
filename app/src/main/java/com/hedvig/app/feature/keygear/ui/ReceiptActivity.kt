@@ -6,17 +6,17 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import androidx.core.content.FileProvider
-import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
+import coil.ImageLoader
+import coil.load
+import coil.request.ImageRequest
+import coil.request.SuccessResult
+import coil.size.Scale
 import com.google.android.material.snackbar.Snackbar
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
@@ -24,13 +24,13 @@ import com.hedvig.app.databinding.ActivityReceiptBinding
 import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.service.FileService
 import com.hedvig.app.util.extensions.askForPermissions
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.hasPermissions
+import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
-import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -48,11 +48,8 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
         super.onCreate(savedInstanceState)
 
         binding.apply {
-            root.setEdgeToEdgeSystemUiFlags(true)
-
-            topBar.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(top = insets.systemWindowInsetTop + initialState.paddings.top)
-            }
+            window.compatSetDecorFitsSystemWindows(false)
+            topBar.applyStatusBarInsets()
 
             val fileUrl = intent.getStringExtra(RECEIPT_URL)
             if (fileUrl == null) {
@@ -109,59 +106,54 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
     }
 
     private fun loadImage(fileUrl: String) {
-        Glide.with(this)
-            .load(fileUrl)
-            .transform(CenterCrop())
-            .into(binding.receipt)
+        binding.receipt.load(fileUrl) {
+            scale(Scale.FILL)
+        }
     }
 
     private fun shareImage(fileUrl: String) {
-        Glide.with(this)
-            .asBitmap()
-            .load(fileUrl)
-            .into(object : CustomTarget<Bitmap>() {
-                override fun onLoadCleared(placeholder: Drawable?) {
+        lifecycleScope.launch {
+            val loader = ImageLoader(this@ReceiptActivity)
+            val request = ImageRequest.Builder(this@ReceiptActivity)
+                .data(fileUrl)
+                .allowHardware(false)
+                .build()
+
+            val result = (loader.execute(request) as SuccessResult).drawable
+            val bitmap = (result as BitmapDrawable).bitmap
+            val filePath = saveImage(bitmap)
+
+            if (filePath == null) {
+                e { "Failed to save image to temp file" }
+                return@launch
+            }
+
+            withContext(Dispatchers.Main) {
+                val sendIntent = Intent().apply {
+
+                    action = Intent.ACTION_SEND
+                    type = "image/jpg"
+
+                    this.data = FileProvider.getUriForFile(
+                        applicationContext,
+                        getString(R.string.file_provider_authority),
+                        File(filePath)
+                    )
+
+                    flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    putExtra(
+                        Intent.EXTRA_STREAM,
+                        FileProvider.getUriForFile(
+                            applicationContext,
+                            getString(R.string.file_provider_authority),
+                            File(filePath)
+                        )
+                    )
                 }
-
-                override fun onResourceReady(
-                    resource: Bitmap,
-                    transition: Transition<in Bitmap>?
-                ) {
-                    lifecycleScope.launch {
-                        val filePath = saveImage(resource)
-                        if (filePath == null) {
-                            e { "Failed to save image to temp file" }
-                            return@launch
-                        }
-
-                        withContext(Dispatchers.Main) {
-                            val sendIntent = Intent().apply {
-
-                                action = Intent.ACTION_SEND
-                                type = "image/jpg"
-
-                                this.data = FileProvider.getUriForFile(
-                                    applicationContext,
-                                    getString(R.string.file_provider_authority),
-                                    File(filePath)
-                                )
-
-                                flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-                                putExtra(
-                                    Intent.EXTRA_STREAM,
-                                    FileProvider.getUriForFile(
-                                        applicationContext,
-                                        getString(R.string.file_provider_authority),
-                                        File(filePath)
-                                    )
-                                )
-                            }
-                            val shareIntent = Intent.createChooser(sendIntent, null)
-                            startActivity(shareIntent)
-                        }
-                    }
-                }
-            })
+                val shareIntent = Intent.createChooser(sendIntent, null)
+                startActivity(shareIntent)
+            }
+        }
     }
 
     private fun downloadFile(fileUrl: String) {

@@ -1,16 +1,25 @@
 package com.hedvig.app.feature.onboarding
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.owldroid.graphql.MemberIdQuery
 import e
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 abstract class MemberIdViewModel : ViewModel() {
-    protected val _data = MutableLiveData<Result<MemberIdQuery.Data>>()
-    val data: LiveData<Result<MemberIdQuery.Data>> = _data
+    sealed class State {
+        data class Success(
+            val id: String
+        ) : State()
+
+        object Error : State()
+        object Loading : State()
+    }
+
+    protected val _state = MutableStateFlow<State>(State.Loading)
+    val state = _state.asStateFlow()
+
     abstract fun load()
 }
 
@@ -30,17 +39,16 @@ class MemberIdViewModelImpl(
             if (response.isFailure) {
                 response.exceptionOrNull()?.let { exception ->
                     e(exception)
-                    _data.postValue(Result.failure(exception))
+                    _state.value = State.Error
                 }
                 return@launch
             }
-
             if (response.getOrNull()?.hasErrors() == true) {
-                _data.postValue(Result.failure(Error()))
+                _state.value = State.Error
                 return@launch
             }
 
-            response.getOrNull()?.data?.let { _data.postValue(Result.success(it)) }
+            response.getOrNull()?.data?.member?.id?.let { _state.value = State.Success(it) }
         }
     }
 }

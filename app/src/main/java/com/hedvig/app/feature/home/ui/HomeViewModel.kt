@@ -16,11 +16,20 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 abstract class HomeViewModel : ViewModel() {
-    protected val _homeData = MutableLiveData<Result<HomeQuery.Data>>()
+    sealed class ViewState {
+        data class Success(
+            val homeData: HomeQuery.Data
+        ) : ViewState()
+
+        object Error : ViewState()
+    }
+
+    protected val _homeData = MutableLiveData<ViewState>()
     protected val _payinStatusData = MutableLiveData<PayinStatusQuery.Data>()
+
     // TODO Fetch address change in progress
     protected val _addressChangeInProgress = MutableLiveData("")
-    val data: LiveData<Triple<Result<HomeQuery.Data>?, PayinStatusQuery.Data?, String?>> = combineTuple(
+    val data: LiveData<Triple<ViewState?, PayinStatusQuery.Data?, String?>> = combineTuple(
         _homeData,
         _payinStatusData,
         _addressChangeInProgress
@@ -39,13 +48,14 @@ class HomeViewModelImpl(
                 .home()
                 .onEach { response ->
                     response.errors?.let {
-                        _homeData.postValue(Result.failure(Error()))
+                        _homeData.postValue(ViewState.Error)
                         return@onEach
                     }
-                    response.data?.let { _homeData.postValue(Result.success(it)) }
+                    response.data?.let { _homeData.postValue(ViewState.Success(it)) }
                 }
-                .catch { e ->
-                    _homeData.postValue(Result.failure(e))
+                .catch { err ->
+                    e(err)
+                    _homeData.postValue(ViewState.Error)
                 }
                 .launchIn(this)
 

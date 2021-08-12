@@ -8,8 +8,8 @@ import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.feature.offer.ui.OfferStartDate
 import com.hedvig.app.feature.offer.ui.changestartdate.getStartDate
 import com.hedvig.app.testdata.feature.offer.builders.ConcurrentInceptionBuilder
-import java.time.LocalDate
 import org.junit.Test
+import java.time.LocalDate
 
 class OfferDateTest {
 
@@ -232,7 +232,7 @@ class OfferDateTest {
                                 id = "ea656f5f-40b2-4953-85d9-752b33e69e38"
                             )
                         ),
-                        startDate = LocalDate.now(),
+                        startDate = null,
                         currentInsurer = OfferQuery.CurrentInsurer2(
                             fragments = OfferQuery.CurrentInsurer2.Fragments(
                                 CurrentInsurerFragment(
@@ -250,7 +250,7 @@ class OfferDateTest {
                                 id = "ea656f5f-40b2-4953-85d9-752b33e69e37"
                             )
                         ),
-                        startDate = LocalDate.now().plusDays(3),
+                        startDate = null,
                         currentInsurer = OfferQuery.CurrentInsurer2(
                             fragments = OfferQuery.CurrentInsurer2.Fragments(
                                 CurrentInsurerFragment(
@@ -268,7 +268,7 @@ class OfferDateTest {
                                 id = "ea656f5f-40b2-4953-85d9-752b33e69e36"
                             )
                         ),
-                        startDate = LocalDate.now().plusDays(5),
+                        startDate = null,
                         currentInsurer = OfferQuery.CurrentInsurer2(
                             fragments = OfferQuery.CurrentInsurer2.Fragments(
                                 CurrentInsurerFragment(

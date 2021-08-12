@@ -16,7 +16,8 @@ class MaterialProgressToolbar @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
-    private var binding: ViewMaterialProgressToolbarBinding = ViewMaterialProgressToolbarBinding.inflate(LayoutInflater.from(context), this)
+    private var binding: ViewMaterialProgressToolbarBinding =
+        ViewMaterialProgressToolbarBinding.inflate(LayoutInflater.from(context), this)
 
     val toolbar: MaterialToolbar
         get() = binding.toolbar

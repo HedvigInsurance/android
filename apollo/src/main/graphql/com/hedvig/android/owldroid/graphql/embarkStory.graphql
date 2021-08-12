@@ -73,6 +73,9 @@ query EmbarkStory($name: String!, $locale: String!) {
               }
               keys
               values
+              api {
+                ...ApiFragment
+              }
             }
           }
         }
@@ -83,6 +86,9 @@ query EmbarkStory($name: String!, $locale: String!) {
             mask
             link {
               ...EmbarkLinkFragment
+            }
+            api {
+              ...ApiFragment
             }
           }
         }
@@ -98,6 +104,9 @@ query EmbarkStory($name: String!, $locale: String!) {
                 placeholder
                 title
               }
+            }
+            api {
+              ...ApiFragment
             }
           }
         }

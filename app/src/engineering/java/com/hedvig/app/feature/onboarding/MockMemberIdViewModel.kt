@@ -10,10 +10,10 @@ class MockMemberIdViewModel : MemberIdViewModel() {
     override fun load() {
         if (!shouldLoad) {
             shouldLoad = true
-            _data.postValue(Result.failure(Error()))
+            _state.value = State.Error
             return
         }
-        _data.postValue(Result.success(mockData))
+        _state.value = State.Success(mockData.member.id!!)
     }
 
     companion object {

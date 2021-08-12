@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.embark.api.graphqlmutation
 
-import com.agoda.kakao.screen.Screen
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
@@ -15,6 +14,7 @@ import com.hedvig.app.util.jsonArrayOf
 import com.hedvig.app.util.jsonObjectOf
 import com.hedvig.app.util.stub
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import io.github.kakaocup.kakao.screen.Screen
 import org.junit.Rule
 import org.junit.Test
 

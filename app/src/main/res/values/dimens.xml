@@ -23,7 +23,6 @@
     <dimen name="common_claim_first_message_bottom_margin">60dp</dimen>
 
     <dimen name="dashboard_need_set_up_background_radius">5dp</dimen>
-    <dimen name="peril_bottom_extra_spacing">48dp</dimen>
     <dimen name="common_claim_icon_size">32dp</dimen>
 
     <dimen name="hedvig_card_view_radius">8dp</dimen>
@@ -43,8 +42,6 @@
     <dimen name="referral_receiver_continue_button_height">48dp</dimen>
     <dimen name="referral_receiver_continue_button_padding_edge">32dp</dimen>
     <dimen name="referral_receiver_continue_without_button_padding_edge">24dp</dimen>
-    <dimen name="referral_background_edit_text_rounded_corner_radius">32dp</dimen>
-    <dimen name="referral_background_edit_text_stroke_width">1dp</dimen>
     <dimen name="pager_indicator_inactive_size">4dp</dimen>
     <dimen name="pager_indicator_hedvig_logo_size">16dp</dimen>
     <dimen name="pager_indicator_height">32dp</dimen>
@@ -71,12 +68,9 @@
     <dimen name="tab_bar_icon_size">26dp</dimen>
     <dimen name="expandable_content_view_collapsed_height">400dp</dimen>
     <dimen name="expandable_content_view_bottom_fade_out_height">100dp</dimen>
-    <dimen name="settings_custom_offset">11dp</dimen>
     <dimen name="ratings_dialog_minimum_width">250dp</dimen>
     <dimen name="key_gear_card_height">200dp</dimen>
     <dimen name="create_key_gear_add_photo_height">250dp</dimen>
-    <dimen name="auto_set_date_text_size">14dp</dimen>
-
     <dimen name="pick_date_button_corner_radius">6dp</dimen>
     <dimen name="base_margin_sesqui">12dp</dimen>
     <dimen name="top_bar_elevation">2dp</dimen>
@@ -86,12 +80,10 @@
     <dimen name="valuation_card_height">100dp</dimen>
     <dimen name="key_gear_item_detail_photos_height">480dp</dimen>
     <dimen name="item_detail_gradient_size">300dp</dimen>
-    <dimen name="offer_info_icon">30dp</dimen>
     <dimen name="premium_box_campaign_header_height">30dp</dimen>
     <dimen name="connect_payment_result_icon_size">56dp</dimen>
     <dimen name="referral_icon_placeholder_size">16dp</dimen>
     <dimen name="small_component_corner_radius">4dp</dimen>
-    <dimen name="numbered_bullet_background_sphere_size">32sp</dimen>
     <dimen name="home_error_icon_size">32dp</dimen>
     <dimen name="dismissible_page_illustration_size">200dp</dimen>
     <dimen name="pill_corner_radius">4dp</dimen>

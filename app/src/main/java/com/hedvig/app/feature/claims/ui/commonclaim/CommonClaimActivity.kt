@@ -4,24 +4,26 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import coil.ImageLoader
+import coil.load
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityCommonClaimBinding
 import com.hedvig.app.feature.claims.ui.commonclaim.bulletpoint.BulletPointsAdapter
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
+import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
+import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.disable
 import com.hedvig.app.util.extensions.view.enable
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
-import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
-import com.hedvig.app.util.svg.buildRequestBuilder
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
-import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
+import org.koin.android.ext.android.inject
 
 class CommonClaimActivity : BaseActivity(R.layout.activity_common_claim) {
 
-    private val requestBuilder by lazy { buildRequestBuilder() }
+    private val imageLoader: ImageLoader by inject()
     private val binding by viewBinding(ActivityCommonClaimBinding::bind)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,13 +32,9 @@ class CommonClaimActivity : BaseActivity(R.layout.activity_common_claim) {
         val data = intent.getParcelableExtra<CommonClaimsData>(CLAIMS_DATA) ?: return
 
         binding.apply {
-            root.setEdgeToEdgeSystemUiFlags(true)
-            root.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
-            }
-            toolbar.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
-            }
+            window.compatSetDecorFitsSystemWindows(false)
+            root.applyNavigationBarInsets()
+            toolbar.applyStatusBarInsets()
 
             toolbar.setNavigationOnClickListener {
                 onBackPressed()
@@ -45,20 +43,14 @@ class CommonClaimActivity : BaseActivity(R.layout.activity_common_claim) {
             toolbar.title = data.title
 
             bulletPointsRecyclerView.adapter =
-                BulletPointsAdapter(getString(R.string.BASE_URL), requestBuilder).also {
+                BulletPointsAdapter(getString(R.string.BASE_URL), imageLoader).also {
                     it.submitList(data.bulletPoints)
                 }
         }
 
         binding.apply {
-            requestBuilder
-                .load(
-                    Uri.parse(
-                        getString(R.string.BASE_URL) +
-                            data.iconUrls.iconByTheme(this@CommonClaimActivity)
-                    )
-                )
-                .into(firstMessage.commonClaimFirstMessageIcon)
+            val url = Uri.parse(getString(R.string.BASE_URL) + data.iconUrls.iconByTheme(this@CommonClaimActivity))
+            firstMessage.commonClaimFirstMessageIcon.load(url, imageLoader)
 
             firstMessage.commonClaimFirstMessage.text = data.layoutTitle
             firstMessage.commonClaimCreateClaimButton.text = data.buttonText

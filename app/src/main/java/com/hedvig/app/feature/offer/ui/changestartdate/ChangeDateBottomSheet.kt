@@ -6,15 +6,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
+import androidx.lifecycle.flowWithLifecycle
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.hedvig.app.R
 import com.hedvig.app.databinding.DialogChangeStartDateBinding
 import com.hedvig.app.util.extensions.epochMillisToLocalDate
-import com.hedvig.app.util.extensions.repeatOnViewLifeCycleLaunch
 import com.hedvig.app.util.extensions.showAlert
+import com.hedvig.app.util.extensions.viewLifecycle
+import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -34,23 +37,20 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        repeatOnViewLifeCycleLaunch {
-            changeDateBottomSheetViewModel.viewState.collect { viewState ->
+        changeDateBottomSheetViewModel
+            .viewState
+            .flowWithLifecycle(viewLifecycle)
+            .onEach { viewState ->
                 when (viewState) {
                     ChangeDateBottomSheetViewModel.ViewState.Dismiss -> dismiss()
                     is ChangeDateBottomSheetViewModel.ViewState.Inceptions -> viewState.inceptions.forEach {
                         val changeDateView = createChangeDateView(it)
                         binding.changeDateContainer.addView(changeDateView)
                     }
-                    ChangeDateBottomSheetViewModel.ViewState.ShowConfirmationDialog -> {
-                        showLoadingState(false)
-                        showChooseOwnStartDateDialog()
-                    }
                     is ChangeDateBottomSheetViewModel.ViewState.Error -> {
                         showLoadingState(false)
                         requireContext().showAlert(
                             title = getString(R.string.error_dialog_title),
-                            // TODO: Create general try again text?
                             message = viewState.message ?: getString(R.string.component_error),
                             positiveLabel = R.string.insurances_tab_error_button_text,
                             positiveAction = { changeDateBottomSheetViewModel.onDialogConfirmed() }
@@ -60,11 +60,11 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
                         showLoadingState(viewState.showLoading)
                     }
                 }
-
-                binding.chooseDateButton.setOnClickListener {
-                    changeDateBottomSheetViewModel.onChooseDateClicked()
-                }
             }
+            .launchIn(viewLifecycleScope)
+
+        binding.chooseDateButton.setOnClickListener {
+            changeDateBottomSheetViewModel.setNewDateAndDismiss()
         }
     }
 
@@ -74,6 +74,7 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
             title = if (!inception.isConcurrent) {
                 inception.title
             } else null,
+            currentInsurerDisplayName = inception.currentInsurer?.displayName,
             startDate = inception.startDate,
             switchable = inception.currentInsurer?.switchable ?: false,
             datePickerListener = {
@@ -100,17 +101,7 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
         return changeDateView
     }
 
-    private fun showChooseOwnStartDateDialog() {
-        requireContext().showAlert(
-            R.string.ALERT_TITLE_STARTDATE,
-            R.string.ALERT_DESCRIPTION_STARTDATE,
-            R.string.ALERT_CONTINUE,
-            R.string.ALERT_CANCEL,
-            { changeDateBottomSheetViewModel.onDialogConfirmed() }
-        )
-    }
-
-    fun showLoadingState(isLoading: Boolean) {
+    private fun showLoadingState(isLoading: Boolean) {
         TransitionManager.beginDelayedTransition(binding.root)
         binding.chooseDateButton.isEnabled = !isLoading
     }

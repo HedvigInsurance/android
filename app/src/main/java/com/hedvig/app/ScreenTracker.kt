@@ -1,9 +1,9 @@
 package com.hedvig.app
 
-import com.mixpanel.android.mpmetrics.MixpanelAPI
+import com.hedvig.app.feature.tracking.TrackingFacade
 
 class ScreenTracker(
-    private val mixpanel: MixpanelAPI
+    private val trackingFacade: TrackingFacade
 ) {
     private lateinit var previousScreen: String
 
@@ -13,6 +13,6 @@ class ScreenTracker(
         }
 
         previousScreen = name
-        mixpanel.track("screen_view_$name")
+        trackingFacade.track("screen_view_$name")
     }
 }

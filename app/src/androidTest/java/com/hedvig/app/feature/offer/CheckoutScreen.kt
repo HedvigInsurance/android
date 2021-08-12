@@ -1,11 +1,11 @@
 package com.hedvig.app.feature.offer
 
-import com.agoda.kakao.edit.KTextInputLayout
-import com.agoda.kakao.text.KButton
-import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
 import com.hedvig.app.feature.offer.ui.checkout.CheckoutActivity
 import com.kaspersky.kaspresso.screens.KScreen
+import io.github.kakaocup.kakao.edit.KTextInputLayout
+import io.github.kakaocup.kakao.text.KButton
+import io.github.kakaocup.kakao.text.KTextView
 
 object CheckoutScreen : KScreen<CheckoutScreen>() {
     override val layoutId = R.layout.activity_checkout

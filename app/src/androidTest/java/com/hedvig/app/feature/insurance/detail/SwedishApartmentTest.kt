@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.insurance.detail
 
-import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
 import com.hedvig.app.R
@@ -8,12 +7,15 @@ import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_APARTMENT
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.FeatureFlagRule
 import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apollo.stringRes
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
+import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.hasText
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import io.github.kakaocup.kakao.screen.Screen.Companion.onScreen
 import org.junit.Rule
 import org.junit.Test
 
@@ -28,6 +30,9 @@ class SwedishApartmentTest : TestCase() {
 
     @get:Rule
     val apolloCacheClearRule = ApolloCacheClearRule()
+
+    @get:Rule
+    val featureFlagRule = FeatureFlagRule(Feature.MOVING_FLOW)
 
     @Test
     fun shouldShowCoinsuredForSwedishApartmentContract() = run {

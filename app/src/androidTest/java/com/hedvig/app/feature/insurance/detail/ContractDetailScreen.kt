@@ -2,19 +2,19 @@ package com.hedvig.app.feature.insurance.detail
 
 import android.content.Intent
 import android.view.View
-import com.agoda.kakao.image.KImageView
-import com.agoda.kakao.intent.KIntent
-import com.agoda.kakao.pager2.KViewPager2
-import com.agoda.kakao.pager2.KViewPagerItem
-import com.agoda.kakao.recycler.KRecyclerItem
-import com.agoda.kakao.recycler.KRecyclerView
-import com.agoda.kakao.screen.Screen
-import com.agoda.kakao.text.KButton
-import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
 import com.hedvig.app.feature.documents.DocumentRecyclerItem
 import com.hedvig.app.feature.insurablelimits.InsurableLimitRecyclerItem
 import com.hedvig.app.feature.perils.PerilRecyclerItem
+import io.github.kakaocup.kakao.image.KImageView
+import io.github.kakaocup.kakao.intent.KIntent
+import io.github.kakaocup.kakao.pager2.KViewPager2
+import io.github.kakaocup.kakao.pager2.KViewPagerItem
+import io.github.kakaocup.kakao.recycler.KRecyclerItem
+import io.github.kakaocup.kakao.recycler.KRecyclerView
+import io.github.kakaocup.kakao.screen.Screen
+import io.github.kakaocup.kakao.text.KButton
+import io.github.kakaocup.kakao.text.KTextView
 import org.hamcrest.Matcher
 
 class ContractDetailScreen : Screen<ContractDetailScreen>() {

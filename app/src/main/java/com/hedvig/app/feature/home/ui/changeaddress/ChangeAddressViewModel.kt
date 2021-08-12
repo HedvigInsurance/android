@@ -6,12 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.app.feature.home.ui.changeaddress.GetAddressChangeStoryIdUseCase.SelfChangeEligibilityResult
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult
-import com.hedvig.app.feature.home.ui.changeaddress.ViewState.ChangeAddressInProgress
-import com.hedvig.app.feature.home.ui.changeaddress.ViewState.Loading
-import com.hedvig.app.feature.home.ui.changeaddress.ViewState.ManualChangeAddress
-import com.hedvig.app.feature.home.ui.changeaddress.ViewState.SelfChangeAddress
-import com.hedvig.app.feature.home.ui.changeaddress.ViewState.SelfChangeError
-import com.hedvig.app.feature.home.ui.changeaddress.ViewState.UpcomingAgreementError
 import kotlinx.coroutines.launch
 
 abstract class ChangeAddressViewModel : ViewModel() {
@@ -33,7 +27,7 @@ class ChangeAddressViewModelImpl(
     }
 
     private fun fetchDataAndCreateState() {
-        _viewState.postValue(Loading)
+        _viewState.postValue(ViewState.Loading)
         viewModelScope.launch {
             _viewState.postValue(createViewState())
         }
@@ -48,14 +42,14 @@ class ChangeAddressViewModelImpl(
     private suspend fun getUpComingAgreementState(onNoUpcomingChange: suspend () -> ViewState) =
         when (val upcomingAgreement = getUpcomingAgreement()) {
             is UpcomingAgreementResult.NoUpcomingAgreementChange -> onNoUpcomingChange()
-            is UpcomingAgreementResult.UpcomingAgreement -> ChangeAddressInProgress(upcomingAgreement)
-            is UpcomingAgreementResult.Error -> UpcomingAgreementError(upcomingAgreement)
+            is UpcomingAgreementResult.UpcomingAgreement -> ViewState.ChangeAddressInProgress(upcomingAgreement)
+            is UpcomingAgreementResult.Error -> ViewState.UpcomingAgreementError(upcomingAgreement)
         }
 
     private suspend fun getSelfChangeState() = when (val selfChangeEligibility = addressChangeStoryId()) {
-        is SelfChangeEligibilityResult.Eligible -> SelfChangeAddress(selfChangeEligibility.embarkStoryId)
-        is SelfChangeEligibilityResult.Blocked -> ManualChangeAddress
-        is SelfChangeEligibilityResult.Error -> SelfChangeError(selfChangeEligibility)
+        is SelfChangeEligibilityResult.Eligible -> ViewState.SelfChangeAddress(selfChangeEligibility.embarkStoryId)
+        is SelfChangeEligibilityResult.Blocked -> ViewState.ManualChangeAddress
+        is SelfChangeEligibilityResult.Error -> ViewState.SelfChangeError(selfChangeEligibility)
     }
 
     override fun reload() {
@@ -69,5 +63,7 @@ sealed class ViewState {
     object ManualChangeAddress : ViewState()
     data class UpcomingAgreementError(val error: UpcomingAgreementResult.Error) : ViewState()
     data class SelfChangeError(val error: SelfChangeEligibilityResult.Error) : ViewState()
-    data class ChangeAddressInProgress(val upcomingAgreementResult: UpcomingAgreementResult.UpcomingAgreement) : ViewState()
+    data class ChangeAddressInProgress(
+        val upcomingAgreementResult: UpcomingAgreementResult.UpcomingAgreement
+    ) : ViewState()
 }

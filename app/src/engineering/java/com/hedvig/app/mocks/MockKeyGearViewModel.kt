@@ -1,6 +1,6 @@
 package com.hedvig.app.mocks
 
-import androidx.lifecycle.MutableLiveData
+import android.content.Context
 import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
 import com.hedvig.android.owldroid.fragment.KeyGearItemValuationFragment
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
@@ -8,13 +8,12 @@ import com.hedvig.android.owldroid.type.KeyGearItemCategory
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModel
 
 class MockKeyGearViewModel : KeyGearViewModel() {
-    override val data = MutableLiveData<Result<KeyGearItemsQuery.Data>>()
-    override fun sendAutoAddedItems() {}
-    override fun load() {}
+    override fun sendAutoAddedItems(viewContext: Context) = Unit
+    override fun load() = Unit
 
     init {
-        data.postValue(
-            Result.success(
+        _data.value = (
+            ViewState.Success(
                 KeyGearItemsQuery.Data(
                     listOf(
                         KeyGearItemsQuery.KeyGearItem(
@@ -26,7 +25,7 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                     photos = listOf(
                                         KeyGearItemFragment.Photo(
                                             file = KeyGearItemFragment.File(
-                                                preSignedUrl = "https://images.unsplash.com/photo-1505156868547-9b49f4df4e04"
+                                                preSignedUrl = UNSPLASH_ONE
                                             )
                                         )
                                     ),
@@ -46,12 +45,13 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                     fragments = KeyGearItemFragment.Fragments(
                                         KeyGearItemValuationFragment(
                                             valuation = KeyGearItemValuationFragment.Valuation1(
-                                                asKeyGearItemValuationFixed = KeyGearItemValuationFragment.AsKeyGearItemValuationFixed(
-                                                    ratio = 31,
-                                                    valuation = KeyGearItemValuationFragment.Valuation(
-                                                        amount = "1234.00"
-                                                    )
-                                                ),
+                                                asKeyGearItemValuationFixed = KeyGearItemValuationFragment
+                                                    .AsKeyGearItemValuationFixed(
+                                                        ratio = 31,
+                                                        valuation = KeyGearItemValuationFragment.Valuation(
+                                                            amount = "1234.00"
+                                                        )
+                                                    ),
                                                 asKeyGearItemValuationMarketValue = null
                                             )
                                         )
@@ -68,7 +68,7 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                     photos = listOf(
                                         KeyGearItemFragment.Photo(
                                             file = KeyGearItemFragment.File(
-                                                preSignedUrl = "https://images.unsplash.com/photo-1522199755839-a2bacb67c546"
+                                                preSignedUrl = UNSPLASH_TWO
                                             )
                                         )
                                     ),
@@ -88,12 +88,13 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                     fragments = KeyGearItemFragment.Fragments(
                                         KeyGearItemValuationFragment(
                                             valuation = KeyGearItemValuationFragment.Valuation1(
-                                                asKeyGearItemValuationFixed = KeyGearItemValuationFragment.AsKeyGearItemValuationFixed(
-                                                    ratio = 31,
-                                                    valuation = KeyGearItemValuationFragment.Valuation(
-                                                        amount = "1234.00"
-                                                    )
-                                                ),
+                                                asKeyGearItemValuationFixed = KeyGearItemValuationFragment
+                                                    .AsKeyGearItemValuationFixed(
+                                                        ratio = 31,
+                                                        valuation = KeyGearItemValuationFragment.Valuation(
+                                                            amount = "1234.00"
+                                                        )
+                                                    ),
                                                 asKeyGearItemValuationMarketValue = null
                                             )
                                         )
@@ -125,12 +126,13 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                     fragments = KeyGearItemFragment.Fragments(
                                         KeyGearItemValuationFragment(
                                             valuation = KeyGearItemValuationFragment.Valuation1(
-                                                asKeyGearItemValuationFixed = KeyGearItemValuationFragment.AsKeyGearItemValuationFixed(
-                                                    ratio = 31,
-                                                    valuation = KeyGearItemValuationFragment.Valuation(
-                                                        amount = "1234.00"
-                                                    )
-                                                ),
+                                                asKeyGearItemValuationFixed = KeyGearItemValuationFragment
+                                                    .AsKeyGearItemValuationFixed(
+                                                        ratio = 31,
+                                                        valuation = KeyGearItemValuationFragment.Valuation(
+                                                            amount = "1234.00"
+                                                        )
+                                                    ),
                                                 asKeyGearItemValuationMarketValue = null
                                             )
                                         )
@@ -141,6 +143,11 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                     )
                 )
             )
-        )
+            )
+    }
+
+    companion object {
+        private const val UNSPLASH_ONE = "https://images.unsplash.com/photo-1505156868547-9b49f4df4e04"
+        private const val UNSPLASH_TWO = "https://images.unsplash.com/photo-1522199755839-a2bacb67c546"
     }
 }

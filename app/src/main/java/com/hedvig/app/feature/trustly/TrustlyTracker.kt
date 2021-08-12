@@ -1,13 +1,11 @@
 package com.hedvig.app.feature.trustly
 
-import com.mixpanel.android.mpmetrics.MixpanelAPI
+import com.hedvig.app.feature.tracking.TrackingFacade
 
 class TrustlyTracker(
-    private val mixpanel: MixpanelAPI
+    private val trackingFacade: TrackingFacade,
 ) {
-    fun explainerConnect() = mixpanel.track("ONBOARDING_CONNECT_DD_CTA")
-    fun doItLater() = mixpanel.track("ONBOARDING_CONNECT_DD_FAILURE_CTA_LATER")
-    fun retry() = mixpanel.track("ONBOARDING_CONNECT_DD_FAILURE_CTA_RETRY")
-    fun notNow() = mixpanel.track("TRUSTLY_SKIP_BUTTON")
-    fun close() = mixpanel.track("PROFILE_TRUSTLY_CLOSE")
+    fun doItLater() = trackingFacade.track("ONBOARDING_CONNECT_DD_FAILURE_CTA_LATER")
+    fun retry() = trackingFacade.track("ONBOARDING_CONNECT_DD_FAILURE_CTA_RETRY")
+    fun close() = trackingFacade.track("PROFILE_TRUSTLY_CLOSE")
 }

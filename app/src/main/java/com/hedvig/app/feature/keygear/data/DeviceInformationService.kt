@@ -29,17 +29,21 @@ class DeviceInformationService(
         return result.toHexString()
     }
 
-    fun getDeviceType(): DeviceType {
+    fun getDeviceType(viewContext: Context): DeviceType {
         val uiModeManager = context.getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
         when (uiModeManager.currentModeType) {
             Configuration.UI_MODE_TYPE_TELEVISION -> return DeviceType.TV
             Configuration.UI_MODE_TYPE_WATCH -> return DeviceType.WATCH
         }
-
         val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         val displayMetrics = DisplayMetrics()
 
-        windowManager.defaultDisplay.getRealMetrics(displayMetrics)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            viewContext.display?.getRealMetrics(displayMetrics)
+        } else {
+            @Suppress("DEPRECATION")
+            windowManager.defaultDisplay.getRealMetrics(displayMetrics)
+        }
 
         val widthInches = displayMetrics.widthPixels / displayMetrics.xdpi
         val heightInches = displayMetrics.heightPixels / displayMetrics.xdpi

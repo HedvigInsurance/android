@@ -1,9 +1,10 @@
 package com.hedvig.app.feature.profile.ui.charity
 
 import android.os.Bundle
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.Target
+import androidx.core.view.isVisible
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import coil.load
 import com.hedvig.android.owldroid.fragment.CashbackFragment
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.app.BaseActivity
@@ -11,12 +12,14 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityCharityBinding
 import com.hedvig.app.feature.profile.service.ProfileTracker
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.setupToolbar
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
-import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -28,8 +31,7 @@ class CharityActivity : BaseActivity(R.layout.activity_charity) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        binding.root.setEdgeToEdgeSystemUiFlags(true)
+        window.compatSetDecorFitsSystemWindows(false)
 
         setupToolbar(R.id.toolbar, R.drawable.ic_back, true) {
             onBackPressed()
@@ -39,31 +41,33 @@ class CharityActivity : BaseActivity(R.layout.activity_charity) {
     }
 
     private fun loadData() {
-        profileViewModel.data.observe(this) { profileData ->
-            binding.loadingSpinner.loadingSpinner.remove()
+        profileViewModel
+            .data
+            .flowWithLifecycle(lifecycle)
+            .onEach { viewState ->
+                binding.loadingSpinner.loadingSpinner.isVisible = viewState is ProfileViewModel.ViewState.Loading
 
-            profileData?.let { data ->
-                data.getOrNull()?.cashback?.fragments?.cashbackFragment?.let { showSelectedCharity(it) }
-                    ?: data.getOrNull()?.cashbackOptions?.filterNotNull()?.let { showCharityPicker(it) }
+                when (viewState) {
+                    is ProfileViewModel.ViewState.Success -> {
+                        val selectedCharity = viewState.data.cashback?.fragments?.cashbackFragment
+                        if (selectedCharity != null) {
+                            showSelectedCharity(selectedCharity)
+                        } else {
+                            showCharityPicker(viewState.data.cashbackOptions.filterNotNull())
+                        }
+                    }
+                    else -> {
+                    }
+                }
             }
-        }
+            .launchIn(lifecycleScope)
     }
 
     private fun showSelectedCharity(cashback: CashbackFragment) {
         binding.apply {
             selectedCharityContainer.show()
             selectCharityContainer.remove()
-
-            Glide
-                .with(selectedCharityBanner)
-                .load(cashback.imageUrl)
-                .apply(
-                    RequestOptions().override(
-                        Target.SIZE_ORIGINAL,
-                        CASH_BACK_IMAGE_HEIGHT
-                    )
-                )
-                .into(selectedCharityBanner)
+            selectedCharityBanner.load(cashback.imageUrl)
 
             selectedCharityCardTitle.text = cashback.name
             selectedCharityCardParagraph.text = cashback.description
@@ -88,9 +92,5 @@ class CharityActivity : BaseActivity(R.layout.activity_charity) {
                     .show(supportFragmentManager, CharityExplanationBottomSheet.TAG)
             }
         }
-    }
-
-    companion object {
-        private const val CASH_BACK_IMAGE_HEIGHT = 200
     }
 }

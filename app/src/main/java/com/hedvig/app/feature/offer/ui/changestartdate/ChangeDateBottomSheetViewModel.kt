@@ -49,19 +49,11 @@ class ChangeDateBottomSheetViewModel(
         }
     }
 
-    fun onChooseDateClicked() {
-        _viewState.value = if (selectedDates.isNotEmpty()) {
-            ViewState.ShowConfirmationDialog
-        } else {
-            ViewState.Dismiss
-        }
-    }
-
     fun onDialogConfirmed() {
         setNewDateAndDismiss()
     }
 
-    private fun setNewDateAndDismiss() {
+    fun setNewDateAndDismiss() {
         viewModelScope.launch {
             tracker.changeDateContinue()
             _viewState.value = ViewState.Loading(true)
@@ -85,7 +77,6 @@ class ChangeDateBottomSheetViewModel(
         object Dismiss : ViewState()
         data class Loading(val showLoading: Boolean) : ViewState()
         data class Error(val message: String? = null) : ViewState()
-        object ShowConfirmationDialog : ViewState()
         data class Inceptions(
             val inceptions: List<ChangeDateBottomSheetData.Inception>
         ) : ViewState()

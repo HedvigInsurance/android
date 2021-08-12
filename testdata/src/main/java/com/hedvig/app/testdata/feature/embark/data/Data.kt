@@ -400,22 +400,18 @@ val STORY_WITH_TEXT_ACTION_SET = EmbarkStoryDataBuilder(
             action = TextActionSetBuilder(
                 link = STANDARD_FIRST_LINK,
                 textActions = listOf(
-                    EmbarkStoryQuery.TextAction(
-                        data = EmbarkStoryQuery.Data3(
-                            placeholder = "Placeholder",
-                            title = "Hint",
-                            key = "FOO",
-                            mask = null
-                        )
-                    ),
-                    EmbarkStoryQuery.TextAction(
-                        data = EmbarkStoryQuery.Data3(
-                            placeholder = "Second Placeholder",
-                            title = "Second Hint",
-                            key = "BAR",
-                            mask = null
-                        )
-                    ),
+                    TextActionBuilder(
+                        placeholder = "Placeholder",
+                        title = "Hint",
+                        key = "FOO",
+                        mask = null
+                    ).buildTextActionSetAction(),
+                    TextActionBuilder(
+                        placeholder = "Second Placeholder",
+                        title = "Second Hint",
+                        key = "BAR",
+                        mask = null
+                    ).buildTextActionSetAction(),
                 )
             ).build()
         ).build(),
@@ -434,22 +430,18 @@ val STORY_WITH_TEXT_ACTION_SET_FIRST_TEXT_PERSONAL_NUMBER_SECOND_TEXT_EMAIL_VALI
             action = TextActionSetBuilder(
                 link = STANDARD_FIRST_LINK,
                 textActions = listOf(
-                    EmbarkStoryQuery.TextAction(
-                        data = EmbarkStoryQuery.Data3(
-                            placeholder = "901124-1234",
-                            title = "Personal number",
-                            key = "FOO",
-                            mask = PERSONAL_NUMBER
-                        )
-                    ),
-                    EmbarkStoryQuery.TextAction(
-                        data = EmbarkStoryQuery.Data3(
-                            placeholder = "example@email.com",
-                            title = "Email",
-                            key = "BAR",
-                            mask = EMAIL
-                        )
-                    ),
+                    TextActionBuilder(
+                        placeholder = "901124-1234",
+                        title = "Personal number",
+                        key = "FOO",
+                        mask = PERSONAL_NUMBER
+                    ).buildTextActionSetAction(),
+                    TextActionBuilder(
+                        placeholder = "example@email.com",
+                        title = "Email",
+                        key = "BAR",
+                        mask = EMAIL
+                    ).buildTextActionSetAction(),
                 )
             ).build()
         ).build(),
@@ -1432,15 +1424,6 @@ val STORY_WITH_TRACK = EmbarkStoryDataBuilder(
     )
 ).build()
 
-val STORY_WITH_EXTERNAL_REDIRECT = EmbarkStoryDataBuilder(
-    passages = listOf(
-        STANDARD_FIRST_PASSAGE_BUILDER.build(),
-        STANDARD_SECOND_PASSAGE_BUILDER
-            .copy(externalRedirect = EmbarkExternalRedirectLocation.OFFER)
-            .build()
-    )
-).build()
-
 val STORY_WITH_OFFER_REDIRECT = EmbarkStoryDataBuilder(
     passages = listOf(
         STANDARD_FIRST_PASSAGE_BUILDER.build(),
@@ -1659,6 +1642,191 @@ val STORY_WITH_CLOSE_AND_CHAT = EmbarkStoryDataBuilder(
             .build(),
         STANDARD_THIRD_PASSAGE_BUILDER
             .copy(externalRedirect = EmbarkExternalRedirectLocation.CLOSE)
+            .build()
+    )
+).build()
+
+val STORY_WITH_TEXT_ACTION_SET_API = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER
+            .copy(
+                action = TextActionSetBuilder(
+                    api = GraphQLApiBuilder(
+                        type = GraphQLApiBuilder.Type.QUERY,
+                        query = HELLO_QUERY,
+                        results = listOf(
+                            GraphQLResultsFragment(
+                                key = "hello", as_ = "HELLO"
+                            )
+                        ),
+                        errors = listOf(
+                            GraphQLErrorsFragment(
+                                contains = null,
+                                next = GraphQLErrorsFragment.Next(
+                                    fragments = GraphQLErrorsFragment.Next.Fragments(
+                                        LINK_TO_FOURTH_PASSAGE
+                                    )
+                                )
+                            )
+                        ),
+                        next = LINK_TO_THIRD_PASSAGE
+                    ).build(),
+                    link = STANDARD_SECOND_LINK,
+                    textActions = listOf(
+                        TextActionBuilder(
+                            key = "",
+                        ).buildTextActionSetAction()
+                    )
+                ).build()
+            )
+            .build(),
+        STANDARD_SECOND_PASSAGE_BUILDER
+            .build(),
+        STANDARD_THIRD_PASSAGE_BUILDER
+            .copy()
+            .build()
+    )
+).build()
+
+val STORY_WITH_TEXT_ACTION_API = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER
+            .copy(
+                action = TextActionBuilder(
+                    api = GraphQLApiBuilder(
+                        type = GraphQLApiBuilder.Type.QUERY,
+                        query = HELLO_QUERY,
+                        results = listOf(
+                            GraphQLResultsFragment(
+                                key = "hello", as_ = "HELLO"
+                            )
+                        ),
+                        errors = listOf(
+                            GraphQLErrorsFragment(
+                                contains = null,
+                                next = GraphQLErrorsFragment.Next(
+                                    fragments = GraphQLErrorsFragment.Next.Fragments(
+                                        LINK_TO_FOURTH_PASSAGE
+                                    )
+                                )
+                            )
+                        ),
+                        next = LINK_TO_THIRD_PASSAGE
+                    ).build(),
+                    link = STANDARD_SECOND_LINK,
+                    key = "",
+                ).build()
+            )
+            .build(),
+        STANDARD_SECOND_PASSAGE_BUILDER
+            .build(),
+        STANDARD_THIRD_PASSAGE_BUILDER
+            .copy()
+            .build()
+    )
+).build()
+
+val STORY_WITH_SELECT_ACTION_API_SINGLE_OPTION = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER
+            .copy(
+                action = SelectActionBuilder(
+                    options = listOf(
+                        SelectOptionBuilder(
+                            api = GraphQLApiBuilder(
+                                type = GraphQLApiBuilder.Type.QUERY,
+                                query = HELLO_QUERY,
+                                results = listOf(
+                                    GraphQLResultsFragment(
+                                        key = "hello", as_ = "HELLO"
+                                    )
+                                ),
+                                errors = listOf(
+                                    GraphQLErrorsFragment(
+                                        contains = null,
+                                        next = GraphQLErrorsFragment.Next(
+                                            fragments = GraphQLErrorsFragment.Next.Fragments(
+                                                LINK_TO_FOURTH_PASSAGE
+                                            )
+                                        )
+                                    )
+                                ),
+                                next = LINK_TO_THIRD_PASSAGE
+                            ).build(),
+                            link = STANDARD_SECOND_LINK
+                        ).build()
+                    )
+                ).build()
+            )
+            .build(),
+        STANDARD_SECOND_PASSAGE_BUILDER
+            .build(),
+        STANDARD_THIRD_PASSAGE_BUILDER
+            .copy()
+            .build()
+    )
+).build()
+
+val STORY_WITH_SELECT_ACTION_API_MULTIPLE_OPTIONS = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER
+            .copy(
+                action = SelectActionBuilder(
+                    options = listOf(
+                        SelectOptionBuilder(
+                            api = GraphQLApiBuilder(
+                                type = GraphQLApiBuilder.Type.QUERY,
+                                query = HELLO_QUERY,
+                                results = listOf(
+                                    GraphQLResultsFragment(
+                                        key = "hello", as_ = "HELLO"
+                                    )
+                                ),
+                                errors = listOf(
+                                    GraphQLErrorsFragment(
+                                        contains = null,
+                                        next = GraphQLErrorsFragment.Next(
+                                            fragments = GraphQLErrorsFragment.Next.Fragments(
+                                                LINK_TO_FOURTH_PASSAGE
+                                            )
+                                        )
+                                    )
+                                ),
+                                next = LINK_TO_FOURTH_PASSAGE
+                            ).build(),
+                            link = STANDARD_SECOND_LINK
+                        ).build(),
+                        SelectOptionBuilder(
+                            api = GraphQLApiBuilder(
+                                type = GraphQLApiBuilder.Type.QUERY,
+                                query = HELLO_QUERY,
+                                results = listOf(
+                                    GraphQLResultsFragment(
+                                        key = "hello", as_ = "HELLO"
+                                    )
+                                ),
+                                errors = listOf(
+                                    GraphQLErrorsFragment(
+                                        contains = null,
+                                        next = GraphQLErrorsFragment.Next(
+                                            fragments = GraphQLErrorsFragment.Next.Fragments(
+                                                LINK_TO_FOURTH_PASSAGE
+                                            )
+                                        )
+                                    )
+                                ),
+                                next = LINK_TO_THIRD_PASSAGE
+                            ).build(),
+                            link = STANDARD_SECOND_LINK
+                        ).build()
+                    )
+                ).build()
+            )
+            .build(),
+        STANDARD_SECOND_PASSAGE_BUILDER
+            .build(),
+        STANDARD_THIRD_PASSAGE_BUILDER
+            .copy()
             .build()
     )
 ).build()

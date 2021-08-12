@@ -1,17 +1,17 @@
 package com.hedvig.app.feature.embark.screens
 
 import android.view.View
-import com.agoda.kakao.dialog.KAlertDialog
-import com.agoda.kakao.edit.KEditText
-import com.agoda.kakao.intent.KIntent
-import com.agoda.kakao.recycler.KRecyclerItem
-import com.agoda.kakao.recycler.KRecyclerView
-import com.agoda.kakao.screen.Screen
-import com.agoda.kakao.text.KButton
-import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
+import io.github.kakaocup.kakao.dialog.KAlertDialog
+import io.github.kakaocup.kakao.edit.KEditText
+import io.github.kakaocup.kakao.intent.KIntent
+import io.github.kakaocup.kakao.recycler.KRecyclerItem
+import io.github.kakaocup.kakao.recycler.KRecyclerView
+import io.github.kakaocup.kakao.screen.Screen
+import io.github.kakaocup.kakao.text.KButton
+import io.github.kakaocup.kakao.text.KTextView
 import org.hamcrest.Matcher
 
 class EmbarkScreen : Screen<EmbarkScreen>() {

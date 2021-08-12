@@ -21,21 +21,19 @@ class MockReferralsEditCodeViewModel : ReferralsEditCodeViewModel() {
             {
                 _isSubmitting.postValue(false)
                 if (!shouldSucceed) {
-                    _data.postValue(Result.failure(Error()))
+                    _data.value = ViewState.Error
                     return@postDelayed
                 }
 
-                _data.postValue(
-                    Result.success(
-                        when (variant) {
-                            EditCodeDataBuilder.ResultVariant.SUCCESS -> EDIT_CODE_DATA_SUCCESS
-                            EditCodeDataBuilder.ResultVariant.ALREADY_TAKEN -> EDIT_CODE_DATA_ALREADY_TAKEN
-                            EditCodeDataBuilder.ResultVariant.TOO_SHORT -> EDIT_CODE_DATA_TOO_SHORT
-                            EditCodeDataBuilder.ResultVariant.TOO_LONG -> EDIT_CODE_DATA_TOO_LONG
-                            EditCodeDataBuilder.ResultVariant.EXCEEDED_MAX_UPDATES -> EDIT_CODE_DATA_TOO_MANY_CHANGES
-                            EditCodeDataBuilder.ResultVariant.UNKNOWN -> EDIT_CODE_DATA_UNKNOWN_RESULT
-                        }
-                    )
+                _data.value = ViewState.Success(
+                    when (variant) {
+                        EditCodeDataBuilder.ResultVariant.SUCCESS -> EDIT_CODE_DATA_SUCCESS
+                        EditCodeDataBuilder.ResultVariant.ALREADY_TAKEN -> EDIT_CODE_DATA_ALREADY_TAKEN
+                        EditCodeDataBuilder.ResultVariant.TOO_SHORT -> EDIT_CODE_DATA_TOO_SHORT
+                        EditCodeDataBuilder.ResultVariant.TOO_LONG -> EDIT_CODE_DATA_TOO_LONG
+                        EditCodeDataBuilder.ResultVariant.EXCEEDED_MAX_UPDATES -> EDIT_CODE_DATA_TOO_MANY_CHANGES
+                        EditCodeDataBuilder.ResultVariant.UNKNOWN -> EDIT_CODE_DATA_UNKNOWN_RESULT
+                    }
                 )
             },
             1000

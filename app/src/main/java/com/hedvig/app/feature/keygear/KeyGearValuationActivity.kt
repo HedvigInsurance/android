@@ -21,23 +21,23 @@ import com.hedvig.app.databinding.ActivityKeyGearValuationBinding
 import com.hedvig.app.feature.keygear.ui.ValuationData
 import com.hedvig.app.feature.keygear.ui.createitem.label
 import com.hedvig.app.util.extensions.colorAttr
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.onChange
+import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
+import com.hedvig.app.util.extensions.view.applyNavigationBarInsetsMargin
+import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.view.updatePadding
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.safeLet
 import com.hedvig.app.util.spring
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
-import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.DateFormatSymbols
 import java.time.LocalDate
 import java.util.Calendar
-import java.util.Locale
 
 class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuation) {
     private val model: KeyGearValuationViewModel by viewModel()
@@ -57,6 +57,11 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
         var maxInsurableAmount = 0
 
         binding.apply {
+            window.compatSetDecorFitsSystemWindows(false)
+            topBar.applyStatusBarInsets()
+            scrollView.applyNavigationBarInsets()
+            saveContainer.applyNavigationBarInsetsMargin()
+
             saveContainer.measure(
                 View.MeasureSpec.makeMeasureSpec(
                     root.width,
@@ -69,20 +74,6 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
                 bottom = scrollView.paddingBottom + saveContainer.measuredHeight
             )
 
-            root.setEdgeToEdgeSystemUiFlags(true)
-
-            topBar.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
-            }
-
-            scrollView.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
-            }
-
-            saveContainer.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
-            }
-
             model.data.observe(this@KeyGearValuationActivity) { data ->
                 safeLet(
                     data,
@@ -90,8 +81,7 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
                 ) { d, amount ->
                     maxInsurableAmount = amount.toBigDecimal().toInt()
                     val category =
-                        resources.getString(d.fragments.keyGearItemFragment.category.label)
-                            .toLowerCase(Locale.ROOT)
+                        resources.getString(d.fragments.keyGearItemFragment.category.label).lowercase()
                     noCoverage.text = getString(R.string.KEY_GEAR_NOT_COVERED, category)
                     body.text =
                         getString(R.string.KEY_GEAR_ITEM_VIEW_ADD_PURCHASE_DATE_BODY, category)

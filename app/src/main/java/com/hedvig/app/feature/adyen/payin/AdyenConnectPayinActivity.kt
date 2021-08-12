@@ -1,15 +1,14 @@
 package com.hedvig.app.feature.adyen.payin
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import com.adyen.checkout.base.model.PaymentMethodsApiResponse
-import com.adyen.checkout.base.model.payments.Amount
 import com.adyen.checkout.card.CardConfiguration
+import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.adyen.checkout.core.api.Environment
 import com.adyen.checkout.dropin.DropIn
 import com.adyen.checkout.dropin.DropInConfiguration
+import com.adyen.checkout.dropin.DropInResult
 import com.adyen.checkout.googlepay.GooglePayConfiguration
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
@@ -34,7 +33,6 @@ class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activ
     private val marketManager: MarketManager by inject()
     private lateinit var paymentMethods: PaymentMethodsApiResponse
     private lateinit var currency: AdyenCurrency
-    private var hasConnected = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -106,12 +104,12 @@ class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activ
     }
 
     private fun startAdyenPayment() {
-        val cardConfig = CardConfiguration.Builder(this, getString(R.string.ADYEN_PUBLIC_KEY))
+        val cardConfig = CardConfiguration.Builder(this, getString(R.string.ADYEN_CLIENT_KEY))
             .setShowStorePaymentField(false)
             .build()
 
         val googlePayConfig =
-            GooglePayConfiguration.Builder(this, getString(R.string.ADYEN_MERCHANT_ACCOUNT))
+            GooglePayConfiguration.Builder(this, getString(R.string.ADYEN_CLIENT_KEY))
                 .setGooglePayEnvironment(
                     if (isDebug()) {
                         GOOGLE_WALLET_ENVIRONMENT_TEST
@@ -123,7 +121,8 @@ class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activ
         val dropInConfiguration = DropInConfiguration
             .Builder(
                 this,
-                intent, AdyenPayinDropInService::class.java
+                AdyenPayinDropInService::class.java,
+                getString(R.string.ADYEN_CLIENT_KEY)
             )
             .addCardConfiguration(cardConfig)
             .addGooglePayConfiguration(googlePayConfig)
@@ -135,41 +134,29 @@ class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activ
                     Environment.EUROPE
                 }
             )
-            .setAmount(
-                Amount().apply {
-                    currency = this@AdyenConnectPayinActivity.currency.toString()
-                    value = 0
-                }
-            )
             .build()
 
         DropIn.startPayment(this, paymentMethods, dropInConfiguration)
     }
 
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-        if (intent?.getStringExtra(DropIn.RESULT_KEY) == ADYEN_RESULT_CODE_AUTHORISED) {
-            hasConnected = true
-            connectPaymentViewModel.navigateTo(ConnectPaymentScreenState.Result(success = true))
-        }
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        // Replace with new result API when adyens handleActivityResult is updated
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (
-            !isPostSign() &&
-            !hasConnected &&
-            resultCode == Activity.RESULT_CANCELED
-        ) {
-            finish()
+        when (DropIn.handleActivityResult(requestCode, resultCode, data)) {
+            is DropInResult.CancelledByUser -> finish()
+            is DropInResult.Error -> connectPaymentViewModel.navigateTo(
+                ConnectPaymentScreenState.Result(success = false)
+            )
+            is DropInResult.Finished -> {
+                connectPaymentViewModel.navigateTo(ConnectPaymentScreenState.Result(success = true))
+            }
         }
     }
 
     private fun isPostSign() = intent.getBooleanExtra(IS_POST_SIGN, false)
 
     companion object {
-        private const val ADYEN_RESULT_CODE_AUTHORISED = "Authorised"
 
         private const val GOOGLE_WALLET_ENVIRONMENT_PRODUCTION = 1
         private const val GOOGLE_WALLET_ENVIRONMENT_TEST = 3

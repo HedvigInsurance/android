@@ -6,7 +6,6 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import androidx.core.view.updatePadding
 import androidx.core.widget.NestedScrollView
 import androidx.dynamicanimation.animation.SpringAnimation
 import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
@@ -25,11 +24,12 @@ import com.hedvig.app.util.boundedColorLerp
 import com.hedvig.app.util.boundedProgress
 import com.hedvig.app.util.extensions.compatColor
 import com.hedvig.app.util.extensions.compatDrawable
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
+import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
+import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.spring
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
-import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -52,7 +52,9 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
         supportPostponeEnterTransition()
 
         binding.apply {
-            root.setEdgeToEdgeSystemUiFlags(true)
+            window.compatSetDecorFitsSystemWindows(false)
+            scrollViewContent.applyNavigationBarInsets()
+
             initializeToolbar()
 
             photosBinder = PhotosBinder(
@@ -65,10 +67,6 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
             nameBinder = NameBinder(nameSection, model, tracker)
             receiptBinder =
                 ReceiptBinder(receiptSection, supportFragmentManager, tracker)
-
-            scrollViewContent.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
-            }
         }
 
         model.data.observe(this) { data ->
@@ -102,10 +100,7 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
 
     private fun initializeToolbar() {
         binding.apply {
-            toolbar.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
-            }
-
+            toolbar.applyStatusBarInsets()
             setSupportActionBar(toolbar)
             supportActionBar?.setDisplayShowTitleEnabled(false)
             val backDrawable = compatDrawable(R.drawable.ic_back)

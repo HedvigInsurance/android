@@ -8,7 +8,6 @@ import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.coroutines.toFlow
 import com.apollographql.apollo.fetcher.ApolloResponseFetchers
 import com.hedvig.android.owldroid.fragment.CostFragment
-import com.hedvig.android.owldroid.graphql.ApproveQuotesMutation
 import com.hedvig.android.owldroid.graphql.LastQuoteIdQuery
 import com.hedvig.android.owldroid.graphql.OfferClosedMutation
 import com.hedvig.android.owldroid.graphql.OfferQuery

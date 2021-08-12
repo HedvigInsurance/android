@@ -7,9 +7,8 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.ContractDetailDocumentsFragmentBinding
 import com.hedvig.app.feature.documents.DocumentAdapter
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
-import com.hedvig.app.util.extensions.view.updatePadding
+import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class DocumentsFragment : Fragment(R.layout.contract_detail_documents_fragment) {
@@ -18,10 +17,7 @@ class DocumentsFragment : Fragment(R.layout.contract_detail_documents_fragment) 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.root.apply {
-            doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
-            }
-
+            applyNavigationBarInsets()
             val documentsAdapter = DocumentAdapter {}
             adapter = documentsAdapter
             model.documentsList.observe(viewLifecycleOwner, documentsAdapter::submitList)

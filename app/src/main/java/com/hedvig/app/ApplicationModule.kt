@@ -1,8 +1,13 @@
 package com.hedvig.app
 
 import android.content.Context
-import android.graphics.drawable.PictureDrawable
+import android.content.Context.MODE_PRIVATE
+import android.content.SharedPreferences
 import android.os.Build
+import coil.ImageLoader
+import coil.decode.GifDecoder
+import coil.decode.ImageDecoderDecoder
+import coil.decode.SvgDecoder
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.cache.normalized.NormalizedCacheFactory
 import com.apollographql.apollo.cache.normalized.lru.EvictionPolicy
@@ -10,8 +15,12 @@ import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCache
 import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCacheFactory
 import com.apollographql.apollo.subscription.SubscriptionConnectionParams
 import com.apollographql.apollo.subscription.WebSocketSubscriptionTransport
-import com.bumptech.glide.RequestBuilder
 import com.google.firebase.messaging.FirebaseMessaging
+import com.hedvig.app.authenticate.AuthenticationTokenService
+import com.hedvig.app.authenticate.LoginStatusService
+import com.hedvig.app.authenticate.LogoutUseCase
+import com.hedvig.app.authenticate.SharedPreferencesAuthenticationTokenService
+import com.hedvig.app.authenticate.SharedPreferencesLoginStatusService
 import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModel
@@ -29,7 +38,6 @@ import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
 import com.hedvig.app.feature.embark.EmbarkRepository
 import com.hedvig.app.feature.embark.EmbarkTracker
-import com.hedvig.app.feature.embark.EmbarkTrackerImpl
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.EmbarkViewModelImpl
 import com.hedvig.app.feature.embark.ValueStore
@@ -129,6 +137,9 @@ import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.MarketManagerImpl
 import com.hedvig.app.feature.settings.SettingsViewModel
+import com.hedvig.app.feature.tracking.MixpanelTracker
+import com.hedvig.app.feature.tracking.TrackerSink
+import com.hedvig.app.feature.tracking.TrackingFacade
 import com.hedvig.app.feature.trustly.TrustlyRepository
 import com.hedvig.app.feature.trustly.TrustlyTracker
 import com.hedvig.app.feature.trustly.TrustlyViewModel
@@ -145,21 +156,19 @@ import com.hedvig.app.feature.zignsec.usecase.StartDanishAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.StartNorwegianAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthStatusUseCase
 import com.hedvig.app.service.FileService
-import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.app.service.push.managers.PaymentNotificationManager
 import com.hedvig.app.terminated.TerminatedTracker
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.ApolloTimberLogger
 import com.hedvig.app.util.apollo.CacheManager
-import com.hedvig.app.util.extensions.getAuthenticationToken
-import com.hedvig.app.util.svg.GlideApp
-import com.hedvig.app.util.svg.SvgSoftwareLayerSetter
+import com.hedvig.app.util.featureflags.FeatureManager
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.dsl.bind
 import org.koin.dsl.module
 import timber.log.Timber
 import java.time.Clock
@@ -192,7 +201,7 @@ val applicationModule = module {
     single<NormalizedCacheFactory<LruNormalizedCache>> {
         LruNormalizedCacheFactory(
             EvictionPolicy.builder().maxSizeBytes(
-                1000 * 1024
+                (1000 * 1024).toLong()
             ).build()
         )
     }
@@ -205,7 +214,7 @@ val applicationModule = module {
                 val builder = original
                     .newBuilder()
                     .method(original.method, original.body)
-                get<Context>().getAuthenticationToken()?.let { token ->
+                get<AuthenticationTokenService>().authenticationToken?.let { token ->
                     builder.header("Authorization", token)
                 }
                 chain.proceed(builder.build())
@@ -235,7 +244,9 @@ val applicationModule = module {
             .serverUrl(get<HedvigApplication>().graphqlUrl)
             .okHttpClient(get())
             .subscriptionConnectionParams {
-                SubscriptionConnectionParams(mapOf("Authorization" to get<Context>().getAuthenticationToken()))
+                SubscriptionConnectionParams(
+                    mapOf("Authorization" to get<AuthenticationTokenService>().authenticationToken)
+                )
             }
             .subscriptionTransportFactory(
                 WebSocketSubscriptionTransport.Factory(
@@ -251,11 +262,6 @@ val applicationModule = module {
             builder.logger(ApolloTimberLogger())
         }
         builder.build()
-    }
-    single<RequestBuilder<PictureDrawable>> {
-        GlideApp.with(get<Context>())
-            .`as`(PictureDrawable::class.java)
-            .listener(SvgSoftwareLayerSetter())
     }
 }
 
@@ -296,8 +302,8 @@ fun getLocale(context: Context, market: Market?): Locale {
 val viewModelModule = module {
     viewModel { ClaimsViewModel(get(), get()) }
     viewModel { BaseTabViewModel(get(), get()) }
-    viewModel { ChatViewModel(get()) }
-    viewModel { UserViewModel(get(), get()) }
+    viewModel { ChatViewModel(get(), get(), get(), get()) }
+    viewModel { UserViewModel(get(), get(), get()) }
     viewModel { RedeemCodeViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
     viewModel { SettingsViewModel(get()) }
@@ -334,7 +340,7 @@ val whatsNewModule = module {
 
 val insuranceModule = module {
     viewModel<InsuranceViewModel> { InsuranceViewModelImpl(get()) }
-    viewModel<ContractDetailViewModel> { ContractDetailViewModelImpl(get(), get(), get()) }
+    viewModel<ContractDetailViewModel> { ContractDetailViewModelImpl(get(), get(), get(), get()) }
 }
 
 val marketingModule = module {
@@ -342,13 +348,13 @@ val marketingModule = module {
 }
 
 val offerModule = module {
-    viewModel<OfferViewModel> { (ids: List<String>) ->
-        OfferViewModelImpl(ids, get(), get(), get(), get(), get(), get(), get())
+    viewModel<OfferViewModel> { (ids: List<String>, shouldShowOnNextAppStart: Boolean) ->
+        OfferViewModelImpl(ids, get(), get(), get(), get(), get(), get(), get(), shouldShowOnNextAppStart)
     }
 }
 
 val profileModule = module {
-    viewModel<ProfileViewModel> { ProfileViewModelImpl(get(), get()) }
+    viewModel<ProfileViewModel> { ProfileViewModelImpl(get(), get(), get()) }
 }
 
 val keyGearModule = module {
@@ -418,12 +424,13 @@ val changeDateBottomSheetModule = module {
 }
 
 val checkoutModule = module {
-    viewModel { (ids: List<String>) -> CheckoutViewModel(ids, get(), get(), get(), get()) }
+    viewModel { (ids: List<String>) -> CheckoutViewModel(ids, get(), get(), get(), get(), get()) }
 }
 
 val serviceModule = module {
     single { FileService(get()) }
-    single { LoginStatusService(get(), get()) }
+    single<LoginStatusService> { SharedPreferencesLoginStatusService(get(), get(), get()) }
+    single<AuthenticationTokenService> { SharedPreferencesAuthenticationTokenService(get()) }
     single { TabNotificationService(get()) }
     single { DeviceInformationService(get()) }
 }
@@ -472,6 +479,11 @@ val trackerModule = module {
     single { MarketingTracker(get()) }
     single { HomeTracker(get()) }
     single { ScreenTracker(get()) }
+    single {
+        // Workaround for https://github.com/InsertKoinIO/koin/issues/1146
+        TrackingFacade(getAll<TrackerSink>().distinct())
+    }
+    single { MixpanelTracker(get()) } bind TrackerSink::class
 }
 
 val localeBroadcastManagerModule = module {
@@ -492,7 +504,9 @@ val notificationModule = module {
 
 val clockModule = module { single { Clock.systemDefaultZone() } }
 
-val embarkTrackerModule = module { single<EmbarkTracker> { EmbarkTrackerImpl(get()) } }
+val embarkTrackerModule = module {
+    single { EmbarkTracker(get()) }
+}
 
 val localeManagerModule = module {
     single { LocaleManager(get(), get()) }
@@ -510,6 +524,7 @@ val useCaseModule = module {
     single { SignQuotesUseCase(get(), get()) }
     single { ApproveQuotesUseCase(get(), get(), get()) }
     single { RefreshQuotesUseCase(get()) }
+    single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get()) }
 }
 
 val cacheManagerModule = module {
@@ -518,4 +533,27 @@ val cacheManagerModule = module {
 
 val pushTokenManagerModule = module {
     single { PushTokenManager(FirebaseMessaging.getInstance()) }
+}
+
+val sharedPreferencesModule = module {
+    single<SharedPreferences> { get<Context>().getSharedPreferences("hedvig_shared_preference", MODE_PRIVATE) }
+}
+
+val featureRuntimeBehaviorModule = module {
+    single { FeatureManager(get(), isDebug()) }
+}
+
+val coilModule = module {
+    single {
+        ImageLoader.Builder(get())
+            .componentRegistry {
+                add(SvgDecoder(get()))
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    add(ImageDecoderDecoder(get()))
+                } else {
+                    add(GifDecoder())
+                }
+            }
+            .build()
+    }
 }

@@ -25,13 +25,11 @@ jobs:
           cat <<EOT > app/src/debug/res/values/adyen.xml
           <?xml version="1.0" encoding="utf-8"?>
           <resources>
-              <string name="ADYEN_PUBLIC_KEY" translatable="false">${ADYEN_PUBLIC_KEY}</string>
-              <string name="ADYEN_MERCHANT_ACCOUNT" translatable="false">${ADYEN_MERCHANT_ACCOUNT}</string>
+              <string name="ADYEN_CLIENT_KEY" translatable="false">${ADYEN_CLIENT_KEY}</string>
           </resources>
           EOT
         env:
-          ADYEN_PUBLIC_KEY: ${{ secrets.ADYEN_PUBLIC_KEY_TEST }}
-          ADYEN_MERCHANT_ACCOUNT: ${{ secrets.ADYEN_MERCHANT_ACCOUNT_TEST }}
+          ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_CLIENT_KEY_TEST }}
       - name: Create Mixpanel secret
         run: |
           cat <<EOT > app/src/debug/res/values/mixpanel.xml
@@ -100,13 +98,11 @@ jobs:
           cat <<EOT > app/src/debug/res/values/adyen.xml
           <?xml version="1.0" encoding="utf-8"?>
           <resources>
-              <string name="ADYEN_PUBLIC_KEY" translatable="false">${ADYEN_PUBLIC_KEY}</string>
-              <string name="ADYEN_MERCHANT_ACCOUNT" translatable="false">${ADYEN_MERCHANT_ACCOUNT}</string>
+              <string name="ADYEN_CLIENT_KEY" translatable="false">${ADYEN_CLIENT_KEY}</string>
           </resources>
           EOT
         env:
-          ADYEN_PUBLIC_KEY: ${{ secrets.ADYEN_PUBLIC_KEY_TEST }}
-          ADYEN_MERCHANT_ACCOUNT: ${{ secrets.ADYEN_MERCHANT_ACCOUNT_TEST }}
+          ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_CLIENT_KEY_TEST }}
       - name: Create Mixpanel secret
         run: |
           cat <<EOT > app/src/debug/res/values/mixpanel.xml
@@ -163,13 +159,11 @@ jobs:
           cat <<EOT > app/src/debug/res/values/adyen.xml
           <?xml version="1.0" encoding="utf-8"?>
           <resources>
-              <string name="ADYEN_PUBLIC_KEY" translatable="false">${ADYEN_PUBLIC_KEY}</string>
-              <string name="ADYEN_MERCHANT_ACCOUNT" translatable="false">${ADYEN_MERCHANT_ACCOUNT}</string>
+              <string name="ADYEN_CLIENT_KEY" translatable="false">${ADYEN_CLIENT_KEY}</string>
           </resources>
           EOT
         env:
-          ADYEN_PUBLIC_KEY: ${{ secrets.ADYEN_PUBLIC_KEY_TEST }}
-          ADYEN_MERCHANT_ACCOUNT: ${{ secrets.ADYEN_MERCHANT_ACCOUNT_TEST }}
+          ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_CLIENT_KEY_TEST }}
       - name: Create Mixpanel secret
         run: |
           cat <<EOT > app/src/debug/res/values/mixpanel.xml
@@ -215,11 +209,16 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: Homebrew/actions/setup-homebrew@master
+      - run: sudo apt-get install libxml2-utils
       - run: brew install ktlint --build-from-source ktlint
       - name: run ktlint
         continue-on-error: true
         run: |
-          ktlint --reporter=checkstyle,output=build/ktlint-report-in-checkstyle-format.xml
+          ktlint "\!**/generated/**" "**/src/**/*.kt*" --reporter=checkstyle,output=build/ktlint-report-in-checkstyle-format.xml
       - uses: yutailang0119/action-ktlint@v1.0.0
         with:
           xml_path: build/ktlint-report-in-checkstyle-format.xml
+      - run: |
+          if [[ $(xmllint --xpath "count(//file)" build/ktlint-report-in-checkstyle-format.xml) -gt 0 ]]; then
+              exit 1;
+          fi;

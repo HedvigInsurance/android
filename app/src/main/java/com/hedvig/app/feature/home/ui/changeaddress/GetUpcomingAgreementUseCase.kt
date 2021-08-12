@@ -30,7 +30,12 @@ class GetUpcomingAgreementUseCase(
                     Error.NoContractsError
                 } else {
                     contracts.firstOrNull {
-                        it.fragments.upcomingAgreementFragment.upcomingAgreementDetailsTable != null
+                        it.fragments.upcomingAgreementFragment
+                            .upcomingAgreementDetailsTable
+                            .fragments
+                            .tableFragment
+                            .sections
+                            .isNotEmpty()
                     }
                         ?.fragments
                         ?.upcomingAgreementFragment

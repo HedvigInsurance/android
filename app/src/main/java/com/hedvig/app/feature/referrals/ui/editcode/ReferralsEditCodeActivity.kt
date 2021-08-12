@@ -7,17 +7,22 @@ import android.os.Bundle
 import android.view.inputmethod.EditorInfo
 import androidx.core.view.doOnLayout
 import androidx.core.view.updatePadding
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityReferralsEditCodeBinding
 import com.hedvig.app.feature.referrals.service.ReferralsTracker
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.showAlert
+import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
+import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.dismissKeyboard
 import com.hedvig.app.util.extensions.viewBinding
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
-import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import e
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -34,18 +39,12 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
         super.onCreate(savedInstanceState)
 
         binding.apply {
-            root.setEdgeToEdgeSystemUiFlags(true)
+            window.compatSetDecorFitsSystemWindows(false)
 
             toolbar.doOnLayout { applyInsets(it.height) }
+            toolbar.applyStatusBarInsets()
 
-            toolbar.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
-                applyInsets(view.height)
-            }
-
-            scrollView.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
-            }
+            scrollView.applyNavigationBarInsets()
 
             toolbar.setNavigationOnClickListener {
                 onBackPressed()
@@ -114,49 +113,57 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
             }
             model.dirty.observe(this@ReferralsEditCodeActivity) { dirty = it }
 
-            model.data.observe(this@ReferralsEditCodeActivity) { data ->
-
-                if (data.isFailure) {
-                    codeContainer.error =
+            model
+                .data
+                .flowWithLifecycle(lifecycle)
+                .onEach { viewState ->
+                    codeContainer.error = if (viewState is ReferralsEditCodeViewModel.ViewState.Error) {
                         getString(R.string.referrals_change_code_sheet_general_error)
-                    return@observe
-                }
-
-                data.getOrNull()?.updateReferralCampaignCode?.let { urcc ->
-                    urcc.asSuccessfullyUpdatedCode?.let {
-                        codeContainer.error = null
-                        finish()
-                        return@observe
-                    }
-                    urcc.asCodeAlreadyTaken?.let {
-                        codeContainer.error =
-                            getString(R.string.referrals_change_code_sheet_error_claimed_code)
-                        return@observe
-                    }
-                    urcc.asCodeTooShort?.let {
-                        codeContainer.error =
-                            getString(R.string.referrals_change_code_sheet_general_error)
-                        return@observe
-                    }
-                    urcc.asCodeTooLong?.let {
-                        codeContainer.error =
-                            getString(R.string.referrals_change_code_sheet_error_max_length)
-                        return@observe
-                    }
-                    urcc.asExceededMaximumUpdates?.maximumNumberOfUpdates?.let { maximumNumberOfUpdates ->
-                        codeContainer.error =
-                            getString(
-                                R.string.referrals_change_code_sheet_error_change_limit_reached,
-                                maximumNumberOfUpdates
-                            )
-                        return@observe
+                    } else {
+                        null
                     }
 
-                    codeContainer.error =
-                        getString(R.string.referrals_change_code_sheet_general_error)
-                    return@observe
+                    when (viewState) {
+                        is ReferralsEditCodeViewModel.ViewState.Success -> {
+                            val urcc = viewState.data.updateReferralCampaignCode
+
+                            urcc.asSuccessfullyUpdatedCode?.let {
+                                codeContainer.error = null
+                                finish()
+                                return@onEach
+                            }
+                            urcc.asCodeAlreadyTaken?.let {
+                                codeContainer.error =
+                                    getString(R.string.referrals_change_code_sheet_error_claimed_code)
+                                return@onEach
+                            }
+                            urcc.asCodeTooShort?.let {
+                                codeContainer.error =
+                                    getString(R.string.referrals_change_code_sheet_general_error)
+                                return@onEach
+                            }
+                            urcc.asCodeTooLong?.let {
+                                codeContainer.error =
+                                    getString(R.string.referrals_change_code_sheet_error_max_length)
+                                return@onEach
+                            }
+                            urcc.asExceededMaximumUpdates?.maximumNumberOfUpdates?.let { maximumNumberOfUpdates ->
+                                codeContainer.error =
+                                    getString(
+                                        R.string.referrals_change_code_sheet_error_change_limit_reached,
+                                        maximumNumberOfUpdates
+                                    )
+                                return@onEach
+                            }
+
+                            codeContainer.error =
+                                getString(R.string.referrals_change_code_sheet_general_error)
+                        }
+                        else -> {
+                        }
+                    }
                 }
-            }
+                .launchIn(lifecycleScope)
         }
     }
 

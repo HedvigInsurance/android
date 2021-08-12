@@ -478,7 +478,12 @@ class ReferralsAdapter(
             ReferralsModel.Header.LoadingHeader,
             ReferralsModel.Code.LoadingCode,
             ReferralsModel.InvitesHeader,
-            ReferralsModel.Referral.LoadingReferral
+            ReferralsModel.Referral.LoadingReferral,
+        )
+
+        val ERROR_STATE = listOf(
+            ReferralsModel.Title,
+            ReferralsModel.Error,
         )
     }
 }

@@ -37,7 +37,9 @@ data class PreviousInsurerActionBuilder(
                                 fragments = EmbarkStoryQuery.Variants.Fragments(
                                     iconVariantsFragment = IconVariantsFragment(
                                         dark = IconVariantsFragment.Dark(svgUrl = ""),
-                                        light = IconVariantsFragment.Light(svgUrl = "/app-content-service/trygg_hansa.svg")
+                                        light = IconVariantsFragment.Light(
+                                            svgUrl = "/app-content-service/trygg_hansa.svg"
+                                        )
                                     )
                                 )
                             )

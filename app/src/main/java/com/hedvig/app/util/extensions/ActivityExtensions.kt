@@ -4,32 +4,40 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.provider.Settings
-import android.util.DisplayMetrics
 import android.view.View
+import android.view.WindowInsets
 import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
+import androidx.core.view.WindowInsetsCompat
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticateDialog
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.offer.ui.OfferActivity
-import com.hedvig.app.service.LoginStatusService.Companion.IS_VIEWING_OFFER
 import com.hedvig.app.util.extensions.view.setupToolbar
 import e
 
-val Activity.displayMetrics: DisplayMetrics
-    get() {
-        val metrics = DisplayMetrics()
-        windowManager.defaultDisplay.getMetrics(metrics)
-        return metrics
-    }
-
 val Activity.screenWidth: Int
     get() = window.decorView.measuredWidth
+
+val Activity.windowHeight: Int
+    get() {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val metrics = windowManager.currentWindowMetrics
+            val insets = metrics.windowInsets.getInsets(WindowInsets.Type.systemBars())
+            metrics.bounds.height() - insets.bottom - insets.top
+        } else {
+            val view = window.decorView
+            val insets = WindowInsetsCompat.toWindowInsetsCompat(view.rootWindowInsets, view)
+                .getInsets(WindowInsetsCompat.Type.systemBars())
+            resources.displayMetrics.heightPixels - insets.bottom - insets.top
+        }
+    }
 
 fun AppCompatActivity.setupToolbar(
     @IdRes toolbar: Int,
@@ -126,9 +134,12 @@ private fun Activity.openAppSettings() {
 
 fun AppCompatActivity.handleSingleSelectLink(value: String) = when (value) {
     "message.forslag.dashboard" -> {
-        storeBoolean(IS_VIEWING_OFFER, true)
         startActivity(
-            Intent(this, OfferActivity::class.java).also {
+            OfferActivity.newInstance(
+                context = this,
+                quoteIds = emptyList(),
+                shouldShowOnNextAppStart = true
+            ).also {
                 it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 it.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
             }

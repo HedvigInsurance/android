@@ -1,10 +1,10 @@
 package com.hedvig.app.feature.keygear.screens
 
-import com.agoda.kakao.text.KButton
-import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearFragment
 import com.kaspersky.kaspresso.screens.KScreen
+import io.github.kakaocup.kakao.text.KButton
+import io.github.kakaocup.kakao.text.KTextView
 
 object KeyGearScreen : KScreen<KeyGearScreen>() {
     override val layoutId = R.layout.generic_error

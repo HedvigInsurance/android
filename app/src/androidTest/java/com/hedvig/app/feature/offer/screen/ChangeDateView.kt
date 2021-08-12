@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.offer.screen
 
-import com.agoda.kakao.check.KCheckBox
 import com.hedvig.app.R
 import com.kaspersky.kaspresso.screens.KScreen
+import io.github.kakaocup.kakao.check.KCheckBox
 
 object ChangeDateView : KScreen<ChangeDateView>() {
     override val layoutId = R.layout.change_date

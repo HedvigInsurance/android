@@ -1,16 +1,23 @@
 package com.hedvig.app.feature.insurance.ui
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.feature.insurance.data.InsuranceRepository
 import e
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 abstract class InsuranceViewModel : ViewModel() {
-    protected val _data = MutableLiveData<Result<InsuranceQuery.Data>>()
-    val data: MutableLiveData<Result<InsuranceQuery.Data>> = _data
+    sealed class ViewState {
+        data class Success(val data: InsuranceQuery.Data) : ViewState()
+        object Loading : ViewState()
+        object Error : ViewState()
+    }
+
+    protected val _data = MutableStateFlow<ViewState>(ViewState.Loading)
+    val data = _data.asStateFlow()
     abstract fun load()
 }
 
@@ -31,17 +38,17 @@ class InsuranceViewModelImpl(
             if (dashboardResponse.isFailure) {
                 dashboardResponse.exceptionOrNull()?.let { exception ->
                     e(exception)
-                    data.postValue(Result.failure(exception))
+                    _data.value = ViewState.Error
                 }
                 return@launch
             }
 
             if (dashboardResponse.getOrNull()?.hasErrors() == true) {
-                data.postValue(Result.failure(Error()))
+                _data.value = ViewState.Error
                 return@launch
             }
 
-            dashboardResponse.getOrNull()?.data?.let { data.postValue(Result.success(it)) }
+            dashboardResponse.getOrNull()?.data?.let { _data.value = ViewState.Success(it) }
         }
     }
 }

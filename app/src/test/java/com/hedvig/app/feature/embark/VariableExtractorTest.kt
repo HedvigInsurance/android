@@ -223,32 +223,35 @@ class VariableExtractorTest {
                     variables = listOf(
                         GraphQLVariablesFragment.Variable(
                             __typename = "EmbarkAPIGraphQLSingleVariable",
-                            asEmbarkAPIGraphQLSingleVariable1 = GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable1(
-                                __typename = "EmbarkAPIGraphQLSingleVariable",
-                                key = "type",
-                                from = "type",
-                                as_ = EmbarkAPIGraphQLSingleVariableCasting.STRING
-                            ),
+                            asEmbarkAPIGraphQLSingleVariable1 = GraphQLVariablesFragment
+                                .AsEmbarkAPIGraphQLSingleVariable1(
+                                    __typename = "EmbarkAPIGraphQLSingleVariable",
+                                    key = "type",
+                                    from = "type",
+                                    as_ = EmbarkAPIGraphQLSingleVariableCasting.STRING
+                                ),
                             asEmbarkAPIGraphQLGeneratedVariable1 = null
                         ),
                         GraphQLVariablesFragment.Variable(
                             __typename = "EmbarkAPIGraphQLSingleVariable",
-                            asEmbarkAPIGraphQLSingleVariable1 = GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable1(
-                                __typename = "EmbarkAPIGraphQLSingleVariable",
-                                key = "area",
-                                from = "area",
-                                as_ = EmbarkAPIGraphQLSingleVariableCasting.INT
-                            ),
+                            asEmbarkAPIGraphQLSingleVariable1 = GraphQLVariablesFragment
+                                .AsEmbarkAPIGraphQLSingleVariable1(
+                                    __typename = "EmbarkAPIGraphQLSingleVariable",
+                                    key = "area",
+                                    from = "area",
+                                    as_ = EmbarkAPIGraphQLSingleVariableCasting.INT
+                                ),
                             asEmbarkAPIGraphQLGeneratedVariable1 = null
                         ),
                         GraphQLVariablesFragment.Variable(
                             __typename = "EmbarkAPIGraphQLSingleVariable",
-                            asEmbarkAPIGraphQLSingleVariable1 = GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable1(
-                                __typename = "EmbarkAPIGraphQLSingleVariable",
-                                key = "hasWaterConnected",
-                                from = "hasWaterConnected",
-                                as_ = EmbarkAPIGraphQLSingleVariableCasting.BOOLEAN
-                            ),
+                            asEmbarkAPIGraphQLSingleVariable1 = GraphQLVariablesFragment
+                                .AsEmbarkAPIGraphQLSingleVariable1(
+                                    __typename = "EmbarkAPIGraphQLSingleVariable",
+                                    key = "hasWaterConnected",
+                                    from = "hasWaterConnected",
+                                    as_ = EmbarkAPIGraphQLSingleVariableCasting.BOOLEAN
+                                ),
                             asEmbarkAPIGraphQLGeneratedVariable1 = null
                         )
                     )

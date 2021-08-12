@@ -4,7 +4,6 @@ import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationStartDateTerminology
 import com.hedvig.app.R
 import com.hedvig.app.feature.offer.ui.OfferStartDate
-import java.lang.IllegalArgumentException
 import java.time.LocalDate
 
 fun OfferQuery.Inception1.toChangeDateBottomSheetData() = ChangeDateBottomSheetData(
@@ -55,7 +54,7 @@ fun OfferQuery.Inception1.toChangeDateBottomSheetData() = ChangeDateBottomSheetD
 
 fun OfferQuery.Inception1.getStartDate(): OfferStartDate {
     return when {
-        isSwitcher() -> OfferStartDate.WhenCurrentPlanExpires
+        isSwitcher() && hasNoDate() -> OfferStartDate.WhenCurrentPlanExpires
         hasNoDate() -> OfferStartDate.AtDate(LocalDate.now())
         asConcurrentInception != null -> OfferStartDate.AtDate(asConcurrentInception?.startDate ?: LocalDate.now())
         asIndependentInceptions != null -> {
@@ -77,7 +76,11 @@ private fun OfferQuery.Inception1.hasNoDate(): Boolean {
 }
 
 private fun OfferQuery.Inception1.isSwitcher(): Boolean {
-    return (asIndependentInceptions?.inceptions?.all { it.currentInsurer?.fragments?.currentInsurerFragment?.switchable == true } == true) ||
+    return (
+        asIndependentInceptions?.inceptions?.all {
+            it.currentInsurer?.fragments?.currentInsurerFragment?.switchable == true
+        } == true
+        ) ||
         (asConcurrentInception?.currentInsurer?.fragments?.currentInsurerFragment?.switchable == true)
 }
 

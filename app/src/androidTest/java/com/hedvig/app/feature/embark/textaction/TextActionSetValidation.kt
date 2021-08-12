@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.embark.textaction
 
-import com.agoda.kakao.edit.KTextInputLayout
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.screens.TextActionSetScreen
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
@@ -12,6 +11,7 @@ import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.withPlaceholder
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import io.github.kakaocup.kakao.edit.KTextInputLayout
 import org.junit.Rule
 import org.junit.Test
 

@@ -424,7 +424,9 @@ class PaymentAdapter(
                 }
 
                 when (data.status) {
-                    PayoutMethodStatus.ACTIVE -> root.setText(R.string.payment_screen_pay_out_connected_payout_footer_connected)
+                    PayoutMethodStatus.ACTIVE -> root.setText(
+                        R.string.payment_screen_pay_out_connected_payout_footer_connected
+                    )
                     PayoutMethodStatus.NEEDS_SETUP -> root.setText(R.string.payment_screen_pay_out_footer_not_connected)
                     PayoutMethodStatus.PENDING -> root.setText(R.string.payment_screen_pay_out_footer_pending)
                     else -> {

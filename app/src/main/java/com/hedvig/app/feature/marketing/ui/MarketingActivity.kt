@@ -7,8 +7,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
+import coil.load
 import com.google.android.material.transition.MaterialContainerTransform
 import com.hedvig.android.owldroid.type.UserInterfaceStyle
 import com.hedvig.app.BaseActivity
@@ -19,8 +18,8 @@ import com.hedvig.app.feature.marketpicker.CurrentFragment.MARKET_PICKER
 import com.hedvig.app.feature.marketpicker.MarketPickerFragment
 import com.hedvig.app.feature.marketpicker.MarketSelectedFragment
 import com.hedvig.app.util.BlurHashDecoder
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.viewBinding
-import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MarketingActivity : BaseActivity(R.layout.activity_marketing) {
@@ -38,18 +37,17 @@ class MarketingActivity : BaseActivity(R.layout.activity_marketing) {
         }
 
         binding.apply {
-            root.setEdgeToEdgeSystemUiFlags(true)
+            window.compatSetDecorFitsSystemWindows(false)
 
             model
                 .marketingBackground
                 .observe(this@MarketingActivity) { image ->
                     val placeholder = BlurHashDecoder.decode(image.blurhash, 32, 32)
-                    Glide
-                        .with(this@MarketingActivity)
-                        .load(image.image?.url)
-                        .transition(withCrossFade())
-                        .placeholder(BitmapDrawable(resources, placeholder))
-                        .into(backgroundImage)
+
+                    backgroundImage.load(image.image?.url) {
+                        crossfade(true)
+                        placeholder(BitmapDrawable(resources, placeholder))
+                    }
 
                     when (image.userInterfaceStyle) {
                         UserInterfaceStyle.LIGHT -> {

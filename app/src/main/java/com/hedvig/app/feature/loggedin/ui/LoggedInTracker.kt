@@ -1,9 +1,9 @@
 package com.hedvig.app.feature.loggedin.ui
 
-import com.mixpanel.android.mpmetrics.MixpanelAPI
+import com.hedvig.app.feature.tracking.TrackingFacade
 
 class LoggedInTracker(
-    private val mixpanel: MixpanelAPI
+    private val trackingFacade: TrackingFacade,
 ) {
-    fun setMemberId(memberId: String) = mixpanel.identify(memberId)
+    fun setMemberId(memberId: String) = trackingFacade.identify(memberId)
 }

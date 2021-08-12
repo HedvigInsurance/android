@@ -67,7 +67,7 @@ class NumberActionFragment : Fragment(R.layout.number_action_set_fragment) {
             submit
                 .hapticClicks()
                 .mapLatest { saveAndAnimate() }
-                .onEach { model.navigateToPassage(data.link) }
+                .onEach { model.submitAction(data.link) }
                 .launchIn(viewLifecycleScope)
 
             messages.doOnNextLayout {
@@ -105,7 +105,7 @@ class NumberActionFragment : Fragment(R.layout.number_action_set_fragment) {
                     if (numberActionViewModel.valid.value == true) {
                         viewLifecycleScope.launch {
                             saveAndAnimate()
-                            model.navigateToPassage(data.link)
+                            model.submitAction(data.link)
                         }
                     }
                 }

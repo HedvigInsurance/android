@@ -5,7 +5,6 @@ import android.net.Uri
 import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra
-import com.agoda.kakao.screen.Screen
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
@@ -20,6 +19,7 @@ import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.stubExternalIntents
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import io.github.kakaocup.kakao.screen.Screen
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.containsString
 import org.hamcrest.Matchers.equalTo

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="event_list_item_line_two" translatable="false">At: %1$s, has properties: %2$s</string>
+    <string name="event_detail_name" translatable="false">Event Name</string>
+    <string name="event_detail_timestamp" translatable="false">Timestamp</string>
+    <string name="event_detail_properties" translatable="false">Properties</string>
+    <string name="event_detail_properties_none" translatable="false">None</string>
+    <string name="tracking_show_notification" translatable="false">Show Notification</string>
+</resources>

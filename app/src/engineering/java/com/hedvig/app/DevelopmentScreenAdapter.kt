@@ -6,24 +6,24 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.databinding.DevelopmentFooterBinding
 import com.hedvig.app.databinding.DevelopmentHeaderBinding
 import com.hedvig.app.databinding.DevelopmentRowBinding
 import com.hedvig.app.mocks.mockModule
 import com.hedvig.app.util.GenericDiffUtilItemCallback
-import com.hedvig.app.util.extensions.getAuthenticationToken
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.makeToast
-import com.hedvig.app.util.extensions.setAuthenticationToken
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import org.koin.core.context.loadKoinModules
 import org.koin.core.context.unloadKoinModules
 
-class DevelopmentScreenAdapter :
-    ListAdapter<DevelopmentScreenAdapter.DevelopmentScreenItem, DevelopmentScreenAdapter.ViewHolder>(
-        GenericDiffUtilItemCallback()
-    ) {
+class DevelopmentScreenAdapter(
+    private val authenticationTokenService: AuthenticationTokenService
+) : ListAdapter<DevelopmentScreenAdapter.DevelopmentScreenItem, DevelopmentScreenAdapter.ViewHolder>(
+    GenericDiffUtilItemCallback()
+) {
     override fun getItemViewType(position: Int) = when (getItem(position)) {
         DevelopmentScreenItem.Header -> R.layout.development_header
         is DevelopmentScreenItem.Row -> R.layout.development_row
@@ -32,7 +32,7 @@ class DevelopmentScreenAdapter :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.development_header -> ViewHolder.Header(parent)
-        R.layout.development_footer -> ViewHolder.Footer(parent)
+        R.layout.development_footer -> ViewHolder.Footer(parent, authenticationTokenService)
         R.layout.development_row -> ViewHolder.Row(parent)
         else -> throw Error("Invalid viewType")
     }
@@ -133,13 +133,16 @@ class DevelopmentScreenAdapter :
             }
         }
 
-        class Footer(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.development_footer)) {
+        class Footer(
+            parent: ViewGroup,
+            private val authenticationTokenService: AuthenticationTokenService
+        ) : ViewHolder(parent.inflate(R.layout.development_footer)) {
             private val binding by viewBinding(DevelopmentFooterBinding::bind)
             override fun bind(data: DevelopmentScreenItem) {
                 with(binding) {
-                    token.setText(token.context.getAuthenticationToken())
+                    token.setText(authenticationTokenService.authenticationToken)
                     saveToken.setHapticClickListener {
-                        saveToken.context.setAuthenticationToken(saveToken.text.toString())
+                        authenticationTokenService.authenticationToken = saveToken.text.toString()
                         saveToken.context.makeToast("Token saved")
                     }
                 }

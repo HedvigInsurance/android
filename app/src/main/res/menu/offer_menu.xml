@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/chat"
-        android:icon="@drawable/ic_chat_white"
         android:title="@string/OFFER_FOOTER_BUTTON_TEXT"
         app:showAsAction="never" />
     <item
@@ -20,5 +19,9 @@
         android:id="@+id/login"
         android:icon="@drawable/ic_profile"
         android:title="@string/common_signin_button_text"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/discard_offer"
+        android:title="@string/general_discard_button"
         app:showAsAction="never" />
 </menu>

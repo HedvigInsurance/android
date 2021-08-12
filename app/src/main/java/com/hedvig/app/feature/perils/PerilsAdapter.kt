@@ -2,14 +2,14 @@ package com.hedvig.app.feature.perils
 
 import android.content.Context
 import android.graphics.Rect
-import android.graphics.drawable.PictureDrawable
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.RequestBuilder
+import coil.ImageLoader
+import coil.load
 import com.carousell.concatadapterextension.ItemDecorationOwner
 import com.carousell.concatadapterextension.SpanSizeLookupOwner
 import com.hedvig.android.owldroid.type.TypeOfContract
@@ -24,13 +24,11 @@ import com.hedvig.app.util.extensions.invalid
 import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
-import e
 
 class PerilsAdapter(
-    private val requestBuilder: RequestBuilder<PictureDrawable>,
     private val fragmentManager: FragmentManager,
-) :
-    ListAdapter<PerilItem, PerilsAdapter.ViewHolder>(GenericDiffUtilItemCallback()),
+    private val imageLoader: ImageLoader,
+) : ListAdapter<PerilItem, PerilsAdapter.ViewHolder>(GenericDiffUtilItemCallback()),
     SpanSizeLookupOwner,
     ItemDecorationOwner {
 
@@ -41,18 +39,17 @@ class PerilsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.contract_detail_coverage_header -> ViewHolder.Header(parent)
-        R.layout.peril_detail -> ViewHolder.Peril(parent)
+        R.layout.peril_detail -> ViewHolder.Peril(parent, imageLoader)
         else -> throw Error("Invalid viewType: $viewType")
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position), requestBuilder, fragmentManager)
+        holder.bind(getItem(position), fragmentManager)
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         abstract fun bind(
             data: PerilItem,
-            requestBuilder: RequestBuilder<PictureDrawable>,
             fragmentManager: FragmentManager,
         ): Any?
 
@@ -61,7 +58,6 @@ class PerilsAdapter(
             private val binding by viewBinding(ContractDetailCoverageHeaderBinding::bind)
             override fun bind(
                 data: PerilItem,
-                requestBuilder: RequestBuilder<PictureDrawable>,
                 fragmentManager: FragmentManager,
             ) = with(binding) {
                 if (data !is PerilItem.Header) {
@@ -108,11 +104,11 @@ class PerilsAdapter(
             }
         }
 
-        class Peril(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.peril_detail)) {
+        class Peril(parent: ViewGroup, private val imageLoader: ImageLoader) :
+            ViewHolder(parent.inflate(R.layout.peril_detail)) {
             private val binding by viewBinding(PerilDetailBinding::bind)
             override fun bind(
                 data: PerilItem,
-                requestBuilder: RequestBuilder<PictureDrawable>,
                 fragmentManager: FragmentManager,
             ) = with(binding) {
                 if (data !is PerilItem.Peril) {
@@ -127,9 +123,9 @@ class PerilsAdapter(
                     data.inner.lightUrl
                 }
                 }"
-                requestBuilder
-                    .load(iconUrl)
-                    .into(icon)
+                icon.load(iconUrl, imageLoader) {
+                    crossfade(true)
+                }
 
                 root.setHapticClickListener {
                     PerilBottomSheet

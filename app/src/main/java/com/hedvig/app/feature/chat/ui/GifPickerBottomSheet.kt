@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import coil.ImageLoader
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.SendGifDialogBinding
@@ -18,12 +19,14 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import java.util.concurrent.TimeUnit
 
 class GifPickerBottomSheet : BottomSheetDialogFragment() {
     private val model: ChatViewModel by sharedViewModel()
     private val binding by viewBinding(SendGifDialogBinding::bind)
+    private val imageLoader: ImageLoader by inject()
 
     private lateinit var onSelectGif: (String) -> Unit
 
@@ -55,14 +58,10 @@ class GifPickerBottomSheet : BottomSheetDialogFragment() {
                     },
                     { e(it) }
                 )
-            val adapter = GifAdapter(
-                requireContext(),
-                sendGif = { url ->
-                    onSelectGif(url)
-                    dismiss()
-                }
-            )
-            gifRecyclerView.addOnScrollListener(adapter.recyclerViewPreloader)
+            val adapter = GifAdapter(imageLoader) { url ->
+                onSelectGif(url)
+                dismiss()
+            }
             gifRecyclerView.adapter = adapter
 
             model.gifs.observe(viewLifecycleOwner) { data ->

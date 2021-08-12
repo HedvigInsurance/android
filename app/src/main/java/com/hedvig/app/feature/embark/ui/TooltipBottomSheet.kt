@@ -2,13 +2,12 @@ package com.hedvig.app.feature.embark.ui
 
 import android.os.Bundle
 import android.os.Parcelable
-import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.FrameLayout
 import androidx.core.os.bundleOf
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.marginBottom
 import androidx.core.view.marginTop
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -25,11 +24,12 @@ import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
+import com.hedvig.app.util.extensions.windowHeight
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import e
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
-class TooltipBottomSheet(private val windowManager: WindowManager) : BottomSheetDialogFragment() {
+class TooltipBottomSheet : BottomSheetDialogFragment() {
     private val binding by viewBinding(TooltipBottomSheetBinding::bind)
 
     override fun onCreateView(
@@ -63,20 +63,18 @@ class TooltipBottomSheet(private val windowManager: WindowManager) : BottomSheet
 
             if (tooltips.size > 1) {
                 val defaultStatusBarColor = dialog?.window?.statusBarColor
-                val defaultSystemUiVisibility = dialog?.window?.decorView?.systemUiVisibility
                 close.alpha = 0f
                 (dialog as? BottomSheetDialog)?.behavior?.let { behaviour ->
-
-                    val displayMetrics = DisplayMetrics()
-                    windowManager.defaultDisplay.getMetrics(displayMetrics)
-                    val windowHeight = displayMetrics.heightPixels
+                    val windowHeight = requireActivity().windowHeight
 
                     recycler.measure(
                         FrameLayout.LayoutParams.MATCH_PARENT,
                         FrameLayout.LayoutParams.MATCH_PARENT
                     )
                     val sheetContentHeight =
-                        recycler.measuredHeight + recycler.marginTop + recycler.marginBottom + resources.getDimension(R.dimen.peril_bottom_sheet_close_icon_size)
+                        recycler.measuredHeight + recycler.marginTop + recycler.marginBottom + resources.getDimension(
+                            R.dimen.peril_bottom_sheet_close_icon_size
+                        )
                             .toInt().dp
                     val shouldPeekAtContentHeight = sheetContentHeight < windowHeight
                     val defaultPeekHeight = 295.dp
@@ -105,8 +103,9 @@ class TooltipBottomSheet(private val windowManager: WindowManager) : BottomSheet
                                                 requireContext().colorAttr(R.attr.colorSurface)
                                             if (!requireContext().isDarkThemeActive) {
                                                 dialog?.window?.decorView?.let {
-                                                    it.systemUiVisibility =
-                                                        it.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                                                    val insetsController =
+                                                        WindowInsetsControllerCompat(requireActivity().window, view)
+                                                    insetsController.isAppearanceLightStatusBars = true
                                                 }
                                             }
                                         }
@@ -114,13 +113,15 @@ class TooltipBottomSheet(private val windowManager: WindowManager) : BottomSheet
                                             defaultStatusBarColor?.let {
                                                 dialog?.window?.statusBarColor = it
                                             }
-                                            defaultSystemUiVisibility?.let {
-                                                dialog?.window?.decorView?.systemUiVisibility = it
-                                            }
                                             close.show()
                                         }
                                         BottomSheetBehavior.STATE_COLLAPSED -> {
                                             close.remove()
+                                        }
+                                        BottomSheetBehavior.STATE_HALF_EXPANDED,
+                                        BottomSheetBehavior.STATE_HIDDEN,
+                                        BottomSheetBehavior.STATE_SETTLING -> {
+                                            // No-op
                                         }
                                     }
                                 }
@@ -150,20 +151,12 @@ class TooltipBottomSheet(private val windowManager: WindowManager) : BottomSheet
         }
     }
 
-    private fun getNavBarHeight(): Int {
-        val resources = requireContext().resources
-        val resourceId: Int = resources.getIdentifier("navigation_bar_height", "dimen", "android")
-        return if (resourceId > 0) {
-            resources.getDimensionPixelSize(resourceId)
-        } else 0
-    }
-
     companion object {
         private const val TOOLTIPS = "TOOLTIPS"
 
         val TAG: String = TooltipBottomSheet::class.java.name
-        fun newInstance(tooltips: List<EmbarkStoryQuery.Tooltip>, windowManager: WindowManager) =
-            TooltipBottomSheet(windowManager).apply {
+        fun newInstance(tooltips: List<EmbarkStoryQuery.Tooltip>) =
+            TooltipBottomSheet().apply {
                 val parcelableTooltips = mutableListOf<Tooltip>()
                 tooltips.forEach {
                     parcelableTooltips.add(

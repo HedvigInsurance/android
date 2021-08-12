@@ -7,10 +7,9 @@ import android.view.ViewGroup
 import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
+import coil.load
+import coil.size.Scale
+import coil.transform.RoundedCornersTransformation
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.R
@@ -103,12 +102,11 @@ class KeyGearItemsAdapter(
                             width = ViewGroup.LayoutParams.MATCH_PARENT
                             height = ViewGroup.LayoutParams.MATCH_PARENT
                         }
-                        Glide
-                            .with(itemPhoto)
-                            .load(photoUrl)
-                            .transition(withCrossFade())
-                            .transform(CenterCrop(), RoundedCorners(BASE_MARGIN))
-                            .into(itemPhoto)
+                        itemPhoto.load(photoUrl) {
+                            crossfade(true)
+                            transformations(RoundedCornersTransformation(BASE_MARGIN.toFloat()))
+                            scale(Scale.FILL)
+                        }
                     } else {
                         keyGearItemRoot.setBackgroundResource(R.drawable.background_rounded_corners)
                         itemPhoto.updateLayoutParams {

@@ -3,6 +3,7 @@ package com.hedvig.app
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.databinding.ActivityDevelopmentBinding
 import com.hedvig.app.feature.adyen.AdyenMockActivity
 import com.hedvig.app.feature.changeaddress.ChangeAddressMockActivity
@@ -19,20 +20,26 @@ import com.hedvig.app.feature.onboarding.OnboardingMockActivity
 import com.hedvig.app.feature.payment.PaymentMockActivity
 import com.hedvig.app.feature.profile.ProfileMockActivity
 import com.hedvig.app.feature.referrals.ReferralsMockActivity
+import com.hedvig.app.feature.tracking.TrackingLogActivity
 import com.hedvig.app.feature.trustly.TrustlyMockActivity
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.viewgallery.ViewGalleryActivity
+import org.koin.android.ext.android.inject
 
 class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
     private val binding by viewBinding(ActivityDevelopmentBinding::bind)
+    private val authenticationTokenService: AuthenticationTokenService by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding.root.adapter = DevelopmentScreenAdapter().also {
+        binding.root.adapter = DevelopmentScreenAdapter(authenticationTokenService).also {
             it.submitList(
                 listOf(
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Header,
+                    DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Tracking") {
+                        startActivity(TrackingLogActivity.newInstance(this))
+                    },
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Change address intro") {
                         startActivity(Intent(this, ChangeAddressMockActivity::class.java))
                     },

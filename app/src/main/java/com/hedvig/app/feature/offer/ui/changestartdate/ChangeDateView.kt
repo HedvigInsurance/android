@@ -23,6 +23,7 @@ class ChangeDateView @JvmOverloads constructor(
 
     fun bind(
         title: String?,
+        currentInsurerDisplayName: String?,
         startDate: LocalDate?,
         switchable: Boolean,
         datePickerListener: () -> Unit,
@@ -40,6 +41,8 @@ class ChangeDateView @JvmOverloads constructor(
 
         if (switchable) {
             binding.autoSetDateSwitch.isChecked = startDate == null
+            binding.autoSetDateSwitch.text =
+                context.getString(R.string.OFFER_PLAN_EXIRES_TEXT, currentInsurerDisplayName)
             binding.autoSetDateSwitch.setOnCheckedChangeListener { _, isChecked ->
                 switchListener(isChecked)
                 setCheckedState(isChecked, startDate)

@@ -2,6 +2,7 @@ package com.hedvig.app.feature.offer.ui.checkout
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.ui.grossMonthlyCost
 import com.hedvig.app.feature.offer.ui.netMonthlyCost
@@ -12,7 +13,6 @@ import com.hedvig.app.util.ValidationResult
 import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.validateEmail
 import com.hedvig.app.util.validateNationalIdentityNumber
-import javax.money.MonetaryAmount
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import javax.money.MonetaryAmount
 
 class CheckoutViewModel(
     private val _quoteIds: List<String>,
@@ -29,6 +30,7 @@ class CheckoutViewModel(
     private val signQuotesUseCase: SignQuotesUseCase,
     private val marketManager: MarketManager,
     private val cacheManager: CacheManager,
+    private val loginStatusService: LoginStatusService
 ) : ViewModel() {
 
     init {
@@ -54,7 +56,8 @@ class CheckoutViewModel(
                 _events.tryEmit(Event.Error(response.message))
             }
             OfferRepository.OfferResult.HasContracts -> {
-                _events.tryEmit(Event.HasContracts)
+                loginStatusService.isViewingOffer = false
+                _events.tryEmit(Event.Error())
             }
             is OfferRepository.OfferResult.Success -> {
                 _titleViewState.value = TitleViewState.Loaded(
@@ -178,12 +181,12 @@ class CheckoutViewModel(
     }
 
     private fun InputViewState.canSign(): Boolean {
-        return emailInputState is InputViewState.InputState.Valid && identityInputState is InputViewState.InputState.Valid
+        return emailInputState is InputViewState.InputState.Valid &&
+            identityInputState is InputViewState.InputState.Valid
     }
 
     sealed class Event {
         data class Error(val message: String? = null) : Event()
-        object HasContracts : Event()
         object CheckoutSuccess : Event()
         object Loading : Event()
     }

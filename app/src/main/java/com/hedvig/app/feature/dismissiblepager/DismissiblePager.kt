@@ -8,17 +8,16 @@ import android.view.WindowManager
 import androidx.annotation.StringRes
 import androidx.annotation.StyleRes
 import androidx.fragment.app.DialogFragment
-import androidx.viewpager.widget.ViewPager
+import androidx.viewpager2.widget.ViewPager2
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentDismissablePagerBinding
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.screenWidth
+import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
+import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
-import com.hedvig.app.util.extensions.view.updateMargin
-import com.hedvig.app.util.extensions.view.updatePadding
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
-import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 
 abstract class DismissiblePager : DialogFragment() {
     abstract val items: List<DismissiblePagerModel>
@@ -69,15 +68,9 @@ abstract class DismissiblePager : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.apply {
-            root.setEdgeToEdgeSystemUiFlags(true)
-
-            proceed.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
-            }
-
-            topBar.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updatePadding(top = initialState.paddings.top + insets.systemWindowInsetTop)
-            }
+            requireActivity().window.compatSetDecorFitsSystemWindows(false)
+            proceed.applyNavigationBarInsets()
+            topBar.applyStatusBarInsets()
 
             pagerIndicator.items = items
 
@@ -91,14 +84,14 @@ abstract class DismissiblePager : DialogFragment() {
                 title.show()
             }
 
-            pager.adapter = DismissiblePagerAdapter(childFragmentManager, items, requireContext())
+            pager.adapter = DismissiblePagerAdapter(childFragmentManager, lifecycle, items)
             pagerIndicator.pager = pager
             proceed.text = if (items.size > 1) {
                 resources.getString(proceedLabel)
             } else {
                 resources.getString(lastButtonText)
             }
-            pager.addOnPageChangeListener(PageChangeListener())
+            pager.registerOnPageChangeCallback(PageChangeListener())
             proceed.setHapticClickListener {
                 tracker.clickProceed()
                 pager.currentItem += 1
@@ -106,13 +99,13 @@ abstract class DismissiblePager : DialogFragment() {
         }
     }
 
-    inner class PageChangeListener : ViewPager.OnPageChangeListener {
+    inner class PageChangeListener : ViewPager2.OnPageChangeCallback() {
 
         override fun onPageScrollStateChanged(p0: Int) {}
 
         override fun onPageScrolled(position: Int, offsetPercentage: Float, offsetPixels: Int) {
             binding.apply {
-                pager.adapter?.count?.let { count ->
+                pager.adapter?.itemCount?.let { count ->
                     when (items.last()) {
                         is DismissiblePagerModel.SwipeOffScreen -> {
                             if (position == count - 2) {
@@ -126,6 +119,10 @@ abstract class DismissiblePager : DialogFragment() {
                                 onLastSwipe()
                                 dismiss()
                             }
+                        }
+                        is DismissiblePagerModel.NoTitlePage,
+                        is DismissiblePagerModel.TitlePage -> {
+                            // No-op }
                         }
                     }
                 }
@@ -143,7 +140,7 @@ abstract class DismissiblePager : DialogFragment() {
                     }
                 }
 
-                pager.adapter?.count?.let { count ->
+                pager.adapter?.itemCount?.let { count ->
                     when (items.last()) {
                         is DismissiblePagerModel.SwipeOffScreen -> {
                             proceed.text = if (isPositionLast(page, count) || isPositionNextToLast(

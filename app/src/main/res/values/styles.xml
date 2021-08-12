@@ -108,36 +108,6 @@
         <item name="android:layout_marginEnd">@dimen/base_margin</item>
     </style>
 
-    <!-- Adyen Compatibility fixes -->
-    <style name="AdyenCheckout.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <item name="boxStrokeColor">?colorPrimary</item>
-        <item name="hintTextAppearance">@style/AdyenCheckout.HintTextStyle</item>
-        <item name="hintTextColor">?colorPrimary</item>
-        <item name="android:minHeight">@dimen/input_layout_height</item>
-    </style>
-
-    <style name="AdyenCheckout.BottomSheet" parent="BottomSheetDialogTheme">
-        <item name="android:background">@drawable/adyen_bottom_sheet_background</item>
-    </style>
-
-    <style name="AdyenCheckout.TextInputEditText">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/input_height</item>
-        <item name="android:textCursorDrawable">@drawable/cursor_shape</item>
-        <item name="android:textSize">16sp</item>
-        <item name="android:textColor">@color/textColorSecondary</item>
-    </style>
-
-    <style name="AdyenCheckout.Button.Colored" parent="Widget.AppCompat.Button.Colored">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/pay_button_height</item>
-        <item name="android:layout_marginBottom">@dimen/standard_half_margin</item>
-        <item name="android:layout_marginLeft">@dimen/standard_margin</item>
-        <item name="android:layout_marginRight">@dimen/standard_margin</item>
-        <item name="android:textColor">@color/colorOnPrimary</item>
-        <item name="android:theme">@style/AdyenCheckout.PrimaryFlatButton</item>
-    </style>
-
     <style name="Hedvig.Theme.EmbarkList">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>

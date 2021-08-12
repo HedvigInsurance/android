@@ -11,10 +11,10 @@ import com.hedvig.app.feature.marketing.ui.MarketingViewModel
 import com.hedvig.app.feature.marketing.ui.NavigationState
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.extensions.compatDrawable
+import com.hedvig.app.util.extensions.view.applyNavigationBarInsetsMargin
+import com.hedvig.app.util.extensions.view.applyStatusBarInsetsMargin
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.view.updateMargin
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
@@ -26,13 +26,8 @@ class MarketSelectedFragment : Fragment(R.layout.fragment_market_selected) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.apply {
-            logIn.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updateMargin(bottom = initialState.margins.bottom + insets.systemWindowInsetBottom)
-            }
-
-            flag.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updateMargin(top = initialState.margins.top + insets.systemWindowInsetTop)
-            }
+            logIn.applyNavigationBarInsetsMargin()
+            flag.applyStatusBarInsetsMargin()
 
             val market = marketManager.market
             if (market == null) {

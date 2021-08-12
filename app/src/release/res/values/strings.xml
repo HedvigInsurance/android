@@ -6,10 +6,6 @@
     <string name="APP_SCHEME" translatable="false">hedvig</string>
     <string name="FIREBASE_LINK_DOMAIN" translatable="false">hedvig.page.link</string>
 
-    <string name="alert_title" translatable="false">Title</string>
-    <string name="alert_message" translatable="false">Message</string>
-
-    <string name="fb_login_protocol_scheme" translatable="false">fb170982226921693</string>
     <string name="GRAPHQL_URL" translatable="false">https://giraffe.hedvig.com/graphql</string>
     <string name="WS_GRAPHQL_URL" translatable="false">wss://giraffe.hedvig.com/subscriptions</string>
     <string name="BASE_URL" translatable="false">https://giraffe.hedvig.com</string>

@@ -1,13 +1,13 @@
 package com.hedvig.app.feature.embark.multiaction
 
 import android.view.View
-import com.agoda.kakao.recycler.KRecyclerItem
-import com.agoda.kakao.recycler.KRecyclerView
-import com.agoda.kakao.text.KButton
-import com.agoda.kakao.text.KTextView
 import com.hedvig.app.R
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionFragment
 import com.kaspersky.kaspresso.screens.KScreen
+import io.github.kakaocup.kakao.recycler.KRecyclerItem
+import io.github.kakaocup.kakao.recycler.KRecyclerView
+import io.github.kakaocup.kakao.text.KButton
+import io.github.kakaocup.kakao.text.KTextView
 import org.hamcrest.Matcher
 
 object MultiActionScreen : KScreen<MultiActionScreen>() {

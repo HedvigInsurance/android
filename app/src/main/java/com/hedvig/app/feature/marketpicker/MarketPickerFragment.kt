@@ -8,9 +8,8 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentMarketPickerBinding
 import com.hedvig.app.feature.marketing.ui.MarketingViewModel
 import com.hedvig.app.feature.marketing.ui.NavigationState
-import com.hedvig.app.util.extensions.view.updateMargin
+import com.hedvig.app.util.extensions.view.applyNavigationBarInsetsMargin
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
-import dev.chrisbanes.insetter.doOnApplyWindowInsets
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
@@ -39,9 +38,7 @@ class MarketPickerFragment : Fragment(R.layout.fragment_market_picker) {
                     )
                 }
             )
-            picker.doOnApplyWindowInsets { view, insets, initialState ->
-                view.updateMargin(bottom = initialState.paddings.bottom + insets.systemWindowInsetBottom)
-            }
+            picker.applyNavigationBarInsetsMargin()
 
             var firstLayout = true
             model.pickerState.observe(viewLifecycleOwner) { data ->

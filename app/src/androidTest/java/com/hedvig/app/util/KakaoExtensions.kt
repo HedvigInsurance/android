@@ -9,16 +9,16 @@ import androidx.annotation.StringRes
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.BoundedMatcher
 import androidx.test.espresso.matcher.ViewMatchers
-import com.agoda.kakao.bottomnav.KBottomNavigationView
-import com.agoda.kakao.common.builders.ViewBuilder
-import com.agoda.kakao.common.utilities.getResourceString
-import com.agoda.kakao.common.views.KView
-import com.agoda.kakao.edit.KTextInputLayout
-import com.agoda.kakao.intent.KIntent
-import com.agoda.kakao.picker.date.KDatePicker
-import com.agoda.kakao.swiperefresh.KSwipeRefreshLayout
-import com.agoda.kakao.text.KTextView
 import com.google.android.material.textfield.TextInputLayout
+import io.github.kakaocup.kakao.bottomnav.KBottomNavigationView
+import io.github.kakaocup.kakao.common.builders.ViewBuilder
+import io.github.kakaocup.kakao.common.utilities.getResourceString
+import io.github.kakaocup.kakao.common.views.KView
+import io.github.kakaocup.kakao.edit.KTextInputLayout
+import io.github.kakaocup.kakao.intent.KIntent
+import io.github.kakaocup.kakao.picker.date.KDatePicker
+import io.github.kakaocup.kakao.swiperefresh.KSwipeRefreshLayout
+import io.github.kakaocup.kakao.text.KTextView
 import org.hamcrest.Description
 import java.time.LocalDate
 

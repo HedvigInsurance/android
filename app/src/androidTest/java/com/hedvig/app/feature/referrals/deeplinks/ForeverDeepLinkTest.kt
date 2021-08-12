@@ -2,13 +2,11 @@ package com.hedvig.app.feature.referrals.deeplinks
 
 import android.content.Intent
 import android.net.Uri
-import com.agoda.kakao.image.KImageView
-import com.agoda.kakao.screen.Screen
-import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.app.R
 import com.hedvig.app.SplashActivity
+import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.referrals.tab.ReferralTabScreen
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_ENABLED
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_NO_DISCOUNTS
@@ -17,19 +15,18 @@ import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
-import com.hedvig.app.util.extensions.isLoggedIn
-import com.hedvig.app.util.extensions.setIsLoggedIn
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
-import org.junit.After
-import org.junit.Before
+import io.github.kakaocup.kakao.image.KImageView
+import io.github.kakaocup.kakao.screen.Screen
+import io.github.kakaocup.kakao.screen.Screen.Companion.onScreen
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
 @Ignore("Causes problems with Espresso")
 class ForeverDeepLinkTest : TestCase() {
-
-    private var previousLoginStatus = false
 
     @get:Rule
     val activityRule = LazyActivityScenarioRule(SplashActivity::class.java)
@@ -47,15 +44,12 @@ class ForeverDeepLinkTest : TestCase() {
     @get:Rule
     val apolloCacheClearRule = ApolloCacheClearRule()
 
-    @Before
-    fun setup() {
-        previousLoginStatus = context().isLoggedIn()
-
-        context().setIsLoggedIn(true)
-    }
+    private val loginStatusService = mockk<LoginStatusService>(relaxed = true)
 
     @Test
     fun shouldOpenLoggedInActivityOnReferralsTabWhenOpeningForeverDeepLink() = run {
+        every { loginStatusService.isLoggedIn }.returns(true)
+
         activityRule.launch(
             Intent(Intent.ACTION_VIEW).apply {
                 data = Uri.parse(
@@ -76,10 +70,5 @@ class ForeverDeepLinkTest : TestCase() {
 
     class SplashScreen : Screen<SplashScreen>() {
         val animation = KImageView { withId(R.id.splashAnimation) }
-    }
-
-    @After
-    fun teardown() {
-        context().setIsLoggedIn(previousLoginStatus)
     }
 }

@@ -18,10 +18,12 @@
     <application
         android:name=".HedvigApplication"
         android:allowBackup="true"
+        android:fullBackupOnly="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/APP_NAME"
         android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
         android:theme="@style/Hedvig.Theme">
         <activity android:name=".feature.embark.ui.MoreOptionsActivity" />
         <activity
@@ -54,6 +56,7 @@
         <activity
             android:name=".SplashActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:exported="true"
             android:launchMode="singleTask"
             android:noHistory="true"
             android:screenOrientation="portrait"
@@ -326,12 +329,20 @@
 
         <receiver android:name=".feature.chat.service.ChatMessageNotificationReceiver" />
 
-        <service
-            android:name=".feature.adyen.payin.AdyenPayinDropInService"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
-        <service
-            android:name=".feature.adyen.payout.AdyenPayoutDropInService"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service android:name=".feature.adyen.payin.AdyenPayinDropInService" />
+        <service android:name=".feature.adyen.payout.AdyenPayoutDropInService" />
+
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+
+            <meta-data
+                android:name="com.hedvig.app.feature.di.KoinInitializer"
+                android:value="androidx.startup" />
+
+        </provider>
     </application>
 
     <queries>

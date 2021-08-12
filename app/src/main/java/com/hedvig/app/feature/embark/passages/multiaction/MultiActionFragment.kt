@@ -15,11 +15,11 @@ import com.hedvig.app.feature.embark.passages.animateResponse
 import com.hedvig.app.feature.embark.passages.multiaction.add.AddComponentBottomSheet
 import com.hedvig.app.feature.embark.passages.multiaction.add.AddComponentBottomSheet.Companion.ADD_COMPONENT_REQUEST_KEY
 import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_MILLIS
+import com.hedvig.app.util.extensions.view.applyNavigationBarInsetsMargin
 import com.hedvig.app.util.extensions.view.hapticClicks
-import com.hedvig.app.util.extensions.view.updateMargin
+import com.hedvig.app.util.extensions.viewLifecycle
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
-import dev.chrisbanes.insetter.Insetter
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
@@ -42,9 +42,7 @@ class MultiActionFragment : Fragment(R.layout.fragment_embark_multi_action) {
         super.onViewCreated(view, savedInstanceState)
         postponeEnterTransition()
 
-        Insetter.builder().setOnApplyInsetsListener { insetView, insets, initialState ->
-            insetView.updateMargin(bottom = initialState.paddings.bottom + insets.stableInsetBottom)
-        }.applyToView(binding.continueButton)
+        binding.continueButton.applyNavigationBarInsetsMargin()
 
         setFragmentResultListener(ADD_COMPONENT_REQUEST_KEY) { requestKey: String, bundle: Bundle ->
             if (requestKey == ADD_COMPONENT_REQUEST_KEY) {
@@ -71,12 +69,13 @@ class MultiActionFragment : Fragment(R.layout.fragment_embark_multi_action) {
 
         multiActionViewModel
             .components
-            .flowWithLifecycle(viewLifecycleOwner.lifecycle)
+            .flowWithLifecycle(viewLifecycle)
             .onEach(adapter::submitList)
             .launchIn(viewLifecycleScope)
+
         multiActionViewModel
             .newComponent
-            .flowWithLifecycle(viewLifecycleOwner.lifecycle)
+            .flowWithLifecycle(viewLifecycle)
             .onEach(::showAddBuildingSheet)
             .launchIn(viewLifecycleScope)
 
@@ -84,7 +83,7 @@ class MultiActionFragment : Fragment(R.layout.fragment_embark_multi_action) {
             .hapticClicks()
             .mapLatest { saveAndAnimate() }
             .onEach {
-                model.navigateToPassage(multiActionParams.link)
+                model.submitAction(multiActionParams.link)
             }
             .launchIn(viewLifecycleScope)
     }

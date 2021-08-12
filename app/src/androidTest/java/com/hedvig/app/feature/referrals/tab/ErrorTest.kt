@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.referrals.tab
 
-import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.apollographql.apollo.api.toJson
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
@@ -12,6 +11,7 @@ import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.context
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import io.github.kakaocup.kakao.screen.Screen.Companion.onScreen
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer

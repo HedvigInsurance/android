@@ -1,7 +1,5 @@
 package com.hedvig.app.util
 
-import com.hedvig.app.isDebug
-
 enum class FeatureFlag(
     val key: String,
     val title: String,

@@ -14,12 +14,12 @@ import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import e
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 import kotlinx.parcelize.Parcelize
 import org.koin.android.ext.android.inject
 import org.koin.java.KoinJavaComponent.inject
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 class ChangeAddressResultActivity : BaseActivity(R.layout.change_address_result_activity) {
     private val binding by viewBinding(ChangeAddressResultActivityBinding::bind)

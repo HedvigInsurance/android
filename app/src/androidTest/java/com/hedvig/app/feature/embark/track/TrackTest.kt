@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.embark.track
 
-import com.agoda.kakao.screen.Screen.Companion.onScreen
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.embarkTrackerModule
 import com.hedvig.app.feature.embark.EmbarkTracker
@@ -16,6 +15,7 @@ import com.hedvig.app.util.context
 import com.hedvig.app.util.json.jsonEq
 import com.hedvig.app.util.jsonObjectOf
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import io.github.kakaocup.kakao.screen.Screen.Companion.onScreen
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.Rule

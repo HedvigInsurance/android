@@ -1,12 +1,10 @@
 package com.hedvig.app.feature.home.ui
 
-import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
-import com.bumptech.glide.RequestBuilder
-import com.google.android.material.transition.MaterialFadeThrough
+import coil.ImageLoader
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.type.PayinMethodStatus
 import com.hedvig.app.R
@@ -16,10 +14,11 @@ import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
 import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
-import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.util.FeatureFlag
-import com.hedvig.app.util.extensions.view.updatePadding
+import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
+import com.hedvig.app.util.extensions.view.applyStatusBarInsets
+import com.hedvig.app.util.featureflags.Feature
+import com.hedvig.app.util.featureflags.FeatureManager
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
@@ -31,16 +30,9 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     private val binding by viewBinding(HomeFragmentBinding::bind)
     private var scroll = 0
     private val tracker: HomeTracker by inject()
-
-    private val requestBuilder: RequestBuilder<PictureDrawable> by inject()
+    private val imageLoader: ImageLoader by inject()
     private val marketManager: MarketManager by inject()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        enterTransition = MaterialFadeThrough()
-        exitTransition = MaterialFadeThrough()
-    }
+    private val featureRuntimeBehavior: FeatureManager by inject()
 
     override fun onResume() {
         super.onResume()
@@ -50,30 +42,19 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         scroll = 0
 
+        val adapter = HomeAdapter(
+            parentFragmentManager,
+            model::load,
+            imageLoader,
+            tracker,
+            marketManager
+        )
+
         binding.recycler.apply {
-            val recyclerInitialPaddingBottom = paddingBottom
-            val recyclerInitialPaddingTop = paddingTop
+            applyNavigationBarInsets()
+            applyStatusBarInsets()
 
-            var hasInsetForToolbar = false
-
-            loggedInViewModel.toolbarInset.observe(viewLifecycleOwner) { toolbarInsets ->
-                updatePadding(top = recyclerInitialPaddingTop + toolbarInsets)
-                if (!hasInsetForToolbar) {
-                    hasInsetForToolbar = true
-                    scrollToPosition(0)
-                }
-            }
-
-            loggedInViewModel.bottomTabInset.observe(viewLifecycleOwner) { bottomTabInset ->
-                updatePadding(bottom = recyclerInitialPaddingBottom + bottomTabInset)
-            }
-            adapter = HomeAdapter(
-                parentFragmentManager,
-                model::load,
-                requestBuilder,
-                tracker,
-                marketManager
-            )
+            this.adapter = adapter
             (layoutManager as? GridLayoutManager)?.spanSizeLookup =
                 object : GridLayoutManager.SpanSizeLookup() {
                     override fun getSpanSize(position: Int): Int {
@@ -97,25 +78,25 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     viewLifecycleOwner
                 )
             )
+            this.adapter = adapter
         }
-
         model.data.observe(viewLifecycleOwner) { (homeData, payinStatusData, pendingAddress) ->
             if (homeData == null) {
                 return@observe
             }
-            if (homeData.isFailure) {
-                (binding.recycler.adapter as? HomeAdapter)?.submitList(listOf(HomeModel.Error))
+            if (homeData is HomeViewModel.ViewState.Error) {
+                adapter.submitList(listOf(HomeModel.Error))
                 return@observe
             }
 
-            val successData = homeData.getOrNull() ?: return@observe
+            val successData = (homeData as? HomeViewModel.ViewState.Success)?.homeData ?: return@observe
             val firstName = successData.member.firstName
             if (firstName == null) {
-                (binding.recycler.adapter as? HomeAdapter)?.submitList(listOf(HomeModel.Error))
+                adapter.submitList(listOf(HomeModel.Error))
                 return@observe
             }
             if (isPending(successData.contracts)) {
-                (binding.recycler.adapter as? HomeAdapter)?.submitList(
+                adapter.submitList(
                     listOf(
                         HomeModel.BigText.Pending(
                             firstName
@@ -134,11 +115,11 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     .minOrNull()
 
                 if (firstInceptionDate == null) {
-                    (binding.recycler.adapter as? HomeAdapter)?.submitList(listOf(HomeModel.Error))
+                    adapter.submitList(listOf(HomeModel.Error))
                     return@observe
                 }
 
-                (binding.recycler.adapter as? HomeAdapter)?.submitList(
+                adapter.submitList(
                     listOf(
                         HomeModel.BigText.ActiveInFuture(
                             firstName,
@@ -158,8 +139,12 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     if (pendingAddress != null && pendingAddress.isNotBlank()) {
                         add(HomeModel.PendingAddressChange(pendingAddress))
                     }
+                    if (featureRuntimeBehavior.isFeatureEnabled(Feature.MOVING_FLOW)) {
+                        add(HomeModel.Header(getString(R.string.home_tab_editing_section_title)))
+                        add(HomeModel.ChangeAddress(pendingAddress))
+                    }
                 }
-                (binding.recycler.adapter as? HomeAdapter)?.submitList(items)
+                adapter.submitList(items)
             }
 
             if (isActive(successData.contracts)) {
@@ -184,12 +169,12 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                             ).toTypedArray()
                         )
                     )
-                    if (FeatureFlag.MOVING_FLOW.enabled && marketManager.market == Market.SE) {
+                    if (featureRuntimeBehavior.isFeatureEnabled(Feature.MOVING_FLOW)) {
                         add(HomeModel.Header(getString(R.string.home_tab_editing_section_title)))
                         add(HomeModel.ChangeAddress(pendingAddress))
                     }
                 }
-                (binding.recycler.adapter as? HomeAdapter)?.submitList(items)
+                adapter.submitList(items)
             }
         }
     }

@@ -13,9 +13,9 @@ import com.hedvig.android.owldroid.type.EmbarkExpressionTypeBinary
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeMultiple
 import com.hedvig.android.owldroid.type.EmbarkExpressionTypeUnary
 import com.hedvig.android.owldroid.type.EmbarkExternalRedirectLocation
+import com.hedvig.app.authenticate.LoginStatus
+import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.embark.util.VariableExtractor
-import com.hedvig.app.service.LoginStatus
-import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.util.Percent
 import com.hedvig.app.util.getWithDotNotation
 import com.hedvig.app.util.plus
@@ -103,7 +103,23 @@ abstract class EmbarkViewModel(
         }.flatten()
     }
 
-    fun navigateToPassage(passageName: String) {
+    fun submitAction(nextPassageName: String, submitIndex: Int = 0) {
+        data.value?.passage?.let { currentPassage ->
+            currentPassage.action?.api(submitIndex)?.let { api ->
+                api.asEmbarkApiGraphQLQuery?.let { graphQLQuery ->
+                    handleGraphQLQuery(graphQLQuery)
+                    return
+                }
+                api.asEmbarkApiGraphQLMutation?.let { graphQLMutation ->
+                    handleGraphQLMutation(graphQLMutation)
+                    return
+                }
+            }
+        }
+        navigateToPassage(nextPassageName)
+    }
+
+    private fun navigateToPassage(passageName: String) {
         storyData.embarkStory?.let { story ->
             val nextPassage = story.passages.find { it.name == passageName }
             if (nextPassage?.redirects?.isNotEmpty() == true) {

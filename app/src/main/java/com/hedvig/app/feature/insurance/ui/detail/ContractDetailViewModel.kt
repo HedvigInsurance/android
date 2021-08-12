@@ -18,13 +18,22 @@ import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoModel
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.apollo.toUpcomingAgreementResult
+import com.hedvig.app.util.featureflags.Feature
+import com.hedvig.app.util.featureflags.FeatureManager
 import e
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 abstract class ContractDetailViewModel : ViewModel() {
+    sealed class ViewState {
+        data class Success(val data: InsuranceQuery.Contract) : ViewState()
+        object Error : ViewState()
+        object Loading : ViewState()
+    }
 
-    protected val _data = MutableLiveData<Result<InsuranceQuery.Contract>>()
-    val data: LiveData<Result<InsuranceQuery.Contract>> = _data
+    protected val _data = MutableStateFlow<ViewState>(ViewState.Loading)
+    val data = _data.asStateFlow()
 
     protected val _yourInfoList = MutableLiveData<List<YourInfoModel>>()
     val yourInfoList: LiveData<List<YourInfoModel>> = _yourInfoList
@@ -43,19 +52,20 @@ class ContractDetailViewModelImpl(
     private val insuranceRepository: InsuranceRepository,
     private val chatRepository: ChatRepository,
     private val marketManager: MarketManager,
+    private val featureRuntimeBehavior: FeatureManager
 ) : ContractDetailViewModel() {
 
     override fun loadContract(id: String) {
         viewModelScope.launch {
             when (val insurance = insuranceRepository()) {
                 is InsuranceRepository.InsuranceResult.Error -> {
-                    _data.postValue(Result.failure(Throwable(insurance.message)))
+                    _data.value = ViewState.Error
                 }
                 is InsuranceRepository.InsuranceResult.Insurance -> {
                     insurance.insurance.contracts
                         .firstOrNull { it.id == id }
                         ?.let { contract ->
-                            _data.postValue(Result.success(contract))
+                            _data.value = ViewState.Success(contract)
                             _yourInfoList.postValue(createContractItems(contract))
                             _documentsList.postValue(createDocumentItems(contract))
                             _coverageViewState.postValue(
@@ -64,14 +74,16 @@ class ContractDetailViewModelImpl(
                                     createInsurableLimitsItems(contract),
                                 )
                             )
-                        } ?: _data.postValue(Result.failure(Throwable("No contract found")))
+                        } ?: run { _data.value = ViewState.Error }
                 }
             }
         }
     }
 
     private fun createContractItems(contract: InsuranceQuery.Contract): List<YourInfoModel> {
-        val contractItems = contract.toModelItems()
+        val contractItems = contract.toModelItems(
+            includeMovingFlowItems = featureRuntimeBehavior.isFeatureEnabled(Feature.MOVING_FLOW)
+        )
         val upcomingAgreement = contract.fragments.upcomingAgreementFragment.toUpcomingAgreementResult()
         val upcomingAgreementItem = upcomingAgreement?.let { YourInfoModel.PendingAddressChange(it) }
         return listOfNotNull(upcomingAgreementItem) + contractItems + listOf(YourInfoModel.Change)

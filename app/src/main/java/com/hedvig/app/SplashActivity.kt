@@ -7,6 +7,8 @@ import android.os.Bundle
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
+import com.hedvig.app.authenticate.LoginStatus
+import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.databinding.ActivitySplashBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
@@ -15,12 +17,10 @@ import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.feature.referrals.ReferralsReceiverActivity
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.service.LoginStatus
-import com.hedvig.app.service.LoginStatusService
 import com.hedvig.app.util.extensions.avdDoOnEnd
 import com.hedvig.app.util.extensions.avdStart
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.viewBinding
-import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
@@ -33,7 +33,7 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding.root.setEdgeToEdgeSystemUiFlags(true)
+        window.compatSetDecorFitsSystemWindows(false)
     }
 
     override fun onStart() {
@@ -53,6 +53,7 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
     private fun handleFirebaseDynamicLink(intent: Intent, loginStatus: LoginStatus?) {
         FirebaseDynamicLinks.getInstance().getDynamicLink(intent)
             .addOnSuccessListener { pendingDynamicLinkData ->
+                // This will actually be null in some cases
                 if (pendingDynamicLinkData != null && pendingDynamicLinkData.link != null) {
                     val link = pendingDynamicLinkData.link
                     when (link?.pathSegments?.getOrNull(0)) {

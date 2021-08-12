@@ -6,7 +6,7 @@ import androidx.work.WorkerParameters
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.coroutines.await
 import com.hedvig.android.owldroid.graphql.RegisterPushTokenMutation
-import com.hedvig.app.util.extensions.getAuthenticationToken
+import com.hedvig.app.authenticate.AuthenticationTokenService
 import e
 import i
 import org.koin.core.component.KoinComponent
@@ -18,6 +18,7 @@ class PushNotificationWorker(
 ) : CoroutineWorker(context, params), KoinComponent {
 
     private val apolloClient: ApolloClient by inject()
+    private val authenticationTokenService: AuthenticationTokenService by inject()
 
     override suspend fun doWork(): Result {
         val pushToken = inputData.getString(PUSH_TOKEN) ?: throw Exception("No token provided")
@@ -31,7 +32,7 @@ class PushNotificationWorker(
 
     private fun hasHedvigToken(): Boolean {
         try {
-            val hedvigToken = context.getAuthenticationToken()
+            val hedvigToken = authenticationTokenService.authenticationToken
             if (hedvigToken != null) {
                 return true
             }

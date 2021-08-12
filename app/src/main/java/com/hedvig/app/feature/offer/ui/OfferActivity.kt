@@ -2,23 +2,25 @@ package com.hedvig.app.feature.offer.ui
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.drawable.PictureDrawable
 import android.os.Bundle
 import android.transition.TransitionManager
 import android.view.MenuItem
+import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.RequestBuilder
+import coil.ImageLoader
 import com.carousell.concatadapterextension.ConcatItemDecoration
 import com.carousell.concatadapterextension.ConcatSpanSizeLookup
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationTitle
 import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.SplashActivity
+import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.databinding.ActivityOfferBinding
 import com.hedvig.app.feature.documents.DocumentAdapter
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
@@ -32,16 +34,16 @@ import com.hedvig.app.feature.offer.ui.checkout.CheckoutActivity
 import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
-import com.hedvig.app.service.LoginStatus
-import com.hedvig.app.util.extensions.insetSystemBottomWithMargin
-import com.hedvig.app.util.extensions.insetSystemTopWithPadding
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
+import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.showErrorDialog
 import com.hedvig.app.util.extensions.startClosableChat
+import com.hedvig.app.util.extensions.view.applyNavigationBarInsetsMargin
+import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
-import dev.chrisbanes.insetter.setEdgeToEdgeSystemUiFlags
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -53,9 +55,12 @@ import org.koin.core.parameter.parametersOf
 class OfferActivity : BaseActivity(R.layout.activity_offer) {
     private val quoteIds: List<String>
         get() = intent.getStringArrayExtra(QUOTE_IDS)?.toList() ?: emptyList()
-    private val model: OfferViewModel by viewModel { parametersOf(quoteIds) }
+    private val shouldShowOnNextAppStart: Boolean
+        get() = intent.getBooleanExtra(SHOULD_SHOW_ON_NEXT_APP_START, false)
+
+    private val model: OfferViewModel by viewModel { parametersOf(quoteIds, shouldShowOnNextAppStart) }
     private val binding by viewBinding(ActivityOfferBinding::bind)
-    private val requestBuilder: RequestBuilder<PictureDrawable> by inject()
+    private val imageLoader: ImageLoader by inject()
     private val tracker: OfferTracker by inject()
     private val marketManager: MarketManager by inject()
 
@@ -63,9 +68,9 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         super.onCreate(savedInstanceState)
 
         binding.apply {
-            offerRoot.setEdgeToEdgeSystemUiFlags(true)
-            offerToolbar.insetSystemTopWithPadding()
-            signButton.insetSystemBottomWithMargin()
+            window.compatSetDecorFitsSystemWindows(false)
+            offerToolbar.applyStatusBarInsets()
+            signButton.applyNavigationBarInsetsMargin()
 
             appbar.background.alpha = 0
             offerScroll.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -106,7 +111,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             )
             val perilsAdapter = PerilsAdapter(
                 fragmentManager = supportFragmentManager,
-                requestBuilder = requestBuilder,
+                imageLoader = imageLoader
             )
             val insurableLimitsAdapter = InsurableLimitsAdapter(
                 fragmentManager = supportFragmentManager
@@ -208,6 +213,16 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                                 )
                             )
                         }
+                        OfferViewModel.Event.DiscardOffer -> {
+                            startActivity(
+                                Intent(
+                                    this@OfferActivity,
+                                    SplashActivity::class.java
+                                )
+                            )
+                        }
+                        OfferViewModel.Event.HasContracts -> {
+                        } // No-op
                     }
                 }
                 .launchIn(lifecycleScope)
@@ -262,11 +277,17 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     }
 
     private fun inflateMenu(loginStatus: LoginStatus) {
-        binding.offerToolbar.menu.clear()
+        val menu = binding.offerToolbar.menu
+        menu.clear()
         when (loginStatus) {
             LoginStatus.ONBOARDING,
             LoginStatus.IN_OFFER -> binding.offerToolbar.inflateMenu(R.menu.offer_menu)
-            LoginStatus.LOGGED_IN -> binding.offerToolbar.inflateMenu(R.menu.offer_menu_logged_in)
+            LoginStatus.LOGGED_IN -> {
+                binding.offerToolbar.inflateMenu(R.menu.offer_menu_logged_in)
+                menu.getItem(0).actionView.setOnClickListener {
+                    handleMenuItem(menu[0])
+                }
+            }
         }
     }
 
@@ -313,14 +334,30 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             marketManager.market?.openAuth(this, supportFragmentManager)
             true
         }
+        R.id.discard_offer -> {
+            showAlert(
+                title = R.string.OFFER_QUIT_TITLE,
+                message = R.string.OFFER_QUIT_MESSAGE,
+                positiveLabel = R.string.general_back_button,
+                negativeLabel = R.string.general_discard_button,
+                positiveAction = {},
+                negativeAction = { model.onDiscardOffer() }
+            )
+            true
+        }
         else -> false
     }
 
     companion object {
         private const val QUOTE_IDS = "QUOTE_IDS"
-        fun newInstance(context: Context, quoteIds: List<String> = emptyList()) =
-            Intent(context, OfferActivity::class.java).apply {
-                putExtra(QUOTE_IDS, quoteIds.toTypedArray())
-            }
+        private const val SHOULD_SHOW_ON_NEXT_APP_START = "SHOULD_SHOW_ON_NEXT_APP_START"
+        fun newInstance(
+            context: Context,
+            quoteIds: List<String> = emptyList(),
+            shouldShowOnNextAppStart: Boolean = false
+        ) = Intent(context, OfferActivity::class.java).apply {
+            putExtra(QUOTE_IDS, quoteIds.toTypedArray())
+            putExtra(SHOULD_SHOW_ON_NEXT_APP_START, shouldShowOnNextAppStart)
+        }
     }
 }
