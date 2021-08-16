@@ -26,11 +26,6 @@ object Libs {
         const val activityCompose = "androidx.activity:activity-compose:1.3.1"
 
         object DataStore {
-            const val preferences = "androidx.datastore:datastore-preferences:1.0.0"
-            const val core = "androidx.datastore:datastore-core:1.0.0"
-        }
-
-        object DataStore {
             const val preferences = "androidx.datastore:datastore-preferences:1.0.0-rc02"
             const val core = "androidx.datastore:datastore-core:1.0.0-rc02"
         }
