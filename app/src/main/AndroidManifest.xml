@@ -301,7 +301,7 @@
 
         <activity android:name=".feature.offer.quotedetail.QuoteDetailActivity" />
 
-        <activity android:name=".feature.embark.passages.previousinsurer.AskForPriceInfoActivity" />
+        <activity android:name=".feature.embark.passages.previousinsurer.askforprice.AskForPriceInfoActivity" />
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"

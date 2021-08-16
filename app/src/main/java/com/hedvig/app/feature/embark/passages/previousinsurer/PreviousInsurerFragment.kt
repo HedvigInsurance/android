@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.embark.passages.previousinsurer
 
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -11,6 +10,8 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.PreviousInsurerFragmentBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.passages.MessageAdapter
+import com.hedvig.app.feature.embark.passages.previousinsurer.askforprice.AskForPriceInfoActivity
+import com.hedvig.app.feature.embark.passages.previousinsurer.askforprice.AskForPriceInfoParameter
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
 import com.hedvig.app.util.whenApiVersion
@@ -46,7 +47,9 @@ class PreviousInsurerFragment : Fragment(R.layout.previous_insurer_fragment) {
                 onShowInsurers()
             }
             continueButton.setHapticClickListener {
-                startActivity(Intent(requireContext(), AskForPriceInfoActivity::class.java))
+                previousInsurerViewModel.previousInsurer.value?.name?.let {
+                    startActivity(AskForPriceInfoActivity.createIntent(requireContext(), AskForPriceInfoParameter(it)))
+                }
             }
 
             previousInsurerViewModel.previousInsurer.observe(viewLifecycleOwner) { selectedInsurer ->
@@ -68,7 +71,7 @@ class PreviousInsurerFragment : Fragment(R.layout.previous_insurer_fragment) {
                 MaterialAlertDialogBuilder(requireContext())
                     .setTitle(getString(R.string.EXTERNAL_INSURANCE_PROVIDER_ALERT_TITLE))
                     .setMessage(getString(R.string.EXTERNAL_INSURANCE_PROVIDER_ALERT_MESSAGE))
-                    .setPositiveButton(getString(R.string.ALERT_OK)) { dialog, _, -> dialog.dismiss() }
+                    .setPositiveButton(getString(R.string.ALERT_OK)) { dialog, _ -> dialog.dismiss() }
                     .show()
             } else {
                 model.putInStore(insurerData.storeKey, item.id)

@@ -62,7 +62,8 @@ fun SecondaryTextButton(
         content = {
             Text(
                 text = text,
-                style = MaterialTheme.typography.button
+                style = MaterialTheme.typography.button,
+                color = MaterialTheme.colors.primary
             )
         },
         onClick = onClick
