@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.embark.passages.previousinsurer
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.View
