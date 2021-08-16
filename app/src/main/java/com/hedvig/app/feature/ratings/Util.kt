@@ -16,9 +16,9 @@ fun Context.tryOpenPlayStore() {
     }
 }
 
-fun Context.canOpenPlayStore() = playStoreIntent().resolveActivity(packageManager) != null
+private fun Context.canOpenPlayStore() = playStoreIntent().resolveActivity(packageManager) != null
 
-fun Context.openPlayStore() {
+private fun Context.openPlayStore() {
     val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$packageName"))
     intent.flags = (
         Intent.FLAG_ACTIVITY_NO_HISTORY

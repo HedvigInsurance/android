@@ -10,4 +10,6 @@ class MockLoggedInViewModel : LoggedInViewModel() {
                 .build()
         )
     }
+
+    override fun onReviewByChatComplete() {}
 }

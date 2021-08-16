@@ -26,8 +26,8 @@ object Libs {
         const val activityCompose = "androidx.activity:activity-compose:1.3.1"
 
         object DataStore {
-            const val preferences = "androidx.datastore:datastore-preferences:1.0.0"
-            const val core = "androidx.datastore:datastore-core:1.0.0"
+            const val preferences = "androidx.datastore:datastore-preferences:1.0.0-rc02"
+            const val core = "androidx.datastore:datastore-core:1.0.0-rc02"
         }
 
         object Lifecycle {
@@ -68,6 +68,8 @@ object Libs {
     const val flexbox = "com.google.android.flexbox:flexbox:3.0.0"
     const val combineTuple = "com.github.Zhuinden:livedata-combinetuple-kt:1.2.1"
     const val fragmentViewBindingDelegate = "com.github.Zhuinden:fragmentviewbindingdelegate-kt:1.0.0"
+
+    const val playKtx = "com.google.android.play:core-ktx:1.8.1"
 
     object OkHttp {
         private const val version = "4.9.1"

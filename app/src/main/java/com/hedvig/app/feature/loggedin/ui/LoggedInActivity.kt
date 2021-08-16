@@ -22,6 +22,7 @@ import com.hedvig.app.databinding.ActivityLoggedInBinding
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.onboarding.MemberIdViewModel
+import com.hedvig.app.feature.ratings.RatingsTracker
 import com.hedvig.app.feature.referrals.ui.ReferralsInformationActivity
 import com.hedvig.app.feature.welcome.WelcomeDialog
 import com.hedvig.app.feature.welcome.WelcomeViewModel
@@ -38,6 +39,7 @@ import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.getLastOpen
 import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.setLastOpen
+import com.hedvig.app.util.extensions.showReviewDialog
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
@@ -45,13 +47,14 @@ import com.hedvig.app.util.extensions.view.performOnTapHapticFeedback
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import e
+import kotlinx.coroutines.delay
+import java.time.LocalDate
+import javax.money.MonetaryAmount
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.time.LocalDate
-import javax.money.MonetaryAmount
 
 class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     private val claimsViewModel: ClaimsViewModel by viewModel()
@@ -62,6 +65,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     private val loggedInViewModel: LoggedInViewModel by viewModel()
 
     private val loggedInTracker: LoggedInTracker by inject()
+    private val ratingsTracker: RatingsTracker by inject()
 
     private val binding by viewBinding(ActivityLoggedInBinding::bind)
 
@@ -95,6 +99,15 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                     gradient.drawable?.alpha = boundedLerp(255, 0, positionInSpan / 5)
                 }
             }
+
+            loggedInViewModel.shouldOpenReviewDialog
+                .flowWithLifecycle(lifecycle)
+                .onEach { shouldOpenReviewDialog ->
+                    if (shouldOpenReviewDialog) {
+                        showReviewWithDelay()
+                    }
+                }
+                .launchIn(lifecycleScope)
 
             setSupportActionBar(toolbar)
             supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -153,6 +166,19 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
             bindData()
             setupToolBar()
+
+            if (intent.getBooleanExtra(SHOW_RATING_DIALOG, false)) {
+                lifecycleScope.launch {
+                    showReviewWithDelay()
+                }
+            }
+        }
+    }
+
+    private suspend fun showReviewWithDelay() {
+        delay(REVIEW_DIALOG_DELAY_MILLIS)
+        showReviewDialog {
+            ratingsTracker.rate()
         }
     }
 
@@ -393,24 +419,27 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     }
 
     companion object {
+        const val EXTRA_IS_FROM_ONBOARDING = "extra_is_from_onboarding"
+
         private const val INITIAL_TAB = "INITIAL_TAB"
+        private const val SHOW_RATING_DIALOG = "SHOW_RATING_DIALOG"
+        private const val REVIEW_DIALOG_DELAY_MILLIS = 2000L
+        private val evaluator = ArgbEvaluator()
+
         fun newInstance(
             context: Context,
             withoutHistory: Boolean = false,
             initialTab: LoggedInTabs = LoggedInTabs.HOME,
             isFromOnboarding: Boolean = false,
-        ) =
-            Intent(context, LoggedInActivity::class.java).apply {
-                if (withoutHistory) {
-                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                }
-                putExtra(INITIAL_TAB, initialTab)
-                putExtra(EXTRA_IS_FROM_ONBOARDING, isFromOnboarding)
+            showRatingDialog: Boolean = false,
+        ) = Intent(context, LoggedInActivity::class.java).apply {
+            if (withoutHistory) {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
             }
-
-        const val EXTRA_IS_FROM_ONBOARDING = "extra_is_from_onboarding"
-
-        private val evaluator = ArgbEvaluator()
+            putExtra(INITIAL_TAB, initialTab)
+            putExtra(EXTRA_IS_FROM_ONBOARDING, isFromOnboarding)
+            putExtra(SHOW_RATING_DIALOG, showRatingDialog)
+        }
     }
 }

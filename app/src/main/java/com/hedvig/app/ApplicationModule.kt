@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.os.Build
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.preferencesDataStoreFile
 import coil.ImageLoader
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
@@ -27,6 +29,8 @@ import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModel
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModelImpl
 import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutViewModel
 import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutViewModelImpl
+import com.hedvig.app.feature.chat.data.ChatEventDataStore
+import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.feature.chat.service.ChatTracker
@@ -164,6 +168,8 @@ import com.hedvig.app.util.apollo.ApolloTimberLogger
 import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.mixpanel.android.mpmetrics.MixpanelAPI
+import java.time.Clock
+import java.util.Locale
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidApplication
@@ -171,8 +177,6 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import timber.log.Timber
-import java.time.Clock
-import java.util.Locale
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APPLICATION_ID == "com.hedvig.test.app"
 
@@ -302,7 +306,7 @@ fun getLocale(context: Context, market: Market?): Locale {
 val viewModelModule = module {
     viewModel { ClaimsViewModel(get(), get()) }
     viewModel { BaseTabViewModel(get(), get()) }
-    viewModel { ChatViewModel(get(), get(), get(), get()) }
+    viewModel { ChatViewModel(get(), get(), get(), get(), get()) }
     viewModel { UserViewModel(get(), get(), get()) }
     viewModel { RedeemCodeViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
@@ -331,7 +335,7 @@ val marketPickerModule = module {
 }
 
 val loggedInModule = module {
-    viewModel<LoggedInViewModel> { LoggedInViewModelImpl(get()) }
+    viewModel<LoggedInViewModel> { LoggedInViewModelImpl(get(), get()) }
 }
 
 val whatsNewModule = module {
@@ -524,7 +528,7 @@ val useCaseModule = module {
     single { SignQuotesUseCase(get(), get()) }
     single { ApproveQuotesUseCase(get(), get(), get()) }
     single { RefreshQuotesUseCase(get()) }
-    single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get()) }
+    single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
 }
 
 val cacheManagerModule = module {
@@ -555,5 +559,19 @@ val coilModule = module {
                 }
             }
             .build()
+    }
+}
+
+val chatEventModule = module {
+    single<ChatEventStore> { ChatEventDataStore(get()) }
+}
+
+val dataStoreModule = module {
+    single {
+        PreferenceDataStoreFactory.create(
+            produceFile = {
+                get<Context>().preferencesDataStoreFile("hedvig_data_store_preferences")
+            }
+        )
     }
 }

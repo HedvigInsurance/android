@@ -23,16 +23,17 @@ class WhatsNewDialog : DismissiblePager() {
 
     override fun onDismiss() {
         whatsNewViewModel.hasSeenNews(BuildConfig.VERSION_NAME)
+        super.onDismiss()
     }
 
     override fun onLastSwipe() {
-        dismiss()
         whatsNewViewModel.hasSeenNews(BuildConfig.VERSION_NAME)
+        super.onLastSwipe()
     }
 
     override fun onLastPageButton() {
-        dismiss()
         whatsNewViewModel.hasSeenNews(BuildConfig.VERSION_NAME)
+        super.onLastPageButton()
     }
 
     companion object {

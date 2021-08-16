@@ -93,7 +93,8 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
                     is ChatViewModel.Event.Error -> showAlert(
                         title = R.string.error_dialog_title,
                         message = R.string.component_error,
-                        positiveAction = {}
+                        positiveAction = {},
+                        negativeLabel = null
                     )
                 }
             }
@@ -360,7 +361,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
 
         lifecycleScope.launch(Dispatchers.IO) {
             val images = getImagesPath()
-            launch(Dispatchers.Main) {
+            lifecycleScope.launch(Dispatchers.Main) {
                 attachPickerDialog.setImages(images)
             }
         }
@@ -479,6 +480,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
 
     override fun finish() {
         super.finish()
+        chatViewModel.onChatClosed()
         if (intent.getBooleanExtra(EXTRA_SHOW_CLOSE, false)) {
             overridePendingTransition(R.anim.stay_in_place, R.anim.activity_slide_down_out)
         }

@@ -19,12 +19,6 @@ class HowClaimsWorkDialog : DismissiblePager() {
     override val items: List<DismissiblePagerModel>
         get() = requireArguments().getParcelableArrayList<DismissiblePagerModel>(ITEMS).orEmpty()
 
-    override fun onDismiss() {
-    }
-
-    override fun onLastSwipe() {
-    }
-
     override fun onLastPageButton() {
         HonestyPledgeBottomSheet
             .newInstance()

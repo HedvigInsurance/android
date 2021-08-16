@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import androidx.annotation.CallSuper
 import androidx.annotation.StringRes
 import androidx.annotation.StyleRes
 import androidx.fragment.app.DialogFragment
@@ -37,9 +38,17 @@ abstract class DismissiblePager : DialogFragment() {
     @get:StringRes
     abstract val titleLabel: Int?
 
-    abstract fun onDismiss()
-    abstract fun onLastSwipe()
-    abstract fun onLastPageButton()
+    @CallSuper
+    open fun onDismiss() {
+        dismiss()
+    }
+
+    @CallSuper
+    open fun onLastSwipe() {
+        dismiss()
+    }
+
+    open fun onLastPageButton() {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,7 +85,6 @@ abstract class DismissiblePager : DialogFragment() {
 
             close.setOnClickListener {
                 onDismiss()
-                dialog?.dismiss()
             }
 
             titleLabel?.let { tl ->
@@ -117,7 +125,6 @@ abstract class DismissiblePager : DialogFragment() {
                             }
                             if (position == count - 1 && offsetPercentage == 0f) {
                                 onLastSwipe()
-                                dismiss()
                             }
                         }
                         is DismissiblePagerModel.NoTitlePage,

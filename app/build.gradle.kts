@@ -163,6 +163,8 @@ dependencies {
     implementation(Libs.materialComponents)
     implementation(Libs.flexbox)
 
+    implementation(Libs.playKtx)
+
     implementation(Libs.combineTuple)
     implementation(Libs.fragmentViewBindingDelegate)
 
