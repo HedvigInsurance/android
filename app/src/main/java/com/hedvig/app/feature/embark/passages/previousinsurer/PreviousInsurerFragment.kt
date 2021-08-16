@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.embark.passages.previousinsurer
 
 import android.app.Activity
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -18,7 +17,6 @@ import com.hedvig.app.feature.embark.passages.previousinsurer.askforprice.AskFor
 import com.hedvig.app.feature.embark.passages.previousinsurer.askforprice.AskForPriceInfoParameter
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
-import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.app.util.whenApiVersion
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
@@ -62,10 +60,8 @@ class PreviousInsurerFragment : Fragment(R.layout.previous_insurer_fragment) {
                 onShowInsurers()
             }
             continueButton.setHapticClickListener {
-                if (featureManager.isFeatureEnabled(Feature.INSURELY_EMBARK)) {
-                    startAskForPrice()
-                } else {
-                    onContinue()
+                previousInsurerViewModel.previousInsurer.value?.name?.let {
+                    startActivity(AskForPriceInfoActivity.createIntent(requireContext(), AskForPriceInfoParameter(it)))
                 }
             }
 
