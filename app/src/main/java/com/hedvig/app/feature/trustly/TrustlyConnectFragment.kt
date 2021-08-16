@@ -108,7 +108,9 @@ class TrustlyConnectFragment : Fragment(R.layout.trustly_connect_fragment) {
                 webViewClient = object : WebViewClient() {
                     override fun onPageFinished(view: WebView?, url: String?) {
                         super.onPageFinished(view, url)
-                        if (viewLifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
+                        if (this@TrustlyConnectFragment.view != null &&
+                            viewLifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)
+                        ) {
                             if (!hasLoadedWebView) {
                                 TransitionManager.beginDelayedTransition(
                                     binding.root,
@@ -151,6 +153,18 @@ class TrustlyConnectFragment : Fragment(R.layout.trustly_connect_fragment) {
                 trustly.loadUrl(url)
             }
         }
+    }
+
+    override fun onDestroy() {
+        destroyWebView()
+        super.onDestroy()
+    }
+
+    private fun destroyWebView() {
+        binding.trustly.removeAllViews()
+        binding.trustly.clearHistory()
+        binding.trustly.clearCache(true)
+        binding.trustly.destroy()
     }
 
     companion object {
