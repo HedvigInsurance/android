@@ -1,4 +1,4 @@
-package com.hedvig.app.ui.compose
+package com.hedvig.app.ui.compose.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.Colors
@@ -12,7 +12,7 @@ import com.google.android.material.composethemeadapter.createMdcTheme
 private val lightThemeColors = Colors(
     primary = hedvigBlack,
     primaryVariant = hedvigDarkGray,
-    onPrimary = Color.White,
+    onPrimary = textColorPrimary,
     secondary = lavender300,
     secondaryVariant = lavender300,
     onSecondary = Color.White,
@@ -28,7 +28,7 @@ private val lightThemeColors = Colors(
 private val darkThemeColors = Colors(
     primary = Color.White,
     primaryVariant = hedvigOffWhite,
-    onPrimary = hedvigBlack,
+    onPrimary = textColorPrimaryDark,
     secondary = lavender400,
     secondaryVariant = lavender400,
     onSecondary = Color.White,
@@ -51,7 +51,8 @@ fun HedvigTheme(
     val (colors, type, shapes) = createMdcTheme(
         context = context,
         layoutDirection = layoutDirection,
-        setDefaultFontFamily = true,
+        setTextColors = true,
+        setDefaultFontFamily = true
     )
 
     MaterialTheme(
