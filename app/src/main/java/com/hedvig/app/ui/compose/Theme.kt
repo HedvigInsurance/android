@@ -5,6 +5,9 @@ import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
+import com.google.android.material.composethemeadapter.createMdcTheme
 
 private val lightThemeColors = Colors(
     primary = hedvigBlack,
@@ -43,8 +46,17 @@ fun HedvigTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
+    val context = LocalContext.current
+    val layoutDirection = LocalLayoutDirection.current
+    val (colors, type, shapes) = createMdcTheme(
+        context = context,
+        layoutDirection = layoutDirection
+    )
+
     MaterialTheme(
-        colors = if (darkTheme) darkThemeColors else lightThemeColors,
-        content = content
+        colors = colors!!,
+        typography = type!!,
+        shapes = shapes!!,
+        content = content,
     )
 }

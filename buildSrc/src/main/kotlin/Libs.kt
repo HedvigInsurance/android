@@ -60,6 +60,7 @@ object Libs {
             const val animation = "androidx.compose.animation:animation:$version"
             const val uiTooling = "androidx.compose.ui:ui-tooling:$version"
             const val uiTestJunit = "androidx.compose.ui:ui-test-junit4:$version"
+            const val mdcAdapter = "com.google.android.material:compose-theme-adapter:$version"
         }
     }
 

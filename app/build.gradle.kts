@@ -229,6 +229,7 @@ dependencies {
     implementation(Libs.AndroidX.activityCompose)
     implementation(Libs.AndroidX.Compose.material)
     implementation(Libs.AndroidX.Compose.animation)
+    implementation(Libs.AndroidX.Compose.mdcAdapter)
     implementation(Libs.AndroidX.Compose.uiTooling)
     implementation(Libs.AndroidX.Lifecycle.compose)
     androidTestImplementation(Libs.AndroidX.Compose.uiTestJunit)
