@@ -9,7 +9,9 @@ import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.hedvig.app.R
 import com.hedvig.app.ui.compose.composables.TopAppBarWithBack
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 
@@ -29,7 +31,7 @@ class AskForPriceInfoActivity : ComponentActivity() {
                     topBar = {
                         TopAppBarWithBack(
                             onClick = { onBackPressed() },
-                            title = "Retrieve price info"
+                            title = stringResource(R.string.insurely_title)
                         )
                     }
                 ) {

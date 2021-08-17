@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.startup.Initializer
 import com.hedvig.app.adyenModule
 import com.hedvig.app.applicationModule
-import com.hedvig.app.askForPriceModule
 import com.hedvig.app.cacheManagerModule
 import com.hedvig.app.changeAddressModule
 import com.hedvig.app.changeDateBottomSheetModule
@@ -102,7 +101,6 @@ class KoinInitializer : Initializer<KoinApplication> {
                 embarkTrackerModule,
                 chatEventModule,
                 dataStoreModule,
-                askForPriceModule,
             )
         )
     }

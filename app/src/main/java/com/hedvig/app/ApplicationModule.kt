@@ -55,7 +55,6 @@ import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionParams
 import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionViewModel
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerViewModel
 import com.hedvig.app.feature.embark.passages.previousinsurer.askforprice.AskForPriceInfoParameter
-import com.hedvig.app.feature.embark.passages.previousinsurer.askforprice.AskForPriceViewModel
 import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
 import com.hedvig.app.feature.embark.passages.textaction.TextActionViewModel
 import com.hedvig.app.feature.home.data.HomeRepository
@@ -174,6 +173,8 @@ import com.hedvig.app.util.apollo.ApolloTimberLogger
 import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.mixpanel.android.mpmetrics.MixpanelAPI
+import java.time.Clock
+import java.util.Locale
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidApplication
@@ -181,8 +182,6 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import timber.log.Timber
-import java.time.Clock
-import java.util.Locale
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APPLICATION_ID == "com.hedvig.test.app"
 
@@ -405,10 +404,6 @@ val textActionSetModule = module {
 
 val numberActionSetModule = module {
     viewModel { (data: NumberActionParams) -> NumberActionViewModel(data) }
-}
-
-val askForPriceModule = module {
-    viewModel { (data: AskForPriceInfoParameter) -> AskForPriceViewModel(data) }
 }
 
 val referralsModule = module {

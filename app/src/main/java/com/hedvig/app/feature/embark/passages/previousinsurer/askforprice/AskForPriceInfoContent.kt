@@ -9,6 +9,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.hedvig.app.R
 import com.hedvig.app.ui.compose.composables.PrimaryTextButton
@@ -32,21 +33,21 @@ fun IntroContent(
     ) {
         Text(
             modifier = Modifier.padding(top = baseMargin),
-            text = "Do you want to retrieve price info from $selectedInsurance?",
+            text = stringResource(R.string.insurely_intro_title, selectedInsurance),
             style = MaterialTheme.typography.h6,
             color = MaterialTheme.colors.primary
         )
         Text(
-            text = "This will allow you to compare your current plan with Hedvig’s.",
+            text = stringResource(R.string.insurely_intro_description),
             style = MaterialTheme.typography.body1
         )
         PrimaryTextButton(
             modifier = Modifier.padding(top = baseMarginQuadruple),
-            text = "Yes, retrieve info",
+            text = stringResource(R.string.insurely_confirmation_continue_button_text),
             onClick = onNavigateToRetrievePriceInfo
         )
         SecondaryTextButton(
-            text = "No, skip",
+            text = stringResource(R.string.insurely_intro_skip_button_text),
             onClick = onSkipRetrievePriceInfo
         )
         Text(
