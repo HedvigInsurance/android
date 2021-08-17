@@ -1,8 +1,11 @@
 package com.hedvig.app.feature.embark.passages.previousinsurer
 
+import android.app.Activity
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.doOnNextLayout
 import androidx.fragment.app.Fragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -15,7 +18,7 @@ import com.hedvig.app.feature.embark.passages.previousinsurer.askforprice.AskFor
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
 import com.hedvig.app.util.featureflags.Feature
-import com.hedvig.app.util.featureflags.FeatureFlagProvider
+import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.app.util.whenApiVersion
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.android.ext.android.inject
@@ -26,7 +29,14 @@ class PreviousInsurerFragment : Fragment(R.layout.previous_insurer_fragment) {
     private val binding by viewBinding(PreviousInsurerFragmentBinding::bind)
     private val model: EmbarkViewModel by sharedViewModel()
     private val previousInsurerViewModel: PreviousInsurerViewModel by sharedViewModel()
-    private val featureFlagProvider: FeatureFlagProvider by inject()
+    private val featureManager: FeatureManager by inject()
+
+    private val startForResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_CANCELED) {
+                onContinue()
+            }
+        }
 
     private val insurerData by lazy {
         requireArguments()
@@ -51,15 +61,8 @@ class PreviousInsurerFragment : Fragment(R.layout.previous_insurer_fragment) {
                 onShowInsurers()
             }
             continueButton.setHapticClickListener {
-                if (featureFlagProvider.hasFeature(Feature.INSURELY_EMBARK)) {
-                    previousInsurerViewModel.previousInsurer.value?.name?.let {
-                        startActivity(
-                            AskForPriceInfoActivity.createIntent(
-                                requireContext(),
-                                AskForPriceInfoParameter(it)
-                            )
-                        )
-                    }
+                if (featureManager.isFeatureEnabled(Feature.INSURELY_EMBARK)) {
+                    startAskForPrice()
                 } else {
                     onContinue()
                 }
@@ -75,6 +78,17 @@ class PreviousInsurerFragment : Fragment(R.layout.previous_insurer_fragment) {
             messages.doOnNextLayout {
                 startPostponedEnterTransition()
             }
+        }
+    }
+
+    private fun startAskForPrice() {
+        previousInsurerViewModel.previousInsurer.value?.name?.let {
+            startForResult.launch(
+                AskForPriceInfoActivity.createIntent(
+                    requireContext(),
+                    AskForPriceInfoParameter(it)
+                )
+            )
         }
     }
 

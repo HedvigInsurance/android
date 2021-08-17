@@ -35,7 +35,7 @@ class AskForPriceInfoActivity : ComponentActivity() {
                 ) {
                     AskForPriceScreen(
                         parameter.selectedInsuranceProvider,
-                        onSkipRetrievePriceInfo = ::setResult,
+                        onSkipRetrievePriceInfo = ::finishWithResult,
                         onNavigateToRetrievePrice = ::startRetrievePriceActivity
                     )
                 }
@@ -47,8 +47,9 @@ class AskForPriceInfoActivity : ComponentActivity() {
         // startActivity(RetrievePriceInfoActivity.createIntent(this))
     }
 
-    private fun setResult() {
+    private fun finishWithResult() {
         setResult(Activity.RESULT_CANCELED)
+        finish()
     }
 
     companion object {
