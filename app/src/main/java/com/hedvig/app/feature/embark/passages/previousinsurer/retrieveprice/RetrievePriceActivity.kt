@@ -5,16 +5,16 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hedvig.app.feature.embark.passages.previousinsurer.askforprice.RetrievePriceContent
-import com.hedvig.app.feature.embark.passages.previousinsurer.retrieveprice.RetrievePriceViewModel.ViewState.Loading
-import com.hedvig.app.feature.embark.passages.previousinsurer.retrieveprice.RetrievePriceViewModel.ViewState.RetrievePrice
 import com.hedvig.app.ui.compose.composables.CenteredProgressIndicator
+import com.hedvig.app.ui.compose.composables.FadeWhen
 import com.hedvig.app.ui.compose.composables.TopAppBarWithBack
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -54,13 +54,21 @@ class RetrievePriceInfoActivity : ComponentActivity() {
 fun RetrievePriceScreen(
     viewModel: RetrievePriceViewModel = viewModel()
 ) {
-    Crossfade(targetState = viewModel.viewState.collectAsState().value) { viewState ->
-        when (viewState) {
-            RetrievePrice -> RetrievePriceContent(
-                onRetrievePriceInfo = viewModel::onRetrievePriceInfo,
-                onIdentityInput = { viewModel.onIdentityInput(it) }
-            )
-            Loading -> CenteredProgressIndicator()
-        }
+    val viewState by viewModel.viewState.collectAsState()
+
+    FadeWhen(visible = viewState.isLoading) {
+        CenteredProgressIndicator()
+    }
+
+    FadeWhen(visible = !viewState.isLoading) {
+        RetrievePriceContent(
+            onRetrievePriceInfo = viewModel::onRetrievePriceInfo,
+            onIdentityInput = { viewModel.onIdentityInput(it) },
+            input = viewState.input,
+            isError = viewState.isError,
+            label = viewState.errorTextKey?.let {
+                stringResource(id = it)
+            } ?: "Personal identity number",
+        )
     }
 }

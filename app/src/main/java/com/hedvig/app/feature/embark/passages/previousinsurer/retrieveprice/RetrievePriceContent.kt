@@ -13,11 +13,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import com.hedvig.app.R
 import com.hedvig.app.ui.compose.composables.PrimaryTextButton
+import com.hedvig.app.ui.compose.composables.buttons.LargeContainedTextButton
 
 @Composable
 fun RetrievePriceContent(
     onRetrievePriceInfo: () -> Unit,
-    onIdentityInput: (String) -> Unit
+    onIdentityInput: (String) -> Unit,
+    label: String,
+    input: String,
+    isError: Boolean,
 ) {
     val baseMargin = dimensionResource(R.dimen.base_margin)
     val baseMarginDouble = dimensionResource(R.dimen.base_margin_double)
@@ -36,16 +40,17 @@ fun RetrievePriceContent(
         )
         TextField(
             modifier = Modifier.fillMaxWidth(),
-            value = "",
+            value = input,
             onValueChange = { onIdentityInput(it) },
             singleLine = true,
             placeholder = { Text("YYMMDD-XXXX") },
-            label = { Text("Personal identity number") },
+            label = { Text(label) },
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = MaterialTheme.colors.background
-            )
+            ),
+            isError = isError
         )
-        PrimaryTextButton(
+        LargeContainedTextButton(
             modifier = Modifier.padding(top = baseMarginQuadruple),
             text = "Retrieve info",
             onClick = onRetrievePriceInfo
