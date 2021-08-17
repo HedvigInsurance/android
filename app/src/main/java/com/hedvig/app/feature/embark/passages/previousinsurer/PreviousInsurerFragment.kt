@@ -14,8 +14,11 @@ import com.hedvig.app.feature.embark.passages.previousinsurer.askforprice.AskFor
 import com.hedvig.app.feature.embark.passages.previousinsurer.askforprice.AskForPriceInfoParameter
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
+import com.hedvig.app.util.featureflags.Feature
+import com.hedvig.app.util.featureflags.FeatureFlagProvider
 import com.hedvig.app.util.whenApiVersion
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class PreviousInsurerFragment : Fragment(R.layout.previous_insurer_fragment) {
@@ -23,6 +26,7 @@ class PreviousInsurerFragment : Fragment(R.layout.previous_insurer_fragment) {
     private val binding by viewBinding(PreviousInsurerFragmentBinding::bind)
     private val model: EmbarkViewModel by sharedViewModel()
     private val previousInsurerViewModel: PreviousInsurerViewModel by sharedViewModel()
+    private val featureFlagProvider: FeatureFlagProvider by inject()
 
     private val insurerData by lazy {
         requireArguments()
@@ -47,8 +51,17 @@ class PreviousInsurerFragment : Fragment(R.layout.previous_insurer_fragment) {
                 onShowInsurers()
             }
             continueButton.setHapticClickListener {
-                previousInsurerViewModel.previousInsurer.value?.name?.let {
-                    startActivity(AskForPriceInfoActivity.createIntent(requireContext(), AskForPriceInfoParameter(it)))
+                if (featureFlagProvider.hasFeature(Feature.INSURELY_EMBARK)) {
+                    previousInsurerViewModel.previousInsurer.value?.name?.let {
+                        startActivity(
+                            AskForPriceInfoActivity.createIntent(
+                                requireContext(),
+                                AskForPriceInfoParameter(it)
+                            )
+                        )
+                    }
+                } else {
+                    onContinue()
                 }
             }
 
