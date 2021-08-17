@@ -304,11 +304,27 @@
 
         <activity android:name=".feature.offer.quotedetail.QuoteDetailActivity" />
 
-        <activity android:name=".feature.embark.passages.previousinsurer.askforprice.AskForPriceInfoActivity" />
         <activity android:name=".feature.crossselling.ui.detail.CrossSellDetailActivity" />
         <activity android:name=".feature.crossselling.ui.detail.CrossSellFaqActivity" />
         <activity android:name=".feature.sunsetting.ForceUpgradeActivity" />
-        <activity android:name=".feature.embark.passages.previousinsurer.AskForPriceInfoActivity" />
+
+        <activity
+            android:name=".feature.embark.passages.previousinsurer.askforprice.AskForPriceInfoActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".feature.embark.passages.previousinsurer.retrieveprice.RetrievePriceInfoActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"

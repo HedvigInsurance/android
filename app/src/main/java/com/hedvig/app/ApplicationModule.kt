@@ -70,7 +70,7 @@ import com.hedvig.app.feature.embark.passages.multiaction.add.AddComponentViewMo
 import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionParams
 import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionViewModel
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerViewModel
-import com.hedvig.app.feature.embark.passages.previousinsurer.askforprice.AskForPriceInfoParameter
+import com.hedvig.app.feature.embark.passages.previousinsurer.retrieveprice.RetrievePriceViewModel
 import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
 import com.hedvig.app.feature.embark.passages.textaction.TextActionViewModel
 import com.hedvig.app.feature.home.data.GetHomeUseCase
@@ -490,6 +490,10 @@ val changeDateBottomSheetModule = module {
 
 val checkoutModule = module {
     viewModel { (ids: List<String>) -> CheckoutViewModel(ids, get(), get(), get()) }
+}
+
+val retrievePriceModule = module {
+    viewModel { RetrievePriceViewModel() }
 }
 
 val serviceModule = module {

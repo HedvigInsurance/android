@@ -12,6 +12,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.feature.embark.passages.previousinsurer.retrieveprice.RetrievePriceInfoActivity
 import com.hedvig.app.ui.compose.composables.appbar.TopAppBarWithBack
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 
@@ -19,6 +20,7 @@ class AskForPriceInfoActivity : BaseActivity() {
 
     private val parameter by lazy {
         intent.getParcelableExtra<AskForPriceInfoParameter>(PARAMETER)
+            ?: AskForPriceInfoParameter("Test")
             ?: throw Error("Programmer error: DATA is null in ${this.javaClass.name}")
     }
 
@@ -46,7 +48,7 @@ class AskForPriceInfoActivity : BaseActivity() {
     }
 
     private fun startRetrievePriceActivity() {
-        // startActivity(RetrievePriceInfoActivity.createIntent(this))
+        startActivity(RetrievePriceInfoActivity.createIntent(this))
     }
 
     private fun finishWithResult() {
