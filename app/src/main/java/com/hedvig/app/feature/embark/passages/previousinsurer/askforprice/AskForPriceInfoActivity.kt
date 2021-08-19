@@ -4,18 +4,18 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.ui.compose.composables.TopAppBarWithBack
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 
-class AskForPriceInfoActivity : ComponentActivity() {
+class AskForPriceInfoActivity : BaseActivity() {
 
     private val parameter by lazy {
         intent.getParcelableExtra<AskForPriceInfoParameter>(PARAMETER)
@@ -26,7 +26,7 @@ class AskForPriceInfoActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            HedvigTheme {
+            HedvigTheme() {
                 Scaffold(
                     topBar = {
                         TopAppBarWithBack(
