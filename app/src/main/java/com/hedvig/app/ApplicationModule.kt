@@ -493,7 +493,7 @@ val checkoutModule = module {
 }
 
 val retrievePriceModule = module {
-    viewModel { RetrievePriceViewModel() }
+    viewModel { RetrievePriceViewModel(get()) }
 }
 
 val serviceModule = module {

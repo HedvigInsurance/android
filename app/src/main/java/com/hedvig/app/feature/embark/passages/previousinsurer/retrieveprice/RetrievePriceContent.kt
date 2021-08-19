@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.embark.passages.previousinsurer.askforprice
+package com.hedvig.app.feature.embark.passages.previousinsurer.retrieveprice
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,6 +11,7 @@ import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import com.hedvig.app.R
 import com.hedvig.app.ui.compose.composables.PrimaryTextButton
 import com.hedvig.app.ui.compose.composables.buttons.LargeContainedTextButton
@@ -19,9 +20,7 @@ import com.hedvig.app.ui.compose.composables.buttons.LargeContainedTextButton
 fun RetrievePriceContent(
     onRetrievePriceInfo: () -> Unit,
     onIdentityInput: (String) -> Unit,
-    label: String,
-    input: String,
-    isError: Boolean,
+    viewState: RetrievePriceViewModel.ViewState,
 ) {
     val baseMargin = dimensionResource(R.dimen.base_margin)
     val baseMarginDouble = dimensionResource(R.dimen.base_margin_double)
@@ -35,24 +34,30 @@ fun RetrievePriceContent(
     ) {
         Text(
             modifier = Modifier.padding(top = baseMargin),
-            text = "Enter your personal identity number to retrieve the price info.",
+            text = stringResource(viewState.ssnTitleTextKey),
             style = MaterialTheme.typography.h6
         )
         TextField(
             modifier = Modifier.fillMaxWidth(),
-            value = input,
+            value = viewState.input,
             onValueChange = { onIdentityInput(it) },
             singleLine = true,
-            placeholder = { Text("YYMMDD-XXXX") },
-            label = { Text(label) },
+            placeholder = { Text(stringResource(viewState.ssnAssistTextKey)) },
+            label = {
+                Text(
+                    viewState.errorTextKey?.let {
+                        stringResource(id = it)
+                    } ?: stringResource(viewState.ssnInputLabelTextKey)
+                )
+            },
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = MaterialTheme.colors.background
             ),
-            isError = isError
+            isError = viewState.isError
         )
         LargeContainedTextButton(
             modifier = Modifier.padding(top = baseMarginQuadruple),
-            text = "Retrieve info",
+            text = stringResource(R.string.insurely_ssn_continue_button_text),
             onClick = onRetrievePriceInfo
         )
     }

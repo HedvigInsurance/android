@@ -2,15 +2,20 @@ package com.hedvig.app.feature.embark.passages.previousinsurer.retrieveprice
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hedvig.app.R
+import com.hedvig.app.feature.settings.Market
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.validateNationalIdentityNumber
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class RetrievePriceViewModel : ViewModel() {
+class RetrievePriceViewModel(
+    marketManager: MarketManager
+) : ViewModel() {
 
-    private val _viewState = MutableStateFlow(ViewState())
+    private val _viewState = MutableStateFlow(ViewState(marketManager.market))
     val viewState: StateFlow<ViewState> = _viewState
 
     fun onRetrievePriceInfo() {
@@ -42,6 +47,31 @@ class RetrievePriceViewModel : ViewModel() {
         val input: String = "",
         val isError: Boolean = false,
         val errorTextKey: Int? = null,
-        val isLoading: Boolean = false
-    )
+        val ssnTitleTextKey: Int = R.string.insurely_se_ssn_title,
+        val ssnAssistTextKey: Int = R.string.insurely_se_ssn_assistive_text,
+        val ssnInputLabelTextKey: Int = R.string.insurely_se_ssn_input_label,
+        val isLoading: Boolean = false,
+    ) {
+
+        constructor(market: Market?) : this(
+            ssnTitleTextKey = when (market) {
+                Market.SE -> R.string.insurely_se_ssn_title
+                Market.NO -> R.string.insurely_no_ssn_title
+                Market.DK,
+                null -> R.string.insurely_se_ssn_title
+            },
+            ssnAssistTextKey = when (market) {
+                Market.SE -> R.string.insurely_se_ssn_assistive_text
+                Market.NO -> R.string.insurely_no_ssn_assistive_text
+                Market.DK,
+                null -> R.string.insurely_se_ssn_assistive_text
+            },
+            ssnInputLabelTextKey = when (market) {
+                Market.SE -> R.string.insurely_se_ssn_input_label
+                Market.NO -> R.string.insurely_no_ssn_input_label
+                Market.DK,
+                null -> R.string.insurely_se_ssn_input_label
+            }
+        )
+    }
 }

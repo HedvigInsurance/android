@@ -12,7 +12,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.hedvig.app.feature.embark.passages.previousinsurer.askforprice.RetrievePriceContent
+import com.hedvig.app.R
 import com.hedvig.app.ui.compose.composables.CenteredProgressIndicator
 import com.hedvig.app.ui.compose.composables.FadeWhen
 import com.hedvig.app.ui.compose.composables.TopAppBarWithBack
@@ -32,7 +32,7 @@ class RetrievePriceInfoActivity : ComponentActivity() {
                     topBar = {
                         TopAppBarWithBack(
                             onClick = { onBackPressed() },
-                            title = "Retrieve price info"
+                            title = stringResource(R.string.insurely_title)
                         )
                     }
                 ) {
@@ -64,11 +64,7 @@ fun RetrievePriceScreen(
         RetrievePriceContent(
             onRetrievePriceInfo = viewModel::onRetrievePriceInfo,
             onIdentityInput = { viewModel.onIdentityInput(it) },
-            input = viewState.input,
-            isError = viewState.isError,
-            label = viewState.errorTextKey?.let {
-                stringResource(id = it)
-            } ?: "Personal identity number",
+            viewState = viewState
         )
     }
 }
