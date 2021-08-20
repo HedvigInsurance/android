@@ -7,10 +7,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.Scaffold
+import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hedvig.app.R
 import com.hedvig.app.ui.compose.composables.CenteredProgressIndicator
@@ -55,6 +57,16 @@ fun RetrievePriceScreen(
     viewModel: RetrievePriceViewModel = viewModel()
 ) {
     val viewState by viewModel.viewState.collectAsState()
+
+    if (viewState.showAuth) {
+    } else if (viewState.error != null) {
+        Dialog(
+            onDismissRequest = {},
+            content = {
+                TextField(value = viewState.error)
+            }
+        )
+    }
 
     FadeWhen(visible = viewState.isLoading) {
         CenteredProgressIndicator()

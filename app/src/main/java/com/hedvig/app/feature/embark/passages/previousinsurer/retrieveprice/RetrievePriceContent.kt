@@ -45,8 +45,8 @@ fun RetrievePriceContent(
             placeholder = { Text(stringResource(viewState.ssnAssistTextKey)) },
             label = {
                 Text(
-                    viewState.errorTextKey?.let {
-                        stringResource(id = it)
+                    viewState.inputError?.let {
+                        stringResource(id = it.errorTextKey)
                     } ?: stringResource(viewState.ssnInputLabelTextKey)
                 )
             },
