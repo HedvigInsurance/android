@@ -11,7 +11,6 @@ import android.webkit.WebViewClient
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
 import androidx.transition.TransitionManager
 import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
@@ -23,12 +22,11 @@ import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
 import com.hedvig.app.feature.connectpayin.TransitionType
 import com.hedvig.app.feature.connectpayin.showConfirmCloseDialog
 import com.hedvig.app.util.onBackPressedCallback
-import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class TrustlyConnectFragment : Fragment(R.layout.trustly_connect_fragment) {
-    private val binding by viewBinding(TrustlyConnectFragmentBinding::bind)
+    private var binding: TrustlyConnectFragmentBinding? = null
     private val trustlyViewModel: TrustlyViewModel by viewModel()
     private val connectPaymentViewModel: ConnectPaymentViewModel by sharedViewModel()
 
@@ -52,6 +50,7 @@ class TrustlyConnectFragment : Fragment(R.layout.trustly_connect_fragment) {
     @SuppressLint("SetJavaScriptEnabled")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding = TrustlyConnectFragmentBinding.bind(view)
 
         val isPostSign = requireArguments().getBoolean(IS_POST_SIGN)
 
@@ -68,103 +67,100 @@ class TrustlyConnectFragment : Fragment(R.layout.trustly_connect_fragment) {
             )
         }
 
-        binding.apply {
-            toolbar.apply {
-                if (isPostSign) {
-                    inflateMenu(R.menu.connect_payin)
-                    setOnMenuItemClickListener { menuItem ->
-                        when (menuItem.itemId) {
-                            R.id.skip -> {
-                                showConfirmCloseDialog(
-                                    requireContext(),
-                                    ConnectPayinType.TRUSTLY,
-                                    connectPaymentViewModel::close
-                                )
-                                true
-                            }
-                            else -> false
-                        }
-                    }
-                } else {
-                    setNavigationIcon(R.drawable.ic_close)
-                    setNavigationOnClickListener {
-                        connectPaymentViewModel.close()
-                    }
-                }
-            }
-            trustly.apply {
-                settings.apply {
-                    javaScriptEnabled = true
-                    loadWithOverviewMode = true
-                    useWideViewPort = true
-                    domStorageEnabled = true
-                    setSupportMultipleWindows(true)
-                }
-                webChromeClient = TrustlyWebChromeClient()
-                addJavascriptInterface(
-                    TrustlyJavascriptInterface(requireActivity()),
-                    TrustlyJavascriptInterface.NAME
-                )
-                webViewClient = object : WebViewClient() {
-                    override fun onPageFinished(view: WebView?, url: String?) {
-                        super.onPageFinished(view, url)
-                        if (this@TrustlyConnectFragment.view != null &&
-                            viewLifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)
-                        ) {
-                            if (!hasLoadedWebView) {
-                                TransitionManager.beginDelayedTransition(
-                                    binding.root,
-                                    MaterialFadeThrough()
-                                )
-                                loadingContainer.isVisible = false
-                                trustly.isVisible = true
-                                hasLoadedWebView = true
-                            }
-                        }
-                    }
-
-                    override fun onPageStarted(view: WebView?, url: String, favicon: Bitmap?) {
-                        if (url.startsWith("bankid")) {
-                            view?.stopLoading()
-                            val intent = Intent(Intent.ACTION_VIEW)
-                            intent.data = Uri.parse(url)
-                            startActivity(intent)
-                            return
-                        }
-
-                        if (url.contains("success")) {
-                            view?.stopLoading()
-                            connectPaymentViewModel.navigateTo(ConnectPaymentScreenState.Result(true))
-                            return
-                        }
-                        if (url.contains("fail")) {
-                            view?.stopLoading()
-                            connectPaymentViewModel.navigateTo(
-                                ConnectPaymentScreenState.Result(
-                                    false
-                                )
+        binding?.toolbar?.apply {
+            if (isPostSign) {
+                inflateMenu(R.menu.connect_payin)
+                setOnMenuItemClickListener { menuItem ->
+                    when (menuItem.itemId) {
+                        R.id.skip -> {
+                            showConfirmCloseDialog(
+                                requireContext(),
+                                ConnectPayinType.TRUSTLY,
+                                connectPaymentViewModel::close
                             )
-                            return
+                            true
+                        }
+                        else -> false
+                    }
+                }
+            } else {
+                setNavigationIcon(R.drawable.ic_close)
+                setNavigationOnClickListener {
+                    connectPaymentViewModel.close()
+                }
+            }
+        }
+        binding?.trustly?.apply {
+            settings.apply {
+                javaScriptEnabled = true
+                loadWithOverviewMode = true
+                useWideViewPort = true
+                domStorageEnabled = true
+                setSupportMultipleWindows(true)
+            }
+            webChromeClient = TrustlyWebChromeClient()
+            addJavascriptInterface(
+                TrustlyJavascriptInterface(requireActivity()),
+                TrustlyJavascriptInterface.NAME
+            )
+            webViewClient = object : WebViewClient() {
+                override fun onPageFinished(view: WebView?, url: String?) {
+                    super.onPageFinished(view, url)
+                    binding?.apply {
+                        if (!hasLoadedWebView) {
+                            TransitionManager.beginDelayedTransition(
+                                root,
+                                MaterialFadeThrough()
+                            )
+                            loadingContainer.isVisible = false
+                            trustly.isVisible = true
+                            hasLoadedWebView = true
                         }
                     }
                 }
+
+                override fun onPageStarted(view: WebView?, url: String, favicon: Bitmap?) {
+                    if (url.startsWith("bankid")) {
+                        view?.stopLoading()
+                        val intent = Intent(Intent.ACTION_VIEW)
+                        intent.data = Uri.parse(url)
+                        startActivity(intent)
+                        return
+                    }
+
+                    if (url.contains("success")) {
+                        view?.stopLoading()
+                        connectPaymentViewModel.navigateTo(ConnectPaymentScreenState.Result(true))
+                        return
+                    }
+                    if (url.contains("fail")) {
+                        view?.stopLoading()
+                        connectPaymentViewModel.navigateTo(
+                            ConnectPaymentScreenState.Result(
+                                false
+                            )
+                        )
+                        return
+                    }
+                }
             }
-            trustlyViewModel.data.observe(viewLifecycleOwner) { url ->
-                trustly.loadUrl(url)
-            }
+        }
+        trustlyViewModel.data.observe(viewLifecycleOwner) { url ->
+            binding?.trustly?.loadUrl(url)
         }
     }
 
-    override fun onDestroy() {
+    override fun onDestroyView() {
         destroyWebView()
-        super.onDestroy()
+        binding = null
+        super.onDestroyView()
     }
 
-    private fun destroyWebView() {
-        binding.trustly.removeAllViews()
-        binding.trustly.clearHistory()
-        binding.trustly.clearCache(true)
-        binding.trustly.destroy()
+    private fun destroyWebView() = binding?.apply {
+        trustly.removeAllViews()
+        trustly.clearHistory()
+        trustly.clearCache(true)
+        trustly.destroy()
     }
 
     companion object {
