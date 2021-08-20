@@ -20,10 +20,8 @@ import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticateDialog
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.offer.ui.OfferActivity
-import com.hedvig.app.feature.ratings.RatingsTracker
 import com.hedvig.app.util.extensions.view.setupToolbar
 import e
-import kotlinx.coroutines.delay
 
 val Activity.screenWidth: Int
     get() = window.decorView.measuredWidth

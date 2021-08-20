@@ -21,7 +21,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
-import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -29,6 +28,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 
 class ChatViewModel(
     private val chatRepository: ChatRepository,

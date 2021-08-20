@@ -30,14 +30,12 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.play.core.review.ReviewManagerFactory
 import com.hedvig.app.R
 import com.hedvig.app.SplashActivity
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.SettingsActivity
-import kotlin.system.exitProcess
 import kotlinx.coroutines.delay
-import timber.log.Timber
+import kotlin.system.exitProcess
 
 private const val SHARED_PREFERENCE_NAME = "hedvig_shared_preference"
 
