@@ -51,8 +51,7 @@ fun IntroContent(
             onClick = onSkipRetrievePriceInfo
         )
         Text(
-            text = "Genom att klicka på \"Ja, hämta info\" godkänner du att Hedvig hämtar data från Trygg Hansa " +
-                "i enlighet med vår Privacy Policy. Detta kan komma att inkludera “känslig data” i enlighet med GDPR",
+            text = stringResource(R.string.insurely_intro_footer, selectedInsurance),
             style = MaterialTheme.typography.caption,
             textAlign = TextAlign.Center
         )
