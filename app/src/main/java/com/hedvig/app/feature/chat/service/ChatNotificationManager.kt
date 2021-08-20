@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.chat.service
 
+import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
@@ -67,6 +68,7 @@ object ChatNotificationManager {
         message: NotificationCompat.MessagingStyle.Message
     ) = NotificationCompat.MessagingStyle(youPerson(context)).addMessage(message)
 
+    @SuppressLint("UnspecifiedImmutableFlag") // Remove this lint warning when targeting SDK 31
     private fun sendChatNotificationInner(
         context: Context,
         style: NotificationCompat.MessagingStyle,
@@ -94,7 +96,7 @@ object ChatNotificationManager {
                     CHAT_NOTIFICATION_ID
                 )
             },
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_UPDATE_CURRENT // Add `PendingIntent.FLAG_MUTABLE` when targeting SDK 31`
         )
 
         val replyAction = NotificationCompat.Action.Builder(
