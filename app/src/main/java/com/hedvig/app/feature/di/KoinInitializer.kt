@@ -7,11 +7,13 @@ import com.hedvig.app.applicationModule
 import com.hedvig.app.cacheManagerModule
 import com.hedvig.app.changeAddressModule
 import com.hedvig.app.changeDateBottomSheetModule
+import com.hedvig.app.chatEventModule
 import com.hedvig.app.checkoutModule
 import com.hedvig.app.choosePlanModule
 import com.hedvig.app.clockModule
 import com.hedvig.app.coilModule
 import com.hedvig.app.connectPaymentModule
+import com.hedvig.app.dataStoreModule
 import com.hedvig.app.embarkModule
 import com.hedvig.app.embarkTrackerModule
 import com.hedvig.app.featureRuntimeBehaviorModule
@@ -97,6 +99,8 @@ class KoinInitializer : Initializer<KoinApplication> {
                 featureRuntimeBehaviorModule,
                 coilModule,
                 embarkTrackerModule,
+                chatEventModule,
+                dataStoreModule,
             )
         )
     }
