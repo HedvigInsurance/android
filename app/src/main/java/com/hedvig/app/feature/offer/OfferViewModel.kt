@@ -130,33 +130,37 @@ class OfferViewModelImpl(
         loginStatusService.isViewingOffer = shouldShowOnNextAppStart
 
         viewModelScope.launch {
-            when (val idsResult = getQuotesUseCase(_quoteIds)) {
-                is GetQuotesUseCase.Result.Success -> {
-                    quoteIds = idsResult.ids
-                    idsResult
-                        .data
-                        .onEach { response ->
-                            when (response) {
-                                is OfferRepository.OfferResult.Error -> {
-                                    _events.tryEmit(Event.Error(response.message))
-                                }
-                                OfferRepository.OfferResult.HasContracts -> {
-                                    _events.tryEmit(Event.Error())
-                                }
-                                is OfferRepository.OfferResult.Success -> {
-                                    val loginStatus = loginStatusService.getLoginStatus()
-                                    _viewState.value = toViewState(response.data, loginStatus)
-                                }
+            loadQuoteIds()
+        }
+    }
+
+    private suspend fun loadQuoteIds() {
+        when (val idsResult = getQuotesUseCase(_quoteIds)) {
+            is GetQuotesUseCase.Result.Success -> {
+                quoteIds = idsResult.ids
+                idsResult
+                    .data
+                    .onEach { response ->
+                        when (response) {
+                            is OfferRepository.OfferResult.Error -> {
+                                _events.tryEmit(Event.Error(response.message))
+                            }
+                            OfferRepository.OfferResult.HasContracts -> {
+                                _events.tryEmit(Event.Error())
+                            }
+                            is OfferRepository.OfferResult.Success -> {
+                                val loginStatus = loginStatusService.getLoginStatus()
+                                _viewState.value = toViewState(response.data, loginStatus)
                             }
                         }
-                        .catch {
-                            _events.tryEmit(Event.Error(it.message))
-                        }
-                        .launchIn(this)
-                }
-                is GetQuotesUseCase.Result.Error -> {
-                    _events.tryEmit(Event.Error(idsResult.message))
-                }
+                    }
+                    .catch {
+                        _events.tryEmit(Event.Error(it.message))
+                    }
+                    .launchIn(viewModelScope)
+            }
+            is GetQuotesUseCase.Result.Error -> {
+                _events.tryEmit(Event.Error(idsResult.message))
             }
         }
     }
@@ -305,6 +309,9 @@ class OfferViewModelImpl(
     override fun reload() {
         _viewState.value = _viewState.value.copy(isLoading = true)
         viewModelScope.launch {
+            if (!::quoteIds.isInitialized) {
+                loadQuoteIds()
+            }
             when (val result = refreshQuotesUseCase(quoteIds)) {
                 RefreshQuotesUseCase.Result.Success -> {
                 }
