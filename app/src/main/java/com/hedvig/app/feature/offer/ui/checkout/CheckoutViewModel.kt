@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 import javax.money.MonetaryAmount
 
 class CheckoutViewModel(
-    private val _quoteIds: List<String>,
+    _quoteIds: List<String>,
     private val getQuotesUseCase: GetQuotesUseCase,
     private val signQuotesUseCase: SignQuotesUseCase,
     private val marketManager: MarketManager,
@@ -33,10 +33,13 @@ class CheckoutViewModel(
     private val loginStatusService: LoginStatusService
 ) : ViewModel() {
 
+    private lateinit var quoteIds: List<String>
+
     init {
         viewModelScope.launch {
             when (val idsResult = getQuotesUseCase(_quoteIds)) {
                 is GetQuotesUseCase.Result.Success -> {
+                    quoteIds = idsResult.ids
                     idsResult
                         .data
                         .onEach(::handleResponse)
@@ -134,7 +137,7 @@ class CheckoutViewModel(
             signQuotes(
                 identityNumberInput = identityNumberInput,
                 emailInput = emailInput,
-                quoteIds = _quoteIds
+                quoteIds = quoteIds
             )
         }
     }
@@ -152,6 +155,8 @@ class CheckoutViewModel(
                     cacheManager.clearCache()
                     _events.tryEmit(Event.CheckoutSuccess)
                 }
+                is SignQuotesUseCase.SignQuoteResult.StartSwedishBankId ->
+                    _events.tryEmit(Event.StartSwedishBankId(result.autoStartToken))
             }
         }
     }
@@ -187,6 +192,8 @@ class CheckoutViewModel(
 
     sealed class Event {
         data class Error(val message: String? = null) : Event()
+        data class StartSwedishBankId(val autoStartToken: String) : Event()
+
         object CheckoutSuccess : Event()
         object Loading : Event()
     }

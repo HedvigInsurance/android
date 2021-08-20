@@ -15,6 +15,7 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityCheckoutBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignDialog
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.extensions.setMarkdownText
 import com.hedvig.app.util.extensions.setStrikethrough
@@ -155,11 +156,16 @@ class CheckoutActivity : BaseActivity(R.layout.activity_checkout) {
                 )
             )
             CheckoutViewModel.Event.Loading -> progressDialog.show()
+            is CheckoutViewModel.Event.StartSwedishBankId -> {
+                progressDialog.dismiss()
+                SwedishBankIdSignDialog
+                    .newInstance(event.autoStartToken)
+                    .show(supportFragmentManager, SwedishBankIdSignDialog.TAG)
+            }
         }
     }
 
     companion object {
-
         private const val PARAMETER = "PARAMETER"
 
         fun newInstance(context: Context, parameter: CheckoutParameter): Intent {

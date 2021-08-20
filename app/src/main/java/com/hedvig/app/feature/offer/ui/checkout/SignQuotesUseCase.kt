@@ -14,6 +14,10 @@ class SignQuotesUseCase(
 
     sealed class SignQuoteResult {
         object Success : SignQuoteResult()
+        data class StartSwedishBankId(
+            val autoStartToken: String,
+        ) : SignQuoteResult()
+
         data class Error(val message: String? = null) : SignQuoteResult()
     }
 
@@ -51,7 +55,8 @@ class SignQuotesUseCase(
                 } ?: signResponse?.asSimpleSignSession?.let {
                     SignQuoteResult.Success
                 } ?: signResponse?.asSwedishBankIdSession?.let {
-                    SignQuoteResult.Success
+                    val autoStartToken = it.autoStartToken ?: return@let SignQuoteResult.Error()
+                    SignQuoteResult.StartSwedishBankId(autoStartToken)
                 } ?: SignQuoteResult.Error(null)
             }
         }

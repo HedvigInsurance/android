@@ -1,16 +1,11 @@
 package com.hedvig.app.feature.offer
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.owldroid.fragment.SignStatusFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
-import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationTitle
 import com.hedvig.android.owldroid.type.SignMethod
-import com.hedvig.android.owldroid.type.SignState
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.documents.DocumentItems
@@ -67,15 +62,9 @@ abstract class OfferViewModel : ViewModel() {
     )
     val events: SharedFlow<Event> = _events
 
-    abstract val autoStartToken: LiveData<SignOfferMutation.Data>
-    abstract val signStatus: LiveData<SignStatusFragment>
-    abstract val signError: LiveData<Boolean>
     abstract fun removeDiscount()
     abstract fun writeDiscountToCache(data: RedeemReferralCodeMutation.Data)
     abstract suspend fun triggerOpenChat()
-    abstract fun startSign()
-    abstract fun clearPreviousErrors()
-    abstract fun manuallyRecheckSignStatus()
 
     data class QuoteDetailItems(
         val displayName: String,
@@ -116,15 +105,10 @@ class OfferViewModelImpl(
     private val loginStatusService: LoginStatusService,
     private val approveQuotesUseCase: ApproveQuotesUseCase,
     private val refreshQuotesUseCase: RefreshQuotesUseCase,
-    private val tracker: OfferTracker,
     shouldShowOnNextAppStart: Boolean
 ) : OfferViewModel() {
 
     private lateinit var quoteIds: List<String>
-
-    override val autoStartToken = MutableLiveData<SignOfferMutation.Data>()
-    override val signStatus = MutableLiveData<SignStatusFragment>()
-    override val signError = MutableLiveData<Boolean>()
 
     init {
         loginStatusService.isViewingOffer = shouldShowOnNextAppStart
@@ -227,58 +211,6 @@ class OfferViewModelImpl(
         val result = runCatching { offerRepository.triggerOpenChatFromOffer() }
         if (result.isFailure) {
             result.exceptionOrNull()?.let { e(it) }
-        }
-    }
-
-    override fun startSign() {
-        viewModelScope.launch {
-            var hasCompletedSign = false
-            offerRepository.subscribeSignStatus()
-                .onEach { response ->
-                    if (
-                        response
-                            .data
-                            ?.signStatus
-                            ?.status
-                            ?.fragments
-                            ?.signStatusFragment
-                            ?.signState == SignState.COMPLETED &&
-                        !hasCompletedSign
-                    ) {
-                        hasCompletedSign = true
-                        tracker.signQuotes(quoteIds)
-                    }
-                    response.data?.signStatus?.status?.fragments?.signStatusFragment?.let {
-                        signStatus.postValue(
-                            it
-                        )
-                    }
-                }
-                .catch { e(it) }
-                .launchIn(this)
-
-            val response = runCatching { offerRepository.startSign() }
-            if (response.isFailure || response.getOrNull()?.hasErrors() == true) {
-                response.exceptionOrNull()?.let { e(it) }
-                return@launch
-            }
-            response.getOrNull()?.data?.let { autoStartToken.postValue(it) }
-        }
-    }
-
-    override fun clearPreviousErrors() {
-        signError.value = false
-    }
-
-    override fun manuallyRecheckSignStatus() {
-        viewModelScope.launch {
-            val response = runCatching { offerRepository.fetchSignStatus() }
-            if (response.isFailure || response.getOrNull()?.hasErrors() == true) {
-                response.exceptionOrNull()?.let { e(it) }
-                return@launch
-            }
-            response.getOrNull()?.data?.signStatus?.fragments?.signStatusFragment
-                ?.let { signStatus.postValue(it) }
         }
     }
 

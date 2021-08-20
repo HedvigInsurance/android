@@ -1,10 +1,7 @@
 package com.hedvig.app.feature.offer
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.owldroid.fragment.SignStatusFragment
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
-import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.feature.offer.quotedetail.buildDocuments
 import com.hedvig.app.feature.offer.quotedetail.buildInsurableLimits
@@ -16,11 +13,6 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 class MockOfferViewModel : OfferViewModel() {
-
-    override val autoStartToken = MutableLiveData<SignOfferMutation.Data>()
-    override val signStatus = MutableLiveData<SignStatusFragment>()
-    override val signError = MutableLiveData<Boolean>()
-
     init {
         load()
     }
@@ -28,9 +20,6 @@ class MockOfferViewModel : OfferViewModel() {
     override fun removeDiscount() = Unit
     override fun writeDiscountToCache(data: RedeemReferralCodeMutation.Data) = Unit
     override suspend fun triggerOpenChat() = Unit
-    override fun startSign() = Unit
-    override fun clearPreviousErrors() = Unit
-    override fun manuallyRecheckSignStatus() = Unit
 
     override fun onOpenQuoteDetails(
         id: String,

@@ -141,6 +141,9 @@ import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.MarketManagerImpl
 import com.hedvig.app.feature.settings.SettingsViewModel
+import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignViewModel
+import com.hedvig.app.feature.swedishbankid.sign.usecase.ManuallyRecheckSwedishBankIdSignStatusUseCase
+import com.hedvig.app.feature.swedishbankid.sign.usecase.SubscribeToSwedishBankIdSignStatusUseCase
 import com.hedvig.app.feature.tracking.MixpanelTracker
 import com.hedvig.app.feature.tracking.TrackerSink
 import com.hedvig.app.feature.tracking.TrackingFacade
@@ -320,6 +323,9 @@ val viewModelModule = module {
             multiActionParams
         )
     }
+    viewModel { (autoStartToken: String) ->
+        SwedishBankIdSignViewModel(autoStartToken, get(), get())
+    }
 }
 
 val choosePlanModule = module {
@@ -353,7 +359,7 @@ val marketingModule = module {
 
 val offerModule = module {
     viewModel<OfferViewModel> { (ids: List<String>, shouldShowOnNextAppStart: Boolean) ->
-        OfferViewModelImpl(ids, get(), get(), get(), get(), get(), get(), get(), shouldShowOnNextAppStart)
+        OfferViewModelImpl(ids, get(), get(), get(), get(), get(), get(), shouldShowOnNextAppStart)
     }
 }
 
@@ -529,6 +535,8 @@ val useCaseModule = module {
     single { ApproveQuotesUseCase(get(), get(), get()) }
     single { RefreshQuotesUseCase(get()) }
     single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { ManuallyRecheckSwedishBankIdSignStatusUseCase(get()) }
+    single { SubscribeToSwedishBankIdSignStatusUseCase(get()) }
 }
 
 val cacheManagerModule = module {

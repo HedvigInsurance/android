@@ -13,9 +13,6 @@ import com.hedvig.android.owldroid.graphql.OfferClosedMutation
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.RemoveDiscountCodeMutation
-import com.hedvig.android.owldroid.graphql.SignOfferMutation
-import com.hedvig.android.owldroid.graphql.SignStatusQuery
-import com.hedvig.android.owldroid.graphql.SignStatusSubscription
 import com.hedvig.app.util.LocaleManager
 import kotlinx.coroutines.flow.map
 
@@ -130,21 +127,6 @@ class OfferRepository(
 
     suspend fun triggerOpenChatFromOffer() = apolloClient
         .mutate(OfferClosedMutation())
-        .await()
-
-    suspend fun startSign() = apolloClient
-        .mutate(SignOfferMutation())
-        .await()
-
-    fun subscribeSignStatus() = apolloClient
-        .subscribe(SignStatusSubscription())
-        .toFlow()
-
-    suspend fun fetchSignStatus() = apolloClient
-        .query(SignStatusQuery())
-        .toBuilder()
-        .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
-        .build()
         .await()
 
     fun quoteIdOfLastQuoteOfMember(): ApolloCall<LastQuoteIdQuery.Data> = apolloClient
