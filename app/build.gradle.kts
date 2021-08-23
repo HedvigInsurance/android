@@ -52,8 +52,12 @@ android {
     }
 
     packagingOptions {
-        exclude("javamoney.properties")
-        exclude("README.txt")
+        resources {
+            excludes += "javamoney.properties"
+            excludes += "README.txt"
+            excludes += "META-INF/LGPL2.1"
+            excludes += "META-INF/AL2.0"
+        }
     }
 
     buildTypes {
