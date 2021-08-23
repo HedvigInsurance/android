@@ -11,6 +11,7 @@ import com.hedvig.android.owldroid.graphql.GifQuery
 import com.hedvig.android.owldroid.graphql.UploadFileMutation
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.feature.chat.FileUploadOutcome
+import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.util.LiveEvent
@@ -33,7 +34,8 @@ class ChatViewModel(
     private val chatRepository: ChatRepository,
     private val userRepository: UserRepository,
     private val authenticationTokenService: AuthenticationTokenService,
-    private val apolloClient: ApolloClient
+    private val apolloClient: ApolloClient,
+    private val chatClosedTracker: ChatEventStore
 ) : ViewModel() {
 
     val messages = MutableLiveData<ChatMessagesQuery.Data>()
@@ -119,17 +121,15 @@ class ChatViewModel(
         }
     }
 
-    private fun isFirstParagraph(response: Response<ChatMessagesQuery.Data>) =
-        (
-            response
-                .data
-                ?.messages
-                ?.firstOrNull()
-                ?.fragments
-                ?.chatMessageFragment
-                ?.body
-                ?.asMessageBodyCore
-            )?.type == "paragraph"
+    private fun isFirstParagraph(response: Response<ChatMessagesQuery.Data>) = response
+        .data
+        ?.messages
+        ?.firstOrNull()
+        ?.fragments
+        ?.chatMessageFragment
+        ?.body
+        ?.asMessageBodyCore
+        ?.type == "paragraph"
 
     private fun getFirstParagraphDelay(response: Response<ChatMessagesQuery.Data>) =
         response.data?.messages?.firstOrNull()?.fragments?.chatMessageFragment?.header?.pollingInterval?.toLong()
@@ -323,6 +323,12 @@ class ChatViewModel(
             }
             apolloClient.subscriptionManager.reconnect()
             _events.tryEmit(Event.Restart)
+        }
+    }
+
+    fun onChatClosed() {
+        viewModelScope.launch {
+            chatClosedTracker.increaseChatClosedCounter()
         }
     }
 }

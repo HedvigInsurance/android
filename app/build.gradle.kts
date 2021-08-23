@@ -23,13 +23,18 @@ android {
         viewBinding = true
         aidl = false
         renderScript = false
+        compose = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.0.1"
     }
 
     defaultConfig {
         applicationId = "com.hedvig"
 
         versionCode = 43
-        versionName = "6.0.3"
+        versionName = "6.0.4"
 
         vectorDrawables.useSupportLibrary = true
 
@@ -47,8 +52,12 @@ android {
     }
 
     packagingOptions {
-        exclude("javamoney.properties")
-        exclude("README.txt")
+        resources {
+            excludes += "javamoney.properties"
+            excludes += "README.txt"
+            excludes += "META-INF/LGPL2.1"
+            excludes += "META-INF/AL2.0"
+        }
     }
 
     buildTypes {
@@ -158,6 +167,8 @@ dependencies {
     implementation(Libs.materialComponents)
     implementation(Libs.flexbox)
 
+    implementation(Libs.playKtx)
+
     implementation(Libs.combineTuple)
     implementation(Libs.fragmentViewBindingDelegate)
 
@@ -219,6 +230,14 @@ dependencies {
     debugImplementation(Libs.leakCanary)
     debugImplementation(Libs.shake)
     "stagingImplementation"(Libs.shake)
+
+    implementation(Libs.AndroidX.activityCompose)
+    implementation(Libs.AndroidX.Compose.material)
+    implementation(Libs.AndroidX.Compose.animation)
+    implementation(Libs.AndroidX.Compose.mdcAdapter)
+    implementation(Libs.AndroidX.Compose.uiTooling)
+    implementation(Libs.AndroidX.Lifecycle.compose)
+    androidTestImplementation(Libs.AndroidX.Compose.uiTestJunit)
 }
 
 val lokaliseProperties = Properties()

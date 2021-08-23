@@ -74,7 +74,7 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
                         EmbarkActivity.newInstance(
                             context = this,
                             storyName = viewState.embarkStoryId,
-                            storyTitle = "Change address"
+                            storyTitle = getString(R.string.moving_embark_title)
                         )
                     )
                 }

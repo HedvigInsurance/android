@@ -23,10 +23,11 @@ object Libs {
         const val browser = "androidx.browser:browser:1.3.0"
         const val workManager = "androidx.work:work-runtime-ktx:2.5.0"
         const val startup = "androidx.startup:startup-runtime:1.0.0"
+        const val activityCompose = "androidx.activity:activity-compose:1.3.1"
 
         object DataStore {
-            const val preferences = "androidx.datastore:datastore-preferences:1.0.0"
-            const val core = "androidx.datastore:datastore-core:1.0.0"
+            const val preferences = "androidx.datastore:datastore-preferences:1.0.0-rc02"
+            const val core = "androidx.datastore:datastore-core:1.0.0-rc02"
         }
 
         object Lifecycle {
@@ -36,6 +37,7 @@ object Libs {
             const val liveData = "androidx.lifecycle:lifecycle-livedata-ktx:$version"
             const val runtime = "androidx.lifecycle:lifecycle-runtime-ktx:$runtimeVersion"
             const val viewModel = "androidx.lifecycle:lifecycle-viewmodel-ktx:$version"
+            const val compose = "androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha07"
         }
 
         object Test {
@@ -51,12 +53,23 @@ object Libs {
             const val intents = "androidx.test.espresso:espresso-intents:$version"
             const val contrib = "androidx.test.espresso:espresso-contrib:$version"
         }
+
+        object Compose {
+            private const val version = "1.0.1"
+            const val material = "androidx.compose.material:material:$version"
+            const val animation = "androidx.compose.animation:animation:$version"
+            const val uiTooling = "androidx.compose.ui:ui-tooling:$version"
+            const val uiTestJunit = "androidx.compose.ui:ui-test-junit4:$version"
+            const val mdcAdapter = "com.google.android.material:compose-theme-adapter:$version"
+        }
     }
 
     const val materialComponents = "com.google.android.material:material:1.4.0"
     const val flexbox = "com.google.android.flexbox:flexbox:3.0.0"
     const val combineTuple = "com.github.Zhuinden:livedata-combinetuple-kt:1.2.1"
     const val fragmentViewBindingDelegate = "com.github.Zhuinden:fragmentviewbindingdelegate-kt:1.0.0"
+
+    const val playKtx = "com.google.android.play:core-ktx:1.8.1"
 
     object OkHttp {
         private const val version = "4.9.1"

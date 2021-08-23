@@ -15,6 +15,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.android.play.core.review.ReviewManagerFactory
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticateDialog
 import com.hedvig.app.feature.chat.ui.ChatActivity
@@ -164,4 +165,20 @@ fun Activity.makeACall(uri: Uri) {
     val intent = Intent(Intent.ACTION_DIAL)
     intent.data = uri
     startActivity(intent)
+}
+
+fun Activity.showReviewDialog(
+    onComplete: () -> Unit
+) {
+    val manager = ReviewManagerFactory.create(this)
+    val request = manager.requestReviewFlow()
+    request.addOnCompleteListener { task ->
+        if (task.isSuccessful) {
+            val reviewInfo = task.result
+            val flow = manager.launchReviewFlow(this, reviewInfo)
+            flow.addOnCompleteListener {
+                onComplete()
+            }
+        }
+    }
 }
