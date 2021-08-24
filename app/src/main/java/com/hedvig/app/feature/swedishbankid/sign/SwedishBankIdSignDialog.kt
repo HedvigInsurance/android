@@ -8,16 +8,32 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.flowWithLifecycle
 import com.hedvig.app.R
-import com.hedvig.app.databinding.DialogSignBinding
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.ui.compose.HedvigTheme
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.viewLifecycle
 import com.hedvig.app.util.extensions.viewLifecycleScope
-import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
@@ -33,14 +49,30 @@ class SwedishBankIdSignDialog : DialogFragment() {
                 )
         )
     }
-    private val binding by viewBinding(DialogSignBinding::bind)
     private val marketManager: MarketManager by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? = inflater.inflate(R.layout.dialog_sign, container, false)
+    ) = ComposeView(requireContext()).apply {
+        setContent {
+            val viewState by model.viewState.collectAsState()
+            HedvigTheme {
+                SwedishBankIdSignDialog(
+                    text = stringResource(
+                        when (viewState) {
+                            is SwedishBankIdSignViewModel.ViewState.StartClient -> R.string.SIGN_START_BANKID
+                            SwedishBankIdSignViewModel.ViewState.Cancelled -> R.string.SIGN_CANCELED
+                            SwedishBankIdSignViewModel.ViewState.InProgress -> R.string.SIGN_IN_PROGRESS
+                            SwedishBankIdSignViewModel.ViewState.Success -> R.string.SIGN_SUCCESSFUL
+                            SwedishBankIdSignViewModel.ViewState.Error -> R.string.SIGN_FAILED_REASON_UNKNOWN
+                        }
+                    )
+                )
+            }
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         model
@@ -72,15 +104,6 @@ class SwedishBankIdSignDialog : DialogFragment() {
             .flowWithLifecycle(viewLifecycle)
             .onEach { viewState ->
                 dialog?.setCanceledOnTouchOutside(viewState is SwedishBankIdSignViewModel.ViewState.Error)
-                binding.signStatus.setText(
-                    when (viewState) {
-                        is SwedishBankIdSignViewModel.ViewState.StartClient -> R.string.SIGN_START_BANKID
-                        SwedishBankIdSignViewModel.ViewState.Cancelled -> R.string.SIGN_CANCELED
-                        SwedishBankIdSignViewModel.ViewState.InProgress -> R.string.SIGN_IN_PROGRESS
-                        SwedishBankIdSignViewModel.ViewState.Success -> R.string.SIGN_SUCCESSFUL
-                        SwedishBankIdSignViewModel.ViewState.Error -> R.string.SIGN_FAILED_REASON_UNKNOWN
-                    }
-                )
             }
             .launchIn(viewLifecycleScope)
     }
@@ -108,4 +131,33 @@ class SwedishBankIdSignDialog : DialogFragment() {
             )
         }
     }
+}
+
+@Composable
+fun SwedishBankIdSignDialog(text: String) {
+    Surface(
+        shape = RoundedCornerShape(8.dp)
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .padding(16.dp),
+        ) {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.subtitle1,
+            )
+            Image(
+                painter = painterResource(id = R.drawable.ic_bank_id),
+                contentDescription = null,
+                modifier = Modifier.padding(top = 8.dp),
+            )
+        }
+    }
+}
+
+@Composable
+@Preview
+fun Preview() {
+    SwedishBankIdSignDialog(text = stringResource(id = R.string.SIGN_IN_PROGRESS))
 }
