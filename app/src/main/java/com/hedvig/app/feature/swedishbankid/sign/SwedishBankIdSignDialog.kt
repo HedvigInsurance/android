@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -32,6 +33,7 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.ui.compose.HedvigTheme
 import com.hedvig.app.util.extensions.canOpenUri
+import com.hedvig.app.util.extensions.toArrayList
 import com.hedvig.app.util.extensions.viewLifecycle
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import kotlinx.coroutines.flow.launchIn
@@ -46,6 +48,10 @@ class SwedishBankIdSignDialog : DialogFragment() {
             requireArguments().getString(AUTO_START_TOKEN)
                 ?: throw IllegalArgumentException(
                     "Programmer error: Missing AUTO_START_TOKEN in ${this.javaClass.name}"
+                ),
+            requireArguments().getStringArrayList(QUOTE_IDS)
+                ?: throw IllegalArgumentException(
+                    "Programmer error: Missing QUOTE_IDS in ${this.javaClass.name}"
                 )
         )
     }
@@ -124,10 +130,15 @@ class SwedishBankIdSignDialog : DialogFragment() {
             Uri.parse("bankid:///?autostarttoken=$autoStartToken&redirect=null")
 
         private const val AUTO_START_TOKEN = "AUTO_START_TOKEN"
+        private const val QUOTE_IDS = "QUOTE_IDS"
         const val TAG = "OfferSignDialog"
-        fun newInstance(autoStartToken: String) = SwedishBankIdSignDialog().apply {
+        fun newInstance(
+            autoStartToken: String,
+            quoteIds: List<String>,
+        ) = SwedishBankIdSignDialog().apply {
             arguments = bundleOf(
                 AUTO_START_TOKEN to autoStartToken,
+                QUOTE_IDS to quoteIds.toArrayList(),
             )
         }
     }

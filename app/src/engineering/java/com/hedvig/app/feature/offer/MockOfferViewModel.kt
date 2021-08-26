@@ -63,6 +63,9 @@ class MockOfferViewModel : OfferViewModel() {
     override fun onGoToDirectDebit() {
     }
 
+    override fun onSwedishBankIdSign() {
+    }
+
     private fun load() {
         viewModelScope.launch {
             delay(650)

@@ -19,7 +19,6 @@ data class OfferDataBuilder(
     private val insuranceCost: CostFragment = CostBuilder()
         .build(),
     private val redeemedCampaigns: List<OfferQuery.RedeemedCampaign> = emptyList(),
-    private val contracts: List<OfferQuery.Contract> = emptyList(),
     private val frequentlyAskedQuestions: List<OfferQuery.FrequentlyAskedQuestion> = emptyList(),
     private val inceptions: OfferQuery.Inception1 = ConcurrentInceptionBuilder().build(),
     private val signMethod: SignMethod = SignMethod.SWEDISH_BANK_ID
@@ -42,7 +41,6 @@ data class OfferDataBuilder(
             )
         ),
         redeemedCampaigns = redeemedCampaigns,
-        contracts = contracts,
         signMethodForQuotes = signMethod
     )
 }

@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.fragment.SignStatusFragment
 import com.hedvig.android.owldroid.type.BankIdStatus
 import com.hedvig.android.owldroid.type.SignState
+import com.hedvig.app.authenticate.LoginStatusService
+import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.swedishbankid.sign.usecase.ManuallyRecheckSwedishBankIdSignStatusUseCase
 import com.hedvig.app.feature.swedishbankid.sign.usecase.SubscribeToSwedishBankIdSignStatusUseCase
 import e
@@ -24,8 +26,11 @@ import kotlin.time.ExperimentalTime
 @OptIn(ExperimentalTime::class)
 class SwedishBankIdSignViewModel(
     autoStartToken: String,
+    private val quoteIds: List<String>,
     subscribeToSwedishBankIdSignStatusUseCase: SubscribeToSwedishBankIdSignStatusUseCase,
-    private val manuallyRecheckSwedishBankIdSignStatusUseCase: ManuallyRecheckSwedishBankIdSignStatusUseCase
+    private val manuallyRecheckSwedishBankIdSignStatusUseCase: ManuallyRecheckSwedishBankIdSignStatusUseCase,
+    private val tracker: OfferTracker,
+    private val loginStatusService: LoginStatusService,
 ) : ViewModel() {
     sealed class ViewState {
         object StartClient : ViewState()
@@ -51,20 +56,14 @@ class SwedishBankIdSignViewModel(
     )
     val events: SharedFlow<Event> = _events
 
+    private var hasCompletedSign = false
+
     init {
         _events.tryEmit(Event.StartBankID(autoStartToken))
 
         subscribeToSwedishBankIdSignStatusUseCase()
             .onEach { response ->
-                toViewStateOrNull(response.data?.signStatus?.status?.fragments?.signStatusFragment)?.let {
-                    _viewState.value = it
-                    if (it is ViewState.Success) {
-                        viewModelScope.launch {
-                            delay(Duration.seconds(1))
-                            _events.tryEmit(Event.StartDirectDebit)
-                        }
-                    }
-                }
+                handleNewSignStatus(response.data?.signStatus?.status?.fragments?.signStatusFragment)
             }
             .catch { ex ->
                 e(ex)
@@ -76,8 +75,22 @@ class SwedishBankIdSignViewModel(
     fun manuallyRecheckSignStatus() {
         viewModelScope.launch {
             manuallyRecheckSwedishBankIdSignStatusUseCase()
-                ?.let(::toViewStateOrNull)
-                ?.let { _viewState.value = it }
+                ?.let(::handleNewSignStatus)
+        }
+    }
+
+    private fun handleNewSignStatus(signStatusFragment: SignStatusFragment?) {
+        val newViewState = toViewStateOrNull(signStatusFragment) ?: return
+        _viewState.value = newViewState
+        if (newViewState is ViewState.Success && !hasCompletedSign) {
+            hasCompletedSign = true
+            tracker.signQuotes(quoteIds)
+            loginStatusService.isViewingOffer = false
+            loginStatusService.isLoggedIn = true
+            viewModelScope.launch {
+                delay(Duration.seconds(1))
+                _events.tryEmit(Event.StartDirectDebit)
+            }
         }
     }
 

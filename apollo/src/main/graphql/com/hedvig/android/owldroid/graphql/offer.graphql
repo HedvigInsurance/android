@@ -81,12 +81,6 @@ query Offer($locale: Locale!, $ids: [ID!]!) {
   }
 
   signMethodForQuotes(input: $ids)
-
-  contracts {
-    status {
-      __typename
-    }
-  }
 }
 
 fragment CurrentInsurerFragment on CurrentInsurer {

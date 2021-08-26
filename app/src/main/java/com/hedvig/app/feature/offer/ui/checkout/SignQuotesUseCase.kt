@@ -44,7 +44,7 @@ class SignQuotesUseCase(
         }
     }
 
-    private suspend fun signQuotes(quoteIds: List<String>): SignQuoteResult {
+    suspend fun signQuotes(quoteIds: List<String>): SignQuoteResult {
         val mutation = SignQuotesMutation(quoteIds)
         return when (val result = apolloClient.mutate(mutation).safeQuery()) {
             is QueryResult.Error -> SignQuoteResult.Error(result.message)

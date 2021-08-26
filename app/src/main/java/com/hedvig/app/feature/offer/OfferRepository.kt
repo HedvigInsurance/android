@@ -29,8 +29,6 @@ class OfferRepository(
         .map(::toDataOrError)
 
     sealed class OfferResult {
-        object HasContracts : OfferResult()
-
         data class Error(val message: String? = null) : OfferResult()
         data class Success(
             val data: OfferQuery.Data

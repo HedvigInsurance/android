@@ -323,8 +323,8 @@ val viewModelModule = module {
             multiActionParams
         )
     }
-    viewModel { (autoStartToken: String) ->
-        SwedishBankIdSignViewModel(autoStartToken, get(), get())
+    viewModel { (autoStartToken: String, quoteIds: List<String>) ->
+        SwedishBankIdSignViewModel(autoStartToken, quoteIds, get(), get(), get(), get())
     }
 }
 
@@ -359,7 +359,7 @@ val marketingModule = module {
 
 val offerModule = module {
     viewModel<OfferViewModel> { (ids: List<String>, shouldShowOnNextAppStart: Boolean) ->
-        OfferViewModelImpl(ids, get(), get(), get(), get(), get(), get(), shouldShowOnNextAppStart)
+        OfferViewModelImpl(ids, get(), get(), get(), get(), get(), get(), get(), shouldShowOnNextAppStart)
     }
 }
 
@@ -434,7 +434,7 @@ val changeDateBottomSheetModule = module {
 }
 
 val checkoutModule = module {
-    viewModel { (ids: List<String>) -> CheckoutViewModel(ids, get(), get(), get(), get(), get()) }
+    viewModel { (ids: List<String>) -> CheckoutViewModel(ids, get(), get(), get(), get()) }
 }
 
 val serviceModule = module {

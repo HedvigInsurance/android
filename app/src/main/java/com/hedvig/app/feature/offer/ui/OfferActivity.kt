@@ -33,6 +33,7 @@ import com.hedvig.app.feature.offer.ui.checkout.CheckoutActivity
 import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
+import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignDialog
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.showErrorDialog
@@ -220,8 +221,11 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                                 )
                             )
                         }
-                        OfferViewModel.Event.HasContracts -> {
-                        } // No-op
+                        is OfferViewModel.Event.StartSwedishBankIdSign -> {
+                            SwedishBankIdSignDialog
+                                .newInstance(event.autoStartToken, event.quoteIds)
+                                .show(supportFragmentManager, SwedishBankIdSignDialog.TAG)
+                        }
                     }
                 }
                 .launchIn(lifecycleScope)
@@ -291,7 +295,8 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
     private fun onSign(signMethod: SignMethod) {
         when (signMethod) {
-            SignMethod.SIMPLE_SIGN, SignMethod.SWEDISH_BANK_ID -> model.onOpenCheckout()
+            SignMethod.SWEDISH_BANK_ID -> model.onSwedishBankIdSign()
+            SignMethod.SIMPLE_SIGN -> model.onOpenCheckout()
             SignMethod.APPROVE_ONLY -> model.approveOffer()
             SignMethod.NORWEGIAN_BANK_ID,
             SignMethod.DANISH_BANK_ID,

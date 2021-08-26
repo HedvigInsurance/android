@@ -156,12 +156,6 @@ class CheckoutActivity : BaseActivity(R.layout.activity_checkout) {
                 )
             )
             CheckoutViewModel.Event.Loading -> progressDialog.show()
-            is CheckoutViewModel.Event.StartSwedishBankId -> {
-                progressDialog.dismiss()
-                SwedishBankIdSignDialog
-                    .newInstance(event.autoStartToken)
-                    .show(supportFragmentManager, SwedishBankIdSignDialog.TAG)
-            }
         }
     }
 

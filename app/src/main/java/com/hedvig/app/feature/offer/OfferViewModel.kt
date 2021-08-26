@@ -16,6 +16,7 @@ import com.hedvig.app.feature.offer.quotedetail.buildPerils
 import com.hedvig.app.feature.offer.ui.OfferModel
 import com.hedvig.app.feature.offer.ui.checkout.ApproveQuotesUseCase
 import com.hedvig.app.feature.offer.ui.checkout.CheckoutParameter
+import com.hedvig.app.feature.offer.ui.checkout.SignQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
@@ -39,7 +40,6 @@ abstract class OfferViewModel : ViewModel() {
     sealed class Event {
         data class Error(val message: String? = null) : Event()
 
-        object HasContracts : Event()
         data class OpenQuoteDetails(
             val quoteDetailItems: QuoteDetailItems,
         ) : Event()
@@ -52,6 +52,8 @@ abstract class OfferViewModel : ViewModel() {
         data class ApproveSuccessful(
             val moveDate: LocalDate?
         ) : Event()
+
+        data class StartSwedishBankIdSign(val quoteIds: List<String>, val autoStartToken: String) : Event()
 
         object DiscardOffer : Event()
     }
@@ -95,6 +97,7 @@ abstract class OfferViewModel : ViewModel() {
     abstract fun reload()
     abstract fun onDiscardOffer()
     abstract fun onGoToDirectDebit()
+    abstract fun onSwedishBankIdSign()
 }
 
 class OfferViewModelImpl(
@@ -105,6 +108,7 @@ class OfferViewModelImpl(
     private val loginStatusService: LoginStatusService,
     private val approveQuotesUseCase: ApproveQuotesUseCase,
     private val refreshQuotesUseCase: RefreshQuotesUseCase,
+    private val signQuotesUseCase: SignQuotesUseCase,
     shouldShowOnNextAppStart: Boolean
 ) : OfferViewModel() {
 
@@ -128,9 +132,6 @@ class OfferViewModelImpl(
                         when (response) {
                             is OfferRepository.OfferResult.Error -> {
                                 _events.tryEmit(Event.Error(response.message))
-                            }
-                            OfferRepository.OfferResult.HasContracts -> {
-                                _events.tryEmit(Event.Error())
                             }
                             is OfferRepository.OfferResult.Success -> {
                                 val loginStatus = loginStatusService.getLoginStatus()
@@ -259,5 +260,18 @@ class OfferViewModelImpl(
 
     override fun onGoToDirectDebit() {
         loginStatusService.isViewingOffer = false
+    }
+
+    override fun onSwedishBankIdSign() {
+        viewModelScope.launch {
+            _events.emit(
+                when (val result = signQuotesUseCase.signQuotes(quoteIds)) {
+                    is SignQuotesUseCase.SignQuoteResult.Error -> Event.Error(result.message)
+                    is SignQuotesUseCase.SignQuoteResult.StartSwedishBankId ->
+                        Event.StartSwedishBankIdSign(quoteIds, result.autoStartToken)
+                    SignQuotesUseCase.SignQuoteResult.Success -> Event.Error()
+                }
+            )
+        }
     }
 }

@@ -2,7 +2,6 @@ package com.hedvig.app.feature.offer.ui.checkout
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.ui.grossMonthlyCost
 import com.hedvig.app.feature.offer.ui.netMonthlyCost
@@ -30,7 +29,6 @@ class CheckoutViewModel(
     private val signQuotesUseCase: SignQuotesUseCase,
     private val marketManager: MarketManager,
     private val cacheManager: CacheManager,
-    private val loginStatusService: LoginStatusService
 ) : ViewModel() {
 
     private lateinit var quoteIds: List<String>
@@ -57,10 +55,6 @@ class CheckoutViewModel(
         when (response) {
             is OfferRepository.OfferResult.Error -> {
                 _events.tryEmit(Event.Error(response.message))
-            }
-            OfferRepository.OfferResult.HasContracts -> {
-                loginStatusService.isViewingOffer = false
-                _events.tryEmit(Event.Error())
             }
             is OfferRepository.OfferResult.Success -> {
                 _titleViewState.value = TitleViewState.Loaded(
@@ -155,8 +149,6 @@ class CheckoutViewModel(
                     cacheManager.clearCache()
                     _events.tryEmit(Event.CheckoutSuccess)
                 }
-                is SignQuotesUseCase.SignQuoteResult.StartSwedishBankId ->
-                    _events.tryEmit(Event.StartSwedishBankId(result.autoStartToken))
             }
         }
     }
@@ -192,7 +184,6 @@ class CheckoutViewModel(
 
     sealed class Event {
         data class Error(val message: String? = null) : Event()
-        data class StartSwedishBankId(val autoStartToken: String) : Event()
 
         object CheckoutSuccess : Event()
         object Loading : Event()
