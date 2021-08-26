@@ -136,7 +136,8 @@ class SwedishBankIdSignDialog : DialogFragment() {
 @Composable
 fun SwedishBankIdSignDialog(text: String) {
     Surface(
-        shape = RoundedCornerShape(8.dp)
+        shape = RoundedCornerShape(8.dp),
+        modifier = Modifier.animateContentSize(),
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
