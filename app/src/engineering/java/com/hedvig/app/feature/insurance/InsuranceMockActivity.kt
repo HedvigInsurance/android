@@ -3,7 +3,7 @@ package com.hedvig.app.feature.insurance
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.MockActivity
 import com.hedvig.app.MockContractDetailViewModel
-import com.hedvig.app.feature.insurance.ui.InsuranceViewModel
+import com.hedvig.app.feature.insurance.ui.tab.InsuranceViewModel
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
 import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsActivity

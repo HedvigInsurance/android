@@ -1,20 +1,15 @@
 package com.hedvig.app.feature.insurance.data
 
 import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.coroutines.await
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
 
-class InsuranceRepository(
+class GetContractsUseCase(
     private val apolloClient: ApolloClient,
     private val localeManager: LocaleManager
 ) {
-    suspend fun insurance() = apolloClient
-        .query(InsuranceQuery(localeManager.defaultLocale()))
-        .await()
-
     suspend operator fun invoke(): InsuranceResult {
         return when (
             val response =
