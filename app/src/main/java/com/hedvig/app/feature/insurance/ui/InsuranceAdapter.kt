@@ -2,13 +2,11 @@ package com.hedvig.app.feature.insurance.ui
 
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.StringRes
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.transition.platform.MaterialSharedAxis
-import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.R
 import com.hedvig.app.databinding.DashboardUpsellBinding
 import com.hedvig.app.databinding.GenericErrorBinding
@@ -222,21 +220,3 @@ class InsuranceAdapter(
     }
 }
 
-sealed class InsuranceModel {
-    object Header : InsuranceModel()
-
-    data class Contract(
-        val inner: InsuranceQuery.Contract
-    ) : InsuranceModel()
-
-    data class Upsell(
-        @get:StringRes val title: Int,
-        @get:StringRes val description: Int,
-        @get:StringRes val ctaText: Int
-    ) : InsuranceModel()
-
-    object Error : InsuranceModel()
-
-    object TerminatedContractsHeader : InsuranceModel()
-    data class TerminatedContracts(val quantity: Int) : InsuranceModel()
-}

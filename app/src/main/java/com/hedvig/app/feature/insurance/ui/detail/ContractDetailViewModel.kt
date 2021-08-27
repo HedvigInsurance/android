@@ -10,7 +10,7 @@ import com.hedvig.android.owldroid.type.AgreementStatus
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.documents.DocumentItems
-import com.hedvig.app.feature.insurance.data.InsuranceRepository
+import com.hedvig.app.feature.insurance.data.GetContractsUseCase
 import com.hedvig.app.feature.insurance.ui.detail.coverage.CoverageViewState
 import com.hedvig.app.feature.insurance.ui.detail.coverage.createCoverageItems
 import com.hedvig.app.feature.insurance.ui.detail.coverage.createInsurableLimitsItems
@@ -49,7 +49,7 @@ abstract class ContractDetailViewModel : ViewModel() {
 }
 
 class ContractDetailViewModelImpl(
-    private val insuranceRepository: InsuranceRepository,
+    private val getContractsUseCase: GetContractsUseCase,
     private val chatRepository: ChatRepository,
     private val marketManager: MarketManager,
     private val featureRuntimeBehavior: FeatureManager
@@ -57,11 +57,11 @@ class ContractDetailViewModelImpl(
 
     override fun loadContract(id: String) {
         viewModelScope.launch {
-            when (val insurance = insuranceRepository()) {
-                is InsuranceRepository.InsuranceResult.Error -> {
+            when (val insurance = getContractsUseCase()) {
+                is GetContractsUseCase.InsuranceResult.Error -> {
                     _data.value = ViewState.Error
                 }
-                is InsuranceRepository.InsuranceResult.Insurance -> {
+                is GetContractsUseCase.InsuranceResult.Insurance -> {
                     insurance.insurance.contracts
                         .firstOrNull { it.id == id }
                         ?.let { contract ->
