@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.insurance.ui
 
-import androidx.annotation.StringRes
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 
 sealed class InsuranceModel {
@@ -10,11 +9,19 @@ sealed class InsuranceModel {
         val inner: InsuranceQuery.Contract
     ) : InsuranceModel()
 
-    data class Upsell(
-            @get:StringRes val title: Int,
-            @get:StringRes val description: Int,
-            @get:StringRes val ctaText: Int
-    ) : InsuranceModel()
+    data class CrossSell(
+        val title: String,
+        val description: String,
+        val callToAction: String,
+        val action: Action,
+        val backgroundUrl: String,
+        val backgroundBlurHash: String,
+    ) : InsuranceModel() {
+        sealed class Action {
+            data class Embark(val embarkStoryId: String) : Action()
+            object Chat : Action()
+        }
+    }
 
     object Error : InsuranceModel()
 

@@ -200,6 +200,8 @@ dependencies {
     implementation(Libs.Coil.coil)
     implementation(Libs.Coil.svg)
     implementation(Libs.Coil.gif)
+    implementation(Libs.Coil.compose)
+    implementation(Libs.Coil.transformations)
 
     implementation(Libs.tooltip)
 
