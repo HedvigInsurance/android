@@ -1,24 +1,54 @@
 package com.hedvig.app.feature.insurance.ui
 
+import android.content.Context
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.view.ContextThemeWrapper
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Button
+import androidx.compose.material.Card
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import coil.compose.rememberImagePainter
+import com.commit451.coiltransformations.CropTransformation
 import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.hedvig.app.R
-import com.hedvig.app.databinding.DashboardUpsellBinding
 import com.hedvig.app.databinding.GenericErrorBinding
 import com.hedvig.app.databinding.InsuranceContractCardBinding
 import com.hedvig.app.databinding.InsuranceTerminatedContractsBinding
 import com.hedvig.app.feature.chat.ui.ChatActivity
+import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.insurance.service.InsuranceTracker
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
 import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.ui.compose.HedvigTheme
 import com.hedvig.app.util.GenericDiffUtilItemCallback
+import com.hedvig.app.util.compose.rememberBlurHash
 import com.hedvig.app.util.extensions.getActivity
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -34,7 +64,9 @@ class InsuranceAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.insurance_contract_card -> ViewHolder.ContractViewHolder(parent)
-        R.layout.dashboard_upsell -> ViewHolder.UpsellViewHolder(parent)
+        R.layout.dashboard_upsell -> ViewHolder.CrossSellViewHolder(
+            ComposeView(ContextThemeWrapper(parent.context, R.style.ThemeOverlay_MaterialComponents_Dark))
+        )
         R.layout.insurance_header -> ViewHolder.TitleViewHolder(parent)
         R.layout.generic_error -> ViewHolder.Error(parent)
         R.layout.insurance_terminated_contracts_header -> ViewHolder.TerminatedContractsHeader(
@@ -52,11 +84,17 @@ class InsuranceAdapter(
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
         is InsuranceModel.Contract -> R.layout.insurance_contract_card
-        is InsuranceModel.Upsell -> R.layout.dashboard_upsell
+        is InsuranceModel.CrossSell -> R.layout.dashboard_upsell
         is InsuranceModel.Header -> R.layout.insurance_header
         InsuranceModel.TerminatedContractsHeader -> R.layout.insurance_terminated_contracts_header
         is InsuranceModel.TerminatedContracts -> R.layout.insurance_terminated_contracts
         InsuranceModel.Error -> R.layout.generic_error
+    }
+
+    override fun onViewRecycled(holder: ViewHolder) {
+        if (holder is ViewHolder.CrossSellViewHolder) {
+            holder.composeView.disposeComposition()
+        }
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -71,25 +109,9 @@ class InsuranceAdapter(
             e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }
         }
 
-        class UpsellViewHolder(parent: ViewGroup) : ViewHolder(
-            parent.inflate(R.layout.dashboard_upsell)
-        ) {
-            private val binding by viewBinding(DashboardUpsellBinding::bind)
-
+        class CrossSellViewHolder(val composeView: ComposeView) : ViewHolder(composeView) {
             init {
-                binding.apply {
-                    cta.setHapticClickListener {
-                        val intent = ChatActivity.newInstance(cta.context, true)
-                        val options =
-                            ActivityOptionsCompat.makeCustomAnimation(
-                                cta.context,
-                                R.anim.activity_slide_up_in,
-                                R.anim.stay_in_place
-                            )
-
-                        ActivityCompat.startActivity(cta.context, intent, options.toBundle())
-                    }
-                }
+                composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             }
 
             override fun bind(
@@ -97,15 +119,43 @@ class InsuranceAdapter(
                 retry: () -> Unit,
                 tracker: InsuranceTracker,
                 marketManager: MarketManager
-            ) =
-                with(binding) {
-                    if (data !is InsuranceModel.Upsell) {
-                        return invalid(data)
-                    }
-                    title.setText(data.title)
-                    description.setText(data.description)
-                    cta.setText(data.ctaText)
+            ) {
+                if (data !is InsuranceModel.CrossSell) {
+                    return invalid(data)
                 }
+
+                composeView.setContent {
+                    val context = LocalContext.current
+                    HedvigTheme {
+                        CrossSell(
+                            data = data,
+                            onCtaClick = {
+                                when (val action = data.action) {
+                                    InsuranceModel.CrossSell.Action.Chat -> openChat(context)
+                                    is InsuranceModel.CrossSell.Action.Embark ->
+                                        openEmbark(context, action.embarkStoryId)
+                                }
+                            }
+                        )
+                    }
+                }
+            }
+
+            private fun openChat(context: Context) {
+                val intent = ChatActivity.newInstance(context, true)
+                val options =
+                    ActivityOptionsCompat.makeCustomAnimation(
+                        context,
+                        R.anim.activity_slide_up_in,
+                        R.anim.stay_in_place
+                    )
+
+                ActivityCompat.startActivity(context, intent, options.toBundle())
+            }
+
+            private fun openEmbark(context: Context, embarkStoryId: String) {
+                EmbarkActivity.newInstance(context, embarkStoryId, "") // What do we even reasonably show here?
+            }
         }
 
         class ContractViewHolder(parent: ViewGroup) : ViewHolder(
@@ -220,3 +270,73 @@ class InsuranceAdapter(
     }
 }
 
+@Composable
+fun CrossSell(
+    data: InsuranceModel.CrossSell,
+    onCtaClick: () -> Unit,
+) {
+    val placeholder by rememberBlurHash(data.backgroundBlurHash, 64, 32)
+    Card(
+        modifier = Modifier
+            .height(200.dp),
+    ) {
+        Image(
+            painter = rememberImagePainter(
+                data = data.backgroundUrl,
+                builder = {
+                    transformations(CropTransformation())
+                    placeholder(placeholder)
+                    crossfade(true)
+                },
+            ),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize(),
+        )
+        Box(
+            contentAlignment = Alignment.BottomCenter,
+            modifier = Modifier.padding(16.dp),
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Column {
+                    Text(
+                        text = data.title,
+                        style = MaterialTheme.typography.subtitle1,
+                    )
+                    Text(
+                        text = data.description,
+                        style = MaterialTheme.typography.subtitle2,
+                    )
+                }
+                Button(
+                    onClick = onCtaClick,
+                ) {
+                    Text(
+                        text = data.callToAction,
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+fun CrossSellPreview() {
+    HedvigTheme {
+        CrossSell(
+            data = InsuranceModel.CrossSell(
+                title = "Accident Insurance",
+                description = "179 kr/mo.",
+                callToAction = "Calculate price",
+                action = InsuranceModel.CrossSell.Action.Chat,
+                backgroundUrl = "https://images.unsplash.com/photo-1628996796855-0b056a464e06",
+                backgroundBlurHash = "LJC6\$2-:DiWB~WxuRkayMwNGo~of",
+            ),
+            onCtaClick = {}
+        )
+    }
+}
