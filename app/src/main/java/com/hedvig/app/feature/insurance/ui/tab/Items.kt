@@ -15,6 +15,13 @@ fun items(data: InsuranceQuery.Data): List<InsuranceModel> = ArrayList<Insurance
         }
     }
     addAll(contracts)
+
+    val potentialCrossSells = data.activeContractBundles.flatMap { it.potentialCrossSells }
+    if (potentialCrossSells.isNotEmpty()) {
+        add(InsuranceModel.CrossSellHeader)
+        addAll(potentialCrossSells.map(::crossSell))
+    }
+
     if (hasNotOnlyTerminatedContracts(data.contracts)) {
         val terminatedContracts = amountOfTerminatedContracts(data.contracts)
         add(InsuranceModel.TerminatedContractsHeader)
@@ -29,3 +36,20 @@ private fun hasNotOnlyTerminatedContracts(contracts: List<InsuranceQuery.Contrac
 
 private fun amountOfTerminatedContracts(contracts: List<InsuranceQuery.Contract>) =
     contracts.filter { it.status.fragments.contractStatusFragment.asTerminatedStatus != null }.size
+
+private fun crossSell(potentialCrossSell: InsuranceQuery.PotentialCrossSell): InsuranceModel.CrossSell {
+    val embarkStoryId = potentialCrossSell.action.asCrossSellEmbark?.embarkStoryId
+    val action = if (embarkStoryId != null) {
+        InsuranceModel.CrossSell.Action.Embark(embarkStoryId)
+    } else {
+        InsuranceModel.CrossSell.Action.Chat
+    }
+    return InsuranceModel.CrossSell(
+        title = potentialCrossSell.title,
+        description = potentialCrossSell.description,
+        callToAction = potentialCrossSell.callToAction,
+        action = action,
+        backgroundUrl = potentialCrossSell.imageUrl,
+        backgroundBlurHash = potentialCrossSell.blurHash,
+    )
+}

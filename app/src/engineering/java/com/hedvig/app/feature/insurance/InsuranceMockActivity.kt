@@ -3,9 +3,9 @@ package com.hedvig.app.feature.insurance
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.MockActivity
 import com.hedvig.app.MockContractDetailViewModel
-import com.hedvig.app.feature.insurance.ui.tab.InsuranceViewModel
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
+import com.hedvig.app.feature.insurance.ui.tab.InsuranceViewModel
 import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
@@ -112,7 +112,8 @@ class InsuranceMockActivity : MockActivity() {
                     contracts = listOf(
                         INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS.contracts[0],
                         INSURANCE_DATA_NORWEGIAN_TRAVEL.contracts[0],
-                    )
+                    ),
+                    activeContractBundles = emptyList(),
                 )
                 shouldError = false
             }

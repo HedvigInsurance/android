@@ -246,6 +246,7 @@ class InsuranceDataBuilder(
                     )
                 )
             )
-        }
+        },
+        activeContractBundles = emptyList(),
     )
 }
