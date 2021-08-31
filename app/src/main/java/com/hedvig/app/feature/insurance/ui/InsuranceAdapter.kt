@@ -1,10 +1,8 @@
 package com.hedvig.app.feature.insurance.ui
 
 import android.content.Context
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.view.ContextThemeWrapper
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -48,6 +47,8 @@ import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContrac
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.ui.compose.HedvigTheme
+import com.hedvig.app.ui.compose.hedvigBlack
+import com.hedvig.app.ui.compose.whiteHighEmphasis
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.compose.rememberBlurHash
 import com.hedvig.app.util.extensions.getActivity
@@ -65,9 +66,7 @@ class InsuranceAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.insurance_contract_card -> ViewHolder.ContractViewHolder(parent)
-        CROSS_SELL -> ViewHolder.CrossSellViewHolder(
-            ComposeView(ContextThemeWrapper(parent.context, R.style.ThemeOverlay_MaterialComponents_Dark))
-        )
+        CROSS_SELL -> ViewHolder.CrossSellViewHolder(ComposeView(parent.context))
         R.layout.insurance_header -> ViewHolder.TitleViewHolder(parent)
         R.layout.generic_error -> ViewHolder.Error(parent)
         SUBHEADING -> ViewHolder.SubheadingViewHolder(ComposeView(parent.context))
@@ -157,7 +156,7 @@ class InsuranceAdapter(
             }
 
             private fun openEmbark(context: Context, embarkStoryId: String) {
-                EmbarkActivity.newInstance(context, embarkStoryId, "") // What do we even reasonably show here?
+                context.startActivity(EmbarkActivity.newInstance(context, embarkStoryId, "")) // What do we even reasonably show here?
             }
         }
 
@@ -237,7 +236,7 @@ class InsuranceAdapter(
                 tracker: InsuranceTracker,
                 marketManager: MarketManager
             ) {
-                if (data !is InsuranceModel.TerminatedContractsHeader || data !is InsuranceModel.CrossSellHeader) {
+                if (data !is InsuranceModel.TerminatedContractsHeader && data !is InsuranceModel.CrossSellHeader) {
                     return invalid(data)
                 }
                 composeView.setContent {
@@ -318,6 +317,13 @@ fun SubheadingPreview() {
     Subheading("Add more coverage")
 }
 
+/*
+ * Note: This Composable uses hardcoded colors due to difficulties with
+ * declaring a particular component to be in dark theme instead of the
+ * default. When we update `HedvigTheme` to be Compose-first instead of
+ * XML-Theme first, we can reconfigure the theme for this composable to
+ * be `dark` no matter what the system value is.
+ */
 @Composable
 fun CrossSell(
     data: InsuranceModel.CrossSell,
@@ -357,14 +363,20 @@ fun CrossSell(
                     Text(
                         text = data.title,
                         style = MaterialTheme.typography.subtitle1,
+                        color = whiteHighEmphasis,
                     )
                     Text(
                         text = data.description,
                         style = MaterialTheme.typography.subtitle2,
+                        color = whiteHighEmphasis,
                     )
                 }
                 Button(
                     onClick = onCtaClick,
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = whiteHighEmphasis,
+                        contentColor = hedvigBlack,
+                    )
                 ) {
                     Text(
                         text = data.callToAction,
@@ -375,7 +387,7 @@ fun CrossSell(
     }
 }
 
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+@Preview(showBackground = true)
 @Composable
 fun CrossSellPreview() {
     HedvigTheme {

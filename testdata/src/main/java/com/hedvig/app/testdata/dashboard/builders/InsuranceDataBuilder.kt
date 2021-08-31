@@ -27,6 +27,7 @@ class InsuranceDataBuilder(
     private val displayName: String = "Hemförsäkring",
     private val showUpcomingAgreement: Boolean = false,
     private val upcomingDetailsTable: TableFragment = TableFragmentBuilder().build(),
+    private val crossSells: List<InsuranceQuery.PotentialCrossSell> = emptyList(),
 ) {
 
     fun build() = InsuranceQuery.Data(
@@ -247,6 +248,14 @@ class InsuranceDataBuilder(
                 )
             )
         },
-        activeContractBundles = emptyList(),
+        activeContractBundles = if (crossSells.isNotEmpty()) {
+            listOf(
+                InsuranceQuery.ActiveContractBundle(
+                    potentialCrossSells = crossSells,
+                )
+            )
+        } else {
+            emptyList()
+        }
     )
 }
