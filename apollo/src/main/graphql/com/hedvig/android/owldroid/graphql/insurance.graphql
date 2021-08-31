@@ -79,4 +79,18 @@ query InsuranceQuery($locale: Locale!) {
     }
     ...UpcomingAgreementFragment
   }
+  activeContractBundles {
+    potentialCrossSells {
+      title
+      description
+      callToAction
+      action {
+        ... on CrossSellEmbark {
+          embarkStoryId
+        }
+      }
+      blurHash
+      imageUrl
+    }
+  }
 }

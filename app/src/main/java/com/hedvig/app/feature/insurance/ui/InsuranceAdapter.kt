@@ -26,6 +26,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
@@ -64,14 +65,12 @@ class InsuranceAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.insurance_contract_card -> ViewHolder.ContractViewHolder(parent)
-        R.layout.dashboard_upsell -> ViewHolder.CrossSellViewHolder(
+        CROSS_SELL -> ViewHolder.CrossSellViewHolder(
             ComposeView(ContextThemeWrapper(parent.context, R.style.ThemeOverlay_MaterialComponents_Dark))
         )
         R.layout.insurance_header -> ViewHolder.TitleViewHolder(parent)
         R.layout.generic_error -> ViewHolder.Error(parent)
-        R.layout.insurance_terminated_contracts_header -> ViewHolder.TerminatedContractsHeader(
-            parent
-        )
+        SUBHEADING -> ViewHolder.SubheadingViewHolder(ComposeView(parent.context))
         R.layout.insurance_terminated_contracts -> ViewHolder.TerminatedContracts(parent)
         else -> {
             throw Error("Unreachable")
@@ -84,15 +83,19 @@ class InsuranceAdapter(
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
         is InsuranceModel.Contract -> R.layout.insurance_contract_card
-        is InsuranceModel.CrossSell -> R.layout.dashboard_upsell
+        is InsuranceModel.CrossSell -> CROSS_SELL
         is InsuranceModel.Header -> R.layout.insurance_header
-        InsuranceModel.TerminatedContractsHeader -> R.layout.insurance_terminated_contracts_header
+        InsuranceModel.TerminatedContractsHeader,
+        InsuranceModel.CrossSellHeader -> SUBHEADING
         is InsuranceModel.TerminatedContracts -> R.layout.insurance_terminated_contracts
         InsuranceModel.Error -> R.layout.generic_error
     }
 
     override fun onViewRecycled(holder: ViewHolder) {
         if (holder is ViewHolder.CrossSellViewHolder) {
+            holder.composeView.disposeComposition()
+        }
+        if (holder is ViewHolder.SubheadingViewHolder) {
             holder.composeView.disposeComposition()
         }
     }
@@ -221,14 +224,34 @@ class InsuranceAdapter(
             }
         }
 
-        class TerminatedContractsHeader(parent: ViewGroup) :
-            ViewHolder(parent.inflate(R.layout.insurance_terminated_contracts_header)) {
+        class SubheadingViewHolder(val composeView: ComposeView) :
+            ViewHolder(composeView) {
+
+            init {
+                composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            }
+
             override fun bind(
                 data: InsuranceModel,
                 retry: () -> Unit,
                 tracker: InsuranceTracker,
                 marketManager: MarketManager
-            ) = Unit
+            ) {
+                if (data !is InsuranceModel.TerminatedContractsHeader || data !is InsuranceModel.CrossSellHeader) {
+                    return invalid(data)
+                }
+                composeView.setContent {
+                    Subheading(
+                        when (data) {
+                            InsuranceModel.CrossSellHeader ->
+                                stringResource(R.string.insurance_tab_cross_sells_title)
+                            InsuranceModel.TerminatedContractsHeader ->
+                                stringResource(R.string.insurances_tab_more_title)
+                            else -> ""
+                        }
+                    )
+                }
+            }
         }
 
         class TerminatedContracts(parent: ViewGroup) :
@@ -267,7 +290,32 @@ class InsuranceAdapter(
 
     companion object {
         private const val TRANSITION_NAME = "contract_card"
+
+        private const val CROSS_SELL = 1
+        private const val SUBHEADING = 2
     }
+}
+
+@Composable
+fun Subheading(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.h6,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                start = 16.dp,
+                top = 48.dp,
+                end = 16.dp,
+                bottom = 16.dp,
+            ),
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SubheadingPreview() {
+    Subheading("Add more coverage")
 }
 
 @Composable
@@ -278,7 +326,11 @@ fun CrossSell(
     val placeholder by rememberBlurHash(data.backgroundBlurHash, 64, 32)
     Card(
         modifier = Modifier
-            .height(200.dp),
+            .height(200.dp)
+            .padding(
+                horizontal = 16.dp,
+                vertical = 8.dp,
+            ),
     ) {
         Image(
             painter = rememberImagePainter(
