@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.offer
 
 import com.hedvig.android.owldroid.graphql.OfferQuery
-import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationGradientOption
+import com.hedvig.android.owldroid.type.TypeOfContractGradientOption
 import com.hedvig.app.R
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
@@ -37,10 +37,10 @@ object OfferItemsBuilder {
                 signMethod = data.signMethodForQuotes,
                 showCampaignManagement = data.quoteBundle.appConfiguration.showCampaignManagement,
                 gradientRes = when (data.quoteBundle.appConfiguration.gradientOption) {
-                    QuoteBundleAppConfigurationGradientOption.GRADIENT_ONE -> R.drawable.gradient_fall_sunset
-                    QuoteBundleAppConfigurationGradientOption.GRADIENT_TWO -> R.drawable.gradient_spring_fog
-                    QuoteBundleAppConfigurationGradientOption.GRADIENT_THREE -> R.drawable.gradient_summer_sky
-                    QuoteBundleAppConfigurationGradientOption.UNKNOWN__ -> R.drawable.gradient_spring_fog
+                    TypeOfContractGradientOption.GRADIENT_ONE -> R.drawable.gradient_fall_sunset
+                    TypeOfContractGradientOption.GRADIENT_TWO -> R.drawable.gradient_spring_fog
+                    TypeOfContractGradientOption.GRADIENT_THREE -> R.drawable.gradient_summer_sky
+                    TypeOfContractGradientOption.UNKNOWN__ -> R.drawable.gradient_spring_fog
                 },
             ),
         )
