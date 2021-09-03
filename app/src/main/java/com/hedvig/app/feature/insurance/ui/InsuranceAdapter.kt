@@ -156,7 +156,9 @@ class InsuranceAdapter(
             }
 
             private fun openEmbark(context: Context, embarkStoryId: String) {
-                context.startActivity(EmbarkActivity.newInstance(context, embarkStoryId, "")) // What do we even reasonably show here?
+                context.startActivity(
+                    EmbarkActivity.newInstance(context, embarkStoryId, "")
+                )
             }
         }
 
@@ -314,7 +316,9 @@ fun Subheading(text: String) {
 @Preview(showBackground = true)
 @Composable
 fun SubheadingPreview() {
-    Subheading("Add more coverage")
+    HedvigTheme {
+        Subheading("Add more coverage")
+    }
 }
 
 /*
