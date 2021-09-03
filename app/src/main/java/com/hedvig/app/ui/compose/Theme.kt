@@ -50,7 +50,8 @@ fun HedvigTheme(
     val layoutDirection = LocalLayoutDirection.current
     val (colors, type, shapes) = createMdcTheme(
         context = context,
-        layoutDirection = layoutDirection
+        layoutDirection = layoutDirection,
+        setDefaultFontFamily = true,
     )
 
     MaterialTheme(
