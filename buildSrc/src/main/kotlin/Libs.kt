@@ -145,6 +145,12 @@ object Libs {
         const val idlingResource = "com.apollographql.apollo:apollo-idling-resource:${CommonVersions.apollo}"
     }
 
+    object Showkase {
+        private const val version = "1.0.0-beta03"
+        const val showkase = "com.airbnb.android:showkase:$version"
+        const val processor = "com.airbnb.android:showkase-processor:$version"
+    }
+
     const val adyen = "com.adyen.checkout:drop-in:4.0.0"
     const val jsonTest = "org.json:json:20210307"
     const val concatAdapterExtension = "com.github.carousell:ConcatAdapterExtension:1.2.1"
