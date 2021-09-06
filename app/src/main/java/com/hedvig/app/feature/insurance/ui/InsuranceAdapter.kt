@@ -245,15 +245,17 @@ class InsuranceAdapter(
                     return invalid(data)
                 }
                 composeView.setContent {
-                    Subheading(
-                        when (data) {
-                            InsuranceModel.CrossSellHeader ->
-                                stringResource(R.string.insurance_tab_cross_sells_title)
-                            InsuranceModel.TerminatedContractsHeader ->
-                                stringResource(R.string.insurances_tab_more_title)
-                            else -> ""
-                        }
-                    )
+                    HedvigTheme {
+                        Subheading(
+                            when (data) {
+                                InsuranceModel.CrossSellHeader ->
+                                    stringResource(R.string.insurance_tab_cross_sells_title)
+                                InsuranceModel.TerminatedContractsHeader ->
+                                    stringResource(R.string.insurances_tab_more_title)
+                                else -> ""
+                            }
+                        )
+                    }
                 }
             }
         }
