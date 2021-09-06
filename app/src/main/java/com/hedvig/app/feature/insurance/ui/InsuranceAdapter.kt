@@ -3,6 +3,7 @@ package com.hedvig.app.feature.insurance.ui
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -51,6 +52,7 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.ui.compose.HedvigTheme
 import com.hedvig.app.ui.compose.hedvigBlack
+import com.hedvig.app.ui.compose.hedvigBlack12percent
 import com.hedvig.app.ui.compose.whiteHighEmphasis
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.compose.rememberBlurHash
@@ -340,6 +342,7 @@ fun CrossSell(
 ) {
     val placeholder by rememberBlurHash(data.backgroundBlurHash, 64, 32)
     Card(
+        border = BorderStroke(1.dp, hedvigBlack12percent),
         modifier = Modifier
             .padding(
                 horizontal = 16.dp,
