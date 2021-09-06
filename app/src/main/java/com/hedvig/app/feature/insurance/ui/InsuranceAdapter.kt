@@ -379,9 +379,10 @@ fun CrossSell(
         ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Bottom,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Column {
+                Column(modifier = Modifier.padding(bottom = 4.dp)) {
                     Text(
                         text = data.title,
                         style = MaterialTheme.typography.subtitle1,
@@ -391,6 +392,7 @@ fun CrossSell(
                         text = data.description,
                         style = MaterialTheme.typography.subtitle2,
                         color = whiteHighEmphasis,
+                        modifier = Modifier.padding(top = 4.dp),
                     )
                 }
                 Button(
