@@ -15,57 +15,9 @@ query InsuranceQuery($locale: Locale!) {
         certificateUrl
         status
       }
-      ... on SwedishApartmentAgreement {
-        address {
-          ...AddressFragment
-        }
-        numberCoInsured
-        squareMeters
-        saType: type
-      }
-      ... on SwedishHouseAgreement {
-        address {
-          ...AddressFragment
-        }
-        numberCoInsured
-        squareMeters
-        ancillaryArea
-        yearOfConstruction
-        numberOfBathrooms
-        isSubleted
-        extraBuildings {
-          ... on ExtraBuildingCore {
-            area
-            displayName
-            hasWaterConnected
-          }
-        }
-      }
-      ... on NorwegianHomeContentAgreement {
-        address {
-          ...AddressFragment
-        }
-        numberCoInsured
-        squareMeters
-        nhcType: type
-      }
-      ... on DanishHomeContentAgreement {
-        address {
-          ...AddressFragment
-        }
-        numberCoInsured
-        squareMeters
-        dhcType: type
-      }
-      ... on NorwegianTravelAgreement {
-        numberCoInsured
-      }
-      ... on DanishTravelAgreement {
-        numberCoInsured
-      }
-      ... on DanishAccidentAgreement {
-        numberCoInsured
-      }
+    }
+    currentAgreementDetailsTable(locale: $locale) {
+      ...TableFragment
     }
     perils(locale: $locale) {
       ...PerilFragment
@@ -77,6 +29,9 @@ query InsuranceQuery($locale: Locale!) {
       displayName
       url
     }
+    statusPills(locale: $locale)
+    detailPills(locale: $locale)
+    gradientOption
     ...UpcomingAgreementFragment
   }
   activeContractBundles {
