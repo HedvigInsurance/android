@@ -341,11 +341,11 @@ fun CrossSell(
     val placeholder by rememberBlurHash(data.backgroundBlurHash, 64, 32)
     Card(
         modifier = Modifier
-            .height(200.dp)
             .padding(
                 horizontal = 16.dp,
                 vertical = 8.dp,
-            ),
+            )
+            .height(200.dp),
     ) {
         Image(
             painter = rememberImagePainter(
