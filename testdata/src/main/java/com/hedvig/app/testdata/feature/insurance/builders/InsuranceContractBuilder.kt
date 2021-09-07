@@ -54,6 +54,7 @@ class InsuranceContractBuilder(
         upcomingRenewal = renewal,
         currentAgreement = InsuranceQuery.CurrentAgreement(
             asAgreementCore = InsuranceQuery.AsAgreementCore(
+                __typename = "NorwegianTravelAgreement",
                 certificateUrl = "https://www.example.com",
                 status = agreementStatus,
             ),

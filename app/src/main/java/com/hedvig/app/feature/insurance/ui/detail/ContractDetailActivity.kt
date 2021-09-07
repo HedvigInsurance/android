@@ -98,6 +98,7 @@ class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
                         }
                         is ContractDetailViewModel.ViewState.Success -> {
                             content.isVisible = true
+                            error.root.isVisible = false
                             val contract = viewState.data
                             contract.bindTo(cardContainer, marketManager)
                             terminationInfo.isVisible =
