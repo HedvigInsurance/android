@@ -99,7 +99,7 @@ class PerilsAdapter(
                     TypeOfContract.DK_ACCIDENT,
                     TypeOfContract.DK_ACCIDENT_STUDENT,
                     -> context.getString(R.string.PLACEHOLDER_CONTRACT_DISPLAY_NAME_DK_HOME_CONTENTS)
-                    TypeOfContract.UNKNOWN__ -> ""
+                    else -> ""
                 }
             }
         }
