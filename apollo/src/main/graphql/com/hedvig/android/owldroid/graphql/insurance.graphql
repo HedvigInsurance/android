@@ -86,7 +86,9 @@ query InsuranceQuery($locale: Locale!) {
       callToAction
       action {
         ... on CrossSellEmbark {
-          embarkStoryId
+          embarkStory {
+            id
+          }
         }
       }
       blurHash

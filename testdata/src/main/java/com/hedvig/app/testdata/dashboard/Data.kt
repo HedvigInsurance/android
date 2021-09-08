@@ -46,7 +46,9 @@ val INSURANCE_DATA_WITH_CROSS_SELL = InsuranceDataBuilder(
             action = InsuranceQuery.Action(
                 __typename = "CrossSellEmbark",
                 asCrossSellEmbark = InsuranceQuery.AsCrossSellEmbark(
-                    embarkStoryId = "123",
+                    embarkStory = InsuranceQuery.EmbarkStory(
+                        id = "123",
+                    ),
                 )
             ),
             blurHash = "LJC6\$2-:DiWB~WxuRkayMwNGo~of",
