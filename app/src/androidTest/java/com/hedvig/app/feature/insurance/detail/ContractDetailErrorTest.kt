@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.insurance.detail
 
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
-import com.hedvig.app.R
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_HOUSE
