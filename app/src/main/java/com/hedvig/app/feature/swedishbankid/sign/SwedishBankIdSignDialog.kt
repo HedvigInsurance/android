@@ -68,18 +68,18 @@ class SwedishBankIdSignDialog : DialogFragment() {
             val viewState by model.viewState.collectAsState()
             HedvigTheme {
                 SwedishBankIdSignDialog(
-                    text = stringResource(
-                        when (viewState) {
-                            is SwedishBankIdSignViewModel.ViewState.StartClient -> R.string.SIGN_START_BANKID
-                            SwedishBankIdSignViewModel.ViewState.Cancelled -> R.string.SIGN_CANCELED
-                            SwedishBankIdSignViewModel.ViewState.InProgress -> R.string.SIGN_IN_PROGRESS
-                            SwedishBankIdSignViewModel.ViewState.Success -> R.string.SIGN_SUCCESSFUL
-                            SwedishBankIdSignViewModel.ViewState.Error -> R.string.SIGN_FAILED_REASON_UNKNOWN
-                        }
-                    )
+                    text = stringResource(getTextByViewState(viewState))
                 )
             }
         }
+    }
+
+    private fun getTextByViewState(viewState: SwedishBankIdSignViewModel.ViewState) = when (viewState) {
+        is SwedishBankIdSignViewModel.ViewState.StartClient -> R.string.SIGN_START_BANKID
+        SwedishBankIdSignViewModel.ViewState.Cancelled -> R.string.SIGN_CANCELED
+        SwedishBankIdSignViewModel.ViewState.InProgress -> R.string.SIGN_IN_PROGRESS
+        SwedishBankIdSignViewModel.ViewState.Success -> R.string.SIGN_SUCCESSFUL
+        SwedishBankIdSignViewModel.ViewState.Error -> R.string.SIGN_FAILED_REASON_UNKNOWN
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
