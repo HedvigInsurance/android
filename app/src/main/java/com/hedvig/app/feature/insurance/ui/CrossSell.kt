@@ -7,10 +7,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
@@ -87,7 +89,11 @@ fun CrossSell(
                 verticalAlignment = Alignment.Bottom,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Column(modifier = Modifier.padding(bottom = 4.dp)) {
+                Column(
+                    modifier = Modifier
+                        .weight(1f, fill = false)
+                        .padding(bottom = 4.dp)
+                ) {
                     Text(
                         text = data.title,
                         style = MaterialTheme.typography.subtitle1,
@@ -100,12 +106,13 @@ fun CrossSell(
                         modifier = Modifier.padding(top = 4.dp),
                     )
                 }
+                Spacer(modifier = Modifier.width(8.dp))
                 Button(
                     onClick = onCtaClick,
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = whiteHighEmphasis,
                         contentColor = hedvigBlack,
-                    )
+                    ),
                 ) {
                     Text(
                         text = data.callToAction,
