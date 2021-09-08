@@ -56,3 +56,8 @@ val INSURANCE_DATA_WITH_CROSS_SELL = InsuranceDataBuilder(
         )
     )
 ).build()
+
+val INSURANCE_DATA_UPCOMING_AGREEMENT = InsuranceDataBuilder(
+    contracts = listOf(ContractStatus.ACTIVE),
+    showUpcomingAgreement = true,
+).build()
