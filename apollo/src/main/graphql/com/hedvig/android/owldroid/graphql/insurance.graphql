@@ -41,7 +41,7 @@ query InsuranceQuery($locale: Locale!) {
       callToAction
       action {
         ... on CrossSellEmbark {
-          embarkStory {
+          embarkStory(locale: $locale) {
             id
           }
         }
