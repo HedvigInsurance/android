@@ -46,10 +46,6 @@
                     android:layout_marginTop="@dimen/base_margin_quintuple"
                     android:background="@drawable/divider" />
 
-                <include
-                    android:id="@+id/coverageSection"
-                    layout="@layout/key_gear_item_detail_coverage_section" />
-
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/horizontal_line_height"

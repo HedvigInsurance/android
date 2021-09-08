@@ -107,11 +107,9 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                     deductible = KeyGearItemFragment.Deductible(
                         amount = "1500"
                     ),
-                    covered = listOf(),
                     maxInsurableAmount = KeyGearItemFragment.MaxInsurableAmount(
                         amount = "50000"
                     ),
-                    exceptions = listOf(),
                     deleted = false,
                     fragments = KeyGearItemFragment.Fragments(
                         KeyGearItemValuationFragment(
@@ -149,11 +147,9 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                     deductible = KeyGearItemFragment.Deductible(
                         amount = "1500"
                     ),
-                    covered = listOf(),
                     maxInsurableAmount = KeyGearItemFragment.MaxInsurableAmount(
                         amount = "50000"
                     ),
-                    exceptions = listOf(),
                     deleted = false,
                     fragments = KeyGearItemFragment.Fragments(
                         KeyGearItemValuationFragment(
@@ -188,11 +184,9 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                     deductible = KeyGearItemFragment.Deductible(
                         amount = "1500"
                     ),
-                    covered = emptyList(),
                     maxInsurableAmount = KeyGearItemFragment.MaxInsurableAmount(
                         amount = "50000"
                     ),
-                    exceptions = emptyList(),
                     deleted = false,
                     fragments = KeyGearItemFragment.Fragments(
                         KeyGearItemValuationFragment(

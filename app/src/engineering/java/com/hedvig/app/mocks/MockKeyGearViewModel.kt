@@ -36,11 +36,9 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                     deductible = KeyGearItemFragment.Deductible(
                                         amount = "1500.00"
                                     ),
-                                    covered = emptyList(),
                                     maxInsurableAmount = KeyGearItemFragment.MaxInsurableAmount(
                                         amount = "50000"
                                     ),
-                                    exceptions = emptyList(),
                                     deleted = false,
                                     fragments = KeyGearItemFragment.Fragments(
                                         KeyGearItemValuationFragment(
@@ -79,11 +77,9 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                     deductible = KeyGearItemFragment.Deductible(
                                         amount = "1500.00"
                                     ),
-                                    covered = emptyList(),
                                     maxInsurableAmount = KeyGearItemFragment.MaxInsurableAmount(
                                         amount = "50000"
                                     ),
-                                    exceptions = emptyList(),
                                     deleted = false,
                                     fragments = KeyGearItemFragment.Fragments(
                                         KeyGearItemValuationFragment(
@@ -117,11 +113,9 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                     deductible = KeyGearItemFragment.Deductible(
                                         amount = "1500.00"
                                     ),
-                                    covered = emptyList(),
                                     maxInsurableAmount = KeyGearItemFragment.MaxInsurableAmount(
                                         amount = "50000"
                                     ),
-                                    exceptions = emptyList(),
                                     deleted = false,
                                     fragments = KeyGearItemFragment.Fragments(
                                         KeyGearItemValuationFragment(
