@@ -42,7 +42,7 @@ query InsuranceQuery($locale: Locale!) {
       action {
         ... on CrossSellEmbark {
           embarkStory(locale: $locale) {
-            id
+            name
           }
         }
       }

@@ -38,7 +38,7 @@ private fun amountOfTerminatedContracts(contracts: List<InsuranceQuery.Contract>
     contracts.filter { it.status.fragments.contractStatusFragment.asTerminatedStatus != null }.size
 
 private fun crossSell(potentialCrossSell: InsuranceQuery.PotentialCrossSell): InsuranceModel.CrossSell {
-    val embarkStoryId = potentialCrossSell.action.asCrossSellEmbark?.embarkStory?.id
+    val embarkStoryId = potentialCrossSell.action.asCrossSellEmbark?.embarkStory?.name
     val action = if (embarkStoryId != null) {
         InsuranceModel.CrossSell.Action.Embark(embarkStoryId)
     } else {

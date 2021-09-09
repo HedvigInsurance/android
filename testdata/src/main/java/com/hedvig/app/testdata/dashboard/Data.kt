@@ -47,7 +47,7 @@ val INSURANCE_DATA_WITH_CROSS_SELL = InsuranceDataBuilder(
                 __typename = "CrossSellEmbark",
                 asCrossSellEmbark = InsuranceQuery.AsCrossSellEmbark(
                     embarkStory = InsuranceQuery.EmbarkStory(
-                        id = "123",
+                        name = "123",
                     ),
                 )
             ),
