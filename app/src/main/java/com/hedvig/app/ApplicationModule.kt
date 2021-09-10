@@ -64,12 +64,13 @@ import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressViewModel
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressViewModelImpl
 import com.hedvig.app.feature.home.ui.changeaddress.GetAddressChangeStoryIdUseCase
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase
-import com.hedvig.app.feature.insurance.data.InsuranceRepository
+import com.hedvig.app.feature.insurance.data.GetContractsUseCase
 import com.hedvig.app.feature.insurance.service.InsuranceTracker
-import com.hedvig.app.feature.insurance.ui.InsuranceViewModel
-import com.hedvig.app.feature.insurance.ui.InsuranceViewModelImpl
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModelImpl
+import com.hedvig.app.feature.insurance.ui.tab.InsuranceViewModel
+import com.hedvig.app.feature.insurance.ui.tab.InsuranceViewModelImpl
+import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsViewModel
 import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.feature.keygear.KeyGearValuationViewModel
 import com.hedvig.app.feature.keygear.KeyGearValuationViewModelImpl
@@ -323,6 +324,7 @@ val viewModelModule = module {
             multiActionParams
         )
     }
+    viewModel { TerminatedContractsViewModel(get()) }
     viewModel { (autoStartToken: String, quoteIds: List<String>) ->
         SwedishBankIdSignViewModel(autoStartToken, quoteIds, get(), get(), get(), get())
     }
@@ -449,7 +451,6 @@ val repositoriesModule = module {
     single { ChatRepository(get(), get(), get()) }
     single { PayinStatusRepository(get()) }
     single { ClaimsRepository(get(), get()) }
-    single { InsuranceRepository(get(), get()) }
     single { ProfileRepository(get()) }
     single { RedeemReferralCodeRepository(get(), get()) }
     single { UserRepository(get()) }
@@ -535,6 +536,7 @@ val useCaseModule = module {
     single { ApproveQuotesUseCase(get(), get(), get()) }
     single { RefreshQuotesUseCase(get()) }
     single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { GetContractsUseCase(get(), get()) }
     single { ManuallyRecheckSwedishBankIdSignStatusUseCase(get()) }
     single { SubscribeToSwedishBankIdSignStatusUseCase(get()) }
 }

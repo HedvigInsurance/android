@@ -106,10 +106,13 @@ object Libs {
     const val svg = "com.caverock:androidsvg-aar:1.4"
 
     object Coil {
-        private const val version = "1.3.1"
+        private const val version = "1.3.2"
         const val svg = "io.coil-kt:coil-svg:$version"
         const val gif = "io.coil-kt:coil-gif:$version"
         const val coil = "io.coil-kt:coil:$version"
+        const val compose = "io.coil-kt:coil-compose:$version"
+
+        const val transformations = "com.github.Commit451.coil-transformations:transformations:1.0.0"
     }
 
     const val tooltip = "com.github.hansemannn:viewtooltip:1.2.2"

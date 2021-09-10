@@ -3,9 +3,12 @@ package com.hedvig.app.ui.compose
 import androidx.compose.ui.graphics.Color
 
 val hedvigBlack = Color(0xff121212)
+val hedvigBlack12percent = hedvigBlack.copy(alpha = 0.12f)
 val hedvigOffWhite = Color(0xfffafafa)
 val hedvigDarkGray = Color(0xff505050)
 val background = Color(0xffF6F6F6)
+
+val whiteHighEmphasis = Color(0xFFFAFAFA)
 
 val lavender300 = Color(0xffC9ABF5)
 val lavender400 = Color(0xffBE9BF3)

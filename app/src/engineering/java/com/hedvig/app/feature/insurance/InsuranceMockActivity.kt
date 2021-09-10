@@ -3,9 +3,9 @@ package com.hedvig.app.feature.insurance
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.MockActivity
 import com.hedvig.app.MockContractDetailViewModel
-import com.hedvig.app.feature.insurance.ui.InsuranceViewModel
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
+import com.hedvig.app.feature.insurance.ui.tab.InsuranceViewModel
 import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
@@ -20,6 +20,7 @@ import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_DANISH_HOME_CONTENTS
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_ONE_ACTIVE_ONE_TERMINATED
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_STUDENT
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_TERMINATED
+import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_WITH_CROSS_SELL
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_DANISH_TRAVEL
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_MULTIPLE_DANISH_CONTRACTS
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS
@@ -112,7 +113,8 @@ class InsuranceMockActivity : MockActivity() {
                     contracts = listOf(
                         INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS.contracts[0],
                         INSURANCE_DATA_NORWEGIAN_TRAVEL.contracts[0],
-                    )
+                    ),
+                    activeContractBundles = emptyList(),
                 )
                 shouldError = false
             }
@@ -230,6 +232,13 @@ class InsuranceMockActivity : MockActivity() {
                     initialTab = LoggedInTabs.INSURANCE
                 )
             )
+        }
+        clickableItem("Cross-Sell") {
+            MockInsuranceViewModel.apply {
+                insuranceMockData = INSURANCE_DATA_WITH_CROSS_SELL
+                shouldError = false
+            }
+            startActivity(LoggedInActivity.newInstance(context, initialTab = LoggedInTabs.INSURANCE))
         }
         header("Detail Screen")
         clickableItem("Swedish Apartment") {
