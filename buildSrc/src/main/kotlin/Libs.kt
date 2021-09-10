@@ -146,7 +146,7 @@ object Libs {
     }
 
     object Showkase {
-        private const val version = "1.0.0-beta03"
+        private const val version = "1.0.0-beta04"
         const val showkase = "com.airbnb.android:showkase:$version"
         const val processor = "com.airbnb.android:showkase-processor:$version"
     }
