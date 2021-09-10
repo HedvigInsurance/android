@@ -26,7 +26,11 @@ fun Subheading(text: String) {
     )
 }
 
-@Preview(showBackground = true)
+@Preview(
+    name = "Subheading",
+    group = "Insurance Tab",
+    showBackground = true,
+)
 @Composable
 fun SubheadingPreview() {
     HedvigTheme {

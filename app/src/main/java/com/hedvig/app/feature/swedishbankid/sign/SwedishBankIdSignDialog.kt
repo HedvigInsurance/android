@@ -171,7 +171,12 @@ fun SwedishBankIdSignDialog(text: String) {
 }
 
 @Composable
-@Preview
+@Preview(
+    name = "Swedish BankID Sign-Dialog",
+    group = "Offer Screen",
+)
 fun Preview() {
-    SwedishBankIdSignDialog(text = stringResource(id = R.string.SIGN_IN_PROGRESS))
+    HedvigTheme {
+        SwedishBankIdSignDialog(text = stringResource(id = R.string.SIGN_IN_PROGRESS))
+    }
 }

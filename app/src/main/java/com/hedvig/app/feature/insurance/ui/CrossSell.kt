@@ -123,7 +123,11 @@ fun CrossSell(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(
+    name = "Cross-Sell Card",
+    group = "Insurance Tab",
+    showBackground = true,
+)
 @Composable
 fun CrossSellPreview() {
     HedvigTheme {
