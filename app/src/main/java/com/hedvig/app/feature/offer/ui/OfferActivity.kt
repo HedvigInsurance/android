@@ -26,7 +26,6 @@ import com.hedvig.app.feature.documents.DocumentAdapter
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
 import com.hedvig.app.feature.home.ui.changeaddress.result.ChangeAddressResultActivity
 import com.hedvig.app.feature.insurablelimits.InsurableLimitsAdapter
-import com.hedvig.app.feature.offer.OfferSignDialog
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.offer.quotedetail.QuoteDetailActivity
@@ -34,6 +33,7 @@ import com.hedvig.app.feature.offer.ui.checkout.CheckoutActivity
 import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
+import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignDialog
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.showErrorDialog
@@ -221,19 +221,14 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                                 )
                             )
                         }
-                        OfferViewModel.Event.HasContracts -> {
-                        } // No-op
+                        is OfferViewModel.Event.StartSwedishBankIdSign -> {
+                            SwedishBankIdSignDialog
+                                .newInstance(event.autoStartToken, event.quoteIds)
+                                .show(supportFragmentManager, SwedishBankIdSignDialog.TAG)
+                        }
                     }
                 }
                 .launchIn(lifecycleScope)
-
-            signButton.setHapticClickListener {
-                tracker.floatingSign()
-                OfferSignDialog.newInstance().show(
-                    supportFragmentManager,
-                    OfferSignDialog.TAG
-                )
-            }
         }
     }
 
@@ -300,13 +295,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
     private fun onSign(signMethod: SignMethod) {
         when (signMethod) {
-            SignMethod.SWEDISH_BANK_ID -> {
-                tracker.floatingSign()
-                OfferSignDialog.newInstance().show(
-                    supportFragmentManager,
-                    OfferSignDialog.TAG
-                )
-            }
+            SignMethod.SWEDISH_BANK_ID -> model.onSwedishBankIdSign()
             SignMethod.SIMPLE_SIGN -> model.onOpenCheckout()
             SignMethod.APPROVE_ONLY -> model.approveOffer()
             SignMethod.NORWEGIAN_BANK_ID,

@@ -17,7 +17,6 @@ class OfferTracker(
         jsonObjectOf("link_label" to displayName)
     )
 
-    fun floatingSign() = trackingFacade.track("OFFER_SIGN_BUTTON")
     fun removeDiscount() = trackingFacade.track("OFFER_REMOVE_DISCOUNT_BUTTON")
     fun addDiscount() = trackingFacade.track("OFFER_ADD_DISCOUNT_BUTTON")
     fun terms() = trackingFacade.track("OFFER_TERMS")
