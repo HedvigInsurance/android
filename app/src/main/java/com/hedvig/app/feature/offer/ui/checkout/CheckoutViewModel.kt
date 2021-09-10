@@ -2,7 +2,6 @@ package com.hedvig.app.feature.offer.ui.checkout
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.ui.grossMonthlyCost
 import com.hedvig.app.feature.offer.ui.netMonthlyCost
@@ -25,18 +24,20 @@ import kotlinx.coroutines.launch
 import javax.money.MonetaryAmount
 
 class CheckoutViewModel(
-    private val _quoteIds: List<String>,
+    _quoteIds: List<String>,
     private val getQuotesUseCase: GetQuotesUseCase,
     private val signQuotesUseCase: SignQuotesUseCase,
     private val marketManager: MarketManager,
     private val cacheManager: CacheManager,
-    private val loginStatusService: LoginStatusService
 ) : ViewModel() {
+
+    private lateinit var quoteIds: List<String>
 
     init {
         viewModelScope.launch {
             when (val idsResult = getQuotesUseCase(_quoteIds)) {
                 is GetQuotesUseCase.Result.Success -> {
+                    quoteIds = idsResult.ids
                     idsResult
                         .data
                         .onEach(::handleResponse)
@@ -54,10 +55,6 @@ class CheckoutViewModel(
         when (response) {
             is OfferRepository.OfferResult.Error -> {
                 _events.tryEmit(Event.Error(response.message))
-            }
-            OfferRepository.OfferResult.HasContracts -> {
-                loginStatusService.isViewingOffer = false
-                _events.tryEmit(Event.Error())
             }
             is OfferRepository.OfferResult.Success -> {
                 _titleViewState.value = TitleViewState.Loaded(
@@ -134,7 +131,7 @@ class CheckoutViewModel(
             signQuotes(
                 identityNumberInput = identityNumberInput,
                 emailInput = emailInput,
-                quoteIds = _quoteIds
+                quoteIds = quoteIds
             )
         }
     }
@@ -187,6 +184,7 @@ class CheckoutViewModel(
 
     sealed class Event {
         data class Error(val message: String? = null) : Event()
+
         object CheckoutSuccess : Event()
         object Loading : Event()
     }

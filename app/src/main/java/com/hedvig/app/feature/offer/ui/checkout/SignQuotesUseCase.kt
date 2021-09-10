@@ -14,6 +14,10 @@ class SignQuotesUseCase(
 
     sealed class SignQuoteResult {
         object Success : SignQuoteResult()
+        data class StartSwedishBankId(
+            val autoStartToken: String,
+        ) : SignQuoteResult()
+
         data class Error(val message: String? = null) : SignQuoteResult()
     }
 
@@ -40,7 +44,7 @@ class SignQuotesUseCase(
         }
     }
 
-    private suspend fun signQuotes(quoteIds: List<String>): SignQuoteResult {
+    suspend fun signQuotes(quoteIds: List<String>): SignQuoteResult {
         val mutation = SignQuotesMutation(quoteIds)
         return when (val result = apolloClient.mutate(mutation).safeQuery()) {
             is QueryResult.Error -> SignQuoteResult.Error(result.message)
@@ -51,7 +55,8 @@ class SignQuotesUseCase(
                 } ?: signResponse?.asSimpleSignSession?.let {
                     SignQuoteResult.Success
                 } ?: signResponse?.asSwedishBankIdSession?.let {
-                    SignQuoteResult.Success
+                    val autoStartToken = it.autoStartToken ?: return@let SignQuoteResult.Error()
+                    SignQuoteResult.StartSwedishBankId(autoStartToken)
                 } ?: SignQuoteResult.Error(null)
             }
         }

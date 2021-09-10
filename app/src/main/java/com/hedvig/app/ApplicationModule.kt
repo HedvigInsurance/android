@@ -142,6 +142,9 @@ import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.MarketManagerImpl
 import com.hedvig.app.feature.settings.SettingsViewModel
+import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignViewModel
+import com.hedvig.app.feature.swedishbankid.sign.usecase.ManuallyRecheckSwedishBankIdSignStatusUseCase
+import com.hedvig.app.feature.swedishbankid.sign.usecase.SubscribeToSwedishBankIdSignStatusUseCase
 import com.hedvig.app.feature.tracking.MixpanelTracker
 import com.hedvig.app.feature.tracking.TrackerSink
 import com.hedvig.app.feature.tracking.TrackingFacade
@@ -322,6 +325,9 @@ val viewModelModule = module {
         )
     }
     viewModel { TerminatedContractsViewModel(get()) }
+    viewModel { (autoStartToken: String, quoteIds: List<String>) ->
+        SwedishBankIdSignViewModel(autoStartToken, quoteIds, get(), get(), get(), get())
+    }
 }
 
 val choosePlanModule = module {
@@ -430,7 +436,7 @@ val changeDateBottomSheetModule = module {
 }
 
 val checkoutModule = module {
-    viewModel { (ids: List<String>) -> CheckoutViewModel(ids, get(), get(), get(), get(), get()) }
+    viewModel { (ids: List<String>) -> CheckoutViewModel(ids, get(), get(), get(), get()) }
 }
 
 val serviceModule = module {
@@ -531,6 +537,8 @@ val useCaseModule = module {
     single { RefreshQuotesUseCase(get()) }
     single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GetContractsUseCase(get(), get()) }
+    single { ManuallyRecheckSwedishBankIdSignStatusUseCase(get()) }
+    single { SubscribeToSwedishBankIdSignStatusUseCase(get()) }
 }
 
 val cacheManagerModule = module {
