@@ -1,16 +1,12 @@
 package com.hedvig.app.ui.compose.designsystem
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.hedvig.app.R
@@ -33,7 +29,7 @@ fun LargeContainedButton(
 
 @Preview
 @Composable
-private fun LargeContainedButtonPreview() {
+fun LargeContainedButtonPreview() {
     HedvigTheme {
         LargeContainedButton(
             onClick = {},

@@ -5,8 +5,8 @@ import com.hedvig.app.MockActivity
 import com.hedvig.app.feature.crossselling.ui.CrossSellingResult
 import com.hedvig.app.feature.crossselling.ui.CrossSellingResultActivity
 import com.hedvig.app.genericDevelopmentAdapter
-import java.time.LocalDate
 import org.koin.core.module.Module
+import java.time.LocalDate
 
 class CrossSellingResultMockActivity : MockActivity() {
     override val original: List<Module> = listOf()

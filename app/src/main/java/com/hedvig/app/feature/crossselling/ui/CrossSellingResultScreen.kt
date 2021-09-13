@@ -150,7 +150,7 @@ private fun ButtonsSection(
 
 @Preview(showSystemUi = true, name = "Accident Result")
 @Composable
-private fun CrossSellingResultScreenPreview(
+fun CrossSellingResultScreenPreview(
     @PreviewParameter(ActivityResultProvider::class) crossSellingResult: CrossSellingResult,
 ) {
     HedvigTheme {

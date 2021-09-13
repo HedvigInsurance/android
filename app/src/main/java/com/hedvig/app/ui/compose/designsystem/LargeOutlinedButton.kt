@@ -35,7 +35,7 @@ fun LargeOutlinedButton(
 
 @Preview
 @Composable
-private fun LargeOutlinedButtonPreview() {
+fun LargeOutlinedButtonPreview() {
     HedvigTheme {
         LargeOutlinedButton(
             onClick = {},
