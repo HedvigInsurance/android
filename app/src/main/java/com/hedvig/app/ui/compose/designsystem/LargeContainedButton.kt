@@ -27,7 +27,10 @@ fun LargeContainedButton(
     )
 }
 
-@Preview
+@Preview(
+    name = "LargeContainedButton",
+    group = "Design System",
+)
 @Composable
 fun LargeContainedButtonPreview() {
     HedvigTheme {

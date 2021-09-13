@@ -34,7 +34,10 @@ fun LargeOutlinedButton(
     )
 }
 
-@Preview
+@Preview(
+    name = "LargeOutlinedButton",
+    group = "Design System",
+)
 @Composable
 fun LargeOutlinedButtonPreview() {
     HedvigTheme {
