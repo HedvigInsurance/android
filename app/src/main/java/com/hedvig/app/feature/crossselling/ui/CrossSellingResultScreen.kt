@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.accident.ui
+package com.hedvig.app.feature.crossselling.ui
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
@@ -141,7 +141,7 @@ private fun ButtonsSection(
                     onClick = {},
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("done")
+                    Text("Done")
                 }
             }
         }

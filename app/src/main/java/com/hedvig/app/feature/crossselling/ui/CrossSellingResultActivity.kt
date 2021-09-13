@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.accident.ui
+package com.hedvig.app.feature.crossselling.ui
 
 import android.content.Context
 import android.content.Intent
