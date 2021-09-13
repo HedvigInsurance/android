@@ -10,7 +10,6 @@ import com.hedvig.app.feature.adyen.AdyenMockActivity
 import com.hedvig.app.feature.changeaddress.ChangeAddressMockActivity
 import com.hedvig.app.feature.chat.ChatMockActivity
 import com.hedvig.app.feature.checkout.CheckoutMockActivity
-import com.hedvig.app.feature.crossselling.CrossSellingResultMockActivity
 import com.hedvig.app.feature.embark.EmbarkMockActivity
 import com.hedvig.app.feature.home.HomeMockActivity
 import com.hedvig.app.feature.insurance.InsuranceMockActivity
@@ -92,9 +91,6 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
                     },
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Trustly") {
                         startActivity(Intent(this, TrustlyMockActivity::class.java))
-                    },
-                    DevelopmentScreenAdapter.DevelopmentScreenItem.Row("CrossSelling") {
-                        startActivity(Intent(this, CrossSellingResultMockActivity::class.java))
                     },
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Row("`VectorDrawable`-gallery") {
                         startActivity(Intent(this, VectorDrawableGalleryActivity::class.java))
