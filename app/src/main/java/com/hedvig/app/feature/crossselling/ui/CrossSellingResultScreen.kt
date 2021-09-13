@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -28,7 +29,7 @@ import com.hedvig.app.ui.compose.designsystem.LargeOutlinedButton
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-// TODO text resources
+// TODO text resources still missing
 @Composable
 fun CrossSellingResultScreen(
     crossSellingResult: CrossSellingResult
@@ -69,20 +70,28 @@ private fun InformationSection(
     }
     val titleText = when (crossSellingResult) {
         CrossSellingResult.Error -> "Something went wrong."
-        is CrossSellingResult.Success -> "You now have accident insurance."
+        is CrossSellingResult.Success -> {
+            stringResource(
+                R.string.purchase_confirmation_new_insurance_today_app_state_title,
+                crossSellingResult.insuranceType
+            )
+        }
     }
     val descriptionText = when (crossSellingResult) {
         CrossSellingResult.Error -> "Your purchase couldn't be completed.\nContact us in the chat."
         is CrossSellingResult.Success -> {
             when {
                 crossSellingResult.startingDate.dayOfMonth <= LocalDate.now().dayOfMonth -> {
-                    "It's already activated"
+                    stringResource(R.string.purchase_confirmation_new_insurance_today_app_state_description)
                 }
                 else -> {
                     val activationDate = crossSellingResult.startingDate.format(
                         DateTimeFormatter.ISO_LOCAL_DATE
                     )
-                    "It'll activate $activationDate"
+                    stringResource(
+                        R.string.purchase_confirmation_new_insurance_active_in_future_app_state_description,
+                        activationDate
+                    )
                 }
             }
         }
@@ -148,7 +157,11 @@ private fun ButtonsSection(
     }
 }
 
-@Preview(showSystemUi = true, name = "Accident Result")
+@Preview(
+    showSystemUi = true,
+    name = "Accident Result",
+    group = "Cross Sell result"
+)
 @Composable
 fun CrossSellingResultScreenPreview(
     @PreviewParameter(ActivityResultProvider::class) crossSellingResult: CrossSellingResult,

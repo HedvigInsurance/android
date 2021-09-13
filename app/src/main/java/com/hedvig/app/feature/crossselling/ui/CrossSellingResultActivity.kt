@@ -33,7 +33,10 @@ class CrossSellingResultActivity : BaseActivity() {
 
 sealed class CrossSellingResult : Parcelable {
     @Parcelize
-    data class Success(val startingDate: LocalDate) : CrossSellingResult()
+    data class Success(
+        val startingDate: LocalDate,
+        val insuranceType: String = "Accident Insurance", // todo get type from backend
+    ) : CrossSellingResult()
 
     @Parcelize
     object Error : CrossSellingResult()
