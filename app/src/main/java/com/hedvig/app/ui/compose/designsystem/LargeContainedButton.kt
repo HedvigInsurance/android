@@ -33,9 +33,8 @@ fun LargeContainedButtonPreview() {
     HedvigTheme {
         LargeContainedButton(
             onClick = {},
-            content = {
-                Text("Contained Button (Large)")
-            },
-        )
+        ) {
+            Text("Contained Button (Large)")
+        }
     }
 }

@@ -3,6 +3,7 @@ package com.hedvig.app.ui.compose.designsystem
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
@@ -39,7 +40,9 @@ fun LargeOutlinedButtonPreview() {
     HedvigTheme {
         LargeOutlinedButton(
             onClick = {},
-            content = { Text("Outlined Button (Large)") },
-        )
+            modifier = Modifier.padding(1.dp)
+        ) {
+            Text("Outlined Button (Large)")
+        }
     }
 }
