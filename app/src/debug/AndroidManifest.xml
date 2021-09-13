@@ -89,6 +89,11 @@
             android:theme="@style/Hedvig.Theme" />
 
         <activity
+            android:name=".feature.crossselling.CrossSellingResultMockActivity"
+            android:label="Cross Selling result Screen"
+            android:theme="@style/Hedvig.Theme" />
+
+        <activity
             android:name=".feature.checkout.CheckoutMockActivity"
             android:label="Checkout Mock Screen" />
 
