@@ -35,7 +35,7 @@ sealed class CrossSellingResult : Parcelable {
     @Parcelize
     data class Success(
         val startingDate: LocalDate,
-        val insuranceType: String = "Accident Insurance", // todo get type from backend
+        val insuranceType: String,
     ) : CrossSellingResult()
 
     @Parcelize

@@ -174,7 +174,7 @@ fun CrossSellingResultScreenPreview(
 class ActivityResultProvider : PreviewParameterProvider<CrossSellingResult> {
     override val values: Sequence<CrossSellingResult> = sequenceOf(
         CrossSellingResult.Error,
-        CrossSellingResult.Success(LocalDate.now()),
-        CrossSellingResult.Success(LocalDate.now().plusDays(2)),
+        CrossSellingResult.Success(LocalDate.now(), "Accident Insurance"),
+        CrossSellingResult.Success(LocalDate.now().plusDays(2), "Accident Insurance"),
     )
 }
