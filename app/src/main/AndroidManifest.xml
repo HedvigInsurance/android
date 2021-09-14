@@ -188,10 +188,6 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".feature.crossselling.ui.CrossSellingResultActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".feature.referrals.ReferralsReceiverActivity"
