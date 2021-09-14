@@ -3,11 +3,8 @@ package com.hedvig.app.feature.crossselling.ui
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Parcelable
 import androidx.activity.compose.setContent
 import com.hedvig.app.BaseActivity
-import kotlinx.parcelize.Parcelize
-import java.time.LocalDate
 
 class CrossSellingResultActivity : BaseActivity() {
 
@@ -29,15 +26,4 @@ class CrossSellingResultActivity : BaseActivity() {
 
         private const val CROSS_SELLING_RESULT = "CROSS_SELLING_RESULT"
     }
-}
-
-sealed class CrossSellingResult : Parcelable {
-    @Parcelize
-    data class Success(
-        val startingDate: LocalDate,
-        val insuranceType: String,
-    ) : CrossSellingResult()
-
-    @Parcelize
-    object Error : CrossSellingResult()
 }
