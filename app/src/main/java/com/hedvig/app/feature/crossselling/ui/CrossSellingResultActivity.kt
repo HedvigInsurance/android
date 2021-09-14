@@ -5,8 +5,12 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import com.hedvig.app.BaseActivity
+import org.koin.android.ext.android.inject
+import java.time.Clock
 
 class CrossSellingResultActivity : BaseActivity() {
+
+    private val clock: Clock by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -14,8 +18,9 @@ class CrossSellingResultActivity : BaseActivity() {
             ?: throw IllegalArgumentException(
                 "Programmer error: CROSS_SELLING_RESULT not provided to ${this.javaClass.name}"
             )
+
         setContent {
-            CrossSellingResultScreen(crossSellingResult)
+            CrossSellingResultScreen(crossSellingResult, clock)
         }
     }
 

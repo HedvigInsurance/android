@@ -26,13 +26,15 @@ import com.hedvig.app.R
 import com.hedvig.app.ui.compose.HedvigTheme
 import com.hedvig.app.ui.compose.designsystem.LargeContainedButton
 import com.hedvig.app.ui.compose.designsystem.LargeOutlinedButton
+import java.time.Clock
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 // TODO text resources still missing
 @Composable
 fun CrossSellingResultScreen(
-    crossSellingResult: CrossSellingResult
+    crossSellingResult: CrossSellingResult,
+    clock: Clock,
 ) {
     HedvigTheme {
         Box(
@@ -42,6 +44,7 @@ fun CrossSellingResultScreen(
         ) {
             InformationSection(
                 crossSellingResult = crossSellingResult,
+                clock = clock,
                 modifier = Modifier
                     .align(Alignment.TopStart)
                     .padding(top = 96.dp)
@@ -61,6 +64,7 @@ fun CrossSellingResultScreen(
 @Composable
 private fun InformationSection(
     crossSellingResult: CrossSellingResult,
+    clock: Clock,
     modifier: Modifier
 ) {
     @DrawableRes
@@ -81,7 +85,7 @@ private fun InformationSection(
         CrossSellingResult.Error -> "Your purchase couldn't be completed.\nContact us in the chat."
         is CrossSellingResult.Success -> {
             when {
-                crossSellingResult.startingDate.dayOfMonth <= LocalDate.now().dayOfMonth -> {
+                crossSellingResult.startingDate.dayOfMonth <= LocalDate.now(clock).dayOfMonth -> {
                     stringResource(R.string.purchase_confirmation_new_insurance_today_app_state_description)
                 }
                 else -> {
@@ -96,21 +100,31 @@ private fun InformationSection(
             }
         }
     }
+    InformationSection(drawableId, titleText, descriptionText, modifier)
+}
+
+@Composable
+private fun InformationSection(
+    @DrawableRes icon: Int,
+    title: String,
+    description: String,
+    modifier: Modifier
+) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(18.dp),
     ) {
         Image(
-            painter = painterResource(drawableId),
+            painter = painterResource(icon),
             contentDescription = null,
             modifier = Modifier.size(32.dp),
         )
         Text(
-            titleText,
+            title,
             style = MaterialTheme.typography.h5
         )
         Text(
-            descriptionText,
+            description,
             style = MaterialTheme.typography.body2
         )
     }
@@ -167,7 +181,7 @@ fun CrossSellingResultScreenPreview(
     @PreviewParameter(ActivityResultProvider::class) crossSellingResult: CrossSellingResult,
 ) {
     HedvigTheme {
-        CrossSellingResultScreen(crossSellingResult)
+        CrossSellingResultScreen(crossSellingResult, Clock.systemDefaultZone())
     }
 }
 
