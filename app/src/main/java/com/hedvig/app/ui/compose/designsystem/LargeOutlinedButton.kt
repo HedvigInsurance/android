@@ -1,17 +1,16 @@
 package com.hedvig.app.ui.compose.designsystem
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.padding
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.hedvig.app.R
 import com.hedvig.app.ui.compose.HedvigTheme
 
@@ -23,11 +22,8 @@ fun LargeOutlinedButton(
 ) {
     OutlinedButton(
         onClick = onClick,
-        modifier = modifier.border(
-            1.dp,
-            color = MaterialTheme.colors.primary,
-            shape = MaterialTheme.shapes.large
-        ),
+        modifier = modifier,
+        border = ButtonDefaults.outlinedBorder.copy(brush = SolidColor(MaterialTheme.colors.primary)),
         shape = MaterialTheme.shapes.large,
         contentPadding = PaddingValues(dimensionResource(R.dimen.base_margin_double)),
         content = content,
@@ -43,7 +39,6 @@ fun LargeOutlinedButtonPreview() {
     HedvigTheme {
         LargeOutlinedButton(
             onClick = {},
-            modifier = Modifier.padding(1.dp)
         ) {
             Text("Outlined Button (Large)")
         }
