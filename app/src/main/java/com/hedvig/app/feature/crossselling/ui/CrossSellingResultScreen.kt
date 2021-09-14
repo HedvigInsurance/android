@@ -85,7 +85,7 @@ private fun InformationSection(
         CrossSellingResult.Error -> "Your purchase couldn't be completed.\nContact us in the chat."
         is CrossSellingResult.Success -> {
             when {
-                crossSellingResult.startingDate.dayOfMonth <= LocalDate.now(clock).dayOfMonth -> {
+                crossSellingResult.startingDate <= LocalDate.now(clock) -> {
                     stringResource(R.string.purchase_confirmation_new_insurance_today_app_state_description)
                 }
                 else -> {
