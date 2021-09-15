@@ -1,14 +1,17 @@
 package com.hedvig.app.feature.offer
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
+import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationPostSignStep
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationTitle
 import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.documents.DocumentItems
+import com.hedvig.app.feature.home.ui.changeaddress.result.ChangeAddressResultActivity
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.offer.quotedetail.buildDocuments
 import com.hedvig.app.feature.offer.quotedetail.buildInsurableLimits
@@ -22,6 +25,7 @@ import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
 import com.hedvig.app.feature.perils.PerilItem
+import com.hedvig.app.feature.settings.Market
 import e
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -64,6 +68,20 @@ abstract class OfferViewModel : ViewModel() {
         object DiscardOffer : Event()
     }
 
+    enum class PostSignScreen {
+        CONNECT_PAYIN,
+        MOVE,
+        CROSS_SELL;
+
+        companion object {
+            fun from(postSignStep: QuoteBundleAppConfigurationPostSignStep) = when (postSignStep) {
+                QuoteBundleAppConfigurationPostSignStep.CONNECT_PAYIN -> CONNECT_PAYIN
+                QuoteBundleAppConfigurationPostSignStep.MOVE -> MOVE
+                QuoteBundleAppConfigurationPostSignStep.CROSS_SELL -> CROSS_SELL
+                QuoteBundleAppConfigurationPostSignStep.UNKNOWN__ -> CONNECT_PAYIN
+            }
+        }
+    }
 
     protected val _events = MutableSharedFlow<Event>(
         extraBufferCapacity = 1,
@@ -295,4 +313,3 @@ class OfferViewModelImpl(
         }
     }
 }
-

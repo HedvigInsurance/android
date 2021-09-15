@@ -200,28 +200,28 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                         }
                         is OfferViewModel.Event.ApproveSuccessful -> {
                             when (event.postSignScreen) {
-                                PostSignScreen.CONNECT_PAYIN -> {
+                                OfferViewModel.PostSignScreen.CONNECT_PAYIN -> {
                                     marketManager
                                         .market
                                         ?.connectPayin(this@OfferActivity, true)
                                         ?.let { startActivity(it) }
                                 }
-                                PostSignScreen.MOVE -> {
+                                OfferViewModel.PostSignScreen.MOVE -> {
                                     ChangeAddressResultActivity.newInstance(
                                         this@OfferActivity,
                                         ChangeAddressResultActivity.Result.Success(event.startDate),
                                     )
                                 }
-                                PostSignScreen.CROSS_SELL -> {
+                                OfferViewModel.PostSignScreen.CROSS_SELL -> {
                                     // TODO: Wire up Cross-Sell Result screen here
                                 }
                             }
                         }
                         is OfferViewModel.Event.ApproveError -> {
                             when (event.postSignScreen) {
-                                PostSignScreen.CONNECT_PAYIN -> {
+                                OfferViewModel.PostSignScreen.CONNECT_PAYIN -> {
                                 }
-                                PostSignScreen.MOVE -> {
+                                OfferViewModel.PostSignScreen.MOVE -> {
                                     startActivity(
                                         ChangeAddressResultActivity.newInstance(
                                             this@OfferActivity,
@@ -229,7 +229,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                                         )
                                     )
                                 }
-                                PostSignScreen.CROSS_SELL -> {
+                                OfferViewModel.PostSignScreen.CROSS_SELL -> {
                                     // TODO: Wire up Cross-Sell Result Screen here
                                 }
                             }
