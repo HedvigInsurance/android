@@ -36,6 +36,8 @@ import java.time.format.DateTimeFormatter
 fun CrossSellingResultScreen(
     crossSellingResult: CrossSellingResult,
     clock: Clock,
+    openChat: () -> Unit,
+    closeResultScreen: () -> Unit,
 ) {
     HedvigTheme {
         Box(
@@ -53,6 +55,8 @@ fun CrossSellingResultScreen(
             )
             ButtonsSection(
                 crossSellingResult = crossSellingResult,
+                openChat = openChat,
+                closeResultScreen = closeResultScreen,
                 modifier = Modifier
                     .align(Alignment.BottomStart)
                     .padding(bottom = 16.dp)
@@ -135,6 +139,8 @@ private fun InformationSection(
 @Composable
 private fun ButtonsSection(
     crossSellingResult: CrossSellingResult,
+    openChat: () -> Unit,
+    closeResultScreen: () -> Unit,
     modifier: Modifier,
 ) {
     Column(
@@ -180,7 +186,12 @@ fun CrossSellingResultScreenPreview(
     @PreviewParameter(ActivityResultProvider::class) crossSellingResult: CrossSellingResult,
 ) {
     HedvigTheme {
-        CrossSellingResultScreen(crossSellingResult, Clock.systemDefaultZone())
+        CrossSellingResultScreen(
+            crossSellingResult,
+            Clock.systemDefaultZone(),
+            {},
+            {}
+        )
     }
 }
 

@@ -5,6 +5,9 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import com.hedvig.app.BaseActivity
+import com.hedvig.app.feature.chat.ui.ChatActivity
+import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import org.koin.android.ext.android.inject
 import java.time.Clock
 
@@ -20,7 +23,20 @@ class CrossSellingResultActivity : BaseActivity() {
             )
 
         setContent {
-            CrossSellingResultScreen(crossSellingResult, clock)
+            CrossSellingResultScreen(
+                crossSellingResult = crossSellingResult,
+                clock = clock,
+                openChat = { startActivity(ChatActivity.newInstance(this)) },
+                closeResultScreen = {
+                    startActivity(
+                        LoggedInActivity.newInstance(
+                            context = this,
+                            withoutHistory = true,
+                            initialTab = LoggedInTabs.INSURANCE
+                        )
+                    )
+                }
+            )
         }
     }
 

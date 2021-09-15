@@ -1,10 +1,11 @@
 package com.hedvig.app.feature.crossselling.ui
 
+import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.SemanticsNodeInteractionsProvider
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.hasText
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import org.junit.Rule
 import org.junit.Test
 import java.time.Clock
@@ -15,7 +16,7 @@ import java.time.ZoneId
 class CrossSellingResultScreenTest {
 
     @get:Rule
-    val compose = createComposeRule()
+    val compose = createAndroidComposeRule<ComponentActivity>()
 
     private val baseClockTime = Clock.fixed(
         Instant.parse("2021-09-14T12:00:00.00Z"),
@@ -26,6 +27,8 @@ class CrossSellingResultScreenTest {
     private val successfulResultToday = CrossSellingResult.Success(baseLocalDate, insuranceType)
 
     private enum class TextAlternative(val text: String) {
+        // todo put the R.strings here and get it inside the @Test where we have ref to the activity
+        //  Do this after all the strings are available from lokalise (couln't be...) is not available yet
         Failed("couldn't be completed"),
         AlreadyActivated("It’s already activated"),
         WillActivate("It’ll activate on"),
@@ -41,7 +44,7 @@ class CrossSellingResultScreenTest {
         val contractYesterday = successfulResultToday.copy(startingDate = baseLocalDate.minusDays(1))
 
         compose.setContent {
-            CrossSellingResultScreen(contractYesterday, baseClockTime)
+            CrossSellingResultScreen(contractYesterday, baseClockTime, {}, {})
         }
 
         compose.onNodeWithText(TextAlternative.AlreadyActivated).assertExists()
@@ -54,7 +57,7 @@ class CrossSellingResultScreenTest {
         val contractTomorrow = successfulResultToday.copy(startingDate = baseLocalDate.plusDays(1))
 
         compose.setContent {
-            CrossSellingResultScreen(contractTomorrow, baseClockTime)
+            CrossSellingResultScreen(contractTomorrow, baseClockTime, {}, {})
         }
 
         compose
@@ -72,7 +75,7 @@ class CrossSellingResultScreenTest {
         val failedResult = CrossSellingResult.Error
 
         compose.setContent {
-            CrossSellingResultScreen(failedResult, baseClockTime)
+            CrossSellingResultScreen(failedResult, baseClockTime, {}, {})
         }
 
         compose.onNodeWithText(TextAlternative.AlreadyActivated).assertDoesNotExist()
@@ -85,7 +88,7 @@ class CrossSellingResultScreenTest {
         val contractNextMonth = CrossSellingResult.Success(LocalDate.of(2021, 10, 12), insuranceType)
 
         compose.setContent {
-            CrossSellingResultScreen(contractNextMonth, baseClockTime)
+            CrossSellingResultScreen(contractNextMonth, baseClockTime, {}, {})
         }
 
         compose
@@ -99,7 +102,7 @@ class CrossSellingResultScreenTest {
         val contractNextYear = CrossSellingResult.Success(LocalDate.of(2022, 1, 1), insuranceType)
 
         compose.setContent {
-            CrossSellingResultScreen(contractNextYear, baseClockTime)
+            CrossSellingResultScreen(contractNextYear, baseClockTime, {}, {})
         }
 
         compose
@@ -113,7 +116,7 @@ class CrossSellingResultScreenTest {
         val contractPreviousYear = CrossSellingResult.Success(LocalDate.of(2020, 1, 1), insuranceType)
 
         compose.setContent {
-            CrossSellingResultScreen(contractPreviousYear, baseClockTime)
+            CrossSellingResultScreen(contractPreviousYear, baseClockTime, {}, {})
         }
 
         compose.onNodeWithText(TextAlternative.AlreadyActivated).assertExists()
