@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -112,17 +113,18 @@ private fun InformationSection(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(18.dp),
     ) {
         Image(
             painter = painterResource(icon),
             contentDescription = null,
             modifier = Modifier.size(32.dp),
         )
+        Spacer(Modifier.height(20.dp))
         Text(
             title,
             style = MaterialTheme.typography.h5
         )
+        Spacer(Modifier.height(24.dp))
         Text(
             description,
             style = MaterialTheme.typography.body2
