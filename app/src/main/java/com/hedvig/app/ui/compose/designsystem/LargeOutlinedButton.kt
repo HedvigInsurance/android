@@ -2,6 +2,7 @@ package com.hedvig.app.ui.compose.designsystem
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
@@ -22,7 +23,7 @@ fun LargeOutlinedButton(
 ) {
     OutlinedButton(
         onClick = onClick,
-        modifier = modifier,
+        modifier = Modifier.fillMaxWidth().then(modifier),
         border = ButtonDefaults.outlinedBorder.copy(brush = SolidColor(MaterialTheme.colors.primary)),
         shape = MaterialTheme.shapes.large,
         contentPadding = PaddingValues(dimensionResource(R.dimen.base_margin_double)),

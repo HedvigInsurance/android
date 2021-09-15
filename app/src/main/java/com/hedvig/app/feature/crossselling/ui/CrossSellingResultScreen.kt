@@ -143,7 +143,6 @@ private fun ButtonsSection(
             is CrossSellingResult.Error -> {
                 LargeContainedButton(
                     onClick = {},
-                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Image(
                         painter = painterResource(R.drawable.ic_chat_white),
@@ -154,7 +153,6 @@ private fun ButtonsSection(
                 }
                 LargeOutlinedButton(
                     onClick = {},
-                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Close")
                 }
@@ -162,7 +160,6 @@ private fun ButtonsSection(
             is CrossSellingResult.Success -> {
                 LargeContainedButton(
                     onClick = {},
-                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Done")
                 }
