@@ -198,20 +198,40 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                             )
                         }
                         is OfferViewModel.Event.ApproveSuccessful -> {
-                            startActivity(
-                                ChangeAddressResultActivity.newInstance(
-                                    this@OfferActivity,
-                                    ChangeAddressResultActivity.Result.Success(event.moveDate)
-                                )
-                            )
+                            when (event.postSignScreen) {
+                                OfferViewModel.PostSignScreen.CONNECT_PAYIN -> {
+                                    marketManager
+                                        .market
+                                        ?.connectPayin(this@OfferActivity, true)
+                                        ?.let { startActivity(it) }
+                                }
+                                OfferViewModel.PostSignScreen.MOVE -> {
+                                    ChangeAddressResultActivity.newInstance(
+                                        this@OfferActivity,
+                                        ChangeAddressResultActivity.Result.Success(event.startDate),
+                                    )
+                                }
+                                OfferViewModel.PostSignScreen.CROSS_SELL -> {
+                                    // TODO: Wire up Cross-Sell Result screen here
+                                }
+                            }
                         }
-                        OfferViewModel.Event.ApproveError -> {
-                            startActivity(
-                                ChangeAddressResultActivity.newInstance(
-                                    this@OfferActivity,
-                                    ChangeAddressResultActivity.Result.Error
-                                )
-                            )
+                        is OfferViewModel.Event.ApproveError -> {
+                            when (event.postSignScreen) {
+                                OfferViewModel.PostSignScreen.CONNECT_PAYIN -> {
+                                }
+                                OfferViewModel.PostSignScreen.MOVE -> {
+                                    startActivity(
+                                        ChangeAddressResultActivity.newInstance(
+                                            this@OfferActivity,
+                                            ChangeAddressResultActivity.Result.Error
+                                        )
+                                    )
+                                }
+                                OfferViewModel.PostSignScreen.CROSS_SELL -> {
+                                    // TODO: Wire up Cross-Sell Result Screen here
+                                }
+                            }
                         }
                         OfferViewModel.Event.DiscardOffer -> {
                             startActivity(

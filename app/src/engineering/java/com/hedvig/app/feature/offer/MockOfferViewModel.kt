@@ -38,7 +38,7 @@ class MockOfferViewModel : OfferViewModel() {
     }
 
     override fun approveOffer() {
-        _events.tryEmit(Event.ApproveSuccessful(LocalDate.now()))
+        _events.tryEmit(Event.ApproveSuccessful(LocalDate.now(), PostSignScreen.MOVE, mockData.quoteBundle.displayName))
     }
 
     override fun onOpenCheckout() {

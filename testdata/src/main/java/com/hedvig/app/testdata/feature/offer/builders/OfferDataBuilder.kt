@@ -3,6 +3,7 @@ package com.hedvig.app.testdata.feature.offer.builders
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.TableFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
+import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationPostSignStep
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationStartDateTerminology
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationTitle
 import com.hedvig.android.owldroid.type.SignMethod
@@ -21,7 +22,9 @@ data class OfferDataBuilder(
     private val redeemedCampaigns: List<OfferQuery.RedeemedCampaign> = emptyList(),
     private val frequentlyAskedQuestions: List<OfferQuery.FrequentlyAskedQuestion> = emptyList(),
     private val inceptions: OfferQuery.Inception1 = ConcurrentInceptionBuilder().build(),
-    private val signMethod: SignMethod = SignMethod.SWEDISH_BANK_ID
+    private val signMethod: SignMethod = SignMethod.SWEDISH_BANK_ID,
+    private val postSignStep: QuoteBundleAppConfigurationPostSignStep =
+        QuoteBundleAppConfigurationPostSignStep.CONNECT_PAYIN,
 ) {
     fun build() = OfferQuery.Data(
         quoteBundle = OfferQuery.QuoteBundle(
@@ -37,7 +40,8 @@ data class OfferDataBuilder(
                 showFAQ = true,
                 startDateTerminology = QuoteBundleAppConfigurationStartDateTerminology.START_DATE,
                 title = QuoteBundleAppConfigurationTitle.LOGO,
-                gradientOption = TypeOfContractGradientOption.GRADIENT_THREE
+                gradientOption = TypeOfContractGradientOption.GRADIENT_THREE,
+                postSignStep = postSignStep,
             )
         ),
         redeemedCampaigns = redeemedCampaigns,
