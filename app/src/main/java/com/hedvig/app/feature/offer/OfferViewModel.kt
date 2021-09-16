@@ -1,11 +1,13 @@
 package com.hedvig.app.feature.offer
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationTitle
 import com.hedvig.android.owldroid.type.SignMethod
+import com.hedvig.app.R
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.documents.DocumentItems
@@ -17,12 +19,14 @@ import com.hedvig.app.feature.offer.ui.OfferModel
 import com.hedvig.app.feature.offer.ui.checkout.ApproveQuotesUseCase
 import com.hedvig.app.feature.offer.ui.checkout.CheckoutParameter
 import com.hedvig.app.feature.offer.ui.checkout.SignQuotesUseCase
+import com.hedvig.app.feature.offer.ui.checkoutTextRes
 import com.hedvig.app.feature.offer.usecase.GetPostSignDependenciesUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
 import com.hedvig.app.feature.perils.PerilItem
 import e
+import java.time.LocalDate
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,7 +36,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 
 abstract class OfferViewModel : ViewModel() {
     protected val _viewState = MutableStateFlow(ViewState(isLoading = true))
@@ -64,7 +67,6 @@ abstract class OfferViewModel : ViewModel() {
         object DiscardOffer : Event()
     }
 
-
     protected val _events = MutableSharedFlow<Event>(
         extraBufferCapacity = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST,
@@ -95,6 +97,8 @@ abstract class OfferViewModel : ViewModel() {
         val insurableLimitsItems: List<InsurableLimitItem> = emptyList(),
         val bottomOfferItems: List<OfferModel> = emptyList(),
         val signMethod: SignMethod = SignMethod.SIMPLE_SIGN,
+        @StringRes
+        val checkoutTextRes: Int? = R.string.OFFER_CONFIRM_PURCHASE,
         val title: QuoteBundleAppConfigurationTitle = QuoteBundleAppConfigurationTitle.LOGO,
         val loginStatus: LoginStatus = LoginStatus.LOGGED_IN,
         val isLoading: Boolean = false,
@@ -205,6 +209,7 @@ class OfferViewModelImpl(
             insurableLimitsItems = insurableLimitsItems,
             bottomOfferItems = bottomOfferItems,
             signMethod = data.signMethodForQuotes,
+            checkoutTextRes = data.checkoutTextRes(),
             title = data.quoteBundle.appConfiguration.title,
             loginStatus = loginStatus,
         )
@@ -295,4 +300,3 @@ class OfferViewModelImpl(
         }
     }
 }
-

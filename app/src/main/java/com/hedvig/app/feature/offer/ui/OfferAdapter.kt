@@ -175,11 +175,15 @@ class OfferAdapter(
                         }
                     }
 
-                    sign.bindWithSignMethod(data.signMethod)
-                    sign.setHapticClickListener {
-                        onSign(data.signMethod)
+                    with(sign) {
+                        text = data.checkoutTextRes?.let(itemView.context::getString) ?: ""
+                        icon = data.signMethod.checkoutIconRes()?.let {
+                            context.compatDrawable(it)
+                        }
+                        setHapticClickListener {
+                            onSign(data.signMethod)
+                        }
                     }
-
                     root.setBackgroundResource(data.gradientRes)
                 }
             }
@@ -231,8 +235,7 @@ class OfferAdapter(
                 if (data !is OfferModel.Footer) {
                     return invalid(data)
                 }
-                val checkoutString = data.signMethod
-                    .checkoutTextRes()
+                val checkoutString = data.checkoutTextRes
                     ?.let(itemView.context::getString)
                     ?: itemView.context.getString(R.string.OFFER_SIGN_BUTTON)
 

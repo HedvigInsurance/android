@@ -3,6 +3,7 @@ package com.hedvig.app.feature.offer.ui
 import android.content.Context
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationApproveButtonTerminology
 import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.R
 import com.hedvig.app.feature.embark.masking.ISO_8601_DATE
@@ -20,6 +21,8 @@ sealed class OfferModel {
         val startDate: OfferStartDate,
         @StringRes
         val startDateLabel: Int,
+        @StringRes
+        val checkoutTextRes: Int?,
         val premium: MonetaryAmount,
         val hasDiscountedPrice: Boolean,
         val originalPremium: MonetaryAmount,
@@ -27,10 +30,11 @@ sealed class OfferModel {
         val hasCampaigns: Boolean,
         val changeDateBottomSheetData: ChangeDateBottomSheetData,
         val signMethod: SignMethod,
+        val approveButtonTerminology: QuoteBundleAppConfigurationApproveButtonTerminology,
         val showCampaignManagement: Boolean,
         val ignoreCampaigns: Boolean,
         @DrawableRes
-        val gradientRes: Int
+        val gradientRes: Int,
     ) : OfferModel()
 
     data class Facts(
@@ -43,7 +47,8 @@ sealed class OfferModel {
     ) : OfferModel()
 
     data class Footer(
-        val signMethod: SignMethod,
+        @StringRes
+        val checkoutTextRes: Int?,
     ) : OfferModel()
 
     sealed class Subheading : OfferModel() {

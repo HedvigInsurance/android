@@ -9,6 +9,7 @@ import com.hedvig.app.feature.offer.ui.OfferModel
 import com.hedvig.app.feature.offer.ui.changestartdate.getStartDate
 import com.hedvig.app.feature.offer.ui.changestartdate.getStartDateLabel
 import com.hedvig.app.feature.offer.ui.changestartdate.toChangeDateBottomSheetData
+import com.hedvig.app.feature.offer.ui.checkoutTextRes
 import com.hedvig.app.feature.offer.ui.faq.FAQItem
 import com.hedvig.app.feature.offer.ui.grossMonthlyCost
 import com.hedvig.app.feature.offer.ui.netMonthlyCost
@@ -41,7 +42,9 @@ object OfferItemsBuilder {
                     .mapNotNull { it.fragments.incentiveFragment.displayValue },
                 hasCampaigns = data.redeemedCampaigns.isNotEmpty(),
                 changeDateBottomSheetData = data.quoteBundle.inception.toChangeDateBottomSheetData(),
+                checkoutTextRes = data.checkoutTextRes(),
                 signMethod = data.signMethodForQuotes,
+                approveButtonTerminology = data.quoteBundle.appConfiguration.approveButtonTerminology,
                 showCampaignManagement = data.quoteBundle.appConfiguration.showCampaignManagement,
                 ignoreCampaigns = data.quoteBundle.appConfiguration.ignoreCampaigns,
                 gradientRes = when (data.quoteBundle.appConfiguration.gradientOption) {
@@ -151,7 +154,7 @@ object OfferItemsBuilder {
                 add(OfferModel.AutomaticSwitchCard)
             }
         }
-        add(OfferModel.Footer(data.signMethodForQuotes))
+        add(OfferModel.Footer(data.checkoutTextRes()))
     }
 
     fun createPerilItems(data: List<OfferQuery.Quote>) = if (data.size == 1) {
