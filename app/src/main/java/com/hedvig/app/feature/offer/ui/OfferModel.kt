@@ -20,13 +20,15 @@ sealed class OfferModel {
         val startDate: OfferStartDate,
         @StringRes
         val startDateLabel: Int,
-        val netMonthlyCost: MonetaryAmount,
-        val grossMonthlyCost: MonetaryAmount,
+        val premium: MonetaryAmount,
+        val hasDiscountedPrice: Boolean,
+        val originalPremium: MonetaryAmount,
         val incentiveDisplayValue: List<String>,
         val hasCampaigns: Boolean,
         val changeDateBottomSheetData: ChangeDateBottomSheetData,
         val signMethod: SignMethod,
         val showCampaignManagement: Boolean,
+        val ignoreCampaigns: Boolean,
         @DrawableRes
         val gradientRes: Int
     ) : OfferModel()

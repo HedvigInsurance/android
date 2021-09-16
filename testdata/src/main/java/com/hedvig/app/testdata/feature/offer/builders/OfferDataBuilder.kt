@@ -3,6 +3,7 @@ package com.hedvig.app.testdata.feature.offer.builders
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.TableFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
+import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationApproveButtonTerminology
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationPostSignStep
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationStartDateTerminology
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationTitle
@@ -25,6 +26,7 @@ data class OfferDataBuilder(
     private val signMethod: SignMethod = SignMethod.SWEDISH_BANK_ID,
     private val postSignStep: QuoteBundleAppConfigurationPostSignStep =
         QuoteBundleAppConfigurationPostSignStep.CONNECT_PAYIN,
+    private val appConfiguration: OfferQuery.AppConfiguration = AppConfigurationBuilder().build(),
 ) {
     fun build() = OfferQuery.Data(
         quoteBundle = OfferQuery.QuoteBundle(
@@ -35,14 +37,7 @@ data class OfferDataBuilder(
             ),
             frequentlyAskedQuestions = frequentlyAskedQuestions,
             inception = inceptions,
-            appConfiguration = OfferQuery.AppConfiguration(
-                showCampaignManagement = true,
-                showFAQ = true,
-                startDateTerminology = QuoteBundleAppConfigurationStartDateTerminology.START_DATE,
-                title = QuoteBundleAppConfigurationTitle.LOGO,
-                gradientOption = TypeOfContractGradientOption.GRADIENT_THREE,
-                postSignStep = postSignStep,
-            )
+            appConfiguration = appConfiguration
         ),
         redeemedCampaigns = redeemedCampaigns,
         signMethodForQuotes = signMethod
@@ -77,6 +72,31 @@ data class QuoteBuilder(
         ),
         insurableLimits = insurableLimits,
         insuranceTerms = insuranceTerms,
+    )
+}
+
+data class AppConfigurationBuilder(
+    private val showCampaignManagement: Boolean = true,
+    private val showFAQ: Boolean = true,
+    private val ignoreCampaigns: Boolean = false,
+    private val approveButtonTerminology: QuoteBundleAppConfigurationApproveButtonTerminology =
+        QuoteBundleAppConfigurationApproveButtonTerminology.APPROVE_CHANGES,
+    private val title: QuoteBundleAppConfigurationTitle = QuoteBundleAppConfigurationTitle.LOGO,
+    private val gradientOption: TypeOfContractGradientOption = TypeOfContractGradientOption.GRADIENT_ONE,
+    private val startDateTerminology: QuoteBundleAppConfigurationStartDateTerminology =
+        QuoteBundleAppConfigurationStartDateTerminology.START_DATE,
+    private val postSignStep: QuoteBundleAppConfigurationPostSignStep =
+        QuoteBundleAppConfigurationPostSignStep.CONNECT_PAYIN
+) {
+    fun build() = OfferQuery.AppConfiguration(
+        showCampaignManagement = showCampaignManagement,
+        showFAQ = showFAQ,
+        ignoreCampaigns = ignoreCampaigns,
+        approveButtonTerminology = approveButtonTerminology,
+        title = title,
+        gradientOption = gradientOption,
+        startDateTerminology = startDateTerminology,
+        postSignStep = postSignStep
     )
 }
 

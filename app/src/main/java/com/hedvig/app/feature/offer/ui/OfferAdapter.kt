@@ -45,7 +45,6 @@ import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
-import com.hedvig.app.util.minus
 
 class OfferAdapter(
     private val fragmentManager: FragmentManager,
@@ -117,15 +116,15 @@ class OfferAdapter(
                 }
                 binding.apply {
                     title.text = data.title ?: itemView.context.getString(R.string.OFFER_INSURANCE_BUNDLE_TITLE)
-                    premium.text = data.netMonthlyCost.format(premium.context, marketManager.market)
+
+                    premium.text = data.premium.format(premium.context, marketManager.market)
                     premiumPeriod.text = premiumPeriod.context.getString(R.string.OFFER_PRICE_PER_MONTH)
 
-                    val hasDiscountedPrice = !(data.grossMonthlyCost - data.netMonthlyCost).isZero
-                    originalPremium.isVisible = hasDiscountedPrice
-                    if (hasDiscountedPrice) {
+                    originalPremium.isVisible = data.hasDiscountedPrice
+                    if (data.hasDiscountedPrice) {
                         originalPremium.setStrikethrough(true)
                         originalPremium.text =
-                            data.grossMonthlyCost.format(originalPremium.context, marketManager.market)
+                            data.originalPremium.format(originalPremium.context, marketManager.market)
                     }
 
                     startDateContainer.setHapticClickListener {

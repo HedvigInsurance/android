@@ -74,6 +74,8 @@ query Offer($locale: Locale!, $ids: [ID!]!) {
     appConfiguration {
       showCampaignManagement
       showFAQ
+      ignoreCampaigns
+      approveButtonTerminology
       startDateTerminology
       title
       gradientOption

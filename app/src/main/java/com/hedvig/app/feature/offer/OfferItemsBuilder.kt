@@ -15,6 +15,7 @@ import com.hedvig.app.feature.offer.ui.netMonthlyCost
 import com.hedvig.app.feature.perils.Peril
 import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.feature.table.intoTable
+import com.hedvig.app.util.minus
 import com.hedvig.app.util.safeLet
 
 object OfferItemsBuilder {
@@ -27,8 +28,14 @@ object OfferItemsBuilder {
                     .quoteBundle
                     .inception
                     .getStartDateLabel(data.quoteBundle.appConfiguration.startDateTerminology),
-                netMonthlyCost = data.netMonthlyCost(),
-                grossMonthlyCost = data.grossMonthlyCost(),
+                premium = if (data.quoteBundle.appConfiguration.ignoreCampaigns) {
+                    data.grossMonthlyCost()
+                } else {
+                    data.netMonthlyCost()
+                },
+                originalPremium = data.grossMonthlyCost(),
+                hasDiscountedPrice = !(data.grossMonthlyCost() - data.netMonthlyCost()).isZero &&
+                    !data.quoteBundle.appConfiguration.ignoreCampaigns,
                 incentiveDisplayValue = data
                     .redeemedCampaigns
                     .mapNotNull { it.fragments.incentiveFragment.displayValue },
@@ -36,6 +43,7 @@ object OfferItemsBuilder {
                 changeDateBottomSheetData = data.quoteBundle.inception.toChangeDateBottomSheetData(),
                 signMethod = data.signMethodForQuotes,
                 showCampaignManagement = data.quoteBundle.appConfiguration.showCampaignManagement,
+                ignoreCampaigns = data.quoteBundle.appConfiguration.ignoreCampaigns,
                 gradientRes = when (data.quoteBundle.appConfiguration.gradientOption) {
                     TypeOfContractGradientOption.GRADIENT_ONE -> R.drawable.gradient_fall_sunset
                     TypeOfContractGradientOption.GRADIENT_TWO -> R.drawable.gradient_spring_fog
