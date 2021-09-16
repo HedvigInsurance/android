@@ -24,7 +24,7 @@ import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
 import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.ui.compose.HedvigTheme
+import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.getActivity
 import com.hedvig.app.util.extensions.inflate

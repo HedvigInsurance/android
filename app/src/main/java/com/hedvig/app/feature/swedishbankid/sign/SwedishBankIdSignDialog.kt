@@ -32,7 +32,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.flowWithLifecycle
 import com.hedvig.app.R
 import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.ui.compose.HedvigTheme
+import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.toArrayList
 import com.hedvig.app.util.extensions.viewLifecycle
