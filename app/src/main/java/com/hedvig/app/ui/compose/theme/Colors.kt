@@ -1,4 +1,4 @@
-package com.hedvig.app.ui.compose
+package com.hedvig.app.ui.compose.theme
 
 import androidx.compose.ui.graphics.Color
 
@@ -15,5 +15,8 @@ val lavender400 = Color(0xffBE9BF3)
 
 val errorLight = Color(0xffDD2727)
 val errorDark = Color(0xffE24646)
+
+val textColorPrimary = Color(0xAB121212)
+val textColorPrimaryDark = Color(0x8FFAFAFA)
 
 val surfaceDark = Color(0xffBE9BF3)

@@ -12,6 +12,7 @@ class DebugFeatureFlagProvider(
     override fun isFeatureEnabled(feature: Feature): Boolean {
         return when (feature) {
             Feature.MOVING_FLOW -> marketManager.market == Market.SE
+            Feature.INSURELY_EMBARK -> true
         }
     }
 
