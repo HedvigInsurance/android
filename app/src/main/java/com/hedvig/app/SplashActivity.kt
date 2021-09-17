@@ -2,21 +2,18 @@ package com.hedvig.app
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
-import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.databinding.ActivitySplashBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.offer.ui.OfferActivity
-import com.hedvig.app.feature.referrals.ReferralsReceiverActivity
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.service.DynamicLinkHandler
 import com.hedvig.app.util.extensions.avdDoOnEnd
 import com.hedvig.app.util.extensions.avdStart
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
@@ -30,10 +27,18 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
     private val loggedInService: LoginStatusService by inject()
     private val marketManager: MarketManager by inject()
     private val binding by viewBinding(ActivitySplashBinding::bind)
+    private lateinit var dynamicLinkHandler: DynamicLinkHandler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.compatSetDecorFitsSystemWindows(false)
+
+        dynamicLinkHandler = DynamicLinkHandler(
+            this,
+            marketManager
+        ) {
+            startDefaultActivity(it)
+        }
     }
 
     override fun onStart() {
@@ -47,88 +52,7 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        handleFirebaseDynamicLink(intent, null)
-    }
-
-    private fun handleFirebaseDynamicLink(intent: Intent, loginStatus: LoginStatus?) {
-        FirebaseDynamicLinks.getInstance().getDynamicLink(intent)
-            .addOnSuccessListener { pendingDynamicLinkData ->
-                // This will actually be null in some cases
-                if (pendingDynamicLinkData != null && pendingDynamicLinkData.link != null) {
-                    val link = pendingDynamicLinkData.link
-                    when (link?.pathSegments?.getOrNull(0)) {
-                        "referrals" -> handleReferralsDeepLink(link, loginStatus)
-                        "direct-debit" -> handleDirectDebitDeepLink(loginStatus)
-                        "forever" -> handleForeverDeepLink(loginStatus)
-                        else -> startDefaultActivity(loginStatus)
-                    }
-                } else {
-                    startDefaultActivity(loginStatus)
-                }
-            }.addOnFailureListener {
-                startDefaultActivity(loginStatus)
-            }
-    }
-
-    private fun handleForeverDeepLink(loginStatus: LoginStatus?) {
-        if (loginStatus != LoginStatus.LOGGED_IN) {
-            startDefaultActivity(loginStatus)
-            return
-        }
-
-        runSplashAnimation {
-            startActivity(LoggedInActivity.newInstance(this, initialTab = LoggedInTabs.REFERRALS))
-        }
-    }
-
-    private fun handleDirectDebitDeepLink(loginStatus: LoginStatus?) {
-        if (loginStatus != LoginStatus.LOGGED_IN) {
-            startDefaultActivity(loginStatus)
-            return
-        }
-
-        runSplashAnimation {
-            marketManager.market?.connectPayin(this)?.let { connectPayinIntent ->
-                startActivities(
-                    arrayOf(
-                        Intent(this, LoggedInActivity::class.java),
-                        connectPayinIntent
-                    )
-                )
-            }
-        }
-    }
-
-    private fun handleReferralsDeepLink(link: Uri, loginStatus: LoginStatus?) {
-        if (loginStatus != LoginStatus.ONBOARDING) {
-            startDefaultActivity(loginStatus)
-            return
-        }
-        when (marketManager.market) {
-            null -> {
-                runSplashAnimation {
-                    startActivity(MarketingActivity.newInstance(this))
-                }
-            }
-            Market.SE -> {
-                link.getQueryParameter("code")?.let { referralCode ->
-                    runSplashAnimation {
-                        startActivity(
-                            ReferralsReceiverActivity.newInstance(
-                                this,
-                                referralCode,
-                                "10"
-                            )
-                        ) // Fixme "10" should not be hard coded
-                    }
-                } ?: startDefaultActivity(loginStatus)
-            }
-            else -> {
-                runSplashAnimation {
-                    startActivity(Intent(this, MarketingActivity::class.java))
-                }
-            }
-        }
+        getLoginStatusAndNavigate()
     }
 
     @SuppressLint("ApplySharedPref")
@@ -162,18 +86,20 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
                     startActivity(Intent(this, LoggedInActivity::class.java))
                 }
             }
-            else -> {
-                CoroutineScope(IO).launch {
-                    val response = loggedInService.getLoginStatus()
-                    navigateToActivity(response)
-                }
-            }
+            else -> getLoginStatusAndNavigate()
+        }
+    }
+
+    private fun getLoginStatusAndNavigate() {
+        CoroutineScope(IO).launch {
+            val response = loggedInService.getLoginStatus()
+            navigateToActivity(response)
         }
     }
 
     private fun navigateToActivity(loginStatus: LoginStatus) = when (loginStatus) {
         LoginStatus.ONBOARDING, LoginStatus.LOGGED_IN -> {
-            handleFirebaseDynamicLink(intent, loginStatus)
+            dynamicLinkHandler.handleIntent(intent, loginStatus)
         }
         else -> startDefaultActivity(loginStatus)
     }
