@@ -21,7 +21,9 @@ fun LargeContainedButton(
 ) {
     Button(
         onClick = onClick,
-        modifier = Modifier.fillMaxWidth().then(modifier),
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(modifier),
         shape = MaterialTheme.shapes.large,
         contentPadding = PaddingValues(dimensionResource(R.dimen.base_margin_double)),
         content = content,
@@ -35,9 +37,7 @@ fun LargeContainedButton(
 @Composable
 fun LargeContainedButtonPreview() {
     HedvigTheme {
-        LargeContainedButton(
-            onClick = {},
-        ) {
+        LargeContainedButton({}) {
             Text("Contained Button (Large)")
         }
     }

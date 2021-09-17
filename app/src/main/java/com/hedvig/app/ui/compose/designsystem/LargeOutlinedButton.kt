@@ -23,7 +23,9 @@ fun LargeOutlinedButton(
 ) {
     OutlinedButton(
         onClick = onClick,
-        modifier = Modifier.fillMaxWidth().then(modifier),
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(modifier),
         border = ButtonDefaults.outlinedBorder.copy(brush = SolidColor(MaterialTheme.colors.primary)),
         shape = MaterialTheme.shapes.large,
         contentPadding = PaddingValues(dimensionResource(R.dimen.base_margin_double)),
@@ -38,9 +40,7 @@ fun LargeOutlinedButton(
 @Composable
 fun LargeOutlinedButtonPreview() {
     HedvigTheme {
-        LargeOutlinedButton(
-            onClick = {},
-        ) {
+        LargeOutlinedButton({}) {
             Text("Outlined Button (Large)")
         }
     }
