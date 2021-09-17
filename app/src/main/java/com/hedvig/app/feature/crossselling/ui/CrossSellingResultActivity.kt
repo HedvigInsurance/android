@@ -10,6 +10,7 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import org.koin.android.ext.android.inject
 import java.time.Clock
+import java.time.format.DateTimeFormatter
 
 class CrossSellingResultActivity : BaseActivity() {
 
@@ -26,6 +27,7 @@ class CrossSellingResultActivity : BaseActivity() {
             CrossSellingResultScreen(
                 crossSellingResult = crossSellingResult,
                 clock = clock,
+                dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE,
                 openChat = { startActivity(ChatActivity.newInstance(this)) },
                 closeResultScreen = {
                     startActivity(

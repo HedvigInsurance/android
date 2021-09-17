@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.crossselling.ui
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,6 +16,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,6 +36,7 @@ import java.time.format.DateTimeFormatter
 fun CrossSellingResultScreen(
     crossSellingResult: CrossSellingResult,
     clock: Clock,
+    dateFormatter: DateTimeFormatter,
     openChat: () -> Unit,
     closeResultScreen: () -> Unit,
 ) {
@@ -48,6 +49,7 @@ fun CrossSellingResultScreen(
             InformationSection(
                 crossSellingResult = crossSellingResult,
                 clock = clock,
+                dateFormatter = dateFormatter,
                 modifier = Modifier
                     .align(Alignment.TopStart)
                     .padding(top = 96.dp)
@@ -70,15 +72,15 @@ fun CrossSellingResultScreen(
 private fun InformationSection(
     crossSellingResult: CrossSellingResult,
     clock: Clock,
+    dateFormatter: DateTimeFormatter,
     modifier: Modifier
 ) {
-    @DrawableRes
-    val drawableId: Int = when (crossSellingResult) {
-        is CrossSellingResult.Success -> R.drawable.ic_checkmark_in_circle
-        CrossSellingResult.Error -> R.drawable.ic_x_in_circle
+    val icon: Painter = when (crossSellingResult) {
+        is CrossSellingResult.Success -> painterResource(R.drawable.ic_checkmark_in_circle)
+        CrossSellingResult.Error -> painterResource(R.drawable.ic_x_in_circle)
     }
     val titleText = when (crossSellingResult) {
-        CrossSellingResult.Error -> "Something went wrong."
+        CrossSellingResult.Error -> stringResource(R.string.purchase_confirmation_error_title)
         is CrossSellingResult.Success -> {
             stringResource(
                 R.string.purchase_confirmation_new_insurance_today_app_state_title,
@@ -86,17 +88,15 @@ private fun InformationSection(
             )
         }
     }
-    val descriptionText = when (crossSellingResult) {
-        CrossSellingResult.Error -> "Your purchase couldn't be completed.\nContact us in the chat."
+    val subtitleText = when (crossSellingResult) {
+        CrossSellingResult.Error -> stringResource(R.string.purchase_confirmation_error_subtitle)
         is CrossSellingResult.Success -> {
             when {
                 crossSellingResult.startingDate <= LocalDate.now(clock) -> {
                     stringResource(R.string.purchase_confirmation_new_insurance_today_app_state_description)
                 }
                 else -> {
-                    val activationDate = crossSellingResult.startingDate.format(
-                        DateTimeFormatter.ISO_LOCAL_DATE
-                    )
+                    val activationDate = crossSellingResult.startingDate.format(dateFormatter)
                     stringResource(
                         R.string.purchase_confirmation_new_insurance_active_in_future_app_state_description,
                         activationDate
@@ -105,12 +105,12 @@ private fun InformationSection(
             }
         }
     }
-    InformationSection(drawableId, titleText, descriptionText, modifier)
+    InformationSection(icon, titleText, subtitleText, modifier)
 }
 
 @Composable
 private fun InformationSection(
-    @DrawableRes icon: Int,
+    icon: Painter,
     title: String,
     description: String,
     modifier: Modifier
@@ -119,7 +119,7 @@ private fun InformationSection(
         modifier = modifier,
     ) {
         Image(
-            painter = painterResource(icon),
+            painter = icon,
             contentDescription = null,
             modifier = Modifier.size(32.dp),
         )
@@ -150,24 +150,24 @@ private fun ButtonsSection(
         when (crossSellingResult) {
             is CrossSellingResult.Error -> {
                 LargeContainedButton(
-                    onClick = {},
+                    onClick = openChat,
                 ) {
                     Image(
                         painter = painterResource(R.drawable.ic_chat_white),
                         contentDescription = null,
                     )
                     Spacer(Modifier.width(8.dp))
-                    Text("Open chat")
+                    Text(stringResource(R.string.purchase_confirmation_error_open_chat_button))
                 }
                 LargeOutlinedButton(
-                    onClick = {},
+                    onClick = closeResultScreen,
                 ) {
-                    Text("Close")
+                    Text(stringResource(R.string.purchase_confirmation_error_close_button))
                 }
             }
             is CrossSellingResult.Success -> {
                 LargeContainedButton(
-                    onClick = {},
+                    onClick = closeResultScreen,
                 ) {
                     Text("Done")
                 }
@@ -189,6 +189,7 @@ fun CrossSellingResultScreenPreview(
         CrossSellingResultScreen(
             crossSellingResult,
             Clock.systemDefaultZone(),
+            DateTimeFormatter.ISO_LOCAL_DATE,
             {},
             {}
         )
