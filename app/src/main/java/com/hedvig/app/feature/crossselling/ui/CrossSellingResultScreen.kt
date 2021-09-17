@@ -31,7 +31,6 @@ import java.time.Clock
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-// TODO text resources still missing
 @Composable
 fun CrossSellingResultScreen(
     crossSellingResult: CrossSellingResult,
@@ -169,7 +168,7 @@ private fun ButtonsSection(
                 LargeContainedButton(
                     onClick = closeResultScreen,
                 ) {
-                    Text("Done")
+                    Text(stringResource(R.string.purchase_confirmation_accident_insurance_done_button))
                 }
             }
         }
