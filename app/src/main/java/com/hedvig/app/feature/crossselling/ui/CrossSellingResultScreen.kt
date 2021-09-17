@@ -24,9 +24,9 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.hedvig.app.R
-import com.hedvig.app.ui.compose.HedvigTheme
 import com.hedvig.app.ui.compose.designsystem.LargeContainedButton
 import com.hedvig.app.ui.compose.designsystem.LargeOutlinedButton
+import com.hedvig.app.ui.compose.theme.HedvigTheme
 import java.time.Clock
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter

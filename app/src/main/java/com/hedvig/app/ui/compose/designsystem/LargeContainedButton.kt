@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.hedvig.app.R
-import com.hedvig.app.ui.compose.HedvigTheme
+import com.hedvig.app.ui.compose.theme.HedvigTheme
 
 @Composable
 fun LargeContainedButton(
