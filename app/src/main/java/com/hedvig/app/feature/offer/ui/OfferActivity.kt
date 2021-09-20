@@ -35,6 +35,7 @@ import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignDialog
+import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.showErrorDialog
@@ -158,7 +159,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     insurableLimitsAdapter.submitList(viewState.insurableLimitsItems)
                     documentAdapter.submitList(viewState.documents)
                     bottomOfferAdapter.submitList(viewState.bottomOfferItems)
-                    setSignState(viewState.signMethod)
+                    setSignButtonState(viewState.signMethod, viewState.checkoutLabel)
 
                     TransitionManager.beginDelayedTransition(binding.offerToolbar)
                     setTitleVisibility(viewState)
@@ -307,8 +308,9 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         }
     }
 
-    private fun setSignState(signMethod: SignMethod) {
-        binding.signButton.bindWithSignMethod(signMethod)
+    private fun setSignButtonState(signMethod: SignMethod, checkoutLabel: CheckoutLabel) {
+        binding.signButton.text = checkoutLabel.toString(this)
+        binding.signButton.icon = signMethod.checkoutIconRes()?.let(::compatDrawable)
         binding.signButton.setHapticClickListener {
             onSign(signMethod)
         }

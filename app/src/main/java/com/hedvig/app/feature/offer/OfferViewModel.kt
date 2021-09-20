@@ -13,10 +13,12 @@ import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.offer.quotedetail.buildDocuments
 import com.hedvig.app.feature.offer.quotedetail.buildInsurableLimits
 import com.hedvig.app.feature.offer.quotedetail.buildPerils
+import com.hedvig.app.feature.offer.ui.CheckoutLabel
 import com.hedvig.app.feature.offer.ui.OfferModel
 import com.hedvig.app.feature.offer.ui.checkout.ApproveQuotesUseCase
 import com.hedvig.app.feature.offer.ui.checkout.CheckoutParameter
 import com.hedvig.app.feature.offer.ui.checkout.SignQuotesUseCase
+import com.hedvig.app.feature.offer.ui.checkoutLabel
 import com.hedvig.app.feature.offer.usecase.GetPostSignDependenciesUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
@@ -64,7 +66,6 @@ abstract class OfferViewModel : ViewModel() {
         object DiscardOffer : Event()
     }
 
-
     protected val _events = MutableSharedFlow<Event>(
         extraBufferCapacity = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST,
@@ -95,6 +96,7 @@ abstract class OfferViewModel : ViewModel() {
         val insurableLimitsItems: List<InsurableLimitItem> = emptyList(),
         val bottomOfferItems: List<OfferModel> = emptyList(),
         val signMethod: SignMethod = SignMethod.SIMPLE_SIGN,
+        val checkoutLabel: CheckoutLabel = CheckoutLabel.CONFIRM,
         val title: QuoteBundleAppConfigurationTitle = QuoteBundleAppConfigurationTitle.LOGO,
         val loginStatus: LoginStatus = LoginStatus.LOGGED_IN,
         val isLoading: Boolean = false,
@@ -205,6 +207,7 @@ class OfferViewModelImpl(
             insurableLimitsItems = insurableLimitsItems,
             bottomOfferItems = bottomOfferItems,
             signMethod = data.signMethodForQuotes,
+            checkoutLabel = data.checkoutLabel(),
             title = data.quoteBundle.appConfiguration.title,
             loginStatus = loginStatus,
         )
@@ -295,4 +298,3 @@ class OfferViewModelImpl(
         }
     }
 }
-
