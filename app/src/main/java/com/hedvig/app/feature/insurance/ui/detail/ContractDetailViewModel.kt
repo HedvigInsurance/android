@@ -109,7 +109,7 @@ class ContractDetailViewModelImpl(
                         uri = Uri.parse(it),
                     )
                 },
-                contract.termsAndConditions?.url?.let {
+                contract.termsAndConditions.url.let {
                     DocumentItems.Document(
                         titleRes = R.string.MY_DOCUMENTS_INSURANCE_TERMS,
                         subTitleRes = R.string.insurance_details_view_documents_insurance_letter_subtitle,
