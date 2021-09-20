@@ -159,7 +159,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     insurableLimitsAdapter.submitList(viewState.insurableLimitsItems)
                     documentAdapter.submitList(viewState.documents)
                     bottomOfferAdapter.submitList(viewState.bottomOfferItems)
-                    setSignButtonState(viewState.signMethod, viewState.checkoutTextRes)
+                    setSignButtonState(viewState.signMethod, viewState.checkoutLabel)
 
                     TransitionManager.beginDelayedTransition(binding.offerToolbar)
                     setTitleVisibility(viewState)
@@ -308,8 +308,8 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         }
     }
 
-    private fun setSignButtonState(signMethod: SignMethod, checkoutTextRes: Int?) {
-        binding.signButton.text = checkoutTextRes?.let(::getString) ?: ""
+    private fun setSignButtonState(signMethod: SignMethod, checkoutLabel: CheckoutLabel) {
+        binding.signButton.text = checkoutLabel.toString(this)
         binding.signButton.icon = signMethod.checkoutIconRes()?.let(::compatDrawable)
         binding.signButton.setHapticClickListener {
             onSign(signMethod)

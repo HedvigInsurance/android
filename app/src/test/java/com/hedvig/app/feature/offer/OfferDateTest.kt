@@ -8,8 +8,8 @@ import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.feature.offer.ui.OfferStartDate
 import com.hedvig.app.feature.offer.ui.changestartdate.getStartDate
 import com.hedvig.app.testdata.feature.offer.builders.ConcurrentInceptionBuilder
-import org.junit.Test
 import java.time.LocalDate
+import org.junit.Test
 
 class OfferDateTest {
 

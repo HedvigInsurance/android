@@ -2,8 +2,8 @@ package com.hedvig.app.feature.offer.ui.changestartdate
 
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationStartDateTerminology
-import com.hedvig.app.R
 import com.hedvig.app.feature.offer.ui.OfferStartDate
+import com.hedvig.app.feature.offer.ui.StartDateLabel
 import java.time.LocalDate
 
 fun OfferQuery.Inception1.toChangeDateBottomSheetData() = ChangeDateBottomSheetData(
@@ -52,22 +52,20 @@ fun OfferQuery.Inception1.toChangeDateBottomSheetData() = ChangeDateBottomSheetD
     } ?: throw IllegalArgumentException("Could not parse inception")
 )
 
-fun OfferQuery.Inception1.getStartDate(): OfferStartDate {
-    return when {
-        isSwitcher() && hasNoDate() -> OfferStartDate.WhenCurrentPlanExpires
-        hasNoDate() -> OfferStartDate.AtDate(LocalDate.now())
-        asConcurrentInception != null -> OfferStartDate.AtDate(asConcurrentInception?.startDate ?: LocalDate.now())
-        asIndependentInceptions != null -> {
-            val inception = asIndependentInceptions?.inceptions?.firstOrNull()
-            val allStartDatesEqual = asIndependentInceptions?.inceptions?.all { it.startDate == inception?.startDate }
-            if (allStartDatesEqual == true) {
-                OfferStartDate.AtDate(inception?.startDate ?: LocalDate.now())
-            } else {
-                OfferStartDate.Multiple
-            }
+fun OfferQuery.Inception1.getStartDate() = when {
+    isSwitcher() && hasNoDate() -> OfferStartDate.WhenCurrentPlanExpires
+    hasNoDate() -> OfferStartDate.AtDate(LocalDate.now())
+    asConcurrentInception != null -> OfferStartDate.AtDate(asConcurrentInception?.startDate ?: LocalDate.now())
+    asIndependentInceptions != null -> {
+        val inception = asIndependentInceptions?.inceptions?.firstOrNull()
+        val allStartDatesEqual = asIndependentInceptions?.inceptions?.all { it.startDate == inception?.startDate }
+        if (allStartDatesEqual == true) {
+            OfferStartDate.AtDate(inception?.startDate ?: LocalDate.now())
+        } else {
+            OfferStartDate.Multiple
         }
-        else -> throw IllegalArgumentException("Could not parse inception")
     }
+    else -> throw IllegalArgumentException("Could not parse inception")
 }
 
 private fun OfferQuery.Inception1.hasNoDate(): Boolean {
@@ -86,17 +84,15 @@ private fun OfferQuery.Inception1.isSwitcher(): Boolean {
 
 fun OfferQuery.Inception1.getStartDateLabel(
     startDateTerminology: QuoteBundleAppConfigurationStartDateTerminology
-): Int {
-    return when (startDateTerminology) {
-        QuoteBundleAppConfigurationStartDateTerminology.START_DATE -> {
-            when {
-                asIndependentInceptions?.inceptions?.size == 1 -> R.string.OFFER_START_DATE
-                asIndependentInceptions != null -> R.string.OFFER_START_DATE_PLURAL
-                asConcurrentInception != null -> R.string.OFFER_START_DATE
-                else -> R.string.OFFER_START_DATE
-            }
+) = when (startDateTerminology) {
+    QuoteBundleAppConfigurationStartDateTerminology.START_DATE -> {
+        when {
+            asIndependentInceptions?.inceptions?.size == 1 -> StartDateLabel.SINGLE_START_DATE
+            asIndependentInceptions != null -> StartDateLabel.MULTIPLE_START_DATES
+            asConcurrentInception != null -> StartDateLabel.SINGLE_START_DATE
+            else -> StartDateLabel.SINGLE_START_DATE
         }
-        QuoteBundleAppConfigurationStartDateTerminology.ACCESS_DATE -> R.string.OFFER_ACCESS_DATE
-        QuoteBundleAppConfigurationStartDateTerminology.UNKNOWN__ -> R.string.OFFER_START_DATE
     }
+    QuoteBundleAppConfigurationStartDateTerminology.ACCESS_DATE -> StartDateLabel.ACCESS_DATE
+    QuoteBundleAppConfigurationStartDateTerminology.UNKNOWN__ -> StartDateLabel.SINGLE_START_DATE
 }

@@ -133,7 +133,7 @@ class OfferAdapter(
                             .show(fragmentManager, ChangeDateBottomSheet.TAG)
                     }
 
-                    startDateLabel.text = itemView.context.getString(data.startDateLabel)
+                    startDateLabel.text = data.startDateLabel.toString(startDateLabel.context)
                     startDate.text = data.startDate.getString(itemView.context)
 
                     val campaignText = data.incentiveDisplayValue.joinToString()
@@ -176,7 +176,7 @@ class OfferAdapter(
                     }
 
                     with(sign) {
-                        text = data.checkoutTextRes?.let(itemView.context::getString) ?: ""
+                        text = data.checkoutLabel.toString(this.context)
                         icon = data.signMethod.checkoutIconRes()?.let {
                             context.compatDrawable(it)
                         }
@@ -184,7 +184,7 @@ class OfferAdapter(
                             onSign(data.signMethod)
                         }
                     }
-                    root.setBackgroundResource(data.gradientRes)
+                    root.background = data.gradientType.toDrawable(itemView.context)
                 }
             }
         }
@@ -235,10 +235,7 @@ class OfferAdapter(
                 if (data !is OfferModel.Footer) {
                     return invalid(data)
                 }
-                val checkoutString = data.checkoutTextRes
-                    ?.let(itemView.context::getString)
-                    ?: itemView.context.getString(R.string.OFFER_SIGN_BUTTON)
-
+                val checkoutString = data.checkoutLabel.toString(itemView.context)
                 val link = itemView.context.getString(
                     R.string.OFFER_FOOTER_GDPR_INFO,
                     checkoutString,

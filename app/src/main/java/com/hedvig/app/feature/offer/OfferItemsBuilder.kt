@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.offer
 
 import com.hedvig.android.owldroid.graphql.OfferQuery
-import com.hedvig.android.owldroid.type.TypeOfContractGradientOption
 import com.hedvig.app.R
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
@@ -9,14 +8,14 @@ import com.hedvig.app.feature.offer.ui.OfferModel
 import com.hedvig.app.feature.offer.ui.changestartdate.getStartDate
 import com.hedvig.app.feature.offer.ui.changestartdate.getStartDateLabel
 import com.hedvig.app.feature.offer.ui.changestartdate.toChangeDateBottomSheetData
-import com.hedvig.app.feature.offer.ui.checkoutTextRes
+import com.hedvig.app.feature.offer.ui.checkoutLabel
 import com.hedvig.app.feature.offer.ui.faq.FAQItem
+import com.hedvig.app.feature.offer.ui.gradientType
 import com.hedvig.app.feature.offer.ui.grossMonthlyCost
 import com.hedvig.app.feature.offer.ui.netMonthlyCost
 import com.hedvig.app.feature.perils.Peril
 import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.feature.table.intoTable
-import com.hedvig.app.util.minus
 import com.hedvig.app.util.safeLet
 
 object OfferItemsBuilder {
@@ -42,17 +41,12 @@ object OfferItemsBuilder {
                     .mapNotNull { it.fragments.incentiveFragment.displayValue },
                 hasCampaigns = data.redeemedCampaigns.isNotEmpty(),
                 changeDateBottomSheetData = data.quoteBundle.inception.toChangeDateBottomSheetData(),
-                checkoutTextRes = data.checkoutTextRes(),
+                checkoutLabel = data.checkoutLabel(),
                 signMethod = data.signMethodForQuotes,
                 approveButtonTerminology = data.quoteBundle.appConfiguration.approveButtonTerminology,
                 showCampaignManagement = data.quoteBundle.appConfiguration.showCampaignManagement,
                 ignoreCampaigns = data.quoteBundle.appConfiguration.ignoreCampaigns,
-                gradientRes = when (data.quoteBundle.appConfiguration.gradientOption) {
-                    TypeOfContractGradientOption.GRADIENT_ONE -> R.drawable.gradient_fall_sunset
-                    TypeOfContractGradientOption.GRADIENT_TWO -> R.drawable.gradient_spring_fog
-                    TypeOfContractGradientOption.GRADIENT_THREE -> R.drawable.gradient_summer_sky
-                    TypeOfContractGradientOption.UNKNOWN__ -> R.drawable.gradient_spring_fog
-                },
+                gradientType = data.gradientType(),
             ),
         )
         add(
@@ -154,7 +148,7 @@ object OfferItemsBuilder {
                 add(OfferModel.AutomaticSwitchCard)
             }
         }
-        add(OfferModel.Footer(data.checkoutTextRes()))
+        add(OfferModel.Footer(data.checkoutLabel()))
     }
 
     fun createPerilItems(data: List<OfferQuery.Quote>) = if (data.size == 1) {

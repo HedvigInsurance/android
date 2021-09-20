@@ -7,7 +7,7 @@ import com.hedvig.app.feature.offer.quotedetail.buildDocuments
 import com.hedvig.app.feature.offer.quotedetail.buildInsurableLimits
 import com.hedvig.app.feature.offer.quotedetail.buildPerils
 import com.hedvig.app.feature.offer.ui.checkout.CheckoutParameter
-import com.hedvig.app.feature.offer.ui.checkoutTextRes
+import com.hedvig.app.feature.offer.ui.checkoutLabel
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -87,7 +87,7 @@ class MockOfferViewModel : OfferViewModel() {
                     insurableLimitsItems = insurableLimitsItems,
                     bottomOfferItems = bottomOfferItems,
                     signMethod = mockData.signMethodForQuotes,
-                    checkoutTextRes = mockData.checkoutTextRes(),
+                    checkoutLabel = mockData.checkoutLabel(),
                     title = mockData.quoteBundle.appConfiguration.title,
                     loginStatus = LoginStatus.LOGGED_IN
                 )

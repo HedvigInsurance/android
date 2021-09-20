@@ -4,6 +4,7 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.R
+import com.hedvig.app.feature.offer.ui.CheckoutLabel
 import com.hedvig.app.feature.offer.ui.OfferModel
 import com.hedvig.app.testdata.common.builders.CostBuilder
 import com.hedvig.app.testdata.feature.offer.builders.AppConfigurationBuilder
@@ -67,13 +68,13 @@ class OfferItemsBuilderTest {
 
         assertThat(items).containsOfType<OfferModel.Header>()
         val header = items.first { it is OfferModel.Header } as OfferModel.Header
-        assertThat(header.checkoutTextRes).isEqualTo(R.string.OFFER_APPROVE_CHANGES)
+        assertThat(header.checkoutLabel).isEqualTo(CheckoutLabel.APPROVE)
 
         val bottomItems = OfferItemsBuilder.createBottomOfferItems(testData)
 
         assertThat(bottomItems).containsOfType<OfferModel.Footer>()
         val footer = bottomItems.first { it is OfferModel.Footer } as OfferModel.Footer
-        assertThat(footer.checkoutTextRes).isEqualTo(R.string.OFFER_APPROVE_CHANGES)
+        assertThat(footer.checkoutLabel).isEqualTo(CheckoutLabel.APPROVE)
     }
 
     @Test
@@ -87,12 +88,12 @@ class OfferItemsBuilderTest {
 
         assertThat(topItems).containsOfType<OfferModel.Header>()
         val header = topItems.first { it is OfferModel.Header } as OfferModel.Header
-        assertThat(header.checkoutTextRes).isEqualTo(R.string.OFFER_CONFIRM_PURCHASE)
+        assertThat(header.checkoutLabel).isEqualTo(CheckoutLabel.CONFIRM)
 
         val bottomItems = OfferItemsBuilder.createBottomOfferItems(testData)
 
         assertThat(bottomItems).containsOfType<OfferModel.Footer>()
         val footer = bottomItems.first { it is OfferModel.Footer } as OfferModel.Footer
-        assertThat(footer.checkoutTextRes).isEqualTo(R.string.OFFER_CONFIRM_PURCHASE)
+        assertThat(footer.checkoutLabel).isEqualTo(CheckoutLabel.CONFIRM)
     }
 }
