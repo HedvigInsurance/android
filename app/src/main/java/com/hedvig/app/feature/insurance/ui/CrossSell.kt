@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.insurance.ui
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -28,6 +29,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
+import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.commit451.coiltransformations.CropTransformation
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.ui.compose.theme.hedvigBlack
@@ -79,7 +81,6 @@ fun CrossSell(
                             Color(0x00000000),
                             Color(0xFF000000),
                         ),
-
                     )
                 )
                 .padding(16.dp),
@@ -123,6 +124,15 @@ fun CrossSell(
     }
 }
 
+private val previewData = InsuranceModel.CrossSell(
+    title = "Accident Insurance",
+    description = "179 kr/mo.",
+    callToAction = "Calculate price",
+    action = InsuranceModel.CrossSell.Action.Chat,
+    backgroundUrl = "https://images.unsplash.com/photo-1628996796855-0b056a464e06",
+    backgroundBlurHash = "LJC6\$2-:DiWB~WxuRkayMwNGo~of",
+)
+
 @Preview(
     name = "Cross-Sell Card",
     group = "Insurance Tab",
@@ -132,14 +142,23 @@ fun CrossSell(
 fun CrossSellPreview() {
     HedvigTheme {
         CrossSell(
-            data = InsuranceModel.CrossSell(
-                title = "Accident Insurance",
-                description = "179 kr/mo.",
-                callToAction = "Calculate price",
-                action = InsuranceModel.CrossSell.Action.Chat,
-                backgroundUrl = "https://images.unsplash.com/photo-1628996796855-0b056a464e06",
-                backgroundBlurHash = "LJC6\$2-:DiWB~WxuRkayMwNGo~of",
-            ),
+            data = previewData,
+            onCtaClick = {}
+        )
+    }
+}
+
+@ShowkaseComposable(skip = true)
+@Preview(
+    name = "Cross-Sell Card • Dark",
+    group = "Insurance Tab",
+    uiMode = UI_MODE_NIGHT_YES,
+)
+@Composable
+fun CrossSellPreviewDark() {
+    HedvigTheme {
+        CrossSell(
+            data = previewData,
             onCtaClick = {}
         )
     }

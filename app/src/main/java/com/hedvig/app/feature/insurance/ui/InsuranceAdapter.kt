@@ -3,7 +3,6 @@ package com.hedvig.app.feature.insurance.ui
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -36,8 +35,7 @@ class InsuranceAdapter(
     private val tracker: InsuranceTracker,
     private val marketManager: MarketManager,
     private val retry: () -> Unit
-) :
-    ListAdapter<InsuranceModel, InsuranceAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
+) : ListAdapter<InsuranceModel, InsuranceAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.insurance_contract_card -> ViewHolder.ContractViewHolder(parent)
@@ -200,8 +198,7 @@ class InsuranceAdapter(
             }
         }
 
-        class SubheadingViewHolder(val composeView: ComposeView) :
-            ViewHolder(composeView) {
+        class SubheadingViewHolder(val composeView: ComposeView) : ViewHolder(composeView) {
 
             init {
                 composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)

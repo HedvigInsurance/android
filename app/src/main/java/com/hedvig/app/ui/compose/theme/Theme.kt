@@ -5,9 +5,5 @@ import com.google.android.material.composethemeadapter.MdcTheme
 
 @Composable
 fun HedvigTheme(content: @Composable () -> Unit) {
-    MdcTheme(
-        setTextColors = false,
-        setDefaultFontFamily = true,
-        content = content,
-    )
+    MdcTheme(content = content)
 }
