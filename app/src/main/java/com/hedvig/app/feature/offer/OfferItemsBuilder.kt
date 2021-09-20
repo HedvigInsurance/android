@@ -35,7 +35,7 @@ object OfferItemsBuilder {
                     data.netMonthlyCost()
                 },
                 originalPremium = data.grossMonthlyCost(),
-                hasDiscountedPrice = !(data.grossMonthlyCost() - data.netMonthlyCost()).isZero &&
+                hasDiscountedPrice = !data.grossMonthlyCost().isEqualTo(data.netMonthlyCost()) &&
                     !data.quoteBundle.appConfiguration.ignoreCampaigns,
                 incentiveDisplayValue = data
                     .redeemedCampaigns
