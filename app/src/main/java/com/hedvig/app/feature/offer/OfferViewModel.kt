@@ -171,7 +171,7 @@ class OfferViewModelImpl(
     override fun approveOffer() {
         viewModelScope.launch {
             _viewState.value = _viewState.value.copy(isLoading = true)
-            val postSignDependencies = getPostSignDependenciesUseCase(quoteIds)
+            val postSignDependencies = getPostSignDependenciesUseCase.invoke(quoteIds)
             if (postSignDependencies !is GetPostSignDependenciesUseCase.Result.Success) {
                 _events.tryEmit(Event.Error())
                 return@launch
