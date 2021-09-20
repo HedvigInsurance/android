@@ -1,8 +1,11 @@
 package com.hedvig.app.feature.insurance
 
+import android.content.Intent
+import android.net.Uri
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.MockActivity
 import com.hedvig.app.MockContractDetailViewModel
+import com.hedvig.app.R
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
 import com.hedvig.app.feature.insurance.ui.tab.InsuranceViewModel
@@ -331,6 +334,15 @@ class InsuranceMockActivity : MockActivity() {
                 shouldError = true
             }
             startActivity(TerminatedContractsActivity.newInstance(context))
+        }
+        header("Deep Links")
+        clickableItem("`/insurance`-Deep Link") {
+            startActivity(
+                Intent(Intent.ACTION_VIEW).apply {
+                    data =
+                        Uri.parse("https://${getString(R.string.FIREBASE_LINK_DOMAIN)}/insurance")
+                }
+            )
         }
     }
 }
