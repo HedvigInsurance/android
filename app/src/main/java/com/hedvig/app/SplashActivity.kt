@@ -13,7 +13,8 @@ import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.service.DynamicLinkHandler
+import com.hedvig.app.service.getDynamicLinkFromFirebase
+import com.hedvig.app.service.startActivity
 import com.hedvig.app.util.extensions.avdDoOnEnd
 import com.hedvig.app.util.extensions.avdStart
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
@@ -27,18 +28,10 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
     private val loggedInService: LoginStatusService by inject()
     private val marketManager: MarketManager by inject()
     private val binding by viewBinding(ActivitySplashBinding::bind)
-    private lateinit var dynamicLinkHandler: DynamicLinkHandler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.compatSetDecorFitsSystemWindows(false)
-
-        dynamicLinkHandler = DynamicLinkHandler(
-            this,
-            marketManager
-        ) {
-            startDefaultActivity(it)
-        }
     }
 
     override fun onStart() {
@@ -97,9 +90,12 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
         }
     }
 
-    private fun navigateToActivity(loginStatus: LoginStatus, intent: Intent) = when (loginStatus) {
+    private suspend fun navigateToActivity(loginStatus: LoginStatus, intent: Intent) = when (loginStatus) {
         LoginStatus.ONBOARDING, LoginStatus.LOGGED_IN -> {
-            dynamicLinkHandler.handleIntent(intent, loginStatus)
+            val dynamicLink = getDynamicLinkFromFirebase(intent)
+            dynamicLink.startActivity(this, marketManager, onDefault = {
+                startDefaultActivity(loginStatus)
+            })
         }
         else -> startDefaultActivity(loginStatus)
     }
