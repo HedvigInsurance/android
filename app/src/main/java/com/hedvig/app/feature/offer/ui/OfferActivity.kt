@@ -202,19 +202,19 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                         }
                         is OfferViewModel.Event.ApproveSuccessful -> {
                             when (event.postSignScreen) {
-                                OfferViewModel.PostSignScreen.CONNECT_PAYIN -> {
+                                PostSignScreen.CONNECT_PAYIN -> {
                                     marketManager
                                         .market
                                         ?.connectPayin(this@OfferActivity, true)
                                         ?.let { startActivity(it) }
                                 }
-                                OfferViewModel.PostSignScreen.MOVE -> {
+                                PostSignScreen.MOVE -> {
                                     ChangeAddressResultActivity.newInstance(
                                         this@OfferActivity,
                                         ChangeAddressResultActivity.Result.Success(event.startDate),
                                     )
                                 }
-                                OfferViewModel.PostSignScreen.CROSS_SELL -> {
+                                PostSignScreen.CROSS_SELL -> {
                                     startActivity(
                                         CrossSellingResultActivity.newInstance(
                                             this@OfferActivity,
@@ -226,9 +226,9 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                         }
                         is OfferViewModel.Event.ApproveError -> {
                             when (event.postSignScreen) {
-                                OfferViewModel.PostSignScreen.CONNECT_PAYIN -> {
+                                PostSignScreen.CONNECT_PAYIN -> {
                                 }
-                                OfferViewModel.PostSignScreen.MOVE -> {
+                                PostSignScreen.MOVE -> {
                                     startActivity(
                                         ChangeAddressResultActivity.newInstance(
                                             this@OfferActivity,
@@ -236,7 +236,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                                         )
                                     )
                                 }
-                                OfferViewModel.PostSignScreen.CROSS_SELL -> {
+                                PostSignScreen.CROSS_SELL -> {
                                     startActivity(
                                         CrossSellingResultActivity.newInstance(
                                             this@OfferActivity,

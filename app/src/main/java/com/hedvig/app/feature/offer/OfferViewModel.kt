@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
-import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationPostSignStep
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationTitle
 import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.authenticate.LoginStatus
@@ -63,21 +62,6 @@ abstract class OfferViewModel : ViewModel() {
         data class StartSwedishBankIdSign(val quoteIds: List<String>, val autoStartToken: String) : Event()
 
         object DiscardOffer : Event()
-    }
-
-    enum class PostSignScreen {
-        CONNECT_PAYIN,
-        MOVE,
-        CROSS_SELL;
-
-        companion object {
-            fun from(postSignStep: QuoteBundleAppConfigurationPostSignStep) = when (postSignStep) {
-                QuoteBundleAppConfigurationPostSignStep.CONNECT_PAYIN -> CONNECT_PAYIN
-                QuoteBundleAppConfigurationPostSignStep.MOVE -> MOVE
-                QuoteBundleAppConfigurationPostSignStep.CROSS_SELL -> CROSS_SELL
-                QuoteBundleAppConfigurationPostSignStep.UNKNOWN__ -> CONNECT_PAYIN
-            }
-        }
     }
 
     protected val _events = MutableSharedFlow<Event>(
