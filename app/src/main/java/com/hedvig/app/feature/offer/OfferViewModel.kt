@@ -17,6 +17,7 @@ import com.hedvig.app.feature.offer.ui.OfferModel
 import com.hedvig.app.feature.offer.ui.checkout.ApproveQuotesUseCase
 import com.hedvig.app.feature.offer.ui.checkout.CheckoutParameter
 import com.hedvig.app.feature.offer.ui.checkout.SignQuotesUseCase
+import com.hedvig.app.feature.offer.usecase.GetPostSignDependenciesUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
@@ -48,15 +49,21 @@ abstract class OfferViewModel : ViewModel() {
             val checkoutParameter: CheckoutParameter
         ) : Event()
 
-        object ApproveError : Event()
+        data class ApproveError(
+            val postSignScreen: PostSignScreen,
+        ) : Event()
+
         data class ApproveSuccessful(
-            val moveDate: LocalDate?
+            val startDate: LocalDate?,
+            val postSignScreen: PostSignScreen,
+            val bundleDisplayName: String,
         ) : Event()
 
         data class StartSwedishBankIdSign(val quoteIds: List<String>, val autoStartToken: String) : Event()
 
         object DiscardOffer : Event()
     }
+
 
     protected val _events = MutableSharedFlow<Event>(
         extraBufferCapacity = 1,
@@ -90,7 +97,7 @@ abstract class OfferViewModel : ViewModel() {
         val signMethod: SignMethod = SignMethod.SIMPLE_SIGN,
         val title: QuoteBundleAppConfigurationTitle = QuoteBundleAppConfigurationTitle.LOGO,
         val loginStatus: LoginStatus = LoginStatus.LOGGED_IN,
-        val isLoading: Boolean = false
+        val isLoading: Boolean = false,
     )
 
     abstract fun onOpenCheckout()
@@ -109,7 +116,8 @@ class OfferViewModelImpl(
     private val approveQuotesUseCase: ApproveQuotesUseCase,
     private val refreshQuotesUseCase: RefreshQuotesUseCase,
     private val signQuotesUseCase: SignQuotesUseCase,
-    shouldShowOnNextAppStart: Boolean
+    shouldShowOnNextAppStart: Boolean,
+    private val getPostSignDependenciesUseCase: GetPostSignDependenciesUseCase
 ) : OfferViewModel() {
 
     private lateinit var quoteIds: List<String>
@@ -163,10 +171,22 @@ class OfferViewModelImpl(
     override fun approveOffer() {
         viewModelScope.launch {
             _viewState.value = _viewState.value.copy(isLoading = true)
+            val postSignDependencies = getPostSignDependenciesUseCase.invoke(quoteIds)
+            if (postSignDependencies !is GetPostSignDependenciesUseCase.Result.Success) {
+                _events.tryEmit(Event.Error())
+                return@launch
+            }
             val event = when (val result = approveQuotesUseCase.approveQuotes(quoteIds)) {
                 is ApproveQuotesUseCase.ApproveQuotesResult.Error.GeneralError -> Event.Error(result.message)
-                ApproveQuotesUseCase.ApproveQuotesResult.Error.ApproveError -> Event.ApproveError
-                is ApproveQuotesUseCase.ApproveQuotesResult.Success -> Event.ApproveSuccessful(result.date)
+                ApproveQuotesUseCase.ApproveQuotesResult.Error.ApproveError -> Event.ApproveError(
+                    postSignDependencies.postSignScreen
+                )
+                is ApproveQuotesUseCase.ApproveQuotesResult.Success ->
+                    Event.ApproveSuccessful(
+                        result.date,
+                        postSignDependencies.postSignScreen,
+                        postSignDependencies.displayName
+                    )
             }
             _events.tryEmit(event)
         }
@@ -186,7 +206,7 @@ class OfferViewModelImpl(
             bottomOfferItems = bottomOfferItems,
             signMethod = data.signMethodForQuotes,
             title = data.quoteBundle.appConfiguration.title,
-            loginStatus = loginStatus
+            loginStatus = loginStatus,
         )
     }
 
@@ -275,3 +295,4 @@ class OfferViewModelImpl(
         }
     }
 }
+
