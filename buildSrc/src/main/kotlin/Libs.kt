@@ -61,6 +61,7 @@ object Libs {
             const val uiTooling = "androidx.compose.ui:ui-tooling:$version"
             const val uiTestJunit = "androidx.compose.ui:ui-test-junit4:$version"
             const val mdcAdapter = "com.google.android.material:compose-theme-adapter:$version"
+            const val uiTestManifest = "androidx.compose.ui:ui-test-manifest:$version"
         }
     }
 
