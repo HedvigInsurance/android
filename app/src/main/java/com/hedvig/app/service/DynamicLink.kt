@@ -3,8 +3,8 @@ package com.hedvig.app.service
 import android.content.Intent
 import android.net.Uri
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
-import kotlin.coroutines.resume
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
 
 sealed class DynamicLink {
 
