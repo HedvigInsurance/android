@@ -18,9 +18,11 @@ fun LibraryExtension.commonConfig() {
 
     buildTypes {
         maybeCreate("staging")
+        maybeCreate("pullrequest")
 
         named("debug") {}
         named("staging") {}
+        named("pullrequest") {}
         named("release") {}
     }
 }

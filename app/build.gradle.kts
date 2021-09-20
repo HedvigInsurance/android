@@ -62,6 +62,7 @@ android {
 
     buildTypes {
         maybeCreate("staging")
+        maybeCreate("pullrequest")
         named("release") {
             applicationIdSuffix = ".app"
 
@@ -90,6 +91,14 @@ android {
             )
         }
 
+        named("pullrequest") {
+            initWith(getByName("staging"))
+            // Uncomment this to test locally
+            // signingConfig = signingConfigs.getByName("debug")
+
+            proguardFile("proguard-rules-showkase.pro")
+        }
+
         named("debug") {
             applicationIdSuffix = ".dev.app"
 
@@ -106,6 +115,11 @@ android {
             manifest.srcFile("src/debug/AndroidManifest.xml")
         }
         named("staging") {
+            java.srcDir("src/engineering/java")
+            res.srcDir("src/engineering/res")
+            manifest.srcFile("src/debug/AndroidManifest.xml")
+        }
+        named("pullrequest") {
             java.srcDir("src/engineering/java")
             res.srcDir("src/engineering/res")
             manifest.srcFile("src/debug/AndroidManifest.xml")
