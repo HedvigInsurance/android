@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.offer.usecase
 
 import com.hedvig.app.feature.offer.OfferRepository
-import com.hedvig.app.feature.offer.OfferViewModel
+import com.hedvig.app.feature.offer.PostSignScreen
 import kotlinx.coroutines.flow.first
 
 class GetPostSignDependenciesUseCase(
@@ -9,7 +9,7 @@ class GetPostSignDependenciesUseCase(
 ) {
     sealed class Result {
         data class Success(
-            val postSignScreen: OfferViewModel.PostSignScreen,
+            val postSignScreen: PostSignScreen,
             val displayName: String,
         ) : Result()
 
@@ -27,7 +27,7 @@ class GetPostSignDependenciesUseCase(
         }
 
         return Result.Success(
-            OfferViewModel.PostSignScreen.from(offer.data.quoteBundle.appConfiguration.postSignStep),
+            PostSignScreen.from(offer.data.quoteBundle.appConfiguration.postSignStep),
             offer.data.quoteBundle.displayName,
         )
     }
