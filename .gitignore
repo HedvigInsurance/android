@@ -12,11 +12,12 @@ sentry.properties
 *.li
 .classpath
 .project
-schema.json
 mapping.txt
 
 # graphql
 .graphqlconfig
+schema.json
+**/*.graphqls
 
 # adyen credentials
 adyen.xml
