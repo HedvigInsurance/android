@@ -109,6 +109,7 @@ import com.hedvig.app.feature.offer.ui.changestartdate.EditStartDateUseCase
 import com.hedvig.app.feature.offer.ui.checkout.ApproveQuotesUseCase
 import com.hedvig.app.feature.offer.ui.checkout.CheckoutViewModel
 import com.hedvig.app.feature.offer.ui.checkout.SignQuotesUseCase
+import com.hedvig.app.feature.offer.usecase.GetPostSignDependenciesUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
@@ -539,6 +540,7 @@ val useCaseModule = module {
     single { GetContractsUseCase(get(), get()) }
     single { ManuallyRecheckSwedishBankIdSignStatusUseCase(get()) }
     single { SubscribeToSwedishBankIdSignStatusUseCase(get()) }
+    single { GetPostSignDependenciesUseCase(get()) }
 }
 
 val cacheManagerModule = module {
