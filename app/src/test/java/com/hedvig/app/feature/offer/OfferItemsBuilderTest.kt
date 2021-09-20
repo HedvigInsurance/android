@@ -2,6 +2,7 @@ package com.hedvig.app.feature.offer
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationApproveButtonTerminology
 import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.feature.offer.ui.CheckoutLabel
 import com.hedvig.app.feature.offer.ui.OfferModel
@@ -60,7 +61,9 @@ class OfferItemsBuilderTest {
     fun `should set correct checkout text for approve changes`() {
         val testData = OfferDataBuilder(
             signMethod = SignMethod.APPROVE_ONLY,
-            appConfiguration = AppConfigurationBuilder(ignoreCampaigns = false).build()
+            appConfiguration = AppConfigurationBuilder(
+                approveButtonTerminology = QuoteBundleAppConfigurationApproveButtonTerminology.APPROVE_CHANGES
+            ).build()
         ).build()
 
         val items = OfferItemsBuilder.createTopOfferItems(testData)
@@ -80,7 +83,9 @@ class OfferItemsBuilderTest {
     fun `should set correct checkout text for confirm purchase`() {
         val testData = OfferDataBuilder(
             signMethod = SignMethod.APPROVE_ONLY,
-            appConfiguration = AppConfigurationBuilder(ignoreCampaigns = true).build()
+            appConfiguration = AppConfigurationBuilder(
+                approveButtonTerminology = QuoteBundleAppConfigurationApproveButtonTerminology.CONFIRM_PURCHASE
+            ).build()
         ).build()
 
         val topItems = OfferItemsBuilder.createTopOfferItems(testData)
