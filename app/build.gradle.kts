@@ -240,6 +240,7 @@ dependencies {
     implementation(Libs.AndroidX.Compose.uiTooling)
     implementation(Libs.AndroidX.Lifecycle.compose)
     androidTestImplementation(Libs.AndroidX.Compose.uiTestJunit)
+    debugImplementation(Libs.AndroidX.Compose.uiTestManifest)
 
     debugImplementation(Libs.Showkase.showkase)
     "stagingImplementation"(Libs.Showkase.showkase)

@@ -8,7 +8,7 @@ class TabNotificationService(
 ) {
     fun getTabNotification(): TabNotification? {
         // TODO: Clean this up. Since we updated Material Components, an implementation detail of
-        // the BottomNavigationBar has changed, and our tab notification feature no longer works.
+        //  the BottomNavigationBar has changed, and our tab notification feature no longer works.
 
         // if (!context
         //         .getSharedPreferences(TAB_NOTIFICATION_SHARED_PREFERENCES, Context.MODE_PRIVATE)
