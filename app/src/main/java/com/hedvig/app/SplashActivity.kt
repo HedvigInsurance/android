@@ -46,13 +46,13 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
 
         lifecycleScope.launch {
             val response = loggedInService.getLoginStatus()
-            navigateToActivity(response)
+            navigateToActivity(response, intent)
         }
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        getLoginStatusAndNavigate()
+        getLoginStatusAndNavigate(intent)
     }
 
     @SuppressLint("ApplySharedPref")
@@ -86,18 +86,18 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
                     startActivity(Intent(this, LoggedInActivity::class.java))
                 }
             }
-            else -> getLoginStatusAndNavigate()
+            else -> getLoginStatusAndNavigate(intent)
         }
     }
 
-    private fun getLoginStatusAndNavigate() {
+    private fun getLoginStatusAndNavigate(intent: Intent) {
         CoroutineScope(IO).launch {
             val response = loggedInService.getLoginStatus()
-            navigateToActivity(response)
+            navigateToActivity(response, intent)
         }
     }
 
-    private fun navigateToActivity(loginStatus: LoginStatus) = when (loginStatus) {
+    private fun navigateToActivity(loginStatus: LoginStatus, intent: Intent) = when (loginStatus) {
         LoginStatus.ONBOARDING, LoginStatus.LOGGED_IN -> {
             dynamicLinkHandler.handleIntent(intent, loginStatus)
         }

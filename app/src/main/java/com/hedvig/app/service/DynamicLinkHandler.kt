@@ -56,8 +56,7 @@ class DynamicLinkHandler(
             null -> context.startActivity(MarketingActivity.newInstance(context))
             Market.SE -> {
                 link.getQueryParameter("code")?.let { referralCode ->
-                    startActivity(
-                        context,
+                    context.startActivity(
                         ReferralsReceiverActivity.newInstance(
                             context,
                             referralCode,
