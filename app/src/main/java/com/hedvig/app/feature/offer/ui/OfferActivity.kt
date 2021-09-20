@@ -22,6 +22,8 @@ import com.hedvig.app.R
 import com.hedvig.app.SplashActivity
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.databinding.ActivityOfferBinding
+import com.hedvig.app.feature.crossselling.ui.CrossSellingResult
+import com.hedvig.app.feature.crossselling.ui.CrossSellingResultActivity
 import com.hedvig.app.feature.documents.DocumentAdapter
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
 import com.hedvig.app.feature.home.ui.changeaddress.result.ChangeAddressResultActivity
@@ -213,7 +215,12 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                                     )
                                 }
                                 OfferViewModel.PostSignScreen.CROSS_SELL -> {
-                                    // TODO: Wire up Cross-Sell Result screen here
+                                    startActivity(
+                                        CrossSellingResultActivity.newInstance(
+                                            this@OfferActivity,
+                                            CrossSellingResult.Success.from(event)
+                                        )
+                                    )
                                 }
                             }
                         }
@@ -230,7 +237,12 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                                     )
                                 }
                                 OfferViewModel.PostSignScreen.CROSS_SELL -> {
-                                    // TODO: Wire up Cross-Sell Result Screen here
+                                    startActivity(
+                                        CrossSellingResultActivity.newInstance(
+                                            this@OfferActivity,
+                                            CrossSellingResult.Error
+                                        )
+                                    )
                                 }
                             }
                         }
