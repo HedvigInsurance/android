@@ -25,7 +25,6 @@ import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
 import com.hedvig.app.feature.perils.PerilItem
 import e
-import java.time.LocalDate
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,6 +34,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 abstract class OfferViewModel : ViewModel() {
     protected val _viewState = MutableStateFlow(ViewState(isLoading = true))

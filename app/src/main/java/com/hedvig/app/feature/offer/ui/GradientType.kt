@@ -17,4 +17,3 @@ fun GradientType.toDrawable(context: Context) = when (this) {
     GradientType.SUMMER_SKY -> context.compatDrawable(R.drawable.gradient_summer_sky)
     GradientType.UNKNOWN -> context.compatDrawable(R.drawable.gradient_spring_fog)
 }
-

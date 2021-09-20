@@ -3,7 +3,6 @@ package com.hedvig.app.feature.offer
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import com.hedvig.android.owldroid.type.SignMethod
-import com.hedvig.app.R
 import com.hedvig.app.feature.offer.ui.CheckoutLabel
 import com.hedvig.app.feature.offer.ui.OfferModel
 import com.hedvig.app.testdata.common.builders.CostBuilder

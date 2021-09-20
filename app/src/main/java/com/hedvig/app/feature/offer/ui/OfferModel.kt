@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.offer.ui
 
 import android.content.Context
-import androidx.annotation.DrawableRes
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationApproveButtonTerminology
 import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.R
