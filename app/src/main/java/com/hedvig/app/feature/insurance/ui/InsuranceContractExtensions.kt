@@ -7,7 +7,6 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.InsuranceContractCardBinding
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.extensions.compatColor
-import com.hedvig.app.util.extensions.view.remove
 
 fun InsuranceQuery.Contract.bindTo(
     binding: InsuranceContractCardBinding,
