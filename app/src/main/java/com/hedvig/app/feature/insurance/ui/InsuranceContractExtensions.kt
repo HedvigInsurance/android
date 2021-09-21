@@ -21,29 +21,7 @@ fun InsuranceQuery.Contract.bindTo(
         secondStatusPill.isVisible = secondStatus != null
         secondStatusPill.text = secondStatus
 
-        status.fragments.contractStatusFragment.let { contractStatus ->
-            contractStatus.asPendingStatus?.let {
-                bindBackgroundColor(gradientOption)
-            }
-            contractStatus.asActiveInFutureStatus?.let {
-                removeBackgroundColor()
-            }
-            contractStatus.asActiveInFutureAndTerminatedInFutureStatus?.let {
-                removeBackgroundColor()
-            }
-            contractStatus.asTerminatedInFutureStatus?.let {
-                bindBackgroundColor(gradientOption)
-            }
-            contractStatus.asTerminatedTodayStatus?.let {
-                bindBackgroundColor(gradientOption)
-            }
-            contractStatus.asTerminatedStatus?.let {
-                removeBackgroundColor()
-            }
-            contractStatus.asActiveStatus?.let {
-                bindBackgroundColor(gradientOption)
-            }
-        }
+        bindBackgroundColor(gradientOption)
 
         contractName.text = displayName
         contractPills.adapter = ContractPillAdapter(marketManager).also { adapter ->
@@ -54,13 +32,8 @@ fun InsuranceQuery.Contract.bindTo(
         contractPills.suppressLayout(true)
     }
 
-private fun InsuranceContractCardBinding.removeBackgroundColor() {
-    container.setBackgroundColor(container.context.getColor(R.color.hedvig_light_gray))
-    blur.remove()
-}
-
 private fun InsuranceContractCardBinding.bindBackgroundColor(
-    gradientOption: TypeOfContractGradientOption
+    gradientOption: TypeOfContractGradientOption?
 ) {
     when (gradientOption) {
         TypeOfContractGradientOption.GRADIENT_ONE, TypeOfContractGradientOption.UNKNOWN__ -> {
@@ -80,6 +53,10 @@ private fun InsuranceContractCardBinding.bindBackgroundColor(
             blur.setColorFilter(
                 blur.context.compatColor(R.color.blur_spring_fog)
             )
+        }
+        else -> {
+            container.setBackgroundColor(container.context.getColor(R.color.hedvig_light_gray))
+            blur.isVisible = false
         }
     }
 }
