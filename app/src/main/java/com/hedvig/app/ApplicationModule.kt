@@ -82,8 +82,8 @@ import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModelImpl
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModel
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModelImpl
+import com.hedvig.app.feature.loggedin.service.GetCrossSellsUseCase
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
-import com.hedvig.app.feature.loggedin.ui.BaseTabViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInRepository
 import com.hedvig.app.feature.loggedin.ui.LoggedInTracker
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
@@ -310,7 +310,6 @@ fun getLocale(context: Context, market: Market?): Locale {
 
 val viewModelModule = module {
     viewModel { ClaimsViewModel(get(), get()) }
-    viewModel { BaseTabViewModel(get(), get()) }
     viewModel { ChatViewModel(get(), get(), get(), get(), get()) }
     viewModel { UserViewModel(get(), get(), get()) }
     viewModel { RedeemCodeViewModel(get()) }
@@ -344,7 +343,7 @@ val marketPickerModule = module {
 }
 
 val loggedInModule = module {
-    viewModel<LoggedInViewModel> { LoggedInViewModelImpl(get(), get()) }
+    viewModel<LoggedInViewModel> { LoggedInViewModelImpl(get(), get(), get()) }
 }
 
 val whatsNewModule = module {
@@ -444,7 +443,7 @@ val serviceModule = module {
     single { FileService(get()) }
     single<LoginStatusService> { SharedPreferencesLoginStatusService(get(), get(), get()) }
     single<AuthenticationTokenService> { SharedPreferencesAuthenticationTokenService(get()) }
-    single { TabNotificationService(get()) }
+    single { TabNotificationService(get(), get()) }
     single { DeviceInformationService(get()) }
 }
 
@@ -541,6 +540,7 @@ val useCaseModule = module {
     single { ManuallyRecheckSwedishBankIdSignStatusUseCase(get()) }
     single { SubscribeToSwedishBankIdSignStatusUseCase(get()) }
     single { GetPostSignDependenciesUseCase(get()) }
+    single { GetCrossSellsUseCase(get()) }
 }
 
 val cacheManagerModule = module {

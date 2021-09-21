@@ -1,36 +1,82 @@
 package com.hedvig.app.feature.loggedin.service
 
-import android.content.Context
-import com.hedvig.app.feature.loggedin.ui.TabNotification
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringSetPreferencesKey
+import com.hedvig.android.owldroid.graphql.CrossSellsQuery
+import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
+import com.hedvig.app.util.apollo.QueryResult
+import e
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class TabNotificationService(
-    private val context: Context
+    private val getCrossSellsUseCase: GetCrossSellsUseCase,
+    private val dataStore: DataStore<Preferences>,
 ) {
-    fun getTabNotification(): TabNotification? {
-        // TODO: Clean this up. Since we updated Material Components, an implementation detail of
-        //  the BottomNavigationBar has changed, and our tab notification feature no longer works.
+    private val seenCrossSells = dataStore
+        .data
+        .map { preferences ->
+            preferences[SEEN_CROSS_SELLS_KEY]
+        }
 
-        // if (!context
-        //         .getSharedPreferences(TAB_NOTIFICATION_SHARED_PREFERENCES, Context.MODE_PRIVATE)
-        //         .getBoolean(HAS_BEEN_NOTIFIED_ABOUT_REFERRALS, false)
-        // ) {
+    suspend fun load(): Flow<Set<LoggedInTabs>> {
+        val potentialCrossSells = when (val potentialCrossSellsResult = getCrossSellsUseCase.invoke()) {
+            is QueryResult.Success -> {
+                getCrossSells(potentialCrossSellsResult.data)
+            }
+            is QueryResult.Error -> {
+                e { "Error when loading potential cross-sells: ${potentialCrossSellsResult.message}" }
+                emptySet()
+            }
+        }
 
-        //     return TabNotification.REFERRALS
-        // }
-
-        return null
+        return seenCrossSells
+            .map {
+                if ((potentialCrossSells subtract (it ?: emptySet())).isNotEmpty()) {
+                    setOf(LoggedInTabs.INSURANCE)
+                } else {
+                    emptySet()
+                }
+            }
     }
 
-    fun hasBeenNotifiedAboutReferrals() {
-        context
-            .getSharedPreferences(TAB_NOTIFICATION_SHARED_PREFERENCES, Context.MODE_PRIVATE)
-            .edit()
-            .putBoolean(HAS_BEEN_NOTIFIED_ABOUT_REFERRALS, true)
-            .apply()
+    private fun getCrossSells(
+        crossSellData: CrossSellsQuery.Data
+    ) = crossSellData
+        .activeContractBundles
+        .flatMap { contractBundle ->
+            contractBundle
+                .potentialCrossSells
+                .map { it.contractType.toString() }
+        }
+        .toSet()
+
+    suspend fun visitTab(tab: LoggedInTabs) {
+        if (tab == LoggedInTabs.INSURANCE) {
+            markCurrentCrossSellsAsSeen()
+        }
+    }
+
+    private suspend fun markCurrentCrossSellsAsSeen() {
+        val currentCrossSellsResult = getCrossSellsUseCase.invoke()
+        if (currentCrossSellsResult !is QueryResult.Success) {
+            (currentCrossSellsResult as? QueryResult.Error)?.message?.let {
+                e { "Error when attempting to load current cross-sells: $it" }
+            }
+            return
+        }
+        val crossSells = getCrossSells(currentCrossSellsResult.data)
+        dataStore
+            .edit { preferences ->
+                preferences[SEEN_CROSS_SELLS_KEY] =
+                    preferences[SEEN_CROSS_SELLS_KEY] ?: emptySet<String>() + crossSells
+            }
     }
 
     companion object {
-        private const val TAB_NOTIFICATION_SHARED_PREFERENCES = "tab_notifications"
-        private const val HAS_BEEN_NOTIFIED_ABOUT_REFERRALS = "has_been_notified_about_referrals"
+        val SEEN_CROSS_SELLS_KEY = stringSetPreferencesKey("SEEN_CROSS_SELLS")
     }
 }
+

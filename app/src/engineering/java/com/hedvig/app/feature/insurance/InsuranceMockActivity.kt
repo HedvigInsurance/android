@@ -2,6 +2,10 @@ package com.hedvig.app.feature.insurance
 
 import android.content.Intent
 import android.net.Uri
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.lifecycle.lifecycleScope
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.MockActivity
 import com.hedvig.app.MockContractDetailViewModel
@@ -10,6 +14,7 @@ import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
 import com.hedvig.app.feature.insurance.ui.tab.InsuranceViewModel
 import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsActivity
+import com.hedvig.app.feature.loggedin.service.TabNotificationService
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
@@ -32,10 +37,13 @@ import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_PENDING_CONTRACT
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_APARTMENT
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_APARTMENT_NO_RENEWAL
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_HOUSE
+import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 class InsuranceMockActivity : MockActivity() {
+    private val dataStore: DataStore<Preferences> by inject()
     override val original = listOf(
         loggedInModule,
         insuranceModule
@@ -236,12 +244,20 @@ class InsuranceMockActivity : MockActivity() {
                 )
             )
         }
+        header("Cross-Sells")
         clickableItem("Cross-Sell") {
             MockInsuranceViewModel.apply {
                 insuranceMockData = INSURANCE_DATA_WITH_CROSS_SELL
                 shouldError = false
             }
             startActivity(LoggedInActivity.newInstance(context, initialTab = LoggedInTabs.INSURANCE))
+        }
+        clickableItem("Reset cross-sell tab notification") {
+            lifecycleScope.launch {
+                dataStore.edit { preferences ->
+                    preferences[TabNotificationService.SEEN_CROSS_SELLS_KEY] = emptySet()
+                }
+            }
         }
         header("Detail Screen")
         clickableItem("Swedish Apartment") {

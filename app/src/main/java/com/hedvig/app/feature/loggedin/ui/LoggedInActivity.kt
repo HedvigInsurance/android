@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.Menu
 import android.view.MenuItem
+import androidx.core.view.forEach
 import androidx.dynamicanimation.animation.FloatValueHolder
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
@@ -113,15 +114,15 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             supportActionBar?.setDisplayShowTitleEnabled(false)
 
             bottomNavigation.itemIconTintList = null
-            bottomNavigation.setOnNavigationItemSelectedListener { menuItem ->
+            bottomNavigation.setOnItemSelectedListener { menuItem ->
                 val id = LoggedInTabs.fromId(menuItem.itemId)
                 if (id == null) {
                     e { "Programmer error: Invalid menu item chosen" }
-                    return@setOnNavigationItemSelectedListener false
+                    return@setOnItemSelectedListener false
                 }
 
                 if (id == lastSelectedTab) {
-                    return@setOnNavigationItemSelectedListener false
+                    return@setOnItemSelectedListener false
                 }
                 supportFragmentManager
                     .beginTransaction()
@@ -131,6 +132,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 setupToolBar()
                 animateGradient(id)
                 lastSelectedTab = id
+                loggedInViewModel.onTabVisited(id)
                 true
             }
 
@@ -331,6 +333,21 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 ?: intent.extras?.getSerializable(INITIAL_TAB) as? LoggedInTabs
                 ?: LoggedInTabs.HOME
             binding.bottomNavigation.selectedItemId = initialTab.id()
+            loggedInViewModel
+                .tabNotifications
+                .flowWithLifecycle(lifecycle)
+                .onEach { tabNotifications ->
+                    binding.bottomNavigation.menu.forEach { item ->
+                        val asTab = LoggedInTabs.fromId(item.itemId) ?: return@forEach
+                        if (tabNotifications.contains(asTab)) {
+                            val badge = binding.bottomNavigation.getOrCreateBadge(item.itemId)
+                            badge.isVisible = true
+                        } else {
+                            binding.bottomNavigation.removeBadge(item.itemId)
+                        }
+                    }
+                }
+                .launchIn(lifecycleScope)
             setupToolBar()
             binding.loggedInRoot.show()
 
