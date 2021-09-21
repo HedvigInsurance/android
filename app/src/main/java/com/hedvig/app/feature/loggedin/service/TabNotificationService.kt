@@ -18,7 +18,7 @@ class TabNotificationService(
     private val seenCrossSells = dataStore
         .data
         .map { preferences ->
-            preferences[SEEN_CROSS_SELLS_KEY]
+            preferences[SEEN_CROSS_SELLS_KEY] ?: emptySet()
         }
 
     suspend fun load(): Flow<Set<LoggedInTabs>> {
@@ -34,7 +34,7 @@ class TabNotificationService(
 
         return seenCrossSells
             .map {
-                if ((potentialCrossSells subtract (it ?: emptySet())).isNotEmpty()) {
+                if ((potentialCrossSells subtract it).isNotEmpty()) {
                     setOf(LoggedInTabs.INSURANCE)
                 } else {
                     emptySet()
@@ -71,7 +71,7 @@ class TabNotificationService(
         dataStore
             .edit { preferences ->
                 preferences[SEEN_CROSS_SELLS_KEY] =
-                    preferences[SEEN_CROSS_SELLS_KEY] ?: emptySet<String>() + crossSells
+                    (preferences[SEEN_CROSS_SELLS_KEY] ?: emptySet()) + crossSells
             }
     }
 
