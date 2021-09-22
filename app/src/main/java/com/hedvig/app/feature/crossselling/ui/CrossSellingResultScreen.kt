@@ -130,7 +130,7 @@ private fun InformationSection(
         Spacer(Modifier.height(24.dp))
         Text(
             description,
-            style = MaterialTheme.typography.body2
+            style = MaterialTheme.typography.body1
         )
     }
 }
