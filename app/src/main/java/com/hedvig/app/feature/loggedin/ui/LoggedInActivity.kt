@@ -342,6 +342,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                         if (tabNotifications.contains(asTab)) {
                             val badge = binding.bottomNavigation.getOrCreateBadge(item.itemId)
                             badge.isVisible = true
+                            badge.horizontalOffset = 4.dp
+                            badge.verticalOffset = 4.dp
                         } else {
                             binding.bottomNavigation.removeBadge(item.itemId)
                         }
