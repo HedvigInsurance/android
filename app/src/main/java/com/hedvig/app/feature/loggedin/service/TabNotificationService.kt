@@ -4,10 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringSetPreferencesKey
-import com.hedvig.android.owldroid.graphql.CrossSellsQuery
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
-import com.hedvig.app.util.apollo.QueryResult
-import e
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -22,36 +19,17 @@ class TabNotificationService(
         }
 
     suspend fun load(): Flow<Set<LoggedInTabs>> {
-        val potentialCrossSells = when (val potentialCrossSellsResult = getCrossSellsUseCase.invoke()) {
-            is QueryResult.Success -> {
-                getCrossSells(potentialCrossSellsResult.data)
-            }
-            is QueryResult.Error -> {
-                e { "Error when loading potential cross-sells: ${potentialCrossSellsResult.message}" }
-                emptySet()
-            }
-        }
+        val potentialCrossSells = getCrossSellsUseCase.invoke()
 
         return seenCrossSells
-            .map {
-                if ((potentialCrossSells subtract it).isNotEmpty()) {
+            .map { seenCrossSells ->
+                if ((potentialCrossSells subtract seenCrossSells).isNotEmpty()) {
                     setOf(LoggedInTabs.INSURANCE)
                 } else {
                     emptySet()
                 }
             }
     }
-
-    private fun getCrossSells(
-        crossSellData: CrossSellsQuery.Data
-    ) = crossSellData
-        .activeContractBundles
-        .flatMap { contractBundle ->
-            contractBundle
-                .potentialCrossSells
-                .map { it.contractType.toString() }
-        }
-        .toSet()
 
     suspend fun visitTab(tab: LoggedInTabs) {
         if (tab == LoggedInTabs.INSURANCE) {
@@ -60,14 +38,7 @@ class TabNotificationService(
     }
 
     private suspend fun markCurrentCrossSellsAsSeen() {
-        val currentCrossSellsResult = getCrossSellsUseCase.invoke()
-        if (currentCrossSellsResult !is QueryResult.Success) {
-            (currentCrossSellsResult as? QueryResult.Error)?.message?.let {
-                e { "Error when attempting to load current cross-sells: $it" }
-            }
-            return
-        }
-        val crossSells = getCrossSells(currentCrossSellsResult.data)
+        val crossSells = getCrossSellsUseCase.invoke()
         dataStore
             .edit { preferences ->
                 preferences[SEEN_CROSS_SELLS_KEY] =
@@ -79,4 +50,3 @@ class TabNotificationService(
         val SEEN_CROSS_SELLS_KEY = stringSetPreferencesKey("SEEN_CROSS_SELLS")
     }
 }
-

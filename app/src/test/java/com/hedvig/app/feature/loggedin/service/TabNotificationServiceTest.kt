@@ -4,10 +4,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import com.hedvig.android.owldroid.graphql.CrossSellsQuery
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
-import com.hedvig.app.util.apollo.QueryResult
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -20,17 +18,7 @@ class TabNotificationServiceTest {
     @Test
     fun `when all cross-sells have been seen, should not show notification for insurance tab`() {
         val mockUseCase = mockk<GetCrossSellsUseCase>()
-        coEvery { mockUseCase.invoke() } returns QueryResult.Success(
-            CrossSellsQuery.Data(
-                activeContractBundles = listOf(
-                    CrossSellsQuery.ActiveContractBundle(
-                        potentialCrossSells = listOf(
-                            CrossSellsQuery.PotentialCrossSell(contractType = TypeOfContract.SE_ACCIDENT)
-                        )
-                    )
-                )
-            )
-        )
+        coEvery { mockUseCase.invoke() } returns setOf(TypeOfContract.SE_ACCIDENT.toString())
         val mockDataStore = mockedDataStore(setOf(TypeOfContract.SE_ACCIDENT.toString()))
 
         val sut = TabNotificationService(
@@ -46,17 +34,7 @@ class TabNotificationServiceTest {
     @Test
     fun `when there is an unseen cross-sell, should show notification for insurance tab`() {
         val mockUseCase = mockk<GetCrossSellsUseCase>()
-        coEvery { mockUseCase.invoke() } returns QueryResult.Success(
-            CrossSellsQuery.Data(
-                activeContractBundles = listOf(
-                    CrossSellsQuery.ActiveContractBundle(
-                        potentialCrossSells = listOf(
-                            CrossSellsQuery.PotentialCrossSell(contractType = TypeOfContract.SE_ACCIDENT)
-                        )
-                    )
-                )
-            )
-        )
+        coEvery { mockUseCase.invoke() } returns setOf(TypeOfContract.SE_ACCIDENT.toString())
         val mockDataStore = mockedDataStore(emptySet())
 
         val sut = TabNotificationService(
