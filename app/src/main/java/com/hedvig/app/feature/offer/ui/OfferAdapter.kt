@@ -162,7 +162,7 @@ class OfferAdapter(
                     } else {
                         discountButton.apply {
                             setText(R.string.OFFER_ADD_DISCOUNT_BUTTON)
-                            setTextColor(context.getColor(R.color.textColorPrimary))
+                            setTextColor(context.getColor(R.color.textColorSecondary))
                             icon = context.compatDrawable(R.drawable.ic_add_circle)
                             setHapticClickListener {
                                 tracker.addDiscount()

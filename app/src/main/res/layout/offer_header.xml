@@ -41,6 +41,7 @@
                 android:layout_marginEnd="@dimen/base_margin_double"
                 android:textAllCaps="true"
                 android:textAppearance="?textAppearanceCaption"
+                android:textColor="?android:textColorPrimary"
                 tools:text="HEDVIG BOSTADSRÄTT" />
 
             <LinearLayout
@@ -62,7 +63,7 @@
                         android:layout_gravity="bottom"
                         android:layout_marginEnd="@dimen/base_margin"
                         android:textAppearance="?textAppearanceHeadline6"
-                        android:textColor="@color/gray"
+                        android:textColor="?android:textColorPrimary"
                         tools:text="179 SEK" />
 
                     <TextView
@@ -82,7 +83,7 @@
                     android:layout_gravity="center"
                     android:text="@string/OFFER_PRICE_PER_MONTH"
                     android:textAppearance="?textAppearanceSubtitle1"
-                    android:textColor="@color/grey_inactive" />
+                    android:textColor="?android:textColorPrimary" />
 
             </LinearLayout>
 
