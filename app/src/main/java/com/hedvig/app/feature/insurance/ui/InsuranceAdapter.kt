@@ -3,7 +3,6 @@ package com.hedvig.app.feature.insurance.ui
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -110,7 +109,7 @@ class InsuranceAdapter(
                                 when (val action = data.action) {
                                     InsuranceModel.CrossSell.Action.Chat -> openChat(context)
                                     is InsuranceModel.CrossSell.Action.Embark ->
-                                        openEmbark(context, action.embarkStoryId)
+                                        openEmbark(context, action.embarkStoryId, data.title)
                                 }
                             }
                         )
@@ -130,9 +129,9 @@ class InsuranceAdapter(
                 ActivityCompat.startActivity(context, intent, options.toBundle())
             }
 
-            private fun openEmbark(context: Context, embarkStoryId: String) {
+            private fun openEmbark(context: Context, embarkStoryId: String, title: String) {
                 context.startActivity(
-                    EmbarkActivity.newInstance(context, embarkStoryId, "")
+                    EmbarkActivity.newInstance(context, embarkStoryId, title)
                 )
             }
         }
