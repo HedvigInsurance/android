@@ -16,7 +16,6 @@ import com.hedvig.app.util.extensions.viewBinding
 import e
 import kotlinx.parcelize.Parcelize
 import org.koin.android.ext.android.inject
-import org.koin.java.KoinJavaComponent.inject
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle

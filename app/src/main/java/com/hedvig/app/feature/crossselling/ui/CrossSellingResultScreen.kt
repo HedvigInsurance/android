@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.crossselling.ui
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.hedvig.app.R
 import com.hedvig.app.ui.compose.designsystem.LargeContainedButton
 import com.hedvig.app.ui.compose.designsystem.LargeOutlinedButton
@@ -152,7 +154,7 @@ private fun ButtonsSection(
                     onClick = openChat,
                 ) {
                     Image(
-                        painter = painterResource(R.drawable.ic_chat_white),
+                        painter = painterResource(R.drawable.ic_chat_on_primary),
                         contentDescription = null,
                     )
                     Spacer(Modifier.width(8.dp))
@@ -182,6 +184,28 @@ private fun ButtonsSection(
 )
 @Composable
 fun CrossSellingResultScreenPreview(
+    @PreviewParameter(ActivityResultProvider::class) crossSellingResult: CrossSellingResult,
+) {
+    HedvigTheme {
+        CrossSellingResultScreen(
+            crossSellingResult,
+            Clock.systemDefaultZone(),
+            DateTimeFormatter.ISO_LOCAL_DATE,
+            {},
+            {}
+        )
+    }
+}
+
+@ShowkaseComposable(skip = true)
+@Preview(
+    showSystemUi = true,
+    name = "Accident Result • Dark",
+    group = "Cross Sell result",
+    uiMode = UI_MODE_NIGHT_YES,
+)
+@Composable
+fun CrossSellingResultScreenPreviewDark(
     @PreviewParameter(ActivityResultProvider::class) crossSellingResult: CrossSellingResult,
 ) {
     HedvigTheme {
