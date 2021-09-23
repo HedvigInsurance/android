@@ -1,36 +1,52 @@
 package com.hedvig.app.feature.loggedin.service
 
-import android.content.Context
-import com.hedvig.app.feature.loggedin.ui.TabNotification
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringSetPreferencesKey
+import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class TabNotificationService(
-    private val context: Context
+    private val getCrossSellsUseCase: GetCrossSellsUseCase,
+    private val dataStore: DataStore<Preferences>,
 ) {
-    fun getTabNotification(): TabNotification? {
-        // TODO: Clean this up. Since we updated Material Components, an implementation detail of
-        //  the BottomNavigationBar has changed, and our tab notification feature no longer works.
+    private val seenCrossSells = dataStore
+        .data
+        .map { preferences ->
+            preferences[SEEN_CROSS_SELLS_KEY] ?: emptySet()
+        }
 
-        // if (!context
-        //         .getSharedPreferences(TAB_NOTIFICATION_SHARED_PREFERENCES, Context.MODE_PRIVATE)
-        //         .getBoolean(HAS_BEEN_NOTIFIED_ABOUT_REFERRALS, false)
-        // ) {
+    suspend fun load(): Flow<Set<LoggedInTabs>> {
+        val potentialCrossSells = getCrossSellsUseCase.invoke()
 
-        //     return TabNotification.REFERRALS
-        // }
-
-        return null
+        return seenCrossSells
+            .map { seenCrossSells ->
+                if ((potentialCrossSells subtract seenCrossSells).isNotEmpty()) {
+                    setOf(LoggedInTabs.INSURANCE)
+                } else {
+                    emptySet()
+                }
+            }
     }
 
-    fun hasBeenNotifiedAboutReferrals() {
-        context
-            .getSharedPreferences(TAB_NOTIFICATION_SHARED_PREFERENCES, Context.MODE_PRIVATE)
-            .edit()
-            .putBoolean(HAS_BEEN_NOTIFIED_ABOUT_REFERRALS, true)
-            .apply()
+    suspend fun visitTab(tab: LoggedInTabs) {
+        if (tab == LoggedInTabs.INSURANCE) {
+            markCurrentCrossSellsAsSeen()
+        }
+    }
+
+    private suspend fun markCurrentCrossSellsAsSeen() {
+        val crossSells = getCrossSellsUseCase.invoke()
+        dataStore
+            .edit { preferences ->
+                preferences[SEEN_CROSS_SELLS_KEY] =
+                    (preferences[SEEN_CROSS_SELLS_KEY] ?: emptySet()) + crossSells
+            }
     }
 
     companion object {
-        private const val TAB_NOTIFICATION_SHARED_PREFERENCES = "tab_notifications"
-        private const val HAS_BEEN_NOTIFIED_ABOUT_REFERRALS = "has_been_notified_about_referrals"
+        val SEEN_CROSS_SELLS_KEY = stringSetPreferencesKey("SEEN_CROSS_SELLS")
     }
 }
