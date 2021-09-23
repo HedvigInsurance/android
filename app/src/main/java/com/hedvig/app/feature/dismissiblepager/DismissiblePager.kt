@@ -48,7 +48,7 @@ abstract class DismissiblePager : DialogFragment() {
         dismiss()
     }
 
-    open fun onLastPageButton() {}
+    abstract fun onLastPageButton()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
