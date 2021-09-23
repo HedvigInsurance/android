@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.MarketManager
+import d
 import org.koin.android.ext.android.inject
 
 abstract class BaseActivity : AppCompatActivity {
@@ -22,7 +23,9 @@ abstract class BaseActivity : AppCompatActivity {
     private val marketManager: MarketManager by inject()
 
     override fun onResume() {
-        tracker.screenView(javaClass.simpleName)
+        val currentClassSimpleName = javaClass.simpleName
+        tracker.screenView(currentClassSimpleName)
+        d { "Navigated to $currentClassSimpleName" }
         super.onResume()
     }
 

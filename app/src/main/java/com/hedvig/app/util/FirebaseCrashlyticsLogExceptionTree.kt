@@ -8,13 +8,15 @@ class FirebaseCrashlyticsLogExceptionTree : Timber.Tree() {
     override fun isLoggable(tag: String?, priority: Int) = priority >= Log.ERROR
 
     override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
-        t?.let { FirebaseCrashlytics.getInstance().recordException(it) } ?: run {
+        if (t != null) {
+            FirebaseCrashlytics.getInstance().recordException(t)
+        } else {
             val tagFormatted = tag?.let { "[$tag]" }.orEmpty()
             FirebaseCrashlytics.getInstance().log("${prefix(priority)}${tagFormatted}$message")
         }
     }
 
-    fun prefix(priority: Int) = when (priority) {
+    private fun prefix(priority: Int) = when (priority) {
         Log.ERROR -> "[ERROR]"
         else -> "[UNKNOWN($priority)]"
     }
