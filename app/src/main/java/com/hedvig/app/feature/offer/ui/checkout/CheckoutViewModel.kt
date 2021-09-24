@@ -9,7 +9,6 @@ import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.ValidationResult
-import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.validateEmail
 import com.hedvig.app.util.validateNationalIdentityNumber
 import kotlinx.coroutines.channels.BufferOverflow
@@ -28,7 +27,6 @@ class CheckoutViewModel(
     private val getQuotesUseCase: GetQuotesUseCase,
     private val signQuotesUseCase: SignQuotesUseCase,
     private val marketManager: MarketManager,
-    private val cacheManager: CacheManager,
 ) : ViewModel() {
 
     private lateinit var quoteIds: List<String>
@@ -146,7 +144,6 @@ class CheckoutViewModel(
             when (result) {
                 is SignQuotesUseCase.SignQuoteResult.Error -> _events.tryEmit(Event.Error(result.message))
                 SignQuotesUseCase.SignQuoteResult.Success -> {
-                    cacheManager.clearCache()
                     _events.tryEmit(Event.CheckoutSuccess)
                 }
             }

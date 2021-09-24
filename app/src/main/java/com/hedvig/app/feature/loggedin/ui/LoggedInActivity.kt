@@ -76,6 +76,10 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     private lateinit var referralTermsUrl: String
     private lateinit var referralsIncentive: MonetaryAmount
 
+    private val isFromOnboarding: Boolean by lazy {
+        intent.getBooleanExtra(EXTRA_IS_FROM_ONBOARDING, false)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -136,34 +140,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 true
             }
 
-            if (intent.getBooleanExtra(EXTRA_IS_FROM_ONBOARDING, false)) {
-                welcomeViewModel.fetch()
-                welcomeViewModel.data.observe(this@LoggedInActivity) { data ->
-                    WelcomeDialog.newInstance(
-                        data.welcome.mapIndexed { index, page ->
-                            DismissiblePagerModel.TitlePage(
-                                ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
-                                page.title,
-                                page.paragraph,
-                                getString(
-                                    if (index == data.welcome.size - 1) {
-                                        R.string.NEWS_DISMISS
-                                    } else {
-                                        R.string.NEWS_PROCEED
-                                    }
-                                )
-                            )
-                        }
-                    )
-                        .show(supportFragmentManager, WelcomeDialog.TAG)
-                    loggedInRoot.postDelayed(
-                        {
-                            loggedInRoot.show()
-                        },
-                        resources.getInteger(R.integer.slide_in_animation_duration).toLong()
-                    )
-                }
-                intent.removeExtra(EXTRA_IS_FROM_ONBOARDING)
+            if (isFromOnboarding) {
+                fetchAndShowWelcomeDialog(binding)
             }
 
             bindData()
@@ -175,6 +153,34 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 }
             }
         }
+    }
+
+    private fun fetchAndShowWelcomeDialog(binding: ActivityLoggedInBinding) {
+        welcomeViewModel.fetch()
+        welcomeViewModel.data.observe(this@LoggedInActivity) { data ->
+            WelcomeDialog.newInstance(
+                data.welcome.mapIndexed { index, page ->
+                    DismissiblePagerModel.TitlePage(
+                        ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
+                        page.title,
+                        page.paragraph,
+                        getString(
+                            if (index == data.welcome.size - 1) {
+                                R.string.NEWS_DISMISS
+                            } else {
+                                R.string.NEWS_PROCEED
+                            }
+                        )
+                    )
+                }
+            )
+                .show(supportFragmentManager, WelcomeDialog.TAG)
+            binding.loggedInRoot.postDelayed(
+                { binding.loggedInRoot.show() },
+                resources.getInteger(R.integer.slide_in_animation_duration).toLong()
+            )
+        }
+        intent.removeExtra(EXTRA_IS_FROM_ONBOARDING)
     }
 
     private suspend fun showReviewWithDelay() {
@@ -450,7 +456,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             withoutHistory: Boolean = false,
             initialTab: LoggedInTabs = LoggedInTabs.HOME,
             isFromOnboarding: Boolean = false,
-            showRatingDialog: Boolean = false,
+            showRatingDialog: Boolean = false
         ) = Intent(context, LoggedInActivity::class.java).apply {
             if (withoutHistory) {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

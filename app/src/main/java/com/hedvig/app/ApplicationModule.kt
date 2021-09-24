@@ -343,7 +343,7 @@ val marketPickerModule = module {
 }
 
 val loggedInModule = module {
-    viewModel<LoggedInViewModel> { LoggedInViewModelImpl(get(), get(), get()) }
+    viewModel<LoggedInViewModel> { LoggedInViewModelImpl(get(), get(), get(), get()) }
 }
 
 val whatsNewModule = module {
@@ -436,7 +436,7 @@ val changeDateBottomSheetModule = module {
 }
 
 val checkoutModule = module {
-    viewModel { (ids: List<String>) -> CheckoutViewModel(ids, get(), get(), get(), get()) }
+    viewModel { (ids: List<String>) -> CheckoutViewModel(ids, get(), get(), get()) }
 }
 
 val serviceModule = module {
@@ -532,8 +532,8 @@ val useCaseModule = module {
     single { GetQuotesUseCase(get()) }
     single { GetQuoteUseCase(get()) }
     single { EditStartDateUseCase(get(), get()) }
-    single { SignQuotesUseCase(get(), get()) }
-    single { ApproveQuotesUseCase(get(), get(), get()) }
+    single { SignQuotesUseCase(get(), get(), get()) }
+    single { ApproveQuotesUseCase(get(), get(), get(), get()) }
     single { RefreshQuotesUseCase(get()) }
     single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GetContractsUseCase(get(), get()) }

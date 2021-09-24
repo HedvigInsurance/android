@@ -14,4 +14,5 @@ class MockLoggedInViewModel : LoggedInViewModel() {
 
     override fun onReviewByChatComplete() {}
     override fun onTabVisited(tab: LoggedInTabs) {}
+    override fun onForceReload() {}
 }

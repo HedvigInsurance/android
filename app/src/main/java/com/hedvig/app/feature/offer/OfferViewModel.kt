@@ -178,7 +178,7 @@ class OfferViewModelImpl(
                 _events.tryEmit(Event.Error())
                 return@launch
             }
-            val event = when (val result = approveQuotesUseCase.approveQuotes(quoteIds)) {
+            val event = when (val result = approveQuotesUseCase.approveQuotesAndClearCache(quoteIds)) {
                 is ApproveQuotesUseCase.ApproveQuotesResult.Error.GeneralError -> Event.Error(result.message)
                 ApproveQuotesUseCase.ApproveQuotesResult.Error.ApproveError -> Event.ApproveError(
                     postSignDependencies.postSignScreen
@@ -288,7 +288,7 @@ class OfferViewModelImpl(
     override fun onSwedishBankIdSign() {
         viewModelScope.launch {
             _events.emit(
-                when (val result = signQuotesUseCase.signQuotes(quoteIds)) {
+                when (val result = signQuotesUseCase.signQuotesAndClearCache(quoteIds)) {
                     is SignQuotesUseCase.SignQuoteResult.Error -> Event.Error(result.message)
                     is SignQuotesUseCase.SignQuoteResult.StartSwedishBankId ->
                         Event.StartSwedishBankIdSign(quoteIds, result.autoStartToken)
