@@ -62,7 +62,7 @@ class InsuranceContractBuilder(
         currentAgreementDetailsTable = InsuranceQuery.CurrentAgreementDetailsTable(
             fragments = InsuranceQuery.CurrentAgreementDetailsTable.Fragments(detailsTable),
         ),
-        perils = PerilBuilder().insuranceQueryBuild(5),
+        contractPerils = PerilBuilder().insuranceQueryBuild(5),
         insurableLimits = listOf(
             InsuranceQuery.InsurableLimit(
                 fragments = InsuranceQuery.InsurableLimit.Fragments(

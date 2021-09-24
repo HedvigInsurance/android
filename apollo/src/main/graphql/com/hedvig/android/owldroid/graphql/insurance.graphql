@@ -19,7 +19,7 @@ query InsuranceQuery($locale: Locale!) {
     currentAgreementDetailsTable(locale: $locale) {
       ...TableFragment
     }
-    perils(locale: $locale) {
+    contractPerils(locale: $locale) {
       ...PerilFragment
     }
     insurableLimits(locale: $locale) {

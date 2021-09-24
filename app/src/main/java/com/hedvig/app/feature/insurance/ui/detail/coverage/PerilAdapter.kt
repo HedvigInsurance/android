@@ -20,7 +20,7 @@ import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.viewBinding
 
 class PerilAdapter(
-    private val imageLoader: ImageLoader
+    private val imageLoader: ImageLoader,
 ) : ListAdapter<PerilModel, PerilAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
@@ -117,20 +117,19 @@ class PerilAdapter(
         class Icon(parent: ViewGroup, private val imageLoader: ImageLoader) :
             ViewHolder(parent.inflate(R.layout.peril_icon)) {
             private val binding by viewBinding(PerilIconBinding::bind)
+
             override fun bind(item: PerilModel) {
                 if (item !is PerilModel.Icon) {
                     invalid(item)
                     return
                 }
                 binding.root.apply {
-                    val link = "${context.getString(R.string.BASE_URL)}${
-                    if (context.isDarkThemeActive) {
+                    val link = if (context.isDarkThemeActive) {
                         item.darkUrl
                     } else {
                         item.lightUrl
                     }
-                    }"
-                    this.load(link, imageLoader) {
+                    load(link, imageLoader) {
                         crossfade(true)
                     }
                 }

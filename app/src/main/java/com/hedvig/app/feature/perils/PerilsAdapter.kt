@@ -104,9 +104,13 @@ class PerilsAdapter(
             }
         }
 
-        class Peril(parent: ViewGroup, private val imageLoader: ImageLoader) :
+        class Peril(
+            parent: ViewGroup,
+            private val imageLoader: ImageLoader,
+        ) :
             ViewHolder(parent.inflate(R.layout.peril_detail)) {
             private val binding by viewBinding(PerilDetailBinding::bind)
+
             override fun bind(
                 data: PerilItem,
                 fragmentManager: FragmentManager,
@@ -116,13 +120,11 @@ class PerilsAdapter(
                 }
 
                 label.text = data.inner.title
-                val iconUrl = "${icon.context.getString(R.string.BASE_URL)}${
-                if (icon.context.isDarkThemeActive) {
+                val iconUrl = if (icon.context.isDarkThemeActive) {
                     data.inner.darkUrl
                 } else {
                     data.inner.lightUrl
                 }
-                }"
                 icon.load(iconUrl, imageLoader) {
                     crossfade(true)
                 }
@@ -132,7 +134,7 @@ class PerilsAdapter(
                         .newInstance(data.inner)
                         .show(
                             fragmentManager,
-                            PerilBottomSheet.TAG
+                            PerilBottomSheet.TAG,
                         )
                 }
             }
