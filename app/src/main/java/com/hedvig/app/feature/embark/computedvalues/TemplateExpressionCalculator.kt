@@ -17,7 +17,7 @@ object TemplateExpressionCalculator {
         TokenType.STRING_CONSTANT to SINGLE_QUOTE_STRING_CONSTANT_EXPR,
     )
 
-    fun evaluateTemplateExpression(expression: String, store: HashMap<String, String>): String = try {
+    fun evaluateTemplateExpression(expression: String, store: Map<String, String>): String = try {
         val tokenStream = parseTokenStream(expression)
         val abstractExpression = parseAbstractExpression(tokenStream)
         evaluateAbstractExpression(abstractExpression, store)
@@ -123,7 +123,7 @@ object TemplateExpressionCalculator {
             ?: throw NoExpressionMatch("Could not create an abstract expression from $tokenStream")
     }
 
-    private fun evaluateAbstractExpression(expression: Expression, store: HashMap<String, String>): String =
+    private fun evaluateAbstractExpression(expression: Expression, store: Map<String, String>): String =
         when (expression) {
             is Expression.StoreKeyExpression -> store[expression.key] ?: ""
             is Expression.NumberConstantExpression -> expression.constant.toBigDecimal().stripTrailingZeros().toString()

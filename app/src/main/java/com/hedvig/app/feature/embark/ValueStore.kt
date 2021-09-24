@@ -52,7 +52,7 @@ class ValueStoreImpl : ValueStore {
 
     override fun get(key: String): String? {
         return computedValues?.get(key)?.let {
-            TemplateExpressionCalculator.evaluateTemplateExpression(it, storedValues.peek())
+            TemplateExpressionCalculator.evaluateTemplateExpression(it, storedValues.peek() + stage)
         } ?: storedValues.peek()[key] ?: stage[key]
     }
 
