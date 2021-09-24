@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
-import com.hedvig.app.util.apollo.CacheManager
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,15 +40,12 @@ abstract class LoggedInViewModel : ViewModel() {
     abstract fun onReviewByChatComplete()
 
     abstract fun onTabVisited(tab: LoggedInTabs)
-
-    abstract fun onForceReload()
 }
 
 class LoggedInViewModelImpl(
     private val loggedInRepository: LoggedInRepository,
     private val chatEventStore: ChatEventStore,
     private val tabNotificationService: TabNotificationService,
-    private val cacheManager: CacheManager,
 ) : LoggedInViewModel() {
 
     init {
@@ -83,9 +79,5 @@ class LoggedInViewModelImpl(
 
     override fun onTabVisited(tab: LoggedInTabs) {
         viewModelScope.launch { tabNotificationService.visitTab(tab) }
-    }
-
-    override fun onForceReload() {
-        cacheManager.clearCache()
     }
 }

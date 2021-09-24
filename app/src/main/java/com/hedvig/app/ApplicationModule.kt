@@ -343,7 +343,7 @@ val marketPickerModule = module {
 }
 
 val loggedInModule = module {
-    viewModel<LoggedInViewModel> { LoggedInViewModelImpl(get(), get(), get(), get()) }
+    viewModel<LoggedInViewModel> { LoggedInViewModelImpl(get(), get(), get()) }
 }
 
 val whatsNewModule = module {
