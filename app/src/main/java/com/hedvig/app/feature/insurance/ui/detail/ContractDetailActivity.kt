@@ -21,7 +21,6 @@ import com.hedvig.app.feature.insurance.ui.bindTo
 import com.hedvig.app.feature.insurance.ui.detail.coverage.CoverageFragment
 import com.hedvig.app.feature.insurance.ui.detail.documents.DocumentsFragment
 import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoFragment
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
@@ -30,7 +29,6 @@ import com.hedvig.app.util.extensions.viewBinding
 import e
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {

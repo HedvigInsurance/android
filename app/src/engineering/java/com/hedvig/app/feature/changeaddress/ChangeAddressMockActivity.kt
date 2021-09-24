@@ -9,8 +9,8 @@ import com.hedvig.app.feature.home.ui.changeaddress.ViewState
 import com.hedvig.app.feature.home.ui.changeaddress.result.ChangeAddressResultActivity
 import com.hedvig.app.feature.table.Table
 import com.hedvig.app.genericDevelopmentAdapter
-import java.time.LocalDate
 import org.koin.core.module.Module
+import java.time.LocalDate
 
 class ChangeAddressMockActivity : MockActivity() {
     override val original = emptyList<Module>()

@@ -8,7 +8,7 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class TabNotificationService(
+class TabNotificationService @Inject constructor(
     private val getCrossSellsUseCase: GetCrossSellsUseCase,
     private val dataStore: DataStore<Preferences>,
 ) {

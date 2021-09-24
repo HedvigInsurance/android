@@ -8,7 +8,6 @@ import com.hedvig.app.feature.dismissiblepager.DismissiblePager
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import dagger.hilt.android.AndroidEntryPoint
 import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
 @AndroidEntryPoint
 class WhatsNewDialog : DismissiblePager() {

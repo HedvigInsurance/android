@@ -23,8 +23,8 @@ import com.hedvig.app.databinding.ActivityLoggedInBinding
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.onboarding.MemberIdViewModel
-import com.hedvig.app.feature.ratings.RatingsTracker
 import com.hedvig.app.feature.onboarding.MemberIdViewModelImpl
+import com.hedvig.app.feature.ratings.RatingsTracker
 import com.hedvig.app.feature.referrals.ui.ReferralsInformationActivity
 import com.hedvig.app.feature.welcome.WelcomeDialog
 import com.hedvig.app.feature.welcome.WelcomeViewModel
@@ -51,14 +51,12 @@ import com.hedvig.app.util.extensions.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
 import e
 import java.time.LocalDate
+import javax.inject.Inject
 import javax.money.MonetaryAmount
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import java.time.LocalDate
-import javax.money.MonetaryAmount
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
@@ -70,7 +68,9 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     private val welcomeViewModel: WelcomeViewModel by viewModels()
     private val loggedInViewModel: LoggedInViewModel by viewModels()
 
-    private val ratingsTracker: RatingsTracker by inject()
+    @Inject
+    lateinit var ratingsTracker: RatingsTracker
+
     @Inject
     lateinit var loggedInTracker: LoggedInTracker
 

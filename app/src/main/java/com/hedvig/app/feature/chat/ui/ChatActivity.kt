@@ -54,7 +54,6 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
     private val chatViewModel: ChatViewModel by viewModel()
     private val binding by viewBinding(ActivityChatBinding::bind)
 
-
     private val imageLoader: ImageLoader by inject()
 
     private val chatTracker: ChatTracker by inject()

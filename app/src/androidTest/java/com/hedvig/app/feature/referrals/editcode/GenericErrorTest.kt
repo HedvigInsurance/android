@@ -1,12 +1,12 @@
 package com.hedvig.app.feature.referrals.editcode
 
 import com.hedvig.android.owldroid.graphql.UpdateReferralCampaignCodeMutation
+import com.hedvig.app.ApolloMockServerRule
 import com.hedvig.app.R
+import com.hedvig.app.apolloResponse
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeActivity
 import com.hedvig.app.util.ApolloCacheClearRule
-import com.hedvig.app.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
-import com.hedvig.app.apolloResponse
 import com.hedvig.app.util.context
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.kakao.screen.Screen.Companion.onScreen

@@ -29,7 +29,6 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
-import org.koin.androidx.viewmodel.ext.android.viewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

@@ -8,7 +8,6 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityReferralsInformationBinding
 import com.hedvig.app.feature.referrals.service.ReferralsTracker
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows

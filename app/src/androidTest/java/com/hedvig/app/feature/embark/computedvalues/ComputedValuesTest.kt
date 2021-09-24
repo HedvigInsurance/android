@@ -1,14 +1,14 @@
 package com.hedvig.app.feature.embark.computedvalues
 
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
+import com.hedvig.app.ApolloMockServerRule
+import com.hedvig.app.apolloResponse
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import com.hedvig.app.feature.embark.screens.NumberActionScreen
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_COMPUTED_VALUE
 import com.hedvig.app.util.ApolloCacheClearRule
-import com.hedvig.app.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
-import com.hedvig.app.apolloResponse
 import com.hedvig.app.util.context
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.kakao.screen.Screen

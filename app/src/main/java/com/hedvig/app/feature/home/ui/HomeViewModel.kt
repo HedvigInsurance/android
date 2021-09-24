@@ -11,11 +11,11 @@ import com.hedvig.app.feature.home.data.HomeRepository
 import com.zhuinden.livedatacombinetuplekt.combineTuple
 import dagger.hilt.android.lifecycle.HiltViewModel
 import e
-import javax.inject.Inject
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 abstract class HomeViewModel : ViewModel() {
     sealed class ViewState {

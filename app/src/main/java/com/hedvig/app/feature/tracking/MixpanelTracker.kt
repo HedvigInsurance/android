@@ -2,8 +2,9 @@ package com.hedvig.app.feature.tracking
 
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import org.json.JSONObject
+import javax.inject.Inject
 
-class MixpanelTracker(
+class MixpanelTracker @Inject constructor(
     private val mixpanel: MixpanelAPI
 ) : TrackerSink {
     override fun track(eventName: String, properties: JSONObject?) {

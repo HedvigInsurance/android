@@ -6,8 +6,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import org.json.JSONObject
 import java.time.LocalDateTime
+import javax.inject.Inject
 
-class EngineeringTracker : TrackerSink {
+class EngineeringTracker @Inject constructor() : TrackerSink {
     private val _tracks = MutableStateFlow<List<TrackEvent>>(emptyList())
     val tracks = _tracks.asStateFlow()
 

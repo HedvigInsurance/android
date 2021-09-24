@@ -35,7 +35,6 @@ import com.hedvig.app.feature.embark.passages.selectaction.SelectActionParameter
 import com.hedvig.app.feature.embark.passages.textaction.TextActionFragment
 import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
 import com.hedvig.app.feature.offer.ui.OfferActivity
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.remove
@@ -43,7 +42,6 @@ import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.whenApiVersion
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 

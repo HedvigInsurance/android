@@ -34,7 +34,6 @@ import com.hedvig.app.feature.offer.PostSignScreen
 import com.hedvig.app.feature.offer.quotedetail.QuoteDetailActivity
 import com.hedvig.app.feature.offer.ui.checkout.CheckoutActivity
 import com.hedvig.app.feature.perils.PerilsAdapter
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignDialog
 import com.hedvig.app.util.extensions.compatDrawable

@@ -1,13 +1,13 @@
 package com.hedvig.app.feature.embark
 
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
+import com.hedvig.app.ApolloMockServerRule
+import com.hedvig.app.apolloResponse
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_INCOMPATIBLE_ACTION
 import com.hedvig.app.util.ApolloCacheClearRule
-import com.hedvig.app.ApolloMockServerRule
 import com.hedvig.app.util.LazyIntentsActivityScenarioRule
-import com.hedvig.app.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.stubExternalIntents
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase

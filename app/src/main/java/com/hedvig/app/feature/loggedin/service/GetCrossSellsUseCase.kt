@@ -6,7 +6,7 @@ import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
 import e
 
-class GetCrossSellsUseCase(
+class GetCrossSellsUseCase @Inject constructor(
     private val apolloClient: ApolloClient,
 ) {
     suspend operator fun invoke() = when (

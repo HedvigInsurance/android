@@ -2,11 +2,11 @@ package com.hedvig.app.di
 
 import android.content.Context
 import com.hedvig.app.BuildConfig
+import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.isDebug
 import com.hedvig.app.makeLocaleString
 import com.hedvig.app.makeUserAgent
-import com.hedvig.app.util.extensions.getAuthenticationToken
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,6 +23,7 @@ object OkHttpModule {
     @Provides
     fun provideOkHttpClient(
         marketManager: MarketManager,
+        authenticationTokenService: AuthenticationTokenService,
         @ApplicationContext context: Context
     ): OkHttpClient {
         val builder = OkHttpClient.Builder()
@@ -31,7 +32,7 @@ object OkHttpModule {
                 val builder = original
                     .newBuilder()
                     .method(original.method, original.body)
-                context.getAuthenticationToken()?.let { token ->
+                authenticationTokenService.authenticationToken?.let { token ->
                     builder.header("Authorization", token)
                 }
                 chain.proceed(builder.build())

@@ -7,8 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.app.feature.home.ui.changeaddress.GetAddressChangeStoryIdUseCase.SelfChangeEligibilityResult
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 abstract class ChangeAddressViewModel : ViewModel() {
     protected val _viewState = MutableLiveData<ViewState>()

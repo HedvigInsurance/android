@@ -11,7 +11,6 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.feature.settings.Market
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.service.getDynamicLinkFromFirebase
 import com.hedvig.app.service.startActivity
 import com.hedvig.app.util.extensions.avdDoOnEnd
@@ -19,11 +18,8 @@ import com.hedvig.app.util.extensions.avdStart
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SplashActivity : BaseActivity(R.layout.activity_splash) {

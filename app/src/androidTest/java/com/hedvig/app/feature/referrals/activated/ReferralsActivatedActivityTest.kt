@@ -2,13 +2,13 @@ package com.hedvig.app.feature.referrals.activated
 
 import androidx.test.rule.ActivityTestRule
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
+import com.hedvig.app.ApolloMockServerRule
 import com.hedvig.app.R
+import com.hedvig.app.apolloResponse
 import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedActivity
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_ENABLED
 import com.hedvig.app.util.ApolloCacheClearRule
-import com.hedvig.app.ApolloMockServerRule
 import com.hedvig.app.util.apollo.format
-import com.hedvig.app.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.market
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase

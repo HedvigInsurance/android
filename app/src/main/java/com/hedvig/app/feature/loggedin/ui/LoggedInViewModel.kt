@@ -2,13 +2,12 @@ package com.hedvig.app.feature.loggedin.ui
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
-<<<<<<< HEAD
 import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,11 +16,8 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
-=======
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
->>>>>>> 69cfc2025... Start work on injecting mock modules
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 abstract class AbstractLoggedInViewModel : ViewModel() {
     protected val _data = MutableLiveData<LoggedInQuery.Data>()
@@ -48,19 +44,12 @@ abstract class AbstractLoggedInViewModel : ViewModel() {
     abstract fun onTabVisited(tab: LoggedInTabs)
 }
 
-<<<<<<< HEAD
-class LoggedInViewModelImpl(
+@HiltViewModel
+class LoggedInViewModel @Inject constructor(
     private val loggedInRepository: LoggedInRepository,
     private val chatEventStore: ChatEventStore,
     private val tabNotificationService: TabNotificationService,
-) : LoggedInViewModel() {
-=======
-@HiltViewModel
-class LoggedInViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
-    private val loggedInRepository: LoggedInRepository
-) : AbstractLoggedInViewModel() {
->>>>>>> 69cfc2025... Start work on injecting mock modules
+    ) : AbstractLoggedInViewModel() {
 
     init {
         viewModelScope.launch {

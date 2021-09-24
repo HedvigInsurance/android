@@ -2,15 +2,15 @@ package com.hedvig.app.feature.payment
 
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.graphql.PaymentQuery
+import com.hedvig.app.ApolloMockServerRule
+import com.hedvig.app.apolloResponse
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
 import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_ACTIVE
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_HISTORIC_PAYMENTS
 import com.hedvig.app.util.ApolloCacheClearRule
-import com.hedvig.app.ApolloMockServerRule
 import com.hedvig.app.util.LazyIntentsActivityScenarioRule
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
-import com.hedvig.app.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.market
 import com.hedvig.app.util.stub

@@ -19,11 +19,9 @@ import com.hedvig.app.feature.connectpayin.ConnectPaymentScreenState
 import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
 import com.hedvig.app.feature.connectpayin.PostSignExplainerFragment
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.getLocale
 import com.hedvig.app.isDebug
 import e
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activity) {

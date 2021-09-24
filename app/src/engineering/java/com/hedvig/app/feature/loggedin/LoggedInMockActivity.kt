@@ -5,8 +5,8 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.whatsnew.WhatsNewRepository
 import com.hedvig.app.genericDevelopmentAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 import org.koin.core.module.Module
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class LoggedInMockActivity : MockActivity() {

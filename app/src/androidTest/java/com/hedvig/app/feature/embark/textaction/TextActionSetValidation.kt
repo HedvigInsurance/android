@@ -2,13 +2,13 @@ package com.hedvig.app.feature.embark.textaction
 
 import com.agoda.kakao.edit.KTextInputLayout
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
+import com.hedvig.app.ApolloMockServerRule
+import com.hedvig.app.apolloResponse
 import com.hedvig.app.feature.embark.screens.TextActionSetScreen
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION_SET_FIRST_TEXT_PERSONAL_NUMBER_SECOND_TEXT_EMAIL_VALIDATION
 import com.hedvig.app.util.ApolloCacheClearRule
-import com.hedvig.app.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
-import com.hedvig.app.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.withPlaceholder
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase

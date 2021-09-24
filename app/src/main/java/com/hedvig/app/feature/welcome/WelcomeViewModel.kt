@@ -7,8 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.WelcomeQuery
 import dagger.hilt.android.lifecycle.HiltViewModel
 import e
-import javax.inject.Inject
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class WelcomeViewModel @Inject constructor(

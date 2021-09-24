@@ -1,13 +1,13 @@
 package com.hedvig.app.feature.insurance.detail
 
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
+import com.hedvig.app.ApolloMockServerRule
 import com.hedvig.app.R
+import com.hedvig.app.apolloResponse
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_NORWEGIAN_TRAVEL
 import com.hedvig.app.util.ApolloCacheClearRule
-import com.hedvig.app.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
-import com.hedvig.app.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.hasText
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase

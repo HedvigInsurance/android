@@ -1,14 +1,14 @@
 package com.hedvig.app.feature.insurance.terminatedcontracts
 
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
+import com.hedvig.app.ApolloMockServerRule
+import com.hedvig.app.apolloResponse
 import com.hedvig.app.feature.insurance.screens.InsuranceScreen
 import com.hedvig.app.feature.insurance.screens.TerminatedContractsScreen
 import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsActivity
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_ONE_ACTIVE_ONE_TERMINATED
 import com.hedvig.app.util.ApolloCacheClearRule
-import com.hedvig.app.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
-import com.hedvig.app.apolloResponse
 import com.hedvig.app.util.context
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.kakao.screen.Screen.Companion.onScreen

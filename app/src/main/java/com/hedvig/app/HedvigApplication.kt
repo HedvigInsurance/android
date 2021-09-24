@@ -19,15 +19,12 @@ import com.hedvig.app.util.extensions.storeBoolean
 import dagger.hilt.android.HiltAndroidApp
 import e
 import i
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
-import org.koin.android.ext.koin.androidContext
-import org.koin.android.ext.koin.androidLogger
-import org.koin.core.context.startKoin
 import timber.log.Timber
+import javax.inject.Inject
 
 @HiltAndroidApp
 open class HedvigApplication : Application() {
@@ -48,48 +45,6 @@ open class HedvigApplication : Application() {
         Theme
             .fromSettings(this)
             ?.apply()
-
-        startKoin {
-            androidLogger()
-            androidContext(this@HedvigApplication)
-            modules(
-                listOf(
-                    applicationModule,
-                    viewModelModule,
-                    insuranceModule,
-                    marketingModule,
-                    offerModule,
-                    profileModule,
-                    paymentModule,
-                    keyGearModule,
-                    adyenModule,
-                    referralsModule,
-                    homeModule,
-                    serviceModule,
-                    repositoriesModule,
-                    localeBroadcastManagerModule,
-                    trackerModule,
-                    embarkModule,
-                    previousInsViewModel,
-                    marketPickerTrackerModule,
-                    whatsNewModule,
-                    marketManagerModule,
-                    connectPaymentModule,
-                    trustlyModule,
-                    notificationModule,
-                    marketPickerModule,
-                    textActionSetModule,
-                    numberActionSetModule,
-                    choosePlanModule,
-                    clockModule,
-                    embarkTrackerModule,
-                    localeManagerModule,
-                    useCaseModule,
-                    valueStoreModule,
-                    onboardingModule,
-                )
-            )
-        }
 
         val previousLanguage = PreferenceManager
             .getDefaultSharedPreferences(this)

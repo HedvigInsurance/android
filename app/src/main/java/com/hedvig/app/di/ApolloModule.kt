@@ -6,11 +6,11 @@ import com.apollographql.apollo.cache.normalized.NormalizedCacheFactory
 import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCache
 import com.apollographql.apollo.subscription.SubscriptionConnectionParams
 import com.apollographql.apollo.subscription.WebSocketSubscriptionTransport
-import com.hedvig.app.BuildConfig
 import com.hedvig.app.CUSTOM_TYPE_ADAPTERS
+import com.hedvig.app.R
+import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.isDebug
 import com.hedvig.app.util.apollo.ApolloTimberLogger
-import com.hedvig.app.util.extensions.getAuthenticationToken
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,6 +26,7 @@ object ApolloModule {
     fun provideApolloClient(
         okHttpClient: OkHttpClient,
         normalizedCacFactory: NormalizedCacheFactory<LruNormalizedCache>,
+        authenticationTokenService: AuthenticationTokenService,
         @ApplicationContext context: Context
     ): ApolloClient {
         val builder = ApolloClient
@@ -33,11 +34,11 @@ object ApolloModule {
             .serverUrl("http://localhost:8080/")
             .okHttpClient(okHttpClient)
             .subscriptionConnectionParams {
-                SubscriptionConnectionParams(mapOf("Authorization" to context.getAuthenticationToken()))
+                SubscriptionConnectionParams(mapOf("Authorization" to authenticationTokenService.authenticationToken))
             }
             .subscriptionTransportFactory(
                 WebSocketSubscriptionTransport.Factory(
-                    BuildConfig.WS_GRAPHQL_URL,
+                    context.getString(R.string.WS_GRAPHQL_URL),
                     okHttpClient
                 )
             )

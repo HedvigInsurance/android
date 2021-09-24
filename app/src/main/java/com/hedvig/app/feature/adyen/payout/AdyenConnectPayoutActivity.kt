@@ -11,11 +11,9 @@ import com.adyen.checkout.dropin.DropInResult
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.adyen.AdyenCurrency
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.getLocale
 import com.hedvig.app.isDebug
 import e
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AdyenConnectPayoutActivity : BaseActivity(R.layout.fragment_container_activity) {

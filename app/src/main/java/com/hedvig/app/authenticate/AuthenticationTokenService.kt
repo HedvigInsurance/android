@@ -8,7 +8,7 @@ interface AuthenticationTokenService {
     var authenticationToken: String?
 }
 
-class SharedPreferencesAuthenticationTokenService(
+class SharedPreferencesAuthenticationTokenService constructor(
     private val sharedPreferences: SharedPreferences
 ) : AuthenticationTokenService {
     override var authenticationToken: String?

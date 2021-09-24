@@ -7,8 +7,9 @@ import com.hedvig.app.feature.home.ui.changeaddress.GetAddressChangeStoryIdUseCa
 import com.hedvig.app.feature.home.ui.changeaddress.GetAddressChangeStoryIdUseCase.SelfChangeEligibilityResult.Error
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
+import javax.inject.Inject
 
-class GetAddressChangeStoryIdUseCase(
+class GetAddressChangeStoryIdUseCase @Inject constructor(
     private val apolloClient: ApolloClient,
 ) {
 

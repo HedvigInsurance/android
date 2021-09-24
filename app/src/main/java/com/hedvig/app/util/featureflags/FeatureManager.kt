@@ -2,18 +2,19 @@ package com.hedvig.app.util.featureflags
 
 import androidx.annotation.VisibleForTesting
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.isDebug
 import java.util.concurrent.CopyOnWriteArrayList
+import javax.inject.Inject
 
-class FeatureManager(
-    val marketManager: MarketManager,
-    isDebugBuild: Boolean
+class FeatureManager @Inject constructor(
+    val marketManager: MarketManager
 ) {
 
     @VisibleForTesting
     internal val providers = CopyOnWriteArrayList<FeatureFlagProvider>()
 
     init {
-        if (isDebugBuild) {
+        if (isDebug()) {
             addProvider(DebugFeatureFlagProvider(marketManager))
         } else {
             addProvider(ProductionFeatureFlagProvider(marketManager))

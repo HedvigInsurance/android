@@ -15,7 +15,6 @@ import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.authenticate.SharedPreferencesAuthenticationTokenService
-import com.hedvig.app.authenticate.SharedPreferencesLoginStatusService
 import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModel
@@ -356,7 +355,7 @@ val checkoutModule = module {
 
 val serviceModule = module {
     single { FileService(get()) }
-    single<LoginStatusService> { SharedPreferencesLoginStatusService(get(), get(), get()) }
+    single<LoginStatusService> { LoginStatusService(get(), get(), get()) }
     single<AuthenticationTokenService> { SharedPreferencesAuthenticationTokenService(get()) }
     single { TabNotificationService(get(), get()) }
     single { DeviceInformationService(get()) }
@@ -471,7 +470,7 @@ val sharedPreferencesModule = module {
 }
 
 val featureRuntimeBehaviorModule = module {
-    single { FeatureManager(get(), isDebug()) }
+    single { FeatureManager(get()) }
 }
 
 val coilModule = module {

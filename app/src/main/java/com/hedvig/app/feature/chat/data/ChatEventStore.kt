@@ -15,7 +15,7 @@ interface ChatEventStore {
     fun observeChatClosedCounter(): Flow<Int>
 }
 
-class ChatEventDataStore(
+class ChatEventDataStore constructor(
     private val dataStore: DataStore<Preferences>
 ) : ChatEventStore {
 

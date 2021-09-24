@@ -2,15 +2,15 @@ package com.hedvig.app.feature.home
 
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
+import com.hedvig.app.ApolloMockServerRule
 import com.hedvig.app.R
+import com.hedvig.app.apolloResponse
 import com.hedvig.app.feature.home.screens.HomeTabScreen
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE_IN_FUTURE
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_KEY_GEAR_FEATURE_ENABLED
 import com.hedvig.app.util.ApolloCacheClearRule
-import com.hedvig.app.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
-import com.hedvig.app.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.hasText
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase

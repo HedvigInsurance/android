@@ -6,8 +6,8 @@ import com.hedvig.android.owldroid.graphql.WhatsNewQuery
 import com.hedvig.app.util.LiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import e
-import javax.inject.Inject
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 abstract class WhatsNewViewModel : ViewModel() {
     val news = LiveEvent<WhatsNewQuery.Data>()

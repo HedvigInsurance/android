@@ -22,7 +22,6 @@ import com.hedvig.app.insuranceModule
 import com.hedvig.app.keyGearModule
 import com.hedvig.app.localeBroadcastManagerModule
 import com.hedvig.app.localeManagerModule
-import com.hedvig.app.loggedInModule
 import com.hedvig.app.marketManagerModule
 import com.hedvig.app.marketPickerModule
 import com.hedvig.app.marketPickerTrackerModule
@@ -59,7 +58,6 @@ class KoinInitializer : Initializer<KoinApplication> {
             listOf(
                 applicationModule,
                 viewModelModule,
-                loggedInModule,
                 insuranceModule,
                 marketingModule,
                 offerModule,
