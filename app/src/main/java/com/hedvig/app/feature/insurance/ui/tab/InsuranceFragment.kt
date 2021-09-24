@@ -2,7 +2,6 @@ package com.hedvig.app.feature.insurance.ui.tab
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.flowWithLifecycle
 import com.hedvig.app.R
@@ -50,6 +49,11 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
             )
             adapter = InsuranceAdapter(tracker, marketManager, insuranceViewModel::load)
         }
+
+        binding.swipeToRefresh.setOnRefreshListener {
+            insuranceViewModel.load()
+        }
+
         insuranceViewModel
             .data
             .flowWithLifecycle(viewLifecycle)
@@ -59,7 +63,7 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
 
     private fun bind(viewState: InsuranceViewModel.ViewState) {
         val adapter = binding.insuranceRecycler.adapter as? InsuranceAdapter ?: return
-        binding.loadSpinner.loadingSpinner.isVisible = viewState is InsuranceViewModel.ViewState.Loading
+        binding.swipeToRefresh.isRefreshing = viewState is InsuranceViewModel.ViewState.Loading
 
         when (viewState) {
             InsuranceViewModel.ViewState.Error -> {

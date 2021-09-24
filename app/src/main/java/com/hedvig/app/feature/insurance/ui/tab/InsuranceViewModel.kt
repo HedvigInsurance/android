@@ -31,6 +31,7 @@ class InsuranceViewModelImpl(
 
     override fun load() {
         viewModelScope.launch {
+            _data.value = ViewState.Loading
             when (val result = getContractsUseCase()) {
                 is GetContractsUseCase.InsuranceResult.Error -> {
                     result.message?.let { e { it } }
