@@ -31,7 +31,7 @@ object ApolloModule {
     ): ApolloClient {
         val builder = ApolloClient
             .builder()
-            .serverUrl("http://localhost:8080/")
+            .serverUrl("https://graphql.dev.hedvigit.com/graphql")
             .okHttpClient(okHttpClient)
             .subscriptionConnectionParams {
                 SubscriptionConnectionParams(mapOf("Authorization" to authenticationTokenService.authenticationToken))

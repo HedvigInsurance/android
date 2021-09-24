@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.stringSetPreferencesKey
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
 class TabNotificationService @Inject constructor(
     private val getCrossSellsUseCase: GetCrossSellsUseCase,

@@ -11,13 +11,15 @@ import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.makeLocaleString
 import com.hedvig.app.util.LocaleManager
+import dagger.hilt.android.qualifiers.ApplicationContext
 import e
 import i
+import javax.inject.Inject
 
-class LanguageRepository(
+class LanguageRepository @Inject constructor(
     private val apolloClient: ApolloClient,
     private val marketManager: MarketManager,
-    private val context: Context,
+    @ApplicationContext private val context: Context,
     private val localeManager: LocaleManager
 ) {
 

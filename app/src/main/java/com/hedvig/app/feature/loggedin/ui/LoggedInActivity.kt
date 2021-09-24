@@ -50,13 +50,13 @@ import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import dagger.hilt.android.AndroidEntryPoint
 import e
-import java.time.LocalDate
-import javax.inject.Inject
-import javax.money.MonetaryAmount
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import javax.inject.Inject
+import javax.money.MonetaryAmount
 
 @AndroidEntryPoint
 class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {

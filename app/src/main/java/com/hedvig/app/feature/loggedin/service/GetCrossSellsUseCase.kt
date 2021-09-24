@@ -5,6 +5,7 @@ import com.hedvig.android.owldroid.graphql.CrossSellsQuery
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
 import e
+import javax.inject.Inject
 
 class GetCrossSellsUseCase @Inject constructor(
     private val apolloClient: ApolloClient,

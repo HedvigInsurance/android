@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.view.View
+import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import coil.load
@@ -20,10 +21,11 @@ import com.hedvig.app.feature.marketpicker.MarketSelectedFragment
 import com.hedvig.app.util.BlurHashDecoder
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.viewBinding
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MarketingActivity : BaseActivity(R.layout.activity_marketing) {
-    private val model: MarketingViewModel by viewModel()
+    private val model: MarketingViewModelImpl by viewModels()
     private val binding by viewBinding(ActivityMarketingBinding::bind)
 
     override fun onCreate(savedInstanceState: Bundle?) {

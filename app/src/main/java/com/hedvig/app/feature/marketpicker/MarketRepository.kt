@@ -3,16 +3,15 @@ package com.hedvig.app.feature.marketpicker
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.coroutines.await
 import com.hedvig.android.owldroid.graphql.GeoQuery
-import com.hedvig.app.HedvigApplication
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.shouldOverrideFeatureFlags
+import javax.inject.Inject
 
-class MarketRepository(
+class MarketRepository @Inject constructor(
     private val apolloClient: ApolloClient,
     private val marketManager: MarketManager,
-    private val application: HedvigApplication
 ) {
 
     suspend fun getMarket(): Market {

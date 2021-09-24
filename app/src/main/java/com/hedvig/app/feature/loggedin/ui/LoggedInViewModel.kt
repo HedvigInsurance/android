@@ -49,7 +49,7 @@ class LoggedInViewModel @Inject constructor(
     private val loggedInRepository: LoggedInRepository,
     private val chatEventStore: ChatEventStore,
     private val tabNotificationService: TabNotificationService,
-    ) : AbstractLoggedInViewModel() {
+) : AbstractLoggedInViewModel() {
 
     init {
         viewModelScope.launch {

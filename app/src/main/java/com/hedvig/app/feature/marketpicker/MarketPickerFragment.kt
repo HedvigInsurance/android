@@ -4,18 +4,20 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.doOnNextLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentMarketPickerBinding
-import com.hedvig.app.feature.marketing.ui.MarketingViewModel
+import com.hedvig.app.feature.marketing.ui.MarketingViewModelImpl
 import com.hedvig.app.feature.marketing.ui.NavigationState
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsetsMargin
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
+import dagger.hilt.android.AndroidEntryPoint
 import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
+@AndroidEntryPoint
 class MarketPickerFragment : Fragment(R.layout.fragment_market_picker) {
-    private val model: MarketPickerViewModel by sharedViewModel()
-    private val marketingViewModel: MarketingViewModel by sharedViewModel()
+    private val model: MarketPickerViewModelImpl by viewModels()
+    private val marketingViewModel: MarketingViewModelImpl by viewModels()
     private val binding by viewBinding(FragmentMarketPickerBinding::bind)
     private val tracker: MarketPickerTracker by inject()
 

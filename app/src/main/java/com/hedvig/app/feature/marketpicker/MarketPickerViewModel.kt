@@ -8,7 +8,10 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 abstract class MarketPickerViewModel : ViewModel() {
     protected val _pickerState = MutableLiveData<PickerState>()
@@ -18,12 +21,13 @@ abstract class MarketPickerViewModel : ViewModel() {
     abstract fun submit()
 }
 
-class MarketPickerViewModelImpl(
+@HiltViewModel
+class MarketPickerViewModelImpl @Inject constructor(
     private val marketRepository: MarketRepository,
     private val languageRepository: LanguageRepository,
     private val localeBroadcastManager: LocaleBroadcastManager,
     private val marketManager: MarketManager,
-    private val context: Context,
+    @ApplicationContext private val context: Context,
 ) : MarketPickerViewModel() {
 
     override fun applyMarketAndReload(market: Market) {

@@ -9,7 +9,9 @@ import com.hedvig.android.owldroid.graphql.MarketingBackgroundQuery
 import com.hedvig.app.feature.marketing.data.MarketingRepository
 import com.hedvig.app.feature.marketpicker.CurrentFragment
 import com.hedvig.app.feature.settings.MarketManager
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 abstract class MarketingViewModel : ViewModel() {
     abstract val marketingBackground: LiveData<MarketingBackgroundQuery.AppMarketingImage>
@@ -26,7 +28,8 @@ abstract class MarketingViewModel : ViewModel() {
     }
 }
 
-class MarketingViewModelImpl(
+@HiltViewModel
+class MarketingViewModelImpl @Inject constructor(
     marketingRepository: MarketingRepository,
     marketManager: MarketManager
 ) : MarketingViewModel() {

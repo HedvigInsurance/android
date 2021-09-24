@@ -160,12 +160,12 @@ import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.mixpanel.android.mpmetrics.MixpanelAPI
-import java.time.Clock
-import java.util.Locale
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import java.time.Clock
+import java.util.Locale
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APPLICATION_ID == "com.hedvig.test.app"
 
@@ -372,7 +372,7 @@ val repositoriesModule = module {
     single { OfferRepository(get(), get()) }
     single { LanguageRepository(get(), get(), get(), get()) }
     single { KeyGearItemsRepository(get(), get(), get(), get()) }
-    single { MarketRepository(get(), get(), get()) }
+    single { MarketRepository(get(), get()) }
     single { MarketingRepository(get(), get()) }
     single { AdyenRepository(get(), get()) }
     single { EmbarkRepository(get(), get(), get(), get()) }
