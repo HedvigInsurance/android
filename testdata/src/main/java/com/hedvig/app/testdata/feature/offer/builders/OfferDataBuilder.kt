@@ -49,7 +49,7 @@ data class QuoteBuilder(
     private val id: String = "ea656f5f-40b2-4953-85d9-752b33e69e38",
     private val typeOfContract: TypeOfContract = TypeOfContract.SE_APARTMENT_RENT,
     private val currentInsurer: OfferQuery.CurrentInsurer? = null,
-    private val perils: List<OfferQuery.Peril> = PerilBuilder().offerQueryBuild(5),
+    private val perils: List<OfferQuery.ContractPeril> = PerilBuilder().offerQueryBuild(5),
     private val termsAndConditionsUrl: String = "https://www.example.com",
     private val insurableLimits: List<OfferQuery.InsurableLimit> = emptyList(),
     private val insuranceTerms: List<OfferQuery.InsuranceTerm> = emptyList(),
@@ -65,7 +65,7 @@ data class QuoteBuilder(
         detailsTable = OfferQuery.DetailsTable(
             fragments = OfferQuery.DetailsTable.Fragments(detailsTable),
         ),
-        perils = perils,
+        contractPerils = perils,
         termsAndConditions = OfferQuery.TermsAndConditions(
             displayName = "Villkor",
             url = termsAndConditionsUrl,

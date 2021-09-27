@@ -109,21 +109,19 @@ class ContractDetailViewModelImpl(
                         uri = Uri.parse(it),
                     )
                 },
-                contract.termsAndConditions?.url.let {
-                    DocumentItems.Document(
-                        titleRes = R.string.MY_DOCUMENTS_INSURANCE_TERMS,
-                        subTitleRes = R.string.insurance_details_view_documents_insurance_letter_subtitle,
-                        // TODO Quick fix for getting new terms and conditions
-                        uri = Uri.parse(
-                            if (marketManager.market == Market.SE) {
-                                "https://www.hedvig.com/se/villkor"
-                            } else {
-                                it
-                            }
-                        ),
-                        type = DocumentItems.Document.Type.TERMS_AND_CONDITIONS
-                    )
-                }
+                DocumentItems.Document(
+                    titleRes = R.string.MY_DOCUMENTS_INSURANCE_TERMS,
+                    subTitleRes = R.string.insurance_details_view_documents_insurance_letter_subtitle,
+                    // TODO Quick fix for getting new terms and conditions
+                    uri = Uri.parse(
+                        if (marketManager.market == Market.SE) {
+                            "https://www.hedvig.com/se/villkor"
+                        } else {
+                            contract.termsAndConditions.url
+                        }
+                    ),
+                    type = DocumentItems.Document.Type.TERMS_AND_CONDITIONS
+                )
             )
         }
     }

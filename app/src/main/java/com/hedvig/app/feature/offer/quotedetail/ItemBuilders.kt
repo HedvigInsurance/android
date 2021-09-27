@@ -7,7 +7,7 @@ import com.hedvig.app.feature.perils.Peril
 import com.hedvig.app.feature.perils.PerilItem
 
 fun buildPerils(quote: OfferQuery.Quote) = quote
-    .perils
+    .contractPerils
     .map { PerilItem.Peril(Peril.from(it.fragments.perilFragment)) }
 
 fun buildInsurableLimits(quote: OfferQuery.Quote) = quote

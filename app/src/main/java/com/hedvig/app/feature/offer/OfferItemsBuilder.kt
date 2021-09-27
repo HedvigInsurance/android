@@ -153,7 +153,7 @@ object OfferItemsBuilder {
 
     fun createPerilItems(data: List<OfferQuery.Quote>) = if (data.size == 1) {
         data[0]
-            .perils
+            .contractPerils
             .map { peril ->
                 peril.fragments.perilFragment.let { perilFragment ->
                     PerilItem.Peril(Peril.from(perilFragment))

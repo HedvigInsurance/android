@@ -19,7 +19,7 @@ query Offer($locale: Locale!, $ids: [ID!]!) {
         ...TableFragment
       }
 
-      perils(locale: $locale) {
+      contractPerils(locale: $locale) {
         ...PerilFragment
       }
       termsAndConditions(locale: $locale) {
