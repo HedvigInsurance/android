@@ -15,7 +15,12 @@ import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.Error.GeneralError
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.Error.NoContractsError
-import com.hedvig.app.feature.home.ui.changeaddress.ViewState.*
+import com.hedvig.app.feature.home.ui.changeaddress.ViewState.ChangeAddressInProgress
+import com.hedvig.app.feature.home.ui.changeaddress.ViewState.Loading
+import com.hedvig.app.feature.home.ui.changeaddress.ViewState.ManualChangeAddress
+import com.hedvig.app.feature.home.ui.changeaddress.ViewState.SelfChangeAddress
+import com.hedvig.app.feature.home.ui.changeaddress.ViewState.SelfChangeError
+import com.hedvig.app.feature.home.ui.changeaddress.ViewState.UpcomingAgreementError
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsetsMargin
