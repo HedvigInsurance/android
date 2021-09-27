@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.transition.TransitionManager
 import androidx.annotation.DrawableRes
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ChangeAddressActivityBinding
@@ -28,6 +29,7 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
@@ -91,7 +93,12 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
                 subtitleText = getString(R.string.moving_intro_existing_move_description),
                 buttonText = getString(R.string.moving_intro_manual_handling_button_text),
                 buttonIcon = R.drawable.ic_chat_white,
-                onContinue = { openChat() },
+                onContinue = {
+                    lifecycleScope.launch {
+                        model.triggerFreeTextChat()
+                        openChat()
+                    }
+                },
                 viewState.upcomingAgreementResult
             )
             is UpcomingAgreementError -> setContent(
