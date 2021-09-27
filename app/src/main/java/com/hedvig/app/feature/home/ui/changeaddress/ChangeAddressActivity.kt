@@ -95,6 +95,7 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
                 buttonIcon = R.drawable.ic_chat_white,
                 onContinue = {
                     lifecycleScope.launch {
+                        model.triggerFreeTextChat()
                         openChat()
                     }
                 },
