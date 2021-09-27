@@ -82,7 +82,8 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
             currentInsurerDisplayName = inception.currentInsurer?.displayName,
             startDate = inception.startDate,
             switchable = inception.currentInsurer?.switchable ?: false,
-            datePickerListener = {
+            datePickerListener = datePickerListener@{
+                if (changeDateBottomSheetViewModel.shouldOpenDatePicker().not()) return@datePickerListener
                 MaterialDatePicker.Builder
                     .datePicker()
                     .setTitleText("")

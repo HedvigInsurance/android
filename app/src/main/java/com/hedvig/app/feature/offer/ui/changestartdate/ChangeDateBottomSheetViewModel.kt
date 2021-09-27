@@ -25,6 +25,10 @@ class ChangeDateBottomSheetViewModel(
 
     private val selectedDates = mutableMapOf<String, LocalDate>()
 
+    fun shouldOpenDatePicker(): Boolean {
+        return _viewState.value !is ViewState.Loading
+    }
+
     fun onDateSelected(isConcurrent: Boolean, quoteId: String, epochMillis: Long) {
         val date = epochMillis.epochMillisToLocalDate()
         if (isConcurrent) {
