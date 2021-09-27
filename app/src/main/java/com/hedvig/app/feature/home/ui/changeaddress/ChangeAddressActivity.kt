@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.transition.TransitionManager
 import androidx.annotation.DrawableRes
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ChangeAddressActivityBinding
@@ -14,12 +15,7 @@ import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.Error.GeneralError
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.Error.NoContractsError
-import com.hedvig.app.feature.home.ui.changeaddress.ViewState.ChangeAddressInProgress
-import com.hedvig.app.feature.home.ui.changeaddress.ViewState.Loading
-import com.hedvig.app.feature.home.ui.changeaddress.ViewState.ManualChangeAddress
-import com.hedvig.app.feature.home.ui.changeaddress.ViewState.SelfChangeAddress
-import com.hedvig.app.feature.home.ui.changeaddress.ViewState.SelfChangeError
-import com.hedvig.app.feature.home.ui.changeaddress.ViewState.UpcomingAgreementError
+import com.hedvig.app.feature.home.ui.changeaddress.ViewState.*
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsetsMargin
@@ -28,6 +24,7 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
@@ -91,7 +88,11 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
                 subtitleText = getString(R.string.moving_intro_existing_move_description),
                 buttonText = getString(R.string.moving_intro_manual_handling_button_text),
                 buttonIcon = R.drawable.ic_chat_white,
-                onContinue = { openChat() },
+                onContinue = {
+                    lifecycleScope.launch {
+                        openChat()
+                    }
+                },
                 viewState.upcomingAgreementResult
             )
             is UpcomingAgreementError -> setContent(
