@@ -43,7 +43,7 @@ class PerilBottomSheetTest : TestCase() {
                             2 +
                                 INSURANCE_DATA_SWEDISH_HOUSE
                                     .contracts[0]
-                                    .let { it.perils.size + it.insurableLimits.size }
+                                    .let { it.contractPerils.size + it.insurableLimits.size }
                         )
                         childAt<PerilRecyclerItem>(3) {
                             click()
