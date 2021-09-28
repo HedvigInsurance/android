@@ -42,10 +42,22 @@ class CrossSellingResultActivity : BaseActivity() {
         }
     }
 
+    override fun onBackPressed() {
+        startActivity(
+            LoggedInActivity.newInstance(
+                context = this,
+                withoutHistory = true,
+                initialTab = LoggedInTabs.INSURANCE
+            )
+        )
+    }
+
     companion object {
         fun newInstance(context: Context, crossSellingResult: CrossSellingResult): Intent =
             Intent(context, CrossSellingResultActivity::class.java).apply {
                 putExtra(CROSS_SELLING_RESULT, crossSellingResult)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
             }
 
         private const val CROSS_SELLING_RESULT = "CROSS_SELLING_RESULT"
