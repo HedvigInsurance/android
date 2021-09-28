@@ -12,8 +12,8 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.hedvig.app.R
-import com.hedvig.app.ui.compose.composables.PrimaryTextButton
-import com.hedvig.app.ui.compose.composables.SecondaryTextButton
+import com.hedvig.app.ui.compose.composables.buttons.PrimaryTextButton
+import com.hedvig.app.ui.compose.composables.buttons.SecondaryTextButton
 
 @Composable
 fun IntroContent(

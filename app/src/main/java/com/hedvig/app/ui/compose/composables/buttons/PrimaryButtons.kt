@@ -1,4 +1,4 @@
-package com.hedvig.app.ui.compose.designsystem
+package com.hedvig.app.ui.compose.composables.buttons
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,15 +11,33 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.hedvig.app.R
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 
 @Composable
-fun LargeContainedButton(
+fun PrimaryTextButton(
+    modifier: Modifier = Modifier,
+    text: String,
+    onClick: () -> Unit
+) {
+    PrimaryButton(
+        modifier = modifier,
+        content = {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.button,
+                color = MaterialTheme.colors.onSecondary
+            )
+        },
+        onClick = onClick
+    )
+}
+
+@Composable
+fun PrimaryButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    content: @Composable RowScope.() -> Unit,
+    content: @Composable RowScope.() -> Unit
 ) {
     Button(
         onClick = onClick,
@@ -33,29 +51,24 @@ fun LargeContainedButton(
 }
 
 @Preview(
-    name = "LargeContainedButton",
-    group = "Design System",
+    name = "PrimaryButton",
+    group = "Buttons",
 )
 @Composable
-fun LargeContainedButtonPreview() {
+fun PrimaryButtonPreview() {
     HedvigTheme {
-        LargeContainedButton({}) {
-            Text("Contained Button (Large)")
-        }
+        PrimaryTextButton(text = "Contained Button (Large)") {}
     }
 }
 
-@ShowkaseComposable(skip = true)
 @Preview(
-    name = "LargeContainedButton • dark",
-    group = "Design System",
+    name = "PrimaryButton • dark",
+    group = "Buttons",
     uiMode = Configuration.UI_MODE_NIGHT_YES,
 )
 @Composable
-fun LargeContainedButtonPreviewDark() {
+fun PrimaryButtonPreviewDark() {
     HedvigTheme {
-        LargeContainedButton({}) {
-            Text("Contained Button (Large)")
-        }
+        PrimaryTextButton(text = "Contained Button Dark (Large)") {}
     }
 }
