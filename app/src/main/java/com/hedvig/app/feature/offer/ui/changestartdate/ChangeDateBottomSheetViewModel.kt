@@ -9,7 +9,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -21,13 +20,11 @@ class ChangeDateBottomSheetViewModel(
 ) : ViewModel() {
 
     private val _viewState = MutableStateFlow<ViewState>(ViewState.Inceptions(data.inceptions))
-    val viewState: StateFlow<ViewState> = _viewState.asStateFlow()
+    val viewState = _viewState.asStateFlow()
 
     private val selectedDates = mutableMapOf<String, LocalDate>()
 
-    fun shouldOpenDatePicker(): Boolean {
-        return _viewState.value !is ViewState.Loading
-    }
+    fun shouldOpenDatePicker(): Boolean = viewState.value !is ViewState.Loading
 
     fun onDateSelected(isConcurrent: Boolean, quoteId: String, epochMillis: Long) {
         val date = epochMillis.epochMillisToLocalDate()
