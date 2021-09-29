@@ -496,7 +496,6 @@ val trackerModule = module {
         TrackingFacade(getAll<TrackerSink>().distinct())
     }
     single { MixpanelTracker(get()) } bind TrackerSink::class
-    single { DebugLogTrackerSink() } bind TrackerSink::class
 }
 
 val localeBroadcastManagerModule = module {
