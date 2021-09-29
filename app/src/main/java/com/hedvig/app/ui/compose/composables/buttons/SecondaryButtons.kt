@@ -16,26 +16,22 @@ import com.hedvig.app.R
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 
 @Composable
-fun SecondaryTextButton(
+fun LageOutlinedTextButton(
     modifier: Modifier = Modifier,
     text: String,
     onClick: () -> Unit
 ) {
-    SecondaryButton(
+    LageOutlinedButton(
         modifier = modifier,
         content = {
-            Text(
-                text = text,
-                style = MaterialTheme.typography.button,
-                color = MaterialTheme.colors.primary
-            )
+            Text(text = text)
         },
         onClick = onClick
     )
 }
 
 @Composable
-fun SecondaryButton(
+fun LageOutlinedButton(
     modifier: Modifier = Modifier,
     content: @Composable RowScope.() -> Unit,
     onClick: () -> Unit
@@ -53,12 +49,12 @@ fun SecondaryButton(
 }
 
 @Preview(
-    name = "SecondaryButton",
+    name = "Outlined Button (Large)",
     group = "Buttons",
 )
 @Composable
-fun SecondaryButtonPreview() {
+fun LageOutlinedButtonPreview() {
     HedvigTheme {
-        SecondaryTextButton(text = "Outlined Button (Large)") {}
+        LageOutlinedTextButton(text = "Outlined Button (Large)") {}
     }
 }

@@ -11,30 +11,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.hedvig.app.R
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 
 @Composable
-fun PrimaryTextButton(
+fun LargeContainedTextButton(
     modifier: Modifier = Modifier,
     text: String,
     onClick: () -> Unit
 ) {
-    PrimaryButton(
+    LargeContainedButton(
         modifier = modifier,
         content = {
-            Text(
-                text = text,
-                style = MaterialTheme.typography.button,
-                color = MaterialTheme.colors.onSecondary
-            )
+            Text(text = text)
         },
         onClick = onClick
     )
 }
 
 @Composable
-fun PrimaryButton(
+fun LargeContainedButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable RowScope.() -> Unit
@@ -51,24 +48,25 @@ fun PrimaryButton(
 }
 
 @Preview(
-    name = "PrimaryButton",
+    name = "Contained Button (Large)",
     group = "Buttons",
 )
 @Composable
-fun PrimaryButtonPreview() {
+fun LargeContainedButtonPreview() {
     HedvigTheme {
-        PrimaryTextButton(text = "Contained Button (Large)") {}
+        LargeContainedTextButton(text = "Contained Button (Large)") {}
     }
 }
 
+@ShowkaseComposable(skip = true)
 @Preview(
-    name = "PrimaryButton • dark",
+    name = "Contained Button (Large) • dark",
     group = "Buttons",
     uiMode = Configuration.UI_MODE_NIGHT_YES,
 )
 @Composable
-fun PrimaryButtonPreviewDark() {
+fun LargeContainedButtonPreviewDark() {
     HedvigTheme {
-        PrimaryTextButton(text = "Contained Button Dark (Large)") {}
+        LargeContainedTextButton(text = "Contained Button Dark (Large)") {}
     }
 }
