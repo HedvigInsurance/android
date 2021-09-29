@@ -1,7 +1,6 @@
 package com.hedvig.app.testdata.dashboard
 
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
-import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.testdata.common.ContractStatus
 import com.hedvig.app.testdata.dashboard.builders.InsuranceDataBuilder
 
