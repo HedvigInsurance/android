@@ -15,10 +15,15 @@ class ScreenTracker(
 
         previousScreen = name
         trackingFacade.track(
-            "screen_view",
+            SCREEN_VIEW,
             jsonObjectOf(
-                "name" to name
+                SCREEN_NAME to name
             ),
         )
+    }
+
+    companion object {
+        const val SCREEN_VIEW = "screen_view"
+        const val SCREEN_NAME = "name"
     }
 }
