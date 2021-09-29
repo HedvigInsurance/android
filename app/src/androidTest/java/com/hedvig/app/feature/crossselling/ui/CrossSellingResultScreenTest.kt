@@ -2,7 +2,9 @@ package com.hedvig.app.feature.crossselling.ui
 
 import android.content.Context
 import androidx.annotation.StringRes
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertTextContains
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.test.platform.app.InstrumentationRegistry
@@ -46,10 +48,34 @@ class CrossSellingResultScreenTest {
             CrossSellingResultScreen(contractYesterday, baseClockTime, isoDateFormatter, {}, {})
         }
 
-        compose.onNodeWithText(TextAlternative.AlreadyActivated.getString(context)).assertExists()
-        compose.onNodeWithText(TextAlternative.WillActivate.getString(context, contractYesterday.startingDate))
+        compose
+            .onNodeWithText(TextAlternative.AlreadyActivated.getString(context, contractYesterday.insuranceType))
+            .assertExists()
+        compose
+            .onNodeWithText(
+                TextAlternative.WillActivate.getString(
+                    context,
+                    contractYesterday.insuranceType,
+                    contractYesterday.startingDate
+                )
+            )
             .assertDoesNotExist()
         compose.onNodeWithText(TextAlternative.Failed.getString(context)).assertDoesNotExist()
+    }
+
+    @Test
+    fun contractToday() {
+        val successfulResultToday = successfulResultToday
+
+        compose.setContent {
+            CrossSellingResultScreen(successfulResultToday, baseClockTime, isoDateFormatter, {}, {})
+        }
+
+        compose
+            .onNodeWithText(TextAlternative.AlreadyActivated.getString(context, successfulResultToday.insuranceType))
+            .assert(hasText("%", substring = true).not())
+            .assert(hasText("$", substring = true).not())
+            .assertExists()
     }
 
     @Test
@@ -61,12 +87,20 @@ class CrossSellingResultScreenTest {
         }
 
         compose
-            .onNodeWithText(TextAlternative.AlreadyActivated.getString(context))
+            .onNodeWithText(TextAlternative.AlreadyActivated.getString(context, contractTomorrow.insuranceType))
             .assertDoesNotExist()
         compose
-            .onNodeWithText(TextAlternative.WillActivate.getString(context, contractTomorrow.startingDate))
+            .onNodeWithText(
+                TextAlternative.WillActivate.getString(
+                    context,
+                    contractTomorrow.insuranceType,
+                    contractTomorrow.startingDate
+                )
+            )
             .assertExists()
             .assertTextContains("2021-09-15", substring = true)
+            .assert(hasText("%", substring = true).not())
+            .assert(hasText("$", substring = true).not())
         compose.onNodeWithText(TextAlternative.Failed.getString(context)).assertDoesNotExist()
     }
 
@@ -78,19 +112,7 @@ class CrossSellingResultScreenTest {
             CrossSellingResultScreen(failedResult, baseClockTime, isoDateFormatter, {}, {})
         }
 
-        compose.onNodeWithText(TextAlternative.AlreadyActivated.getString(context)).assertDoesNotExist()
         compose.onNodeWithText(TextAlternative.Failed.getString(context)).assertExists()
-    }
-
-    @Test
-    fun contractToday() {
-        val successfulResultToday = successfulResultToday
-
-        compose.setContent {
-            CrossSellingResultScreen(successfulResultToday, baseClockTime, isoDateFormatter, {}, {})
-        }
-
-        compose.onNodeWithText(TextAlternative.AlreadyActivated.getString(context)).assertExists()
     }
 
     @Test
@@ -102,7 +124,13 @@ class CrossSellingResultScreenTest {
         }
 
         compose
-            .onNodeWithText(TextAlternative.WillActivate.getString(context, contractNextMonth.startingDate))
+            .onNodeWithText(
+                TextAlternative.WillActivate.getString(
+                    context,
+                    contractNextMonth.insuranceType,
+                    contractNextMonth.startingDate
+                )
+            )
             .assertExists()
     }
 
@@ -115,7 +143,13 @@ class CrossSellingResultScreenTest {
         }
 
         compose
-            .onNodeWithText(TextAlternative.WillActivate.getString(context, contractNextYear.startingDate))
+            .onNodeWithText(
+                TextAlternative.WillActivate.getString(
+                    context,
+                    contractNextYear.insuranceType,
+                    contractNextYear.startingDate
+                )
+            )
             .assertExists()
     }
 
@@ -127,7 +161,9 @@ class CrossSellingResultScreenTest {
             CrossSellingResultScreen(contractPreviousYear, baseClockTime, isoDateFormatter, {}, {})
         }
 
-        compose.onNodeWithText(TextAlternative.AlreadyActivated.getString(context)).assertExists()
+        compose
+            .onNodeWithText(TextAlternative.AlreadyActivated.getString(context, contractPreviousYear.insuranceType))
+            .assertExists()
     }
 }
 
@@ -140,7 +176,13 @@ private sealed class TextAlternative(@StringRes protected val stringRes: Int) {
     object AlreadyActivated : TextAlternative(
         R.string.purchase_confirmation_new_insurance_today_app_state_description
     ) {
-        fun getString(context: Context): String = context.getString(stringRes)
+        fun getString(
+            context: Context,
+            insuranceType: String
+        ): String = context.getString(
+            stringRes,
+            insuranceType
+        )
     }
 
     object WillActivate : TextAlternative(
@@ -148,7 +190,12 @@ private sealed class TextAlternative(@StringRes protected val stringRes: Int) {
     ) {
         fun getString(
             context: Context,
+            insuranceType: String,
             activationDate: LocalDate
-        ): String = context.getString(stringRes, activationDate.format(isoDateFormatter))
+        ): String = context.getString(
+            stringRes,
+            insuranceType,
+            activationDate.format(isoDateFormatter)
+        )
     }
 }
