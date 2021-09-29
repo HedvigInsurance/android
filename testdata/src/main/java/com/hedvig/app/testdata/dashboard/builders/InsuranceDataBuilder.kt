@@ -8,6 +8,7 @@ import com.hedvig.android.owldroid.fragment.UpcomingAgreementChangeFragment
 import com.hedvig.android.owldroid.fragment.UpcomingAgreementFragment
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.AgreementStatus
+import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.android.owldroid.type.TypeOfContractGradientOption
 import com.hedvig.app.testdata.common.ContractStatus
 import com.hedvig.app.testdata.common.builders.TableFragmentBuilder
@@ -26,6 +27,7 @@ class InsuranceDataBuilder(
     private val upcomingDetailsTable: TableFragment = TableFragmentBuilder().build(),
     private val crossSells: List<InsuranceQuery.PotentialCrossSell> = emptyList(),
     private val detailsTable: TableFragment = DEFAULT_DETAILS_TABLE,
+    private val typeOfContract: TypeOfContract = TypeOfContract.SE_HOUSE
 ) {
 
     fun build() = InsuranceQuery.Data(
@@ -125,6 +127,7 @@ class InsuranceDataBuilder(
                 statusPills = emptyList(),
                 detailPills = emptyList(),
                 gradientOption = TypeOfContractGradientOption.GRADIENT_ONE,
+                typeOfContract = typeOfContract,
                 fragments = InsuranceQuery.Contract.Fragments(
                     upcomingAgreementFragment = UpcomingAgreementFragment(
                         status = UpcomingAgreementFragment.Status(
