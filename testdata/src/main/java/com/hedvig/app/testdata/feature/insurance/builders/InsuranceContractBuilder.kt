@@ -6,13 +6,11 @@ import com.hedvig.android.owldroid.fragment.TableFragment
 import com.hedvig.android.owldroid.fragment.UpcomingAgreementFragment
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.AgreementStatus
-import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.android.owldroid.type.TypeOfContractGradientOption
 import com.hedvig.app.testdata.common.builders.TableFragmentBuilder
 import java.time.LocalDate
 
 class InsuranceContractBuilder(
-    private val type: TypeOfContract = TypeOfContract.SE_APARTMENT_RENT,
     private val renewal: InsuranceQuery.UpcomingRenewal? =
         InsuranceQuery.UpcomingRenewal(
             renewalDate = LocalDate.now(),
@@ -50,7 +48,6 @@ class InsuranceContractBuilder(
             )
         ),
         displayName = "Hemförsäkring",
-        typeOfContract = type,
         upcomingRenewal = renewal,
         currentAgreement = InsuranceQuery.CurrentAgreement(
             asAgreementCore = InsuranceQuery.AsAgreementCore(

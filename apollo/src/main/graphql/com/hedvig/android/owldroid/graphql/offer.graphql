@@ -9,7 +9,6 @@ query Offer($locale: Locale!, $ids: [ID!]!) {
       displayName(locale: $locale)
       startDate
       id
-      typeOfContract
       currentInsurer {
         id
         displayName
