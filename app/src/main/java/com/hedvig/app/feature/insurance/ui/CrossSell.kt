@@ -58,7 +58,7 @@ fun CrossSell(
                 horizontal = 16.dp,
                 vertical = 8.dp,
             )
-            .height(200.dp)
+            .height(200.dp),
     ) {
         Image(
             painter = rememberImagePainter(
