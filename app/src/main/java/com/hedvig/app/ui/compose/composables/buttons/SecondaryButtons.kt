@@ -1,4 +1,4 @@
-package com.hedvig.app.ui.compose.designsystem
+package com.hedvig.app.ui.compose.composables.buttons
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
@@ -16,10 +16,25 @@ import com.hedvig.app.R
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 
 @Composable
+fun LargeOutlinedTextButton(
+    modifier: Modifier = Modifier,
+    text: String,
+    onClick: () -> Unit
+) {
+    LargeOutlinedButton(
+        modifier = modifier,
+        content = {
+            Text(text = text)
+        },
+        onClick = onClick
+    )
+}
+
+@Composable
 fun LargeOutlinedButton(
-    onClick: () -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable RowScope.() -> Unit,
+    onClick: () -> Unit
 ) {
     OutlinedButton(
         onClick = onClick,
@@ -34,14 +49,12 @@ fun LargeOutlinedButton(
 }
 
 @Preview(
-    name = "LargeOutlinedButton",
-    group = "Design System",
+    name = "Outlined Button (Large)",
+    group = "Buttons",
 )
 @Composable
 fun LargeOutlinedButtonPreview() {
     HedvigTheme {
-        LargeOutlinedButton({}) {
-            Text("Outlined Button (Large)")
-        }
+        LargeOutlinedTextButton(text = "Outlined Button (Large)") {}
     }
 }

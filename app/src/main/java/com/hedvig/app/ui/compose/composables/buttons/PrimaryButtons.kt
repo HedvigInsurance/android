@@ -1,4 +1,4 @@
-package com.hedvig.app.ui.compose.designsystem
+package com.hedvig.app.ui.compose.composables.buttons
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,10 +16,25 @@ import com.hedvig.app.R
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 
 @Composable
+fun LargeContainedTextButton(
+    modifier: Modifier = Modifier,
+    text: String,
+    onClick: () -> Unit
+) {
+    LargeContainedButton(
+        modifier = modifier,
+        content = {
+            Text(text = text)
+        },
+        onClick = onClick
+    )
+}
+
+@Composable
 fun LargeContainedButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    content: @Composable RowScope.() -> Unit,
+    content: @Composable RowScope.() -> Unit
 ) {
     Button(
         onClick = onClick,
@@ -33,29 +48,25 @@ fun LargeContainedButton(
 }
 
 @Preview(
-    name = "LargeContainedButton",
-    group = "Design System",
+    name = "Contained Button (Large)",
+    group = "Buttons",
 )
 @Composable
 fun LargeContainedButtonPreview() {
     HedvigTheme {
-        LargeContainedButton({}) {
-            Text("Contained Button (Large)")
-        }
+        LargeContainedTextButton(text = "Contained Button (Large)") {}
     }
 }
 
 @ShowkaseComposable(skip = true)
 @Preview(
-    name = "LargeContainedButton • dark",
-    group = "Design System",
+    name = "Contained Button (Large) • dark",
+    group = "Buttons",
     uiMode = Configuration.UI_MODE_NIGHT_YES,
 )
 @Composable
 fun LargeContainedButtonPreviewDark() {
     HedvigTheme {
-        LargeContainedButton({}) {
-            Text("Contained Button (Large)")
-        }
+        LargeContainedTextButton(text = "Contained Button Dark (Large)") {}
     }
 }

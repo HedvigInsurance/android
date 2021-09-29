@@ -26,8 +26,9 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.hedvig.app.R
-import com.hedvig.app.ui.compose.designsystem.LargeContainedButton
-import com.hedvig.app.ui.compose.designsystem.LargeOutlinedButton
+import com.hedvig.app.ui.compose.composables.buttons.LargeContainedButton
+import com.hedvig.app.ui.compose.composables.buttons.LargeContainedTextButton
+import com.hedvig.app.ui.compose.composables.buttons.LargeOutlinedTextButton
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import java.time.Clock
 import java.time.LocalDate
@@ -160,18 +161,16 @@ private fun ButtonsSection(
                     Spacer(Modifier.width(8.dp))
                     Text(stringResource(R.string.purchase_confirmation_error_open_chat_button))
                 }
-                LargeOutlinedButton(
+                LargeOutlinedTextButton(
                     onClick = closeResultScreen,
-                ) {
-                    Text(stringResource(R.string.purchase_confirmation_error_close_button))
-                }
+                    text = stringResource(R.string.purchase_confirmation_error_close_button)
+                )
             }
             is CrossSellingResult.Success -> {
-                LargeContainedButton(
+                LargeContainedTextButton(
                     onClick = closeResultScreen,
-                ) {
-                    Text(stringResource(R.string.purchase_confirmation_accident_insurance_done_button))
-                }
+                    text = stringResource(R.string.purchase_confirmation_accident_insurance_done_button)
+                )
             }
         }
     }
