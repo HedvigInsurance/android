@@ -3,6 +3,7 @@ package com.hedvig.app.util.apollo
 import android.content.Context
 import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.type.Locale
+import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.getLocale
 import org.javamoney.moneta.Money
@@ -39,3 +40,28 @@ fun MonetaryAmount.format(context: Context, market: Market?, minimumDecimals: In
         it.currency = Currency.getInstance(currency.currencyCode)
         it.minimumFractionDigits = minimumDecimals
     }.format(this.number.numberValueExact(BigDecimal::class.java))
+
+fun TypeOfContract.canHaveAddressChanged(): Boolean = when (this) {
+    TypeOfContract.DK_ACCIDENT,
+    TypeOfContract.DK_ACCIDENT_STUDENT,
+    TypeOfContract.DK_HOME_CONTENT_OWN,
+    TypeOfContract.DK_HOME_CONTENT_RENT,
+    TypeOfContract.DK_HOME_CONTENT_STUDENT_OWN,
+    TypeOfContract.DK_HOME_CONTENT_STUDENT_RENT,
+    TypeOfContract.DK_TRAVEL,
+    TypeOfContract.DK_TRAVEL_STUDENT,
+    TypeOfContract.NO_HOME_CONTENT_OWN,
+    TypeOfContract.NO_HOME_CONTENT_RENT,
+    TypeOfContract.NO_HOME_CONTENT_YOUTH_OWN,
+    TypeOfContract.NO_HOME_CONTENT_YOUTH_RENT,
+    TypeOfContract.NO_TRAVEL,
+    TypeOfContract.NO_TRAVEL_YOUTH,
+    TypeOfContract.SE_ACCIDENT,
+    TypeOfContract.SE_ACCIDENT_STUDENT -> false
+    TypeOfContract.SE_APARTMENT_BRF,
+    TypeOfContract.SE_APARTMENT_RENT,
+    TypeOfContract.SE_APARTMENT_STUDENT_BRF,
+    TypeOfContract.SE_APARTMENT_STUDENT_RENT,
+    TypeOfContract.SE_HOUSE -> true
+    TypeOfContract.UNKNOWN__ -> false
+}
