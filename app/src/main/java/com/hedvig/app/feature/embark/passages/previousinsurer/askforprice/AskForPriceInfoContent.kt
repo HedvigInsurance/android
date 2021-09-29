@@ -12,8 +12,8 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.hedvig.app.R
-import com.hedvig.app.ui.compose.composables.buttons.LageOutlinedTextButton
 import com.hedvig.app.ui.compose.composables.buttons.LargeContainedTextButton
+import com.hedvig.app.ui.compose.composables.buttons.LargeOutlinedTextButton
 
 @Composable
 fun IntroContent(
@@ -46,7 +46,7 @@ fun IntroContent(
             text = stringResource(R.string.insurely_confirmation_continue_button_text),
             onClick = onNavigateToRetrievePriceInfo
         )
-        LageOutlinedTextButton(
+        LargeOutlinedTextButton(
             text = stringResource(R.string.insurely_intro_skip_button_text),
             onClick = onSkipRetrievePriceInfo
         )
