@@ -146,6 +146,7 @@ import com.hedvig.app.feature.settings.SettingsViewModel
 import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignViewModel
 import com.hedvig.app.feature.swedishbankid.sign.usecase.ManuallyRecheckSwedishBankIdSignStatusUseCase
 import com.hedvig.app.feature.swedishbankid.sign.usecase.SubscribeToSwedishBankIdSignStatusUseCase
+import com.hedvig.app.feature.tracking.DebugLogTrackerSink
 import com.hedvig.app.feature.tracking.MixpanelTracker
 import com.hedvig.app.feature.tracking.TrackerSink
 import com.hedvig.app.feature.tracking.TrackingFacade

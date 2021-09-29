@@ -9,6 +9,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.test.platform.app.InstrumentationRegistry
 import com.hedvig.app.R
+import com.hedvig.app.util.isoDateFormatter
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -16,9 +17,6 @@ import java.time.Clock
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-
-val isoDateFormatter: DateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE
 
 class CrossSellingResultScreenTest {
 
@@ -163,6 +161,31 @@ class CrossSellingResultScreenTest {
 
         compose
             .onNodeWithText(TextAlternative.AlreadyActivated.getString(context, contractPreviousYear.insuranceType))
+            .assertExists()
+    }
+
+    @Test
+    fun contractActivatingInTwoDays() {
+        val activationDate = LocalDate.of(2021, 9, 24)
+        val contractInTwoDays = CrossSellingResult.Success(activationDate, accidentInsurance)
+        val todayClock = Clock.fixed(
+            Instant.parse("2021-09-22T12:00:00.00Z"),
+            ZoneId.of("Europe/Stockholm")
+        )
+
+        compose.setContent {
+            CrossSellingResultScreen(
+                crossSellingResult = contractInTwoDays,
+                clock = todayClock,
+                dateFormatter = isoDateFormatter,
+                openChat = {},
+                closeResultScreen = {}
+            )
+        }
+
+        compose.onNodeWithText(TextAlternative.AlreadyActivated.getString(context)).assertDoesNotExist()
+        compose
+            .onNodeWithText(TextAlternative.WillActivate.getString(context, activationDate))
             .assertExists()
     }
 }

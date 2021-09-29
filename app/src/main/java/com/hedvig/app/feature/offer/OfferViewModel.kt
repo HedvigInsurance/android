@@ -133,7 +133,7 @@ class OfferViewModelImpl(
     }
 
     private suspend fun loadQuoteIds() {
-        when (val idsResult = getQuotesUseCase(_quoteIds)) {
+        when (val idsResult = getQuotesUseCase.invoke(_quoteIds)) {
             is GetQuotesUseCase.Result.Success -> {
                 quoteIds = idsResult.ids
                 idsResult
