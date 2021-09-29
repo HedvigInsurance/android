@@ -95,12 +95,16 @@ private fun InformationSection(
         is CrossSellingResult.Success -> {
             when {
                 crossSellingResult.startingDate <= LocalDate.now(clock) -> {
-                    stringResource(R.string.purchase_confirmation_new_insurance_today_app_state_description)
+                    stringResource(
+                        R.string.purchase_confirmation_new_insurance_today_app_state_description,
+                        crossSellingResult.insuranceType
+                    )
                 }
                 else -> {
                     val activationDate = crossSellingResult.startingDate.format(dateFormatter)
                     stringResource(
                         R.string.purchase_confirmation_new_insurance_active_in_future_app_state_description,
+                        crossSellingResult.insuranceType,
                         activationDate
                     )
                 }
