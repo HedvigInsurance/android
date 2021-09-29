@@ -8,7 +8,6 @@ import com.hedvig.android.owldroid.fragment.UpcomingAgreementChangeFragment
 import com.hedvig.android.owldroid.fragment.UpcomingAgreementFragment
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.AgreementStatus
-import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.android.owldroid.type.TypeOfContractGradientOption
 import com.hedvig.app.testdata.common.ContractStatus
 import com.hedvig.app.testdata.common.builders.TableFragmentBuilder
@@ -17,7 +16,6 @@ import java.time.LocalDate
 
 class InsuranceDataBuilder(
     private val contracts: List<ContractStatus> = emptyList(),
-    private val typeOfContract: TypeOfContract = TypeOfContract.SE_APARTMENT_BRF,
     private val renewal: InsuranceQuery.UpcomingRenewal? =
         InsuranceQuery.UpcomingRenewal(
             renewalDate = LocalDate.now(),
@@ -98,7 +96,6 @@ class InsuranceDataBuilder(
                     )
                 ),
                 displayName = displayName,
-                typeOfContract = typeOfContract,
                 upcomingRenewal = renewal,
                 currentAgreement = InsuranceQuery.CurrentAgreement(
                     asAgreementCore = InsuranceQuery.AsAgreementCore(

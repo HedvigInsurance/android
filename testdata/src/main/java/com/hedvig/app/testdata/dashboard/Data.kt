@@ -12,7 +12,6 @@ val INSURANCE_DATA =
 
 val INSURANCE_DATA_STUDENT =
     InsuranceDataBuilder(
-        typeOfContract = TypeOfContract.SE_APARTMENT_STUDENT_BRF,
         contracts = listOf(ContractStatus.ACTIVE),
         displayName = "Hemförsäkring Student"
     ).build()
@@ -26,11 +25,9 @@ val INSURANCE_DATA_ONE_ACTIVE_ONE_TERMINATED = InsuranceDataBuilder(
 ).build()
 val INSURANCE_DATA_DANISH_HOME_CONTENTS = InsuranceDataBuilder(
     contracts = listOf(ContractStatus.ACTIVE),
-    typeOfContract = TypeOfContract.DK_HOME_CONTENT_OWN
 ).build()
 val INSURANCE_DATA_DANISH_ACCIDENT = InsuranceDataBuilder(
     contracts = listOf(ContractStatus.ACTIVE),
-    typeOfContract = TypeOfContract.DK_ACCIDENT
 ).build()
 val INSURANCE_DATA_TERMINATED = InsuranceDataBuilder(
     contracts = listOf(ContractStatus.TERMINATED)

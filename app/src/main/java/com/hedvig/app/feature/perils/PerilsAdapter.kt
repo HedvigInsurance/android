@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.perils
 
-import android.content.Context
 import android.graphics.Rect
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +11,6 @@ import coil.ImageLoader
 import coil.load
 import com.carousell.concatadapterextension.ItemDecorationOwner
 import com.carousell.concatadapterextension.SpanSizeLookupOwner
-import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.BASE_MARGIN_HALF
 import com.hedvig.app.R
@@ -68,38 +66,8 @@ class PerilsAdapter(
                     text =
                         context.getString(
                             R.string.CONTRACT_COVERAGE_CONTRACT_TYPE,
-                            data.typeOfContract.displayNameDefinite(context)
+                            data.displayName,
                         )
-                }
-            }
-
-            companion object {
-                private fun TypeOfContract.displayNameDefinite(context: Context) = when (this) {
-                    TypeOfContract.SE_HOUSE,
-                    TypeOfContract.SE_APARTMENT_BRF,
-                    TypeOfContract.SE_APARTMENT_RENT,
-                    TypeOfContract.SE_APARTMENT_STUDENT_BRF,
-                    TypeOfContract.SE_APARTMENT_STUDENT_RENT,
-                    TypeOfContract.NO_HOME_CONTENT_OWN,
-                    TypeOfContract.NO_HOME_CONTENT_RENT,
-                    TypeOfContract.NO_HOME_CONTENT_YOUTH_OWN,
-                    TypeOfContract.NO_HOME_CONTENT_YOUTH_RENT,
-                    TypeOfContract.DK_HOME_CONTENT_OWN,
-                    TypeOfContract.DK_HOME_CONTENT_RENT,
-                    TypeOfContract.DK_HOME_CONTENT_STUDENT_OWN,
-                    TypeOfContract.DK_HOME_CONTENT_STUDENT_RENT,
-                    -> context.getString(R.string.INSURANCE_TYPE_HOME_DEFINITE)
-                    TypeOfContract.NO_TRAVEL,
-                    TypeOfContract.NO_TRAVEL_YOUTH,
-                    TypeOfContract.DK_TRAVEL,
-                    TypeOfContract.DK_TRAVEL_STUDENT,
-                    -> context.getString(
-                        R.string.INSURANCE_TYPE_TRAVEL_DEFINITE
-                    )
-                    TypeOfContract.DK_ACCIDENT,
-                    TypeOfContract.DK_ACCIDENT_STUDENT,
-                    -> context.getString(R.string.PLACEHOLDER_CONTRACT_DISPLAY_NAME_DK_HOME_CONTENTS)
-                    else -> ""
                 }
             }
         }

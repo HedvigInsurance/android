@@ -5,7 +5,6 @@ query InsuranceQuery($locale: Locale!) {
       ...ContractStatusFragment
     }
     displayName
-    typeOfContract
     upcomingRenewal {
       renewalDate
       draftCertificateUrl

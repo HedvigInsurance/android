@@ -60,7 +60,6 @@ data class QuoteBuilder(
         displayName = displayName,
         startDate = startDate,
         id = id,
-        typeOfContract = typeOfContract,
         currentInsurer = currentInsurer,
         detailsTable = OfferQuery.DetailsTable(
             fragments = OfferQuery.DetailsTable.Fragments(detailsTable),
