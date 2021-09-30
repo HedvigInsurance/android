@@ -21,7 +21,7 @@ class InsuranceContractBuilder(
     private val detailsTable: TableFragment = TableFragmentBuilder().build(),
 ) {
 
-    fun build(): InsuranceQuery.Contract = InsuranceQuery.Contract(
+    fun build() = InsuranceQuery.Contract(
         id = "120e9ac9-84b1-4e5d-add1-70a9bad340be",
         status = InsuranceQuery.Status(
             fragments = InsuranceQuery.Status.Fragments(
