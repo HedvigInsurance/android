@@ -19,6 +19,7 @@ class InsuranceContractBuilder(
     private val agreementStatus: AgreementStatus = AgreementStatus.ACTIVE,
     private val showUpcomingAgreement: Boolean = false,
     private val detailsTable: TableFragment = TableFragmentBuilder().build(),
+    private val supportsAddressChange: Boolean = true,
 ) {
 
     fun build() = InsuranceQuery.Contract(
@@ -78,6 +79,7 @@ class InsuranceContractBuilder(
         statusPills = emptyList(),
         detailPills = emptyList(),
         gradientOption = TypeOfContractGradientOption.GRADIENT_ONE,
+        supportsAddressChange = supportsAddressChange,
         fragments = InsuranceQuery.Contract.Fragments(
             upcomingAgreementFragment = UpcomingAgreementFragment(
                 status = UpcomingAgreementFragment.Status(

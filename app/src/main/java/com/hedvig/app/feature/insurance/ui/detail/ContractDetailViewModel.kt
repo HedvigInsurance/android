@@ -69,7 +69,7 @@ class ContractDetailViewModelImpl(
 
     override fun loadContract(id: String) {
         viewModelScope.launch {
-            when (val insurance = getContractsUseCase()) {
+            when (val insurance = getContractsUseCase.invoke()) {
                 is GetContractsUseCase.InsuranceResult.Error -> {
                     _data.value = ViewState.Error
                 }

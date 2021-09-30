@@ -17,7 +17,7 @@ fun yourInfoItems(
     val topItems = listOfNotNull(upcomingAgreement)
     val table = contract.currentAgreementDetailsTable.fragments.tableFragment.intoTable()
     val bottomItems = listOfNotNull(
-        if (movingFlowEnabled) {
+        if (movingFlowEnabled && contract.supportsAddressChange) {
             YourInfoModel.ChangeAddressButton
         } else {
             null
