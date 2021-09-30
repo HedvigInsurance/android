@@ -26,6 +26,7 @@ class InsuranceDataBuilder(
     private val upcomingDetailsTable: TableFragment = TableFragmentBuilder().build(),
     private val crossSells: List<InsuranceQuery.PotentialCrossSell> = emptyList(),
     private val detailsTable: TableFragment = DEFAULT_DETAILS_TABLE,
+    private val supportsAddressChange: Boolean = true,
 ) {
 
     fun build() = InsuranceQuery.Data(
@@ -125,7 +126,7 @@ class InsuranceDataBuilder(
                 statusPills = emptyList(),
                 detailPills = emptyList(),
                 gradientOption = TypeOfContractGradientOption.GRADIENT_ONE,
-                supportsAddressChange = true,
+                supportsAddressChange = supportsAddressChange,
                 fragments = InsuranceQuery.Contract.Fragments(
                     upcomingAgreementFragment = UpcomingAgreementFragment(
                         status = UpcomingAgreementFragment.Status(
