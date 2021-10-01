@@ -12,24 +12,24 @@ class PerilBuilder {
     fun offerQueryBuild(noOfPerils: Int) = offerQueryPerils(noOfPerils)
 
     companion object {
-        private fun insuranceQueryPerils(noOfPerils: Int): MutableList<InsuranceQuery.Peril> {
-            val perilList: MutableList<InsuranceQuery.Peril> = mutableListOf()
+        private fun insuranceQueryPerils(noOfPerils: Int): MutableList<InsuranceQuery.ContractPeril> {
+            val perilList: MutableList<InsuranceQuery.ContractPeril> = mutableListOf()
             for (i in 0..noOfPerils) {
                 perilList.add(
-                    InsuranceQuery.Peril(
-                        fragments = InsuranceQuery.Peril.Fragments(PERIL_FRAGMENT)
+                    InsuranceQuery.ContractPeril(
+                        fragments = InsuranceQuery.ContractPeril.Fragments(PERIL_FRAGMENT)
                     )
                 )
             }
             return perilList
         }
 
-        private fun offerQueryPerils(noOfPerils: Int): MutableList<OfferQuery.Peril> {
-            val perilList: MutableList<OfferQuery.Peril> = mutableListOf()
+        private fun offerQueryPerils(noOfPerils: Int): MutableList<OfferQuery.ContractPeril> {
+            val perilList: MutableList<OfferQuery.ContractPeril> = mutableListOf()
             for (i in 0..noOfPerils) {
                 perilList.add(
-                    OfferQuery.Peril(
-                        fragments = OfferQuery.Peril.Fragments(PERIL_FRAGMENT)
+                    OfferQuery.ContractPeril(
+                        fragments = OfferQuery.ContractPeril.Fragments(PERIL_FRAGMENT)
                     )
                 )
             }

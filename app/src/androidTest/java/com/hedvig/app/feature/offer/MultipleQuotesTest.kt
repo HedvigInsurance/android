@@ -93,7 +93,7 @@ class MultipleQuotesTest : TestCase() {
     private val homeContentsFirstPerilTitle = OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL
         .quoteBundle
         .quotes[0]
-        .perils[0]
+        .contractPerils[0]
         .fragments
         .perilFragment
         .title

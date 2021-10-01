@@ -5,8 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.extensions.epochMillisToLocalDate
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
@@ -17,9 +20,11 @@ class ChangeDateBottomSheetViewModel(
 ) : ViewModel() {
 
     private val _viewState = MutableStateFlow<ViewState>(ViewState.Inceptions(data.inceptions))
-    val viewState: StateFlow<ViewState> = _viewState
+    val viewState = _viewState.asStateFlow()
 
     private val selectedDates = mutableMapOf<String, LocalDate>()
+
+    fun shouldOpenDatePicker(): Boolean = viewState.value !is ViewState.Loading
 
     fun onDateSelected(isConcurrent: Boolean, quoteId: String, epochMillis: Long) {
         val date = epochMillis.epochMillisToLocalDate()
@@ -57,12 +62,16 @@ class ChangeDateBottomSheetViewModel(
         viewModelScope.launch {
             tracker.changeDateContinue()
             _viewState.value = ViewState.Loading(true)
-            val results = selectedDates.map {
-                editStartDateUseCase.setStartDate(
-                    id = it.key,
-                    idsInBundle = data.idsInBundle,
-                    date = it.value
-                )
+            val results = coroutineScope {
+                selectedDates.map { dateMapEntry ->
+                    async {
+                        editStartDateUseCase.setStartDate(
+                            id = dateMapEntry.key,
+                            idsInBundle = data.idsInBundle,
+                            date = dateMapEntry.value
+                        )
+                    }
+                }.awaitAll()
             }
             if (results.any { it is QueryResult.Error }) {
                 val message = (results.first { it is QueryResult.Error } as? QueryResult.Error.QueryError)?.message

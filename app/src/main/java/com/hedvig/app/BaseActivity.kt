@@ -18,11 +18,11 @@ abstract class BaseActivity : AppCompatActivity {
 
     open val preventRecreation = false
 
-    private val tracker: ScreenTracker by inject()
+    private val screenTracker: ScreenTracker by inject()
     private val marketManager: MarketManager by inject()
 
     override fun onResume() {
-        tracker.screenView(javaClass.simpleName)
+        screenTracker.screenView(javaClass.simpleName)
         super.onResume()
     }
 

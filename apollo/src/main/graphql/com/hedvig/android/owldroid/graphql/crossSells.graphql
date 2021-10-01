@@ -1,0 +1,7 @@
+query CrossSells {
+  activeContractBundles {
+    potentialCrossSells {
+      contractType
+    }
+  }
+}

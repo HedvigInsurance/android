@@ -8,9 +8,7 @@ import com.hedvig.android.owldroid.fragment.UpcomingAgreementChangeFragment
 import com.hedvig.android.owldroid.fragment.UpcomingAgreementFragment
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.AgreementStatus
-import com.hedvig.android.owldroid.type.DanishHomeContentLineOfBusiness
-import com.hedvig.android.owldroid.type.SwedishApartmentLineOfBusiness
-import com.hedvig.android.owldroid.type.TypeOfContract
+import com.hedvig.android.owldroid.type.TypeOfContractGradientOption
 import com.hedvig.app.testdata.common.ContractStatus
 import com.hedvig.app.testdata.common.builders.TableFragmentBuilder
 import com.hedvig.app.testdata.feature.insurance.builders.PerilBuilder
@@ -18,7 +16,6 @@ import java.time.LocalDate
 
 class InsuranceDataBuilder(
     private val contracts: List<ContractStatus> = emptyList(),
-    private val typeOfContract: TypeOfContract = TypeOfContract.SE_APARTMENT_BRF,
     private val renewal: InsuranceQuery.UpcomingRenewal? =
         InsuranceQuery.UpcomingRenewal(
             renewalDate = LocalDate.now(),
@@ -27,6 +24,9 @@ class InsuranceDataBuilder(
     private val displayName: String = "Hemförsäkring",
     private val showUpcomingAgreement: Boolean = false,
     private val upcomingDetailsTable: TableFragment = TableFragmentBuilder().build(),
+    private val crossSells: List<InsuranceQuery.PotentialCrossSell> = emptyList(),
+    private val detailsTable: TableFragment = DEFAULT_DETAILS_TABLE,
+    private val supportsAddressChange: Boolean = true,
 ) {
 
     fun build() = InsuranceQuery.Data(
@@ -97,90 +97,17 @@ class InsuranceDataBuilder(
                     )
                 ),
                 displayName = displayName,
-                typeOfContract = typeOfContract,
                 upcomingRenewal = renewal,
                 currentAgreement = InsuranceQuery.CurrentAgreement(
                     asAgreementCore = InsuranceQuery.AsAgreementCore(
                         certificateUrl = "https://www.example.com",
                         status = AgreementStatus.ACTIVE,
                     ),
-                    asSwedishApartmentAgreement = when (typeOfContract) {
-                        TypeOfContract.SE_APARTMENT_BRF,
-                        TypeOfContract.SE_APARTMENT_RENT,
-                        TypeOfContract.SE_APARTMENT_STUDENT_BRF,
-                        TypeOfContract.SE_APARTMENT_STUDENT_RENT,
-                        -> InsuranceQuery.AsSwedishApartmentAgreement(
-                            address = InsuranceQuery.Address(
-                                fragments = InsuranceQuery.Address.Fragments(
-                                    AddressFragment(
-                                        street = "Testvägen 1",
-                                        postalCode = "123 45",
-                                        city = "Tensta"
-                                    )
-                                )
-                            ),
-                            numberCoInsured = 2,
-                            squareMeters = 50,
-                            saType = when (typeOfContract) {
-                                TypeOfContract.SE_APARTMENT_BRF -> SwedishApartmentLineOfBusiness.BRF
-                                TypeOfContract.SE_APARTMENT_STUDENT_BRF -> SwedishApartmentLineOfBusiness.STUDENT_BRF
-                                TypeOfContract.SE_APARTMENT_RENT -> SwedishApartmentLineOfBusiness.RENT
-                                TypeOfContract.SE_APARTMENT_STUDENT_RENT -> SwedishApartmentLineOfBusiness.STUDENT_RENT
-                                else -> throw Error("Unreachable")
-                            }
-                        )
-                        else -> null
-                    },
-                    asNorwegianHomeContentAgreement = null,
-                    asNorwegianTravelAgreement = null,
-                    asSwedishHouseAgreement = null,
-                    asDanishHomeContentAgreement = when (typeOfContract) {
-                        TypeOfContract.DK_HOME_CONTENT_OWN,
-                        TypeOfContract.DK_HOME_CONTENT_RENT,
-                        TypeOfContract.DK_HOME_CONTENT_STUDENT_OWN,
-                        TypeOfContract.DK_HOME_CONTENT_STUDENT_RENT,
-                        -> InsuranceQuery.AsDanishHomeContentAgreement(
-                            address = InsuranceQuery.Address3(
-                                fragments = InsuranceQuery.Address3.Fragments(
-                                    AddressFragment(
-                                        street = "Testvägen 1",
-                                        postalCode = "123 45",
-                                        city = "Tensta"
-                                    )
-                                )
-                            ),
-                            numberCoInsured = 2,
-                            squareMeters = 50,
-                            dhcType = when (typeOfContract) {
-                                TypeOfContract.DK_HOME_CONTENT_OWN -> DanishHomeContentLineOfBusiness.OWN
-                                TypeOfContract.DK_HOME_CONTENT_RENT -> DanishHomeContentLineOfBusiness.RENT
-                                TypeOfContract.DK_HOME_CONTENT_STUDENT_OWN ->
-                                    DanishHomeContentLineOfBusiness.STUDENT_OWN
-                                TypeOfContract.DK_HOME_CONTENT_STUDENT_RENT ->
-                                    DanishHomeContentLineOfBusiness.STUDENT_RENT
-                                else -> throw Error("Unreachable")
-                            }
-                        )
-                        else -> null
-                    },
-                    asDanishTravelAgreement = when (typeOfContract) {
-                        TypeOfContract.DK_TRAVEL,
-                        TypeOfContract.DK_TRAVEL_STUDENT,
-                        -> InsuranceQuery.AsDanishTravelAgreement(
-                            numberCoInsured = 2
-                        )
-                        else -> null
-                    },
-                    asDanishAccidentAgreement = when (typeOfContract) {
-                        TypeOfContract.DK_ACCIDENT,
-                        TypeOfContract.DK_ACCIDENT_STUDENT,
-                        -> InsuranceQuery.AsDanishAccidentAgreement(
-                            numberCoInsured = 2
-                        )
-                        else -> null
-                    }
                 ),
-                perils = PerilBuilder().insuranceQueryBuild(5),
+                currentAgreementDetailsTable = InsuranceQuery.CurrentAgreementDetailsTable(
+                    fragments = InsuranceQuery.CurrentAgreementDetailsTable.Fragments(detailsTable),
+                ),
+                contractPerils = PerilBuilder().insuranceQueryBuild(5),
                 insurableLimits = listOf(
                     InsuranceQuery.InsurableLimit(
                         fragments = InsuranceQuery.InsurableLimit.Fragments(
@@ -196,6 +123,10 @@ class InsuranceDataBuilder(
                     displayName = "Terms and Conditions",
                     url = "https://cdn.hedvig.com/info/insurance-terms-tenant-owners-2019-05.pdf"
                 ),
+                statusPills = emptyList(),
+                detailPills = emptyList(),
+                gradientOption = TypeOfContractGradientOption.GRADIENT_ONE,
+                supportsAddressChange = supportsAddressChange,
                 fragments = InsuranceQuery.Contract.Fragments(
                     upcomingAgreementFragment = UpcomingAgreementFragment(
                         status = UpcomingAgreementFragment.Status(
@@ -246,6 +177,32 @@ class InsuranceDataBuilder(
                     )
                 )
             )
+        },
+        activeContractBundles = if (crossSells.isNotEmpty()) {
+            listOf(
+                InsuranceQuery.ActiveContractBundle(
+                    potentialCrossSells = crossSells,
+                )
+            )
+        } else {
+            emptyList()
         }
     )
+
+    companion object {
+        private val DEFAULT_DETAILS_TABLE = TableFragmentBuilder(
+            title = "",
+            sections = listOf(
+                "Home details" to listOf(
+                    Triple("Adress", null, "Testvägen 1"),
+                    Triple("Postal code", null, "123 45"),
+                    Triple("Housing type", null, "Rental"),
+                    Triple("Size", null, "50 m2")
+                ),
+                "Coinsured" to listOf(
+                    Triple("Insured people", null, "You + 1 person"),
+                )
+            )
+        ).build()
+    }
 }

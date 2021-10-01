@@ -4,19 +4,25 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.home.ui.changeaddress.GetAddressChangeStoryIdUseCase.SelfChangeEligibilityResult
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult
+import com.hedvig.app.util.coroutines.runSuspendCatching
+import e
 import kotlinx.coroutines.launch
 
 abstract class ChangeAddressViewModel : ViewModel() {
     protected val _viewState = MutableLiveData<ViewState>()
     abstract val viewState: LiveData<ViewState>
     abstract fun reload()
+
+    abstract suspend fun triggerFreeTextChat()
 }
 
 class ChangeAddressViewModelImpl(
     private val getUpcomingAgreement: GetUpcomingAgreementUseCase,
     private val addressChangeStoryId: GetAddressChangeStoryIdUseCase,
+    private val chatRepository: ChatRepository,
 ) : ChangeAddressViewModel() {
 
     override val viewState: LiveData<ViewState>
@@ -54,6 +60,13 @@ class ChangeAddressViewModelImpl(
 
     override fun reload() {
         fetchDataAndCreateState()
+    }
+
+    override suspend fun triggerFreeTextChat() {
+        val result = runSuspendCatching {
+            chatRepository.triggerFreeTextChat()
+        }
+        result.exceptionOrNull()?.let { e(it) }
     }
 }
 

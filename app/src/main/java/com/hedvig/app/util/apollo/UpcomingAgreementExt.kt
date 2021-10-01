@@ -6,8 +6,8 @@ import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase
 import com.hedvig.app.feature.table.intoTable
 import java.time.LocalDate
 
-fun UpcomingAgreementFragment.toUpcomingAgreementResult(): GetUpcomingAgreementUseCase
-.UpcomingAgreementResult.UpcomingAgreement? {
+fun UpcomingAgreementFragment.toUpcomingAgreementResult():
+    GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement? {
     if (status.newAgreement() == null) {
         return null
     }

@@ -1,41 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.hedvig.app.ui.view.ExpandableContentView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/expandableContentView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?android:colorBackground"
-    android:orientation="vertical">
+    android:background="?android:colorBackground">
 
-    <TextView
+    <LinearLayout
+        android:id="@+id/expandableContent"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/base_margin_triple"
-        android:gravity="center_horizontal"
-        android:text="@string/OFFER_SCREEN_INFORMATION_TITLE"
-        android:textAppearance="?textAppearanceHeadline4" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/base_margin_quintuple" />
 
-    <TextView
-        style="?textAppearanceBody1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_double"
-        android:layout_marginTop="@dimen/base_margin_double"
-        android:layout_marginEnd="@dimen/base_margin_double"
-        android:gravity="center_horizontal"
-        android:text="@string/OFFER_HOUSE_SUMMARY_DESC" />
+</com.hedvig.app.ui.view.ExpandableContentView>
 
-    <com.hedvig.app.ui.view.ExpandableContentView
-        android:id="@+id/expandableContentView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/base_margin_triple">
-
-        <LinearLayout
-            android:id="@+id/expandableContent"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:paddingBottom="@dimen/base_margin_quintuple" />
-
-    </com.hedvig.app.ui.view.ExpandableContentView>
-
-</LinearLayout>

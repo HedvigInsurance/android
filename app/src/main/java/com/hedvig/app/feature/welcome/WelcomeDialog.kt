@@ -18,6 +18,10 @@ class WelcomeDialog : DismissiblePager() {
     override val items: List<DismissiblePagerModel>
         get() = requireArguments().getParcelableArrayList<DismissiblePagerModel>(ITEMS).orEmpty()
 
+    override fun onLastPageButton() {
+        dismiss()
+    }
+
     companion object {
         const val TAG = "WelcomeDialog"
         private const val ITEMS = "items"

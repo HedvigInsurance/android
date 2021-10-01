@@ -61,6 +61,7 @@ object Libs {
             const val uiTooling = "androidx.compose.ui:ui-tooling:$version"
             const val uiTestJunit = "androidx.compose.ui:ui-test-junit4:$version"
             const val mdcAdapter = "com.google.android.material:compose-theme-adapter:$version"
+            const val uiTestManifest = "androidx.compose.ui:ui-test-manifest:$version"
         }
     }
 
@@ -106,10 +107,13 @@ object Libs {
     const val svg = "com.caverock:androidsvg-aar:1.4"
 
     object Coil {
-        private const val version = "1.3.1"
+        private const val version = "1.3.2"
         const val svg = "io.coil-kt:coil-svg:$version"
         const val gif = "io.coil-kt:coil-gif:$version"
         const val coil = "io.coil-kt:coil:$version"
+        const val compose = "io.coil-kt:coil-compose:$version"
+
+        const val transformations = "com.github.Commit451.coil-transformations:transformations:1.0.0"
     }
 
     const val tooltip = "com.github.hansemannn:viewtooltip:1.2.2"
@@ -140,6 +144,12 @@ object Libs {
         const val android = "com.apollographql.apollo:apollo-android-support:${CommonVersions.apollo}"
         const val coroutines = "com.apollographql.apollo:apollo-coroutines-support:${CommonVersions.apollo}"
         const val idlingResource = "com.apollographql.apollo:apollo-idling-resource:${CommonVersions.apollo}"
+    }
+
+    object Showkase {
+        private const val version = "1.0.0-beta04"
+        const val showkase = "com.airbnb.android:showkase:$version"
+        const val processor = "com.airbnb.android:showkase-processor:$version"
     }
 
     const val adyen = "com.adyen.checkout:drop-in:4.0.0"

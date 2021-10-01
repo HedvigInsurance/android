@@ -41,6 +41,11 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
             .viewState
             .flowWithLifecycle(viewLifecycle)
             .onEach { viewState ->
+                dialog?.let { dialog ->
+                    val isLoading = viewState is ChangeDateBottomSheetViewModel.ViewState.Loading
+                    val isCancellable = !isLoading
+                    dialog.setCancelable(isCancellable)
+                }
                 when (viewState) {
                     ChangeDateBottomSheetViewModel.ViewState.Dismiss -> dismiss()
                     is ChangeDateBottomSheetViewModel.ViewState.Inceptions -> viewState.inceptions.forEach {
@@ -71,13 +76,12 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
     private fun createChangeDateView(inception: ChangeDateBottomSheetData.Inception): View {
         val changeDateView = ChangeDateView(requireContext())
         changeDateView.bind(
-            title = if (!inception.isConcurrent) {
-                inception.title
-            } else null,
+            title = if (!inception.isConcurrent) { inception.title } else null,
             currentInsurerDisplayName = inception.currentInsurer?.displayName,
             startDate = inception.startDate,
             switchable = inception.currentInsurer?.switchable ?: false,
-            datePickerListener = {
+            datePickerListener = datePickerListener@{
+                if (changeDateBottomSheetViewModel.shouldOpenDatePicker().not()) return@datePickerListener
                 MaterialDatePicker.Builder
                     .datePicker()
                     .setTitleText("")

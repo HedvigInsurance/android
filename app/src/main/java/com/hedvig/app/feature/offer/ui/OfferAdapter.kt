@@ -45,7 +45,6 @@ import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
-import com.hedvig.app.util.minus
 
 class OfferAdapter(
     private val fragmentManager: FragmentManager,
@@ -117,15 +116,15 @@ class OfferAdapter(
                 }
                 binding.apply {
                     title.text = data.title ?: itemView.context.getString(R.string.OFFER_INSURANCE_BUNDLE_TITLE)
-                    premium.text = data.netMonthlyCost.format(premium.context, marketManager.market)
+
+                    premium.text = data.premium.format(premium.context, marketManager.market)
                     premiumPeriod.text = premiumPeriod.context.getString(R.string.OFFER_PRICE_PER_MONTH)
 
-                    val hasDiscountedPrice = !(data.grossMonthlyCost - data.netMonthlyCost).isZero
-                    originalPremium.isVisible = hasDiscountedPrice
-                    if (hasDiscountedPrice) {
+                    originalPremium.isVisible = data.hasDiscountedPrice
+                    if (data.hasDiscountedPrice) {
                         originalPremium.setStrikethrough(true)
                         originalPremium.text =
-                            data.grossMonthlyCost.format(originalPremium.context, marketManager.market)
+                            data.originalPremium.format(originalPremium.context, marketManager.market)
                     }
 
                     startDateContainer.setHapticClickListener {
@@ -134,7 +133,7 @@ class OfferAdapter(
                             .show(fragmentManager, ChangeDateBottomSheet.TAG)
                     }
 
-                    startDateLabel.text = itemView.context.getString(data.startDateLabel)
+                    startDateLabel.text = data.startDateLabel.toString(startDateLabel.context)
                     startDate.text = data.startDate.getString(itemView.context)
 
                     val campaignText = data.incentiveDisplayValue.joinToString()
@@ -163,7 +162,7 @@ class OfferAdapter(
                     } else {
                         discountButton.apply {
                             setText(R.string.OFFER_ADD_DISCOUNT_BUTTON)
-                            setTextColor(context.getColor(R.color.textColorPrimary))
+                            setTextColor(context.getColor(R.color.textColorSecondary))
                             icon = context.compatDrawable(R.drawable.ic_add_circle)
                             setHapticClickListener {
                                 tracker.addDiscount()
@@ -176,12 +175,16 @@ class OfferAdapter(
                         }
                     }
 
-                    sign.bindWithSignMethod(data.signMethod)
-                    sign.setHapticClickListener {
-                        onSign(data.signMethod)
+                    with(sign) {
+                        text = data.checkoutLabel.toString(this.context)
+                        icon = data.signMethod.checkoutIconRes()?.let {
+                            context.compatDrawable(it)
+                        }
+                        setHapticClickListener {
+                            onSign(data.signMethod)
+                        }
                     }
-
-                    root.setBackgroundResource(data.gradientRes)
+                    root.background = data.gradientType.toDrawable(itemView.context)
                 }
             }
         }
@@ -232,11 +235,7 @@ class OfferAdapter(
                 if (data !is OfferModel.Footer) {
                     return invalid(data)
                 }
-                val checkoutString = data.signMethod
-                    .checkoutTextRes()
-                    ?.let(itemView.context::getString)
-                    ?: itemView.context.getString(R.string.OFFER_SIGN_BUTTON)
-
+                val checkoutString = data.checkoutLabel.toString(itemView.context)
                 val link = itemView.context.getString(
                     R.string.OFFER_FOOTER_GDPR_INFO,
                     checkoutString,

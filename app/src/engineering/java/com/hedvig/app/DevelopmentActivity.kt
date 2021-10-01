@@ -3,6 +3,7 @@ package com.hedvig.app
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.airbnb.android.showkase.models.Showkase
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.databinding.ActivityDevelopmentBinding
 import com.hedvig.app.feature.adyen.AdyenMockActivity
@@ -39,6 +40,9 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Header,
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Tracking") {
                         startActivity(TrackingLogActivity.newInstance(this))
+                    },
+                    DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Showkase") {
+                        startActivity(Showkase.getBrowserIntent(this))
                     },
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Change address intro") {
                         startActivity(Intent(this, ChangeAddressMockActivity::class.java))

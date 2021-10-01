@@ -5,7 +5,6 @@ query InsuranceQuery($locale: Locale!) {
       ...ContractStatusFragment
     }
     displayName
-    typeOfContract
     upcomingRenewal {
       renewalDate
       draftCertificateUrl
@@ -15,59 +14,11 @@ query InsuranceQuery($locale: Locale!) {
         certificateUrl
         status
       }
-      ... on SwedishApartmentAgreement {
-        address {
-          ...AddressFragment
-        }
-        numberCoInsured
-        squareMeters
-        saType: type
-      }
-      ... on SwedishHouseAgreement {
-        address {
-          ...AddressFragment
-        }
-        numberCoInsured
-        squareMeters
-        ancillaryArea
-        yearOfConstruction
-        numberOfBathrooms
-        isSubleted
-        extraBuildings {
-          ... on ExtraBuildingCore {
-            area
-            displayName
-            hasWaterConnected
-          }
-        }
-      }
-      ... on NorwegianHomeContentAgreement {
-        address {
-          ...AddressFragment
-        }
-        numberCoInsured
-        squareMeters
-        nhcType: type
-      }
-      ... on DanishHomeContentAgreement {
-        address {
-          ...AddressFragment
-        }
-        numberCoInsured
-        squareMeters
-        dhcType: type
-      }
-      ... on NorwegianTravelAgreement {
-        numberCoInsured
-      }
-      ... on DanishTravelAgreement {
-        numberCoInsured
-      }
-      ... on DanishAccidentAgreement {
-        numberCoInsured
-      }
     }
-    perils(locale: $locale) {
+    currentAgreementDetailsTable(locale: $locale) {
+      ...TableFragment
+    }
+    contractPerils(locale: $locale) {
       ...PerilFragment
     }
     insurableLimits(locale: $locale) {
@@ -77,6 +28,26 @@ query InsuranceQuery($locale: Locale!) {
       displayName
       url
     }
+    statusPills(locale: $locale)
+    detailPills(locale: $locale)
+    gradientOption
+    supportsAddressChange
     ...UpcomingAgreementFragment
+  }
+  activeContractBundles {
+    potentialCrossSells {
+      title
+      description
+      callToAction
+      action {
+        ... on CrossSellEmbark {
+          embarkStory(locale: $locale) {
+            name
+          }
+        }
+      }
+      blurHash
+      imageUrl
+    }
   }
 }

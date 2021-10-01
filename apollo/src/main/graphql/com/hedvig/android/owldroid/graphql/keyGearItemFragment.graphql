@@ -21,22 +21,8 @@ fragment KeyGearItemFragment on KeyGearItem {
     amount
   }
   ... KeyGearItemValuationFragment
-  covered {
-    title {
-      translations(where: { language: { code: $languageCode }, project: Android }) {
-        text
-      }
-    }
-  }
   maxInsurableAmount {
     amount
-  }
-  exceptions {
-    title {
-      translations(where: { language: { code: $languageCode }, project: Android }) {
-        text
-      }
-    }
   }
   deleted
 }

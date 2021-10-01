@@ -187,6 +187,9 @@
             android:name=".feature.offer.ui.checkout.CheckoutActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
+            android:name=".feature.crossselling.ui.CrossSellingResultActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".feature.referrals.ReferralsReceiverActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
@@ -300,6 +303,8 @@
         <activity android:name=".feature.home.ui.changeaddress.result.ChangeAddressResultActivity" />
 
         <activity android:name=".feature.offer.quotedetail.QuoteDetailActivity" />
+
+        <activity android:name=".feature.embark.passages.previousinsurer.askforprice.AskForPriceInfoActivity" />
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"

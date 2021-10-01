@@ -89,7 +89,7 @@ class AuthenticateDialog : DialogFragment() {
                         pushTokenManager.refreshToken()
                     }
                     withContext(Dispatchers.Main) {
-                        dismiss()
+                        dismissAllowingStateLoss()
                         startActivity(
                             LoggedInActivity.newInstance(requireContext(), withoutHistory = true)
                         )
