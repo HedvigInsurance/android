@@ -18,6 +18,16 @@ fun evaluateExpression(expression: ExpressionFragment, valueStore: ValueStore): 
     expression.fragments.basicExpressionFragment.asEmbarkExpressionBinary?.let { binaryExpression ->
         when (binaryExpression.binaryType) {
             EmbarkExpressionTypeBinary.EQUALS -> {
+                if (binaryExpression.value == "null") {
+                    return if (
+                        valueStore.get(binaryExpression.key) == null &&
+                        valueStore.getList(binaryExpression.key) == null
+                    ) {
+                        ExpressionResult.True(binaryExpression.text)
+                    } else {
+                        ExpressionResult.False
+                    }
+                }
                 if (valueStore.get(binaryExpression.key) == binaryExpression.value) {
                     return ExpressionResult.True(binaryExpression.text)
                 }

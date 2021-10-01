@@ -53,6 +53,31 @@ class ExpressionTest {
     }
 
     @Test
+    fun `given a true equals expression involving null, should evaluate to true`() {
+        val expression = ExpressionBuilder(
+            type = ExpressionBuilder.ExpressionType.EQUALS,
+            key = "FOO",
+            value = "null"
+        ).build()
+
+        assertThat(evaluateExpression(expression, ValueStoreImpl())).isInstanceOf(ExpressionResult.True::class)
+    }
+
+    @Test
+    fun `given a false equals expression involving null, should evaluate to false`() {
+        val expression = ExpressionBuilder(
+            type = ExpressionBuilder.ExpressionType.EQUALS,
+            key = "FOO",
+            value = "null"
+        ).build()
+
+        val valueStore = ValueStoreImpl()
+        valueStore.put("FOO", emptyList())
+
+        assertThat(evaluateExpression(expression, valueStore)).isInstanceOf(ExpressionResult.False::class)
+    }
+
+    @Test
     fun `given a true greater than expression, should evaluate to false`() {
         val expression = ExpressionBuilder(
             type = ExpressionBuilder.ExpressionType.GREATER_THAN,
