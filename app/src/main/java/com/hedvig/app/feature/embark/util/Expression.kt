@@ -23,6 +23,16 @@ fun evaluateExpression(expression: ExpressionFragment, valueStore: ValueStore): 
                 }
             }
             EmbarkExpressionTypeBinary.NOT_EQUALS -> {
+                if (binaryExpression.value == "null") {
+                    return if (
+                        valueStore.get(binaryExpression.key) == null &&
+                        valueStore.getList(binaryExpression.key) == null
+                    ) {
+                        ExpressionResult.False
+                    } else {
+                        ExpressionResult.True(binaryExpression.text)
+                    }
+                }
                 val stored = valueStore.get(binaryExpression.key)
                     ?: return ExpressionResult.False
                 if (stored != binaryExpression.value) {

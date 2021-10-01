@@ -188,6 +188,32 @@ class ExpressionTest {
     }
 
     @Test
+    fun `given a true not equals expression involving null, should evaluate to true`() {
+        val expression = ExpressionBuilder(
+            type = ExpressionBuilder.ExpressionType.NOT_EQUALS,
+            key = "FOO",
+            value = "null"
+        ).build()
+
+        val valueStore = ValueStoreImpl()
+        valueStore.put("FOO", emptyList())
+        valueStore.commitVersion()
+
+        assertThat(evaluateExpression(expression, valueStore)).isInstanceOf(ExpressionResult.True::class)
+    }
+
+    @Test
+    fun `given a false not equals expression involving null, should evaluate to false`() {
+        val expression = ExpressionBuilder(
+            type = ExpressionBuilder.ExpressionType.NOT_EQUALS,
+            key = "FOO",
+            value = "null"
+        ).build()
+
+        assertThat(evaluateExpression(expression, ValueStoreImpl())).isInstanceOf(ExpressionResult.False::class)
+    }
+
+    @Test
     fun `given a false not equals expression, should evaluate to false`() {
         val expression = ExpressionBuilder(
             type = ExpressionBuilder.ExpressionType.NOT_EQUALS,
