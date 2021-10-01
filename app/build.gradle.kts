@@ -125,6 +125,7 @@ dependencies {
     implementation(project(":apollo"))
 
     androidTestImplementation(project(":testdata"))
+    testImplementation(project(":testdata"))
     debugImplementation(project(":testdata"))
 
     "stagingImplementation"(project(":testdata"))
