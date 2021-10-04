@@ -16,7 +16,6 @@ import com.hedvig.app.feature.insurance.ui.detail.coverage.createCoverageItems
 import com.hedvig.app.feature.insurance.ui.detail.coverage.createInsurableLimitsItems
 import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoModel
 import com.hedvig.app.feature.insurance.ui.detail.yourinfo.yourInfoItems
-import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.table.Table
 import com.hedvig.app.util.featureflags.Feature
