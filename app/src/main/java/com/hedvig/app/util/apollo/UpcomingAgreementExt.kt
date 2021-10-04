@@ -8,16 +8,16 @@ import java.time.LocalDate
 
 fun UpcomingAgreementFragment.toUpcomingAgreementResult():
     GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement? {
-    if (status.newAgreement() == null) {
-        return null
-    }
+        if (status.newAgreement() == null) {
+            return null
+        }
 
-    return GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement(
-        activeFrom = activeFrom(),
-        address = address(),
-        table = upcomingAgreementDetailsTable.fragments.tableFragment.intoTable()
-    )
-}
+        return GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement(
+            activeFrom = activeFrom(),
+            address = address(),
+            table = upcomingAgreementDetailsTable.fragments.tableFragment.intoTable()
+        )
+    }
 
 private fun UpcomingAgreementFragment.activeFrom(): LocalDate? {
     val newAgreement = status.newAgreement()

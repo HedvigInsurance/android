@@ -1,6 +1,5 @@
 package com.hedvig.app.ui.compose.composables.buttons
 
-import android.content.res.Configuration
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.hedvig.app.R
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 
@@ -55,18 +53,5 @@ fun LargeContainedButton(
 fun LargeContainedButtonPreview() {
     HedvigTheme {
         LargeContainedTextButton(text = "Contained Button (Large)") {}
-    }
-}
-
-@ShowkaseComposable(skip = true)
-@Preview(
-    name = "Contained Button (Large) • dark",
-    group = "Buttons",
-    uiMode = Configuration.UI_MODE_NIGHT_YES,
-)
-@Composable
-fun LargeContainedButtonPreviewDark() {
-    HedvigTheme {
-        LargeContainedTextButton(text = "Contained Button Dark (Large)") {}
     }
 }
