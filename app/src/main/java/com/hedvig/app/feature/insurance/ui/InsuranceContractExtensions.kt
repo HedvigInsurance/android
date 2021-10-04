@@ -54,7 +54,7 @@ private fun InsuranceContractCardBinding.bindBackgroundColor(
             )
         }
         else -> {
-            container.setBackgroundColor(container.context.getColor(R.color.hedvig_light_gray))
+            container.setBackgroundColor(container.context.compatColor(R.color.default_insurance_card))
             blur.isVisible = false
         }
     }
