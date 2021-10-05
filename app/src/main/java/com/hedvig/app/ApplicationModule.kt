@@ -17,6 +17,8 @@ import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCache
 import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCacheFactory
 import com.apollographql.apollo.subscription.SubscriptionConnectionParams
 import com.apollographql.apollo.subscription.WebSocketSubscriptionTransport
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.authenticate.LoginStatusService
@@ -146,6 +148,7 @@ import com.hedvig.app.feature.settings.SettingsViewModel
 import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignViewModel
 import com.hedvig.app.feature.swedishbankid.sign.usecase.ManuallyRecheckSwedishBankIdSignStatusUseCase
 import com.hedvig.app.feature.swedishbankid.sign.usecase.SubscribeToSwedishBankIdSignStatusUseCase
+import com.hedvig.app.feature.tracking.FirebaseTracker
 import com.hedvig.app.feature.tracking.MixpanelTracker
 import com.hedvig.app.feature.tracking.TrackerSink
 import com.hedvig.app.feature.tracking.TrackingFacade
@@ -272,6 +275,7 @@ val applicationModule = module {
         }
         builder.build()
     }
+    single { Firebase.analytics }
 }
 
 fun makeUserAgent(context: Context, market: Market?) =
@@ -495,6 +499,7 @@ val trackerModule = module {
         TrackingFacade(getAll<TrackerSink>().distinct())
     }
     single { MixpanelTracker(get()) } bind TrackerSink::class
+    single { FirebaseTracker(get()) } bind TrackerSink::class
 }
 
 val localeBroadcastManagerModule = module {

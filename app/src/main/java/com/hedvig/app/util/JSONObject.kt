@@ -1,5 +1,6 @@
 package com.hedvig.app.util
 
+import androidx.core.os.bundleOf
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -35,6 +36,8 @@ fun JSONObject.getWithDotNotation(accessor: String): Any? {
 }
 
 fun Collection<Any>.toJsonArray() = JSONArray(this)
+
+fun JSONObject.toBundle() = bundleOf(*(entries().asSequence().toList().toTypedArray()))
 
 fun JSONObject.entries() = JSONObjectEntryIterator(this)
 

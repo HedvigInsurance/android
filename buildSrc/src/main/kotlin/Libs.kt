@@ -80,11 +80,13 @@ object Libs {
     }
 
     object Firebase {
-        const val playServicesBase = "com.google.android.gms:play-services-base:17.6.0"
-        const val crashlytics = "com.google.firebase:firebase-crashlytics:18.2.0"
-        const val dynamicLinks = "com.google.firebase:firebase-dynamic-links:20.1.1"
-        const val config = "com.google.firebase:firebase-config:21.0.0"
-        const val messaging = "com.google.firebase:firebase-messaging:22.0.0"
+        const val bom = "com.google.firebase:firebase-bom:28.4.1"
+        const val playServicesBase = "com.google.android.gms:play-services-base"
+        const val crashlytics = "com.google.firebase:firebase-crashlytics"
+        const val dynamicLinks = "com.google.firebase:firebase-dynamic-links"
+        const val config = "com.google.firebase:firebase-config"
+        const val messaging = "com.google.firebase:firebase-messaging"
+        const val tracking = "com.google.firebase:firebase-analytics-ktx"
     }
 
     const val mixpanel = "com.mixpanel.android:mixpanel-android:5.9.1"
