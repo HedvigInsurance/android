@@ -17,9 +17,9 @@ import com.hedvig.app.ui.compose.theme.HedvigTheme
 
 @Composable
 fun LargeOutlinedTextButton(
-    modifier: Modifier = Modifier,
     text: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     LargeOutlinedButton(
         modifier = modifier,
@@ -55,6 +55,6 @@ fun LargeOutlinedButton(
 @Composable
 fun LargeOutlinedButtonPreview() {
     HedvigTheme {
-        LargeOutlinedTextButton(text = "Outlined Button (Large)") {}
+        LargeOutlinedTextButton(text = "Outlined Button (Large)", onClick = {})
     }
 }

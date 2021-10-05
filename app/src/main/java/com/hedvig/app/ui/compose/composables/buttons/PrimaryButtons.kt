@@ -17,16 +17,16 @@ import com.hedvig.app.ui.compose.theme.HedvigTheme
 
 @Composable
 fun LargeContainedTextButton(
-    modifier: Modifier = Modifier,
     text: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     LargeContainedButton(
-        modifier = modifier,
         content = {
             Text(text = text)
         },
-        onClick = onClick
+        onClick = onClick,
+        modifier = modifier,
     )
 }
 
@@ -63,6 +63,6 @@ fun LargeContainedButton(
 @Composable
 fun LargeContainedButtonPreview() {
     HedvigTheme {
-        LargeContainedTextButton(text = "Contained Button (Large)") {}
+        LargeContainedTextButton(text = "Contained Button (Large)", onClick = {})
     }
 }
