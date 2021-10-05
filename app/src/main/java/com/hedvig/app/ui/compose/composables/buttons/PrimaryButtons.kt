@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonColors
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -32,7 +34,15 @@ fun LargeContainedTextButton(
 fun LargeContainedButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    content: @Composable RowScope.() -> Unit
+    colors: ButtonColors = ButtonDefaults.buttonColors(
+        backgroundColor = if (MaterialTheme.colors.isLight) {
+            MaterialTheme.colors.primary
+        } else {
+            MaterialTheme.colors.secondary
+        },
+        contentColor = MaterialTheme.colors.onPrimary,
+    ),
+    content: @Composable RowScope.() -> Unit,
 ) {
     Button(
         onClick = onClick,
@@ -41,6 +51,7 @@ fun LargeContainedButton(
             .then(modifier),
         shape = MaterialTheme.shapes.large,
         contentPadding = PaddingValues(dimensionResource(R.dimen.base_margin_double)),
+        colors = colors,
         content = content,
     )
 }
