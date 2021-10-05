@@ -186,7 +186,7 @@ class CrossSellingResultScreenTest {
         compose.onNodeWithText(
             TextAlternative.AlreadyActivated.getString(context, accidentInsurance)
         ).assertDoesNotExist()
-       
+
         compose
             .onNodeWithText(TextAlternative.WillActivate.getString(context, accidentInsurance, activationDate))
             .assertExists()
