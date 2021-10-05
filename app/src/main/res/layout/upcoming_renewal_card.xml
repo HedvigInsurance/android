@@ -10,9 +10,7 @@
     android:layout_marginBottom="@dimen/base_margin_double"
     android:padding="@dimen/base_margin_double"
     android:theme="@style/ThemeOverlay.Hedvig.RenewalCard"
-    app:cardElevation="0dp"
-    app:strokeColor="@color/color_divider"
-    app:strokeWidth="1dp">
+    style="@style/Hedvig.Theme.InfoCard">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
