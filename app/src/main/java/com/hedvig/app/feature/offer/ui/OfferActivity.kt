@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.transition.TransitionManager
 import android.view.MenuItem
+import android.view.animation.AnimationUtils
 import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.lifecycle.flowWithLifecycle
@@ -48,7 +49,6 @@ import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -67,6 +67,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     private val imageLoader: ImageLoader by inject()
     private val tracker: OfferTracker by inject()
     private val marketManager: MarketManager by inject()
+    private var hasStartedRecyclerAnimation: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -153,9 +154,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 .viewState
                 .flowWithLifecycle(lifecycle)
                 .onEach { viewState ->
-                    if (concatAdapter.itemCount == 0 || concatAdapter.itemCount == 1) {
-                        scheduleEnterAnimation()
-                    }
+
                     topOfferAdapter.submitList(viewState.topOfferItems)
                     perilsAdapter.submitList(viewState.perils)
                     insurableLimitsAdapter.submitList(viewState.insurableLimitsItems)
@@ -168,6 +167,10 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     inflateMenu(viewState.loginStatus)
                     binding.progressBar.isVisible = viewState.isLoading
                     binding.offerScroll.isVisible = !viewState.isLoading
+
+                    if (!hasStartedRecyclerAnimation) {
+                        scheduleEnterAnimation()
+                    }
                 }
                 .launchIn(lifecycleScope)
 
@@ -288,21 +291,10 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     }
 
     private fun scheduleEnterAnimation() {
+        hasStartedRecyclerAnimation = true
         binding.offerScroll.scheduleLayoutAnimation()
-        binding.offerScroll.postOnAnimation {
-            changeBackgroundWithDelay()
-        }
-    }
-
-    // Some items in the concat adapter does not have a background. We want them
-    // to have the default colorBackground. Before submitting items to the recycler view we
-    // are showing a gradient for a smoother transition to the header item. Hence why we need to change
-    // the background here.
-    private fun changeBackgroundWithDelay() {
-        lifecycleScope.launch {
-            delay(800)
-            binding.offerRoot.setBackgroundColor(binding.offerRoot.context.getColor(R.color.colorBackground))
-        }
+        val animation = AnimationUtils.loadLayoutAnimation(this, R.anim.layout_animation_appear_from_bottom)
+        binding.offerScroll.layoutAnimation = animation
     }
 
     private fun inflateMenu(loginStatus: LoginStatus) {

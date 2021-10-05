@@ -16,7 +16,6 @@ import com.hedvig.app.feature.insurance.ui.detail.coverage.createCoverageItems
 import com.hedvig.app.feature.insurance.ui.detail.coverage.createInsurableLimitsItems
 import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoModel
 import com.hedvig.app.feature.insurance.ui.detail.yourinfo.yourInfoItems
-import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.table.Table
 import com.hedvig.app.util.featureflags.Feature
@@ -112,14 +111,7 @@ class ContractDetailViewModelImpl(
                 DocumentItems.Document(
                     titleRes = R.string.MY_DOCUMENTS_INSURANCE_TERMS,
                     subTitleRes = R.string.insurance_details_view_documents_insurance_letter_subtitle,
-                    // TODO Quick fix for getting new terms and conditions
-                    uri = Uri.parse(
-                        if (marketManager.market == Market.SE) {
-                            "https://www.hedvig.com/se/villkor"
-                        } else {
-                            contract.termsAndConditions.url
-                        }
-                    ),
+                    uri = Uri.parse(contract.termsAndConditions.url),
                     type = DocumentItems.Document.Type.TERMS_AND_CONDITIONS
                 )
             )

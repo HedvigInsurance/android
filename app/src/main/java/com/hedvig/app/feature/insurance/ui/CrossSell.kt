@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.insurance.ui
 
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -30,7 +29,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
-import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.commit451.coiltransformations.CropTransformation
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.ui.compose.theme.hedvigBlack
@@ -145,22 +143,6 @@ private val previewData = InsuranceModel.CrossSell(
 )
 @Composable
 fun CrossSellPreview() {
-    HedvigTheme {
-        CrossSell(
-            data = previewData,
-            onCtaClick = {}
-        )
-    }
-}
-
-@ShowkaseComposable(skip = true)
-@Preview(
-    name = "Cross-Sell Card • Dark",
-    group = "Insurance Tab",
-    uiMode = UI_MODE_NIGHT_YES,
-)
-@Composable
-fun CrossSellPreviewDark() {
     HedvigTheme {
         CrossSell(
             data = previewData,
