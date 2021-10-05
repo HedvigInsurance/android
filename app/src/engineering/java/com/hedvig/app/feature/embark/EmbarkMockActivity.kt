@@ -87,7 +87,7 @@ class EmbarkMockActivity : MockActivity() {
         header("Computed Value")
         clickableItem("Computed Value") {
             MockEmbarkViewModel.mockedData = STORY_WITH_COMPUTED_VALUE
-            startActivity(EmbarkActivity.newInstance(context, this.javaClass.name, "Date Picker Action"))
+            startActivity(EmbarkActivity.newInstance(context, this.javaClass.name, "Computed Value"))
         }
         header("Previous Insurer")
         clickableItem("Previous Insurer") {
