@@ -8,7 +8,7 @@ class FirebaseTracker(
     private val firebaseAnalytics: FirebaseAnalytics,
 ) : TrackerSink {
     override fun track(eventName: String, properties: JSONObject?) {
-        firebaseAnalytics.logEvent(eventName, properties?.toBundle()) // TODO: Fix params
+        firebaseAnalytics.logEvent(eventName, properties?.toBundle())
     }
 
     override fun identify(id: String) {
