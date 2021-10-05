@@ -2,4 +2,6 @@
 <resources>
     <integer name="slide_in_animation_duration">225</integer>
     <integer name="fade_in_animation_duration">225</integer>
+    <integer name="chat_slide_in_animation_duration">300</integer>
+    <integer name="chat_slide_out_animation_duration">250</integer>
 </resources>
