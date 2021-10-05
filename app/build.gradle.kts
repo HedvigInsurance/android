@@ -177,11 +177,13 @@ dependencies {
     implementation(Libs.OkHttp.coroutines)
     androidTestImplementation(Libs.OkHttp.mockWebServer)
 
+    implementation(platform(Libs.Firebase.bom))
     implementation(Libs.Firebase.playServicesBase)
     implementation(Libs.Firebase.crashlytics)
     implementation(Libs.Firebase.dynamicLinks)
     implementation(Libs.Firebase.config)
     implementation(Libs.Firebase.messaging)
+    implementation(Libs.Firebase.tracking)
 
     implementation(Libs.mixpanel)
 
