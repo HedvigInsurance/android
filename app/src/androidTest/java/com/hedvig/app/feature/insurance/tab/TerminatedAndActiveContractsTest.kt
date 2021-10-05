@@ -54,9 +54,6 @@ class TerminatedAndActiveContractsTest : TestCase() {
                 childAt<InsuranceScreen.ContractCard>(1) {
                     firstStatusPill { isGone() }
                 }
-                childAt<InsuranceScreen.TerminatedContractsHeader>(2) {
-                    text { hasText(R.string.insurances_tab_more_title) }
-                }
                 childAt<InsuranceScreen.TerminatedContracts>(3) {
                     caption {
                         hasPluralText(R.plurals.insurances_tab_terminated_insurance_subtitile, 1, 1)
