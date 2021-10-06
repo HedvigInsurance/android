@@ -17,15 +17,20 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
+import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.ripple.LocalRippleTheme
+import androidx.compose.material.ripple.RippleTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
@@ -35,6 +40,7 @@ import com.hedvig.app.ui.compose.theme.hedvigBlack
 import com.hedvig.app.ui.compose.theme.hedvigBlack12percent
 import com.hedvig.app.ui.compose.theme.whiteHighEmphasis
 import com.hedvig.app.util.compose.rememberBlurHash
+import com.hedvig.app.util.extensions.makeToast
 
 /*
  * Note: This Composable uses hardcoded colors due to difficulties with
@@ -111,20 +117,35 @@ fun CrossSell(
                     )
                 }
                 Spacer(modifier = Modifier.width(8.dp))
-                Button(
-                    onClick = onCtaClick,
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = whiteHighEmphasis,
-                        contentColor = hedvigBlack,
-                    ),
+                CompositionLocalProvider(
+                    LocalRippleTheme provides DarkRippleTheme,
                 ) {
-                    Text(
-                        text = data.callToAction,
-                    )
+                    Button(
+                        onClick = onCtaClick,
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = whiteHighEmphasis,
+                            contentColor = hedvigBlack,
+                        ),
+                    ) {
+                        Text(
+                            text = data.callToAction,
+                        )
+                    }
                 }
             }
         }
     }
+}
+
+private object DarkRippleTheme : RippleTheme {
+    @Composable
+    override fun defaultColor() = Color(0x1f000000)
+
+    @Composable
+    override fun rippleAlpha() = RippleTheme.defaultRippleAlpha(
+        contentColor = LocalContentColor.current,
+        lightTheme = false,
+    )
 }
 
 private val previewData = InsuranceModel.CrossSell(
@@ -143,10 +164,11 @@ private val previewData = InsuranceModel.CrossSell(
 )
 @Composable
 fun CrossSellPreview() {
+    val context = LocalContext.current
     HedvigTheme {
         CrossSell(
             data = previewData,
-            onCtaClick = {}
+            onCtaClick = { context.makeToast("Doing stuff") }
         )
     }
 }
