@@ -4,7 +4,9 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.os.Build
+import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import coil.ImageLoader
 import coil.decode.GifDecoder
@@ -26,6 +28,7 @@ import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.authenticate.SharedPreferencesAuthenticationTokenService
 import com.hedvig.app.authenticate.SharedPreferencesLoginStatusService
 import com.hedvig.app.data.debit.PayinStatusRepository
+import com.hedvig.app.datastore.SeenCrossSellsPreferencesDataMigration
 import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModel
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModelImpl
@@ -168,6 +171,8 @@ import com.hedvig.app.feature.zignsec.usecase.StartDanishAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.StartNorwegianAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthStatusUseCase
 import com.hedvig.app.service.FileService
+import com.hedvig.app.service.badge.NotificationBadgeService
+import com.hedvig.app.service.badge.NotificationBadgeServiceImpl
 import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.app.service.push.managers.PaymentNotificationManager
 import com.hedvig.app.terminated.TerminatedTracker
@@ -355,7 +360,7 @@ val whatsNewModule = module {
 }
 
 val insuranceModule = module {
-    viewModel<InsuranceViewModel> { InsuranceViewModelImpl(get()) }
+    viewModel<InsuranceViewModel> { InsuranceViewModelImpl(get(), get()) }
     viewModel<ContractDetailViewModel> { ContractDetailViewModelImpl(get(), get(), get(), get()) }
 }
 
@@ -448,6 +453,8 @@ val serviceModule = module {
     single<LoginStatusService> { SharedPreferencesLoginStatusService(get(), get(), get()) }
     single<AuthenticationTokenService> { SharedPreferencesAuthenticationTokenService(get()) }
     single { TabNotificationService(get(), get()) }
+    single { NotificationBadgeServiceImpl(get()) } bind NotificationBadgeService::class
+
     single { DeviceInformationService(get()) }
 }
 
@@ -584,8 +591,15 @@ val chatEventModule = module {
 }
 
 val dataStoreModule = module {
-    single {
+
+    single { SeenCrossSellsPreferencesDataMigration() }
+
+    @Suppress("RemoveExplicitTypeArguments")
+    single<DataStore<Preferences>> {
         PreferenceDataStoreFactory.create(
+            migrations = listOf(
+                get<SeenCrossSellsPreferencesDataMigration>(),
+            ),
             produceFile = {
                 get<Context>().preferencesDataStoreFile("hedvig_data_store_preferences")
             }

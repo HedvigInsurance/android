@@ -58,7 +58,7 @@ class InsuranceAdapter(
         is InsuranceModel.CrossSell -> CROSS_SELL
         is InsuranceModel.Header -> R.layout.insurance_header
         InsuranceModel.TerminatedContractsHeader,
-        InsuranceModel.CrossSellHeader -> SUBHEADING
+        is InsuranceModel.CrossSellHeader -> SUBHEADING
         is InsuranceModel.TerminatedContracts -> R.layout.insurance_terminated_contracts
         InsuranceModel.Error -> R.layout.generic_error
     }
@@ -78,7 +78,7 @@ class InsuranceAdapter(
             retry: () -> Unit,
             tracker: InsuranceTracker,
             marketManager: MarketManager
-        ): Any?
+        )
 
         fun invalid(data: InsuranceModel) {
             e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }
@@ -190,7 +190,7 @@ class InsuranceAdapter(
                 retry: () -> Unit,
                 tracker: InsuranceTracker,
                 marketManager: MarketManager
-            ): Any? = with(binding) {
+            ) = with(binding) {
                 this.retry.setHapticClickListener {
                     tracker.retry()
                     retry()
@@ -213,16 +213,19 @@ class InsuranceAdapter(
                 if (data !is InsuranceModel.TerminatedContractsHeader && data !is InsuranceModel.CrossSellHeader) {
                     return invalid(data)
                 }
+                val showNotificationDot =
+                    (data is InsuranceModel.CrossSellHeader && data.showNotificationBadge)
                 composeView.setContent {
                     HedvigTheme {
                         Subheading(
                             when (data) {
-                                InsuranceModel.CrossSellHeader ->
+                                is InsuranceModel.CrossSellHeader ->
                                     stringResource(R.string.insurance_tab_cross_sells_title)
                                 InsuranceModel.TerminatedContractsHeader ->
                                     stringResource(R.string.insurances_tab_more_title)
                                 else -> ""
-                            }
+                            },
+                            showNotificationDot
                         )
                     }
                 }

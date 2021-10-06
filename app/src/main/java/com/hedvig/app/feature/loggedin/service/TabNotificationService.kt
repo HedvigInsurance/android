@@ -1,52 +1,47 @@
 package com.hedvig.app.feature.loggedin.service
 
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringSetPreferencesKey
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
+import com.hedvig.app.service.badge.NotificationBadge
+import com.hedvig.app.service.badge.NotificationBadgeService
+import com.hedvig.app.service.badge.Seen
+import com.hedvig.app.service.badge.isSeen
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class TabNotificationService(
     private val getCrossSellsUseCase: GetCrossSellsUseCase,
-    private val dataStore: DataStore<Preferences>,
+    private val notificationBadgeService: NotificationBadgeService,
 ) {
-    private val seenCrossSells = dataStore
-        .data
-        .map { preferences ->
-            preferences[SEEN_CROSS_SELLS_KEY] ?: emptySet()
-        }
 
-    suspend fun load(): Flow<Set<LoggedInTabs>> {
+    suspend fun unseenTabNotifications(): Flow<Set<LoggedInTabs>> {
         val potentialCrossSells = getCrossSellsUseCase.invoke()
+        val tabNotifications = NotificationBadge.fromPotentialCrossSells(potentialCrossSells)
 
-        return seenCrossSells
-            .map { seenCrossSells ->
-                if ((potentialCrossSells subtract seenCrossSells).isNotEmpty()) {
-                    setOf(LoggedInTabs.INSURANCE)
-                } else {
-                    emptySet()
-                }
+        return notificationBadgeService.seenStatus(tabNotifications)
+            .map { notificationBadgeToSeenPairs ->
+                notificationBadgeToSeenPairs
+                    .filter { (_, seen) ->
+                        seen.isSeen().not()
+                    }
+                    .mapNotNull { (notificationBadge, _) ->
+                        notificationToTabMap[notificationBadge]
+                    }
+                    .toSet()
             }
     }
 
     suspend fun visitTab(tab: LoggedInTabs) {
-        if (tab == LoggedInTabs.INSURANCE) {
-            markCurrentCrossSellsAsSeen()
-        }
-    }
-
-    private suspend fun markCurrentCrossSellsAsSeen() {
-        val crossSells = getCrossSellsUseCase.invoke()
-        dataStore
-            .edit { preferences ->
-                preferences[SEEN_CROSS_SELLS_KEY] =
-                    (preferences[SEEN_CROSS_SELLS_KEY] ?: emptySet()) + crossSells
-            }
+        val associatedNotification = tabToNotificationMap[tab] ?: return
+        notificationBadgeService.setSeenStatus(associatedNotification, Seen.seen())
     }
 
     companion object {
-        val SEEN_CROSS_SELLS_KEY = stringSetPreferencesKey("SEEN_CROSS_SELLS")
+        val notificationToTabMap = mapOf<NotificationBadge.BottomNav, LoggedInTabs>(
+            NotificationBadge.BottomNav.CrossSellOnInsuranceFragment to LoggedInTabs.INSURANCE
+        )
+
+        val tabToNotificationMap = notificationToTabMap.map {
+            it.value to it.key
+        }.toMap()
     }
 }

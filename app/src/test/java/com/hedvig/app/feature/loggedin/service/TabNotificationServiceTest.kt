@@ -1,11 +1,12 @@
 package com.hedvig.app.feature.loggedin.service
 
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
+import com.hedvig.app.service.badge.NotificationBadge
+import com.hedvig.app.service.badge.NotificationBadgeService
+import com.hedvig.app.service.badge.Seen
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -15,11 +16,12 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
 
 class TabNotificationServiceTest {
+
     @Test
     fun `when all cross-sells have been seen, should not show notification for insurance tab`() {
         val mockUseCase = mockk<GetCrossSellsUseCase>()
-        coEvery { mockUseCase.invoke() } returns setOf(TypeOfContract.SE_ACCIDENT.toString())
-        val mockDataStore = mockedDataStore(setOf(TypeOfContract.SE_ACCIDENT.toString()))
+        coEvery { mockUseCase.invoke() } returns setOf(TypeOfContract.SE_ACCIDENT)
+        val mockDataStore = mockedNotificationBadgeService(Seen.seen())
 
         val sut = TabNotificationService(
             mockUseCase,
@@ -27,31 +29,35 @@ class TabNotificationServiceTest {
         )
 
         runBlockingTest {
-            assertThat(sut.load().first()).isEqualTo(emptySet())
+            assertThat(sut.unseenTabNotifications().first()).isEqualTo(emptySet())
         }
     }
 
     @Test
     fun `when there is an unseen cross-sell, should show notification for insurance tab`() {
         val mockUseCase = mockk<GetCrossSellsUseCase>()
-        coEvery { mockUseCase.invoke() } returns setOf(TypeOfContract.SE_ACCIDENT.toString())
-        val mockDataStore = mockedDataStore(emptySet())
+        coEvery { mockUseCase.invoke() } returns setOf(TypeOfContract.SE_ACCIDENT)
+        val mockNotificationBadgeService = mockedNotificationBadgeService(Seen.notSeen())
 
         val sut = TabNotificationService(
             mockUseCase,
-            mockDataStore,
+            mockNotificationBadgeService,
         )
 
         runBlockingTest {
-            assertThat(sut.load().first()).isEqualTo(setOf(LoggedInTabs.INSURANCE))
+            assertThat(sut.unseenTabNotifications().first()).isEqualTo(setOf(LoggedInTabs.INSURANCE))
         }
     }
 
-    private fun mockedDataStore(data: Set<String>): DataStore<Preferences> {
-        val mockPreferences = mockk<Preferences>()
-        every { mockPreferences[TabNotificationService.SEEN_CROSS_SELLS_KEY] } returns data
-        val mockDataStore = mockk<DataStore<Preferences>>()
-        every { mockDataStore.data } returns flowOf(mockPreferences)
-        return mockDataStore
+    private fun mockedNotificationBadgeService(seen: Seen): NotificationBadgeService {
+        val mockNotificationBadgeService = mockk<NotificationBadgeService>()
+        every {
+            mockNotificationBadgeService.seenStatus(any<List<NotificationBadge>>())
+        } returns flowOf<List<Pair<NotificationBadge, Seen>>>(
+            listOf(
+                NotificationBadge.BottomNav.CrossSellOnInsuranceFragment to seen
+            )
+        )
+        return mockNotificationBadgeService
     }
 }
