@@ -66,7 +66,7 @@
 
         <Button
             android:id="@+id/action"
-            style="@style/Hedvig.Button.Text"
+            style="?materialButtonTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
