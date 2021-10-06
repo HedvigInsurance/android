@@ -121,7 +121,7 @@ class InsuranceAdapter(
                 val options =
                     ActivityOptionsCompat.makeCustomAnimation(
                         context,
-                        R.anim.activity_slide_up_in,
+                        R.anim.chat_slide_up_in,
                         R.anim.stay_in_place
                     )
 

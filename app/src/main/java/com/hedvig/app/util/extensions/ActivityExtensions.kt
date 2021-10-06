@@ -68,7 +68,7 @@ fun Activity.startClosableChat(restartable: Boolean = false) {
     val options =
         ActivityOptionsCompat.makeCustomAnimation(
             this,
-            R.anim.activity_slide_up_in,
+            R.anim.chat_slide_up_in,
             R.anim.stay_in_place
         )
 
