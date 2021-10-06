@@ -37,7 +37,20 @@ fun JSONObject.getWithDotNotation(accessor: String): Any? {
 
 fun Collection<Any>.toJsonArray() = JSONArray(this)
 
-fun JSONObject.toBundle() = bundleOf(*(entries().asSequence().toList().toTypedArray()))
+fun JSONObject.toBundle() = bundleOf(
+    *(
+        entries()
+            .asSequence()
+            .map { (k, v) ->
+                if (v == JSONObject.NULL) {
+                    k to null
+                } else {
+                    k to v
+                }
+            }
+            .toList().toTypedArray()
+        )
+)
 
 fun JSONObject.entries() = JSONObjectEntryIterator(this)
 
