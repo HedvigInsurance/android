@@ -21,8 +21,8 @@ abstract class InsuranceViewModel : ViewModel() {
         object Error : ViewState()
     }
 
-    protected val _data = MutableStateFlow<ViewState>(ViewState.Loading)
-    val data = _data.asStateFlow()
+    protected val _viewState = MutableStateFlow<ViewState>(ViewState.Loading)
+    val viewState = _viewState.asStateFlow()
     abstract fun load()
     abstract fun markCrossSellsAsSeen()
 }
@@ -34,11 +34,11 @@ class InsuranceViewModelImpl(
 
     override fun load() {
         viewModelScope.launch {
-            _data.value = ViewState.Loading
+            _viewState.value = ViewState.Loading
             when (val result = getContractsUseCase.invoke()) {
                 is GetContractsUseCase.InsuranceResult.Error -> {
                     result.message?.let { e { it } }
-                    _data.value = ViewState.Error
+                    _viewState.value = ViewState.Error
                 }
                 is GetContractsUseCase.InsuranceResult.Insurance -> {
                     val showNotificationBadge = notificationBadgeService
@@ -47,7 +47,7 @@ class InsuranceViewModelImpl(
                         .isSeen()
                         .not()
                     val items = items(result.insurance, showNotificationBadge)
-                    _data.value = ViewState.Success(items)
+                    _viewState.value = ViewState.Success(items)
                 }
             }
         }

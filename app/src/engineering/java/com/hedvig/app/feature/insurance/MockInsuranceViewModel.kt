@@ -13,10 +13,10 @@ class MockInsuranceViewModel : InsuranceViewModel() {
     override fun load() {
         if (shouldError) {
             shouldError = false
-            _data.value = ViewState.Error
+            _viewState.value = ViewState.Error
             return
         }
-        _data.value = ViewState.Success(items(insuranceMockData))
+        _viewState.value = ViewState.Success(items(insuranceMockData))
     }
 
     override fun markCrossSellsAsSeen() {}

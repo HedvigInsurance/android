@@ -55,7 +55,7 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
         }
 
         insuranceViewModel
-            .data
+            .viewState
             .flowWithLifecycle(viewLifecycle)
             .onEach { bind(it) }
             .launchIn(viewLifecycleScope)
