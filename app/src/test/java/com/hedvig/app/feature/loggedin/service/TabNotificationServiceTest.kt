@@ -21,11 +21,13 @@ class TabNotificationServiceTest {
     fun `when all cross-sells have been seen, should not show notification for insurance tab`() {
         val mockUseCase = mockk<GetCrossSellsUseCase>()
         coEvery { mockUseCase.invoke() } returns setOf(TypeOfContract.SE_ACCIDENT)
-        val mockDataStore = mockedNotificationBadgeService(Seen.seen())
+        val mockService = mockedNotificationBadgeService(
+            returnValue = NotificationBadge.BottomNav.CrossSellOnInsuranceFragment to Seen.seen()
+        )
 
         val sut = TabNotificationService(
             mockUseCase,
-            mockDataStore,
+            mockService,
         )
 
         runBlockingTest {
@@ -37,11 +39,13 @@ class TabNotificationServiceTest {
     fun `when there is an unseen cross-sell, should show notification for insurance tab`() {
         val mockUseCase = mockk<GetCrossSellsUseCase>()
         coEvery { mockUseCase.invoke() } returns setOf(TypeOfContract.SE_ACCIDENT)
-        val mockNotificationBadgeService = mockedNotificationBadgeService(Seen.notSeen())
+        val mockService = mockedNotificationBadgeService(
+            returnValue = NotificationBadge.BottomNav.CrossSellOnInsuranceFragment to Seen.notSeen()
+        )
 
         val sut = TabNotificationService(
             mockUseCase,
-            mockNotificationBadgeService,
+            mockService,
         )
 
         runBlockingTest {
@@ -49,13 +53,15 @@ class TabNotificationServiceTest {
         }
     }
 
-    private fun mockedNotificationBadgeService(seen: Seen): NotificationBadgeService {
+    private fun mockedNotificationBadgeService(
+        returnValue: Pair<NotificationBadge, Seen>
+    ): NotificationBadgeService {
         val mockNotificationBadgeService = mockk<NotificationBadgeService>()
         every {
             mockNotificationBadgeService.seenStatus(any<List<NotificationBadge>>())
-        } returns flowOf<List<Pair<NotificationBadge, Seen>>>(
+        } returns flowOf(
             listOf(
-                NotificationBadge.BottomNav.CrossSellOnInsuranceFragment to seen
+                returnValue
             )
         )
         return mockNotificationBadgeService
