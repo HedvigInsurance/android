@@ -41,11 +41,11 @@ fun JSONObject.toBundle() = bundleOf(
     *(
         entries()
             .asSequence()
-            .map { (k, v) ->
-                if (v == JSONObject.NULL) {
-                    k to null
+            .map { // Replace `JSONObject`s NULL-markers with true nulls
+                if (it.second == JSONObject.NULL) {
+                    (it.first to null)
                 } else {
-                    k to v
+                    it
                 }
             }
             .toList().toTypedArray()
