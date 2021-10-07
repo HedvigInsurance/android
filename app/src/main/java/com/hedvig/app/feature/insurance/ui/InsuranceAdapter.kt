@@ -213,20 +213,22 @@ class InsuranceAdapter(
                 if (data !is InsuranceModel.TerminatedContractsHeader && data !is InsuranceModel.CrossSellHeader) {
                     return invalid(data)
                 }
-                val showNotificationDot =
-                    (data is InsuranceModel.CrossSellHeader && data.showNotificationBadge)
+                val showNotificationDot = (data is InsuranceModel.CrossSellHeader && data.showNotificationBadge)
                 composeView.setContent {
+                    val subheadingText = when (data) {
+                        is InsuranceModel.CrossSellHeader ->
+                            stringResource(R.string.insurance_tab_cross_sells_title)
+                        InsuranceModel.TerminatedContractsHeader ->
+                            stringResource(R.string.insurances_tab_more_title)
+                        else -> ""
+                    }
+
                     HedvigTheme {
-                        Subheading(
-                            when (data) {
-                                is InsuranceModel.CrossSellHeader ->
-                                    stringResource(R.string.insurance_tab_cross_sells_title)
-                                InsuranceModel.TerminatedContractsHeader ->
-                                    stringResource(R.string.insurances_tab_more_title)
-                                else -> ""
-                            },
-                            showNotificationDot
-                        )
+                        if (showNotificationDot) {
+                            NotificationSubheading(subheadingText)
+                        } else {
+                            Subheading(subheadingText)
+                        }
                     }
                 }
             }
