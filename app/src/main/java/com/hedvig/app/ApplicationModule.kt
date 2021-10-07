@@ -42,6 +42,7 @@ import com.hedvig.app.feature.claims.data.ClaimsRepository
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
+import com.hedvig.app.feature.crossselling.ui.CrossSellTracker
 import com.hedvig.app.feature.embark.EmbarkRepository
 import com.hedvig.app.feature.embark.EmbarkTracker
 import com.hedvig.app.feature.embark.EmbarkViewModel
@@ -494,6 +495,7 @@ val trackerModule = module {
     single { MarketingTracker(get()) }
     single { HomeTracker(get()) }
     single { ScreenTracker(get()) }
+    single { CrossSellTracker(get()) }
     single {
         // Workaround for https://github.com/InsertKoinIO/koin/issues/1146
         TrackingFacade(getAll<TrackerSink>().distinct())

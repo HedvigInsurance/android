@@ -13,8 +13,8 @@ import java.time.Clock
 import java.time.format.DateTimeFormatter
 
 class CrossSellingResultActivity : BaseActivity() {
-
     private val clock: Clock by inject()
+    private val tracker: CrossSellTracker by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,6 +23,7 @@ class CrossSellingResultActivity : BaseActivity() {
                 "Programmer error: CROSS_SELLING_RESULT not provided to ${this.javaClass.name}"
             )
 
+        tracker.view(crossSellingResult)
         setContent {
             CrossSellingResultScreen(
                 crossSellingResult = crossSellingResult,
