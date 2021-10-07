@@ -30,7 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
@@ -40,7 +39,6 @@ import com.hedvig.app.ui.compose.theme.hedvigBlack
 import com.hedvig.app.ui.compose.theme.hedvigBlack12percent
 import com.hedvig.app.ui.compose.theme.whiteHighEmphasis
 import com.hedvig.app.util.compose.rememberBlurHash
-import com.hedvig.app.util.extensions.makeToast
 
 /*
  * Note: This Composable uses hardcoded colors due to difficulties with
@@ -138,6 +136,8 @@ fun CrossSell(
 }
 
 private object DarkRippleTheme : RippleTheme {
+    // Color sourced from
+    // https://cs.android.com/android/platform/superproject/+/master:prebuilts/sdk/current/support/v7/appcompat/res/values/values.xml;l=59
     @Composable
     override fun defaultColor() = Color(0x1f000000)
 
@@ -164,11 +164,10 @@ private val previewData = InsuranceModel.CrossSell(
 )
 @Composable
 fun CrossSellPreview() {
-    val context = LocalContext.current
     HedvigTheme {
         CrossSell(
             data = previewData,
-            onCtaClick = { context.makeToast("Doing stuff") }
+            onCtaClick = {}
         )
     }
 }
