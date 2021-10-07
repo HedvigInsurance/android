@@ -176,11 +176,12 @@ class OfferAdapter(
                     }
 
                     with(sign) {
-                        text = data.checkoutLabel.toString(this.context)
+                        text = data.checkoutLabel.toString(context)
                         icon = data.signMethod.checkoutIconRes()?.let {
                             context.compatDrawable(it)
                         }
                         setHapticClickListener {
+                            tracker.checkoutHeader(data.checkoutLabel.localizationKey(context))
                             onSign(data.signMethod)
                         }
                     }

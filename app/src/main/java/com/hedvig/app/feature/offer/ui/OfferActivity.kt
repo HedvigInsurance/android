@@ -316,6 +316,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         binding.signButton.text = checkoutLabel.toString(this)
         binding.signButton.icon = signMethod.checkoutIconRes()?.let(::compatDrawable)
         binding.signButton.setHapticClickListener {
+            tracker.checkoutFloating(checkoutLabel.localizationKey(this))
             onSign(signMethod)
         }
     }
