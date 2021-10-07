@@ -29,9 +29,8 @@
             android:id="@+id/piechart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/base_margin_septuple"
-            android:layout_marginTop="@dimen/base_margin"
-            android:layout_marginEnd="@dimen/base_margin_septuple" />
+            android:layout_marginHorizontal="@dimen/base_margin_undecuple"
+            android:layout_marginTop="@dimen/base_margin"/>
 
     </com.facebook.shimmer.ShimmerFrameLayout>
 
