@@ -48,6 +48,7 @@ private fun crossSell(potentialCrossSell: InsuranceQuery.PotentialCrossSell): In
         title = potentialCrossSell.title,
         description = potentialCrossSell.description,
         callToAction = potentialCrossSell.callToAction,
+        typeOfContract = potentialCrossSell.contractType.rawValue,
         action = action,
         backgroundUrl = potentialCrossSell.imageUrl,
         backgroundBlurHash = potentialCrossSell.blurHash,

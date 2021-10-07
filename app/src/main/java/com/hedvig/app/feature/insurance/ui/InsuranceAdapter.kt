@@ -27,9 +27,9 @@ import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.getActivity
 import com.hedvig.app.util.extensions.inflate
+import com.hedvig.app.util.extensions.invalid
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
-import e
 
 class InsuranceAdapter(
     private val tracker: InsuranceTracker,
@@ -39,9 +39,9 @@ class InsuranceAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.insurance_contract_card -> ViewHolder.ContractViewHolder(parent)
-        CROSS_SELL -> ViewHolder.CrossSellViewHolder(ComposeView(parent.context))
+        CROSS_SELL -> ViewHolder.CrossSellViewHolder(ComposeView(parent.context), tracker)
         R.layout.insurance_header -> ViewHolder.TitleViewHolder(parent)
-        R.layout.generic_error -> ViewHolder.Error(parent)
+        R.layout.generic_error -> ViewHolder.Error(parent, tracker)
         SUBHEADING -> ViewHolder.SubheadingViewHolder(ComposeView(parent.context))
         R.layout.insurance_terminated_contracts -> ViewHolder.TerminatedContracts(parent)
         else -> {
@@ -50,7 +50,7 @@ class InsuranceAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position), retry, tracker, marketManager)
+        holder.bind(getItem(position), retry, marketManager)
     }
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
@@ -76,15 +76,13 @@ class InsuranceAdapter(
         abstract fun bind(
             data: InsuranceModel,
             retry: () -> Unit,
-            tracker: InsuranceTracker,
             marketManager: MarketManager
         ): Any?
 
-        fun invalid(data: InsuranceModel) {
-            e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }
-        }
-
-        class CrossSellViewHolder(val composeView: ComposeView) : ViewHolder(composeView) {
+        class CrossSellViewHolder(
+            val composeView: ComposeView,
+            private val tracker: InsuranceTracker,
+        ) : ViewHolder(composeView) {
             init {
                 composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             }
@@ -92,7 +90,6 @@ class InsuranceAdapter(
             override fun bind(
                 data: InsuranceModel,
                 retry: () -> Unit,
-                tracker: InsuranceTracker,
                 marketManager: MarketManager
             ) {
                 if (data !is InsuranceModel.CrossSell) {
@@ -104,7 +101,12 @@ class InsuranceAdapter(
                     HedvigTheme {
                         CrossSell(
                             data = data,
-                            onCtaClick = {
+                            onClick = { label ->
+                                if (label != null) {
+                                    tracker.crossSellCta(label, data.typeOfContract)
+                                } else {
+                                    tracker.crossSellCard(data.typeOfContract)
+                                }
                                 when (val action = data.action) {
                                     InsuranceModel.CrossSell.Action.Chat -> openChat(context)
                                     is InsuranceModel.CrossSell.Action.Embark ->
@@ -143,7 +145,6 @@ class InsuranceAdapter(
             override fun bind(
                 data: InsuranceModel,
                 retry: () -> Unit,
-                tracker: InsuranceTracker,
                 marketManager: MarketManager
             ) = with(binding) {
                 if (data !is InsuranceModel.Contract) {
@@ -178,19 +179,20 @@ class InsuranceAdapter(
             override fun bind(
                 data: InsuranceModel,
                 retry: () -> Unit,
-                tracker: InsuranceTracker,
                 marketManager: MarketManager
             ) = Unit
         }
 
-        class Error(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.generic_error)) {
+        class Error(
+            parent: ViewGroup,
+            private val tracker: InsuranceTracker,
+        ) : ViewHolder(parent.inflate(R.layout.generic_error)) {
             private val binding by viewBinding(GenericErrorBinding::bind)
             override fun bind(
                 data: InsuranceModel,
                 retry: () -> Unit,
-                tracker: InsuranceTracker,
                 marketManager: MarketManager
-            ): Any? = with(binding) {
+            ) = with(binding) {
                 this.retry.setHapticClickListener {
                     tracker.retry()
                     retry()
@@ -207,7 +209,6 @@ class InsuranceAdapter(
             override fun bind(
                 data: InsuranceModel,
                 retry: () -> Unit,
-                tracker: InsuranceTracker,
                 marketManager: MarketManager
             ) {
                 if (data !is InsuranceModel.TerminatedContractsHeader && data !is InsuranceModel.CrossSellHeader) {
@@ -235,7 +236,6 @@ class InsuranceAdapter(
             override fun bind(
                 data: InsuranceModel,
                 retry: () -> Unit,
-                tracker: InsuranceTracker,
                 marketManager: MarketManager
             ) = with(binding) {
                 if (data !is InsuranceModel.TerminatedContracts) {
