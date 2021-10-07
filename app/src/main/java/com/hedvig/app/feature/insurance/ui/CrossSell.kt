@@ -17,9 +17,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
+import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.ripple.LocalRippleTheme
+import androidx.compose.material.ripple.RippleTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -111,20 +115,37 @@ fun CrossSell(
                     )
                 }
                 Spacer(modifier = Modifier.width(8.dp))
-                Button(
-                    onClick = onCtaClick,
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = whiteHighEmphasis,
-                        contentColor = hedvigBlack,
-                    ),
+                CompositionLocalProvider(
+                    LocalRippleTheme provides DarkRippleTheme,
                 ) {
-                    Text(
-                        text = data.callToAction,
-                    )
+                    Button(
+                        onClick = onCtaClick,
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = whiteHighEmphasis,
+                            contentColor = hedvigBlack,
+                        ),
+                    ) {
+                        Text(
+                            text = data.callToAction,
+                        )
+                    }
                 }
             }
         }
     }
+}
+
+private object DarkRippleTheme : RippleTheme {
+    // Color sourced from
+    // https://cs.android.com/android/platform/superproject/+/master:prebuilts/sdk/current/support/v7/appcompat/res/values/values.xml;l=59
+    @Composable
+    override fun defaultColor() = Color(0x1f000000)
+
+    @Composable
+    override fun rippleAlpha() = RippleTheme.defaultRippleAlpha(
+        contentColor = LocalContentColor.current,
+        lightTheme = false,
+    )
 }
 
 private val previewData = InsuranceModel.CrossSell(
