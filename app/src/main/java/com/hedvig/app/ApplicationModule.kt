@@ -172,7 +172,6 @@ import com.hedvig.app.feature.zignsec.usecase.StartNorwegianAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthStatusUseCase
 import com.hedvig.app.service.FileService
 import com.hedvig.app.service.badge.NotificationBadgeService
-import com.hedvig.app.service.badge.NotificationBadgeServiceImpl
 import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.app.service.push.managers.PaymentNotificationManager
 import com.hedvig.app.terminated.TerminatedTracker
@@ -453,7 +452,7 @@ val serviceModule = module {
     single<LoginStatusService> { SharedPreferencesLoginStatusService(get(), get(), get()) }
     single<AuthenticationTokenService> { SharedPreferencesAuthenticationTokenService(get()) }
     single { TabNotificationService(get(), get()) }
-    single { NotificationBadgeServiceImpl(get()) } bind NotificationBadgeService::class
+    single { NotificationBadgeService(get()) }
 
     single { DeviceInformationService(get()) }
 }
