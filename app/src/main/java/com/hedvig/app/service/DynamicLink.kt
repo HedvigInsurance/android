@@ -45,7 +45,7 @@ fun createDynamicLinkFromUri(uri: Uri?): DynamicLink {
             )
             "direct-debit" -> DynamicLink.DirectDebit
             "forever" -> DynamicLink.Forever
-            "insurance" -> DynamicLink.Insurance
+            "insurances" -> DynamicLink.Insurance
             null -> DynamicLink.None
             else -> DynamicLink.Unknown
         }
