@@ -34,4 +34,13 @@ class OfferTracker(
             "location" to location,
         )
     )
+
+    fun viewOffer(typesOfContract: List<String>) {
+        trackingFacade.track(
+            "offer_viewed",
+            jsonObjectOf(
+                "types_of_contract" to typesOfContract.joinToString(",")
+            )
+        )
+    }
 }
