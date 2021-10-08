@@ -1,6 +1,7 @@
 package com.hedvig.app.testdata.dashboard
 
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
+import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.testdata.common.ContractStatus
 import com.hedvig.app.testdata.dashboard.builders.InsuranceDataBuilder
 
@@ -39,6 +40,7 @@ val INSURANCE_DATA_WITH_CROSS_SELL = InsuranceDataBuilder(
             title = "Accident Insurance",
             description = "179 SEK/mo.",
             callToAction = "Calculate price",
+            contractType = TypeOfContract.SE_ACCIDENT,
             action = InsuranceQuery.Action(
                 __typename = "CrossSellEmbark",
                 asCrossSellEmbark = InsuranceQuery.AsCrossSellEmbark(
