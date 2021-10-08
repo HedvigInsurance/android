@@ -10,35 +10,34 @@ class NotificationBadgeService(
     private val dataStore: DataStore<Preferences>,
 ) {
 
-    fun seenStatus(
-        notificationBadgeList: List<NotificationBadge>
-    ): Flow<List<Pair<NotificationBadge, Seen>>> {
+    @JvmName("getValueOrEmptySetIfItsNull")
+    fun <SetOfT : Set<T>, T> getValue(
+        notificationBadge: NotificationBadge<SetOfT>
+    ): Flow<Set<T>> {
         return dataStore
             .data
             .map { preferences ->
-                notificationBadgeList
-                    .map { notificationBadge ->
-                        notificationBadge to Seen.fromNullableBoolean(preferences.get(notificationBadge.key))
-                    }
+                val value = preferences[notificationBadge.key]
+                value ?: emptySet()
             }
     }
 
-    fun seenStatus(
-        notificationBadge: NotificationBadge
-    ): Flow<Seen> {
+    fun <T> getValue(
+        notificationBadge: NotificationBadge<T>
+    ): Flow<T?> {
         return dataStore
             .data
             .map { preferences ->
-                Seen.fromNullableBoolean(preferences[notificationBadge.key])
+                preferences[notificationBadge.key]
             }
     }
 
-    suspend fun setSeenStatus(
-        notificationBadge: NotificationBadge,
-        newSeenStatus: Seen
+    suspend fun <T> setValue(
+        notificationBadge: NotificationBadge<T>,
+        newStatus: T
     ) {
         dataStore.edit { preferences ->
-            preferences[notificationBadge.key] = newSeenStatus.isSeen()
+            preferences[notificationBadge.key] = newStatus
         }
     }
 }

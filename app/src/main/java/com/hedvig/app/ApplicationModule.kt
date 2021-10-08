@@ -28,7 +28,6 @@ import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.authenticate.SharedPreferencesAuthenticationTokenService
 import com.hedvig.app.authenticate.SharedPreferencesLoginStatusService
 import com.hedvig.app.data.debit.PayinStatusRepository
-import com.hedvig.app.datastore.SeenCrossSellsPreferencesDataMigration
 import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModel
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModelImpl
@@ -171,6 +170,7 @@ import com.hedvig.app.feature.zignsec.usecase.StartDanishAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.StartNorwegianAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthStatusUseCase
 import com.hedvig.app.service.FileService
+import com.hedvig.app.service.badge.CrossSellNotificationBadgeService
 import com.hedvig.app.service.badge.NotificationBadgeService
 import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.app.service.push.managers.PaymentNotificationManager
@@ -451,7 +451,9 @@ val serviceModule = module {
     single { FileService(get()) }
     single<LoginStatusService> { SharedPreferencesLoginStatusService(get(), get(), get()) }
     single<AuthenticationTokenService> { SharedPreferencesAuthenticationTokenService(get()) }
-    single { TabNotificationService(get(), get()) }
+
+    single { TabNotificationService(get()) }
+    single { CrossSellNotificationBadgeService(get(), get()) }
     single { NotificationBadgeService(get()) }
 
     single { DeviceInformationService(get()) }
@@ -591,14 +593,9 @@ val chatEventModule = module {
 
 val dataStoreModule = module {
 
-    single { SeenCrossSellsPreferencesDataMigration() }
-
     @Suppress("RemoveExplicitTypeArguments")
     single<DataStore<Preferences>> {
         PreferenceDataStoreFactory.create(
-            migrations = listOf(
-                get<SeenCrossSellsPreferencesDataMigration>(),
-            ),
             produceFile = {
                 get<Context>().preferencesDataStoreFile("hedvig_data_store_preferences")
             }

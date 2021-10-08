@@ -65,7 +65,7 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
 
     override fun onStop() {
         super.onStop()
-        insuranceViewModel.markCrossSellsAsSeen()
+        insuranceViewModel.markCardCrossSellsAsSeen()
     }
 
     private fun bind(viewState: InsuranceViewModel.ViewState) {

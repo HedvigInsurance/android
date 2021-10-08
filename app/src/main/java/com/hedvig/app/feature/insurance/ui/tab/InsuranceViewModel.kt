@@ -4,14 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.app.feature.insurance.data.GetContractsUseCase
 import com.hedvig.app.feature.insurance.ui.InsuranceModel
-import com.hedvig.app.service.badge.NotificationBadge
-import com.hedvig.app.service.badge.NotificationBadgeService
-import com.hedvig.app.service.badge.Seen
-import com.hedvig.app.service.badge.isSeen
+import com.hedvig.app.service.badge.CrossSellNotificationBadgeService
 import e
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 abstract class InsuranceViewModel : ViewModel() {
@@ -24,12 +21,12 @@ abstract class InsuranceViewModel : ViewModel() {
     protected val _viewState = MutableStateFlow<ViewState>(ViewState.Loading)
     val viewState = _viewState.asStateFlow()
     abstract fun load()
-    abstract fun markCrossSellsAsSeen()
+    abstract fun markCardCrossSellsAsSeen()
 }
 
 class InsuranceViewModelImpl(
     private val getContractsUseCase: GetContractsUseCase,
-    private val notificationBadgeService: NotificationBadgeService,
+    private val crossSellNotificationBadgeService: CrossSellNotificationBadgeService,
 ) : InsuranceViewModel() {
 
     override fun load() {
@@ -41,11 +38,10 @@ class InsuranceViewModelImpl(
                     _viewState.value = ViewState.Error
                 }
                 is GetContractsUseCase.InsuranceResult.Insurance -> {
-                    val showNotificationBadge = notificationBadgeService
-                        .seenStatus(NotificationBadge.CrossSellInsuranceFragmentCard)
-                        .firstOrNull()
-                        .isSeen()
-                        .not()
+                    val showNotificationBadge = crossSellNotificationBadgeService
+                        .getUnseenCrossSells(CrossSellNotificationBadgeService.CrossSellBadgeType.InsuranceFragmentCard)
+                        .first()
+                        .isNotEmpty()
                     val items = items(result.insurance, showNotificationBadge)
                     _viewState.value = ViewState.Success(items)
                 }
@@ -53,9 +49,11 @@ class InsuranceViewModelImpl(
         }
     }
 
-    override fun markCrossSellsAsSeen() {
+    override fun markCardCrossSellsAsSeen() {
         viewModelScope.launch {
-            notificationBadgeService.setSeenStatus(NotificationBadge.CrossSellInsuranceFragmentCard, Seen.seen())
+            crossSellNotificationBadgeService.markCurrentCrossSellsAsSeen(
+                CrossSellNotificationBadgeService.CrossSellBadgeType.InsuranceFragmentCard
+            )
         }
     }
 }

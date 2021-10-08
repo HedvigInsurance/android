@@ -20,7 +20,6 @@ import com.hedvig.app.insuranceModule
 import com.hedvig.app.loggedInModule
 import com.hedvig.app.service.badge.NotificationBadge
 import com.hedvig.app.service.badge.NotificationBadgeService
-import com.hedvig.app.service.badge.Seen
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_ACTIVE_AND_TERMINATED
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_DANISH_ACCIDENT
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_DANISH_HOME_CONTENTS
@@ -253,9 +252,9 @@ class InsuranceMockActivity : MockActivity() {
         }
         clickableItem("Reset cross-sell tab notification") {
             lifecycleScope.launch {
-                notificationBadgeService.setSeenStatus(
+                notificationBadgeService.setValue(
                     NotificationBadge.BottomNav.CrossSellOnInsuranceFragment,
-                    Seen.notSeen()
+                    emptySet()
                 )
             }
         }

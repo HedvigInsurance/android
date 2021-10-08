@@ -19,7 +19,7 @@ class MockInsuranceViewModel : InsuranceViewModel() {
         _viewState.value = ViewState.Success(items(insuranceMockData))
     }
 
-    override fun markCrossSellsAsSeen() {}
+    override fun markCardCrossSellsAsSeen() {}
 
     companion object {
         var insuranceMockData = INSURANCE_DATA_SWEDISH_APARTMENT
