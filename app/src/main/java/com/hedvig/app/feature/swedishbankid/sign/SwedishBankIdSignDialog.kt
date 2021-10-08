@@ -37,8 +37,10 @@ import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.toArrayList
 import com.hedvig.app.util.extensions.viewLifecycle
 import com.hedvig.app.util.extensions.viewLifecycleScope
+import kotlinx.coroutines.flow.flowWith
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -85,6 +87,7 @@ class SwedishBankIdSignDialog : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         model
             .events
+            .receiveAsFlow()
             .flowWithLifecycle(viewLifecycle)
             .onEach { event ->
                 when (event) {

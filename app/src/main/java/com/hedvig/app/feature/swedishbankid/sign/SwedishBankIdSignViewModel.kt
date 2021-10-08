@@ -11,6 +11,8 @@ import com.hedvig.app.feature.swedishbankid.sign.usecase.ManuallyRecheckSwedishB
 import com.hedvig.app.feature.swedishbankid.sign.usecase.SubscribeToSwedishBankIdSignStatusUseCase
 import e
 import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +21,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
@@ -50,16 +53,13 @@ class SwedishBankIdSignViewModel(
         object StartDirectDebit : Event()
     }
 
-    private val _events = MutableSharedFlow<Event>(
-        extraBufferCapacity = 1,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST,
-    )
-    val events: SharedFlow<Event> = _events
+    private val _events = Channel<Event>(Channel.UNLIMITED)
+    val events: ReceiveChannel<Event> = _events
 
     private var hasCompletedSign = false
 
     init {
-        _events.tryEmit(Event.StartBankID(autoStartToken))
+        _events.trySend(Event.StartBankID(autoStartToken))
 
         subscribeToSwedishBankIdSignStatusUseCase()
             .onEach { response ->
@@ -89,7 +89,7 @@ class SwedishBankIdSignViewModel(
             loginStatusService.isLoggedIn = true
             viewModelScope.launch {
                 delay(Duration.seconds(1))
-                _events.tryEmit(Event.StartDirectDebit)
+                _events.trySend(Event.StartDirectDebit)
             }
         }
     }
