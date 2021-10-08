@@ -42,7 +42,9 @@ import com.hedvig.app.feature.claims.data.ClaimsRepository
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
+import com.hedvig.app.feature.crossselling.ui.CrossSellResultViewModel
 import com.hedvig.app.feature.crossselling.ui.CrossSellTracker
+import com.hedvig.app.feature.crossselling.ui.CrossSellingResult
 import com.hedvig.app.feature.embark.EmbarkRepository
 import com.hedvig.app.feature.embark.EmbarkTracker
 import com.hedvig.app.feature.embark.EmbarkViewModel
@@ -333,6 +335,7 @@ val viewModelModule = module {
     viewModel { (autoStartToken: String, quoteIds: List<String>) ->
         SwedishBankIdSignViewModel(autoStartToken, quoteIds, get(), get(), get(), get())
     }
+    viewModel { (result: CrossSellingResult) -> CrossSellResultViewModel(result, get()) }
 }
 
 val choosePlanModule = module {

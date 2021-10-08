@@ -6,14 +6,7 @@ import com.hedvig.app.util.jsonObjectOf
 class CrossSellTracker(
     private val trackingFacade: TrackingFacade,
 ) {
-    private val viewedResults = mutableSetOf<CrossSellingResult>()
-
     fun view(result: CrossSellingResult) {
-        if (viewedResults.contains(result)) {
-            return
-        }
-
-        viewedResults.add(result)
         when (result) {
             is CrossSellingResult.Success -> {
                 trackingFacade.track(
