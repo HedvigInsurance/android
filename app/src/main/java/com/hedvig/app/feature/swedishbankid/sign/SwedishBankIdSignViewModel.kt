@@ -10,13 +10,9 @@ import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.swedishbankid.sign.usecase.ManuallyRecheckSwedishBankIdSignStatusUseCase
 import com.hedvig.app.feature.swedishbankid.sign.usecase.SubscribeToSwedishBankIdSignStatusUseCase
 import e
-import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
@@ -43,9 +39,7 @@ class SwedishBankIdSignViewModel(
         object Success : ViewState()
     }
 
-    private val _viewState = MutableStateFlow<ViewState>(
-        ViewState.StartClient
-    )
+    private val _viewState = MutableStateFlow<ViewState>(ViewState.StartClient)
     val viewState = _viewState.asStateFlow()
 
     sealed class Event {
@@ -54,7 +48,7 @@ class SwedishBankIdSignViewModel(
     }
 
     private val _events = Channel<Event>(Channel.UNLIMITED)
-    val events: ReceiveChannel<Event> = _events
+    val events = _events.receiveAsFlow()
 
     private var hasCompletedSign = false
 
