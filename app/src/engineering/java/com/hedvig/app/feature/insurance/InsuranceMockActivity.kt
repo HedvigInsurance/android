@@ -2,6 +2,9 @@ package com.hedvig.app.feature.insurance
 
 import android.content.Intent
 import android.net.Uri
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.lifecycleScope
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.MockActivity
@@ -11,6 +14,7 @@ import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
 import com.hedvig.app.feature.insurance.ui.tab.InsuranceViewModel
 import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsActivity
+import com.hedvig.app.feature.loggedin.service.TabNotificationService
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
@@ -18,8 +22,6 @@ import com.hedvig.app.feature.referrals.MockLoggedInViewModel
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.insuranceModule
 import com.hedvig.app.loggedInModule
-import com.hedvig.app.service.badge.NotificationBadge
-import com.hedvig.app.service.badge.NotificationBadgeService
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_ACTIVE_AND_TERMINATED
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_DANISH_ACCIDENT
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_DANISH_HOME_CONTENTS
@@ -41,7 +43,7 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 class InsuranceMockActivity : MockActivity() {
-    private val notificationBadgeService: NotificationBadgeService by inject()
+    private val dataStore: DataStore<Preferences> by inject()
     override val original = listOf(
         loggedInModule,
         insuranceModule
@@ -252,10 +254,9 @@ class InsuranceMockActivity : MockActivity() {
         }
         clickableItem("Reset cross-sell tab notification") {
             lifecycleScope.launch {
-                notificationBadgeService.setValue(
-                    NotificationBadge.BottomNav.CrossSellOnInsuranceFragment,
-                    emptySet()
-                )
+                dataStore.edit { preferences ->
+                    preferences[TabNotificationService.SEEN_CROSS_SELLS_KEY] = emptySet()
+                }
             }
         }
         header("Detail Screen")

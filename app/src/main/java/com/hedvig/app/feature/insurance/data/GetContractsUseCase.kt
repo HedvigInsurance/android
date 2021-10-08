@@ -11,9 +11,12 @@ class GetContractsUseCase(
     private val localeManager: LocaleManager
 ) {
     suspend operator fun invoke(): InsuranceResult {
-        return when (val response = apolloClient.query(InsuranceQuery(localeManager.defaultLocale())).safeQuery()) {
-            is QueryResult.Error -> InsuranceResult.Error(response.message)
+        return when (
+            val response =
+                apolloClient.query(InsuranceQuery(localeManager.defaultLocale())).safeQuery()
+        ) {
             is QueryResult.Success -> InsuranceResult.Insurance(response.data)
+            is QueryResult.Error -> InsuranceResult.Error(response.message)
         }
     }
 

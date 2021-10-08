@@ -58,7 +58,7 @@ class InsuranceAdapter(
         is InsuranceModel.CrossSell -> CROSS_SELL
         is InsuranceModel.Header -> R.layout.insurance_header
         InsuranceModel.TerminatedContractsHeader,
-        is InsuranceModel.CrossSellHeader -> SUBHEADING
+        InsuranceModel.CrossSellHeader -> SUBHEADING
         is InsuranceModel.TerminatedContracts -> R.layout.insurance_terminated_contracts
         InsuranceModel.Error -> R.layout.generic_error
     }
@@ -77,7 +77,7 @@ class InsuranceAdapter(
             data: InsuranceModel,
             retry: () -> Unit,
             marketManager: MarketManager
-        )
+        ): Any?
 
         class CrossSellViewHolder(
             val composeView: ComposeView,
@@ -214,22 +214,17 @@ class InsuranceAdapter(
                 if (data !is InsuranceModel.TerminatedContractsHeader && data !is InsuranceModel.CrossSellHeader) {
                     return invalid(data)
                 }
-                val showNotificationDot = (data is InsuranceModel.CrossSellHeader && data.showNotificationBadge)
                 composeView.setContent {
-                    val subheadingText = when (data) {
-                        is InsuranceModel.CrossSellHeader ->
-                            stringResource(R.string.insurance_tab_cross_sells_title)
-                        InsuranceModel.TerminatedContractsHeader ->
-                            stringResource(R.string.insurances_tab_more_title)
-                        else -> ""
-                    }
-
                     HedvigTheme {
-                        if (showNotificationDot) {
-                            NotificationSubheading(subheadingText)
-                        } else {
-                            Subheading(subheadingText)
-                        }
+                        Subheading(
+                            when (data) {
+                                InsuranceModel.CrossSellHeader ->
+                                    stringResource(R.string.insurance_tab_cross_sells_title)
+                                InsuranceModel.TerminatedContractsHeader ->
+                                    stringResource(R.string.insurances_tab_more_title)
+                                else -> ""
+                            }
+                        )
                     }
                 }
             }

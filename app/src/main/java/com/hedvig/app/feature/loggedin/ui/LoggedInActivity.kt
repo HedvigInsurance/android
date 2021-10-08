@@ -341,12 +341,12 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 ?: LoggedInTabs.HOME
             binding.bottomNavigation.selectedItemId = initialTab.id()
             loggedInViewModel
-                .unseenTabNotifications
+                .tabNotifications
                 .flowWithLifecycle(lifecycle)
-                .onEach { unseenTabNotifications ->
+                .onEach { tabNotifications ->
                     binding.bottomNavigation.menu.forEach { item ->
                         val asTab = LoggedInTabs.fromId(item.itemId) ?: return@forEach
-                        if (unseenTabNotifications.contains(asTab)) {
+                        if (tabNotifications.contains(asTab)) {
                             val badge = binding.bottomNavigation.getOrCreateBadge(item.itemId)
                             badge.isVisible = true
                             badge.horizontalOffset = 4.dp
