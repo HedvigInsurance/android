@@ -164,12 +164,12 @@ class OfferViewModelImpl(
 
     private var hasTrackedView = false
     private fun trackView(data: OfferQuery.Data) {
-        if(hasTrackedView) {
+        if (hasTrackedView) {
             return
         }
         hasTrackedView = true
 
-        tracker.viewOffer(data.quoteBundle.quotes.map {it.typeOfContract.rawValue})
+        tracker.viewOffer(data.quoteBundle.quotes.map { it.typeOfContract.rawValue })
     }
 
     override fun onOpenCheckout() {

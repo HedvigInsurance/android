@@ -68,4 +68,3 @@ class CrossSellingResultActivity : BaseActivity() {
         private const val CROSS_SELLING_RESULT = "CROSS_SELLING_RESULT"
     }
 }
-
