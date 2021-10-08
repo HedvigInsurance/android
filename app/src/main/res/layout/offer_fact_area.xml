@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:paddingBottom="@dimen/base_margin_quintuple" />
+        android:paddingBottom="@dimen/base_margin" />
 
 </com.hedvig.app.ui.view.ExpandableContentView>
 
