@@ -55,17 +55,10 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
         }
 
         insuranceViewModel
-            .viewState
+            .data
             .flowWithLifecycle(viewLifecycle)
             .onEach { bind(it) }
             .launchIn(viewLifecycleScope)
-
-        insuranceViewModel.load()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        insuranceViewModel.markCardCrossSellsAsSeen()
     }
 
     private fun bind(viewState: InsuranceViewModel.ViewState) {

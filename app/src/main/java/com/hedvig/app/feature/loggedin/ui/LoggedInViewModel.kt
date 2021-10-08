@@ -30,8 +30,8 @@ abstract class LoggedInViewModel : ViewModel() {
     )
     val shouldOpenReviewDialog: SharedFlow<Boolean> = _shouldOpenReviewDialog.asSharedFlow()
 
-    protected val _unseenTabNotifications = MutableStateFlow<Set<LoggedInTabs>>(emptySet())
-    val unseenTabNotifications = _unseenTabNotifications.asStateFlow()
+    protected val _tabNotifications = MutableStateFlow<Set<LoggedInTabs>>(emptySet())
+    val tabNotifications = _tabNotifications.asStateFlow()
 
     fun onScroll(scroll: Int) {
         _scroll.postValue(scroll)
@@ -64,9 +64,9 @@ class LoggedInViewModelImpl(
         }
         viewModelScope.launch {
             tabNotificationService
-                .unseenTabNotifications()
-                .collect { unseenTabNotificationSet ->
-                    _unseenTabNotifications.value = unseenTabNotificationSet
+                .load()
+                .collect {
+                    _tabNotifications.value = it
                 }
         }
     }

@@ -183,17 +183,12 @@ class CrossSellingResultScreenTest {
             )
         }
 
+        compose.onNodeWithText(
+            TextAlternative.AlreadyActivated.getString(context, accidentInsurance)
+        ).assertDoesNotExist()
+
         compose
-            .onNodeWithText(TextAlternative.AlreadyActivated.getString(context, contractInTwoDays.insuranceType))
-            .assertDoesNotExist()
-        compose
-            .onNodeWithText(
-                TextAlternative.WillActivate.getString(
-                    context,
-                    contractInTwoDays.insuranceType,
-                    activationDate
-                )
-            )
+            .onNodeWithText(TextAlternative.WillActivate.getString(context, accidentInsurance, activationDate))
             .assertExists()
     }
 }

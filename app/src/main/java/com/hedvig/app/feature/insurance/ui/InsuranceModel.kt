@@ -9,10 +9,7 @@ sealed class InsuranceModel {
         val inner: InsuranceQuery.Contract
     ) : InsuranceModel()
 
-    data class CrossSellHeader(
-        val showNotificationBadge: Boolean = false
-    ) : InsuranceModel()
-
+    object CrossSellHeader : InsuranceModel()
     data class CrossSell(
         val title: String,
         val description: String,
