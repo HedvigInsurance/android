@@ -151,6 +151,8 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                 val items = mutableListOf<HomeModel>().apply {
                     addAll(listOfNotNull(*psaItems(successData.importantMessages).toTypedArray()))
                     add(HomeModel.BigText.Active(firstName))
+                    // TODO think about showing this in other states as well? Not just on isActive(...)
+                    add(HomeModel.ActiveClaims(successData.activeClaims))
                     add(HomeModel.StartClaimContained)
                     add(HomeModel.HowClaimsWork(successData.howClaimsWork))
                     if (pendingAddress != null && pendingAddress.isNotBlank()) {

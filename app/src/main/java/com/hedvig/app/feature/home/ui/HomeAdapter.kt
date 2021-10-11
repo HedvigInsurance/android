@@ -5,7 +5,10 @@ import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.FragmentManager
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
@@ -31,8 +34,9 @@ import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
+import com.hedvig.app.feature.home.ui.composable.ActiveClaimCards
 import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.util.GenericDiffUtilItemCallback
+import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.inflate
@@ -51,12 +55,13 @@ class HomeAdapter(
     private val imageLoader: ImageLoader,
     private val tracker: HomeTracker,
     private val marketManager: MarketManager,
-) : ListAdapter<HomeModel, HomeAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
+) : ListAdapter<HomeModel, HomeAdapter.ViewHolder>(HomeAdapterDiffUtilItemCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.home_psa -> ViewHolder.PSABox(parent)
         R.layout.home_big_text -> ViewHolder.BigText(parent)
         R.layout.home_body_text -> ViewHolder.BodyText(parent)
+        ACTIVE_CLAIM -> ViewHolder.BodyText(parent)
         R.layout.home_start_claim_outlined -> ViewHolder.StartClaimOutlined(parent)
         R.layout.home_start_claim_contained -> ViewHolder.StartClaimContained(parent)
         R.layout.home_info_card -> ViewHolder.InfoCard(parent)
@@ -73,6 +78,7 @@ class HomeAdapter(
     override fun getItemViewType(position: Int) = when (getItem(position)) {
         is HomeModel.BigText -> R.layout.home_big_text
         is HomeModel.BodyText -> R.layout.home_body_text
+        is HomeModel.ActiveClaims -> ACTIVE_CLAIM
         HomeModel.StartClaimOutlined -> R.layout.home_start_claim_outlined
         HomeModel.StartClaimContained -> R.layout.home_start_claim_contained
         is HomeModel.ConnectPayin -> R.layout.home_info_card
@@ -96,6 +102,12 @@ class HomeAdapter(
         )
     }
 
+    override fun onViewRecycled(holder: ViewHolder) {
+        if (holder is ViewHolder.ActiveClaims) {
+            holder.composeView.disposeComposition()
+        }
+    }
+
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         abstract fun bind(
             data: HomeModel,
@@ -103,7 +115,7 @@ class HomeAdapter(
             retry: () -> Unit,
             tracker: HomeTracker,
             marketManager: MarketManager,
-        ): Any?
+        )
 
         fun invalid(data: HomeModel) {
             e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }
@@ -184,6 +196,32 @@ class HomeAdapter(
             }
         }
 
+        class ActiveClaims(
+            val composeView: ComposeView,
+        ) : ViewHolder(composeView) {
+            init {
+                composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            }
+
+            override fun bind(
+                data: HomeModel,
+                fragmentManager: FragmentManager,
+                retry: () -> Unit,
+                tracker: HomeTracker,
+                marketManager: MarketManager
+            ) {
+                if (data !is HomeModel.ActiveClaims) {
+                    return invalid(data)
+                }
+
+                composeView.setContent {
+                    HedvigTheme {
+                        ActiveClaimCards(data.claims)
+                    }
+                }
+            }
+        }
+
         class StartClaimOutlined(parent: ViewGroup) :
             ViewHolder(parent.inflate(R.layout.home_start_claim_outlined)) {
             private val binding by viewBinding(HomeStartClaimOutlinedBinding::bind)
@@ -193,7 +231,7 @@ class HomeAdapter(
                 retry: () -> Unit,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
-            ): Any? = with(binding) {
+            ) = with(binding) {
                 if (data != HomeModel.StartClaimOutlined) {
                     return invalid(data)
                 }
@@ -493,7 +531,20 @@ class HomeAdapter(
     }
 
     companion object {
+        const val ACTIVE_CLAIM = 1
+
         fun daysLeft(date: LocalDate) =
             ChronoUnit.DAYS.between(LocalDate.now(), date).toInt()
+
+        object HomeAdapterDiffUtilItemCallback : DiffUtil.ItemCallback<HomeModel>() {
+            override fun areItemsTheSame(oldItem: HomeModel, newItem: HomeModel): Boolean {
+                if (oldItem is HomeModel.ActiveClaims && newItem is HomeModel.ActiveClaims) {
+                    return true
+                }
+                return oldItem == newItem
+            }
+
+            override fun areContentsTheSame(oldItem: HomeModel, newItem: HomeModel): Boolean = oldItem == newItem
+        }
     }
 }
