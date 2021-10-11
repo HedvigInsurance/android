@@ -61,7 +61,7 @@ class HomeAdapter(
         R.layout.home_psa -> ViewHolder.PSABox(parent)
         R.layout.home_big_text -> ViewHolder.BigText(parent)
         R.layout.home_body_text -> ViewHolder.BodyText(parent)
-        ACTIVE_CLAIM -> ViewHolder.BodyText(parent)
+        ACTIVE_CLAIM -> ViewHolder.ActiveClaims(ComposeView(parent.context))
         R.layout.home_start_claim_outlined -> ViewHolder.StartClaimOutlined(parent)
         R.layout.home_start_claim_contained -> ViewHolder.StartClaimContained(parent)
         R.layout.home_info_card -> ViewHolder.InfoCard(parent)
