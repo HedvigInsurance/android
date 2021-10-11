@@ -185,7 +185,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
         .filterNotNull()
         .map { HomeModel.PSA(it) }
 
-    private fun upcomingRenewals(contracts: List<HomeQuery.Contract>) =
+    private fun upcomingRenewals(contracts: List<HomeQuery.Contract1>) =
         contracts.mapNotNull { c ->
             c.upcomingRenewal?.let {
                 HomeModel.UpcomingRenewal(c.displayName, it)
@@ -212,23 +212,23 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
         }
 
     companion object {
-        private fun isPending(contracts: List<HomeQuery.Contract>) =
+        private fun isPending(contracts: List<HomeQuery.Contract1>) =
             contracts.all { it.status.asPendingStatus != null }
 
-        private fun isActiveInFuture(contracts: List<HomeQuery.Contract>) =
+        private fun isActiveInFuture(contracts: List<HomeQuery.Contract1>) =
             contracts.all {
                 it.status.asActiveInFutureStatus != null ||
                     it.status.asActiveInFutureAndTerminatedInFutureStatus != null
             }
 
-        private fun isActive(contracts: List<HomeQuery.Contract>) =
+        private fun isActive(contracts: List<HomeQuery.Contract1>) =
             contracts.any {
                 it.status.asActiveStatus != null ||
                     it.status.asTerminatedTodayStatus != null ||
                     it.status.asTerminatedInFutureStatus != null
             }
 
-        private fun isTerminated(contracts: List<HomeQuery.Contract>) =
+        private fun isTerminated(contracts: List<HomeQuery.Contract1>) =
             contracts.all { it.status.asTerminatedStatus != null }
     }
 }

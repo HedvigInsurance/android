@@ -2,8 +2,10 @@ package com.hedvig.app.testdata.feature.home.builders
 
 import com.hedvig.android.owldroid.fragment.IconVariantsFragment
 import com.hedvig.android.owldroid.graphql.HomeQuery
+import com.hedvig.android.owldroid.type.ClaimStatus
 import com.hedvig.app.testdata.common.ContractStatus
 import java.time.LocalDate
+import java.util.UUID
 
 data class HomeDataBuilder(
     private val contracts: List<ContractStatus> = emptyList(),
@@ -17,14 +19,16 @@ data class HomeDataBuilder(
         CommonClaimBuilder(title = "Försenat bagage").build()
     ),
     private val importantMessages: List<HomeQuery.ImportantMessage> = emptyList(),
-    private val renewalDate: LocalDate? = null
+    private val renewalDate: LocalDate? = null,
+    private val activeClaims: List<ActiveClaimBuilder> = emptyList()
 ) {
     fun build() = HomeQuery.Data(
         member = HomeQuery.Member(
             firstName = firstName
         ),
+        activeClaims = activeClaims.map(ActiveClaimBuilder::build),
         contracts = contracts.map { c ->
-            HomeQuery.Contract(
+            HomeQuery.Contract1(
                 displayName = CONTRACT_DISPLAY_NAME,
                 switchedFromInsuranceProvider = null,
                 status = HomeQuery.Status(
@@ -160,5 +164,21 @@ data class ImportantMessageBuilder(
     fun build() = HomeQuery.ImportantMessage(
         message = body,
         link = url
+    )
+}
+
+data class ActiveClaimBuilder(
+    private val status: ClaimStatus
+) {
+    fun build() = HomeQuery.ActiveClaim(
+        id = UUID.randomUUID().toString(),
+        contract = null,
+        status = status,
+        outcome = null,
+        submittedAt = 1,
+        closedAt = null,
+        files = emptyList(),
+        signedAudioURL = null,
+        payout = null,
     )
 }
