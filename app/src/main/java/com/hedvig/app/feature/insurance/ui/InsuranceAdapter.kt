@@ -103,7 +103,10 @@ class InsuranceAdapter(
                             data = data,
                             onClick = { label ->
                                 if (label != null) {
-                                    tracker.crossSellCta(label, data.typeOfContract)
+                                    tracker.crossSellCta(
+                                        typeOfContract = data.typeOfContract,
+                                        label = label,
+                                    )
                                 } else {
                                     tracker.crossSellCard(data.typeOfContract)
                                 }
