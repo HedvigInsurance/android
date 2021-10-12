@@ -3,6 +3,7 @@ package com.hedvig.app.feature.embark.passages.audiorecorder
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -11,19 +12,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-
-private val color = Color.Black
 
 @Composable
 fun RecordingWaveForm(
     amplitudes: List<Int>,
     modifier: Modifier = Modifier,
 ) {
+    val color = MaterialTheme.colors.primary
     var size by remember { mutableStateOf(IntSize.Zero) }
     Canvas(
         modifier
