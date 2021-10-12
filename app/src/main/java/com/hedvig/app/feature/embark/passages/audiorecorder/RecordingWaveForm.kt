@@ -22,10 +22,11 @@ private val color = Color.Black
 @Composable
 fun RecordingWaveForm(
     amplitudes: List<Int>,
+    modifier: Modifier = Modifier,
 ) {
     var size by remember { mutableStateOf(IntSize.Zero) }
     Canvas(
-        Modifier
+        modifier
             .height(200.dp)
             .fillMaxWidth()
             .clipToBounds()

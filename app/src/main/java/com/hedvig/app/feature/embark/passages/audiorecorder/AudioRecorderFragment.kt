@@ -20,7 +20,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -32,13 +32,17 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import com.hedvig.app.R
 import com.hedvig.app.ui.compose.theme.HedvigTheme
-import i
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.parcelize.Parcelize
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
+import java.time.Clock
+import java.time.Duration
+import java.time.Instant
+import java.time.ZoneId
 import java.util.Timer
 import java.util.TimerTask
 
@@ -50,6 +54,7 @@ inline fun timerTask(crossinline run: () -> Unit) = object : TimerTask() {
 
 class AudioRecorderFragment : Fragment() {
     private val model: AudioRecorderViewModel by viewModel()
+    private val clock: Clock by inject()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
         ComposeView(requireContext()).apply {
@@ -64,6 +69,7 @@ class AudioRecorderFragment : Fragment() {
                         parameters = parameters,
                         viewState = state,
                         startRecording = model::startRecording,
+                        clock = clock,
                     )
                 }
             }
@@ -79,11 +85,14 @@ class AudioRecorderFragment : Fragment() {
     }
 }
 
-class AudioRecorderViewModel : ViewModel() {
+class AudioRecorderViewModel(
+    private val clock: Clock,
+) : ViewModel() {
     sealed class ViewState {
         object NotRecording : ViewState()
         data class Recording(
             val amplitudes: List<Int>,
+            val startedAt: Instant,
         ) : ViewState()
     }
 
@@ -103,7 +112,7 @@ class AudioRecorderViewModel : ViewModel() {
                 prepare()
                 start()
             }
-            _viewState.value = ViewState.Recording(emptyList())
+            _viewState.value = ViewState.Recording(emptyList(), Instant.now(clock))
             timer = Timer()
             timer?.schedule(
                 timerTask {
@@ -150,6 +159,7 @@ fun AudioRecorderScreen(
     parameters: AudioRecorderParameters,
     viewState: AudioRecorderViewModel.ViewState,
     startRecording: () -> Unit,
+    clock: Clock,
 ) {
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
@@ -178,14 +188,17 @@ fun AudioRecorderScreen(
         }
 
         Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth(),
         ) {
             val amplitudes = (viewState as? AudioRecorderViewModel.ViewState.Recording)?.amplitudes ?: emptyList()
-            RecordingWaveForm(amplitudes)
+            RecordingWaveForm(
+                amplitudes = amplitudes,
+                modifier = Modifier.padding(16.dp),
+            )
             IconButton(
                 onClick = startRecording,
                 modifier = Modifier
-                    .align(CenterHorizontally)
                     .padding(bottom = 24.dp)
             ) {
                 Image(
@@ -193,6 +206,20 @@ fun AudioRecorderScreen(
                     contentDescription = "Start Recording", // TODO: String Resource
                 )
             }
+            val label = when (viewState) {
+                is AudioRecorderViewModel.ViewState.Recording -> {
+                    val diff = Duration.between(
+                        viewState.startedAt, Instant.now(clock)
+                    )
+                    String.format("%02d:%02d", diff.toMinutes(), diff.seconds % 60)
+                }
+                AudioRecorderViewModel.ViewState.NotRecording -> "Start Recording"
+            }
+            Text(
+                text = label,
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.padding(bottom = 16.dp),
+            )
         }
     }
 }
@@ -204,7 +231,8 @@ fun AudioRecorderScreenNotRecordingPreview() {
         AudioRecorderScreen(
             parameters = AudioRecorderParameters(listOf("Hello", "World")),
             viewState = AudioRecorderViewModel.ViewState.NotRecording,
-            startRecording = {}
+            startRecording = {},
+            clock = Clock.systemDefaultZone(),
         )
     }
 }
@@ -240,9 +268,11 @@ fun AudioRecorderScreenRecordingPreview() {
                     100, 200, 150, 250, 0,
                     100, 200, 150, 250, 0,
                     100, 200, 150, 250, 0,
-                )
+                ),
+                Instant.ofEpochSecond(1634025260)
             ),
-            startRecording = {}
+            startRecording = {},
+            clock = Clock.fixed(Instant.ofEpochSecond(1634025262), ZoneId.systemDefault())
         )
     }
 }

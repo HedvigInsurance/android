@@ -337,7 +337,7 @@ val viewModelModule = module {
         SwedishBankIdSignViewModel(autoStartToken, quoteIds, get(), get(), get(), get())
     }
     viewModel { (result: CrossSellingResult) -> CrossSellResultViewModel(result, get()) }
-    viewModel { AudioRecorderViewModel() }
+    viewModel { AudioRecorderViewModel(get()) }
 }
 
 val choosePlanModule = module {
