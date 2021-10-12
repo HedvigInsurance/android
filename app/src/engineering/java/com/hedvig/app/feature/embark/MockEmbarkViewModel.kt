@@ -18,7 +18,7 @@ class MockEmbarkViewModel(tracker: EmbarkTracker) : EmbarkViewModel(tracker, Val
         setInitialState(LoginStatus.ONBOARDING)
     }
 
-    override suspend fun callGraphQL(query: String, variables: JSONObject?) =
+    override suspend fun callGraphQL(query: String, variables: JSONObject?, files: List<FileVariable>): JSONObject? =
         jsonObjectOf("data" to graphQLQueryResponse)
 
     companion object {

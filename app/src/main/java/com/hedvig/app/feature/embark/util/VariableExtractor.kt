@@ -44,8 +44,8 @@ object VariableExtractor {
                 val storeValue = valueStore.get(singleVariable.from)
                 if (storeValue != null && singleVariable.as_ == EmbarkAPIGraphQLSingleVariableCasting.FILE) {
                     FileVariable(
-                        key = storeValue,
-                        path = singleVariable.key
+                        key = singleVariable.key,
+                        path = storeValue
                     )
                 } else {
                     null
