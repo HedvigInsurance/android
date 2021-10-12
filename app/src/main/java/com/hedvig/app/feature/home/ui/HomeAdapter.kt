@@ -33,8 +33,8 @@ import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyActivity
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.home.service.HomeTracker
+import com.hedvig.app.feature.home.ui.activeclaim.ActiveClaimCards
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
-import com.hedvig.app.feature.home.ui.composable.ActiveClaimCards
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.apollo.ThemedIconUrls
@@ -222,8 +222,7 @@ class HomeAdapter(
             }
         }
 
-        class StartClaimOutlined(parent: ViewGroup) :
-            ViewHolder(parent.inflate(R.layout.home_start_claim_outlined)) {
+        class StartClaimOutlined(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.home_start_claim_outlined)) {
             private val binding by viewBinding(HomeStartClaimOutlinedBinding::bind)
             override fun bind(
                 data: HomeModel,
@@ -243,8 +242,7 @@ class HomeAdapter(
             }
         }
 
-        class StartClaimContained(parent: ViewGroup) :
-            ViewHolder(parent.inflate(R.layout.home_start_claim_contained)) {
+        class StartClaimContained(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.home_start_claim_contained)) {
             private val binding by viewBinding(HomeStartClaimContainedBinding::bind)
             override fun bind(
                 data: HomeModel,
@@ -264,8 +262,7 @@ class HomeAdapter(
             }
         }
 
-        class UpcomingRenewal(parent: ViewGroup) :
-            ViewHolder(parent.inflate(R.layout.upcoming_renewal_card)) {
+        class UpcomingRenewal(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.upcoming_renewal_card)) {
             private val binding by viewBinding(UpcomingRenewalCardBinding::bind)
             override fun bind(
                 data: HomeModel,
@@ -325,8 +322,7 @@ class HomeAdapter(
             }
         }
 
-        class PSABox(parent: ViewGroup) :
-            ViewHolder(parent.inflate(R.layout.home_psa)) {
+        class PSABox(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.home_psa)) {
             private val binding by viewBinding(HomePsaBinding::bind)
             override fun bind(
                 data: HomeModel,
@@ -348,8 +344,10 @@ class HomeAdapter(
             }
         }
 
-        class CommonClaim(parent: ViewGroup, private val imageLoader: ImageLoader) :
-            ViewHolder(parent.inflate(R.layout.home_common_claim)) {
+        class CommonClaim(
+            parent: ViewGroup,
+            private val imageLoader: ImageLoader
+        ) : ViewHolder(parent.inflate(R.layout.home_common_claim)) {
             private val binding by viewBinding(HomeCommonClaimBinding::bind)
             override fun bind(
                 data: HomeModel,
@@ -395,8 +393,7 @@ class HomeAdapter(
             )
         }
 
-        class HowClaimsWorkButton(parent: ViewGroup) :
-            ViewHolder(parent.inflate(R.layout.how_claims_work_button)) {
+        class HowClaimsWorkButton(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.how_claims_work_button)) {
             private val binding by viewBinding(HowClaimsWorkButtonBinding::bind)
             override fun bind(
                 data: HomeModel,
