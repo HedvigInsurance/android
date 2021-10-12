@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.embark.passages.audiorecorder
 
+import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.os.Bundle
 import android.os.Parcelable
@@ -30,11 +31,15 @@ import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.hedvig.app.R
+import com.hedvig.app.ui.compose.composables.buttons.LargeContainedButton
+import com.hedvig.app.ui.compose.composables.buttons.LargeTextButton
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -56,24 +61,32 @@ class AudioRecorderFragment : Fragment() {
     private val model: AudioRecorderViewModel by viewModel()
     private val clock: Clock by inject()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
-        ComposeView(requireContext()).apply {
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            val parameters = requireArguments().getParcelable<AudioRecorderParameters>(PARAMETERS)
-                ?: throw IllegalArgumentException("Programmer error: Missing PARAMETERS in ${this.javaClass.name}")
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ) = ComposeView(requireContext()).apply {
+        setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+        val parameters = requireArguments().getParcelable<AudioRecorderParameters>(PARAMETERS)
+            ?: throw IllegalArgumentException("Programmer error: Missing PARAMETERS in ${this.javaClass.name}")
 
-            setContent {
-                HedvigTheme {
-                    val state by model.viewState.collectAsState()
-                    AudioRecorderScreen(
-                        parameters = parameters,
-                        viewState = state,
-                        startRecording = model::startRecording,
-                        clock = clock,
-                    )
-                }
+        setContent {
+            HedvigTheme {
+                val state by model.viewState.collectAsState()
+                AudioRecorderScreen(
+                    parameters = parameters,
+                    viewState = state,
+                    startRecording = model::startRecording,
+                    clock = clock,
+                    stopRecording = model::stopRecording,
+                    submit = { /* TODO */ },
+                    redo = model::redo,
+                    play = model::play,
+                    pause = model::pause,
+                )
             }
         }
+    }
 
     companion object {
         private const val PARAMETERS = "PARAMETERS"
@@ -93,11 +106,18 @@ class AudioRecorderViewModel(
         data class Recording(
             val amplitudes: List<Int>,
             val startedAt: Instant,
+            val filePath: String,
+        ) : ViewState()
+
+        data class Playback(
+            val filePath: String,
+            val isPlaying: Boolean,
         ) : ViewState()
     }
 
     private var recorder: MediaRecorder? = null
     private var timer: Timer? = null
+    private var player: MediaPlayer? = null
 
     private val _viewState = MutableStateFlow<ViewState>(ViewState.NotRecording)
     val viewState = _viewState.asStateFlow()
@@ -107,12 +127,13 @@ class AudioRecorderViewModel(
             recorder = MediaRecorder().apply {
                 setAudioSource(MediaRecorder.AudioSource.DEFAULT)
                 setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS)
-                setOutputFile(File.createTempFile("test_claim_file", null).absolutePath)
+                val filePath = File.createTempFile("test_claim_file", null).absolutePath
+                setOutputFile(filePath)
                 setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
                 prepare()
                 start()
+                _viewState.value = ViewState.Recording(emptyList(), Instant.now(clock), filePath)
             }
-            _viewState.value = ViewState.Recording(emptyList(), Instant.now(clock))
             timer = Timer()
             timer?.schedule(
                 timerTask {
@@ -132,20 +153,64 @@ class AudioRecorderViewModel(
         }
     }
 
-    private fun stopRecording() {
-        if (recorder != null) {
-            timer?.cancel()
-            timer = null
-            recorder?.stop()
-            recorder?.release()
-            recorder = null
+    fun stopRecording() {
+        val currentState = viewState.value
+        if (currentState !is ViewState.Recording) {
+            throw IllegalStateException("Must be in Recording-state to stop recording")
         }
+        cleanup()
+        _viewState.value = ViewState.Playback(
+            currentState.filePath,
+            false,
+        )
+    }
+
+    fun redo() {
+        cleanup()
+        _viewState.value = ViewState.NotRecording
+    }
+
+    fun play() {
+        val currentState = viewState.value
+        if (currentState !is ViewState.Playback) {
+            throw IllegalStateException("Must be in Playback-state to play")
+        }
+        viewModelScope.launch {
+            player = MediaPlayer().apply {
+                setDataSource(currentState.filePath)
+                setOnPreparedListener {
+                    _viewState.value = currentState.copy(isPlaying = true) // TODO: Copy current state instead
+                    start()
+                }
+                setOnCompletionListener {
+                    _viewState.value = currentState.copy(isPlaying = false)
+                }
+                prepareAsync()
+            }
+        }
+    }
+
+    fun pause() {
+        player?.pause()
     }
 
     override fun onCleared() {
         super.onCleared()
 
-        stopRecording()
+        cleanup()
+    }
+
+    private fun cleanup() {
+        timer?.cancel()
+        timer = null
+
+        recorder?.stop()
+        recorder?.release()
+        recorder = null
+
+        player?.stop()
+        player?.release()
+        player = null
     }
 }
 
@@ -160,6 +225,11 @@ fun AudioRecorderScreen(
     viewState: AudioRecorderViewModel.ViewState,
     startRecording: () -> Unit,
     clock: Clock,
+    stopRecording: () -> Unit,
+    submit: () -> Unit,
+    redo: () -> Unit,
+    play: () -> Unit,
+    pause: () -> Unit,
 ) {
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
@@ -187,39 +257,136 @@ fun AudioRecorderScreen(
             }
         }
 
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth(),
+        when (viewState) {
+            AudioRecorderViewModel.ViewState.NotRecording -> NotRecording(
+                startRecording = startRecording,
+            )
+            is AudioRecorderViewModel.ViewState.Recording -> Recording(
+                viewState = viewState,
+                stopRecording = stopRecording,
+                clock = clock,
+            )
+            is AudioRecorderViewModel.ViewState.Playback -> Playback(
+                viewState = viewState,
+                submit = submit,
+                redo = redo,
+                play = play,
+                pause = pause,
+            )
+        }
+    }
+}
+
+@Composable
+fun NotRecording(startRecording: () -> Unit) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        val label = "Start Recording"
+        IconButton(
+            onClick = startRecording,
+            modifier = Modifier
+                .padding(bottom = 24.dp)
         ) {
-            val amplitudes = (viewState as? AudioRecorderViewModel.ViewState.Recording)?.amplitudes ?: emptyList()
-            RecordingWaveForm(
-                amplitudes = amplitudes,
-                modifier = Modifier.padding(16.dp),
+            Image(
+                painter = painterResource(
+                    R.drawable.ic_record
+                ),
+                contentDescription = label,
             )
-            IconButton(
-                onClick = startRecording,
-                modifier = Modifier
-                    .padding(bottom = 24.dp)
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.ic_mic),
-                    contentDescription = "Start Recording", // TODO: String Resource
-                )
-            }
-            val label = when (viewState) {
-                is AudioRecorderViewModel.ViewState.Recording -> {
-                    val diff = Duration.between(
-                        viewState.startedAt, Instant.now(clock)
-                    )
-                    String.format("%02d:%02d", diff.toMinutes(), diff.seconds % 60)
-                }
-                AudioRecorderViewModel.ViewState.NotRecording -> "Start Recording"
-            }
-            Text(
-                text = label,
-                style = MaterialTheme.typography.caption,
-                modifier = Modifier.padding(bottom = 16.dp),
+        }
+        Text(
+            text = label,
+            style = MaterialTheme.typography.caption,
+            modifier = Modifier.padding(bottom = 16.dp),
+        )
+    }
+}
+
+@Composable
+fun Recording(
+    viewState: AudioRecorderViewModel.ViewState.Recording,
+    stopRecording: () -> Unit,
+    clock: Clock,
+) {
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        RecordingWaveForm(
+            amplitudes = viewState.amplitudes,
+            modifier = Modifier.padding(16.dp),
+        )
+        IconButton(
+            onClick = stopRecording,
+            modifier = Modifier
+                .padding(bottom = 24.dp)
+        ) {
+            Image(
+                painter = painterResource(
+                    R.drawable.ic_record_stop
+                ),
+                contentDescription = "Stop Recording", // TODO: String Resource
             )
+        }
+        val diff = Duration.between(
+            viewState.startedAt, Instant.now(clock)
+        )
+        val label = String.format("%02d:%02d", diff.toMinutes(), diff.seconds % 60)
+        Text(
+            text = label,
+            style = MaterialTheme.typography.caption,
+            modifier = Modifier.padding(bottom = 16.dp),
+        )
+    }
+}
+
+@Composable
+fun Playback(
+    viewState: AudioRecorderViewModel.ViewState.Playback,
+    submit: () -> Unit,
+    redo: () -> Unit,
+    play: () -> Unit,
+    pause: () -> Unit,
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .padding(16.dp)
+            .fillMaxWidth(),
+    ) {
+        // TODO: WaveForm, but for playback
+        IconButton(
+            onClick = if (viewState.isPlaying) {
+                pause
+            } else {
+                play
+            }
+        ) {
+            Image(
+                painter = painterResource(
+                    if (viewState.isPlaying) {
+                        android.R.drawable.ic_media_pause
+                    } else {
+                        android.R.drawable.ic_media_play
+                    }
+                ),
+                contentDescription = "Play"
+            )
+        }
+        LargeContainedButton(
+            onClick = submit,
+            modifier = Modifier.padding(top = 16.dp),
+        ) {
+            Text("Submit Claim")
+        }
+        LargeTextButton(
+            onClick = redo,
+            modifier = Modifier.padding(top = 8.dp),
+        ) {
+            Text("Record again")
         }
     }
 }
@@ -233,6 +400,11 @@ fun AudioRecorderScreenNotRecordingPreview() {
             viewState = AudioRecorderViewModel.ViewState.NotRecording,
             startRecording = {},
             clock = Clock.systemDefaultZone(),
+            stopRecording = {},
+            submit = {},
+            redo = {},
+            play = {},
+            pause = {},
         )
     }
 }
@@ -269,10 +441,34 @@ fun AudioRecorderScreenRecordingPreview() {
                     100, 200, 150, 250, 0,
                     100, 200, 150, 250, 0,
                 ),
-                Instant.ofEpochSecond(1634025260)
+                Instant.ofEpochSecond(1634025260),
+                "",
             ),
             startRecording = {},
-            clock = Clock.fixed(Instant.ofEpochSecond(1634025262), ZoneId.systemDefault())
+            clock = Clock.fixed(Instant.ofEpochSecond(1634025262), ZoneId.systemDefault()),
+            stopRecording = {},
+            submit = {},
+            redo = {},
+            play = {},
+            pause = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun AudioRecorderScreenPlaybackPreview() {
+    HedvigTheme {
+        AudioRecorderScreen(
+            parameters = AudioRecorderParameters(listOf("Hello", "World")),
+            viewState = AudioRecorderViewModel.ViewState.Playback("", false),
+            startRecording = {},
+            clock = Clock.systemDefaultZone(),
+            stopRecording = {},
+            submit = {},
+            redo = {},
+            play = {},
+            pause = {},
         )
     }
 }
