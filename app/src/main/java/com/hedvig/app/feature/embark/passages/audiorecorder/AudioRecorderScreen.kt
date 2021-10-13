@@ -16,9 +16,11 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.insets.LocalWindowInsets
 import com.hedvig.app.R
 import com.hedvig.app.ui.compose.composables.buttons.LargeContainedButton
 import com.hedvig.app.ui.compose.composables.buttons.LargeTextButton
@@ -40,10 +42,16 @@ fun AudioRecorderScreen(
     play: () -> Unit,
     pause: () -> Unit,
 ) {
+    val insets = LocalWindowInsets.current
+    val systemTop = with(LocalDensity.current) { insets.systemBars.top.toDp() }
+    val systemBottom = with(LocalDensity.current) { insets.systemBars.bottom.toDp() }
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
-            .padding(top = 24.dp)
+            .padding(
+                top = 24.dp + systemTop,
+                bottom = systemBottom,
+            )
             .fillMaxSize()
     ) {
         LazyColumn(
