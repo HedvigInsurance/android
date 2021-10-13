@@ -1,6 +1,6 @@
 package com.hedvig.app.testdata.feature.home
 
-import com.hedvig.android.owldroid.type.ClaimStatus
+import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.app.testdata.common.ContractStatus
 import com.hedvig.app.testdata.feature.home.builders.ActiveClaimBuilder
 import com.hedvig.app.testdata.feature.home.builders.HomeDataBuilder
@@ -63,7 +63,13 @@ val HOME_DATA_ACTIVE_WITH_MULTIPLE_PSA = HomeDataBuilder(
     )
 ).build()
 
-fun homeActiveContractWithClaim(claimStatusList: List<ClaimStatus>) = HomeDataBuilder(
-    listOf(ContractStatus.ACTIVE),
-    activeClaims = claimStatusList.map(::ActiveClaimBuilder)
+fun homeActiveContractWithClaim(
+    activeClaims: ActiveClaimBuilder
+) = homeActiveContractWithClaim(listOf(activeClaims))
+
+fun homeActiveContractWithClaim(
+    activeClaims: List<ActiveClaimBuilder>,
+): HomeQuery.Data = HomeDataBuilder(
+    contracts = listOf(ContractStatus.ACTIVE),
+    activeClaims = activeClaims
 ).build()

@@ -1,7 +1,9 @@
 package com.hedvig.app.testdata.feature.home.builders
 
+import android.text.style.TtsSpan
 import com.hedvig.android.owldroid.fragment.IconVariantsFragment
 import com.hedvig.android.owldroid.graphql.HomeQuery
+import com.hedvig.android.owldroid.type.ClaimOutcome
 import com.hedvig.android.owldroid.type.ClaimStatus
 import com.hedvig.app.testdata.common.ContractStatus
 import java.time.LocalDate
@@ -168,17 +170,32 @@ data class ImportantMessageBuilder(
 }
 
 data class ActiveClaimBuilder(
-    private val status: ClaimStatus
+    private val status: ClaimStatus,
+    private val outcome: ClaimOutcome? = null,
+    private val payout: HomeQuery.Payout? = null,
 ) {
     fun build() = HomeQuery.ActiveClaim(
         id = UUID.randomUUID().toString(),
         contract = null,
         status = status,
-        outcome = null,
+        outcome = outcome,
         submittedAt = 1,
         closedAt = null,
         files = emptyList(),
         signedAudioURL = null,
-        payout = null,
+        payout = payout,
     )
+
+    companion object {
+        fun closed(outcome: ClaimOutcome): ActiveClaimBuilder = ActiveClaimBuilder(
+            status = ClaimStatus.CLOSED,
+            outcome = outcome
+        )
+
+        fun paid(amount: String, currency: String): ActiveClaimBuilder = ActiveClaimBuilder(
+            status = ClaimStatus.CLOSED,
+            outcome = ClaimOutcome.PAID,
+            payout = HomeQuery.Payout(amount = amount, currency = currency)
+        )
+    }
 }

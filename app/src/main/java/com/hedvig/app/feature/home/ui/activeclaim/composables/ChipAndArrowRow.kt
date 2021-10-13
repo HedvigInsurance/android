@@ -4,7 +4,6 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ButtonDefaults
@@ -72,23 +71,19 @@ fun FlatNonClickableButtonLookingSurface(
     ) {
         ProvideTextStyle(MaterialTheme.typography.button) {
             Row(
-                Modifier
-                    .defaultMinSize(
-                        minWidth = ButtonDefaults.MinWidth,
-                        minHeight = ButtonDefaults.MinHeight
-                    )
-                    .padding(
-                        horizontal = 5.dp,
-                        vertical = 8.dp
-                    ),
+                Modifier.padding(
+                    horizontal = 5.dp,
+                    vertical = 8.dp
+                ),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 // TODO uppercase it in a different way? Check user's preference on language maybe?
                 val currentLocale = Locale.current
                 Text(
-                    text.uppercase(java.util.Locale(currentLocale.language)),
-                    style = MaterialTheme.typography.caption
+                    text.uppercase(java.util.Locale(currentLocale.language, currentLocale.region)),
+                    style = MaterialTheme.typography.caption,
+                    maxLines = 1
                 )
             }
         }
