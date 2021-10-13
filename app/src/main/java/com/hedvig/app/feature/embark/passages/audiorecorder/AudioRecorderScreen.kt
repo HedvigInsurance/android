@@ -174,28 +174,16 @@ fun Playback(
             .padding(16.dp)
             .fillMaxWidth(),
     ) {
-        // TODO: WaveForm, but for playback
         if (!viewState.isPrepared) {
             CircularProgressIndicator()
         } else {
-            IconButton(
-                onClick = if (viewState.isPlaying) {
-                    pause
-                } else {
-                    play
-                }
-            ) {
-                Image(
-                    painter = painterResource(
-                        if (viewState.isPlaying) {
-                            android.R.drawable.ic_media_pause
-                        } else {
-                            android.R.drawable.ic_media_play
-                        }
-                    ),
-                    contentDescription = "Play"
-                )
-            }
+            PlaybackWaveForm(
+                isPlaying = viewState.isPlaying,
+                play = play,
+                pause = pause,
+                amplitudes = viewState.amplitudes,
+                progress = viewState.progress,
+            )
         }
         LargeContainedButton(
             onClick = submit,
@@ -282,7 +270,37 @@ fun AudioRecorderScreenPlaybackPreview() {
     HedvigTheme {
         AudioRecorderScreen(
             parameters = AudioRecorderParameters(listOf("Hello", "World")),
-            viewState = AudioRecorderViewModel.ViewState.Playback("", isPlaying = false, isPrepared = true),
+            viewState = AudioRecorderViewModel.ViewState.Playback(
+                "",
+                isPlaying = false,
+                isPrepared = true,
+                amplitudes = listOf(
+                    100, 200, 150, 250, 0,
+                    100, 200, 150, 250, 0,
+                    100, 200, 150, 250, 0,
+                    100, 200, 150, 250, 0,
+                    100, 200, 150, 250, 0,
+                    100, 200, 150, 250, 0,
+                    100, 200, 150, 250, 0,
+                    100, 200, 150, 250, 0,
+                    100, 200, 150, 250, 0,
+                    100, 200, 150, 250, 0,
+                    100, 200, 150, 250, 0,
+                    100, 200, 150, 250, 0,
+                    100, 200, 150, 250, 0,
+                    100, 200, 150, 250, 0,
+                    100, 200, 150, 250, 0,
+                    100, 200, 150, 250, 0,
+                    100, 200, 150, 250, 0,
+                    100, 200, 150, 250, 0,
+                    100, 200, 150, 250, 0,
+                    100, 200, 150, 250, 0,
+                    100, 200, 150, 250, 0,
+                    100, 200, 150, 250, 0,
+                    100, 200, 150, 250, 0,
+                ),
+                progress = 0.5f,
+            ),
             startRecording = {},
             clock = Clock.systemDefaultZone(),
             stopRecording = {},

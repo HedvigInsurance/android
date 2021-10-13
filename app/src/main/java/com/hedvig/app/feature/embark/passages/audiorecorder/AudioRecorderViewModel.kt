@@ -29,6 +29,8 @@ class AudioRecorderViewModel(
             val filePath: String,
             val isPlaying: Boolean,
             val isPrepared: Boolean,
+            val amplitudes: List<Int>,
+            val progress: Float,
         ) : ViewState()
     }
 
@@ -85,14 +87,17 @@ class AudioRecorderViewModel(
             setDataSource(currentState.filePath)
             setOnPreparedListener {
                 _viewState.value = ViewState.Playback(
-                    currentState.filePath,
+                    filePath = currentState.filePath,
                     isPlaying = false,
                     isPrepared = true,
+                    amplitudes = currentState.amplitudes,
+                    progress = 0f,
                 )
             }
             setOnCompletionListener {
                 // Bail if the user has backed out of the playback-state
                 val currentPlaybackState = viewState.value as? ViewState.Playback ?: return@setOnCompletionListener
+                cleanupTimer()
                 _viewState.value = currentPlaybackState.copy(isPlaying = false)
             }
             prepare()
@@ -113,6 +118,21 @@ class AudioRecorderViewModel(
             e { "Attempted to play before player was prepared" }
             return
         }
+        timer = Timer()
+        timer?.schedule(
+            timerTask {
+                val progress = player?.let { it.currentPosition.toFloat() / it.duration } ?: return@timerTask
+                _viewState.update { vs ->
+                    if (vs is ViewState.Playback) {
+                        vs.copy(progress = progress)
+                    } else {
+                        vs
+                    }
+                }
+            },
+            0,
+            1000L / 60,
+        )
         _viewState.value = currentState.copy(isPlaying = true)
         player?.start()
     }
@@ -122,6 +142,7 @@ class AudioRecorderViewModel(
         if (currentState !is ViewState.Playback) {
             throw IllegalStateException("Must be in Playback-state to pause")
         }
+        cleanupTimer()
         player?.pause()
         _viewState.value = currentState.copy(isPlaying = false)
     }
@@ -132,9 +153,13 @@ class AudioRecorderViewModel(
         cleanup()
     }
 
-    private fun cleanup() {
+    private fun cleanupTimer() {
         timer?.cancel()
         timer = null
+    }
+
+    private fun cleanup() {
+        cleanupTimer()
 
         recorder?.stop()
         recorder?.release()
