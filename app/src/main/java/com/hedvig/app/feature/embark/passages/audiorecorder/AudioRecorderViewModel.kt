@@ -3,16 +3,16 @@ package com.hedvig.app.feature.embark.passages.audiorecorder
 import android.media.MediaPlayer
 import android.media.MediaRecorder
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import e
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import java.io.File
 import java.time.Clock
 import java.time.Instant
 import java.util.Timer
 import java.util.TimerTask
+import java.util.UUID
 
 class AudioRecorderViewModel(
     private val clock: Clock,
@@ -28,6 +28,7 @@ class AudioRecorderViewModel(
         data class Playback(
             val filePath: String,
             val isPlaying: Boolean,
+            val isPrepared: Boolean,
         ) : ViewState()
     }
 
@@ -45,7 +46,10 @@ class AudioRecorderViewModel(
                 setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS)
                 setAudioSamplingRate(96_000)
                 setAudioEncodingBitRate(128_000)
-                val filePath = File.createTempFile("test_claim_file", null).absolutePath
+                val filePath = File.createTempFile(
+                    "claim_${UUID.randomUUID()}",
+                    ".aac",
+                ).absolutePath
                 setOutputFile(filePath)
                 setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
                 prepare()
@@ -77,10 +81,22 @@ class AudioRecorderViewModel(
             throw IllegalStateException("Must be in Recording-state to stop recording")
         }
         cleanup()
-        _viewState.value = ViewState.Playback(
-            currentState.filePath,
-            false,
-        )
+        player = MediaPlayer().apply {
+            setDataSource(currentState.filePath)
+            setOnPreparedListener {
+                _viewState.value = ViewState.Playback(
+                    currentState.filePath,
+                    isPlaying = false,
+                    isPrepared = true,
+                )
+            }
+            setOnCompletionListener {
+                // Bail if the user has backed out of the playback-state
+                val currentPlaybackState = viewState.value as? ViewState.Playback ?: return@setOnCompletionListener
+                _viewState.value = currentPlaybackState.copy(isPlaying = false)
+            }
+            prepare()
+        }
     }
 
     fun redo() {
@@ -93,23 +109,21 @@ class AudioRecorderViewModel(
         if (currentState !is ViewState.Playback) {
             throw IllegalStateException("Must be in Playback-state to play")
         }
-        viewModelScope.launch {
-            player = MediaPlayer().apply {
-                setDataSource(currentState.filePath)
-                setOnPreparedListener {
-                    _viewState.value = currentState.copy(isPlaying = true) // TODO: Copy current state instead
-                    start()
-                }
-                setOnCompletionListener {
-                    _viewState.value = currentState.copy(isPlaying = false)
-                }
-                prepareAsync()
-            }
+        if (!currentState.isPrepared) {
+            e { "Attempted to play before player was prepared" }
+            return
         }
+        _viewState.value = currentState.copy(isPlaying = true)
+        player?.start()
     }
 
     fun pause() {
+        val currentState = viewState.value as? ViewState.Playback
+        if (currentState !is ViewState.Playback) {
+            throw IllegalStateException("Must be in Playback-state to pause")
+        }
         player?.pause()
+        _viewState.value = currentState.copy(isPlaying = false)
     }
 
     override fun onCleared() {

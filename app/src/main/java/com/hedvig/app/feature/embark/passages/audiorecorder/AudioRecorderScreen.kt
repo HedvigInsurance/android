@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -166,23 +167,27 @@ fun Playback(
             .fillMaxWidth(),
     ) {
         // TODO: WaveForm, but for playback
-        IconButton(
-            onClick = if (viewState.isPlaying) {
-                pause
-            } else {
-                play
+        if (!viewState.isPrepared) {
+            CircularProgressIndicator()
+        } else {
+            IconButton(
+                onClick = if (viewState.isPlaying) {
+                    pause
+                } else {
+                    play
+                }
+            ) {
+                Image(
+                    painter = painterResource(
+                        if (viewState.isPlaying) {
+                            android.R.drawable.ic_media_pause
+                        } else {
+                            android.R.drawable.ic_media_play
+                        }
+                    ),
+                    contentDescription = "Play"
+                )
             }
-        ) {
-            Image(
-                painter = painterResource(
-                    if (viewState.isPlaying) {
-                        android.R.drawable.ic_media_pause
-                    } else {
-                        android.R.drawable.ic_media_play
-                    }
-                ),
-                contentDescription = "Play"
-            )
         }
         LargeContainedButton(
             onClick = submit,
@@ -269,7 +274,7 @@ fun AudioRecorderScreenPlaybackPreview() {
     HedvigTheme {
         AudioRecorderScreen(
             parameters = AudioRecorderParameters(listOf("Hello", "World")),
-            viewState = AudioRecorderViewModel.ViewState.Playback("", false),
+            viewState = AudioRecorderViewModel.ViewState.Playback("", isPlaying = false, isPrepared = true),
             startRecording = {},
             clock = Clock.systemDefaultZone(),
             stopRecording = {},

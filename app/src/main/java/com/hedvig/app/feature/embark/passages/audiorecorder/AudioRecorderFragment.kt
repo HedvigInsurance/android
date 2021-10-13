@@ -13,8 +13,6 @@ import com.hedvig.app.ui.compose.theme.HedvigTheme
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.time.Clock
-import java.util.TimerTask
-
 
 class AudioRecorderFragment : Fragment() {
     private val model: AudioRecorderViewModel by viewModel()
