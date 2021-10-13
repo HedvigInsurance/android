@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.contentColorFor
@@ -69,23 +68,21 @@ fun FlatNonClickableButtonLookingSurface(
             )
         }
     ) {
-        ProvideTextStyle(MaterialTheme.typography.button) {
-            Row(
-                Modifier.padding(
-                    horizontal = 5.dp,
-                    vertical = 8.dp
-                ),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                // TODO uppercase it in a different way? Check user's preference on language maybe?
-                val currentLocale = Locale.current
-                Text(
-                    text.uppercase(java.util.Locale(currentLocale.language, currentLocale.region)),
-                    style = MaterialTheme.typography.caption,
-                    maxLines = 1
-                )
-            }
+        Row(
+            Modifier.padding(
+                horizontal = 8.dp,
+                vertical = 5.dp
+            ),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            // TODO uppercase it in a different way? Check user's preference on language maybe?
+            val currentLocale = Locale.current
+            Text(
+                text.uppercase(java.util.Locale(currentLocale.language, currentLocale.region)),
+                style = MaterialTheme.typography.caption,
+                maxLines = 1
+            )
         }
     }
 }
