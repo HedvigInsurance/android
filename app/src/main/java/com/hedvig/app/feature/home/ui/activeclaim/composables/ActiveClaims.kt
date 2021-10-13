@@ -6,21 +6,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.owldroid.graphql.HomeQuery
-import com.hedvig.app.feature.home.ui.activeclaim.composables.ActiveClaimCard
-import com.hedvig.app.feature.home.ui.activeclaim.data.ActiveClaimData
+import com.hedvig.app.feature.home.ui.activeclaim.composables.ClaimStatusCard
+import com.hedvig.app.feature.home.ui.activeclaim.data.ClaimStatusData
 
 @Composable
-fun ActiveClaimCards(homeQueryActiveClaimList: List<HomeQuery.ActiveClaim>) {
+fun ClaimStatusCards(homeQueryActiveClaimList: List<HomeQuery.ClaimStatus>) {
     require(homeQueryActiveClaimList.isNotEmpty())
 
-    val activeClaimDataList: List<ActiveClaimData> = homeQueryActiveClaimList.map {
-        ActiveClaimData.fromHomeQueryActiveClaim(it)
+    val claimStatusDataList: List<ClaimStatusData> = homeQueryActiveClaimList.map {
+        ClaimStatusData.fromHomeQueryClaimStatus(it)
     }
 
     // TODO Horizontal Scroll Pager with dot indicators
-    val activeClaimData = activeClaimDataList.first()
-    ActiveClaimCard(
-        activeClaimData = activeClaimData,
+    val activeClaimData = claimStatusDataList.first()
+    ClaimStatusCard(
+        claimStatusData = activeClaimData,
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)

@@ -1,6 +1,5 @@
 package com.hedvig.app.testdata.feature.home.builders
 
-import android.text.style.TtsSpan
 import com.hedvig.android.owldroid.fragment.IconVariantsFragment
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.type.ClaimOutcome
@@ -22,13 +21,13 @@ data class HomeDataBuilder(
     ),
     private val importantMessages: List<HomeQuery.ImportantMessage> = emptyList(),
     private val renewalDate: LocalDate? = null,
-    private val activeClaims: List<ActiveClaimBuilder> = emptyList()
+    private val claimStatusList: List<ClaimStatusBuilder> = emptyList()
 ) {
     fun build() = HomeQuery.Data(
         member = HomeQuery.Member(
             firstName = firstName
         ),
-        activeClaims = activeClaims.map(ActiveClaimBuilder::build),
+        claimStatus = claimStatusList.map(ClaimStatusBuilder::build),
         contracts = contracts.map { c ->
             HomeQuery.Contract1(
                 displayName = CONTRACT_DISPLAY_NAME,
@@ -169,12 +168,12 @@ data class ImportantMessageBuilder(
     )
 }
 
-data class ActiveClaimBuilder(
+data class ClaimStatusBuilder(
     private val status: ClaimStatus,
     private val outcome: ClaimOutcome? = null,
     private val payout: HomeQuery.Payout? = null,
 ) {
-    fun build() = HomeQuery.ActiveClaim(
+    fun build() = HomeQuery.ClaimStatus(
         id = UUID.randomUUID().toString(),
         contract = null,
         status = status,
@@ -187,12 +186,12 @@ data class ActiveClaimBuilder(
     )
 
     companion object {
-        fun closed(outcome: ClaimOutcome): ActiveClaimBuilder = ActiveClaimBuilder(
+        fun closed(outcome: ClaimOutcome): ClaimStatusBuilder = ClaimStatusBuilder(
             status = ClaimStatus.CLOSED,
             outcome = outcome
         )
 
-        fun paid(amount: String, currency: String): ActiveClaimBuilder = ActiveClaimBuilder(
+        fun paid(amount: String, currency: String): ClaimStatusBuilder = ClaimStatusBuilder(
             status = ClaimStatus.CLOSED,
             outcome = ClaimOutcome.PAID,
             payout = HomeQuery.Payout(amount = amount, currency = currency)

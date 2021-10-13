@@ -2,7 +2,7 @@ query HomeQuery($locale: Locale!, $languageCode: String!) {
   member {
     firstName
   }
-  activeClaims: claims {
+  claimStatus: claims {
     id
     contract {
       id

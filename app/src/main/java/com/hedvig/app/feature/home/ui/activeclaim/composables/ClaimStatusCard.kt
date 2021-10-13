@@ -12,13 +12,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import com.hedvig.app.feature.home.ui.activeclaim.data.ActiveClaimData
 import com.hedvig.app.feature.home.ui.activeclaim.data.ClaimProgressData
+import com.hedvig.app.feature.home.ui.activeclaim.data.ClaimStatusData
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 
 @Composable
-fun ActiveClaimCard(
-    activeClaimData: ActiveClaimData,
+fun ClaimStatusCard(
+    claimStatusData: ClaimStatusData,
     modifier: Modifier = Modifier,
 ) {
     Card(
@@ -27,14 +27,14 @@ fun ActiveClaimCard(
     ) {
         Column {
             TopInfo(
-                pillDataList = activeClaimData.pillData,
-                title = activeClaimData.title,
-                subtitle = activeClaimData.subtitle,
+                pillDataList = claimStatusData.pillData,
+                title = claimStatusData.title,
+                subtitle = claimStatusData.subtitle,
                 modifier = Modifier.padding(16.dp)
             )
             Divider()
             ClaimProgress(
-                claimProgressData = activeClaimData.claimProgressData,
+                claimProgressData = claimStatusData.claimProgressData,
                 modifier = Modifier.padding(16.dp)
             )
         }
@@ -43,26 +43,26 @@ fun ActiveClaimCard(
 
 @Preview
 @Composable
-fun ActiveClaimCardPreview(
-    @PreviewParameter(ActiveClaimDataProvider::class) activeClaimData: ActiveClaimData
+fun ClaimStatusCardPreview(
+    @PreviewParameter(ClaimStatusDataProvider::class) claimStatusData: ClaimStatusData
 ) {
     HedvigTheme {
         Surface(
             color = MaterialTheme.colors.background,
         ) {
-            ActiveClaimCard(activeClaimData)
+            ClaimStatusCard(claimStatusData)
         }
     }
 }
 
-class ActiveClaimDataProvider : PreviewParameterProvider<ActiveClaimData> {
+class ClaimStatusDataProvider : PreviewParameterProvider<ClaimStatusData> {
 
-    override val values: Sequence<ActiveClaimData>
+    override val values: Sequence<ClaimStatusData>
         get() {
             val title = "All-risk"
             val subTitle = "Contents insurance"
             return sequenceOf(
-                ActiveClaimData(
+                ClaimStatusData(
                     pillData = listOf(),
                     title = title,
                     subtitle = subTitle,

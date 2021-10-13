@@ -19,7 +19,7 @@ data class PillData(val text: String, val type: PillType) {
 
     companion object {
         @Composable
-        fun pillDataListFromActiveClaim(activeClaim: HomeQuery.ActiveClaim): List<PillData> {
+        fun pillDataListFromClaimStatus(activeClaim: HomeQuery.ClaimStatus): List<PillData> {
             return when (activeClaim.status) {
                 ClaimStatus.SUBMITTED -> listOf(PillData("CLAIM", PillType.Outlined))
                 ClaimStatus.BEING_HANDLED -> listOf(PillData("CLAIM", PillType.Outlined))

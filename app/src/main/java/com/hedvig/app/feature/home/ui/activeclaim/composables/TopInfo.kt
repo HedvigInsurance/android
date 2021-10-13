@@ -26,7 +26,7 @@ fun TopInfo(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        PillsAndArrowRow(pillDataList)
+        Pills(pillDataList)
         Spacer(modifier = Modifier.height(20.dp))
         Text(title)
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {

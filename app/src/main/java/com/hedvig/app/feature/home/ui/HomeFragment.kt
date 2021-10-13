@@ -152,8 +152,8 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     addAll(listOfNotNull(*psaItems(successData.importantMessages).toTypedArray()))
                     add(HomeModel.BigText.Active(firstName))
                     // TODO think about showing this in other states as well? Not just on isActive(...)
-                    if (successData.activeClaims.isNotEmpty()) {
-                        add(HomeModel.ActiveClaims(successData.activeClaims))
+                    if (successData.claimStatus.isNotEmpty()) {
+                        add(HomeModel.ClaimStatus(successData.claimStatus))
                     }
                     add(HomeModel.StartClaimContained)
                     add(HomeModel.HowClaimsWork(successData.howClaimsWork))

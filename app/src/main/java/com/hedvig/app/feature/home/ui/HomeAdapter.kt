@@ -33,7 +33,7 @@ import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyActivity
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.home.service.HomeTracker
-import com.hedvig.app.feature.home.ui.activeclaim.ActiveClaimCards
+import com.hedvig.app.feature.home.ui.activeclaim.ClaimStatusCards
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.ui.compose.theme.HedvigTheme
@@ -61,7 +61,7 @@ class HomeAdapter(
         R.layout.home_psa -> ViewHolder.PSABox(parent)
         R.layout.home_big_text -> ViewHolder.BigText(parent)
         R.layout.home_body_text -> ViewHolder.BodyText(parent)
-        ACTIVE_CLAIM -> ViewHolder.ActiveClaims(ComposeView(parent.context))
+        ACTIVE_CLAIM -> ViewHolder.ClaimStatus(ComposeView(parent.context))
         R.layout.home_start_claim_outlined -> ViewHolder.StartClaimOutlined(parent)
         R.layout.home_start_claim_contained -> ViewHolder.StartClaimContained(parent)
         R.layout.home_info_card -> ViewHolder.InfoCard(parent)
@@ -78,7 +78,7 @@ class HomeAdapter(
     override fun getItemViewType(position: Int) = when (getItem(position)) {
         is HomeModel.BigText -> R.layout.home_big_text
         is HomeModel.BodyText -> R.layout.home_body_text
-        is HomeModel.ActiveClaims -> ACTIVE_CLAIM
+        is HomeModel.ClaimStatus -> ACTIVE_CLAIM
         HomeModel.StartClaimOutlined -> R.layout.home_start_claim_outlined
         HomeModel.StartClaimContained -> R.layout.home_start_claim_contained
         is HomeModel.ConnectPayin -> R.layout.home_info_card
@@ -103,7 +103,7 @@ class HomeAdapter(
     }
 
     override fun onViewRecycled(holder: ViewHolder) {
-        if (holder is ViewHolder.ActiveClaims) {
+        if (holder is ViewHolder.ClaimStatus) {
             holder.composeView.disposeComposition()
         }
     }
@@ -196,7 +196,7 @@ class HomeAdapter(
             }
         }
 
-        class ActiveClaims(
+        class ClaimStatus(
             val composeView: ComposeView,
         ) : ViewHolder(composeView) {
             init {
@@ -210,13 +210,13 @@ class HomeAdapter(
                 tracker: HomeTracker,
                 marketManager: MarketManager
             ) {
-                if (data !is HomeModel.ActiveClaims) {
+                if (data !is HomeModel.ClaimStatus) {
                     return invalid(data)
                 }
 
                 composeView.setContent {
                     HedvigTheme {
-                        ActiveClaimCards(data.claims)
+                        ClaimStatusCards(data.claims)
                     }
                 }
             }
@@ -535,7 +535,7 @@ class HomeAdapter(
 
         object HomeAdapterDiffUtilItemCallback : DiffUtil.ItemCallback<HomeModel>() {
             override fun areItemsTheSame(oldItem: HomeModel, newItem: HomeModel): Boolean {
-                if (oldItem is HomeModel.ActiveClaims && newItem is HomeModel.ActiveClaims) {
+                if (oldItem is HomeModel.ClaimStatus && newItem is HomeModel.ClaimStatus) {
                     return true
                 }
                 return oldItem == newItem

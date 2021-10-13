@@ -7,13 +7,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.contentColorFor
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,7 +22,7 @@ import com.hedvig.app.feature.home.ui.activeclaim.data.PillData
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 
 @Composable
-fun PillsAndArrowRow(pillData: List<PillData>) {
+fun Pills(pillData: List<PillData>) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -35,31 +32,32 @@ fun PillsAndArrowRow(pillData: List<PillData>) {
             pillData.forEach { pillData: PillData ->
                 Pill(
                     text = pillData.text,
-                    chipType = pillData.type,
+                    pillType = pillData.type,
                 )
             }
         }
-        Icon(Icons.Default.ArrowForward, contentDescription = null)
+        // Uncomment when the card is clickable to go to detail screen
+//        Icon(Icons.Default.ArrowForward, contentDescription = null)
     }
 }
 
 @Composable
 private fun Pill(
     text: String,
-    chipType: PillData.PillType
+    pillType: PillData.PillType
 ) {
-    val backgroundColor = when (chipType) {
-        is PillData.PillType.Contained -> chipType.color
+    val backgroundColor = when (pillType) {
+        is PillData.PillType.Contained -> pillType.color
         PillData.PillType.Outlined -> Color.Transparent
     }
     Surface(
         shape = MaterialTheme.shapes.small,
         color = backgroundColor,
-        contentColor = when (chipType) {
+        contentColor = when (pillType) {
             is PillData.PillType.Contained -> contentColorFor(backgroundColor)
             PillData.PillType.Outlined -> contentColorFor(MaterialTheme.colors.background)
         },
-        border = when (chipType) {
+        border = when (pillType) {
             is PillData.PillType.Contained -> null
             PillData.PillType.Outlined -> BorderStroke(
                 width = ButtonDefaults.OutlinedBorderSize,
@@ -89,12 +87,12 @@ private fun Pill(
 @Preview
 @Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
-fun ChipAndArrowRowPreview() {
+fun PillsPreview() {
     HedvigTheme {
         Surface(
             color = MaterialTheme.colors.background,
         ) {
-            PillsAndArrowRow(
+            Pills(
                 listOf(
                     PillData("Reopened", PillData.PillType.Contained(Color(0xFFFE9650))),
                     PillData("Claim", PillData.PillType.Outlined),

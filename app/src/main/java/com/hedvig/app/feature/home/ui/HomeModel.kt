@@ -36,8 +36,8 @@ sealed class HomeModel {
         object Terminated : BodyText()
     }
 
-    data class ActiveClaims(
-        val claims: List<HomeQuery.ActiveClaim>
+    data class ClaimStatus(
+        val claims: List<HomeQuery.ClaimStatus>
     ) : HomeModel()
 
     object StartClaimOutlined : HomeModel()
