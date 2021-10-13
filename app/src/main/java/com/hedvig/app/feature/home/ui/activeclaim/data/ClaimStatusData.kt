@@ -12,14 +12,14 @@ data class ClaimStatusData(
     companion object {
         @Composable
         fun fromHomeQueryClaimStatus(claimStatus: HomeQuery.ClaimStatus): ClaimStatusData {
-            val pillData = PillData.pillDataListFromClaimStatus(claimStatus)
+            val pillData = PillData.fromClaimStatus(claimStatus)
             val claimProgressData = ClaimProgressData.progressItemListFromClaimStatus(claimStatus)
+            val claimType = ClaimTypeData.fromClaimStatus(claimStatus)
+            val relatedContractType = RelatedContractTypeData.fromClaimStatus(claimStatus)
             return ClaimStatusData(
                 pillData = pillData,
-                // Todo why is this nullable? Proper localization?
-                title = claimStatus.contract?.displayName ?: "Unknown Type",
-                // Todo what should go in the details? What is "Contents insurance" to "All-risk"
-                subtitle = claimStatus.contract?.displayName ?: "Unknown Type",
+                title = claimType.text,
+                subtitle = relatedContractType.text,
                 claimProgressData = claimProgressData
             )
         }

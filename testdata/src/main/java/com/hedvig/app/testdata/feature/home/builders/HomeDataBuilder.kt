@@ -178,10 +178,6 @@ data class ClaimStatusBuilder(
         contract = null,
         status = status,
         outcome = outcome,
-        submittedAt = 1,
-        closedAt = null,
-        files = emptyList(),
-        signedAudioURL = null,
         payout = payout,
     )
 

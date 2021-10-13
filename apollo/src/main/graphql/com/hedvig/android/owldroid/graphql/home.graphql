@@ -10,13 +10,6 @@ query HomeQuery($locale: Locale!, $languageCode: String!) {
     }
     status
     outcome
-    submittedAt
-    closedAt
-    files {
-      key
-      bucket
-    }
-    signedAudioURL
     payout {
       amount
       currency
