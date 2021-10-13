@@ -64,7 +64,11 @@ data class PillData(val text: String, val type: PillType) {
                     PillData(
                         stringResource(R.string.home_claim_card_pill_reopened),
                         PillType.Contained(ActiveClaimColors.Pill.reopened)
-                    )
+                    ),
+                    PillData(
+                        stringResource(R.string.home_claim_card_pill_claim),
+                        PillType.Outlined
+                    ),
                 )
                 ClaimStatus.UNKNOWN__ -> throw IllegalArgumentException()
             }
