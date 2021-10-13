@@ -3,9 +3,11 @@ package com.hedvig.app.feature.home.ui.activeclaim.data
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.type.ClaimOutcome
 import com.hedvig.android.owldroid.type.ClaimStatus
+import com.hedvig.app.R
 
 data class ChipButtonData(val text: String, val type: ButtonType) {
 
@@ -25,6 +27,12 @@ data class ChipButtonData(val text: String, val type: ButtonType) {
                         ClaimOutcome.PAID -> {
                             mutableListOf<ChipButtonData>().apply {
                                 val payout = activeClaim.payout
+                                add(
+                                    ChipButtonData(
+                                        "PAID",
+                                        ButtonType.Contained(colorResource(R.color.colorInfoCardSurface))
+                                    )
+                                )
                                 if (payout != null) {
                                     add(
                                         ChipButtonData(
@@ -34,12 +42,6 @@ data class ChipButtonData(val text: String, val type: ButtonType) {
                                         )
                                     )
                                 }
-                                add(
-                                    ChipButtonData(
-                                        "PAID",
-                                        ButtonType.Contained(MaterialTheme.colors.onSurface)
-                                    )
-                                )
                             }.toList()
                         }
                         ClaimOutcome.NOT_COMPENSATED -> listOf(

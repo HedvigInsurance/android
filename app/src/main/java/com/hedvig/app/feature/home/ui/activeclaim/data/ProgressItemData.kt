@@ -4,9 +4,11 @@ import androidx.compose.material.ContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.type.ClaimOutcome
 import com.hedvig.android.owldroid.type.ClaimStatus
+import com.hedvig.app.R
 
 data class ProgressItemData(val text: String, val type: ProgressItemType) {
 
@@ -19,7 +21,7 @@ data class ProgressItemData(val text: String, val type: ProgressItemType) {
 
         object Paid : ProgressItemType() {
             override val color: Color
-                @Composable get() = Color(0xFFC9ABF5) // TODO Color theming
+                @Composable get() = colorResource(R.color.colorInfoCardSurface)
             override val contentAlpha: Float
                 @Composable get() = ContentAlpha.high
         }
