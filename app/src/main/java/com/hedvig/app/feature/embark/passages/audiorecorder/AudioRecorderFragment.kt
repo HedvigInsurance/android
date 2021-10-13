@@ -11,11 +11,11 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import java.time.Clock
 
 class AudioRecorderFragment : Fragment() {
-    private val model: AudioRecorderViewModel by viewModel()
+    private val model: AudioRecorderViewModel by sharedViewModel()
     private val clock: Clock by inject()
 
     override fun onCreateView(
