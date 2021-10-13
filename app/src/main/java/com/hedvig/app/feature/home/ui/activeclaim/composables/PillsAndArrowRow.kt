@@ -21,21 +21,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hedvig.app.feature.home.ui.activeclaim.data.ChipButtonData
+import com.hedvig.app.feature.home.ui.activeclaim.data.PillData
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 
 @Composable
-fun ChipAndArrowRow(chipButtonData: List<ChipButtonData>) {
+fun PillsAndArrowRow(pillData: List<PillData>) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Top,
     ) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            chipButtonData.forEach { chipButtonData: ChipButtonData ->
-                FlatNonClickableButtonLookingSurface(
-                    text = chipButtonData.text,
-                    chipType = chipButtonData.type,
+            pillData.forEach { pillData: PillData ->
+                Pill(
+                    text = pillData.text,
+                    chipType = pillData.type,
                 )
             }
         }
@@ -43,26 +43,25 @@ fun ChipAndArrowRow(chipButtonData: List<ChipButtonData>) {
     }
 }
 
-// TODO what kind of name would fit here, no clue 😂
 @Composable
-fun FlatNonClickableButtonLookingSurface(
+private fun Pill(
     text: String,
-    chipType: ChipButtonData.ButtonType
+    chipType: PillData.PillType
 ) {
     val backgroundColor = when (chipType) {
-        is ChipButtonData.ButtonType.Contained -> chipType.color
-        ChipButtonData.ButtonType.Outlined -> Color.Transparent
+        is PillData.PillType.Contained -> chipType.color
+        PillData.PillType.Outlined -> Color.Transparent
     }
     Surface(
         shape = MaterialTheme.shapes.small,
         color = backgroundColor,
         contentColor = when (chipType) {
-            is ChipButtonData.ButtonType.Contained -> contentColorFor(backgroundColor)
-            ChipButtonData.ButtonType.Outlined -> contentColorFor(MaterialTheme.colors.background)
+            is PillData.PillType.Contained -> contentColorFor(backgroundColor)
+            PillData.PillType.Outlined -> contentColorFor(MaterialTheme.colors.background)
         },
         border = when (chipType) {
-            is ChipButtonData.ButtonType.Contained -> null
-            ChipButtonData.ButtonType.Outlined -> BorderStroke(
+            is PillData.PillType.Contained -> null
+            PillData.PillType.Outlined -> BorderStroke(
                 width = ButtonDefaults.OutlinedBorderSize,
                 color = MaterialTheme.colors.onSurface
             )
@@ -95,10 +94,10 @@ fun ChipAndArrowRowPreview() {
         Surface(
             color = MaterialTheme.colors.background,
         ) {
-            ChipAndArrowRow(
+            PillsAndArrowRow(
                 listOf(
-                    ChipButtonData("Reopened", ChipButtonData.ButtonType.Contained(Color(0xFFFE9650))),
-                    ChipButtonData("Claim", ChipButtonData.ButtonType.Outlined),
+                    PillData("Reopened", PillData.PillType.Contained(Color(0xFFFE9650))),
+                    PillData("Claim", PillData.PillType.Outlined),
                 )
             )
         }

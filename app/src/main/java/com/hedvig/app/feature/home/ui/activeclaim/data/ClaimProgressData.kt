@@ -4,99 +4,98 @@ import androidx.compose.material.ContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.type.ClaimOutcome
 import com.hedvig.android.owldroid.type.ClaimStatus
-import com.hedvig.app.R
+import com.hedvig.app.ui.compose.theme.ActiveClaimColors
 
-data class ProgressItemData(val text: String, val type: ProgressItemType) {
+data class ClaimProgressData(val text: String, val type: ClaimProgressType) {
 
-    sealed class ProgressItemType {
+    sealed class ClaimProgressType {
         abstract val color: Color
             @Composable get
 
         abstract val contentAlpha: Float
             @Composable get
 
-        object Paid : ProgressItemType() {
+        object Paid : ClaimProgressType() {
             override val color: Color
-                @Composable get() = colorResource(R.color.colorInfoCardSurface)
+                @Composable get() = ActiveClaimColors.Progress.paid
             override val contentAlpha: Float
                 @Composable get() = ContentAlpha.high
         }
 
-        object PastInactive : ProgressItemType() {
+        object PastInactive : ClaimProgressType() {
             override val color: Color
                 @Composable get() = MaterialTheme.colors.primary
             override val contentAlpha: Float
                 @Composable get() = ContentAlpha.medium
         }
 
-        object CurrentlyActive : ProgressItemType() {
+        object CurrentlyActive : ClaimProgressType() {
             override val color: Color
                 @Composable get() = MaterialTheme.colors.primary
             override val contentAlpha: Float
                 @Composable get() = ContentAlpha.high
         }
 
-        object FutureInactive : ProgressItemType() {
+        object FutureInactive : ClaimProgressType() {
             override val color: Color
                 @Composable get() = MaterialTheme.colors.primary
             override val contentAlpha: Float
                 @Composable get() = ContentAlpha.disabled
         }
 
-        object Reopened : ProgressItemType() {
+        object Reopened : ClaimProgressType() {
             override val color: Color
-                @Composable get() = Color(0xFFFE9650)
+                @Composable get() = ActiveClaimColors.Progress.reopened
             override val contentAlpha: Float
                 @Composable get() = ContentAlpha.high
         }
     }
 
     companion object {
-        fun progressItemListFromActiveClaim(activeClaim: HomeQuery.ActiveClaim): List<ProgressItemData> {
+        fun progressItemListFromActiveClaim(activeClaim: HomeQuery.ActiveClaim): List<ClaimProgressData> {
             val (first, second, third) = progressItemTypeListFromActiveClaim(activeClaim)
             return listOf(
-                ProgressItemData("Submitted", first),
-                ProgressItemData("Being handled", second),
-                ProgressItemData("Closed", third),
+                ClaimProgressData("Submitted", first),
+                ClaimProgressData("Being handled", second),
+                ClaimProgressData("Closed", third),
             )
         }
 
         private fun progressItemTypeListFromActiveClaim(
             activeClaim: HomeQuery.ActiveClaim
-        ): Triple<ProgressItemType, ProgressItemType, ProgressItemType> {
+        ): Triple<ClaimProgressType, ClaimProgressType, ClaimProgressType> {
             return when (activeClaim.status) {
                 ClaimStatus.SUBMITTED -> Triple(
-                    ProgressItemType.CurrentlyActive,
-                    ProgressItemType.FutureInactive,
-                    ProgressItemType.FutureInactive,
+                    ClaimProgressType.CurrentlyActive,
+                    ClaimProgressType.FutureInactive,
+                    ClaimProgressType.FutureInactive,
                 )
                 ClaimStatus.BEING_HANDLED -> Triple(
-                    ProgressItemType.PastInactive,
-                    ProgressItemType.CurrentlyActive,
-                    ProgressItemType.FutureInactive,
+                    ClaimProgressType.PastInactive,
+                    ClaimProgressType.CurrentlyActive,
+                    ClaimProgressType.FutureInactive,
                 )
                 ClaimStatus.CLOSED -> {
                     when (activeClaim.outcome) {
                         ClaimOutcome.PAID -> Triple(
-                            ProgressItemType.Paid,
-                            ProgressItemType.Paid,
-                            ProgressItemType.Paid,
+                            ClaimProgressType.Paid,
+                            ClaimProgressType.Paid,
+                            ClaimProgressType.Paid,
                         )
                         else -> Triple(
-                            ProgressItemType.CurrentlyActive,
-                            ProgressItemType.CurrentlyActive,
-                            ProgressItemType.CurrentlyActive,
+                            ClaimProgressType.CurrentlyActive,
+                            ClaimProgressType.CurrentlyActive,
+                            ClaimProgressType.CurrentlyActive,
                         )
                     }
                 }
                 ClaimStatus.REOPENED -> Triple(
-                    ProgressItemType.PastInactive,
-                    ProgressItemType.Reopened,
-                    ProgressItemType.FutureInactive,
+                    ClaimProgressType.PastInactive,
+                    ClaimProgressType.Reopened,
+                    ClaimProgressType.FutureInactive,
                 )
                 ClaimStatus.UNKNOWN__ -> throw IllegalArgumentException()
             }

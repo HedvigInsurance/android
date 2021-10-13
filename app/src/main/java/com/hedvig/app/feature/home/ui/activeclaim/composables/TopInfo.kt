@@ -15,18 +15,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hedvig.app.feature.home.ui.activeclaim.data.ChipButtonData
+import com.hedvig.app.feature.home.ui.activeclaim.data.PillData
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 
 @Composable
 fun TopInfo(
-    chipButtonDataList: List<ChipButtonData>,
+    pillDataList: List<PillData>,
     title: String,
     subtitle: String,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        ChipAndArrowRow(chipButtonDataList)
+        PillsAndArrowRow(pillDataList)
         Spacer(modifier = Modifier.height(20.dp))
         Text(title)
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
@@ -48,9 +48,9 @@ fun TopInfoPreview() {
             color = MaterialTheme.colors.background,
         ) {
             TopInfo(
-                chipButtonDataList = listOf(
-                    ChipButtonData("Reopened", ChipButtonData.ButtonType.Contained(Color(0xFFFE9650))),
-                    ChipButtonData("Claim", ChipButtonData.ButtonType.Outlined),
+                pillDataList = listOf(
+                    PillData("Reopened", PillData.PillType.Contained(Color(0xFFFE9650))),
+                    PillData("Claim", PillData.PillType.Outlined),
                 ),
                 title = "All-risk",
                 subtitle = "Contents insurance",

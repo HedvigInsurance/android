@@ -3,65 +3,68 @@ package com.hedvig.app.feature.home.ui.activeclaim.data
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.type.ClaimOutcome
 import com.hedvig.android.owldroid.type.ClaimStatus
 import com.hedvig.app.R
+import com.hedvig.app.ui.compose.theme.ActiveClaimColors
 
-data class ChipButtonData(val text: String, val type: ButtonType) {
+data class PillData(val text: String, val type: PillType) {
 
-    sealed class ButtonType {
-        data class Contained(val color: Color) : ButtonType()
-        object Outlined : ButtonType()
+    sealed class PillType {
+        data class Contained(val color: Color) : PillType()
+        object Outlined : PillType()
     }
 
     companion object {
         @Composable
-        fun buttonListFromActiveClaim(activeClaim: HomeQuery.ActiveClaim): List<ChipButtonData> {
+        fun pillDataListFromActiveClaim(activeClaim: HomeQuery.ActiveClaim): List<PillData> {
             return when (activeClaim.status) {
-                ClaimStatus.SUBMITTED -> listOf(ChipButtonData("CLAIM", ButtonType.Outlined))
-                ClaimStatus.BEING_HANDLED -> listOf(ChipButtonData("CLAIM", ButtonType.Outlined))
+                ClaimStatus.SUBMITTED -> listOf(PillData("CLAIM", PillType.Outlined))
+                ClaimStatus.BEING_HANDLED -> listOf(PillData("CLAIM", PillType.Outlined))
                 ClaimStatus.CLOSED -> {
                     when (activeClaim.outcome) {
                         ClaimOutcome.PAID -> {
-                            mutableListOf<ChipButtonData>().apply {
-                                val payout = activeClaim.payout
+                            mutableListOf<PillData>().apply {
                                 add(
-                                    ChipButtonData(
-                                        "PAID",
-                                        ButtonType.Contained(colorResource(R.color.colorInfoCardSurface))
+                                    PillData(
+                                        stringResource(R.string.claim_decision_paid),
+                                        PillType.Contained(ActiveClaimColors.Pill.paid)
                                     )
                                 )
+                                val payout = activeClaim.payout
                                 if (payout != null) {
                                     add(
-                                        ChipButtonData(
+                                        PillData(
                                             // TODO proper currency handling? Does GraphQL return this properly?
                                             "${payout.amount} ${payout.currency}",
-                                            ButtonType.Contained(MaterialTheme.colors.primary)
+                                            PillType.Contained(MaterialTheme.colors.primary)
                                         )
                                     )
                                 }
                             }.toList()
                         }
                         ClaimOutcome.NOT_COMPENSATED -> listOf(
-                            ChipButtonData(
-                                "NOT COMPENSATED",
-                                ButtonType.Contained(MaterialTheme.colors.primary)
+                            PillData(
+                                stringResource(R.string.claim_decision_not_compensated),
+                                PillType.Contained(MaterialTheme.colors.primary)
                             )
                         )
                         ClaimOutcome.NOT_COVERED -> listOf(
-                            ChipButtonData(
-                                "NOT COVERED",
-                                ButtonType.Contained(MaterialTheme.colors.primary)
+                            PillData(
+                                stringResource(R.string.claim_decision_not_covered),
+                                PillType.Contained(MaterialTheme.colors.primary)
                             )
                         )
                         else -> throw IllegalArgumentException()
                     }
                 }
                 ClaimStatus.REOPENED -> listOf(
-                    // TODO proper dark theme color
-                    ChipButtonData("REOPENED", ButtonType.Contained(Color(0xFFFCBA8D)))
+                    PillData(
+                        stringResource(R.string.home_claim_card_pill_reopened),
+                        PillType.Contained(ActiveClaimColors.Pill.reopened)
+                    )
                 )
                 ClaimStatus.UNKNOWN__ -> throw IllegalArgumentException()
             }

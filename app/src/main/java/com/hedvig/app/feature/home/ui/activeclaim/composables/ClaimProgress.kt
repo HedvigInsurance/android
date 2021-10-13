@@ -17,23 +17,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hedvig.app.feature.home.ui.activeclaim.data.ProgressItemData
+import com.hedvig.app.feature.home.ui.activeclaim.data.ClaimProgressData
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.compose.fillWithColor
 
 @Composable
-fun BottomProgress(
-    progressItemData: List<ProgressItemData>,
+fun ClaimProgress(
+    claimProgressData: List<ClaimProgressData>,
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        progressItemData.forEach { progressItemData: ProgressItemData ->
-            ProgressItem(
-                text = progressItemData.text,
-                type = progressItemData.type,
+        claimProgressData.forEach { claimProgressData: ClaimProgressData ->
+            ClaimProgress(
+                text = claimProgressData.text,
+                type = claimProgressData.type,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -41,20 +41,20 @@ fun BottomProgress(
 }
 
 @Composable
-private fun ProgressItem(
+private fun ClaimProgress(
     text: String,
-    type: ProgressItemData.ProgressItemType,
+    type: ClaimProgressData.ClaimProgressType,
     modifier: Modifier,
 ) {
     CompositionLocalProvider(LocalContentAlpha provides type.contentAlpha) {
         Column(modifier = modifier) {
-            val topColor = type.color.copy(alpha = LocalContentAlpha.current)
+            val progressColor = type.color.copy(alpha = LocalContentAlpha.current)
             Canvas(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(4.dp)
             ) {
-                fillWithColor(topColor)
+                fillWithColor(progressColor)
             }
             Spacer(modifier = Modifier.height(6.dp))
             Text(
@@ -73,11 +73,11 @@ fun BottomProgressPreview() {
         Surface(
             color = MaterialTheme.colors.background,
         ) {
-            BottomProgress(
+            ClaimProgress(
                 listOf(
-                    ProgressItemData("Submitted", ProgressItemData.ProgressItemType.PastInactive),
-                    ProgressItemData("Being Handled", ProgressItemData.ProgressItemType.Reopened),
-                    ProgressItemData("Closed", ProgressItemData.ProgressItemType.FutureInactive),
+                    ClaimProgressData("Submitted", ClaimProgressData.ClaimProgressType.PastInactive),
+                    ClaimProgressData("Being Handled", ClaimProgressData.ClaimProgressType.Reopened),
+                    ClaimProgressData("Closed", ClaimProgressData.ClaimProgressType.FutureInactive),
                 ),
             )
         }

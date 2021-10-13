@@ -13,7 +13,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.hedvig.app.feature.home.ui.activeclaim.data.ActiveClaimData
-import com.hedvig.app.feature.home.ui.activeclaim.data.ProgressItemData
+import com.hedvig.app.feature.home.ui.activeclaim.data.ClaimProgressData
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 
 @Composable
@@ -27,14 +27,14 @@ fun ActiveClaimCard(
     ) {
         Column {
             TopInfo(
-                chipButtonDataList = activeClaimData.chipButtonData,
+                pillDataList = activeClaimData.pillData,
                 title = activeClaimData.title,
                 subtitle = activeClaimData.subtitle,
                 modifier = Modifier.padding(16.dp)
             )
             Divider()
-            BottomProgress(
-                progressItemData = activeClaimData.progressItemData,
+            ClaimProgress(
+                claimProgressData = activeClaimData.claimProgressData,
                 modifier = Modifier.padding(16.dp)
             )
         }
@@ -63,11 +63,11 @@ class ActiveClaimDataProvider : PreviewParameterProvider<ActiveClaimData> {
             val subTitle = "Contents insurance"
             return sequenceOf(
                 ActiveClaimData(
-                    chipButtonData = listOf(),
+                    pillData = listOf(),
                     title = title,
                     subtitle = subTitle,
-                    progressItemData = listOf(
-                        ProgressItemData("Submitted", ProgressItemData.ProgressItemType.Paid)
+                    claimProgressData = listOf(
+                        ClaimProgressData("Submitted", ClaimProgressData.ClaimProgressType.Paid)
                     )
                 ),
             )

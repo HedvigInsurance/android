@@ -4,22 +4,22 @@ import androidx.compose.runtime.Composable
 import com.hedvig.android.owldroid.graphql.HomeQuery
 
 data class ActiveClaimData(
-    val chipButtonData: List<ChipButtonData>,
+    val pillData: List<PillData>,
     val title: String,
     val subtitle: String,
-    val progressItemData: List<ProgressItemData>,
+    val claimProgressData: List<ClaimProgressData>,
 ) {
     companion object {
         @Composable
         fun fromHomeQueryActiveClaim(activeClaim: HomeQuery.ActiveClaim): ActiveClaimData {
-            val chipButtons = ChipButtonData.buttonListFromActiveClaim(activeClaim)
-            val progressItems = ProgressItemData.progressItemListFromActiveClaim(activeClaim)
+            val chipButtons = PillData.pillDataListFromActiveClaim(activeClaim)
+            val progressItems = ClaimProgressData.progressItemListFromActiveClaim(activeClaim)
             return ActiveClaimData(
-                chipButtonData = chipButtons,
+                pillData = chipButtons,
                 // Todo why is this nullable? Proper localization?
                 title = activeClaim.contract?.displayName ?: "Unknown Type",
                 subtitle = activeClaim.contract?.displayName ?: "Unknown Type",
-                progressItemData = progressItems
+                claimProgressData = progressItems
             )
         }
     }
