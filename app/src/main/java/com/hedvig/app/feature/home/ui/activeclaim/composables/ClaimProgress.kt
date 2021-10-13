@@ -60,6 +60,7 @@ private fun ClaimProgress(
             Text(
                 text = text,
                 textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.caption,
                 modifier = Modifier.fillMaxWidth()
             )
         }
