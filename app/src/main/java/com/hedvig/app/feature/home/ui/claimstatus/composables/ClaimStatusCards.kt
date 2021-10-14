@@ -16,7 +16,6 @@ import com.google.accompanist.pager.rememberPagerState
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusData
 
-@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ClaimStatusCards(homeQueryClaimStatusList: List<HomeQuery.ClaimStatus>) {
     require(homeQueryClaimStatusList.isNotEmpty())
@@ -25,6 +24,13 @@ fun ClaimStatusCards(homeQueryClaimStatusList: List<HomeQuery.ClaimStatus>) {
         ClaimStatusData.fromHomeQueryClaimStatus(it)
     }
 
+    ClaimStatusCards(claimStatusDataList)
+}
+
+@JvmName("ClaimStatusCardsWithConvertedInputData")
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+private fun ClaimStatusCards(claimStatusDataList: List<ClaimStatusData>) {
     val pagerState = rememberPagerState()
     Column {
         HorizontalPager(
