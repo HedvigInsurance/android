@@ -30,16 +30,15 @@ data class PillData(val text: String, val type: PillType) {
                                 add(
                                     PillData(
                                         stringResource(R.string.claim_decision_paid),
-                                        PillType.Contained(ClaimStatusColors.Pill.paid)
+                                        PillType.Contained(MaterialTheme.colors.primary)
                                     )
                                 )
                                 val payout = claimStatus.payout
                                 if (payout != null) {
                                     add(
                                         PillData(
-                                            // TODO proper currency handling? Does GraphQL return this properly?
                                             "${payout.amount} ${payout.currency}",
-                                            PillType.Contained(MaterialTheme.colors.primary)
+                                            PillType.Contained(ClaimStatusColors.Pill.paid)
                                         )
                                     )
                                 }
