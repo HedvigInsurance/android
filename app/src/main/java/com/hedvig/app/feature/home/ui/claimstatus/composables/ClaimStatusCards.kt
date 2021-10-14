@@ -3,7 +3,6 @@ package com.hedvig.app.feature.home.ui.claimstatus.composables
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -26,31 +25,29 @@ fun ClaimStatusCards(homeQueryClaimStatusList: List<HomeQuery.ClaimStatus>) {
         ClaimStatusData.fromHomeQueryClaimStatus(it)
     }
 
-    if (claimStatusDataList.size == 1) {
-        val claimStatusData = claimStatusDataList.first()
-        ClaimStatusCard(
-            claimStatusData = claimStatusData,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .padding(top = 24.dp)
-        )
-    } else {
-        val pagerState = rememberPagerState()
-        Column {
-            HorizontalPager(
-                count = claimStatusDataList.size,
-                key = { page: Int -> claimStatusDataList[page].id },
-                state = pagerState,
-                itemSpacing = 12.dp,
-                contentPadding = PaddingValues(top = 0.dp, start = 16.dp, end = 16.dp),
-            ) { page: Int ->
-                val claimStatusData = claimStatusDataList[page]
-                ClaimStatusCard(
-                    claimStatusData = claimStatusData,
-                )
-            }
-
+    val pagerState = rememberPagerState()
+    Column {
+        HorizontalPager(
+            count = claimStatusDataList.size,
+            key = { page: Int -> claimStatusDataList[page].id },
+            state = pagerState,
+            itemSpacing = 0.dp,
+            contentPadding = PaddingValues(horizontal = 16.dp),
+        ) { page: Int ->
+            val claimStatusData = claimStatusDataList[page]
+            // TODO use normal itemSpacing on pager after https://github.com/google/accompanist/issues/793 is fixed
+            val itemSpacingPadding = PaddingValues(
+                start = if (page == 0) 0.dp else 6.dp,
+                end = if (page == claimStatusDataList.lastIndex) 0.dp else 6.dp,
+            )
+            ClaimStatusCard(
+                claimStatusData = claimStatusData,
+                modifier = Modifier.padding(itemSpacingPadding),
+            )
+        }
+        if (claimStatusDataList.size == 1) {
+            Spacer(Modifier.height(14.dp))
+        } else {
             Spacer(Modifier.height(16.dp))
 
             HorizontalPagerIndicator(
