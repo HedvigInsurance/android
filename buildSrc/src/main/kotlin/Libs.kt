@@ -88,7 +88,7 @@ object Libs {
         const val tracking = "com.google.firebase:firebase-analytics-ktx"
     }
 
-    const val mixpanel = "com.mixpanel.android:mixpanel-android:6.0.0-beta1"
+    const val mixpanel = "com.mixpanel.android:mixpanel-android:5.9.4"
 
     object Koin {
         private const val version = "3.1.2"
