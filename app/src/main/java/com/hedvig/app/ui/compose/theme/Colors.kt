@@ -62,3 +62,12 @@ object ActiveClaimColors {
             @Composable get() = foreverOrange500
     }
 }
+
+@Composable
+fun hedvigContentColorFor(backgroundColor: Color): Color {
+    // TODO check how to properly provide contentColor colors for non-material colors. This is a workaround for now.
+    return when (backgroundColor) {
+        foreverOrange500 -> Color.Black
+        else -> contentColorFor(backgroundColor)
+    }
+}

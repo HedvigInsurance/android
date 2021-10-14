@@ -10,7 +10,6 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.app.feature.home.ui.activeclaim.data.PillData
 import com.hedvig.app.ui.compose.theme.HedvigTheme
+import com.hedvig.app.ui.compose.theme.hedvigContentColorFor
 
 @Composable
 fun Pills(pillData: List<PillData>) {
@@ -54,8 +54,8 @@ private fun Pill(
         shape = MaterialTheme.shapes.small,
         color = backgroundColor,
         contentColor = when (pillType) {
-            is PillData.PillType.Contained -> contentColorFor(backgroundColor)
-            PillData.PillType.Outlined -> contentColorFor(MaterialTheme.colors.background)
+            is PillData.PillType.Contained -> hedvigContentColorFor(backgroundColor)
+            PillData.PillType.Outlined -> hedvigContentColorFor(MaterialTheme.colors.background)
         },
         border = when (pillType) {
             is PillData.PillType.Contained -> null
