@@ -9,6 +9,11 @@ object Libs {
         const val test = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$version"
     }
 
+    object Accompanist {
+        const val pager = "com.google.accompanist:accompanist-pager:0.19.0"
+        const val pagerIndicators = "com.google.accompanist:accompanist-pager-indicators:0.19.0"
+    }
+
     object AndroidX {
         const val constraintLayout = "androidx.constraintlayout:constraintlayout:2.1.1"
         const val appCompat = "androidx.appcompat:appcompat:1.3.1"
