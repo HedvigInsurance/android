@@ -33,8 +33,7 @@ data class PillData(val text: String, val type: PillType) {
                                         PillType.Contained(MaterialTheme.colors.primary)
                                     )
                                 )
-                                val payout = claimStatus.payout
-                                if (payout != null) {
+                                claimStatus.payout?.let { payout: HomeQuery.Payout ->
                                     add(
                                         PillData(
                                             "${payout.amount} ${payout.currency}",
