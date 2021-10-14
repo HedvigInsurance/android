@@ -9,6 +9,8 @@ import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.HedvigApplication
 import com.hedvig.app.service.FileService
 import com.hedvig.app.util.LocaleManager
+import com.hedvig.app.util.apollo.QueryResult
+import com.hedvig.app.util.apollo.safeCall
 import com.hedvig.app.util.jsonObjectOfNotNull
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
@@ -17,10 +19,8 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
 import okio.Buffer
 import org.json.JSONObject
-import ru.gildor.coroutines.okhttp.await
 import java.io.File
 
 class EmbarkRepository(
@@ -38,7 +38,7 @@ class EmbarkRepository(
         query: String,
         variables: JSONObject? = null,
         files: List<FileVariable>
-    ): Response {
+    ): QueryResult<JSONObject> {
 
         var requestBody = createVariableRequestBody(query, variables, files)
         requestBody = if (files.isNotEmpty()) {
@@ -54,7 +54,7 @@ class EmbarkRepository(
                     .header("Content-Type", APPLICATION_JSON)
                     .post(requestBody)
                     .build()
-            ).await()
+            ).safeCall()
     }
 
     private fun createVariableRequestBody(

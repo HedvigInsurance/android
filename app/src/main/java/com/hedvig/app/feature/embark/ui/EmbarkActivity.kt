@@ -75,7 +75,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
             }
             progressToolbar.toolbar.title = storyTitle
 
-            model.data.observe(this@EmbarkActivity) { embarkData ->
+            model.viewState.observe(this@EmbarkActivity) { embarkData ->
                 loadingSpinnerLayout.loadingSpinner.remove()
                 setupToolbarMenu(
                     progressToolbar,
@@ -137,7 +137,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
             true
         }
         R.id.tooltip -> {
-            model.data.value?.passage?.tooltips?.let {
+            model.viewState.value?.passage?.tooltips?.let {
                 TooltipBottomSheet.newInstance(it).show(
                     supportFragmentManager, TooltipBottomSheet.TAG
                 )

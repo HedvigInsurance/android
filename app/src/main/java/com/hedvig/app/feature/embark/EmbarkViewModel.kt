@@ -12,29 +12,27 @@ import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.type.EmbarkExternalRedirectLocation
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.authenticate.LoginStatusService
+import com.hedvig.app.feature.embark.extensions.api
+import com.hedvig.app.feature.embark.extensions.getComputedValues
 import com.hedvig.app.feature.embark.util.VariableExtractor
 import com.hedvig.app.feature.embark.util.evaluateExpression
 import com.hedvig.app.util.Percent
-import com.hedvig.app.util.getWithDotNotation
 import com.hedvig.app.util.plus
 import com.hedvig.app.util.safeLet
-import com.hedvig.app.util.toStringArray
-import kotlinx.coroutines.Dispatchers
+import java.util.Stack
+import kotlin.math.max
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.json.JSONArray
 import org.json.JSONObject
-import java.util.Stack
-import kotlin.math.max
 
 abstract class EmbarkViewModel(
     private val tracker: EmbarkTracker,
-    private val valueStore: ValueStore
+    private val valueStore: ValueStore,
+    private val graphQLQueryUseCase: GraphQLQueryUseCase
 ) : ViewModel() {
-    private val _data = MutableLiveData<EmbarkModel>()
-    val data: LiveData<EmbarkModel> = _data
+    private val _viewState = MutableLiveData<ViewState>()
+    val viewState: LiveData<ViewState> = _viewState
 
     protected val _events = Channel<Event>(Channel.UNLIMITED)
     val events = _events.receiveAsFlow()
@@ -47,12 +45,6 @@ abstract class EmbarkViewModel(
     }
 
     abstract fun fetchStory(name: String)
-
-    abstract suspend fun callGraphQL(
-        query: String,
-        variables: JSONObject? = null,
-        files: List<FileVariable>
-    ): JSONObject?
 
     protected lateinit var storyData: EmbarkStoryQuery.Data
     private lateinit var loginStatus: LoginStatus
@@ -94,7 +86,7 @@ abstract class EmbarkViewModel(
     }
 
     fun submitAction(nextPassageName: String, submitIndex: Int = 0) {
-        data.value?.passage?.let { currentPassage ->
+        viewState.value?.passage?.let { currentPassage ->
             currentPassage.action?.api(submitIndex)?.let { api ->
                 api.asEmbarkApiGraphQLQuery?.let { graphQLQuery ->
                     handleGraphQLQuery(graphQLQuery)
@@ -162,18 +154,18 @@ abstract class EmbarkViewModel(
                     return
                 }
             }
-            _data.value?.passage?.name?.let {
+            _viewState.value?.passage?.name?.let {
                 valueStore.commitVersion()
                 backStack.push(it)
             }
-            val model = EmbarkModel(
+            val state = ViewState(
                 passage = preProcessPassage(nextPassage),
                 navigationDirection = NavigationDirection.FORWARDS,
                 progress = currentProgress(nextPassage),
                 isLoggedIn = loginStatus == LoginStatus.LOGGED_IN,
                 hasTooltips = nextPassage?.tooltips?.isNotEmpty() == true
             )
-            _data.postValue(model)
+            _viewState.postValue(state)
             nextPassage?.tracks?.forEach { track ->
                 tracker.track(track.eventName, trackingData(track))
             }
@@ -213,35 +205,8 @@ abstract class EmbarkViewModel(
                 ?.let { VariableExtractor.extractFileVariable(it, valueStore) }
                 ?: emptyList()
 
-            val result = runCatching { callGraphQL(graphQLQuery.queryData.query, variables, fileVariables) }
-
-            when {
-                result.isFailure -> navigateToPassage(graphQLQuery.getPassageNameFromError())
-                result.hasErrors() -> {
-                    if (graphQLQuery.queryData.errors.any { it.fragments.graphQLErrorsFragment.contains != null }) {
-                        TODO("Handle matched error")
-                    }
-                    navigateToPassage(graphQLQuery.getPassageNameFromError())
-                }
-                result.isSuccess -> {
-                    val response = result.getOrNull()?.getJSONObject("data") ?: return@launch
-
-                    graphQLQuery.queryData.results.forEach { r ->
-                        val key = r.fragments.graphQLResultsFragment.as_
-                        when (val value = response.getWithDotNotation(r.fragments.graphQLResultsFragment.key)) {
-                            is JSONArray -> putInStore(key, value.toStringArray())
-                            is JSONObject -> putInStore(key, value.toString())
-                            else -> putInStore(key, value.toString())
-                        }
-                    }
-
-                    graphQLQuery.queryData.next?.fragments?.embarkLinkFragment?.name?.let {
-                        navigateToPassage(
-                            it
-                        )
-                    }
-                }
-            }
+            val result = graphQLQueryUseCase.executeQuery(graphQLQuery, variables, fileVariables)
+            handleQueryResult(result)
         }
     }
 
@@ -258,37 +223,25 @@ abstract class EmbarkViewModel(
                 ?.let { VariableExtractor.extractFileVariable(it, valueStore) }
                 ?: emptyList()
 
-            val result = runCatching { callGraphQL(graphQLMutation.mutationData.mutation, variables, fileVariables) }
+            val result = graphQLQueryUseCase.executeMutation(graphQLMutation, variables, fileVariables)
+            handleQueryResult(result)
+        }
+    }
 
-            val passageName = graphQLMutation.mutationData.errors
-                .first().fragments.graphQLErrorsFragment
-                .next.fragments.embarkLinkFragment.name
-
-            when {
-                result.isFailure -> navigateToPassage(passageName)
-                result.hasErrors() -> {
-                    val containsErrors = graphQLMutation
-                        .mutationData
-                        .errors.any { it.fragments.graphQLErrorsFragment.contains != null }
-                    if (containsErrors) {
-                        TODO("Handle matched error")
-                    }
-                    navigateToPassage(passageName)
+    private fun handleQueryResult(result: GraphQLQueryUseCase.GraphQLQueryResult) {
+        when (result) {
+            // TODO Handle errors 
+            is GraphQLQueryUseCase.GraphQLQueryResult.Error -> navigateToPassage(result.passageName)
+            is GraphQLQueryUseCase.GraphQLQueryResult.ValuesFromResponse -> {
+                result.arrayValues.forEach {
+                    valueStore.put(it.first, it.second)
                 }
-                result.isSuccess -> {
-                    val response = result.getOrNull()?.getJSONObject("data") ?: return@launch
+                result.objectValues.forEach {
+                    valueStore.put(it.first, it.second)
+                }
 
-                    graphQLMutation.mutationData.results.filterNotNull().forEach { r ->
-                        val key = r.fragments.graphQLResultsFragment.as_
-                        when (val value = response.getWithDotNotation(r.fragments.graphQLResultsFragment.key)) {
-                            is JSONArray -> putInStore(key, value.toStringArray())
-                            is JSONObject -> putInStore(key, value.toString())
-                            else -> putInStore(key, value.toString())
-                        }
-                    }
-                    graphQLMutation.mutationData.next?.fragments?.embarkLinkFragment?.name?.let {
-                        navigateToPassage(it)
-                    }
+                if (result.passageName != null) {
+                    navigateToPassage(result.passageName)
                 }
             }
         }
@@ -301,18 +254,18 @@ abstract class EmbarkViewModel(
         val passageName = backStack.pop()
 
         storyData.embarkStory?.let { story ->
-            _data.value?.passage?.name?.let { currentPassageName ->
+            _viewState.value?.passage?.name?.let { currentPassageName ->
                 tracker.track("Passage Go Back - $currentPassageName")
             }
             val nextPassage = story.passages.find { it.name == passageName }
-            val model = EmbarkModel(
+            val model = ViewState(
                 passage = preProcessPassage(nextPassage),
                 navigationDirection = NavigationDirection.BACKWARDS,
                 progress = currentProgress(nextPassage),
                 isLoggedIn = loginStatus == LoginStatus.LOGGED_IN,
                 hasTooltips = nextPassage?.tooltips?.isNotEmpty() == true
             )
-            _data.postValue(model)
+            _viewState.postValue(model)
 
             valueStore.rollbackVersion()
             return true
@@ -449,8 +402,6 @@ abstract class EmbarkViewModel(
     companion object {
         private val REPLACEMENT_FINDER = Regex("\\{[\\w.]+\\}")
 
-        private fun Result<JSONObject?>.hasErrors() = getOrNull()?.has("errors") == true
-
         private fun EmbarkStoryQuery.Redirect.into(): ExpressionFragment =
             ExpressionFragment(
                 fragments = ExpressionFragment.Fragments(
@@ -553,10 +504,11 @@ abstract class EmbarkViewModel(
 class EmbarkViewModelImpl(
     private val embarkRepository: EmbarkRepository,
     private val loginStatusService: LoginStatusService,
+    graphQLQueryUseCase: GraphQLQueryUseCase,
     tracker: EmbarkTracker,
     valueStore: ValueStore,
     storyName: String,
-) : EmbarkViewModel(tracker, valueStore) {
+) : EmbarkViewModel(tracker, valueStore, graphQLQueryUseCase) {
 
     init {
         fetchStory(storyName)
@@ -582,16 +534,5 @@ class EmbarkViewModelImpl(
                 setInitialState(loginStatus)
             }
         }
-    }
-
-    override suspend fun callGraphQL(
-        query: String,
-        variables: JSONObject?,
-        files: List<FileVariable>
-    ) = withContext(Dispatchers.IO) {
-        embarkRepository.graphQLQuery(query, variables, files)
-            .body
-            ?.string()
-            ?.let { JSONObject(it) }
     }
 }
