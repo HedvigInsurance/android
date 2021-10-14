@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.home.ui.activeclaim
+package com.hedvig.app.feature.home.ui.activeclaim.composables
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -6,7 +6,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hedvig.android.owldroid.graphql.HomeQuery
-import com.hedvig.app.feature.home.ui.activeclaim.composables.ClaimStatusCard
 import com.hedvig.app.feature.home.ui.activeclaim.data.ClaimStatusData
 
 @Composable
