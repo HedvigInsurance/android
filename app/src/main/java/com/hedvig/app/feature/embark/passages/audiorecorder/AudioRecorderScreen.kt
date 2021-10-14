@@ -39,7 +39,7 @@ fun AudioRecorderScreen(
     startRecording: () -> Unit,
     clock: Clock,
     stopRecording: () -> Unit,
-    submit: () -> Unit,
+    submit: (String) -> Unit,
     redo: () -> Unit,
     play: () -> Unit,
     pause: () -> Unit,
@@ -168,7 +168,7 @@ fun Recording(
 @Composable
 fun Playback(
     viewState: AudioRecorderViewModel.ViewState.Playback,
-    submit: () -> Unit,
+    submit: (String) -> Unit,
     redo: () -> Unit,
     play: () -> Unit,
     pause: () -> Unit,
@@ -191,7 +191,7 @@ fun Playback(
             )
         }
         LargeContainedButton(
-            onClick = submit,
+            onClick = { submit(viewState.filePath) },
             modifier = Modifier.padding(top = 16.dp),
         ) {
             Text("Submit Claim")
@@ -210,7 +210,12 @@ fun Playback(
 fun AudioRecorderScreenNotRecordingPreview() {
     HedvigTheme {
         AudioRecorderScreen(
-            parameters = AudioRecorderParameters(listOf("Hello", "World")),
+            parameters = AudioRecorderParameters(
+                messages = listOf("Hello", "World"),
+                key = "key",
+                label = "label",
+                link = "link"
+            ),
             viewState = AudioRecorderViewModel.ViewState.NotRecording,
             startRecording = {},
             clock = Clock.systemDefaultZone(),
@@ -228,7 +233,12 @@ fun AudioRecorderScreenNotRecordingPreview() {
 fun AudioRecorderScreenRecordingPreview() {
     HedvigTheme {
         AudioRecorderScreen(
-            parameters = AudioRecorderParameters(listOf("Hello", "World")),
+            parameters = AudioRecorderParameters(
+                messages = listOf("Hello", "World"),
+                key = "key",
+                label = "label",
+                link = "link"
+            ),
             viewState = AudioRecorderViewModel.ViewState.Recording(
                 listOf(
                     100, 200, 150, 250, 0,
@@ -274,7 +284,12 @@ fun AudioRecorderScreenRecordingPreview() {
 fun AudioRecorderScreenPlaybackPreview() {
     HedvigTheme {
         AudioRecorderScreen(
-            parameters = AudioRecorderParameters(listOf("Hello", "World")),
+            parameters = AudioRecorderParameters(
+                messages = listOf("Hello", "World"),
+                key = "key",
+                label = "label",
+                link = "link"
+            ),
             viewState = AudioRecorderViewModel.ViewState.Playback(
                 "",
                 isPlaying = false,

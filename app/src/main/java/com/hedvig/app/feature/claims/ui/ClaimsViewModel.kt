@@ -31,15 +31,6 @@ class ClaimsViewModel(
         }
     }
 
-    suspend fun triggerClaimsChat(claimTypeId: String? = null) {
-        val response =
-            runCatching { claimsRepository.triggerClaimsChat(claimTypeId) }
-        if (response.isFailure) {
-            response.exceptionOrNull()?.let { e(it) }
-            return
-        }
-    }
-
     suspend fun triggerFreeTextChat() {
         val response = runCatching {
             chatRepository

@@ -16,7 +16,17 @@ class RecorderScaffoldActivity : AppCompatActivity(R.layout.fragment_container_a
 
         supportFragmentManager
             .commit(allowStateLoss = true) {
-                replace(R.id.container, AudioRecorderFragment.newInstance(AudioRecorderParameters(listOf("Hello"))))
+                replace(
+                    R.id.container,
+                    AudioRecorderFragment.newInstance(
+                        AudioRecorderParameters(
+                            messages = listOf("Hello"),
+                            key = "test",
+                            label = "recordLabel",
+                            link = "nextPassage"
+                        )
+                    )
+                )
             }
     }
 }

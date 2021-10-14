@@ -71,15 +71,7 @@ abstract class EmbarkViewModel(
             val firstPassage = story.passages.first { it.id == story.startPassage }
 
             totalSteps = getPassagesLeft(firstPassage)
-
-            val model = EmbarkModel(
-                passage = preProcessPassage(firstPassage),
-                navigationDirection = NavigationDirection.INITIAL,
-                progress = currentProgress(firstPassage),
-                isLoggedIn = loginStatus == LoginStatus.LOGGED_IN,
-                hasTooltips = firstPassage.tooltips.isNotEmpty()
-            )
-            _data.postValue(model)
+            navigateToPassage(firstPassage.name)
 
             firstPassage.tracks.forEach { track ->
                 tracker.track(track.eventName, trackingData(track))

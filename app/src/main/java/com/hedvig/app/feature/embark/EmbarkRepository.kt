@@ -2,10 +2,12 @@ package com.hedvig.app.feature.embark
 
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.internal.json.JsonWriter
+import com.apollographql.apollo.api.internal.network.ContentType.APPLICATION_JSON
 import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.internal.interceptor.ApolloServerInterceptor
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.HedvigApplication
+import com.hedvig.app.service.FileService
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.jsonObjectOfNotNull
 import okhttp3.MediaType.Companion.toMediaType
@@ -25,7 +27,8 @@ class EmbarkRepository(
     private val apolloClient: ApolloClient,
     private val okHttpClient: OkHttpClient,
     private val application: HedvigApplication,
-    private val localeManager: LocaleManager
+    private val localeManager: LocaleManager,
+    private val fileService: FileService
 ) {
     suspend fun embarkStory(name: String) = apolloClient
         .query(EmbarkStoryQuery(name, localeManager.defaultLocale().rawValue))
@@ -37,48 +40,43 @@ class EmbarkRepository(
         files: List<FileVariable>
     ): Response {
 
-        val requestBody = if (files.isEmpty()) {
-            createVariableRequestBody(query, variables)
+        var requestBody = createVariableRequestBody(query, variables, files)
+        requestBody = if (files.isNotEmpty()) {
+            createFileUploadRequestBody(requestBody, files)
         } else {
-            createMultiPartRequestBody(query, variables, files)
+            requestBody
         }
 
         return okHttpClient
             .newCall(
                 Request.Builder()
                     .url(application.graphqlUrl)
-                    .header("Content-Type", "application/json")
+                    .header("Content-Type", APPLICATION_JSON)
                     .post(requestBody)
                     .build()
             ).await()
     }
 
-    private fun createMultiPartRequestBody(
+    private fun createVariableRequestBody(
         query: String,
         variables: JSONObject?,
         files: List<FileVariable>
-    ): MultipartBody {
-        val builder = MultipartBody.Builder()
+    ): RequestBody {
 
-        val variableRequestBody = createVariableRequestBody(query, variables)
-        builder.addPart(variableRequestBody)
+        val jsonObject = variables ?: JSONObject()
 
-        val fileUploadRequestBody = createFileUploadRequestBody(query, files)
-        builder.addPart(fileUploadRequestBody)
+        files.map { it.key }
+            .forEach { jsonObject.put(it, JSONObject.NULL) }
 
-        return builder.build()
-    }
-
-    private fun createVariableRequestBody(query: String, variables: JSONObject?): RequestBody {
         return jsonObjectOfNotNull(
             "query" to query,
-            variables?.let { "variables" to variables }
+            "variables" to jsonObject
         )
             .toString()
             .toRequestBody()
     }
 
-    private fun createFileUploadRequestBody(query: String, variables: List<FileVariable>): RequestBody {
+    private fun createFileUploadRequestBody(request: RequestBody, variables: List<FileVariable>): RequestBody {
         val buffer = createFileMap(variables)
 
         val multipartBodyBuilder = MultipartBody.Builder()
@@ -86,22 +84,21 @@ class EmbarkRepository(
             .addFormDataPart(
                 name = "operations",
                 filename = null,
-                body = jsonObjectOfNotNull("query" to query)
-                    .toString()
-                    .toRequestBody()
+                body = request
             )
             .addFormDataPart(
                 name = "map",
                 filename = null,
-                body = RequestBody.create(ApolloServerInterceptor.MEDIA_TYPE, buffer.readByteString())
+                body = buffer.readByteString().toRequestBody(ApolloServerInterceptor.MEDIA_TYPE)
             )
 
         variables.forEachIndexed { i, variable ->
             val file = File(variable.path)
+            val mediaType = fileService.getMimeType(variable.path).toMediaType()
             multipartBodyBuilder.addFormDataPart(
                 i.toString(),
                 file.name,
-                file.asRequestBody("audio".toMediaType())
+                file.asRequestBody(mediaType)
             )
         }
 
@@ -114,7 +111,7 @@ class EmbarkRepository(
         jsonWriter.beginObject()
         fileVariables.forEachIndexed { i, variable ->
             jsonWriter.name(i.toString()).beginArray()
-            jsonWriter.value(variable.key)
+            jsonWriter.value("variables." + variable.key)
             jsonWriter.endArray()
         }
 

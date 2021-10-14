@@ -21,6 +21,8 @@ import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.NavigationDirection
 import com.hedvig.app.feature.embark.passages.UpgradeAppFragment
+import com.hedvig.app.feature.embark.passages.audiorecorder.AudioRecorderFragment
+import com.hedvig.app.feature.embark.passages.audiorecorder.AudioRecorderParameters
 import com.hedvig.app.feature.embark.passages.datepicker.DatePickerFragment
 import com.hedvig.app.feature.embark.passages.datepicker.DatePickerParams
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionComponent
@@ -325,6 +327,16 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 submitLabel = multiAction.multiActionData.link.fragments.embarkLinkFragment.label,
             )
             return MultiActionFragment.newInstance(params)
+        }
+
+        passage?.action?.asEmbarkAudioRecorderAction?.let { audioRecorderAction ->
+            val params = AudioRecorderParameters(
+                messages = passage.messages.map { it.fragments.messageFragment.text },
+                key = audioRecorderAction.audioRecorderActionData.storeKey,
+                label = audioRecorderAction.audioRecorderActionData.label,
+                link = audioRecorderAction.audioRecorderActionData.next.fragments.embarkLinkFragment.name,
+            )
+            return AudioRecorderFragment.newInstance(params)
         }
 
         return UpgradeAppFragment.newInstance()
