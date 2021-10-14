@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import com.hedvig.android.owldroid.graphql.HomeQuery
 
 data class ClaimStatusData(
+    val id: String,
     val pillData: List<PillData>,
     val title: String,
     val subtitle: String,
@@ -17,6 +18,7 @@ data class ClaimStatusData(
             val claimType = ClaimTypeData.fromClaimStatus(claimStatus)
             val relatedContractType = RelatedContractTypeData.fromClaimStatus(claimStatus)
             return ClaimStatusData(
+                id = claimStatus.id,
                 pillData = pillData,
                 title = claimType.text,
                 subtitle = relatedContractType.text,

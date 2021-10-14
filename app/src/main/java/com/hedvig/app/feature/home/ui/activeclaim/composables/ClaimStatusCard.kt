@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.home.ui.activeclaim.composables
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Card
@@ -9,12 +10,13 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.hedvig.app.feature.home.ui.activeclaim.data.ClaimProgressData
 import com.hedvig.app.feature.home.ui.activeclaim.data.ClaimStatusData
+import com.hedvig.app.feature.home.ui.activeclaim.data.PillData
+import com.hedvig.app.ui.compose.theme.ActiveClaimColors
 import com.hedvig.app.ui.compose.theme.HedvigTheme
+import java.util.UUID
 
 @Composable
 fun ClaimStatusCard(
@@ -42,34 +44,28 @@ fun ClaimStatusCard(
 }
 
 @Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun ClaimStatusCardPreview(
-    @PreviewParameter(ClaimStatusDataProvider::class) claimStatusData: ClaimStatusData
-) {
+fun ClaimStatusCardPreview() {
     HedvigTheme {
         Surface(
             color = MaterialTheme.colors.background,
         ) {
+            val claimStatusData = ClaimStatusData(
+                id = UUID.randomUUID().toString(),
+                pillData = listOf(
+                    PillData("Reopened", PillData.PillType.Contained(ActiveClaimColors.Pill.reopened)),
+                    PillData("Claim", PillData.PillType.Outlined),
+                ),
+                title = "All-risk",
+                subtitle = "Contents insurance",
+                claimProgressData = listOf(
+                    ClaimProgressData("Submitted", ClaimProgressData.ClaimProgressType.PastInactive),
+                    ClaimProgressData("Being Handled", ClaimProgressData.ClaimProgressType.Paid),
+                    ClaimProgressData("Closed", ClaimProgressData.ClaimProgressType.FutureInactive),
+                )
+            )
             ClaimStatusCard(claimStatusData)
         }
     }
-}
-
-class ClaimStatusDataProvider : PreviewParameterProvider<ClaimStatusData> {
-
-    override val values: Sequence<ClaimStatusData>
-        get() {
-            val title = "All-risk"
-            val subTitle = "Contents insurance"
-            return sequenceOf(
-                ClaimStatusData(
-                    pillData = listOf(),
-                    title = title,
-                    subtitle = subTitle,
-                    claimProgressData = listOf(
-                        ClaimProgressData("Submitted", ClaimProgressData.ClaimProgressType.Paid)
-                    )
-                ),
-            )
-        }
 }
