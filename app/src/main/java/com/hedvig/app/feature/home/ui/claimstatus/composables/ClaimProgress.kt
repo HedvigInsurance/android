@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.home.ui.activeclaim.composables
+package com.hedvig.app.feature.home.ui.claimstatus.composables
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hedvig.app.feature.home.ui.activeclaim.data.ClaimProgressData
+import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimProgressData
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.compose.fillWithColor
 

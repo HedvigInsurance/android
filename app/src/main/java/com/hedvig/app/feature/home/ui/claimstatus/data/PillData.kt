@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.home.ui.activeclaim.data
+package com.hedvig.app.feature.home.ui.claimstatus.data
 
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -8,7 +8,7 @@ import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.type.ClaimOutcome
 import com.hedvig.android.owldroid.type.ClaimStatus
 import com.hedvig.app.R
-import com.hedvig.app.ui.compose.theme.ActiveClaimColors
+import com.hedvig.app.ui.compose.theme.ClaimStatusColors
 
 data class PillData(val text: String, val type: PillType) {
 
@@ -19,21 +19,21 @@ data class PillData(val text: String, val type: PillType) {
 
     companion object {
         @Composable
-        fun fromClaimStatus(activeClaim: HomeQuery.ClaimStatus): List<PillData> {
-            return when (activeClaim.status) {
+        fun fromClaimStatus(claimStatus: HomeQuery.ClaimStatus): List<PillData> {
+            return when (claimStatus.status) {
                 ClaimStatus.SUBMITTED -> listOf(PillData("CLAIM", PillType.Outlined))
                 ClaimStatus.BEING_HANDLED -> listOf(PillData("CLAIM", PillType.Outlined))
                 ClaimStatus.CLOSED -> {
-                    when (activeClaim.outcome) {
+                    when (claimStatus.outcome) {
                         ClaimOutcome.PAID -> {
                             mutableListOf<PillData>().apply {
                                 add(
                                     PillData(
                                         stringResource(R.string.claim_decision_paid),
-                                        PillType.Contained(ActiveClaimColors.Pill.paid)
+                                        PillType.Contained(ClaimStatusColors.Pill.paid)
                                     )
                                 )
-                                val payout = activeClaim.payout
+                                val payout = claimStatus.payout
                                 if (payout != null) {
                                     add(
                                         PillData(
@@ -63,7 +63,7 @@ data class PillData(val text: String, val type: PillType) {
                 ClaimStatus.REOPENED -> listOf(
                     PillData(
                         stringResource(R.string.home_claim_card_pill_reopened),
-                        PillType.Contained(ActiveClaimColors.Pill.reopened)
+                        PillType.Contained(ClaimStatusColors.Pill.reopened)
                     ),
                     PillData(
                         stringResource(R.string.home_claim_card_pill_claim),

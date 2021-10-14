@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.home.ui.activeclaim.data
+package com.hedvig.app.feature.home.ui.claimstatus.data
 
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.MaterialTheme
@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.Color
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.type.ClaimOutcome
 import com.hedvig.android.owldroid.type.ClaimStatus
-import com.hedvig.app.ui.compose.theme.ActiveClaimColors
+import com.hedvig.app.ui.compose.theme.ClaimStatusColors
 
 data class ClaimProgressData(val text: String, val type: ClaimProgressType) {
 
@@ -20,7 +20,7 @@ data class ClaimProgressData(val text: String, val type: ClaimProgressType) {
 
         object Paid : ClaimProgressType() {
             override val color: Color
-                @Composable get() = ActiveClaimColors.Progress.paid
+                @Composable get() = ClaimStatusColors.Progress.paid
             override val contentAlpha: Float
                 @Composable get() = ContentAlpha.high
         }
@@ -48,15 +48,15 @@ data class ClaimProgressData(val text: String, val type: ClaimProgressType) {
 
         object Reopened : ClaimProgressType() {
             override val color: Color
-                @Composable get() = ActiveClaimColors.Progress.reopened
+                @Composable get() = ClaimStatusColors.Progress.reopened
             override val contentAlpha: Float
                 @Composable get() = ContentAlpha.high
         }
     }
 
     companion object {
-        fun progressItemListFromClaimStatus(activeClaim: HomeQuery.ClaimStatus): List<ClaimProgressData> {
-            val (first, second, third) = progressItemTypeListFromActiveClaim(activeClaim)
+        fun progressItemListFromClaimStatus(claimStatus: HomeQuery.ClaimStatus): List<ClaimProgressData> {
+            val (first, second, third) = progressItemTypeListFromClaimStatus(claimStatus)
             return listOf(
                 ClaimProgressData("Submitted", first),
                 ClaimProgressData("Being handled", second),
@@ -64,10 +64,10 @@ data class ClaimProgressData(val text: String, val type: ClaimProgressType) {
             )
         }
 
-        private fun progressItemTypeListFromActiveClaim(
-            activeClaim: HomeQuery.ClaimStatus
+        private fun progressItemTypeListFromClaimStatus(
+            claimStatus: HomeQuery.ClaimStatus
         ): Triple<ClaimProgressType, ClaimProgressType, ClaimProgressType> {
-            return when (activeClaim.status) {
+            return when (claimStatus.status) {
                 ClaimStatus.SUBMITTED -> Triple(
                     ClaimProgressType.CurrentlyActive,
                     ClaimProgressType.FutureInactive,
@@ -79,7 +79,7 @@ data class ClaimProgressData(val text: String, val type: ClaimProgressType) {
                     ClaimProgressType.FutureInactive,
                 )
                 ClaimStatus.CLOSED -> {
-                    when (activeClaim.outcome) {
+                    when (claimStatus.outcome) {
                         ClaimOutcome.PAID -> Triple(
                             ClaimProgressType.Paid,
                             ClaimProgressType.Paid,

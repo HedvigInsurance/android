@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.home.ui.activeclaim.data
+package com.hedvig.app.feature.home.ui.claimstatus.data
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource

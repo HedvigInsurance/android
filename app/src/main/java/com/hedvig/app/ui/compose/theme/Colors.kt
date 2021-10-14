@@ -37,7 +37,7 @@ val foreverOrange300: Color
 val foreverOrange500: Color
     @Composable get() = colorResource(R.color.forever_orange_500)
 
-object ActiveClaimColors {
+object ClaimStatusColors {
     object Pill {
         val paid: Color
             @Composable get() = if (isSystemInDarkTheme()) {

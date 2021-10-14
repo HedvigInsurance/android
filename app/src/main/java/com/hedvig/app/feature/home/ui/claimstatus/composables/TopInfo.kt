@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.home.ui.activeclaim.composables
+package com.hedvig.app.feature.home.ui.claimstatus.composables
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hedvig.app.feature.home.ui.activeclaim.data.PillData
+import com.hedvig.app.feature.home.ui.claimstatus.data.PillData
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 
 @Composable

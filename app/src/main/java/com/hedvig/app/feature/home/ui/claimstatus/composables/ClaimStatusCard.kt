@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.home.ui.activeclaim.composables
+package com.hedvig.app.feature.home.ui.claimstatus.composables
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
@@ -11,10 +11,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hedvig.app.feature.home.ui.activeclaim.data.ClaimProgressData
-import com.hedvig.app.feature.home.ui.activeclaim.data.ClaimStatusData
-import com.hedvig.app.feature.home.ui.activeclaim.data.PillData
-import com.hedvig.app.ui.compose.theme.ActiveClaimColors
+import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimProgressData
+import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusData
+import com.hedvig.app.feature.home.ui.claimstatus.data.PillData
+import com.hedvig.app.ui.compose.theme.ClaimStatusColors
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import java.util.UUID
 
@@ -54,7 +54,7 @@ fun ClaimStatusCardPreview() {
             val claimStatusData = ClaimStatusData(
                 id = UUID.randomUUID().toString(),
                 pillData = listOf(
-                    PillData("Reopened", PillData.PillType.Contained(ActiveClaimColors.Pill.reopened)),
+                    PillData("Reopened", PillData.PillType.Contained(ClaimStatusColors.Pill.reopened)),
                     PillData("Claim", PillData.PillType.Outlined),
                 ),
                 title = "All-risk",

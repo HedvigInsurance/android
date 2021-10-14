@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.home.ui.activeclaim.composables
+package com.hedvig.app.feature.home.ui.claimstatus.composables
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -15,21 +15,21 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
 import com.hedvig.android.owldroid.graphql.HomeQuery
-import com.hedvig.app.feature.home.ui.activeclaim.data.ClaimStatusData
+import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusData
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun ClaimStatusCards(homeQueryActiveClaimList: List<HomeQuery.ClaimStatus>) {
-    require(homeQueryActiveClaimList.isNotEmpty())
+fun ClaimStatusCards(homeQueryClaimStatusList: List<HomeQuery.ClaimStatus>) {
+    require(homeQueryClaimStatusList.isNotEmpty())
 
-    val claimStatusDataList: List<ClaimStatusData> = homeQueryActiveClaimList.map {
+    val claimStatusDataList: List<ClaimStatusData> = homeQueryClaimStatusList.map {
         ClaimStatusData.fromHomeQueryClaimStatus(it)
     }
 
     if (claimStatusDataList.size == 1) {
-        val activeClaimData = claimStatusDataList.first()
+        val claimStatusData = claimStatusDataList.first()
         ClaimStatusCard(
-            claimStatusData = activeClaimData,
+            claimStatusData = claimStatusData,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
@@ -45,9 +45,9 @@ fun ClaimStatusCards(homeQueryActiveClaimList: List<HomeQuery.ClaimStatus>) {
                 itemSpacing = 12.dp,
                 contentPadding = PaddingValues(top = 0.dp, start = 16.dp, end = 16.dp),
             ) { page: Int ->
-                val activeClaimData = claimStatusDataList[page]
+                val claimStatusData = claimStatusDataList[page]
                 ClaimStatusCard(
-                    claimStatusData = activeClaimData,
+                    claimStatusData = claimStatusData,
                 )
             }
 
