@@ -37,6 +37,7 @@ import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
 import com.hedvig.app.feature.home.ui.claimstatus.composables.ClaimStatusCards
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.ui.compose.theme.HedvigTheme
+import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.inflate
@@ -55,7 +56,7 @@ class HomeAdapter(
     private val imageLoader: ImageLoader,
     private val tracker: HomeTracker,
     private val marketManager: MarketManager,
-) : ListAdapter<HomeModel, HomeAdapter.ViewHolder>(HomeAdapterDiffUtilItemCallback) {
+) : ListAdapter<HomeModel, HomeAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.home_psa -> ViewHolder.PSABox(parent)
@@ -530,18 +531,6 @@ class HomeAdapter(
     companion object {
         const val ACTIVE_CLAIM = 1
 
-        fun daysLeft(date: LocalDate) =
-            ChronoUnit.DAYS.between(LocalDate.now(), date).toInt()
-
-        object HomeAdapterDiffUtilItemCallback : DiffUtil.ItemCallback<HomeModel>() {
-            override fun areItemsTheSame(oldItem: HomeModel, newItem: HomeModel): Boolean {
-                if (oldItem is HomeModel.ClaimStatus && newItem is HomeModel.ClaimStatus) {
-                    return true
-                }
-                return oldItem == newItem
-            }
-
-            override fun areContentsTheSame(oldItem: HomeModel, newItem: HomeModel): Boolean = oldItem == newItem
-        }
+        fun daysLeft(date: LocalDate): Int = ChronoUnit.DAYS.between(LocalDate.now(), date).toInt()
     }
 }
