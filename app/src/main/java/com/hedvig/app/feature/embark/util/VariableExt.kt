@@ -56,6 +56,7 @@ fun GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable.createSingleVariab
         // FILE is not handled here since we need to create a separate multipart request body for
         // uploading. See extractFileVariable in VariableExtractor.
         EmbarkAPIGraphQLSingleVariableCasting.FILE -> null
+        else -> null
     } ?: return null
     return Pair(key, value)
 }
