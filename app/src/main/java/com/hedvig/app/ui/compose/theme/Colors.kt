@@ -1,6 +1,7 @@
 package com.hedvig.app.ui.compose.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
@@ -47,9 +48,9 @@ object ActiveClaimColors {
 
         val reopened: Color
             @Composable get() = if (isSystemInDarkTheme()) {
-                foreverOrange300
-            } else {
                 foreverOrange500
+            } else {
+                foreverOrange300
             }
     }
 
