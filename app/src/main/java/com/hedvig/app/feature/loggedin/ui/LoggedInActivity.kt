@@ -119,25 +119,25 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
             bottomNavigation.itemIconTintList = null
             bottomNavigation.setOnItemSelectedListener { menuItem ->
-                val id = LoggedInTabs.fromId(menuItem.itemId)
-                if (id == null) {
+                val selectedTab = LoggedInTabs.fromId(menuItem.itemId)
+                if (selectedTab == null) {
                     e { "Programmer error: Invalid menu item chosen" }
                     return@setOnItemSelectedListener false
                 }
 
-                if (id == lastSelectedTab) {
+                if (selectedTab == lastSelectedTab) {
                     return@setOnItemSelectedListener false
                 }
                 supportFragmentManager
                     .beginTransaction()
-                    .replace(R.id.tabContent, id.fragment)
+                    .replace(R.id.tabContent, selectedTab.fragment)
                     .commitNowAllowingStateLoss()
 
                 setupToolBar()
-                animateGradient(id)
-                lastSelectedTab = id
-                loggedInViewModel.onTabVisited(id)
-                loggedInTracker.tabVisited(id)
+                animateGradient(selectedTab)
+                lastSelectedTab = selectedTab
+                loggedInViewModel.onTabVisited(selectedTab)
+                loggedInTracker.tabVisited(selectedTab)
                 true
             }
 
