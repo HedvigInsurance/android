@@ -165,6 +165,8 @@ dependencies {
     androidTestImplementation(Libs.AndroidX.Test.rules)
     androidTestImplementation(Libs.AndroidX.Test.junit)
 
+    implementation(Libs.Accompanist.insets)
+
     implementation(Libs.materialComponents)
     implementation(Libs.flexbox)
 

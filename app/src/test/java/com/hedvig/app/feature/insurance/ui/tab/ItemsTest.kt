@@ -16,7 +16,7 @@ class ItemsTest {
         val result = items(INSURANCE_DATA)
 
         assertThat(result).containsNone(InsuranceModel.CrossSellHeader)
-        assertThat(result).containsNoneOfType<InsuranceModel.CrossSell>()
+        assertThat(result).containsNoneOfType<InsuranceModel.CrossSellCard>()
     }
 
     @Test
@@ -24,6 +24,6 @@ class ItemsTest {
         val result = items(INSURANCE_DATA_WITH_CROSS_SELL)
 
         assertThat(result).contains(InsuranceModel.CrossSellHeader)
-        assertThat(result).containsOfType<InsuranceModel.CrossSell>()
+        assertThat(result).containsOfType<InsuranceModel.CrossSellCard>()
     }
 }
