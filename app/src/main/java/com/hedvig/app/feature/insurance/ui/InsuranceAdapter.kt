@@ -64,8 +64,8 @@ class InsuranceAdapter(
     }
 
     override fun onViewRecycled(holder: ViewHolder) {
-        if (holder is ViewHolder.CrossSellViewHolder) {
-            holder.composeView.disposeComposition()
+        if (holder.itemView is ComposeView) {
+            holder.itemView.disposeComposition()
         }
         if (holder is ViewHolder.SubheadingViewHolder) {
             holder.composeView.disposeComposition()
@@ -84,7 +84,7 @@ class InsuranceAdapter(
             e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }
         }
 
-        class CrossSellViewHolder(val composeView: ComposeView) : ViewHolder(composeView) {
+        class CrossSellViewHolder(private val composeView: ComposeView) : ViewHolder(composeView) {
             init {
                 composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             }
@@ -198,7 +198,7 @@ class InsuranceAdapter(
             }
         }
 
-        class SubheadingViewHolder(val composeView: ComposeView) : ViewHolder(composeView) {
+        class SubheadingViewHolder(private val composeView: ComposeView) : ViewHolder(composeView) {
 
             init {
                 composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
