@@ -28,11 +28,6 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
     private val binding by viewBinding(FragmentInsuranceBinding::bind)
     private var scroll = 0
 
-    override fun onResume() {
-        super.onResume()
-        loggedInViewModel.onScroll(scroll)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -59,12 +54,16 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
             .flowWithLifecycle(viewLifecycle)
             .onEach { bind(it) }
             .launchIn(viewLifecycleScope)
+    }
 
+    override fun onResume() {
+        super.onResume()
+        loggedInViewModel.onScroll(scroll)
         insuranceViewModel.load()
     }
 
-    override fun onStop() {
-        super.onStop()
+    override fun onPause() {
+        super.onPause()
         insuranceViewModel.markCardCrossSellsAsSeen()
     }
 
