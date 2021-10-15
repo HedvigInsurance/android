@@ -256,6 +256,10 @@ class InsuranceMockActivity : MockActivity() {
                     NotificationBadge.BottomNav.CrossSellOnInsuranceFragment,
                     emptySet()
                 )
+                notificationBadgeService.setValue(
+                    NotificationBadge.CrossSellInsuranceFragmentCard,
+                    emptySet()
+                )
             }
         }
         header("Detail Screen")
