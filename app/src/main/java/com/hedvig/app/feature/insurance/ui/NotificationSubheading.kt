@@ -1,5 +1,7 @@
 package com.hedvig.app.feature.insurance.ui
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,8 +19,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun NotificationSubheading(text: String) {
+fun NotificationSubheading(
+    text: String,
+    showNotification: Boolean
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -30,10 +36,14 @@ fun NotificationSubheading(text: String) {
             ),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Canvas(Modifier.size(8.dp)) {
-            drawCircle(Color.Red)
+        AnimatedVisibility(showNotification) {
+            Row {
+                Canvas(Modifier.size(8.dp)) {
+                    drawCircle(Color.Red)
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+            }
         }
-        Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = text,
             style = MaterialTheme.typography.h6,
@@ -49,6 +59,6 @@ fun NotificationSubheading(text: String) {
 @Composable
 fun UnseenBadgeSubheadingPreview() {
     HedvigTheme {
-        NotificationSubheading("Add more coverage")
+        NotificationSubheading("Add more coverage", true)
     }
 }

@@ -3,12 +3,16 @@ package com.hedvig.app.feature.insurance.ui
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.transition.platform.MaterialSharedAxis
@@ -24,7 +28,6 @@ import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContrac
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.ui.compose.theme.HedvigTheme
-import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.getActivity
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -35,7 +38,7 @@ class InsuranceAdapter(
     private val tracker: InsuranceTracker,
     private val marketManager: MarketManager,
     private val retry: () -> Unit
-) : ListAdapter<InsuranceModel, InsuranceAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
+) : ListAdapter<InsuranceModel, InsuranceAdapter.ViewHolder>(InsuranceAdapterDiffUtilItemCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.insurance_contract_card -> ViewHolder.ContractViewHolder(parent)
@@ -43,32 +46,30 @@ class InsuranceAdapter(
         R.layout.insurance_header -> ViewHolder.TitleViewHolder(parent)
         R.layout.generic_error -> ViewHolder.Error(parent)
         SUBHEADING -> ViewHolder.SubheadingViewHolder(ComposeView(parent.context))
+        NOTIFICATION_SUBHEADING -> ViewHolder.NotificationSubheadingViewHolder(ComposeView(parent.context))
         R.layout.insurance_terminated_contracts -> ViewHolder.TerminatedContracts(parent)
         else -> {
             throw Error("Unreachable")
         }
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position), retry, tracker, marketManager)
-    }
-
     override fun getItemViewType(position: Int) = when (getItem(position)) {
         is InsuranceModel.Contract -> R.layout.insurance_contract_card
         is InsuranceModel.CrossSell -> CROSS_SELL
         is InsuranceModel.Header -> R.layout.insurance_header
-        InsuranceModel.TerminatedContractsHeader,
-        is InsuranceModel.CrossSellHeader -> SUBHEADING
+        InsuranceModel.TerminatedContractsHeader -> SUBHEADING
+        is InsuranceModel.CrossSellHeader -> NOTIFICATION_SUBHEADING
         is InsuranceModel.TerminatedContracts -> R.layout.insurance_terminated_contracts
         InsuranceModel.Error -> R.layout.generic_error
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.bind(getItem(position), retry, tracker, marketManager)
     }
 
     override fun onViewRecycled(holder: ViewHolder) {
         if (holder.itemView is ComposeView) {
             holder.itemView.disposeComposition()
-        }
-        if (holder is ViewHolder.SubheadingViewHolder) {
-            holder.composeView.disposeComposition()
         }
     }
 
@@ -210,27 +211,44 @@ class InsuranceAdapter(
                 tracker: InsuranceTracker,
                 marketManager: MarketManager
             ) {
-                if (data !is InsuranceModel.TerminatedContractsHeader && data !is InsuranceModel.CrossSellHeader) {
+                if (data !is InsuranceModel.TerminatedContractsHeader) {
                     return invalid(data)
                 }
-                val showNotificationDot = (data is InsuranceModel.CrossSellHeader && data.showNotificationBadge)
                 composeView.setContent {
-                    val subheadingText = when (data) {
-                        is InsuranceModel.CrossSellHeader ->
-                            stringResource(R.string.insurance_tab_cross_sells_title)
-                        InsuranceModel.TerminatedContractsHeader ->
-                            stringResource(R.string.insurances_tab_more_title)
-                        else -> ""
-                    }
-
                     HedvigTheme {
-                        if (showNotificationDot) {
-                            NotificationSubheading(subheadingText)
-                        } else {
-                            Subheading(subheadingText)
-                        }
+                        Subheading(stringResource(R.string.insurances_tab_more_title))
                     }
                 }
+            }
+        }
+
+        class NotificationSubheadingViewHolder(composeView: ComposeView) : ViewHolder(composeView) {
+
+            private var data by mutableStateOf<InsuranceModel.CrossSellHeader?>(null)
+
+            init {
+                composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                composeView.setContent {
+                    val data = data ?: return@setContent
+                    HedvigTheme {
+                        NotificationSubheading(
+                            text = stringResource(R.string.insurance_tab_cross_sells_title),
+                            showNotification = data.showNotificationBadge
+                        )
+                    }
+                }
+            }
+
+            override fun bind(
+                data: InsuranceModel,
+                retry: () -> Unit,
+                tracker: InsuranceTracker,
+                marketManager: MarketManager
+            ) {
+                if (data !is InsuranceModel.CrossSellHeader) {
+                    return invalid(data)
+                }
+                this.data = data
             }
         }
 
@@ -273,5 +291,21 @@ class InsuranceAdapter(
 
         private const val CROSS_SELL = 1
         private const val SUBHEADING = 2
+        private const val NOTIFICATION_SUBHEADING = 3
+
+        object InsuranceAdapterDiffUtilItemCallback : DiffUtil.ItemCallback<InsuranceModel>() {
+            override fun areItemsTheSame(oldItem: InsuranceModel, newItem: InsuranceModel): Boolean {
+                if (oldItem is InsuranceModel.CrossSellHeader && newItem is InsuranceModel.CrossSellHeader) {
+                    // Only a single CrossSellHeader must appear in the list, therefore always true
+                    return true
+                }
+                return oldItem == newItem
+            }
+
+            override fun areContentsTheSame(
+                oldItem: InsuranceModel,
+                newItem: InsuranceModel
+            ): Boolean = oldItem == newItem
+        }
     }
 }

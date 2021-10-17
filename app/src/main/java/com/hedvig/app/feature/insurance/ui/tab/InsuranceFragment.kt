@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.flowWithLifecycle
+import androidx.recyclerview.widget.SimpleItemAnimator
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentInsuranceBinding
 import com.hedvig.app.feature.insurance.service.InsuranceTracker
@@ -42,6 +43,7 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
                     lifecycleOwner = viewLifecycleOwner
                 )
             )
+            (itemAnimator as? SimpleItemAnimator)?.supportsChangeAnimations = false
             adapter = InsuranceAdapter(tracker, marketManager, insuranceViewModel::load)
         }
 
