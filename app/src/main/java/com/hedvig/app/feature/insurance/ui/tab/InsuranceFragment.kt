@@ -35,11 +35,11 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
             scroll = 0
             addOnScrollListener(
                 ScrollPositionListener(
-                    { scrollPosition ->
+                    onScroll = { scrollPosition ->
                         scroll = scrollPosition
                         loggedInViewModel.onScroll(scrollPosition)
                     },
-                    viewLifecycleOwner
+                    lifecycleOwner = viewLifecycleOwner
                 )
             )
             adapter = InsuranceAdapter(tracker, marketManager, insuranceViewModel::load)
