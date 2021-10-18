@@ -20,6 +20,8 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.app.feature.home.ui.claimstatus.data.PillData
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.ui.compose.theme.hedvigContentColorFor
+import com.hedvig.app.util.compose.DarkAndLightColor
+import com.hedvig.app.util.compose.DisplayableText
 
 @Composable
 fun Pills(pillData: List<PillData>) {
@@ -31,12 +33,12 @@ fun Pills(pillData: List<PillData>) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             pillData.forEach { pillData: PillData ->
                 Pill(
-                    text = pillData.text,
+                    text = pillData.displayableText.text(),
                     pillType = pillData.type,
                 )
             }
         }
-        // Uncomment when the card is clickable to go to detail screen
+        // TODO: Uncomment and check figma layout when the card is clickable to go to detail screen
 //        Icon(Icons.Default.ArrowForward, contentDescription = null)
     }
 }
@@ -47,7 +49,7 @@ private fun Pill(
     pillType: PillData.PillType
 ) {
     val backgroundColor = when (pillType) {
-        is PillData.PillType.Contained -> pillType.color
+        is PillData.PillType.Contained -> pillType.color.toComposableColor()
         PillData.PillType.Outlined -> Color.Transparent
     }
     Surface(
@@ -73,7 +75,6 @@ private fun Pill(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            // TODO uppercase it in a different way? Check user's preference on language maybe?
             val currentLocale = Locale.current
             Text(
                 text.uppercase(java.util.Locale(currentLocale.language, currentLocale.region)),
@@ -94,8 +95,11 @@ fun PillsPreview() {
         ) {
             Pills(
                 listOf(
-                    PillData("Reopened", PillData.PillType.Contained(Color(0xFFFE9650))),
-                    PillData("Claim", PillData.PillType.Outlined),
+                    PillData(
+                        DisplayableText("Reopened"),
+                        PillData.PillType.Contained(DarkAndLightColor(Color(0xFFFE9650)))
+                    ),
+                    PillData(DisplayableText("Claim"), PillData.PillType.Outlined),
                 )
             )
         }

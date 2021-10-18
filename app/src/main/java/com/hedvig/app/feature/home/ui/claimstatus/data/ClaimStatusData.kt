@@ -1,17 +1,16 @@
 package com.hedvig.app.feature.home.ui.claimstatus.data
 
-import androidx.compose.runtime.Composable
 import com.hedvig.android.owldroid.graphql.HomeQuery
+import com.hedvig.app.util.compose.DisplayableText
 
 data class ClaimStatusData(
     val id: String,
     val pillData: List<PillData>,
-    val title: String,
-    val subtitle: String,
+    val title: DisplayableText,
+    val subtitle: DisplayableText,
     val claimProgressData: List<ClaimProgressData>,
 ) {
     companion object {
-        @Composable
         fun fromHomeQueryClaim(homeQueryClaim: HomeQuery.Claim): ClaimStatusData {
             val pillData = PillData.fromClaimStatus(homeQueryClaim)
             val claimProgressData = ClaimProgressData.claimProgressDataListFromHomeQueryClaim(homeQueryClaim)
@@ -20,8 +19,8 @@ data class ClaimStatusData(
             return ClaimStatusData(
                 id = homeQueryClaim.id,
                 pillData = pillData,
-                title = claimType.text,
-                subtitle = relatedContractType.text,
+                title = claimType.displayableText,
+                subtitle = relatedContractType.displayableText,
                 claimProgressData = claimProgressData
             )
         }

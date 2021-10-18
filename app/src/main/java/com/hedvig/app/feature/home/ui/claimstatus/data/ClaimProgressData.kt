@@ -1,56 +1,55 @@
 package com.hedvig.app.feature.home.ui.claimstatus.data
 
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.type.ClaimOutcome
 import com.hedvig.android.owldroid.type.ClaimStatus
+import com.hedvig.app.R
 import com.hedvig.app.ui.compose.theme.ClaimStatusColors
+import com.hedvig.app.util.compose.ContentAlpha
+import com.hedvig.app.util.compose.DarkAndLightColor
+import com.hedvig.app.util.compose.DisplayableText
 
-data class ClaimProgressData(val text: String, val type: ClaimProgressType) {
-
+data class ClaimProgressData(
+    val displayableText: DisplayableText,
+    val type: ClaimProgressType
+) {
     sealed class ClaimProgressType {
-        abstract val color: Color
-            @Composable get
-
-        abstract val contentAlpha: Float
-            @Composable get
+        abstract val color: DarkAndLightColor
+        abstract val contentAlpha: ContentAlpha
 
         object Paid : ClaimProgressType() {
-            override val color: Color
-                @Composable get() = ClaimStatusColors.Progress.paid
-            override val contentAlpha: Float
-                @Composable get() = ContentAlpha.high
+            override val color: DarkAndLightColor
+                get() = ClaimStatusColors.Progress.paid
+            override val contentAlpha: ContentAlpha
+                get() = ContentAlpha.HIGH
         }
 
         object PastInactive : ClaimProgressType() {
-            override val color: Color
-                @Composable get() = MaterialTheme.colors.primary
-            override val contentAlpha: Float
-                @Composable get() = ContentAlpha.medium
+            override val color: DarkAndLightColor
+                get() = DarkAndLightColor.primary()
+            override val contentAlpha: ContentAlpha
+                get() = ContentAlpha.MEDIUM
         }
 
         object CurrentlyActive : ClaimProgressType() {
-            override val color: Color
-                @Composable get() = MaterialTheme.colors.primary
-            override val contentAlpha: Float
-                @Composable get() = ContentAlpha.high
+            override val color: DarkAndLightColor
+                get() = DarkAndLightColor.primary()
+            override val contentAlpha: ContentAlpha
+                get() = ContentAlpha.HIGH
         }
 
         object FutureInactive : ClaimProgressType() {
-            override val color: Color
-                @Composable get() = MaterialTheme.colors.primary
-            override val contentAlpha: Float
-                @Composable get() = ContentAlpha.disabled
+            override val color: DarkAndLightColor
+                get() = DarkAndLightColor.primary()
+            override val contentAlpha: ContentAlpha
+                get() = ContentAlpha.DISABLED
         }
 
         object Reopened : ClaimProgressType() {
-            override val color: Color
-                @Composable get() = ClaimStatusColors.Progress.reopened
-            override val contentAlpha: Float
-                @Composable get() = ContentAlpha.high
+            override val color: DarkAndLightColor
+                get() = ClaimStatusColors.Progress.reopened
+            override val contentAlpha: ContentAlpha
+                get() = ContentAlpha.HIGH
         }
     }
 
@@ -60,9 +59,9 @@ data class ClaimProgressData(val text: String, val type: ClaimProgressType) {
         ): List<ClaimProgressData> {
             val (first, second, third) = claimProgressDataTripleFromHomeQueryClaim(homeQueryClaim)
             return listOf(
-                ClaimProgressData("Submitted", first),
-                ClaimProgressData("Being handled", second),
-                ClaimProgressData("Closed", third),
+                ClaimProgressData(DisplayableText(R.string.claim_status_bar_submitted), first),
+                ClaimProgressData(DisplayableText(R.string.claim_status_bar_being_handled), second),
+                ClaimProgressData(DisplayableText(R.string.claim_status_bar_closed), third),
             )
         }
 

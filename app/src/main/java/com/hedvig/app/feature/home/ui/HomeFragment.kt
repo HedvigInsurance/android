@@ -12,6 +12,7 @@ import com.hedvig.app.databinding.HomeFragmentBinding
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
 import com.hedvig.app.feature.home.service.HomeTracker
+import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusData
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
 import com.hedvig.app.feature.settings.MarketManager
@@ -153,7 +154,9 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     add(HomeModel.BigText.Active(firstName))
                     // TODO think about showing this in other states as well? Not just on isActive(...)
                     if (successData.claims.isNotEmpty()) {
-                        add(HomeModel.ClaimStatus(successData.claims))
+                        add(
+                            HomeModel.ClaimStatus(successData.claims.map(ClaimStatusData.Companion::fromHomeQueryClaim))
+                        )
                     }
                     add(HomeModel.StartClaimContained)
                     add(HomeModel.HowClaimsWork(successData.howClaimsWork))

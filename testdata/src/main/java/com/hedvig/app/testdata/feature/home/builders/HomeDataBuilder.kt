@@ -1,6 +1,7 @@
 package com.hedvig.app.testdata.feature.home.builders
 
 import com.hedvig.android.owldroid.fragment.IconVariantsFragment
+import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.type.ClaimOutcome
 import com.hedvig.android.owldroid.type.ClaimStatus
@@ -190,7 +191,11 @@ data class HomeQueryClaimBuilder(
         fun paid(amount: String, currency: String): HomeQueryClaimBuilder = HomeQueryClaimBuilder(
             status = ClaimStatus.CLOSED,
             outcome = ClaimOutcome.PAID,
-            payout = HomeQuery.Payout(amount = amount, currency = currency)
+            payout = HomeQuery.Payout(
+                fragments = HomeQuery.Payout.Fragments(
+                    MonetaryAmountFragment(amount = amount, currency = currency)
+                )
+            )
         )
     }
 }

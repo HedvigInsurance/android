@@ -11,8 +11,7 @@ query HomeQuery($locale: Locale!, $languageCode: String!) {
     status
     outcome
     payout {
-      amount
-      currency
+      ...MonetaryAmountFragment
     }
   }
   contracts {

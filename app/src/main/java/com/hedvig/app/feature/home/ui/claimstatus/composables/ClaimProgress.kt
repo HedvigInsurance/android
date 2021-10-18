@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimProgressData
 import com.hedvig.app.ui.compose.theme.HedvigTheme
+import com.hedvig.app.util.compose.DisplayableText
 import com.hedvig.app.util.compose.fillWithColor
 
 @Composable
@@ -32,7 +33,7 @@ fun ClaimProgress(
     ) {
         claimProgressData.forEach { claimProgressData: ClaimProgressData ->
             ClaimProgress(
-                text = claimProgressData.text,
+                text = claimProgressData.displayableText.text(),
                 type = claimProgressData.type,
                 modifier = Modifier.weight(1f)
             )
@@ -46,9 +47,9 @@ private fun ClaimProgress(
     type: ClaimProgressData.ClaimProgressType,
     modifier: Modifier,
 ) {
-    CompositionLocalProvider(LocalContentAlpha provides type.contentAlpha) {
+    CompositionLocalProvider(LocalContentAlpha provides type.contentAlpha.toComposableAlpha()) {
         Column(modifier = modifier) {
-            val progressColor = type.color.copy(alpha = LocalContentAlpha.current)
+            val progressColor = type.color.toComposableColor().copy(alpha = LocalContentAlpha.current)
             Canvas(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -76,9 +77,18 @@ fun BottomProgressPreview() {
         ) {
             ClaimProgress(
                 listOf(
-                    ClaimProgressData("Submitted", ClaimProgressData.ClaimProgressType.PastInactive),
-                    ClaimProgressData("Being Handled", ClaimProgressData.ClaimProgressType.Reopened),
-                    ClaimProgressData("Closed", ClaimProgressData.ClaimProgressType.FutureInactive),
+                    ClaimProgressData(
+                        DisplayableText("Submitted"),
+                        ClaimProgressData.ClaimProgressType.PastInactive
+                    ),
+                    ClaimProgressData(
+                        DisplayableText("Being Handled"),
+                        ClaimProgressData.ClaimProgressType.Reopened
+                    ),
+                    ClaimProgressData(
+                        DisplayableText("Closed"),
+                        ClaimProgressData.ClaimProgressType.FutureInactive
+                    ),
                 ),
             )
         }

@@ -1,42 +1,53 @@
 package com.hedvig.app.feature.home.ui.claimstatus.data
 
-import androidx.compose.material.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.type.ClaimOutcome
 import com.hedvig.android.owldroid.type.ClaimStatus
 import com.hedvig.app.R
 import com.hedvig.app.ui.compose.theme.ClaimStatusColors
+import com.hedvig.app.util.apollo.toMonetaryAmount
+import com.hedvig.app.util.compose.DarkAndLightColor
+import com.hedvig.app.util.compose.DisplayableText
 
-data class PillData(val text: String, val type: PillType) {
+data class PillData(
+    val displayableText: DisplayableText,
+    val type: PillType
+) {
 
     sealed class PillType {
-        data class Contained(val color: Color) : PillType()
+        data class Contained(val color: DarkAndLightColor) : PillType()
         object Outlined : PillType()
     }
 
     companion object {
-        @Composable
         fun fromClaimStatus(homeQueryClaim: HomeQuery.Claim): List<PillData> {
             return when (homeQueryClaim.status) {
-                ClaimStatus.SUBMITTED -> listOf(PillData("CLAIM", PillType.Outlined))
-                ClaimStatus.BEING_HANDLED -> listOf(PillData("CLAIM", PillType.Outlined))
+                ClaimStatus.SUBMITTED -> listOf(
+                    PillData(
+                        DisplayableText(R.string.home_claim_card_pill_claim),
+                        PillType.Outlined,
+                    ),
+                )
+                ClaimStatus.BEING_HANDLED -> listOf(
+                    PillData(
+                        DisplayableText(R.string.home_claim_card_pill_claim),
+                        PillType.Outlined,
+                    ),
+                )
                 ClaimStatus.CLOSED -> {
                     when (homeQueryClaim.outcome) {
                         ClaimOutcome.PAID -> {
                             mutableListOf<PillData>().apply {
                                 add(
                                     PillData(
-                                        stringResource(R.string.claim_decision_paid),
-                                        PillType.Contained(MaterialTheme.colors.primary)
-                                    )
+                                        DisplayableText(R.string.claim_decision_paid),
+                                        PillType.Contained(DarkAndLightColor.primary()),
+                                    ),
                                 )
                                 homeQueryClaim.payout?.let { payout: HomeQuery.Payout ->
                                     add(
                                         PillData(
-                                            "${payout.amount} ${payout.currency}",
+                                            DisplayableText(payout.fragments.monetaryAmountFragment.toMonetaryAmount()),
                                             PillType.Contained(ClaimStatusColors.Pill.paid)
                                         )
                                     )
@@ -45,14 +56,14 @@ data class PillData(val text: String, val type: PillType) {
                         }
                         ClaimOutcome.NOT_COMPENSATED -> listOf(
                             PillData(
-                                stringResource(R.string.claim_decision_not_compensated),
-                                PillType.Contained(MaterialTheme.colors.primary)
+                                DisplayableText(R.string.claim_decision_not_compensated),
+                                PillType.Contained(DarkAndLightColor.primary())
                             )
                         )
                         ClaimOutcome.NOT_COVERED -> listOf(
                             PillData(
-                                stringResource(R.string.claim_decision_not_covered),
-                                PillType.Contained(MaterialTheme.colors.primary)
+                                DisplayableText(R.string.claim_decision_not_covered),
+                                PillType.Contained(DarkAndLightColor.primary())
                             )
                         )
                         else -> throw IllegalArgumentException()
@@ -60,11 +71,11 @@ data class PillData(val text: String, val type: PillType) {
                 }
                 ClaimStatus.REOPENED -> listOf(
                     PillData(
-                        stringResource(R.string.home_claim_card_pill_reopened),
+                        DisplayableText(R.string.home_claim_card_pill_reopened),
                         PillType.Contained(ClaimStatusColors.Pill.reopened)
                     ),
                     PillData(
-                        stringResource(R.string.home_claim_card_pill_claim),
+                        DisplayableText(R.string.home_claim_card_pill_claim),
                         PillType.Outlined
                     ),
                 )
