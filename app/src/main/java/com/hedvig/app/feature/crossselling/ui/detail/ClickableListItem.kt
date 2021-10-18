@@ -30,10 +30,9 @@ fun ClickableListItem(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .clickable(onClick = onClick)
-            .padding(vertical = 16.dp)
+            .padding(16.dp)
             .fillMaxWidth(),
     ) {
-        Spacer(Modifier.size(16.dp))
         Image(
             painter = painterResource(icon),
             contentDescription = null,
