@@ -12,13 +12,13 @@ data class ClaimStatusData(
 ) {
     companion object {
         @Composable
-        fun fromHomeQueryClaimStatus(claimStatus: HomeQuery.ClaimStatus): ClaimStatusData {
-            val pillData = PillData.fromClaimStatus(claimStatus)
-            val claimProgressData = ClaimProgressData.progressItemListFromClaimStatus(claimStatus)
-            val claimType = ClaimTypeData.fromClaimStatus(claimStatus)
-            val relatedContractType = RelatedContractTypeData.fromClaimStatus(claimStatus)
+        fun fromHomeQueryClaim(homeQueryClaim: HomeQuery.Claim): ClaimStatusData {
+            val pillData = PillData.fromClaimStatus(homeQueryClaim)
+            val claimProgressData = ClaimProgressData.claimProgressDataListFromHomeQueryClaim(homeQueryClaim)
+            val claimType = ClaimTypeData.fromHomeQueryClaim(homeQueryClaim)
+            val relatedContractType = RelatedContractTypeData.fromClaimStatus(homeQueryClaim)
             return ClaimStatusData(
-                id = claimStatus.id,
+                id = homeQueryClaim.id,
                 pillData = pillData,
                 title = claimType.text,
                 subtitle = relatedContractType.text,

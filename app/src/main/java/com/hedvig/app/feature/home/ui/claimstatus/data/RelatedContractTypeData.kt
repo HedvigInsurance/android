@@ -7,9 +7,9 @@ import com.hedvig.android.owldroid.graphql.HomeQuery
 value class RelatedContractTypeData(val text: String) {
     companion object {
         @Composable
-        fun fromClaimStatus(claimStatus: HomeQuery.ClaimStatus): RelatedContractTypeData {
+        fun fromClaimStatus(homeQueryClaim: HomeQuery.Claim): RelatedContractTypeData {
             // TODO Is displayName appropriate?
-            val relatedContract = claimStatus.contract?.displayName ?: String()
+            val relatedContract = homeQueryClaim.contract?.displayName ?: String()
             return RelatedContractTypeData(relatedContract)
         }
     }

@@ -216,7 +216,7 @@ class HomeAdapter(
 
                 composeView.setContent {
                     HedvigTheme {
-                        ClaimStatusCards(data.claims)
+                        ClaimStatusCards(data.homeQueryClaims)
                     }
                 }
             }

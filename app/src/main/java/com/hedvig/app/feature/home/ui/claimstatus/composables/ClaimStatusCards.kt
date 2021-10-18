@@ -17,11 +17,11 @@ import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusData
 
 @Composable
-fun ClaimStatusCards(homeQueryClaimStatusList: List<HomeQuery.ClaimStatus>) {
-    require(homeQueryClaimStatusList.isNotEmpty())
+fun ClaimStatusCards(homeQueryClaims: List<HomeQuery.Claim>) {
+    require(homeQueryClaims.isNotEmpty())
 
-    val claimStatusDataList: List<ClaimStatusData> = homeQueryClaimStatusList.map {
-        ClaimStatusData.fromHomeQueryClaimStatus(it)
+    val claimStatusDataList: List<ClaimStatusData> = homeQueryClaims.map {
+        ClaimStatusData.fromHomeQueryClaim(it)
     }
 
     ClaimStatusCards(claimStatusDataList)

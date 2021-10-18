@@ -19,12 +19,12 @@ data class PillData(val text: String, val type: PillType) {
 
     companion object {
         @Composable
-        fun fromClaimStatus(claimStatus: HomeQuery.ClaimStatus): List<PillData> {
-            return when (claimStatus.status) {
+        fun fromClaimStatus(homeQueryClaim: HomeQuery.Claim): List<PillData> {
+            return when (homeQueryClaim.status) {
                 ClaimStatus.SUBMITTED -> listOf(PillData("CLAIM", PillType.Outlined))
                 ClaimStatus.BEING_HANDLED -> listOf(PillData("CLAIM", PillType.Outlined))
                 ClaimStatus.CLOSED -> {
-                    when (claimStatus.outcome) {
+                    when (homeQueryClaim.outcome) {
                         ClaimOutcome.PAID -> {
                             mutableListOf<PillData>().apply {
                                 add(
@@ -33,7 +33,7 @@ data class PillData(val text: String, val type: PillType) {
                                         PillType.Contained(MaterialTheme.colors.primary)
                                     )
                                 )
-                                claimStatus.payout?.let { payout: HomeQuery.Payout ->
+                                homeQueryClaim.payout?.let { payout: HomeQuery.Payout ->
                                     add(
                                         PillData(
                                             "${payout.amount} ${payout.currency}",

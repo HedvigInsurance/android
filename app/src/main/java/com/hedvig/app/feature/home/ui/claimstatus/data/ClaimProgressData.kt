@@ -55,8 +55,10 @@ data class ClaimProgressData(val text: String, val type: ClaimProgressType) {
     }
 
     companion object {
-        fun progressItemListFromClaimStatus(claimStatus: HomeQuery.ClaimStatus): List<ClaimProgressData> {
-            val (first, second, third) = progressItemTypeListFromClaimStatus(claimStatus)
+        fun claimProgressDataListFromHomeQueryClaim(
+            homeQueryClaim: HomeQuery.Claim
+        ): List<ClaimProgressData> {
+            val (first, second, third) = claimProgressDataTripleFromHomeQueryClaim(homeQueryClaim)
             return listOf(
                 ClaimProgressData("Submitted", first),
                 ClaimProgressData("Being handled", second),
@@ -64,10 +66,10 @@ data class ClaimProgressData(val text: String, val type: ClaimProgressType) {
             )
         }
 
-        private fun progressItemTypeListFromClaimStatus(
-            claimStatus: HomeQuery.ClaimStatus
+        private fun claimProgressDataTripleFromHomeQueryClaim(
+            homeQueryClaim: HomeQuery.Claim
         ): Triple<ClaimProgressType, ClaimProgressType, ClaimProgressType> {
-            return when (claimStatus.status) {
+            return when (homeQueryClaim.status) {
                 ClaimStatus.SUBMITTED -> Triple(
                     ClaimProgressType.CurrentlyActive,
                     ClaimProgressType.FutureInactive,
@@ -79,7 +81,7 @@ data class ClaimProgressData(val text: String, val type: ClaimProgressType) {
                     ClaimProgressType.FutureInactive,
                 )
                 ClaimStatus.CLOSED -> {
-                    when (claimStatus.outcome) {
+                    when (homeQueryClaim.outcome) {
                         ClaimOutcome.PAID -> Triple(
                             ClaimProgressType.Paid,
                             ClaimProgressType.Paid,

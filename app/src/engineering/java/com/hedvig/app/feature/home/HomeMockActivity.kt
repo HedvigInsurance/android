@@ -24,7 +24,7 @@ import com.hedvig.app.testdata.feature.home.HOME_DATA_TERMINATED
 import com.hedvig.app.testdata.feature.home.HOME_DATA_TERMINATED_IN_FUTURE
 import com.hedvig.app.testdata.feature.home.HOME_DATA_TERMINATED_TODAY
 import com.hedvig.app.testdata.feature.home.HOME_DATA_UPCOMING_RENEWAL
-import com.hedvig.app.testdata.feature.home.builders.ClaimStatusBuilder
+import com.hedvig.app.testdata.feature.home.builders.HomeQueryClaimBuilder
 import com.hedvig.app.testdata.feature.home.homeActiveContractWithClaim
 import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_ACTIVE
 import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_NEEDS_SETUP
@@ -134,33 +134,33 @@ class HomeMockActivity : MockActivity() {
         header("Claims")
         clickableItem("Submitted") {
             MockHomeViewModel.apply {
-                homeMockData = homeActiveContractWithClaim(ClaimStatusBuilder(ClaimStatus.SUBMITTED))
+                homeMockData = homeActiveContractWithClaim(HomeQueryClaimBuilder(ClaimStatus.SUBMITTED))
             }
             startActivity(LoggedInActivity.newInstance(this@HomeMockActivity))
         }
         clickableItem("Being Handled") {
             MockHomeViewModel.apply {
-                homeMockData = homeActiveContractWithClaim(ClaimStatusBuilder(ClaimStatus.BEING_HANDLED))
+                homeMockData = homeActiveContractWithClaim(HomeQueryClaimBuilder(ClaimStatus.BEING_HANDLED))
             }
             startActivity(LoggedInActivity.newInstance(this@HomeMockActivity))
         }
         clickableItem("Reopenned") {
             MockHomeViewModel.apply {
-                homeMockData = homeActiveContractWithClaim(ClaimStatusBuilder(ClaimStatus.REOPENED))
+                homeMockData = homeActiveContractWithClaim(HomeQueryClaimBuilder(ClaimStatus.REOPENED))
             }
             startActivity(LoggedInActivity.newInstance(this@HomeMockActivity))
         }
         clickableItem("Paid (Closed)") {
             MockHomeViewModel.apply {
                 homeMockData = homeActiveContractWithClaim(
-                    ClaimStatusBuilder.paid("200.00", "SEK")
+                    HomeQueryClaimBuilder.paid("200.00", "SEK")
                 )
             }
             startActivity(LoggedInActivity.newInstance(this@HomeMockActivity))
         }
         clickableItem("Not Compensated (Closed)") {
             MockHomeViewModel.apply {
-                homeMockData = homeActiveContractWithClaim(ClaimStatusBuilder.closed(ClaimOutcome.NOT_COMPENSATED))
+                homeMockData = homeActiveContractWithClaim(HomeQueryClaimBuilder.closed(ClaimOutcome.NOT_COMPENSATED))
             }
             startActivity(LoggedInActivity.newInstance(this@HomeMockActivity))
         }
@@ -168,9 +168,9 @@ class HomeMockActivity : MockActivity() {
             MockHomeViewModel.apply {
                 homeMockData = homeActiveContractWithClaim(
                     listOf(
-                        ClaimStatusBuilder(ClaimStatus.SUBMITTED),
-                        ClaimStatusBuilder.closed(ClaimOutcome.NOT_COMPENSATED),
-                        ClaimStatusBuilder.paid("1400.00", "SEK"),
+                        HomeQueryClaimBuilder(ClaimStatus.SUBMITTED),
+                        HomeQueryClaimBuilder.closed(ClaimOutcome.NOT_COMPENSATED),
+                        HomeQueryClaimBuilder.paid("1400.00", "SEK"),
                     )
                 )
             }

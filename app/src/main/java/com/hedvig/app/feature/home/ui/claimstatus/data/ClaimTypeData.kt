@@ -10,12 +10,12 @@ import com.hedvig.app.R
 value class ClaimTypeData(val text: String) {
     companion object {
         @Composable
-        fun fromClaimStatus(claimStatus: HomeQuery.ClaimStatus): ClaimTypeData {
+        fun fromHomeQueryClaim(homeQueryClaim: HomeQuery.Claim): ClaimTypeData {
             return ClaimTypeData(
                 when {
                     // TODO get the type from backend? It exists in Hope already, but not on GraphQL 
                     // claimStatus.perilType != null -> claimStatus.perilType.toProperReadableString
-                    claimStatus.status == ClaimStatus.SUBMITTED -> {
+                    homeQueryClaim.status == ClaimStatus.SUBMITTED -> {
                         stringResource(R.string.claim_type_new_insurance_case)
                     }
                     else -> {

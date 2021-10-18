@@ -21,13 +21,13 @@ data class HomeDataBuilder(
     ),
     private val importantMessages: List<HomeQuery.ImportantMessage> = emptyList(),
     private val renewalDate: LocalDate? = null,
-    private val claimStatusList: List<ClaimStatusBuilder> = emptyList()
+    private val homeQueryClaimBuilders: List<HomeQueryClaimBuilder> = emptyList()
 ) {
     fun build() = HomeQuery.Data(
         member = HomeQuery.Member(
             firstName = firstName
         ),
-        claimStatus = claimStatusList.map(ClaimStatusBuilder::build),
+        claims = homeQueryClaimBuilders.map(HomeQueryClaimBuilder::build),
         contracts = contracts.map { c ->
             HomeQuery.Contract1(
                 displayName = CONTRACT_DISPLAY_NAME,
@@ -168,12 +168,12 @@ data class ImportantMessageBuilder(
     )
 }
 
-data class ClaimStatusBuilder(
+data class HomeQueryClaimBuilder(
     private val status: ClaimStatus,
     private val outcome: ClaimOutcome? = null,
     private val payout: HomeQuery.Payout? = null,
 ) {
-    fun build() = HomeQuery.ClaimStatus(
+    fun build() = HomeQuery.Claim(
         id = UUID.randomUUID().toString(),
         contract = null,
         status = status,
@@ -182,12 +182,12 @@ data class ClaimStatusBuilder(
     )
 
     companion object {
-        fun closed(outcome: ClaimOutcome): ClaimStatusBuilder = ClaimStatusBuilder(
+        fun closed(outcome: ClaimOutcome): HomeQueryClaimBuilder = HomeQueryClaimBuilder(
             status = ClaimStatus.CLOSED,
             outcome = outcome
         )
 
-        fun paid(amount: String, currency: String): ClaimStatusBuilder = ClaimStatusBuilder(
+        fun paid(amount: String, currency: String): HomeQueryClaimBuilder = HomeQueryClaimBuilder(
             status = ClaimStatus.CLOSED,
             outcome = ClaimOutcome.PAID,
             payout = HomeQuery.Payout(amount = amount, currency = currency)

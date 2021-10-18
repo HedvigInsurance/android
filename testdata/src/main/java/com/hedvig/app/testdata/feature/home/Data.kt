@@ -2,8 +2,8 @@ package com.hedvig.app.testdata.feature.home
 
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.app.testdata.common.ContractStatus
-import com.hedvig.app.testdata.feature.home.builders.ClaimStatusBuilder
 import com.hedvig.app.testdata.feature.home.builders.HomeDataBuilder
+import com.hedvig.app.testdata.feature.home.builders.HomeQueryClaimBuilder
 import com.hedvig.app.testdata.feature.home.builders.ImportantMessageBuilder
 import java.time.LocalDate
 
@@ -64,12 +64,12 @@ val HOME_DATA_ACTIVE_WITH_MULTIPLE_PSA = HomeDataBuilder(
 ).build()
 
 fun homeActiveContractWithClaim(
-    claimsStatus: ClaimStatusBuilder
-) = homeActiveContractWithClaim(listOf(claimsStatus))
+    homeQueryClaimBuilder: HomeQueryClaimBuilder
+) = homeActiveContractWithClaim(listOf(homeQueryClaimBuilder))
 
 fun homeActiveContractWithClaim(
-    claimStatusList: List<ClaimStatusBuilder>,
+    homeQueryClaimBuilders: List<HomeQueryClaimBuilder>,
 ): HomeQuery.Data = HomeDataBuilder(
     contracts = listOf(ContractStatus.ACTIVE),
-    claimStatusList = claimStatusList
+    homeQueryClaimBuilders = homeQueryClaimBuilders
 ).build()
