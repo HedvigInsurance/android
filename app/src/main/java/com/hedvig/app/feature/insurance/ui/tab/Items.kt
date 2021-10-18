@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.insurance.ui.tab
 
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
-import com.hedvig.app.feature.crossselling.ui.CrossSell
+import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.feature.insurance.ui.InsuranceModel
 
 fun items(data: InsuranceQuery.Data): List<InsuranceModel> = ArrayList<InsuranceModel>().apply {
@@ -39,4 +39,4 @@ private fun amountOfTerminatedContracts(contracts: List<InsuranceQuery.Contract>
     contracts.filter { it.status.fragments.contractStatusFragment.asTerminatedStatus != null }.size
 
 private fun crossSell(potentialCrossSell: InsuranceQuery.PotentialCrossSell) =
-    InsuranceModel.CrossSellCard(CrossSell.from(potentialCrossSell))
+    InsuranceModel.CrossSellCard(CrossSellData.from(potentialCrossSell))

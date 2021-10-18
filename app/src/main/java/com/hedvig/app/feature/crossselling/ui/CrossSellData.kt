@@ -6,7 +6,7 @@ import com.hedvig.app.feature.perils.Peril
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class CrossSell(
+data class CrossSellData(
     val title: String,
     val description: String,
     val callToAction: String,
@@ -57,7 +57,7 @@ data class CrossSell(
     }
 
     companion object {
-        fun from(data: InsuranceQuery.PotentialCrossSell) = CrossSell(
+        fun from(data: InsuranceQuery.PotentialCrossSell) = CrossSellData(
             title = data.title,
             description = data.description,
             callToAction = data.callToAction,
