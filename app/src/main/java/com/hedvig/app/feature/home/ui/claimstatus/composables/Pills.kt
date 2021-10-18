@@ -14,11 +14,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.app.feature.home.ui.claimstatus.data.PillData
 import com.hedvig.app.ui.compose.theme.HedvigTheme
+import com.hedvig.app.ui.compose.theme.LocalLanguage
 import com.hedvig.app.ui.compose.theme.hedvigContentColorFor
 import com.hedvig.app.util.compose.DarkAndLightColor
 import com.hedvig.app.util.compose.DisplayableText
@@ -75,9 +75,9 @@ private fun Pill(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            val currentLocale = Locale.current
+            val currentLanguage = LocalLanguage.current
             Text(
-                text.uppercase(java.util.Locale(currentLocale.language, currentLocale.region)),
+                text.uppercase(java.util.Locale.forLanguageTag(currentLanguage.toString())),
                 style = MaterialTheme.typography.caption,
                 maxLines = 1
             )
