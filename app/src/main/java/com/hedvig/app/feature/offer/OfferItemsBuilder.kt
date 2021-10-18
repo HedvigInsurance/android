@@ -66,7 +66,7 @@ object OfferItemsBuilder {
             return emptyList()
         }
         val documents = data[0].insuranceTerms.map {
-            DocumentItems.Document.from(it)
+            DocumentItems.Document.from(it.fragments.insuranceTermFragment)
         }
         return listOf(DocumentItems.Header(R.string.OFFER_DOCUMENTS_SECTION_TITLE)) + documents
     }

@@ -191,8 +191,11 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                         is OfferViewModel.Event.OpenQuoteDetails -> {
                             startActivity(
                                 QuoteDetailActivity.newInstance(
-                                    this@OfferActivity,
-                                    event.quoteDetailItems
+                                    context = this@OfferActivity,
+                                    title = event.quoteDetailItems.displayName,
+                                    perils = event.quoteDetailItems.perils,
+                                    insurableLimits = event.quoteDetailItems.insurableLimits,
+                                    documents = event.quoteDetailItems.documents,
                                 )
                             )
                         }

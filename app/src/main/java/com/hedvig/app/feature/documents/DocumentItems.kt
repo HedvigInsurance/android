@@ -4,7 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Parcelable
 import androidx.annotation.StringRes
-import com.hedvig.android.owldroid.graphql.OfferQuery
+import com.hedvig.android.owldroid.fragment.InsuranceTermFragment
 import kotlinx.parcelize.Parcelize
 
 sealed class DocumentItems {
@@ -31,10 +31,10 @@ sealed class DocumentItems {
         fun getSubTitle(context: Context) = subtitle ?: subTitleRes?.let(context::getString)
 
         companion object {
-            fun from(insuranceTerm: OfferQuery.InsuranceTerm) = Document(
-                title = insuranceTerm.fragments.insuranceTermFragment.displayName,
+            fun from(insuranceTerm: InsuranceTermFragment) = Document(
+                title = insuranceTerm.displayName,
                 subtitle = null,
-                uri = Uri.parse(insuranceTerm.fragments.insuranceTermFragment.url),
+                uri = Uri.parse(insuranceTerm.url),
                 type = Type.GENERAL_TERMS
             )
         }
