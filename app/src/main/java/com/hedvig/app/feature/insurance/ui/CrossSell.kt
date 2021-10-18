@@ -34,7 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.commit451.coiltransformations.CropTransformation
-import com.hedvig.app.feature.crossselling.ui.CrossSell
+import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.ui.compose.theme.hedvigBlack
 import com.hedvig.app.ui.compose.theme.hedvigBlack12percent
@@ -50,7 +50,7 @@ import com.hedvig.app.util.compose.rememberBlurHash
  */
 @Composable
 fun CrossSell(
-    data: CrossSell,
+    data: CrossSellData,
     onClick: (label: String?) -> Unit,
 ) {
     val placeholder by rememberBlurHash(data.backgroundBlurHash, 64, 32)
@@ -149,12 +149,12 @@ private object DarkRippleTheme : RippleTheme {
     )
 }
 
-private val previewData = CrossSell(
+private val previewData = CrossSellData(
     title = "Accident Insurance",
     description = "179 kr/mo.",
     callToAction = "Calculate price",
     typeOfContract = "SE_ACCIDENT",
-    action = CrossSell.Action.Chat,
+    action = CrossSellData.Action.Chat,
     backgroundUrl = "https://images.unsplash.com/photo-1628996796855-0b056a464e06",
     backgroundBlurHash = "LJC6\$2-:DiWB~WxuRkayMwNGo~of",
     displayName = "Accident Insurance",
@@ -165,16 +165,16 @@ private val previewData = CrossSell(
     perils = emptyList(),
     terms = emptyList(),
     highlights = listOf(
-        CrossSell.Highlight(
+        CrossSellData.Highlight(
             title = "Covers dental injuries",
             description = "Up to 100 000 SEK per damage.",
         ),
-        CrossSell.Highlight(
+        CrossSellData.Highlight(
             title = "Compensates permanent injuries",
             description = "A fixed amount up to 2 000 000 SEK is payed out in " +
                 "the event of a permanent injury.",
         ),
-        CrossSell.Highlight(
+        CrossSellData.Highlight(
             title = "Rehabilitation and therapy is covered",
             description = "After accidents and sudden events, such as the death of a close family member.",
         ),
