@@ -4,13 +4,12 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import androidx.core.app.ActivityCompat
-import androidx.core.app.ActivityOptionsCompat
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
-import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
-import com.hedvig.app.feature.embark.ui.EmbarkActivity
+import com.hedvig.app.feature.offer.quotedetail.QuoteDetailAction
+import com.hedvig.app.feature.offer.quotedetail.QuoteDetailActivity
+import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 
@@ -26,35 +25,29 @@ class CrossSellDetailActivity : BaseActivity() {
         setContent {
             HedvigTheme {
                 CrossSellDetailScreen(
-                    onCtaClick = {
-                        when (val action = crossSell.action) {
-                            CrossSellData.Action.Chat -> openChat(this)
-                            is CrossSellData.Action.Embark ->
-                                openEmbark(this, action.embarkStoryId, crossSell.title)
-                        }
-                    },
+                    onCtaClick = { handleAction(this, crossSell.action) },
                     onUpClick = { finish() },
+                    onCoverageClick = { openCoverage(crossSell) },
                     data = crossSell,
                 )
             }
         }
     }
 
-    private fun openChat(context: Context) {
-        val intent = ChatActivity.newInstance(context, true)
-        val options =
-            ActivityOptionsCompat.makeCustomAnimation(
-                context,
-                R.anim.chat_slide_up_in,
-                R.anim.stay_in_place
+    private fun openCoverage(crossSell: CrossSellData) {
+        val perils = crossSell.perils.map { PerilItem.Peril(it) }
+        startActivity(
+            QuoteDetailActivity.newInstance(
+                context = this,
+                title = getString(R.string.cross_sell_info_full_coverage_row),
+                perils = perils,
+                insurableLimits = crossSell.insurableLimits,
+                documents = crossSell.terms,
+                action = QuoteDetailAction(
+                    action = crossSell.action,
+                    label = crossSell.callToAction,
+                )
             )
-
-        ActivityCompat.startActivity(context, intent, options.toBundle())
-    }
-
-    private fun openEmbark(context: Context, embarkStoryId: String, title: String) {
-        context.startActivity(
-            EmbarkActivity.newInstance(context, embarkStoryId, title)
         )
     }
 
