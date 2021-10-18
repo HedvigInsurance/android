@@ -39,6 +39,7 @@ import com.hedvig.app.util.compose.rememberBlurHash
 fun CrossSellDetailScreen(
     onCtaClick: () -> Unit,
     onUpClick: () -> Unit,
+    onCoverageClick: () -> Unit,
     data: CrossSellData,
 ) {
     val placeholder by rememberBlurHash(
@@ -108,7 +109,7 @@ fun CrossSellDetailScreen(
             }
             Spacer(Modifier.height(16.dp))
             ClickableListItem(
-                onClick = { /*TODO*/ },
+                onClick = onCoverageClick,
                 icon = R.drawable.ic_insurance,
                 text = stringResource(R.string.cross_sell_info_full_coverage_row),
             )
@@ -149,6 +150,7 @@ fun CrossSellDetailScreenPreview() {
         CrossSellDetailScreen(
             onCtaClick = {},
             onUpClick = {},
+            onCoverageClick = {},
             data = CrossSellData(
                 title = "Accident Insurance",
                 description = "179 kr/mo.",
