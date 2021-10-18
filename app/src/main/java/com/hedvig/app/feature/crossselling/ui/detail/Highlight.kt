@@ -3,7 +3,9 @@ package com.hedvig.app.feature.crossselling.ui.detail
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -24,8 +26,8 @@ fun Highlight(
         Image(
             painter = painterResource(R.drawable.ic_checkmark),
             contentDescription = null,
-            modifier = Modifier.padding(end = 16.dp)
         )
+        Spacer(Modifier.width(16.dp))
         Column {
             Text(
                 text = title,
