@@ -72,7 +72,7 @@ fun CrossSellDetailScreen(
                     .fillMaxWidth(),
             )
             Column(Modifier.padding(horizontal = 16.dp)) {
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(24.dp))
                 Text(
                     text = data.title,
                     style = MaterialTheme.typography.h5,
