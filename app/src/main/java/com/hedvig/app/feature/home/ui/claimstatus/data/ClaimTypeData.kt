@@ -13,7 +13,8 @@ value class ClaimTypeData(val text: String) {
         fun fromHomeQueryClaim(homeQueryClaim: HomeQuery.Claim): ClaimTypeData {
             return ClaimTypeData(
                 when {
-                    // TODO get the type from backend? It exists in Hope already, but not on GraphQL 
+                    // TODO get the type from backend? It exists in Hope already, but not on GraphQL
+                    //  context: https://hedviginsurance.slack.com/archives/C01SCHY7W1W/p1634557500017900
                     // claimStatus.perilType != null -> claimStatus.perilType.toProperReadableString
                     homeQueryClaim.status == ClaimStatus.SUBMITTED -> {
                         stringResource(R.string.claim_type_new_insurance_case)
