@@ -12,7 +12,7 @@ sealed class DisplayableText private constructor() {
     @Composable
     abstract fun text(): String
 
-    class FromStringResource(
+    private class FromStringResource(
         @StringRes private val stringRes: Int,
     ) : DisplayableText() {
         @Composable
@@ -21,7 +21,7 @@ sealed class DisplayableText private constructor() {
         }
     }
 
-    class FromMonetaryAmount(
+    private class FromMonetaryAmount(
         private val monetaryAmount: MonetaryAmount,
     ) : DisplayableText() {
         @Composable
@@ -30,7 +30,7 @@ sealed class DisplayableText private constructor() {
         }
     }
 
-    class FromString(
+    private class FromString(
         private val string: String
     ) : DisplayableText() {
         @Composable
