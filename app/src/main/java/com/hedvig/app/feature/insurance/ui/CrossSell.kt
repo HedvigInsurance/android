@@ -81,8 +81,8 @@ fun CrossSell(
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
+                            Color(0x7F000000),
                             Color(0x00000000),
-                            Color(0xFF000000),
                         ),
                     )
                 )
