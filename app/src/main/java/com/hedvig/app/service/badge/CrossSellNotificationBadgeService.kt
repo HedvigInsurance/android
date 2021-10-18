@@ -25,7 +25,7 @@ class CrossSellNotificationBadgeService(
 
     suspend fun markCurrentCrossSellsAsSeen(badgeType: CrossSellBadgeType) {
         val associatedBadge = badgeType.associatedBadge
-        val potentialCrossSells = getCrossSellsUseCase.invoke().map(TypeOfContract::toString).toSet()
+        val potentialCrossSells = getCrossSellsUseCase.invoke().map(TypeOfContract::rawValue).toSet()
         val alreadySeenCrossSells = notificationBadgeService
             .getValue(associatedBadge)
             .first()
