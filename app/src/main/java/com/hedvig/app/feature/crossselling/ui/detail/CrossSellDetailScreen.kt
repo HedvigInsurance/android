@@ -127,7 +127,7 @@ fun CrossSellDetailScreen(
         ) {
             Icon(
                 imageVector = Icons.Filled.ArrowBack,
-                contentDescription = null, // Where do I find the right `contentDescription` for this button?
+                contentDescription = null,
                 tint = whiteHighEmphasis,
             )
         }
