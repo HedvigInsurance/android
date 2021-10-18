@@ -22,9 +22,10 @@ val LocalLanguage: ProvidableCompositionLocal<Language> = staticCompositionLocal
 @Composable
 fun HedvigTheme(content: @Composable () -> Unit) {
     val marketManager = getKoin().get<MarketManager>()
-    val language = Language.fromSettings(LocalContext.current, marketManager.market)
+    val market = marketManager.market
+    val language = Language.fromSettings(LocalContext.current, market)
     CompositionLocalProvider(
-        LocalMarket provides marketManager.market,
+        LocalMarket provides market,
         LocalLanguage provides language,
     ) {
         MdcTheme(setDefaultFontFamily = true, content = content)
