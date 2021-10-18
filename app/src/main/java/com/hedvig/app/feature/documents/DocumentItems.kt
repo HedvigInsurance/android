@@ -5,7 +5,6 @@ import android.net.Uri
 import android.os.Parcelable
 import androidx.annotation.StringRes
 import com.hedvig.android.owldroid.fragment.InsuranceTermFragment
-import com.hedvig.android.owldroid.graphql.OfferQuery
 import kotlinx.parcelize.Parcelize
 
 sealed class DocumentItems {
