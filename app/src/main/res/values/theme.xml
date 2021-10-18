@@ -3,8 +3,6 @@
 
     <style name="AppTheme" parent="Hedvig.Theme.V23" />
 
-    <style name="Dummy" parent="Widget.AppCompat.Toolbar.Button.Navigation"></style>
-
     <style name="Hedvig.Theme.V23" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorOnPrimary">@color/colorOnPrimary</item>
