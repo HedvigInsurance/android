@@ -10,9 +10,9 @@ import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.type.SignMethod
+import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.BASE_MARGIN_OCTUPLE
-import com.hedvig.app.BASE_MARGIN_SEPTUPLE
 import com.hedvig.app.BASE_MARGIN_TRIPLE
 import com.hedvig.app.R
 import com.hedvig.app.databinding.GenericErrorBinding
@@ -176,11 +176,12 @@ class OfferAdapter(
                     }
 
                     with(sign) {
-                        text = data.checkoutLabel.toString(this.context)
+                        text = data.checkoutLabel.toString(context)
                         icon = data.signMethod.checkoutIconRes()?.let {
                             context.compatDrawable(it)
                         }
                         setHapticClickListener {
+                            tracker.checkoutHeader(data.checkoutLabel.localizationKey(context))
                             onSign(data.signMethod)
                         }
                     }
@@ -251,7 +252,7 @@ class OfferAdapter(
             init {
                 binding.root.updateMargin(
                     start = BASE_MARGIN_DOUBLE,
-                    top = BASE_MARGIN_SEPTUPLE,
+                    top = BASE_MARGIN_DOUBLE,
                     end = BASE_MARGIN_DOUBLE,
                 )
             }
@@ -264,7 +265,7 @@ class OfferAdapter(
                 when (data) {
                     OfferModel.Subheading.Coverage -> {
                         setText(R.string.offer_screen_coverage_title)
-                        updateMargin(bottom = 0)
+                        updateMargin(bottom = BASE_MARGIN)
                     }
                     is OfferModel.Subheading.Switcher -> {
                         text = context.resources.getQuantityString(

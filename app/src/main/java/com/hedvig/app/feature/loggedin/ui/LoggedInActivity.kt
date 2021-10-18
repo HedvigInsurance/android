@@ -137,6 +137,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 animateGradient(selectedTab)
                 lastSelectedTab = selectedTab
                 loggedInViewModel.onTabVisited(selectedTab)
+                loggedInTracker.tabVisited(selectedTab)
                 true
             }
 

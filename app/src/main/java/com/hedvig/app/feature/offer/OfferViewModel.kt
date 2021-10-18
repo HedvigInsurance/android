@@ -119,7 +119,8 @@ class OfferViewModelImpl(
     private val refreshQuotesUseCase: RefreshQuotesUseCase,
     private val signQuotesUseCase: SignQuotesUseCase,
     shouldShowOnNextAppStart: Boolean,
-    private val getPostSignDependenciesUseCase: GetPostSignDependenciesUseCase
+    private val getPostSignDependenciesUseCase: GetPostSignDependenciesUseCase,
+    private val tracker: OfferTracker,
 ) : OfferViewModel() {
 
     private lateinit var quoteIds: List<String>
@@ -144,6 +145,7 @@ class OfferViewModelImpl(
                                 _events.tryEmit(Event.Error(response.message))
                             }
                             is OfferRepository.OfferResult.Success -> {
+                                trackView(response.data)
                                 val loginStatus = loginStatusService.getLoginStatus()
                                 _viewState.value = toViewState(response.data, loginStatus)
                             }
@@ -158,6 +160,16 @@ class OfferViewModelImpl(
                 _events.tryEmit(Event.Error(idsResult.message))
             }
         }
+    }
+
+    private var hasTrackedView = false
+    private fun trackView(data: OfferQuery.Data) {
+        if (hasTrackedView) {
+            return
+        }
+        hasTrackedView = true
+
+        tracker.viewOffer(data.quoteBundle.quotes.map { it.typeOfContract.rawValue })
     }
 
     override fun onOpenCheckout() {

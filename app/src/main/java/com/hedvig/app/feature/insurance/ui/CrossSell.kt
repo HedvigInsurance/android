@@ -50,7 +50,7 @@ import com.hedvig.app.util.compose.rememberBlurHash
 @Composable
 fun CrossSell(
     data: InsuranceModel.CrossSell,
-    onCtaClick: () -> Unit,
+    onClick: (label: String?) -> Unit,
 ) {
     val placeholder by rememberBlurHash(data.backgroundBlurHash, 64, 32)
     Card(
@@ -76,7 +76,7 @@ fun CrossSell(
             modifier = Modifier
                 .fillMaxSize()
                 .clickable(
-                    onClick = onCtaClick
+                    onClick = { onClick(null) }
                 ),
         )
         Box(
@@ -119,7 +119,7 @@ fun CrossSell(
                     LocalRippleTheme provides DarkRippleTheme,
                 ) {
                     Button(
-                        onClick = onCtaClick,
+                        onClick = { onClick(data.callToAction) },
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = whiteHighEmphasis,
                             contentColor = hedvigBlack,
@@ -152,6 +152,7 @@ private val previewData = InsuranceModel.CrossSell(
     title = "Accident Insurance",
     description = "179 kr/mo.",
     callToAction = "Calculate price",
+    typeOfContract = "SE_ACCIDENT",
     action = InsuranceModel.CrossSell.Action.Chat,
     backgroundUrl = "https://images.unsplash.com/photo-1628996796855-0b056a464e06",
     backgroundBlurHash = "LJC6\$2-:DiWB~WxuRkayMwNGo~of",
@@ -167,7 +168,7 @@ fun CrossSellPreview() {
     HedvigTheme {
         CrossSell(
             data = previewData,
-            onCtaClick = {}
+            onClick = {}
         )
     }
 }

@@ -16,6 +16,11 @@ apollo {
             "JSONString" to "org.json.JSONObject"
         )
     )
+    sealedClassesForEnumsMatching.set(
+        listOf(
+            "TypeOfContract",
+        )
+    )
 }
 
 android {

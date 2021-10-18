@@ -292,7 +292,7 @@ val View.centerX: Int
 val View.centerY: Int
     get() = (y + height / 2).toInt()
 
-fun View.hapticClicks(): Flow<Unit> = callbackFlow {
+fun View.hapticClicks(): Flow<Unit> = callbackFlow<Unit> {
     setOnClickListener {
         performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
         runCatching { trySend(Unit) }.getOrDefault(false)

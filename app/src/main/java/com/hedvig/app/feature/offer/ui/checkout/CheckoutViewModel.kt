@@ -141,12 +141,12 @@ class CheckoutViewModel(
                 ssn = identityNumberInput,
                 email = emailInput
             )
-            when (result) {
-                is SignQuotesUseCase.SignQuoteResult.Error -> _events.tryEmit(Event.Error(result.message))
-                SignQuotesUseCase.SignQuoteResult.Success -> {
-                    _events.tryEmit(Event.CheckoutSuccess)
-                }
+            val event = when (result) {
+                is SignQuotesUseCase.SignQuoteResult.Error -> Event.Error(result.message)
+                SignQuotesUseCase.SignQuoteResult.Success -> Event.CheckoutSuccess
+                else -> Event.Error()
             }
+            _events.tryEmit(event)
         }
     }
 

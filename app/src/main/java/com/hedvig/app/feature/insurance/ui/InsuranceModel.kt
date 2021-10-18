@@ -20,6 +20,7 @@ sealed class InsuranceModel {
         val action: Action,
         val backgroundUrl: String,
         val backgroundBlurHash: String,
+        val typeOfContract: String
     ) : InsuranceModel() {
         sealed class Action {
             data class Embark(val embarkStoryId: String) : Action()
