@@ -5,15 +5,12 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
@@ -25,7 +22,6 @@ import androidx.compose.material.ripple.RippleTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -60,7 +56,10 @@ fun CrossSell(
                 horizontal = 16.dp,
                 vertical = 8.dp,
             )
-            .height(200.dp),
+            .height(200.dp)
+            .clickable(
+                onClick = { onClick(null) }
+            )
     ) {
         Image(
             painter = rememberImagePainter(
@@ -73,15 +72,12 @@ fun CrossSell(
             ),
             contentDescription = null,
             contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
+        Column(
+            verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxSize()
-                .clickable(
-                    onClick = { onClick(null) }
-                ),
-        )
-        Box(
-            contentAlignment = Alignment.BottomCenter,
-            modifier = Modifier
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
@@ -92,43 +88,33 @@ fun CrossSell(
                 )
                 .padding(16.dp),
         ) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Bottom,
-                modifier = Modifier.fillMaxWidth(),
+            Column {
+                Text(
+                    text = data.title,
+                    style = MaterialTheme.typography.subtitle1,
+                    color = whiteHighEmphasis,
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = data.description,
+                    style = MaterialTheme.typography.subtitle2,
+                    color = whiteHighEmphasis,
+                )
+            }
+            CompositionLocalProvider(
+                LocalRippleTheme provides DarkRippleTheme,
             ) {
-                Column(
-                    modifier = Modifier
-                        .weight(1f, fill = false)
-                        .padding(bottom = 4.dp)
+                Button(
+                    onClick = { onClick(data.callToAction) },
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = whiteHighEmphasis,
+                        contentColor = hedvigBlack,
+                    ),
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = data.title,
-                        style = MaterialTheme.typography.subtitle1,
-                        color = whiteHighEmphasis,
+                        text = data.callToAction,
                     )
-                    Text(
-                        text = data.description,
-                        style = MaterialTheme.typography.subtitle2,
-                        color = whiteHighEmphasis,
-                        modifier = Modifier.padding(top = 4.dp),
-                    )
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                CompositionLocalProvider(
-                    LocalRippleTheme provides DarkRippleTheme,
-                ) {
-                    Button(
-                        onClick = { onClick(data.callToAction) },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = whiteHighEmphasis,
-                            contentColor = hedvigBlack,
-                        ),
-                    ) {
-                        Text(
-                            text = data.callToAction,
-                        )
-                    }
                 }
             }
         }
