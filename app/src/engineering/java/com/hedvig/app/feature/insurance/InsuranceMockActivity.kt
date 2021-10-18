@@ -246,11 +246,20 @@ class InsuranceMockActivity : MockActivity() {
         clickableItem("Cross-Sell") {
             MockInsuranceViewModel.apply {
                 insuranceMockData = INSURANCE_DATA_WITH_CROSS_SELL
+                showCrossSellBadge = false
                 shouldError = false
             }
             startActivity(LoggedInActivity.newInstance(context, initialTab = LoggedInTabs.INSURANCE))
         }
-        clickableItem("Reset cross-sell tab notification") {
+        clickableItem("Cross-Sell with card badge notification") {
+            MockInsuranceViewModel.apply {
+                insuranceMockData = INSURANCE_DATA_WITH_CROSS_SELL
+                showCrossSellBadge = true
+                shouldError = false
+            }
+            startActivity(LoggedInActivity.newInstance(context, initialTab = LoggedInTabs.INSURANCE))
+        }
+        clickableItem("Reset cross-sell tab and card notification") {
             lifecycleScope.launch {
                 notificationBadgeService.setValue(
                     NotificationBadge.BottomNav.CrossSellOnInsuranceFragment,
