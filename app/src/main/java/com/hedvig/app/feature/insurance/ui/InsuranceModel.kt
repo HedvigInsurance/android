@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.insurance.ui
 
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
-import com.hedvig.app.feature.crossselling.ui.CrossSell
+import com.hedvig.app.feature.crossselling.ui.CrossSellData
 
 sealed class InsuranceModel {
     object Header : InsuranceModel()
@@ -15,7 +15,7 @@ sealed class InsuranceModel {
     ) : InsuranceModel()
 
     data class CrossSellCard(
-        val inner: CrossSell
+        val inner: CrossSellData
     ) : InsuranceModel()
 
     object Error : InsuranceModel()
