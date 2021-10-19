@@ -4,7 +4,6 @@ import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.type.ClaimOutcome
 import com.hedvig.android.owldroid.type.ClaimStatus
 import com.hedvig.app.R
-import com.hedvig.app.ui.compose.theme.ClaimStatusColors
 import com.hedvig.app.util.compose.ContentAlpha
 import com.hedvig.app.util.compose.DarkAndLightColor
 import com.hedvig.app.util.compose.DisplayableText

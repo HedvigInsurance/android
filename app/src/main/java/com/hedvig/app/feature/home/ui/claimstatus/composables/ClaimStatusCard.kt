@@ -12,9 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimProgressData
+import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusColors
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusData
 import com.hedvig.app.feature.home.ui.claimstatus.data.PillData
-import com.hedvig.app.ui.compose.theme.ClaimStatusColors
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.compose.DisplayableText
 import java.util.UUID
