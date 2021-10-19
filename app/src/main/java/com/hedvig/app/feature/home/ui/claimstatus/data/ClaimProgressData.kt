@@ -98,7 +98,11 @@ data class ClaimProgressData(
                     ClaimProgressType.Reopened,
                     ClaimProgressType.FutureInactive,
                 )
-                ClaimStatus.UNKNOWN__ -> throw IllegalArgumentException()
+                else -> Triple(
+                    ClaimProgressType.CurrentlyActive,
+                    ClaimProgressType.CurrentlyActive,
+                    ClaimProgressType.CurrentlyActive,
+                )
             }
         }
     }

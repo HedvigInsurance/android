@@ -66,7 +66,12 @@ data class PillData(
                                 PillType.Contained(DarkAndLightColor.primary())
                             )
                         )
-                        else -> throw IllegalArgumentException()
+                        else -> listOf(
+                            PillData(
+                                DisplayableText(R.string.home_claim_card_pill_claim),
+                                PillType.Outlined,
+                            )
+                        )
                     }
                 }
                 ClaimStatus.REOPENED -> listOf(
@@ -79,7 +84,12 @@ data class PillData(
                         PillType.Outlined
                     ),
                 )
-                ClaimStatus.UNKNOWN__ -> throw IllegalArgumentException()
+                else -> listOf(
+                    PillData(
+                        DisplayableText(R.string.home_claim_card_pill_claim),
+                        PillType.Outlined,
+                    ),
+                )
             }
         }
     }
