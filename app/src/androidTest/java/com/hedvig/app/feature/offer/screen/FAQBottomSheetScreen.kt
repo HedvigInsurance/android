@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.offer.screen
 
 import com.hedvig.app.R
-import com.hedvig.app.feature.offer.ui.faq.FAQBottomSheet
+import com.hedvig.app.feature.faq.FAQBottomSheet
 import com.kaspersky.kaspresso.screens.KScreen
 import io.github.kakaocup.kakao.text.KTextView
 

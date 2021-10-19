@@ -28,6 +28,7 @@ class CrossSellDetailActivity : BaseActivity() {
                     onCtaClick = { handleAction(this, crossSell.action) },
                     onUpClick = { finish() },
                     onCoverageClick = { openCoverage(crossSell) },
+                    onFaqClick = { openFaq(crossSell) },
                     data = crossSell,
                 )
             }
@@ -49,6 +50,10 @@ class CrossSellDetailActivity : BaseActivity() {
                 )
             )
         )
+    }
+
+    private fun openFaq(crossSell: CrossSellData) {
+        startActivity(CrossSellFaqActivity.newInstance(this, crossSell))
     }
 
     companion object {

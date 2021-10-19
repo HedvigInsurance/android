@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.offer.ui.faq
+package com.hedvig.app.feature.faq
 
 import android.os.Bundle
 import android.view.LayoutInflater

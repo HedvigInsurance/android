@@ -306,6 +306,7 @@
 
         <activity android:name=".feature.embark.passages.previousinsurer.askforprice.AskForPriceInfoActivity" />
         <activity android:name=".feature.crossselling.ui.detail.CrossSellDetailActivity" />
+        <activity android:name=".feature.crossselling.ui.detail.CrossSellFaqActivity" />
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"

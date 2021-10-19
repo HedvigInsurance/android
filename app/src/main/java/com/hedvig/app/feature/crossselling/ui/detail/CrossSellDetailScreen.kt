@@ -40,6 +40,7 @@ fun CrossSellDetailScreen(
     onCtaClick: () -> Unit,
     onUpClick: () -> Unit,
     onCoverageClick: () -> Unit,
+    onFaqClick: () -> Unit,
     data: CrossSellData,
 ) {
     val placeholder by rememberBlurHash(
@@ -114,7 +115,7 @@ fun CrossSellDetailScreen(
                 text = stringResource(R.string.cross_sell_info_full_coverage_row),
             )
             ClickableListItem(
-                onClick = { /*TODO*/ },
+                onClick = onFaqClick,
                 icon = R.drawable.ic_info_toolbar,
                 text = stringResource(R.string.cross_sell_info_common_questions_row),
             )
@@ -151,6 +152,7 @@ fun CrossSellDetailScreenPreview() {
             onCtaClick = {},
             onUpClick = {},
             onCoverageClick = {},
+            onFaqClick = {},
             data = CrossSellData(
                 title = "Accident Insurance",
                 description = "179 kr/mo.",

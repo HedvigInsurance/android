@@ -6,7 +6,7 @@ import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.R
 import com.hedvig.app.feature.embark.masking.ISO_8601_DATE
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
-import com.hedvig.app.feature.offer.ui.faq.FAQItem
+import com.hedvig.app.feature.faq.FAQItem
 import com.hedvig.app.feature.table.Table
 import com.hedvig.app.util.extensions.isToday
 import java.time.LocalDate
