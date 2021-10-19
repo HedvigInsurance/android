@@ -38,7 +38,7 @@ sealed class HomeModel {
     }
 
     data class ClaimStatus(
-        val homeQueryClaims: List<ClaimStatusData>
+        val claimStatusDataList: List<ClaimStatusData>
     ) : HomeModel()
 
     object StartClaimOutlined : HomeModel()

@@ -155,7 +155,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     // TODO think about showing this in other states as well? Not just on isActive(...)
                     if (successData.claims.isNotEmpty()) {
                         add(
-                            HomeModel.ClaimStatus(successData.claims.map(ClaimStatusData.Companion::fromHomeQueryClaim))
+                            HomeModel.ClaimStatus(successData.claims.map(ClaimStatusData::fromHomeQueryClaim))
                         )
                     }
                     add(HomeModel.StartClaimContained)
