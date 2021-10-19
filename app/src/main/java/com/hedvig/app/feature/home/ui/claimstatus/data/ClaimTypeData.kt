@@ -5,8 +5,7 @@ import com.hedvig.android.owldroid.type.ClaimStatus
 import com.hedvig.app.R
 import com.hedvig.app.util.compose.DisplayableText
 
-@JvmInline
-value class ClaimTypeData(val displayableText: DisplayableText) {
+data class ClaimTypeData(val displayableText: DisplayableText) {
     companion object {
         fun fromHomeQueryClaim(homeQueryClaim: HomeQuery.Claim): ClaimTypeData {
             return ClaimTypeData(
