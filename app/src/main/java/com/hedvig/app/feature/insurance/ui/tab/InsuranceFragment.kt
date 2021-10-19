@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.flowWithLifecycle
-import androidx.recyclerview.widget.SimpleItemAnimator
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentInsuranceBinding
 import com.hedvig.app.feature.insurance.service.InsuranceTracker
@@ -13,6 +12,7 @@ import com.hedvig.app.feature.insurance.ui.InsuranceModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
 import com.hedvig.app.util.extensions.viewLifecycle
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
@@ -43,7 +43,7 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
                     lifecycleOwner = viewLifecycleOwner
                 )
             )
-            (itemAnimator as? SimpleItemAnimator)?.supportsChangeAnimations = false
+            itemAnimator = ViewHolderReusingDefaultItemAnimator()
             adapter = InsuranceAdapter(tracker, marketManager, insuranceViewModel::load)
         }
 
