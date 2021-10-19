@@ -48,7 +48,6 @@ sealed class DarkAndLightColor {
             @ColorRes light: Int
         ): DarkAndLightColor = FromResources(dark, light)
 
-        @JvmName("invokeFromColorRes")
         operator fun invoke(
             @ColorRes both: Int,
         ): DarkAndLightColor = invoke(both, both)
