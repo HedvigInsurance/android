@@ -32,9 +32,9 @@ sealed class DocumentItems {
 
         companion object {
             fun from(insuranceTerm: OfferQuery.InsuranceTerm) = Document(
-                title = insuranceTerm.displayName,
+                title = insuranceTerm.fragments.insuranceTermFragment.displayName,
                 subtitle = null,
-                uri = Uri.parse(insuranceTerm.url),
+                uri = Uri.parse(insuranceTerm.fragments.insuranceTermFragment.url),
                 type = Type.GENERAL_TERMS
             )
         }

@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.insurance.ui.tab
 
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
+import com.hedvig.app.feature.crossselling.ui.CrossSell
 import com.hedvig.app.feature.insurance.ui.InsuranceModel
 
 fun items(
@@ -40,20 +41,5 @@ private fun hasNotOnlyTerminatedContracts(contracts: List<InsuranceQuery.Contrac
 private fun amountOfTerminatedContracts(contracts: List<InsuranceQuery.Contract>) =
     contracts.filter { it.status.fragments.contractStatusFragment.asTerminatedStatus != null }.size
 
-private fun crossSell(potentialCrossSell: InsuranceQuery.PotentialCrossSell): InsuranceModel.CrossSell {
-    val embarkStoryId = potentialCrossSell.action.asCrossSellEmbark?.embarkStory?.name
-    val action = if (embarkStoryId != null) {
-        InsuranceModel.CrossSell.Action.Embark(embarkStoryId)
-    } else {
-        InsuranceModel.CrossSell.Action.Chat
-    }
-    return InsuranceModel.CrossSell(
-        title = potentialCrossSell.title,
-        description = potentialCrossSell.description,
-        callToAction = potentialCrossSell.callToAction,
-        typeOfContract = potentialCrossSell.contractType.rawValue,
-        action = action,
-        backgroundUrl = potentialCrossSell.imageUrl,
-        backgroundBlurHash = potentialCrossSell.blurHash,
-    )
-}
+private fun crossSell(potentialCrossSell: InsuranceQuery.PotentialCrossSell) =
+    InsuranceModel.CrossSellCard(CrossSell.from(potentialCrossSell))
