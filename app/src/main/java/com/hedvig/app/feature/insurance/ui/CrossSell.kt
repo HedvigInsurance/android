@@ -48,7 +48,8 @@ import com.hedvig.app.util.compose.rememberBlurHash
 @Composable
 fun CrossSell(
     data: CrossSellData,
-    onClick: (label: String?) -> Unit,
+    onCardClick: () -> Unit,
+    onCtaClick: (label: String) -> Unit,
 ) {
     val placeholder by rememberBlurHash(data.backgroundBlurHash, 64, 32)
     Card(
@@ -60,7 +61,7 @@ fun CrossSell(
             )
             .height(200.dp)
             .clickable(
-                onClick = { onClick(null) }
+                onClick = onCardClick,
             )
     ) {
         Image(
@@ -107,7 +108,7 @@ fun CrossSell(
                 LocalRippleTheme provides DarkRippleTheme,
             ) {
                 Button(
-                    onClick = { onClick(data.callToAction) },
+                    onClick = { onCtaClick(data.callToAction) },
                     shape = RoundedCornerShape(6.dp),
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = whiteHighEmphasis,
@@ -181,7 +182,8 @@ fun CrossSellPreview() {
     HedvigTheme {
         CrossSell(
             data = previewData,
-            onClick = {}
+            onCardClick = {},
+            onCtaClick = {},
         )
     }
 }

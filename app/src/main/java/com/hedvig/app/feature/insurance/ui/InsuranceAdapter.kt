@@ -19,6 +19,7 @@ import com.hedvig.app.databinding.GenericErrorBinding
 import com.hedvig.app.databinding.InsuranceContractCardBinding
 import com.hedvig.app.databinding.InsuranceTerminatedContractsBinding
 import com.hedvig.app.feature.crossselling.ui.detail.CrossSellDetailActivity
+import com.hedvig.app.feature.crossselling.ui.detail.handleAction
 import com.hedvig.app.feature.insurance.service.InsuranceTracker
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
 import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsActivity
@@ -99,16 +100,16 @@ class InsuranceAdapter(
                     HedvigTheme {
                         CrossSell(
                             data = data.inner,
-                            onClick = { label ->
-                                if (label != null) {
-                                    tracker.crossSellCta(
-                                        typeOfContract = data.inner.typeOfContract,
-                                        label = label,
-                                    )
-                                } else {
-                                    tracker.crossSellCard(data.inner.typeOfContract)
-                                }
+                            onCardClick = {
+                                tracker.crossSellCard(data.inner.typeOfContract)
                                 context.startActivity(CrossSellDetailActivity.newInstance(context, data.inner))
+                            },
+                            onCtaClick = { label ->
+                                tracker.crossSellCta(
+                                    typeOfContract = data.inner.typeOfContract,
+                                    label = label,
+                                )
+                                handleAction(context, data.inner.action)
                             }
                         )
                     }

@@ -3,20 +3,19 @@ package com.hedvig.app.feature.offer
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.documents.DocumentItems
+import com.hedvig.app.feature.faq.FAQItem
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.offer.ui.OfferModel
 import com.hedvig.app.feature.offer.ui.changestartdate.getStartDate
 import com.hedvig.app.feature.offer.ui.changestartdate.getStartDateLabel
 import com.hedvig.app.feature.offer.ui.changestartdate.toChangeDateBottomSheetData
 import com.hedvig.app.feature.offer.ui.checkoutLabel
-import com.hedvig.app.feature.offer.ui.faq.FAQItem
 import com.hedvig.app.feature.offer.ui.gradientType
 import com.hedvig.app.feature.offer.ui.grossMonthlyCost
 import com.hedvig.app.feature.offer.ui.netMonthlyCost
 import com.hedvig.app.feature.perils.Peril
 import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.feature.table.intoTable
-import com.hedvig.app.util.safeLet
 
 object OfferItemsBuilder {
     fun createTopOfferItems(data: OfferQuery.Data): List<OfferModel> = ArrayList<OfferModel>().apply {
@@ -89,11 +88,7 @@ object OfferItemsBuilder {
         if (bundle.frequentlyAskedQuestions.isNotEmpty() && bundle.appConfiguration.showFAQ) {
             add(
                 OfferModel.FAQ(
-                    bundle.frequentlyAskedQuestions.mapNotNull {
-                        safeLet(it.headline, it.body) { headline, body ->
-                            FAQItem(headline, body)
-                        }
-                    }
+                    bundle.frequentlyAskedQuestions.mapNotNull { FAQItem.from(it) }
                 )
             )
         }
