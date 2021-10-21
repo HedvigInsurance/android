@@ -4,7 +4,9 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.os.Build
+import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import coil.ImageLoader
 import coil.decode.GifDecoder
@@ -172,6 +174,8 @@ import com.hedvig.app.feature.zignsec.usecase.StartDanishAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.StartNorwegianAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthStatusUseCase
 import com.hedvig.app.service.FileService
+import com.hedvig.app.service.badge.CrossSellNotificationBadgeService
+import com.hedvig.app.service.badge.NotificationBadgeService
 import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.app.service.push.managers.PaymentNotificationManager
 import com.hedvig.app.terminated.TerminatedTracker
@@ -361,7 +365,7 @@ val whatsNewModule = module {
 }
 
 val insuranceModule = module {
-    viewModel<InsuranceViewModel> { InsuranceViewModelImpl(get()) }
+    viewModel<InsuranceViewModel> { InsuranceViewModelImpl(get(), get()) }
     viewModel<ContractDetailViewModel> { ContractDetailViewModelImpl(get(), get(), get(), get()) }
 }
 
@@ -453,7 +457,11 @@ val serviceModule = module {
     single { FileService(get()) }
     single<LoginStatusService> { SharedPreferencesLoginStatusService(get(), get(), get()) }
     single<AuthenticationTokenService> { SharedPreferencesAuthenticationTokenService(get()) }
-    single { TabNotificationService(get(), get()) }
+
+    single { TabNotificationService(get()) }
+    single { CrossSellNotificationBadgeService(get(), get()) }
+    single { NotificationBadgeService(get()) }
+
     single { DeviceInformationService(get()) }
 }
 
@@ -591,7 +599,9 @@ val chatEventModule = module {
 }
 
 val dataStoreModule = module {
-    single {
+
+    @Suppress("RemoveExplicitTypeArguments")
+    single<DataStore<Preferences>> {
         PreferenceDataStoreFactory.create(
             produceFile = {
                 get<Context>().preferencesDataStoreFile("hedvig_data_store_preferences")
