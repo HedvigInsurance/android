@@ -26,10 +26,10 @@ import com.hedvig.app.databinding.TextBody2Binding
 import com.hedvig.app.databinding.TextHeadline5Binding
 import com.hedvig.app.databinding.TextSubtitle1Binding
 import com.hedvig.app.databinding.WarningCardBinding
+import com.hedvig.app.feature.faq.FAQBottomSheet
 import com.hedvig.app.feature.offer.OfferRedeemCodeBottomSheet
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheet
-import com.hedvig.app.feature.faq.FAQBottomSheet
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.table.generateTable
 import com.hedvig.app.util.GenericDiffUtilItemCallback

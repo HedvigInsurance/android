@@ -3,13 +3,13 @@ package com.hedvig.app.feature.offer
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.documents.DocumentItems
+import com.hedvig.app.feature.faq.FAQItem
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.offer.ui.OfferModel
 import com.hedvig.app.feature.offer.ui.changestartdate.getStartDate
 import com.hedvig.app.feature.offer.ui.changestartdate.getStartDateLabel
 import com.hedvig.app.feature.offer.ui.changestartdate.toChangeDateBottomSheetData
 import com.hedvig.app.feature.offer.ui.checkoutLabel
-import com.hedvig.app.feature.faq.FAQItem
 import com.hedvig.app.feature.offer.ui.gradientType
 import com.hedvig.app.feature.offer.ui.grossMonthlyCost
 import com.hedvig.app.feature.offer.ui.netMonthlyCost
