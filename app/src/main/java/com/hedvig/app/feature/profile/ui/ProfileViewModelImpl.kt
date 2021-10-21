@@ -124,8 +124,8 @@ class ProfileViewModelImpl(
     override fun onLogout() {
         viewModelScope.launch {
             when (val result = logoutUseCase.logout()) {
-                is LogoutUseCase.LogoutResult.Error -> _events.tryEmit(Event.Error(result.message))
-                LogoutUseCase.LogoutResult.Success -> _events.tryEmit(Event.Logout)
+                is LogoutUseCase.LogoutResult.Error -> _events.trySend(Event.Error(result.message))
+                LogoutUseCase.LogoutResult.Success -> _events.trySend(Event.Logout)
             }
         }
     }
