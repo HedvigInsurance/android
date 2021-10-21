@@ -64,6 +64,11 @@ object Libs {
         }
     }
 
+    object Accompanist {
+        private const val version = "0.19.0"
+        const val insets = "com.google.accompanist:accompanist-insets:$version"
+    }
+
     const val materialComponents = "com.google.android.material:material:1.4.0"
     const val flexbox = "com.google.android.flexbox:flexbox:3.0.0"
     const val combineTuple = "com.github.Zhuinden:livedata-combinetuple-kt:1.2.1"

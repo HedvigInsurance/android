@@ -51,6 +51,20 @@ val INSURANCE_DATA_WITH_CROSS_SELL = InsuranceDataBuilder(
             ),
             blurHash = "LJC6\$2-:DiWB~WxuRkayMwNGo~of",
             imageUrl = "https://images.unsplash.com/photo-1628996796855-0b056a464e06",
+            info = InsuranceQuery.Info(
+                displayName = "Accident Insurance",
+                aboutSection = "If you or a family member is injured in an accident insurance, Hedvig is able to" +
+                    " compensate you for a hospital stay, rehabilitation, therapy and dental injuries. \n" +
+                    "\n" +
+                    "In case of a permanent injury that affect your your quality of life and ability " +
+                    "to work, an accident insurance can complement the support from " +
+                    "the social welfare system and your employer.",
+                contractPerils = emptyList(),
+                insuranceTerms = emptyList(),
+                highlights = emptyList(),
+                faq = emptyList(),
+                insurableLimits = emptyList(),
+            )
         )
     )
 ).build()

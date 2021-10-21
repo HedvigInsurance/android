@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.insurance.ui
 
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
+import com.hedvig.app.feature.crossselling.ui.CrossSellData
 
 sealed class InsuranceModel {
     object Header : InsuranceModel()
@@ -13,20 +14,9 @@ sealed class InsuranceModel {
         val showNotificationBadge: Boolean = false
     ) : InsuranceModel()
 
-    data class CrossSell(
-        val title: String,
-        val description: String,
-        val callToAction: String,
-        val action: Action,
-        val backgroundUrl: String,
-        val backgroundBlurHash: String,
-        val typeOfContract: String
-    ) : InsuranceModel() {
-        sealed class Action {
-            data class Embark(val embarkStoryId: String) : Action()
-            object Chat : Action()
-        }
-    }
+    data class CrossSellCard(
+        val inner: CrossSellData
+    ) : InsuranceModel()
 
     object Error : InsuranceModel()
 

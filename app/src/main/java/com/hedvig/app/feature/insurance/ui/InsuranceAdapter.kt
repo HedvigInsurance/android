@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.insurance.ui
 
-import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.runtime.getValue
@@ -10,7 +9,6 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
-import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -20,8 +18,8 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.GenericErrorBinding
 import com.hedvig.app.databinding.InsuranceContractCardBinding
 import com.hedvig.app.databinding.InsuranceTerminatedContractsBinding
-import com.hedvig.app.feature.chat.ui.ChatActivity
-import com.hedvig.app.feature.embark.ui.EmbarkActivity
+import com.hedvig.app.feature.crossselling.ui.detail.CrossSellDetailActivity
+import com.hedvig.app.feature.crossselling.ui.detail.handleAction
 import com.hedvig.app.feature.insurance.service.InsuranceTracker
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
 import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsActivity
@@ -55,7 +53,7 @@ class InsuranceAdapter(
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
         is InsuranceModel.Contract -> R.layout.insurance_contract_card
-        is InsuranceModel.CrossSell -> CROSS_SELL
+        is InsuranceModel.CrossSellCard -> CROSS_SELL
         is InsuranceModel.Header -> R.layout.insurance_header
         InsuranceModel.TerminatedContractsHeader -> SUBHEADING
         is InsuranceModel.CrossSellHeader -> NOTIFICATION_SUBHEADING
@@ -93,7 +91,7 @@ class InsuranceAdapter(
                 retry: () -> Unit,
                 marketManager: MarketManager
             ) {
-                if (data !is InsuranceModel.CrossSell) {
+                if (data !is InsuranceModel.CrossSellCard) {
                     return invalid(data)
                 }
 
@@ -101,43 +99,21 @@ class InsuranceAdapter(
                     val context = LocalContext.current
                     HedvigTheme {
                         CrossSell(
-                            data = data,
-                            onClick = { label ->
-                                if (label != null) {
-                                    tracker.crossSellCta(
-                                        typeOfContract = data.typeOfContract,
-                                        label = label,
-                                    )
-                                } else {
-                                    tracker.crossSellCard(data.typeOfContract)
-                                }
-                                when (val action = data.action) {
-                                    InsuranceModel.CrossSell.Action.Chat -> openChat(context)
-                                    is InsuranceModel.CrossSell.Action.Embark ->
-                                        openEmbark(context, action.embarkStoryId, data.title)
-                                }
+                            data = data.inner,
+                            onCardClick = {
+                                tracker.crossSellCard(data.inner.typeOfContract)
+                                context.startActivity(CrossSellDetailActivity.newInstance(context, data.inner))
+                            },
+                            onCtaClick = { label ->
+                                tracker.crossSellCta(
+                                    typeOfContract = data.inner.typeOfContract,
+                                    label = label,
+                                )
+                                handleAction(context, data.inner.action)
                             }
                         )
                     }
                 }
-            }
-
-            private fun openChat(context: Context) {
-                val intent = ChatActivity.newInstance(context, true)
-                val options =
-                    ActivityOptionsCompat.makeCustomAnimation(
-                        context,
-                        R.anim.chat_slide_up_in,
-                        R.anim.stay_in_place
-                    )
-
-                ActivityCompat.startActivity(context, intent, options.toBundle())
-            }
-
-            private fun openEmbark(context: Context, embarkStoryId: String, title: String) {
-                context.startActivity(
-                    EmbarkActivity.newInstance(context, embarkStoryId, title)
-                )
             }
         }
 
