@@ -24,5 +24,6 @@ data class TextActionSetBuilder(
         asEmbarkNumberActionSet = null,
         asEmbarkDatePickerAction = null,
         asEmbarkMultiAction = null,
+        asEmbarkAudioRecorderAction = null,
     )
 }

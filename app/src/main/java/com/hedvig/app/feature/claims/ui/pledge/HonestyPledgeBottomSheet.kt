@@ -8,17 +8,14 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.BottomSheetHonestyPledgeBinding
 import com.hedvig.app.feature.claims.service.ClaimsTracker
-import com.hedvig.app.feature.claims.ui.ClaimsViewModel
-import com.hedvig.app.util.extensions.startClosableChat
+import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class HonestyPledgeBottomSheet : BottomSheetDialogFragment() {
     private val tracker: ClaimsTracker by inject()
-    private val claimsViewModel: ClaimsViewModel by sharedViewModel()
     private val binding by viewBinding(BottomSheetHonestyPledgeBinding::bind)
 
     override fun onCreateView(
@@ -31,9 +28,9 @@ class HonestyPledgeBottomSheet : BottomSheetDialogFragment() {
         binding.bottomSheetHonestyPledgeButton.setHapticClickListener {
             tracker.pledgeHonesty()
             viewLifecycleScope.launchWhenStarted {
-                claimsViewModel.triggerClaimsChat()
+                // TODO string resources
+                startActivity(EmbarkActivity.newInstance(requireContext(), "claims", "Submit claim"))
                 dismiss()
-                requireActivity().startClosableChat()
             }
         }
     }

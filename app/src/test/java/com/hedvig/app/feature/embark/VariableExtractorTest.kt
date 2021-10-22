@@ -33,6 +33,15 @@ class VariableExtractorTest {
         assertThat(secondExtraBuilding.getInt("area")).isEqualTo(5)
     }
 
+    @Test
+    fun `should extract file variables`() {
+        val variables = createTestVariables()
+        val valueStore = createTestValueStore()
+        val fileVariables = VariableExtractor.extractFileVariable(variables, valueStore)
+        val fileVariable = fileVariables.find { it.key == "audioRecording" }
+        assertThat(fileVariable?.path).isEqualTo("path-to-file")
+    }
+
     private fun createTestValueStore(): ValueStore {
         val valueStore = ValueStoreImpl()
 
@@ -56,6 +65,7 @@ class VariableExtractorTest {
         valueStore.put("streetAddress", "Est")
         valueStore.put("movingDate", "13-06-2021")
         valueStore.put("homeType", "house")
+        valueStore.put("audioRecording", "path-to-file")
 
         valueStore.put("extraBuildings[0]type", "Carport")
         valueStore.put("extraBuildings[0]area", "13")
@@ -256,6 +266,17 @@ class VariableExtractorTest {
                         )
                     )
                 )
+            ),
+            GraphQLVariablesFragment(
+                __typename = "EmbarkAPIGraphQLSingleVariable",
+                asEmbarkAPIGraphQLSingleVariable = GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable(
+                    __typename = "EmbarkAPIGraphQLSingleVariable",
+                    key = "audioRecording",
+                    from = "audioRecording",
+                    as_ = EmbarkAPIGraphQLSingleVariableCasting.FILE
+                ),
+                asEmbarkAPIGraphQLGeneratedVariable = null,
+                asEmbarkAPIGraphQLMultiActionVariable = null
             )
         )
     }

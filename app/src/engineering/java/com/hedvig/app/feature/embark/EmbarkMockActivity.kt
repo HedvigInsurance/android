@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.embark
 
+import android.content.Intent
 import com.hedvig.app.MockActivity
 import com.hedvig.app.embarkModule
 import com.hedvig.app.feature.embark.passages.previousinsurer.askforprice.AskForPriceInfoActivity
@@ -64,6 +65,10 @@ class EmbarkMockActivity : MockActivity() {
     )
 
     override fun adapter() = genericDevelopmentAdapter {
+        header("Audio Recorder")
+        clickableItem("Open") {
+            startActivity(Intent(context, RecorderScaffoldActivity::class.java))
+        }
         header("Grouped Response")
         clickableItem("Regular items") {
             MockEmbarkViewModel.mockedData = STORY_WITH_GROUPED_RESPONSE

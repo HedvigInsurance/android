@@ -99,9 +99,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             if (isPending(successData.contracts)) {
                 adapter.submitList(
                     listOf(
-                        HomeModel.BigText.Pending(
-                            firstName
-                        ),
+                        HomeModel.BigText.Pending(firstName),
                         HomeModel.BodyText.Pending
                     )
                 )

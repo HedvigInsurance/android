@@ -5,6 +5,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalContext
+import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.android.material.composethemeadapter.MdcTheme
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.Market
@@ -28,6 +29,8 @@ fun HedvigTheme(content: @Composable () -> Unit) {
         LocalMarket provides market,
         LocalLanguage provides language,
     ) {
-        MdcTheme(setDefaultFontFamily = true, content = content)
-    }
+      ProvideWindowInsets {
+          MdcTheme(setDefaultFontFamily = true, content = content)
+      }
+   }
 }

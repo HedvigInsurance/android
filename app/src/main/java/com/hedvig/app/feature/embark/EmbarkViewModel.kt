@@ -52,7 +52,11 @@ abstract class EmbarkViewModel(
 
     abstract fun fetchStory(name: String)
 
-    abstract suspend fun callGraphQL(query: String, variables: JSONObject? = null): JSONObject?
+    abstract suspend fun callGraphQL(
+        query: String,
+        variables: JSONObject? = null,
+        files: List<FileVariable>
+    ): JSONObject?
 
     protected lateinit var storyData: EmbarkStoryQuery.Data
     private lateinit var loginStatus: LoginStatus
@@ -67,15 +71,7 @@ abstract class EmbarkViewModel(
             val firstPassage = story.passages.first { it.id == story.startPassage }
 
             totalSteps = getPassagesLeft(firstPassage)
-
-            val model = EmbarkModel(
-                passage = preProcessPassage(firstPassage),
-                navigationDirection = NavigationDirection.INITIAL,
-                progress = currentProgress(firstPassage),
-                isLoggedIn = loginStatus == LoginStatus.LOGGED_IN,
-                hasTooltips = firstPassage.tooltips.isNotEmpty()
-            )
-            _data.postValue(model)
+            navigateToPassage(firstPassage.name)
 
             firstPassage.tracks.forEach { track ->
                 tracker.track(track.eventName, trackingData(track))
@@ -210,13 +206,18 @@ abstract class EmbarkViewModel(
 
     private fun handleGraphQLQuery(graphQLQuery: ApiFragment.AsEmbarkApiGraphQLQuery) {
         viewModelScope.launch {
-            val variables = if (graphQLQuery.queryData.variables.isNotEmpty()) {
-                val variables = graphQLQuery.queryData.variables.map { it.fragments.graphQLVariablesFragment }
-                VariableExtractor.extractVariables(variables, valueStore)
-            } else {
-                null
-            }
-            val result = runCatching { callGraphQL(graphQLQuery.queryData.query, variables) }
+            val variables = graphQLQuery.queryData.variables
+                .takeIf { it.isNotEmpty() }
+                ?.map { it.fragments.graphQLVariablesFragment }
+                ?.let { VariableExtractor.extractVariables(it, valueStore) }
+
+            val fileVariables = graphQLQuery.queryData.variables
+                .takeIf { it.isNotEmpty() }
+                ?.map { it.fragments.graphQLVariablesFragment }
+                ?.let { VariableExtractor.extractFileVariable(it, valueStore) }
+                ?: emptyList()
+
+            val result = runCatching { callGraphQL(graphQLQuery.queryData.query, variables, fileVariables) }
 
             when {
                 result.isFailure -> navigateToPassage(graphQLQuery.getPassageNameFromError())
@@ -250,13 +251,18 @@ abstract class EmbarkViewModel(
 
     private fun handleGraphQLMutation(graphQLMutation: ApiFragment.AsEmbarkApiGraphQLMutation) {
         viewModelScope.launch {
-            val variables = if (graphQLMutation.mutationData.variables.isNotEmpty()) {
-                val variables = graphQLMutation.mutationData.variables.map { it.fragments.graphQLVariablesFragment }
-                VariableExtractor.extractVariables(variables, valueStore)
-            } else {
-                null
-            }
-            val result = runCatching { callGraphQL(graphQLMutation.mutationData.mutation, variables) }
+            val variables = graphQLMutation.mutationData.variables
+                .takeIf { it.isNotEmpty() }
+                ?.map { it.fragments.graphQLVariablesFragment }
+                ?.let { VariableExtractor.extractVariables(it, valueStore) }
+
+            val fileVariables = graphQLMutation.mutationData.variables
+                .takeIf { it.isNotEmpty() }
+                ?.map { it.fragments.graphQLVariablesFragment }
+                ?.let { VariableExtractor.extractFileVariable(it, valueStore) }
+                ?: emptyList()
+
+            val result = runCatching { callGraphQL(graphQLMutation.mutationData.mutation, variables, fileVariables) }
 
             val passageName = graphQLMutation.mutationData.errors
                 .first().fragments.graphQLErrorsFragment
@@ -582,8 +588,14 @@ class EmbarkViewModelImpl(
         }
     }
 
-    override suspend fun callGraphQL(query: String, variables: JSONObject?) =
-        withContext(Dispatchers.IO) {
-            embarkRepository.graphQLQuery(query, variables).body?.string()?.let { JSONObject(it) }
-        }
+    override suspend fun callGraphQL(
+        query: String,
+        variables: JSONObject?,
+        files: List<FileVariable>
+    ) = withContext(Dispatchers.IO) {
+        embarkRepository.graphQLQuery(query, variables, files)
+            .body
+            ?.string()
+            ?.let { JSONObject(it) }
+    }
 }
