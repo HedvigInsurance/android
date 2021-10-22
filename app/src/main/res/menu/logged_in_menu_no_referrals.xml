@@ -7,7 +7,7 @@
 
     <item
         android:id="@+id/insurance"
-        android:icon="@drawable/ic_insurance"
+        android:icon="@drawable/ic_insurance_bottom_navigation"
         android:title="@string/insurances_tab.title" />
 
     <item

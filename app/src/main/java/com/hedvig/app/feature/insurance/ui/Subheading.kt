@@ -11,7 +11,9 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 
 @Composable
-fun Subheading(text: String) {
+fun Subheading(
+    text: String,
+) {
     Text(
         text = text,
         style = MaterialTheme.typography.h6,

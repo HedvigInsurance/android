@@ -51,11 +51,11 @@ fun GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable.createSingleVariab
             }
         }
         EmbarkAPIGraphQLSingleVariableCasting.BOOLEAN -> storeValue.toBoolean()
-        // Unsupported generated types are ignored for now.
-        EmbarkAPIGraphQLSingleVariableCasting.UNKNOWN__ -> null
         // FILE is not handled here since we need to create a separate multipart request body for
         // uploading. See extractFileVariable in VariableExtractor.
         EmbarkAPIGraphQLSingleVariableCasting.FILE -> null
+        // Unsupported generated types are ignored for now.
+        EmbarkAPIGraphQLSingleVariableCasting.UNKNOWN__ -> null
         else -> null
     } ?: return null
     return Pair(key, value)

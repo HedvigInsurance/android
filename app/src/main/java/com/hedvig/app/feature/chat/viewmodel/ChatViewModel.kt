@@ -21,12 +21,11 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
@@ -54,11 +53,8 @@ class ChatViewModel(
     private var isSendingMessage = false
     private var loadRetries = 0L
 
-    private val _events = MutableSharedFlow<Event>(
-        extraBufferCapacity = 1,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST,
-    )
-    val events: SharedFlow<Event> = _events
+    private val _events = Channel<Event>(Channel.UNLIMITED)
+    val events = _events.receiveAsFlow()
 
     sealed class Event {
         object Restart : Event()
@@ -319,10 +315,10 @@ class ChatViewModel(
             val response = runCatching { userRepository.logout() }
             if (response.isFailure) {
                 response.exceptionOrNull()?.let { e { "$it Failed to log out" } }
-                _events.tryEmit(Event.Error)
+                _events.trySend(Event.Error)
             }
             apolloClient.subscriptionManager.reconnect()
-            _events.tryEmit(Event.Restart)
+            _events.trySend(Event.Restart)
         }
     }
 
