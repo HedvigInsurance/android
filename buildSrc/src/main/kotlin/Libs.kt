@@ -21,7 +21,7 @@ object Libs {
         const val recyclerView = "androidx.recyclerview:recyclerview:1.2.1"
         const val fragment = "androidx.fragment:fragment-ktx:1.3.6"
         const val browser = "androidx.browser:browser:1.3.0"
-        const val workManager = "androidx.work:work-runtime-ktx:2.6.0"
+        const val workManager = "androidx.work:work-runtime-ktx:2.7.0"
         const val startup = "androidx.startup:startup-runtime:1.1.0"
         const val activityCompose = "androidx.activity:activity-compose:1.3.1"
 
