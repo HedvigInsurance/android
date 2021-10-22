@@ -29,8 +29,8 @@ fun HedvigTheme(content: @Composable () -> Unit) {
         LocalMarket provides market,
         LocalLanguage provides language,
     ) {
-      ProvideWindowInsets {
-          MdcTheme(setDefaultFontFamily = true, content = content)
-      }
-   }
+        ProvideWindowInsets {
+            MdcTheme(setDefaultFontFamily = true, content = content)
+        }
+    }
 }
