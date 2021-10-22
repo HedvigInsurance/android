@@ -18,4 +18,4 @@ fun buildInsurableLimits(quote: OfferQuery.Quote) = quote
 
 fun buildDocuments(quote: OfferQuery.Quote) = quote
     .insuranceTerms
-    .map { DocumentItems.Document.from(it) }
+    .map { DocumentItems.Document.from(it.fragments.insuranceTermFragment) }

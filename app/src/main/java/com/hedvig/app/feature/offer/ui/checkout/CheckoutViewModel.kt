@@ -11,14 +11,13 @@ import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.ValidationResult
 import com.hedvig.app.util.validateEmail
 import com.hedvig.app.util.validateNationalIdentityNumber
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.money.MonetaryAmount
 
@@ -39,11 +38,11 @@ class CheckoutViewModel(
                     idsResult
                         .data
                         .onEach(::handleResponse)
-                        .catch { _events.tryEmit(Event.Error(it.message)) }
+                        .catch { _events.trySend(Event.Error(it.message)) }
                         .launchIn(this)
                 }
                 is GetQuotesUseCase.Result.Error -> {
-                    _events.tryEmit(Event.Error(idsResult.message))
+                    _events.trySend(Event.Error(idsResult.message))
                 }
             }
         }
@@ -52,7 +51,7 @@ class CheckoutViewModel(
     private fun handleResponse(response: OfferRepository.OfferResult) {
         when (response) {
             is OfferRepository.OfferResult.Error -> {
-                _events.tryEmit(Event.Error(response.message))
+                _events.trySend(Event.Error(response.message))
             }
             is OfferRepository.OfferResult.Success -> {
                 _titleViewState.value = TitleViewState.Loaded(
@@ -125,7 +124,7 @@ class CheckoutViewModel(
 
     fun onTrySign(emailInput: String, identityNumberInput: String) {
         if (inputViewState.value.canSign()) {
-            _events.tryEmit(Event.Loading)
+            _events.trySend(Event.Loading)
             signQuotes(
                 identityNumberInput = identityNumberInput,
                 emailInput = emailInput,
@@ -146,7 +145,7 @@ class CheckoutViewModel(
                 SignQuotesUseCase.SignQuoteResult.Success -> Event.CheckoutSuccess
                 else -> Event.Error()
             }
-            _events.tryEmit(event)
+            _events.trySend(event)
         }
     }
 
@@ -186,9 +185,6 @@ class CheckoutViewModel(
         object Loading : Event()
     }
 
-    private val _events = MutableSharedFlow<Event>(
-        extraBufferCapacity = 1,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST,
-    )
-    val events: SharedFlow<Event> = _events
+    private val _events = Channel<Event>(Channel.UNLIMITED)
+    val events = _events.receiveAsFlow()
 }

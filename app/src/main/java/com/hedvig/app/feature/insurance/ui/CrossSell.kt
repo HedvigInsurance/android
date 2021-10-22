@@ -5,15 +5,13 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
@@ -25,7 +23,6 @@ import androidx.compose.material.ripple.RippleTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -34,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.commit451.coiltransformations.CropTransformation
+import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.ui.compose.theme.hedvigBlack
 import com.hedvig.app.ui.compose.theme.hedvigBlack12percent
@@ -49,8 +47,9 @@ import com.hedvig.app.util.compose.rememberBlurHash
  */
 @Composable
 fun CrossSell(
-    data: InsuranceModel.CrossSell,
-    onClick: (label: String?) -> Unit,
+    data: CrossSellData,
+    onCardClick: () -> Unit,
+    onCtaClick: (label: String) -> Unit,
 ) {
     val placeholder by rememberBlurHash(data.backgroundBlurHash, 64, 32)
     Card(
@@ -60,7 +59,10 @@ fun CrossSell(
                 horizontal = 16.dp,
                 vertical = 8.dp,
             )
-            .height(200.dp),
+            .height(200.dp)
+            .clickable(
+                onClick = onCardClick,
+            )
     ) {
         Image(
             painter = rememberImagePainter(
@@ -73,62 +75,50 @@ fun CrossSell(
             ),
             contentDescription = null,
             contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
+        Column(
+            verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxSize()
-                .clickable(
-                    onClick = { onClick(null) }
-                ),
-        )
-        Box(
-            contentAlignment = Alignment.BottomCenter,
-            modifier = Modifier
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
+                            Color(0x7F000000),
                             Color(0x00000000),
-                            Color(0xFF000000),
                         ),
                     )
                 )
                 .padding(16.dp),
         ) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Bottom,
-                modifier = Modifier.fillMaxWidth(),
+            Column {
+                Text(
+                    text = data.title,
+                    style = MaterialTheme.typography.subtitle1,
+                    color = whiteHighEmphasis,
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = data.description,
+                    style = MaterialTheme.typography.subtitle2,
+                    color = whiteHighEmphasis,
+                )
+            }
+            CompositionLocalProvider(
+                LocalRippleTheme provides DarkRippleTheme,
             ) {
-                Column(
-                    modifier = Modifier
-                        .weight(1f, fill = false)
-                        .padding(bottom = 4.dp)
+                Button(
+                    onClick = { onCtaClick(data.callToAction) },
+                    shape = RoundedCornerShape(6.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = whiteHighEmphasis,
+                        contentColor = hedvigBlack,
+                    ),
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = data.title,
-                        style = MaterialTheme.typography.subtitle1,
-                        color = whiteHighEmphasis,
+                        text = data.callToAction,
                     )
-                    Text(
-                        text = data.description,
-                        style = MaterialTheme.typography.subtitle2,
-                        color = whiteHighEmphasis,
-                        modifier = Modifier.padding(top = 4.dp),
-                    )
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                CompositionLocalProvider(
-                    LocalRippleTheme provides DarkRippleTheme,
-                ) {
-                    Button(
-                        onClick = { onClick(data.callToAction) },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = whiteHighEmphasis,
-                            contentColor = hedvigBlack,
-                        ),
-                    ) {
-                        Text(
-                            text = data.callToAction,
-                        )
-                    }
                 }
             }
         }
@@ -148,14 +138,38 @@ private object DarkRippleTheme : RippleTheme {
     )
 }
 
-private val previewData = InsuranceModel.CrossSell(
+private val previewData = CrossSellData(
     title = "Accident Insurance",
     description = "179 kr/mo.",
     callToAction = "Calculate price",
     typeOfContract = "SE_ACCIDENT",
-    action = InsuranceModel.CrossSell.Action.Chat,
+    action = CrossSellData.Action.Chat,
     backgroundUrl = "https://images.unsplash.com/photo-1628996796855-0b056a464e06",
     backgroundBlurHash = "LJC6\$2-:DiWB~WxuRkayMwNGo~of",
+    displayName = "Accident Insurance",
+    about = "If you or a family member is injured in an accident insurance, Hedvig is able to compensate" +
+        " you for a hospital stay, rehabilitation, therapy and dental injuries. \n\n" +
+        "In case of a permanent injury that affect your your quality of life and ability to work, an " +
+        "accident insurance can complement the support from the social welfare system and your employer.",
+    perils = emptyList(),
+    terms = emptyList(),
+    highlights = listOf(
+        CrossSellData.Highlight(
+            title = "Covers dental injuries",
+            description = "Up to 100 000 SEK per damage.",
+        ),
+        CrossSellData.Highlight(
+            title = "Compensates permanent injuries",
+            description = "A fixed amount up to 2 000 000 SEK is payed out in " +
+                "the event of a permanent injury.",
+        ),
+        CrossSellData.Highlight(
+            title = "Rehabilitation and therapy is covered",
+            description = "After accidents and sudden events, such as the death of a close family member.",
+        ),
+    ),
+    faq = emptyList(),
+    insurableLimits = emptyList(),
 )
 
 @Preview(
@@ -168,7 +182,8 @@ fun CrossSellPreview() {
     HedvigTheme {
         CrossSell(
             data = previewData,
-            onClick = {}
+            onCardClick = {},
+            onCtaClick = {},
         )
     }
 }

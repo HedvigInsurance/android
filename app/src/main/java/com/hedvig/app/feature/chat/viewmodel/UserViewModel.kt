@@ -9,12 +9,11 @@ import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.feature.chat.data.UserRepository
 import e
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 class UserViewModel(
@@ -26,11 +25,8 @@ class UserViewModel(
     val autoStartToken = MutableLiveData<SwedishBankIdAuthMutation.Data>()
     val authStatus = MutableLiveData<AuthStatusSubscription.Data>()
 
-    private val _events = MutableSharedFlow<Event>(
-        extraBufferCapacity = 1,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST,
-    )
-    val events: SharedFlow<Event> = _events
+    private val _events = Channel<Event>(Channel.UNLIMITED)
+    val events = _events.receiveAsFlow()
 
     sealed class Event {
         object Logout : Event()
@@ -60,10 +56,10 @@ class UserViewModel(
         viewModelScope.launch {
             when (val result = logoutUserCase.logout()) {
                 is LogoutUseCase.LogoutResult.Error -> {
-                    _events.tryEmit(Event.Error(result.message))
+                    _events.trySend(Event.Error(result.message))
                 }
                 LogoutUseCase.LogoutResult.Success -> {
-                    _events.tryEmit(Event.Logout)
+                    _events.trySend(Event.Logout)
                 }
             }
         }

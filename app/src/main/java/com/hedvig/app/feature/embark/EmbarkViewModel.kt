@@ -20,9 +20,8 @@ import com.hedvig.app.util.plus
 import com.hedvig.app.util.safeLet
 import com.hedvig.app.util.toStringArray
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
@@ -37,11 +36,8 @@ abstract class EmbarkViewModel(
     private val _data = MutableLiveData<EmbarkModel>()
     val data: LiveData<EmbarkModel> = _data
 
-    protected val _events = MutableSharedFlow<Event>(
-        extraBufferCapacity = 1,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST,
-    )
-    val events: SharedFlow<Event> = _events
+    protected val _events = Channel<Event>(Channel.UNLIMITED)
+    val events = _events.receiveAsFlow()
 
     sealed class Event {
         data class Offer(val ids: List<String>) : Event()
@@ -129,7 +125,7 @@ abstract class EmbarkViewModel(
             }
             nextPassage?.offerRedirect?.data?.keys?.takeIf { it.isNotEmpty() }?.let { keys ->
                 val ids = getListFromStore(keys)
-                _events.tryEmit(Event.Offer(ids))
+                _events.trySend(Event.Offer(ids))
                 return
             }
             nextPassage?.externalRedirect?.data?.location?.let { location ->
@@ -137,18 +133,18 @@ abstract class EmbarkViewModel(
                     EmbarkExternalRedirectLocation.OFFER -> {
                         val id = getFromStore("quoteId")
                         if (id == null) {
-                            _events.tryEmit(Event.Error())
+                            _events.trySend(Event.Error())
                             return
                         }
-                        _events.tryEmit(Event.Offer(listOf(id)))
+                        _events.trySend(Event.Offer(listOf(id)))
                         return
                     }
                     EmbarkExternalRedirectLocation.CLOSE -> {
-                        _events.tryEmit(Event.Close)
+                        _events.trySend(Event.Close)
                         return
                     }
                     EmbarkExternalRedirectLocation.CHAT -> {
-                        _events.tryEmit(Event.Chat)
+                        _events.trySend(Event.Chat)
                         return
                     }
                     else -> {
@@ -572,7 +568,7 @@ class EmbarkViewModelImpl(
                 embarkRepository.embarkStory(name)
             }
             if (result.isFailure) {
-                _events.tryEmit(
+                _events.trySend(
                     Event.Error(
                         result.getOrNull()?.errors?.toString()
                             ?: result.exceptionOrNull()?.message

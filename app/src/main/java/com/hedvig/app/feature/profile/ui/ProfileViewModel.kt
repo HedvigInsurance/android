@@ -5,11 +5,10 @@ import androidx.lifecycle.ViewModel
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.app.util.LiveEvent
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 
 abstract class ProfileViewModel : ViewModel() {
     sealed class ViewState {
@@ -32,11 +31,8 @@ abstract class ProfileViewModel : ViewModel() {
     abstract fun updateReferralsInformation(data: RedeemReferralCodeMutation.Data)
     abstract fun onLogout()
 
-    protected val _events = MutableSharedFlow<Event>(
-        extraBufferCapacity = 1,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST,
-    )
-    val events: SharedFlow<Event> = _events
+    protected val _events = Channel<Event>(Channel.UNLIMITED)
+    val events = _events.receiveAsFlow()
 
     sealed class Event {
         object Logout : Event()
