@@ -7,14 +7,8 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import com.hedvig.app.R
 import com.hedvig.app.service.push.setupNotificationChannel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 
 class TrackingShortcutService : Service() {
-
-    private val coroutineJob = Job()
-    private val coroutineScope = CoroutineScope(Dispatchers.IO + coroutineJob)
 
     override fun onBind(intent: Intent?): Nothing? = null
 
@@ -50,11 +44,6 @@ class TrackingShortcutService : Service() {
 
     private fun removeNotification() {
         stopForeground(true)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        coroutineJob.cancel()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
