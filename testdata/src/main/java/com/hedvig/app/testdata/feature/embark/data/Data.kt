@@ -83,9 +83,6 @@ val STANDARD_FIRST_PASSAGE_BUILDER =
                 ).build(),
                 SelectOptionBuilder(
                     link = STANDARD_FIRST_LINK
-                ).build(),
-                SelectOptionBuilder(
-                    link = STANDARD_SECOND_LINK
                 ).build()
             )
         ).build()

@@ -20,8 +20,9 @@ class SelectActionAdapter(
         holder.bind(getItem(position), bindClicks)
     }
 
-    class ViewHolder(parent: ViewGroup) :
-        RecyclerView.ViewHolder(parent.inflate(R.layout.embark_select_action_item)) {
+    class ViewHolder(
+        parent: ViewGroup
+    ) : RecyclerView.ViewHolder(parent.inflate(R.layout.embark_select_action_item)) {
         private val binding by viewBinding(EmbarkSelectActionItemBinding::bind)
         fun bind(
             item: SelectActionParameter.SelectAction,

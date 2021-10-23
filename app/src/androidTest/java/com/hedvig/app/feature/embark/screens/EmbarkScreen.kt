@@ -19,7 +19,7 @@ class EmbarkScreen : Screen<EmbarkScreen>() {
 
     val response = KTextView { withId(R.id.response) }
 
-    val selectActions = KRecyclerView({ withId(R.id.actions) }, { itemType(::SelectAction) })
+    val selectActions = KRecyclerView({ withId(R.id.actions_recycler_view) }, { itemType(::SelectAction) })
 
     val singleSelectAction = KButton { withId(R.id.singleActionButton) }
 

@@ -39,7 +39,7 @@
         tools:text="Continue to offer" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/actions"
+        android:id="@+id/actions_recycler_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/base_margin"

@@ -15,6 +15,7 @@ import com.hedvig.app.feature.embark.Response
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.animateResponse
 import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_MILLIS
+import com.hedvig.app.util.CenteredLastItemTwoLineGridLayoutManager
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
 import com.hedvig.app.util.extensions.viewLifecycleScope
@@ -43,9 +44,9 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
 
         binding.apply {
             whenApiVersion(Build.VERSION_CODES.R) {
-                actions.setupInsetsForIme(
+                actionsRecyclerView.setupInsetsForIme(
                     root = root,
-                    actions,
+                    actionsRecyclerView,
                 )
             }
 
@@ -77,18 +78,18 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
     }
 
     private fun FragmentEmbarkSelectActionBinding.bindAdapter(data: SelectActionParameter) {
-        with(actions) {
+        with(actionsRecyclerView) {
             isVisible = true
-            adapter = SelectActionAdapter { selectAction: SelectActionParameter.SelectAction,
-                view: View,
-                position: Int ->
-                view.hapticClicks()
-                    .mapLatest { onActionSelected(selectAction, data, responseContainer) }
-                    .onEach { model.submitAction(selectAction.link, position) }
-                    .launchIn(viewLifecycleScope)
-            }.apply {
-                submitList(data.actions)
-            }
+            layoutManager = CenteredLastItemTwoLineGridLayoutManager(context)
+            adapter =
+                SelectActionAdapter { selectAction: SelectActionParameter.SelectAction, view: View, position: Int ->
+                    view.hapticClicks()
+                        .mapLatest { onActionSelected(selectAction, data, responseContainer) }
+                        .onEach { model.submitAction(selectAction.link, position) }
+                        .launchIn(viewLifecycleScope)
+                }.apply {
+                    submitList(data.actions)
+                }
             addItemDecoration(SelectActionDecoration())
         }
     }
