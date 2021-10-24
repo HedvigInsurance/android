@@ -1,3 +1,0 @@
-include ':testdata'
-include ':apollo'
-include ':app'

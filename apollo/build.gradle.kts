@@ -1,3 +1,4 @@
+
 plugins {
     id("com.android.library")
     id("kotlin-android")
@@ -24,7 +25,28 @@ apollo {
 }
 
 android {
-    commonConfig()
+    // region TODO Extract this to a LibraryExtension.commonConfig() again
+    compileSdk = libs.versions.compileSdkVersion.get().toInt()
+
+    defaultConfig {
+        minSdk = libs.versions.minSdkVersion.get().toInt()
+        targetSdk = libs.versions.targetSdkVersion.get().toInt()
+    }
+
+    compileOptions {
+        isCoreLibraryDesugaringEnabled = true
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    buildTypes {
+        maybeCreate("staging")
+
+        named("debug") {}
+        named("staging") {}
+        named("release") {}
+    }
+    // endregion
 
     buildFeatures {
         buildConfig = false
@@ -42,14 +64,14 @@ android {
 }
 
 dependencies {
-    implementation(Libs.kotlin)
-    coreLibraryDesugaring(Libs.coreLibraryDesugaring)
+    implementation(libs.kotlin.stdlib)
+    coreLibraryDesugaring(libs.coreLibraryDesugaring)
 
-    implementation(Libs.AndroidX.constraintLayout)
+    implementation(libs.androidx.other.constraintLayout)
 
-    api(Libs.Apollo.runtime)
-    api(Libs.Apollo.android)
-    api(Libs.Apollo.coroutines)
+    api(libs.apollo.runtime)
+    api(libs.apollo.android)
+    api(libs.apollo.coroutines)
 
-    implementation(Libs.adyen)
+    implementation(libs.adyen)
 }
