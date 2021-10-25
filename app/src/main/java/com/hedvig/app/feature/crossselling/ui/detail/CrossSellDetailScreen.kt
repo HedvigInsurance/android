@@ -20,11 +20,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
+import coil.size.Scale
 import com.commit451.coiltransformations.CropTransformation
 import com.google.accompanist.insets.LocalWindowInsets
 import com.hedvig.app.R
@@ -63,6 +65,7 @@ fun CrossSellDetailScreen(
                 painter = rememberImagePainter(
                     data = data.backgroundUrl,
                     builder = {
+                        scale(Scale.FILL)
                         transformations(CropTransformation())
                         placeholder(placeholder)
                         crossfade(true)
@@ -72,6 +75,7 @@ fun CrossSellDetailScreen(
                 modifier = Modifier
                     .height(260.dp)
                     .fillMaxWidth(),
+                contentScale = ContentScale.FillBounds,
             )
             Column(Modifier.padding(horizontal = 16.dp)) {
                 Spacer(Modifier.height(24.dp))
