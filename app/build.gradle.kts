@@ -39,6 +39,10 @@ android {
     }
     // endregion
 
+    composeOptions {
+        kotlinCompilerExtensionVersion = libs.versions.androidx.compose.get()
+    }
+
     defaultConfig {
         applicationId = "com.hedvig"
 
