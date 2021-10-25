@@ -100,7 +100,6 @@ fun CrossSellDetailScreen(
                     text = stringResource(R.string.cross_sell_info_learn_more_title),
                 )
             }
-            Spacer(Modifier.height(16.dp))
             ClickableListItem(
                 onClick = onCoverageClick,
                 icon = R.drawable.ic_insurance,
