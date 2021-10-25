@@ -80,14 +80,6 @@ fun CrossSellDetailScreen(
                     style = MaterialTheme.typography.h5,
                 )
                 Spacer(Modifier.height(16.dp))
-                Text(
-                    text = data.description,
-                    style = MaterialTheme.typography.body2,
-                )
-                SectionTitle(
-                    text = stringResource(R.string.cross_sell_info_highlights_title),
-                )
-                Spacer(Modifier.height(8.dp))
                 data.highlights.forEach { highlight ->
                     Highlight(
                         title = highlight.title,
