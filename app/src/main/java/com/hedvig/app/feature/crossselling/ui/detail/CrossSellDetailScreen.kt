@@ -1,8 +1,10 @@
 package com.hedvig.app.feature.crossselling.ui.detail
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,10 +15,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,17 +28,18 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import coil.size.Scale
 import com.commit451.coiltransformations.CropTransformation
 import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.systemBarsPadding
 import com.hedvig.app.R
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.ui.compose.composables.buttons.LargeContainedButton
 import com.hedvig.app.ui.compose.composables.list.SectionTitle
 import com.hedvig.app.ui.compose.theme.HedvigTheme
-import com.hedvig.app.ui.compose.theme.whiteHighEmphasis
 import com.hedvig.app.util.compose.rememberBlurHash
 
 @Composable
@@ -45,97 +50,149 @@ fun CrossSellDetailScreen(
     onFaqClick: () -> Unit,
     data: CrossSellData,
 ) {
-    val placeholder by rememberBlurHash(
-        data.backgroundBlurHash,
-        64,
-        32,
-    )
-    val insets = LocalWindowInsets.current
-    val systemBottom = with(LocalDensity.current) { insets.systemBars.bottom.toDp() }
-    val systemTop = with(LocalDensity.current) { insets.systemBars.top.toDp() }
+    val scrollState = rememberScrollState()
+    val scrollFromTopInDp = with(LocalDensity.current) {
+        scrollState.value.toDp()
+    }
+    val imageHeight = 260.dp
+    val topAppBarBackgroundColorAlpha by derivedStateOf {
+        val percentageOfImageScrolledPast = scrollFromTopInDp.coerceAtMost(imageHeight) / imageHeight
+        percentageOfImageScrolledPast
+    }
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
-        ) {
-            Image(
-                painter = rememberImagePainter(
-                    data = data.backgroundUrl,
-                    builder = {
-                        scale(Scale.FILL)
-                        transformations(CropTransformation())
-                        placeholder(placeholder)
-                        crossfade(true)
-                    },
-                ),
-                contentDescription = null,
-                modifier = Modifier
-                    .height(260.dp)
-                    .fillMaxWidth(),
-                contentScale = ContentScale.FillBounds,
-            )
-            Column(Modifier.padding(horizontal = 16.dp)) {
-                Spacer(Modifier.height(24.dp))
-                Text(
-                    text = data.title,
-                    style = MaterialTheme.typography.h5,
-                )
-                Spacer(Modifier.height(16.dp))
-                data.highlights.forEach { highlight ->
-                    Highlight(
-                        title = highlight.title,
-                        description = highlight.description,
-                    )
-                    Spacer(Modifier.height(24.dp))
-                }
-                SectionTitle(
-                    text = stringResource(R.string.cross_sell_info_about_title),
-                )
-                Spacer(Modifier.height(8.dp))
-                Text(
-                    text = data.about,
-                    style = MaterialTheme.typography.body2,
-                )
-                Spacer(Modifier.height(24.dp))
-                SectionTitle(
-                    text = stringResource(R.string.cross_sell_info_learn_more_title),
-                )
-            }
-            ClickableListItem(
-                onClick = onCoverageClick,
-                icon = R.drawable.ic_insurance,
-                text = stringResource(R.string.cross_sell_info_full_coverage_row),
-            )
-            ClickableListItem(
-                onClick = onFaqClick,
-                icon = R.drawable.ic_info_toolbar,
-                text = stringResource(R.string.cross_sell_info_common_questions_row),
-            )
-            Spacer(Modifier.height(104.dp + systemBottom))
-        }
-        IconButton(
-            onClick = onUpClick,
+        ScrollableContent(
+            crossSellData = data,
+            onCoverageClick = onCoverageClick,
+            onFaqClick = onFaqClick,
+            imageHeight = imageHeight,
+            scrollState = scrollState,
+        )
+        FadingInTopAppBar(
+            topAppBarBackgroundColorAlpha = topAppBarBackgroundColorAlpha,
+            onUpClick = onUpClick,
             modifier = Modifier
                 .align(Alignment.TopStart)
-                .padding(top = systemTop)
-        ) {
-            Icon(
-                imageVector = Icons.Filled.ArrowBack,
-                contentDescription = null,
-                tint = whiteHighEmphasis,
-            )
-        }
+                .fillMaxWidth()
+        )
         LargeContainedButton(
             onClick = onCtaClick,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 16.dp + systemBottom),
+                .systemBarsPadding(bottom = true)
+                .padding(16.dp)
         ) {
             Text(text = data.callToAction)
         }
+    }
+}
+
+@Composable
+private fun FadingInTopAppBar(
+    topAppBarBackgroundColorAlpha: Float,
+    onUpClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val topInset = with(LocalDensity.current) {
+        LocalWindowInsets.current.statusBars.top.toDp()
+    }
+    Surface(
+        color = MaterialTheme.colors.surface.copy(alpha = topAppBarBackgroundColorAlpha),
+        modifier = modifier
+            .height(56.dp + topInset)
+            .fillMaxWidth()
+    ) {
+        Row {
+            IconButton(
+                onClick = onUpClick,
+                modifier = Modifier.align(Alignment.Bottom)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = null,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ScrollableContent(
+    crossSellData: CrossSellData,
+    onCoverageClick: () -> Unit,
+    onFaqClick: () -> Unit,
+    imageHeight: Dp,
+    modifier: Modifier = Modifier,
+    scrollState: ScrollState = rememberScrollState(),
+) {
+    val placeholder by rememberBlurHash(
+        crossSellData.backgroundBlurHash,
+        64,
+        32,
+    )
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState),
+    ) {
+        Image(
+            painter = rememberImagePainter(
+                data = crossSellData.backgroundUrl,
+                builder = {
+                    scale(Scale.FILL)
+                    transformations(CropTransformation())
+                    placeholder(placeholder)
+                    crossfade(true)
+                },
+            ),
+            contentDescription = null,
+            modifier = Modifier
+                .height(imageHeight)
+                .fillMaxWidth(),
+            contentScale = ContentScale.FillBounds,
+        )
+        Column(Modifier.padding(horizontal = 16.dp)) {
+            Spacer(Modifier.height(24.dp))
+            Text(
+                text = crossSellData.title,
+                style = MaterialTheme.typography.h5,
+            )
+            Spacer(Modifier.height(16.dp))
+            crossSellData.highlights.forEach { highlight ->
+                Highlight(
+                    title = highlight.title,
+                    description = highlight.description,
+                )
+                Spacer(Modifier.height(24.dp))
+            }
+            SectionTitle(
+                text = stringResource(R.string.cross_sell_info_about_title),
+            )
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = crossSellData.about,
+                style = MaterialTheme.typography.body2,
+            )
+            Spacer(Modifier.height(24.dp))
+            SectionTitle(
+                text = stringResource(R.string.cross_sell_info_learn_more_title),
+            )
+        }
+        ClickableListItem(
+            onClick = onCoverageClick,
+            icon = R.drawable.ic_insurance,
+            text = stringResource(R.string.cross_sell_info_full_coverage_row),
+        )
+        ClickableListItem(
+            onClick = onFaqClick,
+            icon = R.drawable.ic_info_toolbar,
+            text = stringResource(R.string.cross_sell_info_common_questions_row),
+        )
+        val bottomSystemBarInset = with(LocalDensity.current) {
+            LocalWindowInsets.current.systemBars.bottom.toDp()
+        }
+        Spacer(Modifier.height(104.dp + bottomSystemBarInset))
     }
 }
 
