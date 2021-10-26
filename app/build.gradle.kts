@@ -166,6 +166,7 @@ dependencies {
     androidTestImplementation(Libs.AndroidX.Test.junit)
 
     implementation(Libs.Accompanist.insets)
+    implementation(Libs.Accompanist.insetsUi)
 
     implementation(Libs.materialComponents)
     implementation(Libs.flexbox)
