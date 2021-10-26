@@ -1,5 +1,6 @@
 package com.hedvig.app.util
 
+import androidx.core.os.bundleOf
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -35,6 +36,21 @@ fun JSONObject.getWithDotNotation(accessor: String): Any? {
 }
 
 fun Collection<Any>.toJsonArray() = JSONArray(this)
+
+fun JSONObject.toBundle() = bundleOf(
+    *(
+        entries()
+            .asSequence()
+            .map { // Replace `JSONObject`s NULL-markers with true nulls
+                if (it.second == JSONObject.NULL) {
+                    (it.first to null)
+                } else {
+                    it
+                }
+            }
+            .toList().toTypedArray()
+        )
+)
 
 fun JSONObject.entries() = JSONObjectEntryIterator(this)
 

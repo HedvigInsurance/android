@@ -3,7 +3,7 @@ package com.hedvig.app.feature.table
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.hedvig.app.databinding.BottomSheetHeaderItemLayoutBinding
-import com.hedvig.app.databinding.HeaderCenteredItemLayoutBinding
+import com.hedvig.app.databinding.HeaderItemLayoutBinding
 import com.hedvig.app.databinding.ListTextItemBinding
 import com.hedvig.app.databinding.ListTextItemTwoLineBinding
 
@@ -11,7 +11,7 @@ fun generateTable(target: ViewGroup, table: Table) {
     val inflater = LayoutInflater.from(target.context)
     target.removeAllViews()
 
-    val header = HeaderCenteredItemLayoutBinding.inflate(inflater, target, false)
+    val header = HeaderItemLayoutBinding.inflate(inflater, target, false)
     header.root.text = table.title
     target.addView(header.root)
 

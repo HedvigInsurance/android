@@ -1,6 +1,7 @@
 package com.hedvig.app
 
 import com.hedvig.app.feature.tracking.TrackingFacade
+import com.hedvig.app.util.jsonObjectOf
 
 class ScreenTracker(
     private val trackingFacade: TrackingFacade
@@ -13,6 +14,16 @@ class ScreenTracker(
         }
 
         previousScreen = name
-        trackingFacade.track("screen_view_$name")
+        trackingFacade.track(
+            SCREEN_VIEW,
+            jsonObjectOf(
+                SCREEN_NAME to name
+            ),
+        )
+    }
+
+    companion object {
+        const val SCREEN_VIEW = "screen_view_android"
+        const val SCREEN_NAME = "name"
     }
 }

@@ -22,6 +22,8 @@ class MockChangeAddressViewModel : ChangeAddressViewModel() {
         }
     }
 
+    override suspend fun triggerFreeTextChat() = Unit
+
     companion object {
         var mockedState: MutableLiveData<ViewState> = MutableLiveData()
     }

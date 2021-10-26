@@ -52,7 +52,7 @@ fun GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable.createSingleVariab
         }
         EmbarkAPIGraphQLSingleVariableCasting.BOOLEAN -> storeValue.toBoolean()
         // Unsupported generated types are ignored for now.
-        EmbarkAPIGraphQLSingleVariableCasting.UNKNOWN__ -> null
+        else -> null
     } ?: return null
     return Pair(key, value)
 }

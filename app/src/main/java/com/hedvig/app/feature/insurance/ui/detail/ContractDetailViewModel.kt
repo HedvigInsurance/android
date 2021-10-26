@@ -10,14 +10,14 @@ import com.hedvig.android.owldroid.type.AgreementStatus
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.documents.DocumentItems
-import com.hedvig.app.feature.insurance.data.InsuranceRepository
+import com.hedvig.app.feature.insurance.data.GetContractsUseCase
 import com.hedvig.app.feature.insurance.ui.detail.coverage.CoverageViewState
 import com.hedvig.app.feature.insurance.ui.detail.coverage.createCoverageItems
 import com.hedvig.app.feature.insurance.ui.detail.coverage.createInsurableLimitsItems
 import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoModel
-import com.hedvig.app.feature.settings.Market
+import com.hedvig.app.feature.insurance.ui.detail.yourinfo.yourInfoItems
 import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.util.apollo.toUpcomingAgreementResult
+import com.hedvig.app.feature.table.Table
 import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
 import e
@@ -35,8 +35,19 @@ abstract class ContractDetailViewModel : ViewModel() {
     protected val _data = MutableStateFlow<ViewState>(ViewState.Loading)
     val data = _data.asStateFlow()
 
-    protected val _yourInfoList = MutableLiveData<List<YourInfoModel>>()
-    val yourInfoList: LiveData<List<YourInfoModel>> = _yourInfoList
+    sealed class YourInfoViewState {
+        data class Success(
+            val topItems: List<YourInfoModel>,
+            val detailsTable: Table,
+            val bottomItems: List<YourInfoModel>,
+        ) : YourInfoViewState()
+
+        object Loading : YourInfoViewState()
+        object Error : YourInfoViewState()
+    }
+
+    protected val _yourInfoList = MutableStateFlow<YourInfoViewState>(YourInfoViewState.Loading)
+    val yourInfoList = _yourInfoList.asStateFlow()
 
     protected val _documentsList = MutableLiveData<List<DocumentItems.Document>>()
     val documentsList: LiveData<List<DocumentItems.Document>> = _documentsList
@@ -49,7 +60,7 @@ abstract class ContractDetailViewModel : ViewModel() {
 }
 
 class ContractDetailViewModelImpl(
-    private val insuranceRepository: InsuranceRepository,
+    private val getContractsUseCase: GetContractsUseCase,
     private val chatRepository: ChatRepository,
     private val marketManager: MarketManager,
     private val featureRuntimeBehavior: FeatureManager
@@ -57,16 +68,19 @@ class ContractDetailViewModelImpl(
 
     override fun loadContract(id: String) {
         viewModelScope.launch {
-            when (val insurance = insuranceRepository()) {
-                is InsuranceRepository.InsuranceResult.Error -> {
+            when (val insurance = getContractsUseCase.invoke()) {
+                is GetContractsUseCase.InsuranceResult.Error -> {
                     _data.value = ViewState.Error
                 }
-                is InsuranceRepository.InsuranceResult.Insurance -> {
+                is GetContractsUseCase.InsuranceResult.Insurance -> {
                     insurance.insurance.contracts
                         .firstOrNull { it.id == id }
                         ?.let { contract ->
                             _data.value = ViewState.Success(contract)
-                            _yourInfoList.postValue(createContractItems(contract))
+                            _yourInfoList.value = yourInfoItems(
+                                contract,
+                                featureRuntimeBehavior.isFeatureEnabled(Feature.MOVING_FLOW)
+                            )
                             _documentsList.postValue(createDocumentItems(contract))
                             _coverageViewState.postValue(
                                 CoverageViewState(
@@ -78,15 +92,6 @@ class ContractDetailViewModelImpl(
                 }
             }
         }
-    }
-
-    private fun createContractItems(contract: InsuranceQuery.Contract): List<YourInfoModel> {
-        val contractItems = contract.toModelItems(
-            includeMovingFlowItems = featureRuntimeBehavior.isFeatureEnabled(Feature.MOVING_FLOW)
-        )
-        val upcomingAgreement = contract.fragments.upcomingAgreementFragment.toUpcomingAgreementResult()
-        val upcomingAgreementItem = upcomingAgreement?.let { YourInfoModel.PendingAddressChange(it) }
-        return listOfNotNull(upcomingAgreementItem) + contractItems + listOf(YourInfoModel.Change)
     }
 
     private fun createDocumentItems(contract: InsuranceQuery.Contract): List<DocumentItems.Document> {
@@ -103,21 +108,12 @@ class ContractDetailViewModelImpl(
                         uri = Uri.parse(it),
                     )
                 },
-                contract.termsAndConditions.url.let {
-                    DocumentItems.Document(
-                        titleRes = R.string.MY_DOCUMENTS_INSURANCE_TERMS,
-                        subTitleRes = R.string.insurance_details_view_documents_insurance_letter_subtitle,
-                        // TODO Quick fix for getting new terms and conditions
-                        uri = Uri.parse(
-                            if (marketManager.market == Market.SE) {
-                                "https://www.hedvig.com/se/villkor"
-                            } else {
-                                it
-                            }
-                        ),
-                        type = DocumentItems.Document.Type.TERMS_AND_CONDITIONS
-                    )
-                }
+                DocumentItems.Document(
+                    titleRes = R.string.MY_DOCUMENTS_INSURANCE_TERMS,
+                    subTitleRes = R.string.insurance_details_view_documents_insurance_letter_subtitle,
+                    uri = Uri.parse(contract.termsAndConditions.url),
+                    type = DocumentItems.Document.Type.TERMS_AND_CONDITIONS
+                )
             )
         }
     }

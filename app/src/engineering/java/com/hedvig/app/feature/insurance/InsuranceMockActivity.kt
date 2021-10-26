@@ -1,11 +1,15 @@
 package com.hedvig.app.feature.insurance
 
+import android.content.Intent
+import android.net.Uri
+import androidx.lifecycle.lifecycleScope
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.MockActivity
 import com.hedvig.app.MockContractDetailViewModel
-import com.hedvig.app.feature.insurance.ui.InsuranceViewModel
+import com.hedvig.app.R
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
+import com.hedvig.app.feature.insurance.ui.tab.InsuranceViewModel
 import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
@@ -14,12 +18,15 @@ import com.hedvig.app.feature.referrals.MockLoggedInViewModel
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.insuranceModule
 import com.hedvig.app.loggedInModule
+import com.hedvig.app.service.badge.NotificationBadge
+import com.hedvig.app.service.badge.NotificationBadgeService
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_ACTIVE_AND_TERMINATED
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_DANISH_ACCIDENT
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_DANISH_HOME_CONTENTS
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_ONE_ACTIVE_ONE_TERMINATED
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_STUDENT
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_TERMINATED
+import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_WITH_CROSS_SELL
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_DANISH_TRAVEL
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_MULTIPLE_DANISH_CONTRACTS
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS
@@ -28,10 +35,13 @@ import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_PENDING_CONTRACT
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_APARTMENT
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_APARTMENT_NO_RENEWAL
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_HOUSE
+import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 class InsuranceMockActivity : MockActivity() {
+    private val notificationBadgeService: NotificationBadgeService by inject()
     override val original = listOf(
         loggedInModule,
         insuranceModule
@@ -112,7 +122,8 @@ class InsuranceMockActivity : MockActivity() {
                     contracts = listOf(
                         INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS.contracts[0],
                         INSURANCE_DATA_NORWEGIAN_TRAVEL.contracts[0],
-                    )
+                    ),
+                    activeContractBundles = emptyList(),
                 )
                 shouldError = false
             }
@@ -231,6 +242,35 @@ class InsuranceMockActivity : MockActivity() {
                 )
             )
         }
+        header("Cross-Sells")
+        clickableItem("Cross-Sell") {
+            MockInsuranceViewModel.apply {
+                insuranceMockData = INSURANCE_DATA_WITH_CROSS_SELL
+                showCrossSellBadge = false
+                shouldError = false
+            }
+            startActivity(LoggedInActivity.newInstance(context, initialTab = LoggedInTabs.INSURANCE))
+        }
+        clickableItem("Cross-Sell with card badge notification") {
+            MockInsuranceViewModel.apply {
+                insuranceMockData = INSURANCE_DATA_WITH_CROSS_SELL
+                showCrossSellBadge = true
+                shouldError = false
+            }
+            startActivity(LoggedInActivity.newInstance(context, initialTab = LoggedInTabs.INSURANCE))
+        }
+        clickableItem("Reset cross-sell tab and card notification") {
+            lifecycleScope.launch {
+                notificationBadgeService.setValue(
+                    NotificationBadge.BottomNav.CrossSellOnInsuranceFragment,
+                    emptySet()
+                )
+                notificationBadgeService.setValue(
+                    NotificationBadge.CrossSellInsuranceFragmentCard,
+                    emptySet()
+                )
+            }
+        }
         header("Detail Screen")
         clickableItem("Swedish Apartment") {
             MockContractDetailViewModel.mockData = INSURANCE_DATA_SWEDISH_APARTMENT
@@ -322,6 +362,15 @@ class InsuranceMockActivity : MockActivity() {
                 shouldError = true
             }
             startActivity(TerminatedContractsActivity.newInstance(context))
+        }
+        header("Deep Links")
+        clickableItem("`/insurance`-Deep Link") {
+            startActivity(
+                Intent(Intent.ACTION_VIEW).apply {
+                    data =
+                        Uri.parse("https://${getString(R.string.FIREBASE_LINK_DOMAIN)}/insurance")
+                }
+            )
         }
     }
 }

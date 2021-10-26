@@ -85,11 +85,26 @@ fun Context.hideKeyboard(view: View) {
     inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
 }
 
+fun Context.showKeyboard(view: View) {
+    if (view.requestFocus()) {
+        val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.showSoftInput(view, InputMethodManager.SHOW_FORCED)
+    }
+}
+
 suspend fun Context.hideKeyboardWithDelay(inputView: View, delayMillis: Long = 0) {
     val windowInsets = WindowInsetsCompat.toWindowInsetsCompat(inputView.rootView.rootWindowInsets)
     if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) {
         hideKeyboard(inputView)
         delay(delayMillis)
+    }
+}
+
+suspend fun Context.showKeyboardWithDelay(inputView: View, delayMillis: Long = 0) {
+    val windowInsets = WindowInsetsCompat.toWindowInsetsCompat(inputView.rootView.rootWindowInsets)
+    if (!windowInsets.isVisible(WindowInsetsCompat.Type.ime())) {
+        delay(delayMillis)
+        showKeyboard(inputView)
     }
 }
 

@@ -78,7 +78,7 @@ class MultipleQuotesTest : TestCase() {
         QuoteDetailScreen {
             toolbar { hasTitle(homeContentsDisplayName) }
             recycler {
-                childAt<PerilRecyclerItem>(0) {
+                childAt<PerilRecyclerItem>(1) {
                     label { hasText(homeContentsFirstPerilTitle) }
                 }
             }
@@ -93,7 +93,7 @@ class MultipleQuotesTest : TestCase() {
     private val homeContentsFirstPerilTitle = OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL
         .quoteBundle
         .quotes[0]
-        .perils[0]
+        .contractPerils[0]
         .fragments
         .perilFragment
         .title

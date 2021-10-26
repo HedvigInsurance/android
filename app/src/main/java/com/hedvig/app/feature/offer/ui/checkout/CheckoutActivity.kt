@@ -159,7 +159,6 @@ class CheckoutActivity : BaseActivity(R.layout.activity_checkout) {
     }
 
     companion object {
-
         private const val PARAMETER = "PARAMETER"
 
         fun newInstance(context: Context, parameter: CheckoutParameter): Intent {

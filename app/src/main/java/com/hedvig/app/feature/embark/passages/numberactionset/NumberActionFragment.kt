@@ -9,6 +9,7 @@ import androidx.core.os.bundleOf
 import androidx.core.view.doOnNextLayout
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import com.google.android.material.textfield.TextInputEditText
 import com.hedvig.app.R
 import com.hedvig.app.databinding.EmbarkInputItemBinding
 import com.hedvig.app.databinding.NumberActionSetFragmentBinding
@@ -21,6 +22,7 @@ import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.PASSAGE_ANIMATI
 import com.hedvig.app.util.extensions.addViews
 import com.hedvig.app.util.extensions.hideKeyboardWithDelay
 import com.hedvig.app.util.extensions.onImeAction
+import com.hedvig.app.util.extensions.showKeyboardWithDelay
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
 import com.hedvig.app.util.extensions.viewLifecycleScope
@@ -60,6 +62,12 @@ class NumberActionFragment : Fragment(R.layout.number_action_set_fragment) {
 
             messages.adapter = MessageAdapter(data.messages)
             val views = createInputViews()
+            views.firstOrNull()?.let {
+                val input = it.findViewById<TextInputEditText>(R.id.input)
+                viewLifecycleScope.launchWhenCreated {
+                    requireContext().showKeyboardWithDelay(input, 500)
+                }
+            }
             inputContainer.addViews(views)
 
             numberActionViewModel.valid.observe(viewLifecycleOwner) { submit.isEnabled = it }

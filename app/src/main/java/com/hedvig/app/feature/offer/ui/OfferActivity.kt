@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.transition.TransitionManager
 import android.view.MenuItem
+import android.view.animation.AnimationUtils
 import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.lifecycle.flowWithLifecycle
@@ -22,18 +23,22 @@ import com.hedvig.app.R
 import com.hedvig.app.SplashActivity
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.databinding.ActivityOfferBinding
+import com.hedvig.app.feature.crossselling.ui.CrossSellingResult
+import com.hedvig.app.feature.crossselling.ui.CrossSellingResultActivity
 import com.hedvig.app.feature.documents.DocumentAdapter
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
 import com.hedvig.app.feature.home.ui.changeaddress.result.ChangeAddressResultActivity
 import com.hedvig.app.feature.insurablelimits.InsurableLimitsAdapter
-import com.hedvig.app.feature.offer.OfferSignDialog
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
+import com.hedvig.app.feature.offer.PostSignScreen
 import com.hedvig.app.feature.offer.quotedetail.QuoteDetailActivity
 import com.hedvig.app.feature.offer.ui.checkout.CheckoutActivity
 import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
+import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignDialog
+import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.showErrorDialog
@@ -44,7 +49,6 @@ import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -63,6 +67,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     private val imageLoader: ImageLoader by inject()
     private val tracker: OfferTracker by inject()
     private val marketManager: MarketManager by inject()
+    private var hasStartedRecyclerAnimation: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -149,21 +154,23 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 .viewState
                 .flowWithLifecycle(lifecycle)
                 .onEach { viewState ->
-                    if (concatAdapter.itemCount == 0 || concatAdapter.itemCount == 1) {
-                        scheduleEnterAnimation()
-                    }
+
                     topOfferAdapter.submitList(viewState.topOfferItems)
                     perilsAdapter.submitList(viewState.perils)
                     insurableLimitsAdapter.submitList(viewState.insurableLimitsItems)
                     documentAdapter.submitList(viewState.documents)
                     bottomOfferAdapter.submitList(viewState.bottomOfferItems)
-                    setSignState(viewState.signMethod)
+                    setSignButtonState(viewState.signMethod, viewState.checkoutLabel)
 
                     TransitionManager.beginDelayedTransition(binding.offerToolbar)
                     setTitleVisibility(viewState)
                     inflateMenu(viewState.loginStatus)
                     binding.progressBar.isVisible = viewState.isLoading
                     binding.offerScroll.isVisible = !viewState.isLoading
+
+                    if (!hasStartedRecyclerAnimation) {
+                        scheduleEnterAnimation()
+                    }
                 }
                 .launchIn(lifecycleScope)
 
@@ -184,8 +191,11 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                         is OfferViewModel.Event.OpenQuoteDetails -> {
                             startActivity(
                                 QuoteDetailActivity.newInstance(
-                                    this@OfferActivity,
-                                    event.quoteDetailItems
+                                    context = this@OfferActivity,
+                                    title = event.quoteDetailItems.displayName,
+                                    perils = event.quoteDetailItems.perils,
+                                    insurableLimits = event.quoteDetailItems.insurableLimits,
+                                    documents = event.quoteDetailItems.documents,
                                 )
                             )
                         }
@@ -198,20 +208,50 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                             )
                         }
                         is OfferViewModel.Event.ApproveSuccessful -> {
-                            startActivity(
-                                ChangeAddressResultActivity.newInstance(
-                                    this@OfferActivity,
-                                    ChangeAddressResultActivity.Result.Success(event.moveDate)
-                                )
-                            )
+                            when (event.postSignScreen) {
+                                PostSignScreen.CONNECT_PAYIN -> {
+                                    marketManager
+                                        .market
+                                        ?.connectPayin(this@OfferActivity, true)
+                                        ?.let { startActivity(it) }
+                                }
+                                PostSignScreen.MOVE -> {
+                                    ChangeAddressResultActivity.newInstance(
+                                        this@OfferActivity,
+                                        ChangeAddressResultActivity.Result.Success(event.startDate),
+                                    )
+                                }
+                                PostSignScreen.CROSS_SELL -> {
+                                    startActivity(
+                                        CrossSellingResultActivity.newInstance(
+                                            this@OfferActivity,
+                                            CrossSellingResult.Success.from(event)
+                                        )
+                                    )
+                                }
+                            }
                         }
-                        OfferViewModel.Event.ApproveError -> {
-                            startActivity(
-                                ChangeAddressResultActivity.newInstance(
-                                    this@OfferActivity,
-                                    ChangeAddressResultActivity.Result.Error
-                                )
-                            )
+                        is OfferViewModel.Event.ApproveError -> {
+                            when (event.postSignScreen) {
+                                PostSignScreen.CONNECT_PAYIN -> {
+                                }
+                                PostSignScreen.MOVE -> {
+                                    startActivity(
+                                        ChangeAddressResultActivity.newInstance(
+                                            this@OfferActivity,
+                                            ChangeAddressResultActivity.Result.Error
+                                        )
+                                    )
+                                }
+                                PostSignScreen.CROSS_SELL -> {
+                                    startActivity(
+                                        CrossSellingResultActivity.newInstance(
+                                            this@OfferActivity,
+                                            CrossSellingResult.Error
+                                        )
+                                    )
+                                }
+                            }
                         }
                         OfferViewModel.Event.DiscardOffer -> {
                             startActivity(
@@ -221,19 +261,14 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                                 )
                             )
                         }
-                        OfferViewModel.Event.HasContracts -> {
-                        } // No-op
+                        is OfferViewModel.Event.StartSwedishBankIdSign -> {
+                            SwedishBankIdSignDialog
+                                .newInstance(event.autoStartToken, event.quoteIds)
+                                .show(supportFragmentManager, SwedishBankIdSignDialog.TAG)
+                        }
                     }
                 }
                 .launchIn(lifecycleScope)
-
-            signButton.setHapticClickListener {
-                tracker.floatingSign()
-                OfferSignDialog.newInstance().show(
-                    supportFragmentManager,
-                    OfferSignDialog.TAG
-                )
-            }
         }
     }
 
@@ -259,21 +294,10 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     }
 
     private fun scheduleEnterAnimation() {
+        hasStartedRecyclerAnimation = true
         binding.offerScroll.scheduleLayoutAnimation()
-        binding.offerScroll.postOnAnimation {
-            changeBackgroundWithDelay()
-        }
-    }
-
-    // Some items in the concat adapter does not have a background. We want them
-    // to have the default colorBackground. Before submitting items to the recycler view we
-    // are showing a gradient for a smoother transition to the header item. Hence why we need to change
-    // the background here.
-    private fun changeBackgroundWithDelay() {
-        lifecycleScope.launch {
-            delay(800)
-            binding.offerRoot.setBackgroundColor(binding.offerRoot.context.getColor(R.color.colorBackground))
-        }
+        val animation = AnimationUtils.loadLayoutAnimation(this, R.anim.layout_animation_appear_from_bottom)
+        binding.offerScroll.layoutAnimation = animation
     }
 
     private fun inflateMenu(loginStatus: LoginStatus) {
@@ -291,22 +315,18 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         }
     }
 
-    private fun setSignState(signMethod: SignMethod) {
-        binding.signButton.bindWithSignMethod(signMethod)
+    private fun setSignButtonState(signMethod: SignMethod, checkoutLabel: CheckoutLabel) {
+        binding.signButton.text = checkoutLabel.toString(this)
+        binding.signButton.icon = signMethod.checkoutIconRes()?.let(::compatDrawable)
         binding.signButton.setHapticClickListener {
+            tracker.checkoutFloating(checkoutLabel.localizationKey(this))
             onSign(signMethod)
         }
     }
 
     private fun onSign(signMethod: SignMethod) {
         when (signMethod) {
-            SignMethod.SWEDISH_BANK_ID -> {
-                tracker.floatingSign()
-                OfferSignDialog.newInstance().show(
-                    supportFragmentManager,
-                    OfferSignDialog.TAG
-                )
-            }
+            SignMethod.SWEDISH_BANK_ID -> model.onSwedishBankIdSign()
             SignMethod.SIMPLE_SIGN -> model.onOpenCheckout()
             SignMethod.APPROVE_ONLY -> model.approveOffer()
             SignMethod.NORWEGIAN_BANK_ID,

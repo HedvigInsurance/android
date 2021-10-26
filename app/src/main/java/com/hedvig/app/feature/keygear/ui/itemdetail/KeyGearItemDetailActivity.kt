@@ -15,7 +15,6 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityKeyGearItemDetailBinding
 import com.hedvig.app.feature.keygear.KeyGearTracker
-import com.hedvig.app.feature.keygear.ui.itemdetail.binders.CoverageBinder
 import com.hedvig.app.feature.keygear.ui.itemdetail.viewbinders.NameBinder
 import com.hedvig.app.feature.keygear.ui.itemdetail.viewbinders.PhotosBinder
 import com.hedvig.app.feature.keygear.ui.itemdetail.viewbinders.ReceiptBinder
@@ -40,7 +39,6 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
 
     private lateinit var photosBinder: PhotosBinder
     private lateinit var valuationBinder: ValuationBinder
-    private lateinit var coverageBinder: CoverageBinder
     private lateinit var receiptBinder: ReceiptBinder
     private lateinit var nameBinder: NameBinder
 
@@ -63,7 +61,6 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
                 intent.getSerializableExtra(CATEGORY) as KeyGearItemCategory
             ) { supportStartPostponedEnterTransition() }
             valuationBinder = ValuationBinder(valuationSection, tracker)
-            coverageBinder = CoverageBinder(coverageSection)
             nameBinder = NameBinder(nameSection, model, tracker)
             receiptBinder =
                 ReceiptBinder(receiptSection, supportFragmentManager, tracker)
@@ -135,7 +132,6 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
         photosBinder.bind(data)
         valuationBinder.bind(data)
         nameBinder.bind(data)
-        coverageBinder.bind(data)
         receiptBinder.bind(data)
 
         if (isFirstLoad) {

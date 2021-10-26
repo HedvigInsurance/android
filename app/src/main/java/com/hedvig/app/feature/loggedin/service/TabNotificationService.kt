@@ -1,36 +1,31 @@
 package com.hedvig.app.feature.loggedin.service
 
-import android.content.Context
-import com.hedvig.app.feature.loggedin.ui.TabNotification
+import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
+import com.hedvig.app.service.badge.CrossSellNotificationBadgeService
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class TabNotificationService(
-    private val context: Context
+    private val crossSellNotificationBadgeService: CrossSellNotificationBadgeService,
 ) {
-    fun getTabNotification(): TabNotification? {
-        // TODO: Clean this up. Since we updated Material Components, an implementation detail of
-        // the BottomNavigationBar has changed, and our tab notification feature no longer works.
 
-        // if (!context
-        //         .getSharedPreferences(TAB_NOTIFICATION_SHARED_PREFERENCES, Context.MODE_PRIVATE)
-        //         .getBoolean(HAS_BEEN_NOTIFIED_ABOUT_REFERRALS, false)
-        // ) {
-
-        //     return TabNotification.REFERRALS
-        // }
-
-        return null
+    suspend fun unseenTabNotifications(): Flow<Set<LoggedInTabs>> {
+        return crossSellNotificationBadgeService
+            .getUnseenCrossSells(CrossSellNotificationBadgeService.CrossSellBadgeType.BottomNav)
+            .map { contracts ->
+                if (contracts.isNotEmpty()) {
+                    setOf(LoggedInTabs.INSURANCE)
+                } else {
+                    emptySet()
+                }
+            }
     }
 
-    fun hasBeenNotifiedAboutReferrals() {
-        context
-            .getSharedPreferences(TAB_NOTIFICATION_SHARED_PREFERENCES, Context.MODE_PRIVATE)
-            .edit()
-            .putBoolean(HAS_BEEN_NOTIFIED_ABOUT_REFERRALS, true)
-            .apply()
-    }
-
-    companion object {
-        private const val TAB_NOTIFICATION_SHARED_PREFERENCES = "tab_notifications"
-        private const val HAS_BEEN_NOTIFIED_ABOUT_REFERRALS = "has_been_notified_about_referrals"
+    suspend fun visitTab(tab: LoggedInTabs) {
+        if (tab == LoggedInTabs.INSURANCE) {
+            crossSellNotificationBadgeService.markCurrentCrossSellsAsSeen(
+                CrossSellNotificationBadgeService.CrossSellBadgeType.BottomNav
+            )
+        }
     }
 }

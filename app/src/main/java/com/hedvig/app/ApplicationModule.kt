@@ -4,7 +4,9 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.os.Build
+import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import coil.ImageLoader
 import coil.decode.GifDecoder
@@ -17,6 +19,8 @@ import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCache
 import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCacheFactory
 import com.apollographql.apollo.subscription.SubscriptionConnectionParams
 import com.apollographql.apollo.subscription.WebSocketSubscriptionTransport
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.authenticate.LoginStatusService
@@ -40,6 +44,10 @@ import com.hedvig.app.feature.claims.data.ClaimsRepository
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
+import com.hedvig.app.feature.crossselling.ui.CrossSellResultViewModel
+import com.hedvig.app.feature.crossselling.ui.CrossSellTracker
+import com.hedvig.app.feature.crossselling.ui.CrossSellingResult
+import com.hedvig.app.feature.crossselling.ui.detail.CrossSellFaqViewModel
 import com.hedvig.app.feature.embark.EmbarkRepository
 import com.hedvig.app.feature.embark.EmbarkTracker
 import com.hedvig.app.feature.embark.EmbarkViewModel
@@ -64,12 +72,13 @@ import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressViewModel
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressViewModelImpl
 import com.hedvig.app.feature.home.ui.changeaddress.GetAddressChangeStoryIdUseCase
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase
-import com.hedvig.app.feature.insurance.data.InsuranceRepository
+import com.hedvig.app.feature.insurance.data.GetContractsUseCase
 import com.hedvig.app.feature.insurance.service.InsuranceTracker
-import com.hedvig.app.feature.insurance.ui.InsuranceViewModel
-import com.hedvig.app.feature.insurance.ui.InsuranceViewModelImpl
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModelImpl
+import com.hedvig.app.feature.insurance.ui.tab.InsuranceViewModel
+import com.hedvig.app.feature.insurance.ui.tab.InsuranceViewModelImpl
+import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsViewModel
 import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.feature.keygear.KeyGearValuationViewModel
 import com.hedvig.app.feature.keygear.KeyGearValuationViewModelImpl
@@ -81,8 +90,8 @@ import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModelImpl
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModel
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModelImpl
+import com.hedvig.app.feature.loggedin.service.GetCrossSellsUseCase
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
-import com.hedvig.app.feature.loggedin.ui.BaseTabViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInRepository
 import com.hedvig.app.feature.loggedin.ui.LoggedInTracker
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
@@ -108,6 +117,7 @@ import com.hedvig.app.feature.offer.ui.changestartdate.EditStartDateUseCase
 import com.hedvig.app.feature.offer.ui.checkout.ApproveQuotesUseCase
 import com.hedvig.app.feature.offer.ui.checkout.CheckoutViewModel
 import com.hedvig.app.feature.offer.ui.checkout.SignQuotesUseCase
+import com.hedvig.app.feature.offer.usecase.GetPostSignDependenciesUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
@@ -141,6 +151,10 @@ import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.MarketManagerImpl
 import com.hedvig.app.feature.settings.SettingsViewModel
+import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignViewModel
+import com.hedvig.app.feature.swedishbankid.sign.usecase.ManuallyRecheckSwedishBankIdSignStatusUseCase
+import com.hedvig.app.feature.swedishbankid.sign.usecase.SubscribeToSwedishBankIdSignStatusUseCase
+import com.hedvig.app.feature.tracking.FirebaseTracker
 import com.hedvig.app.feature.tracking.MixpanelTracker
 import com.hedvig.app.feature.tracking.TrackerSink
 import com.hedvig.app.feature.tracking.TrackingFacade
@@ -160,6 +174,8 @@ import com.hedvig.app.feature.zignsec.usecase.StartDanishAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.StartNorwegianAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthStatusUseCase
 import com.hedvig.app.service.FileService
+import com.hedvig.app.service.badge.CrossSellNotificationBadgeService
+import com.hedvig.app.service.badge.NotificationBadgeService
 import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.app.service.push.managers.PaymentNotificationManager
 import com.hedvig.app.terminated.TerminatedTracker
@@ -267,6 +283,7 @@ val applicationModule = module {
         }
         builder.build()
     }
+    single { Firebase.analytics }
 }
 
 fun makeUserAgent(context: Context, market: Market?) =
@@ -305,7 +322,6 @@ fun getLocale(context: Context, market: Market?): Locale {
 
 val viewModelModule = module {
     viewModel { ClaimsViewModel(get(), get()) }
-    viewModel { BaseTabViewModel(get(), get()) }
     viewModel { ChatViewModel(get(), get(), get(), get(), get()) }
     viewModel { UserViewModel(get(), get(), get()) }
     viewModel { RedeemCodeViewModel(get()) }
@@ -320,6 +336,12 @@ val viewModelModule = module {
             multiActionParams
         )
     }
+    viewModel { TerminatedContractsViewModel(get()) }
+    viewModel { (autoStartToken: String, quoteIds: List<String>) ->
+        SwedishBankIdSignViewModel(autoStartToken, quoteIds, get(), get(), get(), get())
+    }
+    viewModel { (result: CrossSellingResult) -> CrossSellResultViewModel(result, get()) }
+    viewModel { CrossSellFaqViewModel(get()) }
 }
 
 val choosePlanModule = module {
@@ -335,7 +357,7 @@ val marketPickerModule = module {
 }
 
 val loggedInModule = module {
-    viewModel<LoggedInViewModel> { LoggedInViewModelImpl(get(), get()) }
+    viewModel<LoggedInViewModel> { LoggedInViewModelImpl(get(), get(), get()) }
 }
 
 val whatsNewModule = module {
@@ -343,7 +365,7 @@ val whatsNewModule = module {
 }
 
 val insuranceModule = module {
-    viewModel<InsuranceViewModel> { InsuranceViewModelImpl(get()) }
+    viewModel<InsuranceViewModel> { InsuranceViewModelImpl(get(), get()) }
     viewModel<ContractDetailViewModel> { ContractDetailViewModelImpl(get(), get(), get(), get()) }
 }
 
@@ -353,7 +375,7 @@ val marketingModule = module {
 
 val offerModule = module {
     viewModel<OfferViewModel> { (ids: List<String>, shouldShowOnNextAppStart: Boolean) ->
-        OfferViewModelImpl(ids, get(), get(), get(), get(), get(), get(), get(), shouldShowOnNextAppStart)
+        OfferViewModelImpl(ids, get(), get(), get(), get(), get(), get(), get(), shouldShowOnNextAppStart, get(), get())
     }
 }
 
@@ -420,7 +442,7 @@ val trustlyModule = module {
 }
 
 val changeAddressModule = module {
-    viewModel<ChangeAddressViewModel> { ChangeAddressViewModelImpl(get(), get()) }
+    viewModel<ChangeAddressViewModel> { ChangeAddressViewModelImpl(get(), get(), get()) }
 }
 
 val changeDateBottomSheetModule = module {
@@ -428,14 +450,18 @@ val changeDateBottomSheetModule = module {
 }
 
 val checkoutModule = module {
-    viewModel { (ids: List<String>) -> CheckoutViewModel(ids, get(), get(), get(), get(), get()) }
+    viewModel { (ids: List<String>) -> CheckoutViewModel(ids, get(), get(), get()) }
 }
 
 val serviceModule = module {
     single { FileService(get()) }
     single<LoginStatusService> { SharedPreferencesLoginStatusService(get(), get(), get()) }
     single<AuthenticationTokenService> { SharedPreferencesAuthenticationTokenService(get()) }
+
     single { TabNotificationService(get()) }
+    single { CrossSellNotificationBadgeService(get(), get()) }
+    single { NotificationBadgeService(get()) }
+
     single { DeviceInformationService(get()) }
 }
 
@@ -443,7 +469,6 @@ val repositoriesModule = module {
     single { ChatRepository(get(), get(), get()) }
     single { PayinStatusRepository(get()) }
     single { ClaimsRepository(get(), get()) }
-    single { InsuranceRepository(get(), get()) }
     single { ProfileRepository(get()) }
     single { RedeemReferralCodeRepository(get(), get()) }
     single { UserRepository(get()) }
@@ -483,11 +508,13 @@ val trackerModule = module {
     single { MarketingTracker(get()) }
     single { HomeTracker(get()) }
     single { ScreenTracker(get()) }
+    single { CrossSellTracker(get()) }
     single {
         // Workaround for https://github.com/InsertKoinIO/koin/issues/1146
         TrackingFacade(getAll<TrackerSink>().distinct())
     }
     single { MixpanelTracker(get()) } bind TrackerSink::class
+    single { FirebaseTracker(get()) } bind TrackerSink::class
 }
 
 val localeBroadcastManagerModule = module {
@@ -525,10 +552,15 @@ val useCaseModule = module {
     single { GetQuotesUseCase(get()) }
     single { GetQuoteUseCase(get()) }
     single { EditStartDateUseCase(get(), get()) }
-    single { SignQuotesUseCase(get(), get()) }
-    single { ApproveQuotesUseCase(get(), get(), get()) }
+    single { SignQuotesUseCase(get(), get(), get()) }
+    single { ApproveQuotesUseCase(get(), get(), get(), get()) }
     single { RefreshQuotesUseCase(get()) }
     single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { GetContractsUseCase(get(), get()) }
+    single { ManuallyRecheckSwedishBankIdSignStatusUseCase(get()) }
+    single { SubscribeToSwedishBankIdSignStatusUseCase(get()) }
+    single { GetPostSignDependenciesUseCase(get()) }
+    single { GetCrossSellsUseCase(get()) }
 }
 
 val cacheManagerModule = module {
@@ -567,7 +599,9 @@ val chatEventModule = module {
 }
 
 val dataStoreModule = module {
-    single {
+
+    @Suppress("RemoveExplicitTypeArguments")
+    single<DataStore<Preferences>> {
         PreferenceDataStoreFactory.create(
             produceFile = {
                 get<Context>().preferencesDataStoreFile("hedvig_data_store_preferences")

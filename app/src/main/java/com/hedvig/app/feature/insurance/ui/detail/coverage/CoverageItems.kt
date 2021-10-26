@@ -7,8 +7,8 @@ import com.hedvig.app.feature.perils.PerilItem
 
 fun createCoverageItems(contract: InsuranceQuery.Contract): List<PerilItem> {
     return listOf(
-        PerilItem.Header(contract.typeOfContract)
-    ) + contract.perils.map {
+        PerilItem.Header.CoversSuffix(contract.displayName)
+    ) + contract.contractPerils.map {
         PerilItem.Peril(Peril.from(it.fragments.perilFragment))
     }
 }

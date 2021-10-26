@@ -17,7 +17,6 @@ class OfferTracker(
         jsonObjectOf("link_label" to displayName)
     )
 
-    fun floatingSign() = trackingFacade.track("OFFER_SIGN_BUTTON")
     fun removeDiscount() = trackingFacade.track("OFFER_REMOVE_DISCOUNT_BUTTON")
     fun addDiscount() = trackingFacade.track("OFFER_ADD_DISCOUNT_BUTTON")
     fun terms() = trackingFacade.track("OFFER_TERMS")
@@ -26,4 +25,22 @@ class OfferTracker(
     fun activateOnInsuranceEnd() = trackingFacade.track("ACTIVATE_INSURANCE_END_BTN")
     fun changeDateContinue() = trackingFacade.track("ALERT_CONTINUE")
     fun settings() = trackingFacade.track("SETTINGS_ACCESSIBILITY_HINT")
+    fun checkoutHeader(method: String) = checkout(method, "header")
+    fun checkoutFloating(method: String) = checkout(method, "floating")
+    private fun checkout(method: String, location: String) = trackingFacade.track(
+        "button_click",
+        jsonObjectOf(
+            "localization_key" to method,
+            "location" to location,
+        )
+    )
+
+    fun viewOffer(typesOfContract: List<String>) {
+        trackingFacade.track(
+            "offer_viewed",
+            jsonObjectOf(
+                "types_of_contract" to typesOfContract.joinToString(",")
+            )
+        )
+    }
 }

@@ -1,12 +1,16 @@
 package com.hedvig.app.feature.perils
 
 import android.os.Parcelable
-import com.hedvig.android.owldroid.type.TypeOfContract
 import kotlinx.parcelize.Parcelize
 
 sealed class PerilItem : Parcelable {
-    @Parcelize
-    data class Header(val typeOfContract: TypeOfContract) : PerilItem()
+    sealed class Header : PerilItem() {
+        @Parcelize
+        data class CoversSuffix(val displayName: String) : Header()
+
+        @Parcelize
+        data class Simple(val displayName: String) : Header()
+    }
 
     @Parcelize
     data class Peril(val inner: com.hedvig.app.feature.perils.Peril) : PerilItem()

@@ -3,6 +3,7 @@ package com.hedvig.app.testdata.feature.offer
 import com.hedvig.android.owldroid.fragment.CurrentInsurerFragment
 import com.hedvig.android.owldroid.fragment.IncentiveFragment
 import com.hedvig.android.owldroid.fragment.InsurableLimitsFragment
+import com.hedvig.android.owldroid.fragment.InsuranceTermFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.type.InsuranceTermType
 import com.hedvig.android.owldroid.type.SignMethod
@@ -87,14 +88,22 @@ val OFFER_DATA_SWEDISH_HOUSE = OfferDataBuilder(
             ),
             insuranceTerms = listOf(
                 OfferQuery.InsuranceTerm(
-                    type = InsuranceTermType.GENERAL_TERMS,
-                    displayName = "General term",
-                    url = "invalid url"
+                    fragments = OfferQuery.InsuranceTerm.Fragments(
+                        InsuranceTermFragment(
+                            type = InsuranceTermType.GENERAL_TERMS,
+                            displayName = "General term",
+                            url = "invalid url"
+                        )
+                    )
                 ),
                 OfferQuery.InsuranceTerm(
-                    type = InsuranceTermType.TERMS_AND_CONDITIONS,
-                    displayName = "Terms and conditions",
-                    url = "invalid url"
+                    fragments = OfferQuery.InsuranceTerm.Fragments(
+                        InsuranceTermFragment(
+                            type = InsuranceTermType.TERMS_AND_CONDITIONS,
+                            displayName = "Terms and conditions",
+                            url = "invalid url"
+                        )
+                    )
                 )
             )
         ).build()
@@ -186,14 +195,22 @@ val BUNDLE_WITH_CONCURRENT_INCEPTION_DATES_SPECIFIC_DATE = OfferDataBuilder(
             ),
             insuranceTerms = listOf(
                 OfferQuery.InsuranceTerm(
-                    type = InsuranceTermType.GENERAL_TERMS,
-                    displayName = "General term",
-                    url = "invalid url"
+                    fragments = OfferQuery.InsuranceTerm.Fragments(
+                        InsuranceTermFragment(
+                            type = InsuranceTermType.GENERAL_TERMS,
+                            displayName = "General term",
+                            url = "invalid url"
+                        )
+                    )
                 ),
                 OfferQuery.InsuranceTerm(
-                    type = InsuranceTermType.TERMS_AND_CONDITIONS,
-                    displayName = "Terms and conditions",
-                    url = "invalid url"
+                    fragments = OfferQuery.InsuranceTerm.Fragments(
+                        InsuranceTermFragment(
+                            type = InsuranceTermType.TERMS_AND_CONDITIONS,
+                            displayName = "Terms and conditions",
+                            url = "invalid url"
+                        )
+                    )
                 )
             )
         ).build()
@@ -258,14 +275,22 @@ val BUNDLE_WITH_INDEPENDENT_INCEPTION_DATES = OfferDataBuilder(
             typeOfContract = TypeOfContract.SE_HOUSE,
             insuranceTerms = listOf(
                 OfferQuery.InsuranceTerm(
-                    type = InsuranceTermType.GENERAL_TERMS,
-                    displayName = "General term",
-                    url = "invalid url"
+                    fragments = OfferQuery.InsuranceTerm.Fragments(
+                        InsuranceTermFragment(
+                            type = InsuranceTermType.GENERAL_TERMS,
+                            displayName = "General term",
+                            url = "invalid url"
+                        )
+                    )
                 ),
                 OfferQuery.InsuranceTerm(
-                    type = InsuranceTermType.TERMS_AND_CONDITIONS,
-                    displayName = "Terms and conditions",
-                    url = "invalid url"
+                    fragments = OfferQuery.InsuranceTerm.Fragments(
+                        InsuranceTermFragment(
+                            type = InsuranceTermType.TERMS_AND_CONDITIONS,
+                            displayName = "Terms and conditions",
+                            url = "invalid url"
+                        )
+                    )
                 )
             )
         ).build()
@@ -329,14 +354,22 @@ val BUNDLE_WITH_START_DATE_FROM_PREVIOUS_INSURER = OfferDataBuilder(
             ),
             insuranceTerms = listOf(
                 OfferQuery.InsuranceTerm(
-                    type = InsuranceTermType.GENERAL_TERMS,
-                    displayName = "General term",
-                    url = "invalid url"
+                    fragments = OfferQuery.InsuranceTerm.Fragments(
+                        InsuranceTermFragment(
+                            type = InsuranceTermType.GENERAL_TERMS,
+                            displayName = "General term",
+                            url = "invalid url"
+                        )
+                    )
                 ),
                 OfferQuery.InsuranceTerm(
-                    type = InsuranceTermType.TERMS_AND_CONDITIONS,
-                    displayName = "Terms and conditions",
-                    url = "invalid url"
+                    fragments = OfferQuery.InsuranceTerm.Fragments(
+                        InsuranceTermFragment(
+                            type = InsuranceTermType.TERMS_AND_CONDITIONS,
+                            displayName = "Terms and conditions",
+                            url = "invalid url"
+                        )
+                    )
                 )
             )
         ).build()

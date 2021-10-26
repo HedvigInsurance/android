@@ -5,7 +5,7 @@ import com.apollographql.apollo.cache.normalized.ApolloStoreOperation
 import timber.log.Timber
 
 class CacheManager(
-    val apolloClient: ApolloClient
+    private val apolloClient: ApolloClient
 ) {
     fun clearCache() {
         apolloClient.clearHttpCache()

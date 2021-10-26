@@ -3,11 +3,13 @@ package com.hedvig.app.testdata.feature.offer.builders
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.TableFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
-import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationGradientOption
+import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationApproveButtonTerminology
+import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationPostSignStep
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationStartDateTerminology
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationTitle
 import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.android.owldroid.type.TypeOfContract
+import com.hedvig.android.owldroid.type.TypeOfContractGradientOption
 import com.hedvig.app.testdata.common.builders.CostBuilder
 import com.hedvig.app.testdata.common.builders.TableFragmentBuilder
 import com.hedvig.app.testdata.feature.insurance.builders.PerilBuilder
@@ -19,10 +21,12 @@ data class OfferDataBuilder(
     private val insuranceCost: CostFragment = CostBuilder()
         .build(),
     private val redeemedCampaigns: List<OfferQuery.RedeemedCampaign> = emptyList(),
-    private val contracts: List<OfferQuery.Contract> = emptyList(),
     private val frequentlyAskedQuestions: List<OfferQuery.FrequentlyAskedQuestion> = emptyList(),
     private val inceptions: OfferQuery.Inception1 = ConcurrentInceptionBuilder().build(),
-    private val signMethod: SignMethod = SignMethod.SWEDISH_BANK_ID
+    private val signMethod: SignMethod = SignMethod.SWEDISH_BANK_ID,
+    private val postSignStep: QuoteBundleAppConfigurationPostSignStep =
+        QuoteBundleAppConfigurationPostSignStep.CONNECT_PAYIN,
+    private val appConfiguration: OfferQuery.AppConfiguration = AppConfigurationBuilder().build(),
 ) {
     fun build() = OfferQuery.Data(
         quoteBundle = OfferQuery.QuoteBundle(
@@ -33,16 +37,9 @@ data class OfferDataBuilder(
             ),
             frequentlyAskedQuestions = frequentlyAskedQuestions,
             inception = inceptions,
-            appConfiguration = OfferQuery.AppConfiguration(
-                showCampaignManagement = true,
-                showFAQ = true,
-                startDateTerminology = QuoteBundleAppConfigurationStartDateTerminology.START_DATE,
-                title = QuoteBundleAppConfigurationTitle.LOGO,
-                gradientOption = QuoteBundleAppConfigurationGradientOption.GRADIENT_THREE
-            )
+            appConfiguration = appConfiguration
         ),
         redeemedCampaigns = redeemedCampaigns,
-        contracts = contracts,
         signMethodForQuotes = signMethod
     )
 }
@@ -52,7 +49,7 @@ data class QuoteBuilder(
     private val id: String = "ea656f5f-40b2-4953-85d9-752b33e69e38",
     private val typeOfContract: TypeOfContract = TypeOfContract.SE_APARTMENT_RENT,
     private val currentInsurer: OfferQuery.CurrentInsurer? = null,
-    private val perils: List<OfferQuery.Peril> = PerilBuilder().offerQueryBuild(5),
+    private val perils: List<OfferQuery.ContractPeril> = PerilBuilder().offerQueryBuild(5),
     private val termsAndConditionsUrl: String = "https://www.example.com",
     private val insurableLimits: List<OfferQuery.InsurableLimit> = emptyList(),
     private val insuranceTerms: List<OfferQuery.InsuranceTerm> = emptyList(),
@@ -63,18 +60,43 @@ data class QuoteBuilder(
         displayName = displayName,
         startDate = startDate,
         id = id,
-        typeOfContract = typeOfContract,
         currentInsurer = currentInsurer,
         detailsTable = OfferQuery.DetailsTable(
             fragments = OfferQuery.DetailsTable.Fragments(detailsTable),
         ),
-        perils = perils,
+        contractPerils = perils,
         termsAndConditions = OfferQuery.TermsAndConditions(
             displayName = "Villkor",
             url = termsAndConditionsUrl,
         ),
         insurableLimits = insurableLimits,
         insuranceTerms = insuranceTerms,
+        typeOfContract = typeOfContract,
+    )
+}
+
+data class AppConfigurationBuilder(
+    private val showCampaignManagement: Boolean = true,
+    private val showFAQ: Boolean = true,
+    private val ignoreCampaigns: Boolean = false,
+    private val approveButtonTerminology: QuoteBundleAppConfigurationApproveButtonTerminology =
+        QuoteBundleAppConfigurationApproveButtonTerminology.APPROVE_CHANGES,
+    private val title: QuoteBundleAppConfigurationTitle = QuoteBundleAppConfigurationTitle.LOGO,
+    private val gradientOption: TypeOfContractGradientOption = TypeOfContractGradientOption.GRADIENT_ONE,
+    private val startDateTerminology: QuoteBundleAppConfigurationStartDateTerminology =
+        QuoteBundleAppConfigurationStartDateTerminology.START_DATE,
+    private val postSignStep: QuoteBundleAppConfigurationPostSignStep =
+        QuoteBundleAppConfigurationPostSignStep.CONNECT_PAYIN
+) {
+    fun build() = OfferQuery.AppConfiguration(
+        showCampaignManagement = showCampaignManagement,
+        showFAQ = showFAQ,
+        ignoreCampaigns = ignoreCampaigns,
+        approveButtonTerminology = approveButtonTerminology,
+        title = title,
+        gradientOption = gradientOption,
+        startDateTerminology = startDateTerminology,
+        postSignStep = postSignStep
     )
 }
 

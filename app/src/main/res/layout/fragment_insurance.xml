@@ -1,17 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/swipeToRefresh"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".feature.insurance.ui.InsuranceFragment">
-
-    <include
-        android:id="@+id/loadSpinner"
-        layout="@layout/loading_spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center" />
+    tools:context=".feature.insurance.ui.tab.InsuranceFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/insuranceRecycler"
@@ -25,4 +19,4 @@
         tools:itemCount="2"
         tools:listitem="@layout/insurance_contract_card" />
 
-</FrameLayout>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

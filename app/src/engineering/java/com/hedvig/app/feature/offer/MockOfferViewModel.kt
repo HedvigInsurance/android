@@ -1,26 +1,19 @@
 package com.hedvig.app.feature.offer
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.owldroid.fragment.SignStatusFragment
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
-import com.hedvig.android.owldroid.graphql.SignOfferMutation
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.feature.offer.quotedetail.buildDocuments
 import com.hedvig.app.feature.offer.quotedetail.buildInsurableLimits
 import com.hedvig.app.feature.offer.quotedetail.buildPerils
 import com.hedvig.app.feature.offer.ui.checkout.CheckoutParameter
+import com.hedvig.app.feature.offer.ui.checkoutLabel
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 class MockOfferViewModel : OfferViewModel() {
-
-    override val autoStartToken = MutableLiveData<SignOfferMutation.Data>()
-    override val signStatus = MutableLiveData<SignStatusFragment>()
-    override val signError = MutableLiveData<Boolean>()
-
     init {
         load()
     }
@@ -28,15 +21,12 @@ class MockOfferViewModel : OfferViewModel() {
     override fun removeDiscount() = Unit
     override fun writeDiscountToCache(data: RedeemReferralCodeMutation.Data) = Unit
     override suspend fun triggerOpenChat() = Unit
-    override fun startSign() = Unit
-    override fun clearPreviousErrors() = Unit
-    override fun manuallyRecheckSignStatus() = Unit
 
     override fun onOpenQuoteDetails(
         id: String,
     ) {
         val quote = mockData.quoteBundle.quotes.first { it.id == id }
-        _events.tryEmit(
+        _events.trySend(
             Event.OpenQuoteDetails(
                 QuoteDetailItems(
                     quote.displayName,
@@ -49,11 +39,11 @@ class MockOfferViewModel : OfferViewModel() {
     }
 
     override fun approveOffer() {
-        _events.tryEmit(Event.ApproveSuccessful(LocalDate.now()))
+        _events.trySend(Event.ApproveSuccessful(LocalDate.now(), PostSignScreen.MOVE, mockData.quoteBundle.displayName))
     }
 
     override fun onOpenCheckout() {
-        _events.tryEmit(
+        _events.trySend(
             Event.OpenCheckout(
                 CheckoutParameter(
                     quoteIds = listOf(mockData.quoteBundle.quotes[0].id)
@@ -68,17 +58,20 @@ class MockOfferViewModel : OfferViewModel() {
     }
 
     override fun onDiscardOffer() {
-        _events.tryEmit(Event.DiscardOffer)
+        _events.trySend(Event.DiscardOffer)
     }
 
     override fun onGoToDirectDebit() {
+    }
+
+    override fun onSwedishBankIdSign() {
     }
 
     private fun load() {
         viewModelScope.launch {
             delay(650)
             if (shouldError) {
-                _events.tryEmit(Event.Error())
+                _events.trySend(Event.Error())
                 return@launch
             }
             val topOfferItems = OfferItemsBuilder.createTopOfferItems(mockData)
@@ -94,6 +87,7 @@ class MockOfferViewModel : OfferViewModel() {
                     insurableLimitsItems = insurableLimitsItems,
                     bottomOfferItems = bottomOfferItems,
                     signMethod = mockData.signMethodForQuotes,
+                    checkoutLabel = mockData.checkoutLabel(),
                     title = mockData.quoteBundle.appConfiguration.title,
                     loginStatus = LoginStatus.LOGGED_IN
                 )

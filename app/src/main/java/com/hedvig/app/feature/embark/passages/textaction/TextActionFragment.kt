@@ -6,6 +6,7 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import com.google.android.material.textfield.TextInputEditText
 import com.hedvig.app.R
 import com.hedvig.app.databinding.EmbarkInputItemBinding
 import com.hedvig.app.databinding.FragmentTextActionSetBinding
@@ -25,6 +26,7 @@ import com.hedvig.app.util.extensions.addViews
 import com.hedvig.app.util.extensions.hideKeyboardWithDelay
 import com.hedvig.app.util.extensions.onChange
 import com.hedvig.app.util.extensions.onImeAction
+import com.hedvig.app.util.extensions.showKeyboardWithDelay
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
 import com.hedvig.app.util.extensions.viewLifecycleScope
@@ -66,6 +68,13 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
                 )
             }
             val views = createInputViews()
+            views.firstOrNull()?.let {
+                val input = it.findViewById<TextInputEditText>(R.id.input)
+                viewLifecycleScope.launchWhenCreated {
+                    requireContext().showKeyboardWithDelay(input, 500)
+                }
+            }
+
             inputContainer.addViews(views)
 
             messages.adapter = MessageAdapter(data.messages)

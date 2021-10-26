@@ -1,21 +1,21 @@
 package com.hedvig.app.feature.offer
 
 import com.hedvig.android.owldroid.graphql.OfferQuery
-import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationGradientOption
 import com.hedvig.app.R
 import com.hedvig.app.feature.documents.DocumentItems
+import com.hedvig.app.feature.faq.FAQItem
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.offer.ui.OfferModel
 import com.hedvig.app.feature.offer.ui.changestartdate.getStartDate
 import com.hedvig.app.feature.offer.ui.changestartdate.getStartDateLabel
 import com.hedvig.app.feature.offer.ui.changestartdate.toChangeDateBottomSheetData
-import com.hedvig.app.feature.offer.ui.faq.FAQItem
+import com.hedvig.app.feature.offer.ui.checkoutLabel
+import com.hedvig.app.feature.offer.ui.gradientType
 import com.hedvig.app.feature.offer.ui.grossMonthlyCost
 import com.hedvig.app.feature.offer.ui.netMonthlyCost
 import com.hedvig.app.feature.perils.Peril
 import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.feature.table.intoTable
-import com.hedvig.app.util.safeLet
 
 object OfferItemsBuilder {
     fun createTopOfferItems(data: OfferQuery.Data): List<OfferModel> = ArrayList<OfferModel>().apply {
@@ -27,21 +27,25 @@ object OfferItemsBuilder {
                     .quoteBundle
                     .inception
                     .getStartDateLabel(data.quoteBundle.appConfiguration.startDateTerminology),
-                netMonthlyCost = data.netMonthlyCost(),
-                grossMonthlyCost = data.grossMonthlyCost(),
+                premium = if (data.quoteBundle.appConfiguration.ignoreCampaigns) {
+                    data.grossMonthlyCost()
+                } else {
+                    data.netMonthlyCost()
+                },
+                originalPremium = data.grossMonthlyCost(),
+                hasDiscountedPrice = !data.grossMonthlyCost().isEqualTo(data.netMonthlyCost()) &&
+                    !data.quoteBundle.appConfiguration.ignoreCampaigns,
                 incentiveDisplayValue = data
                     .redeemedCampaigns
                     .mapNotNull { it.fragments.incentiveFragment.displayValue },
                 hasCampaigns = data.redeemedCampaigns.isNotEmpty(),
                 changeDateBottomSheetData = data.quoteBundle.inception.toChangeDateBottomSheetData(),
+                checkoutLabel = data.checkoutLabel(),
                 signMethod = data.signMethodForQuotes,
+                approveButtonTerminology = data.quoteBundle.appConfiguration.approveButtonTerminology,
                 showCampaignManagement = data.quoteBundle.appConfiguration.showCampaignManagement,
-                gradientRes = when (data.quoteBundle.appConfiguration.gradientOption) {
-                    QuoteBundleAppConfigurationGradientOption.GRADIENT_ONE -> R.drawable.gradient_fall_sunset
-                    QuoteBundleAppConfigurationGradientOption.GRADIENT_TWO -> R.drawable.gradient_spring_fog
-                    QuoteBundleAppConfigurationGradientOption.GRADIENT_THREE -> R.drawable.gradient_summer_sky
-                    QuoteBundleAppConfigurationGradientOption.UNKNOWN__ -> R.drawable.gradient_spring_fog
-                },
+                ignoreCampaigns = data.quoteBundle.appConfiguration.ignoreCampaigns,
+                gradientType = data.gradientType(),
             ),
         )
         add(
@@ -61,7 +65,7 @@ object OfferItemsBuilder {
             return emptyList()
         }
         val documents = data[0].insuranceTerms.map {
-            DocumentItems.Document.from(it)
+            DocumentItems.Document.from(it.fragments.insuranceTermFragment)
         }
         return listOf(DocumentItems.Header(R.string.OFFER_DOCUMENTS_SECTION_TITLE)) + documents
     }
@@ -84,11 +88,7 @@ object OfferItemsBuilder {
         if (bundle.frequentlyAskedQuestions.isNotEmpty() && bundle.appConfiguration.showFAQ) {
             add(
                 OfferModel.FAQ(
-                    bundle.frequentlyAskedQuestions.mapNotNull {
-                        safeLet(it.headline, it.body) { headline, body ->
-                            FAQItem(headline, body)
-                        }
-                    }
+                    bundle.frequentlyAskedQuestions.mapNotNull { FAQItem.from(it) }
                 )
             )
         }
@@ -143,12 +143,12 @@ object OfferItemsBuilder {
                 add(OfferModel.AutomaticSwitchCard)
             }
         }
-        add(OfferModel.Footer(data.signMethodForQuotes))
+        add(OfferModel.Footer(data.checkoutLabel()))
     }
 
     fun createPerilItems(data: List<OfferQuery.Quote>) = if (data.size == 1) {
         data[0]
-            .perils
+            .contractPerils
             .map { peril ->
                 peril.fragments.perilFragment.let { perilFragment ->
                     PerilItem.Peril(Peril.from(perilFragment))

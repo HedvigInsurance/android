@@ -51,7 +51,7 @@ class OfferDateTest {
     }
 
     @Test
-    fun `should todays date if current insurer is not switchable`() {
+    fun `should show todays date if current insurer is not switchable`() {
         val inception = ConcurrentInceptionBuilder(
             startDate = null,
             currentInsurer = OfferQuery.CurrentInsurer1(

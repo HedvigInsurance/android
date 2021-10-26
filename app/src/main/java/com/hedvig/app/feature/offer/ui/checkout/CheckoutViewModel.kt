@@ -2,7 +2,6 @@ package com.hedvig.app.feature.offer.ui.checkout
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.ui.grossMonthlyCost
 import com.hedvig.app.feature.offer.ui.netMonthlyCost
@@ -10,41 +9,40 @@ import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.ValidationResult
-import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.validateEmail
 import com.hedvig.app.util.validateNationalIdentityNumber
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.money.MonetaryAmount
 
 class CheckoutViewModel(
-    private val _quoteIds: List<String>,
+    _quoteIds: List<String>,
     private val getQuotesUseCase: GetQuotesUseCase,
     private val signQuotesUseCase: SignQuotesUseCase,
     private val marketManager: MarketManager,
-    private val cacheManager: CacheManager,
-    private val loginStatusService: LoginStatusService
 ) : ViewModel() {
+
+    private lateinit var quoteIds: List<String>
 
     init {
         viewModelScope.launch {
             when (val idsResult = getQuotesUseCase(_quoteIds)) {
                 is GetQuotesUseCase.Result.Success -> {
+                    quoteIds = idsResult.ids
                     idsResult
                         .data
                         .onEach(::handleResponse)
-                        .catch { _events.tryEmit(Event.Error(it.message)) }
+                        .catch { _events.trySend(Event.Error(it.message)) }
                         .launchIn(this)
                 }
                 is GetQuotesUseCase.Result.Error -> {
-                    _events.tryEmit(Event.Error(idsResult.message))
+                    _events.trySend(Event.Error(idsResult.message))
                 }
             }
         }
@@ -53,11 +51,7 @@ class CheckoutViewModel(
     private fun handleResponse(response: OfferRepository.OfferResult) {
         when (response) {
             is OfferRepository.OfferResult.Error -> {
-                _events.tryEmit(Event.Error(response.message))
-            }
-            OfferRepository.OfferResult.HasContracts -> {
-                loginStatusService.isViewingOffer = false
-                _events.tryEmit(Event.Error())
+                _events.trySend(Event.Error(response.message))
             }
             is OfferRepository.OfferResult.Success -> {
                 _titleViewState.value = TitleViewState.Loaded(
@@ -130,11 +124,11 @@ class CheckoutViewModel(
 
     fun onTrySign(emailInput: String, identityNumberInput: String) {
         if (inputViewState.value.canSign()) {
-            _events.tryEmit(Event.Loading)
+            _events.trySend(Event.Loading)
             signQuotes(
                 identityNumberInput = identityNumberInput,
                 emailInput = emailInput,
-                quoteIds = _quoteIds
+                quoteIds = quoteIds
             )
         }
     }
@@ -146,13 +140,12 @@ class CheckoutViewModel(
                 ssn = identityNumberInput,
                 email = emailInput
             )
-            when (result) {
-                is SignQuotesUseCase.SignQuoteResult.Error -> _events.tryEmit(Event.Error(result.message))
-                SignQuotesUseCase.SignQuoteResult.Success -> {
-                    cacheManager.clearCache()
-                    _events.tryEmit(Event.CheckoutSuccess)
-                }
+            val event = when (result) {
+                is SignQuotesUseCase.SignQuoteResult.Error -> Event.Error(result.message)
+                SignQuotesUseCase.SignQuoteResult.Success -> Event.CheckoutSuccess
+                else -> Event.Error()
             }
+            _events.trySend(event)
         }
     }
 
@@ -187,13 +180,11 @@ class CheckoutViewModel(
 
     sealed class Event {
         data class Error(val message: String? = null) : Event()
+
         object CheckoutSuccess : Event()
         object Loading : Event()
     }
 
-    private val _events = MutableSharedFlow<Event>(
-        extraBufferCapacity = 1,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST,
-    )
-    val events: SharedFlow<Event> = _events
+    private val _events = Channel<Event>(Channel.UNLIMITED)
+    val events = _events.receiveAsFlow()
 }

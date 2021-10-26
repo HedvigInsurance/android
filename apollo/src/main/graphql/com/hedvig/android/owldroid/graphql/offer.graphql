@@ -19,7 +19,7 @@ query Offer($locale: Locale!, $ids: [ID!]!) {
         ...TableFragment
       }
 
-      perils(locale: $locale) {
+      contractPerils(locale: $locale) {
         ...PerilFragment
       }
       termsAndConditions(locale: $locale) {
@@ -30,9 +30,7 @@ query Offer($locale: Locale!, $ids: [ID!]!) {
         ...InsurableLimitsFragment
       }
       insuranceTerms(locale: $locale) {
-        type
-        displayName
-        url
+        ...InsuranceTermFragment
       }
     }
     bundleCost {
@@ -74,19 +72,16 @@ query Offer($locale: Locale!, $ids: [ID!]!) {
     appConfiguration {
       showCampaignManagement
       showFAQ
+      ignoreCampaigns
+      approveButtonTerminology
       startDateTerminology
       title
       gradientOption
+      postSignStep
     }
   }
 
   signMethodForQuotes(input: $ids)
-
-  contracts {
-    status {
-      __typename
-    }
-  }
 }
 
 fragment CurrentInsurerFragment on CurrentInsurer {

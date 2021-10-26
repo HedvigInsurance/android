@@ -9,22 +9,19 @@ import com.hedvig.android.owldroid.fragment.BasicExpressionFragment
 import com.hedvig.android.owldroid.fragment.ExpressionFragment
 import com.hedvig.android.owldroid.fragment.MessageFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
-import com.hedvig.android.owldroid.type.EmbarkExpressionTypeBinary
-import com.hedvig.android.owldroid.type.EmbarkExpressionTypeMultiple
-import com.hedvig.android.owldroid.type.EmbarkExpressionTypeUnary
 import com.hedvig.android.owldroid.type.EmbarkExternalRedirectLocation
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.embark.util.VariableExtractor
+import com.hedvig.app.feature.embark.util.evaluateExpression
 import com.hedvig.app.util.Percent
 import com.hedvig.app.util.getWithDotNotation
 import com.hedvig.app.util.plus
 import com.hedvig.app.util.safeLet
 import com.hedvig.app.util.toStringArray
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
@@ -39,11 +36,8 @@ abstract class EmbarkViewModel(
     private val _data = MutableLiveData<EmbarkModel>()
     val data: LiveData<EmbarkModel> = _data
 
-    protected val _events = MutableSharedFlow<Event>(
-        extraBufferCapacity = 1,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST,
-    )
-    val events: SharedFlow<Event> = _events
+    protected val _events = Channel<Event>(Channel.UNLIMITED)
+    val events = _events.receiveAsFlow()
 
     sealed class Event {
         data class Offer(val ids: List<String>) : Event()
@@ -124,7 +118,7 @@ abstract class EmbarkViewModel(
             val nextPassage = story.passages.find { it.name == passageName }
             if (nextPassage?.redirects?.isNotEmpty() == true) {
                 nextPassage.redirects.forEach { redirect ->
-                    if (evaluateExpression(redirect.into()) is ExpressionResult.True) {
+                    if (evaluateExpression(redirect.into(), valueStore) is ExpressionResult.True) {
                         redirect.passedKeyValue?.let { (key, value) -> putInStore(key, value) }
                         redirect.to?.let { to ->
                             navigateToPassage(to)
@@ -135,7 +129,7 @@ abstract class EmbarkViewModel(
             }
             nextPassage?.offerRedirect?.data?.keys?.takeIf { it.isNotEmpty() }?.let { keys ->
                 val ids = getListFromStore(keys)
-                _events.tryEmit(Event.Offer(ids))
+                _events.trySend(Event.Offer(ids))
                 return
             }
             nextPassage?.externalRedirect?.data?.location?.let { location ->
@@ -143,18 +137,18 @@ abstract class EmbarkViewModel(
                     EmbarkExternalRedirectLocation.OFFER -> {
                         val id = getFromStore("quoteId")
                         if (id == null) {
-                            _events.tryEmit(Event.Error())
+                            _events.trySend(Event.Error())
                             return
                         }
-                        _events.tryEmit(Event.Offer(listOf(id)))
+                        _events.trySend(Event.Offer(listOf(id)))
                         return
                     }
                     EmbarkExternalRedirectLocation.CLOSE -> {
-                        _events.tryEmit(Event.Close)
+                        _events.trySend(Event.Close)
                         return
                     }
                     EmbarkExternalRedirectLocation.CHAT -> {
-                        _events.tryEmit(Event.Chat)
+                        _events.trySend(Event.Chat)
                         return
                     }
                     else -> {
@@ -426,7 +420,7 @@ abstract class EmbarkViewModel(
 
         val expressionText = message
             .expressions
-            .map { evaluateExpression(it.fragments.expressionFragment) }
+            .map { evaluateExpression(it.fragments.expressionFragment, valueStore) }
             .filterIsInstance<ExpressionResult.True>()
             .firstOrNull()
             ?.resultValue
@@ -435,110 +429,6 @@ abstract class EmbarkViewModel(
         return message.copy(
             text = interpolateMessage(expressionText)
         )
-    }
-
-    private fun evaluateExpression(expression: ExpressionFragment): ExpressionResult {
-        expression.fragments.basicExpressionFragment.asEmbarkExpressionUnary?.let { unaryExpression ->
-            return when (unaryExpression.unaryType) {
-                EmbarkExpressionTypeUnary.ALWAYS -> ExpressionResult.True(unaryExpression.text)
-                EmbarkExpressionTypeUnary.NEVER -> ExpressionResult.False
-                else -> ExpressionResult.False
-            }
-        }
-        expression.fragments.basicExpressionFragment.asEmbarkExpressionBinary?.let { binaryExpression ->
-            when (binaryExpression.binaryType) {
-                EmbarkExpressionTypeBinary.EQUALS -> {
-                    if (valueStore.get(binaryExpression.key) == binaryExpression.value) {
-                        return ExpressionResult.True(binaryExpression.text)
-                    }
-                }
-                EmbarkExpressionTypeBinary.NOT_EQUALS -> {
-                    val stored = valueStore.get(binaryExpression.key)
-                        ?: return ExpressionResult.False
-                    if (stored != binaryExpression.value) {
-                        return ExpressionResult.True(binaryExpression.text)
-                    }
-                }
-                EmbarkExpressionTypeBinary.MORE_THAN,
-                EmbarkExpressionTypeBinary.MORE_THAN_OR_EQUALS,
-                EmbarkExpressionTypeBinary.LESS_THAN,
-                EmbarkExpressionTypeBinary.LESS_THAN_OR_EQUALS,
-                -> {
-                    val storedAsInt = valueStore.get(binaryExpression.key)?.toIntOrNull()
-                        ?: return ExpressionResult.False
-                    val valueAsInt =
-                        binaryExpression.value.toIntOrNull() ?: return ExpressionResult.False
-
-                    val evaluatesToTrue = when (binaryExpression.binaryType) {
-                        EmbarkExpressionTypeBinary.MORE_THAN -> storedAsInt > valueAsInt
-                        EmbarkExpressionTypeBinary.MORE_THAN_OR_EQUALS -> storedAsInt >= valueAsInt
-                        EmbarkExpressionTypeBinary.LESS_THAN -> storedAsInt < valueAsInt
-                        EmbarkExpressionTypeBinary.LESS_THAN_OR_EQUALS -> storedAsInt <= valueAsInt
-                        else -> false
-                    }
-
-                    if (evaluatesToTrue) {
-                        return ExpressionResult.True(binaryExpression.text)
-                    }
-                }
-                else -> {
-                }
-            }
-            return ExpressionResult.False
-        }
-        expression.asEmbarkExpressionMultiple?.let { multipleExpression ->
-            val results =
-                multipleExpression.subExpressions.map {
-                    evaluateExpression(
-                        ExpressionFragment(
-                            fragments = ExpressionFragment.Fragments(it.fragments.basicExpressionFragment),
-                            asEmbarkExpressionMultiple = it.asEmbarkExpressionMultiple1?.let { asMulti ->
-                                ExpressionFragment.AsEmbarkExpressionMultiple(
-                                    multipleType = asMulti.multipleType,
-                                    text = asMulti.text,
-                                    subExpressions = asMulti.subExpressions.map { se ->
-                                        ExpressionFragment.SubExpression2(
-                                            fragments = ExpressionFragment.SubExpression2.Fragments(
-                                                se.fragments.basicExpressionFragment
-                                            ),
-                                            asEmbarkExpressionMultiple1 = se
-                                                .asEmbarkExpressionMultiple2?.let { asMulti2 ->
-                                                    ExpressionFragment.AsEmbarkExpressionMultiple1(
-                                                        multipleType = asMulti2.multipleType,
-                                                        text = asMulti2.text,
-                                                        subExpressions = asMulti2.subExpressions.map { se2 ->
-                                                            ExpressionFragment.SubExpression1(
-                                                                fragments = ExpressionFragment.SubExpression1.Fragments(
-                                                                    se2.fragments.basicExpressionFragment
-                                                                ),
-                                                                asEmbarkExpressionMultiple2 = null,
-                                                            )
-                                                        }
-                                                    )
-                                                }
-                                        )
-                                    }
-                                )
-                            },
-                        )
-                    )
-                }
-            when (multipleExpression.multipleType) {
-                EmbarkExpressionTypeMultiple.AND -> {
-                    if (results.all { it is ExpressionResult.True }) {
-                        return ExpressionResult.True(multipleExpression.text)
-                    }
-                }
-                EmbarkExpressionTypeMultiple.OR -> {
-                    if (results.any { it is ExpressionResult.True }) {
-                        return ExpressionResult.True(multipleExpression.text)
-                    }
-                }
-                else -> {
-                }
-            }
-        }
-        return ExpressionResult.False
     }
 
     private fun interpolateMessage(message: String, store: ValueStoreView = valueStore) =
@@ -672,7 +562,7 @@ class EmbarkViewModelImpl(
                 embarkRepository.embarkStory(name)
             }
             if (result.isFailure) {
-                _events.tryEmit(
+                _events.trySend(
                     Event.Error(
                         result.getOrNull()?.errors?.toString()
                             ?: result.exceptionOrNull()?.message

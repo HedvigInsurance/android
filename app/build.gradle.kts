@@ -27,14 +27,14 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.0.1"
+        kotlinCompilerExtensionVersion = "1.0.3"
     }
 
     defaultConfig {
         applicationId = "com.hedvig"
 
         versionCode = 43
-        versionName = "6.0.4"
+        versionName = "6.2.0"
 
         vectorDrawables.useSupportLibrary = true
 
@@ -125,6 +125,7 @@ dependencies {
     implementation(project(":apollo"))
 
     androidTestImplementation(project(":testdata"))
+    testImplementation(project(":testdata"))
     debugImplementation(project(":testdata"))
 
     "stagingImplementation"(project(":testdata"))
@@ -164,6 +165,8 @@ dependencies {
     androidTestImplementation(Libs.AndroidX.Test.rules)
     androidTestImplementation(Libs.AndroidX.Test.junit)
 
+    implementation(Libs.Accompanist.insets)
+
     implementation(Libs.materialComponents)
     implementation(Libs.flexbox)
 
@@ -176,11 +179,13 @@ dependencies {
     implementation(Libs.OkHttp.coroutines)
     androidTestImplementation(Libs.OkHttp.mockWebServer)
 
+    implementation(platform(Libs.Firebase.bom))
     implementation(Libs.Firebase.playServicesBase)
     implementation(Libs.Firebase.crashlytics)
     implementation(Libs.Firebase.dynamicLinks)
     implementation(Libs.Firebase.config)
     implementation(Libs.Firebase.messaging)
+    implementation(Libs.Firebase.tracking)
 
     implementation(Libs.mixpanel)
 
@@ -200,6 +205,8 @@ dependencies {
     implementation(Libs.Coil.coil)
     implementation(Libs.Coil.svg)
     implementation(Libs.Coil.gif)
+    implementation(Libs.Coil.compose)
+    implementation(Libs.Coil.transformations)
 
     implementation(Libs.tooltip)
 
@@ -238,6 +245,12 @@ dependencies {
     implementation(Libs.AndroidX.Compose.uiTooling)
     implementation(Libs.AndroidX.Lifecycle.compose)
     androidTestImplementation(Libs.AndroidX.Compose.uiTestJunit)
+    debugImplementation(Libs.AndroidX.Compose.uiTestManifest)
+
+    debugImplementation(Libs.Showkase.showkase)
+    "stagingImplementation"(Libs.Showkase.showkase)
+    kaptDebug(Libs.Showkase.processor)
+    "kaptStaging"(Libs.Showkase.processor)
 }
 
 val lokaliseProperties = Properties()

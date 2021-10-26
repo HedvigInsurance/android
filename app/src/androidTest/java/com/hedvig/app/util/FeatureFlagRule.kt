@@ -11,12 +11,12 @@ import org.koin.core.context.unloadKoinModules
 import org.koin.dsl.module
 
 class FeatureFlagRule(
-    vararg flags: Feature
+    vararg flags: Pair<Feature, Boolean>
 ) : ExternalResource() {
     private val mockModule = module {
         single {
             val mock = mockk<FeatureManager>()
-            flags.forEach { every { mock.isFeatureEnabled(it) } returns true }
+            flags.forEach { every { mock.isFeatureEnabled(it.first) } returns it.second }
             mock
         }
     }

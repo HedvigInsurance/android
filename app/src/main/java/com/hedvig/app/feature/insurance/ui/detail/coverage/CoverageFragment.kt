@@ -24,7 +24,10 @@ class CoverageFragment : Fragment(R.layout.contract_detail_coverage_fragment) {
     private val imageLoader: ImageLoader by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val perilsAdapter = PerilsAdapter(parentFragmentManager, imageLoader)
+        val perilsAdapter = PerilsAdapter(
+            fragmentManager = parentFragmentManager,
+            imageLoader = imageLoader,
+        )
         val insurableLimitsAdapter = InsurableLimitsAdapter(parentFragmentManager)
         val concatAdapter = ConcatAdapter(perilsAdapter, insurableLimitsAdapter)
         binding.root.apply {

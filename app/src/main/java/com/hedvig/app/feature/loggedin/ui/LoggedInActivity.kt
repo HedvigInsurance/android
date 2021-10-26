@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.Menu
 import android.view.MenuItem
+import androidx.core.view.forEach
 import androidx.dynamicanimation.animation.FloatValueHolder
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
@@ -75,6 +76,10 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     private lateinit var referralTermsUrl: String
     private lateinit var referralsIncentive: MonetaryAmount
 
+    private val isFromOnboarding: Boolean by lazy {
+        intent.getBooleanExtra(EXTRA_IS_FROM_ONBOARDING, false)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -113,55 +118,31 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             supportActionBar?.setDisplayShowTitleEnabled(false)
 
             bottomNavigation.itemIconTintList = null
-            bottomNavigation.setOnNavigationItemSelectedListener { menuItem ->
-                val id = LoggedInTabs.fromId(menuItem.itemId)
-                if (id == null) {
+            bottomNavigation.setOnItemSelectedListener { menuItem ->
+                val selectedTab = LoggedInTabs.fromId(menuItem.itemId)
+                if (selectedTab == null) {
                     e { "Programmer error: Invalid menu item chosen" }
-                    return@setOnNavigationItemSelectedListener false
+                    return@setOnItemSelectedListener false
                 }
 
-                if (id == lastSelectedTab) {
-                    return@setOnNavigationItemSelectedListener false
+                if (selectedTab == lastSelectedTab) {
+                    return@setOnItemSelectedListener false
                 }
                 supportFragmentManager
                     .beginTransaction()
-                    .replace(R.id.tabContent, id.fragment)
+                    .replace(R.id.tabContent, selectedTab.fragment)
                     .commitNowAllowingStateLoss()
 
                 setupToolBar()
-                animateGradient(id)
-                lastSelectedTab = id
+                animateGradient(selectedTab)
+                lastSelectedTab = selectedTab
+                loggedInViewModel.onTabVisited(selectedTab)
+                loggedInTracker.tabVisited(selectedTab)
                 true
             }
 
-            if (intent.getBooleanExtra(EXTRA_IS_FROM_ONBOARDING, false)) {
-                welcomeViewModel.fetch()
-                welcomeViewModel.data.observe(this@LoggedInActivity) { data ->
-                    WelcomeDialog.newInstance(
-                        data.welcome.mapIndexed { index, page ->
-                            DismissiblePagerModel.TitlePage(
-                                ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
-                                page.title,
-                                page.paragraph,
-                                getString(
-                                    if (index == data.welcome.size - 1) {
-                                        R.string.NEWS_DISMISS
-                                    } else {
-                                        R.string.NEWS_PROCEED
-                                    }
-                                )
-                            )
-                        }
-                    )
-                        .show(supportFragmentManager, WelcomeDialog.TAG)
-                    loggedInRoot.postDelayed(
-                        {
-                            loggedInRoot.show()
-                        },
-                        resources.getInteger(R.integer.slide_in_animation_duration).toLong()
-                    )
-                }
-                intent.removeExtra(EXTRA_IS_FROM_ONBOARDING)
+            if (isFromOnboarding) {
+                fetchAndShowWelcomeDialog(binding)
             }
 
             bindData()
@@ -173,6 +154,34 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 }
             }
         }
+    }
+
+    private fun fetchAndShowWelcomeDialog(binding: ActivityLoggedInBinding) {
+        welcomeViewModel.fetch()
+        welcomeViewModel.data.observe(this@LoggedInActivity) { data ->
+            WelcomeDialog.newInstance(
+                data.welcome.mapIndexed { index, page ->
+                    DismissiblePagerModel.TitlePage(
+                        ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
+                        page.title,
+                        page.paragraph,
+                        getString(
+                            if (index == data.welcome.size - 1) {
+                                R.string.NEWS_DISMISS
+                            } else {
+                                R.string.NEWS_PROCEED
+                            }
+                        )
+                    )
+                }
+            )
+                .show(supportFragmentManager, WelcomeDialog.TAG)
+            binding.loggedInRoot.postDelayed(
+                { binding.loggedInRoot.show() },
+                resources.getInteger(R.integer.slide_in_animation_duration).toLong()
+            )
+        }
+        intent.removeExtra(EXTRA_IS_FROM_ONBOARDING)
     }
 
     private suspend fun showReviewWithDelay() {
@@ -331,6 +340,23 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 ?: intent.extras?.getSerializable(INITIAL_TAB) as? LoggedInTabs
                 ?: LoggedInTabs.HOME
             binding.bottomNavigation.selectedItemId = initialTab.id()
+            loggedInViewModel
+                .unseenTabNotifications
+                .flowWithLifecycle(lifecycle)
+                .onEach { unseenTabNotifications ->
+                    binding.bottomNavigation.menu.forEach { item ->
+                        val asTab = LoggedInTabs.fromId(item.itemId) ?: return@forEach
+                        if (unseenTabNotifications.contains(asTab)) {
+                            val badge = binding.bottomNavigation.getOrCreateBadge(item.itemId)
+                            badge.isVisible = true
+                            badge.horizontalOffset = 4.dp
+                            badge.verticalOffset = 4.dp
+                        } else {
+                            binding.bottomNavigation.removeBadge(item.itemId)
+                        }
+                    }
+                }
+                .launchIn(lifecycleScope)
             setupToolBar()
             binding.loggedInRoot.show()
 
@@ -431,7 +457,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             withoutHistory: Boolean = false,
             initialTab: LoggedInTabs = LoggedInTabs.HOME,
             isFromOnboarding: Boolean = false,
-            showRatingDialog: Boolean = false,
+            showRatingDialog: Boolean = false
         ) = Intent(context, LoggedInActivity::class.java).apply {
             if (withoutHistory) {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

@@ -6,10 +6,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.app.feature.chat.data.ChatEventStore
+import com.hedvig.app.feature.loggedin.service.TabNotificationService
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -27,16 +30,22 @@ abstract class LoggedInViewModel : ViewModel() {
     )
     val shouldOpenReviewDialog: SharedFlow<Boolean> = _shouldOpenReviewDialog.asSharedFlow()
 
+    protected val _unseenTabNotifications = MutableStateFlow<Set<LoggedInTabs>>(emptySet())
+    val unseenTabNotifications = _unseenTabNotifications.asStateFlow()
+
     fun onScroll(scroll: Int) {
         _scroll.postValue(scroll)
     }
 
     abstract fun onReviewByChatComplete()
+
+    abstract fun onTabVisited(tab: LoggedInTabs)
 }
 
 class LoggedInViewModelImpl(
     private val loggedInRepository: LoggedInRepository,
-    private val chatEventStore: ChatEventStore
+    private val chatEventStore: ChatEventStore,
+    private val tabNotificationService: TabNotificationService,
 ) : LoggedInViewModel() {
 
     init {
@@ -53,11 +62,22 @@ class LoggedInViewModelImpl(
 
             response.getOrNull()?.data?.let { _data.postValue(it) }
         }
+        viewModelScope.launch {
+            tabNotificationService
+                .unseenTabNotifications()
+                .collect { unseenTabNotificationSet ->
+                    _unseenTabNotifications.value = unseenTabNotificationSet
+                }
+        }
     }
 
     override fun onReviewByChatComplete() {
         viewModelScope.launch {
             chatEventStore.resetChatClosedCounter()
         }
+    }
+
+    override fun onTabVisited(tab: LoggedInTabs) {
+        viewModelScope.launch { tabNotificationService.visitTab(tab) }
     }
 }
