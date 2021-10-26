@@ -42,6 +42,7 @@ abstract class EmbarkViewModel(
         data class Error(val message: String? = null) : Event()
         object Close : Event()
         object Chat : Event()
+        object Loading : Event()
     }
 
     abstract fun fetchStory(name: String)
@@ -77,9 +78,9 @@ abstract class EmbarkViewModel(
 
     fun getPrefillFromStore(key: String) = valueStore.prefill.get(key)
 
-    fun getFromStore(key: String) = valueStore.get(key)
+    private fun getFromStore(key: String) = valueStore.get(key)
 
-    fun getListFromStore(keys: List<String>): List<String> {
+    private fun getListFromStore(keys: List<String>): List<String> {
         return keys.map {
             valueStore.getList(it) ?: listOfNotNull(valueStore.get(it))
         }.flatten()
@@ -88,88 +89,92 @@ abstract class EmbarkViewModel(
     fun submitAction(nextPassageName: String, submitIndex: Int = 0) {
         viewState.value?.passage?.let { currentPassage ->
             currentPassage.action?.api(submitIndex)?.let { api ->
-                api.asEmbarkApiGraphQLQuery?.let { graphQLQuery ->
-                    handleGraphQLQuery(graphQLQuery)
-                    return
-                }
-                api.asEmbarkApiGraphQLMutation?.let { graphQLMutation ->
-                    handleGraphQLMutation(graphQLMutation)
-                    return
-                }
+                callApi(api)
             }
         }
         navigateToPassage(nextPassageName)
     }
 
     private fun navigateToPassage(passageName: String) {
-        storyData.embarkStory?.let { story ->
-            val nextPassage = story.passages.find { it.name == passageName }
-            if (nextPassage?.redirects?.isNotEmpty() == true) {
-                nextPassage.redirects.forEach { redirect ->
-                    if (evaluateExpression(redirect.into(), valueStore) is ExpressionResult.True) {
-                        redirect.passedKeyValue?.let { (key, value) -> putInStore(key, value) }
-                        redirect.to?.let { to ->
-                            navigateToPassage(to)
-                            return
-                        }
-                    }
-                }
-            }
-            nextPassage?.offerRedirect?.data?.keys?.takeIf { it.isNotEmpty() }?.let { keys ->
+        val nextPassage = storyData.embarkStory?.passages?.find { it.name == passageName }
+        val redirectPassage = getRedirectPassageAndPutInStore(nextPassage?.redirects)
+        val keys = nextPassage?.offerRedirect?.data?.keys?.takeIf { it.isNotEmpty() }
+        val location = nextPassage?.externalRedirect?.data?.location
+        val api = nextPassage?.api?.fragments?.apiFragment
+
+        when {
+            storyData.embarkStory == null || nextPassage == null -> _events.trySend(Event.Error())
+            redirectPassage != null -> navigateToPassage(redirectPassage)
+            keys != null && keys.isNotEmpty() -> {
                 val ids = getListFromStore(keys)
                 _events.trySend(Event.Offer(ids))
-                return
             }
-            nextPassage?.externalRedirect?.data?.location?.let { location ->
-                when (location) {
-                    EmbarkExternalRedirectLocation.OFFER -> {
-                        val id = getFromStore("quoteId")
-                        if (id == null) {
-                            _events.trySend(Event.Error())
-                            return
-                        }
-                        _events.trySend(Event.Offer(listOf(id)))
-                        return
-                    }
-                    EmbarkExternalRedirectLocation.CLOSE -> {
-                        _events.trySend(Event.Close)
-                        return
-                    }
-                    EmbarkExternalRedirectLocation.CHAT -> {
-                        _events.trySend(Event.Chat)
-                        return
-                    }
-                    else -> {
-                        // Do nothing
-                    }
+            location != null -> handleRedirectLocation(location)
+            api != null -> callApi(api)
+            else -> setupPassageAndEmitState(nextPassage)
+        }
+    }
+
+    private fun setupPassageAndEmitState(nextPassage: EmbarkStoryQuery.Passage) {
+        _viewState.value?.passage?.name?.let {
+            valueStore.commitVersion()
+            backStack.push(it)
+        }
+        val state = ViewState(
+            passage = preProcessPassage(nextPassage),
+            navigationDirection = NavigationDirection.FORWARDS,
+            progress = currentProgress(nextPassage),
+            isLoggedIn = loginStatus == LoginStatus.LOGGED_IN,
+            hasTooltips = nextPassage.tooltips.isNotEmpty()
+        )
+        _viewState.postValue(state)
+        nextPassage.tracks.forEach { track ->
+            tracker.track(track.eventName, trackingData(track))
+        }
+    }
+
+    private fun callApi(apiFragment: ApiFragment) {
+        _events.trySend(Event.Loading)
+
+        apiFragment.asEmbarkApiGraphQLQuery?.let { graphQLQuery ->
+            handleGraphQLQuery(graphQLQuery)
+        } ?: apiFragment.asEmbarkApiGraphQLMutation?.let { graphQLMutation ->
+            handleGraphQLMutation(graphQLMutation)
+        } ?: _events.trySend(Event.Error())
+    }
+
+    private fun handleRedirectLocation(location: EmbarkExternalRedirectLocation) {
+        when (location) {
+            EmbarkExternalRedirectLocation.OFFER -> {
+                val id = getFromStore("quoteId")
+                if (id == null) {
+                    _events.trySend(Event.Error())
+                } else {
+                    _events.trySend(Event.Offer(listOf(id)))
                 }
             }
-            nextPassage?.api?.let { api ->
-                api.fragments.apiFragment.asEmbarkApiGraphQLQuery?.let { graphQLQuery ->
-                    handleGraphQLQuery(graphQLQuery)
-                    return
-                }
-                api.fragments.apiFragment.asEmbarkApiGraphQLMutation?.let { graphQLMutation ->
-                    handleGraphQLMutation(graphQLMutation)
-                    return
-                }
+            EmbarkExternalRedirectLocation.CLOSE -> {
+                _events.trySend(Event.Close)
             }
-            _viewState.value?.passage?.name?.let {
-                valueStore.commitVersion()
-                backStack.push(it)
+            EmbarkExternalRedirectLocation.CHAT -> {
+                _events.trySend(Event.Chat)
             }
-            val state = ViewState(
-                passage = preProcessPassage(nextPassage),
-                navigationDirection = NavigationDirection.FORWARDS,
-                progress = currentProgress(nextPassage),
-                isLoggedIn = loginStatus == LoginStatus.LOGGED_IN,
-                hasTooltips = nextPassage?.tooltips?.isNotEmpty() == true
-            )
-            _viewState.postValue(state)
-            nextPassage?.tracks?.forEach { track ->
-                tracker.track(track.eventName, trackingData(track))
+            else -> {
+                // Do nothing
             }
         }
+    }
+
+    private fun getRedirectPassageAndPutInStore(redirects: List<EmbarkStoryQuery.Redirect>?): String? {
+        redirects?.forEach { redirect ->
+            if (evaluateExpression(redirect.into(), valueStore) is ExpressionResult.True) {
+                redirect.passedKeyValue?.let { (key, value) -> putInStore(key, value) }
+                redirect.to?.let { to ->
+                    return to
+                }
+            }
+        }
+        return null
     }
 
     private fun trackingData(track: EmbarkStoryQuery.Track) = when {
@@ -228,11 +233,11 @@ abstract class EmbarkViewModel(
         }
     }
 
-    private fun handleQueryResult(result: GraphQLQueryUseCase.GraphQLQueryResult) {
+    private fun handleQueryResult(result: GraphQLQueryResult) {
         when (result) {
             // TODO Handle errors 
-            is GraphQLQueryUseCase.GraphQLQueryResult.Error -> navigateToPassage(result.passageName)
-            is GraphQLQueryUseCase.GraphQLQueryResult.ValuesFromResponse -> {
+            is GraphQLQueryResult.Error -> navigateToPassage(result.passageName)
+            is GraphQLQueryResult.ValuesFromResponse -> {
                 result.arrayValues.forEach {
                     valueStore.put(it.first, it.second)
                 }

@@ -4,8 +4,10 @@ import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.testdata.feature.embark.data.STANDARD_STORY
 import org.json.JSONObject
 
-// TODO Inject use-case interface
-class MockEmbarkViewModel(tracker: EmbarkTracker) : EmbarkViewModel(tracker, ValueStoreImpl(),) {
+class MockEmbarkViewModel(
+    tracker: EmbarkTracker,
+    graphQLQueryUseCase: GraphQLQueryUseCase
+) : EmbarkViewModel(tracker, ValueStoreImpl(), graphQLQueryUseCase) {
     init {
         fetchStory("")
     }

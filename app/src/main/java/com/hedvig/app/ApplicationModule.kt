@@ -53,6 +53,7 @@ import com.hedvig.app.feature.embark.EmbarkTracker
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.EmbarkViewModelImpl
 import com.hedvig.app.feature.embark.GraphQLQueryUseCase
+import com.hedvig.app.feature.embark.GraphQLQueryUseCaseImpl
 import com.hedvig.app.feature.embark.ValueStore
 import com.hedvig.app.feature.embark.ValueStoreImpl
 import com.hedvig.app.feature.embark.passages.audiorecorder.AudioRecorderViewModel
@@ -573,7 +574,7 @@ val useCaseModule = module {
     single { SubscribeToSwedishBankIdSignStatusUseCase(get()) }
     single { GetPostSignDependenciesUseCase(get()) }
     single { GetCrossSellsUseCase(get()) }
-    single { GraphQLQueryUseCase(get()) }
+    single<GraphQLQueryUseCase> { GraphQLQueryUseCaseImpl(get()) }
 }
 
 val cacheManagerModule = module {

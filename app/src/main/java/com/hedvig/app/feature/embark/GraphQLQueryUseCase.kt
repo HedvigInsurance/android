@@ -7,24 +7,38 @@ import com.hedvig.app.util.toStringArray
 import org.json.JSONArray
 import org.json.JSONObject
 
-class GraphQLQueryUseCase(
-    private val embarkRepository: EmbarkRepository
-) {
-
-    sealed class GraphQLQueryResult {
-        data class Error(
-            val message: String?,
-            val passageName: String
-        ) : GraphQLQueryResult()
-
-        data class ValuesFromResponse(
-            val arrayValues: List<Pair<String, List<String>>>,
-            val objectValues: List<Pair<String, String>>,
-            val passageName: String?
-        ) : GraphQLQueryResult()
-    }
-
+interface GraphQLQueryUseCase {
     suspend fun executeQuery(
+        graphQLQuery: ApiFragment.AsEmbarkApiGraphQLQuery,
+        variables: JSONObject?,
+        fileVariables: List<FileVariable>
+    ): GraphQLQueryResult
+
+    suspend fun executeMutation(
+        graphQLMutation: ApiFragment.AsEmbarkApiGraphQLMutation,
+        variables: JSONObject?,
+        fileVariables: List<FileVariable>
+    ): GraphQLQueryResult
+}
+
+sealed class GraphQLQueryResult {
+    data class Error(
+        val message: String?,
+        val passageName: String
+    ) : GraphQLQueryResult()
+
+    data class ValuesFromResponse(
+        val arrayValues: List<Pair<String, List<String>>>,
+        val objectValues: List<Pair<String, String>>,
+        val passageName: String?
+    ) : GraphQLQueryResult()
+}
+
+class GraphQLQueryUseCaseImpl(
+    private val embarkRepository: EmbarkRepository
+) : GraphQLQueryUseCase {
+
+    override suspend fun executeQuery(
         graphQLQuery: ApiFragment.AsEmbarkApiGraphQLQuery,
         variables: JSONObject?,
         fileVariables: List<FileVariable>
@@ -38,7 +52,7 @@ class GraphQLQueryUseCase(
         }
     }
 
-    suspend fun executeMutation(
+    override suspend fun executeMutation(
         graphQLMutation: ApiFragment.AsEmbarkApiGraphQLMutation,
         variables: JSONObject?,
         fileVariables: List<FileVariable>

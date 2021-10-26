@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <com.hedvig.app.feature.embark.ui.MaterialProgressToolbar
         android:id="@+id/progressToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:titleTextColor="?colorPrimary" />
 
     <include
+        app:layout_constraintTop_toBottomOf="@id/progressToolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="@dimen/base_margin_quintuple"
         android:layout_width="@dimen/loading_spinner_width"
         android:layout_height="@dimen/loading_spinner_height"
@@ -22,7 +26,31 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/passageContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/progressToolbar"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="0dp" />
 
-</LinearLayout>
+    <FrameLayout
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/progressToolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:id="@+id/fullScreenLoadingSpinnerLayout"
+        android:background="@color/color_background_95">
+
+        <include
+            android:layout_marginTop="@dimen/base_margin_quintuple"
+            android:layout_width="@dimen/loading_spinner_width"
+            android:layout_height="@dimen/loading_spinner_height"
+            android:layout_gravity="center"
+            layout="@layout/loading_spinner" />
+
+    </FrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
