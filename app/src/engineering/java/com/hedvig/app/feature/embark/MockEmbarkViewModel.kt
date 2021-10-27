@@ -2,7 +2,6 @@ package com.hedvig.app.feature.embark
 
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.testdata.feature.embark.data.STANDARD_STORY
-import org.json.JSONObject
 
 class MockEmbarkViewModel(
     tracker: EmbarkTracker,
@@ -23,6 +22,5 @@ class MockEmbarkViewModel(
     companion object {
         var shouldLoad = true
         var mockedData = STANDARD_STORY
-        var graphQLQueryResponse: JSONObject? = null
     }
 }
