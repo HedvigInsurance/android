@@ -106,6 +106,7 @@ class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activ
     private fun startAdyenPayment() {
         val cardConfig = CardConfiguration.Builder(this, getString(R.string.ADYEN_CLIENT_KEY))
             .setShowStorePaymentField(false)
+            .setEnvironment(getEnvironment())
             .build()
 
         val googlePayConfig =
@@ -127,16 +128,16 @@ class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activ
             .addCardConfiguration(cardConfig)
             .addGooglePayConfiguration(googlePayConfig)
             .setShopperLocale(getLocale(this, marketManager.market))
-            .setEnvironment(
-                if (isDebug()) {
-                    Environment.TEST
-                } else {
-                    Environment.EUROPE
-                }
-            )
+            .setEnvironment(getEnvironment())
             .build()
 
         DropIn.startPayment(this, paymentMethods, dropInConfiguration)
+    }
+
+    private fun getEnvironment() = if (isDebug()) {
+        Environment.TEST
+    } else {
+        Environment.EUROPE
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
