@@ -87,6 +87,11 @@ object ChatNotificationManager {
             .setLabel(context.getString(R.string.notifications_chat_reply_action))
             .build()
 
+        val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+        } else {
+            PendingIntent.FLAG_UPDATE_CURRENT
+        }
         val replyPendingIntent = PendingIntent.getBroadcast(
             context,
             CHAT_REPLY_REQUEST_CODE,
@@ -96,7 +101,7 @@ object ChatNotificationManager {
                     CHAT_NOTIFICATION_ID
                 )
             },
-            PendingIntent.FLAG_UPDATE_CURRENT // Add `PendingIntent.FLAG_MUTABLE` when targeting SDK 31`
+            flags,
         )
 
         val replyAction = NotificationCompat.Action.Builder(
