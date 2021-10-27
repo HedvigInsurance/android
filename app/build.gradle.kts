@@ -17,19 +17,13 @@ configure<com.jaredsburrows.license.LicenseReportExtension> {
 }
 
 android {
-    // region TODO Extract this to a BaseAppModuleExtension.commonConfig() again
-    compileSdk = libs.versions.compileSdkVersion.get().toInt()
-
-    defaultConfig {
-        minSdk = libs.versions.minSdkVersion.get().toInt()
-        targetSdk = libs.versions.targetSdkVersion.get().toInt()
-    }
-
-    compileOptions {
-        isCoreLibraryDesugaringEnabled = true
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
+    commonConfig(
+        AndroidVersions(
+            libs.versions.compileSdkVersion.get().toInt(),
+            libs.versions.minSdkVersion.get().toInt(),
+            libs.versions.targetSdkVersion.get().toInt(),
+        )
+    )
 
     buildFeatures {
         viewBinding = true
@@ -37,7 +31,6 @@ android {
         renderScript = false
         compose = true
     }
-    // endregion
 
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.androidx.compose.get()
@@ -54,10 +47,6 @@ android {
         resourceConfigurations.addAll(listOf("en", "en-rNO", "en-rSE", "en-rDK", "nb-rNO", "sv-rSE", "da-rDK"))
 
         testInstrumentationRunner = "com.hedvig.app.TestRunner"
-    }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
     }
 
     lint {
@@ -193,7 +182,7 @@ dependencies {
     implementation(libs.okhttp.coroutines)
     androidTestImplementation(libs.okhttp.mockWebServer)
 
-    // TODO use bom again? Not useful for version catalogs maybe?
+    // Todo: Look into if this is the proper way to use boms with version catalogs
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.playServicesBase)
     implementation(libs.firebase.crashlytics)

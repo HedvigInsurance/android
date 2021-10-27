@@ -4,28 +4,13 @@ plugins {
 }
 
 android {
-    // region TODO Extract this to a LibraryExtension.commonConfig() again
-    compileSdk = libs.versions.compileSdkVersion.get().toInt()
-
-    defaultConfig {
-        minSdk = libs.versions.minSdkVersion.get().toInt()
-        targetSdk = libs.versions.targetSdkVersion.get().toInt()
-    }
-
-    compileOptions {
-        isCoreLibraryDesugaringEnabled = true
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-
-    buildTypes {
-        maybeCreate("staging")
-
-        named("debug") {}
-        named("staging") {}
-        named("release") {}
-    }
-    // endregion
+    commonConfig(
+        AndroidVersions(
+            libs.versions.compileSdkVersion.get().toInt(),
+            libs.versions.minSdkVersion.get().toInt(),
+            libs.versions.targetSdkVersion.get().toInt(),
+        )
+    )
 
     buildFeatures {
         buildConfig = false
@@ -35,10 +20,6 @@ android {
         renderScript = false
         resValues = false
         shaders = false
-    }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
     }
 }
 

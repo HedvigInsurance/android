@@ -5,7 +5,7 @@ targetSdkVersion = "30"
 minSdkVersion = "23"
 
 # gradlePlugin versions
-androidBuildTools = "7.0.2"
+androidBuildTools = "7.0.3"
 apollo = "2.5.9"
 crashlytics = "2.7.1"
 googleServices = "4.3.10"
@@ -73,6 +73,7 @@ tooltip = "1.2.2"
 zXing = "3.4.1"
 
 [libraries]
+# Plugins
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "androidBuildTools" }
 apollo-gradlePlugin = { module = "com.apollographql.apollo:apollo-gradle-plugin", version.ref = "apollo" }
 crashlytics-gradlePlugin = { module = "com.google.firebase:firebase-crashlytics-gradle", version.ref = "crashlytics" }
@@ -81,6 +82,7 @@ kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", ve
 licenses-gradlePlugin = { module = "com.jaredsburrows:gradle-license-plugin", version.ref = "license" }
 lokalise-gradlePlugin = { module = "com.hedvig.android:lokalise-plugin", version.ref = "lokalise" }
 
+# Libraries listed alphabetically
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk7", version.ref = "kotlin" }
 
 accompanist-insets = { module = "com.google.accompanist:accompanist-insets", version.ref = "accompanist" }
