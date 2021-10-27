@@ -40,9 +40,9 @@ abstract class EmbarkViewModel(
     sealed class Event {
         data class Offer(val ids: List<String>) : Event()
         data class Error(val message: String? = null) : Event()
+        data class Loading(val show: Boolean) : Event()
         object Close : Event()
         object Chat : Event()
-        object Loading : Event()
     }
 
     abstract fun fetchStory(name: String)
@@ -134,7 +134,7 @@ abstract class EmbarkViewModel(
     }
 
     private fun callApi(apiFragment: ApiFragment) {
-        _events.trySend(Event.Loading)
+        _events.trySend(Event.Loading(show = true))
 
         apiFragment.asEmbarkApiGraphQLQuery?.let { graphQLQuery ->
             handleGraphQLQuery(graphQLQuery)
@@ -234,6 +234,8 @@ abstract class EmbarkViewModel(
     }
 
     private fun handleQueryResult(result: GraphQLQueryResult) {
+        _events.trySend(Event.Loading(show = false))
+
         when (result) {
             // TODO Handle errors 
             is GraphQLQueryResult.Error -> navigateToPassage(result.passageName)

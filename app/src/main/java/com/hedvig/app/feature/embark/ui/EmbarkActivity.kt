@@ -125,9 +125,9 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                                 .create()
                                 .show()
                         }
-                        EmbarkViewModel.Event.Loading -> {
+                        is EmbarkViewModel.Event.Loading -> {
                             TransitionManager.beginDelayedTransition(root)
-                            fullScreenLoadingSpinnerLayout.show()
+                            fullScreenLoadingSpinnerLayout.isVisible = event.show
                         }
                         EmbarkViewModel.Event.Close -> {
                             fullScreenLoadingSpinnerLayout.hide()
