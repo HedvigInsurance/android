@@ -8,20 +8,6 @@ import com.hedvig.app.util.toStringArray
 import org.json.JSONArray
 import org.json.JSONObject
 
-interface GraphQLQueryUseCase {
-    suspend fun executeQuery(
-        graphQLQuery: ApiFragment.AsEmbarkApiGraphQLQuery,
-        variables: JSONObject?,
-        fileVariables: List<FileVariable>
-    ): GraphQLQueryResult
-
-    suspend fun executeMutation(
-        graphQLMutation: ApiFragment.AsEmbarkApiGraphQLMutation,
-        variables: JSONObject?,
-        fileVariables: List<FileVariable>
-    ): GraphQLQueryResult
-}
-
 sealed class GraphQLQueryResult {
     data class Error(
         val message: String?,
@@ -35,11 +21,11 @@ sealed class GraphQLQueryResult {
     ) : GraphQLQueryResult()
 }
 
-class GraphQLQueryUseCaseImpl(
+class GraphQLQueryUseCase(
     private val embarkRepository: EmbarkRepository
-) : GraphQLQueryUseCase {
+) {
 
-    override suspend fun executeQuery(
+    suspend fun executeQuery(
         graphQLQuery: ApiFragment.AsEmbarkApiGraphQLQuery,
         variables: JSONObject?,
         fileVariables: List<FileVariable>
@@ -64,7 +50,7 @@ class GraphQLQueryUseCaseImpl(
         else -> parseValuesFromJsonResult(result, graphQLQuery)
     }
 
-    override suspend fun executeMutation(
+    suspend fun executeMutation(
         graphQLMutation: ApiFragment.AsEmbarkApiGraphQLMutation,
         variables: JSONObject?,
         fileVariables: List<FileVariable>
