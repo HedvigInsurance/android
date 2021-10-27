@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.embark
 
+import com.adyen.checkout.core.model.getStringOrNull
 import com.hedvig.android.owldroid.fragment.ApiFragment
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.getWithDotNotation
@@ -48,8 +49,19 @@ class GraphQLQueryUseCaseImpl(
                 embarkRepository.graphQLQuery(graphQLQuery.queryData.query, variables, fileVariables)
         ) {
             is QueryResult.Error -> GraphQLQueryResult.Error(result.message, graphQLQuery.getErrorPassageName())
-            is QueryResult.Success -> parseValuesFromJsonResult(result, graphQLQuery)
+            is QueryResult.Success -> handleQueryCallSuccess(graphQLQuery, result)
         }
+    }
+
+    private fun handleQueryCallSuccess(
+        graphQLQuery: ApiFragment.AsEmbarkApiGraphQLQuery,
+        result: QueryResult.Success<JSONObject>
+    ) = when {
+        hasErrors(graphQLQuery) || result.data.isNull(DATA_TITLE) -> GraphQLQueryResult.Error(
+            result.getErrorMessage(),
+            graphQLQuery.getErrorPassageName()
+        )
+        else -> parseValuesFromJsonResult(result, graphQLQuery)
     }
 
     override suspend fun executeMutation(
@@ -62,8 +74,19 @@ class GraphQLQueryUseCaseImpl(
                 embarkRepository.graphQLQuery(graphQLMutation.mutationData.mutation, variables, fileVariables)
         ) {
             is QueryResult.Error -> GraphQLQueryResult.Error(result.message, graphQLMutation.getErrorPassageName())
-            is QueryResult.Success -> parseValuesFromJsonResult(result, graphQLMutation)
+            is QueryResult.Success -> handleMutationCallSuccess(graphQLMutation, result)
         }
+    }
+
+    private fun handleMutationCallSuccess(
+        graphQLMutation: ApiFragment.AsEmbarkApiGraphQLMutation,
+        result: QueryResult.Success<JSONObject>
+    ) = when {
+        hasErrors(graphQLMutation) || result.data.isNull(DATA_TITLE) -> GraphQLQueryResult.Error(
+            result.getErrorMessage(),
+            graphQLMutation.getErrorPassageName()
+        )
+        else -> parseValuesFromJsonResult(result, graphQLMutation)
     }
 
     private fun parseValuesFromJsonResult(
@@ -71,7 +94,7 @@ class GraphQLQueryUseCaseImpl(
         graphQLQuery: ApiFragment.AsEmbarkApiGraphQLQuery
     ): GraphQLQueryResult.ValuesFromResponse {
 
-        val response = result.data.getJSONObject("data")
+        val response = result.data.getJSONObject(DATA_TITLE)
         val arrayValues = mutableListOf<Pair<String, List<String>>>()
         val objectValues = mutableListOf<Pair<String, String>>()
 
@@ -95,7 +118,7 @@ class GraphQLQueryUseCaseImpl(
         result: QueryResult.Success<JSONObject>,
         graphQLMutation: ApiFragment.AsEmbarkApiGraphQLMutation
     ): GraphQLQueryResult.ValuesFromResponse {
-        val response = result.data.getJSONObject("data")
+        val response = result.data.getJSONObject(DATA_TITLE)
 
         val arrayValues = mutableListOf<Pair<String, List<String>>>()
         val objectValues = mutableListOf<Pair<String, String>>()
@@ -126,6 +149,12 @@ class GraphQLQueryUseCaseImpl(
         }
     }
 
+    private fun hasErrors(graphQLQuery: ApiFragment.AsEmbarkApiGraphQLQuery) =
+        graphQLQuery.queryData.errors.any { it.fragments.graphQLErrorsFragment.contains != null }
+
+    private fun hasErrors(graphQLMutation: ApiFragment.AsEmbarkApiGraphQLMutation) =
+        graphQLMutation.mutationData.errors.any { it.fragments.graphQLErrorsFragment.contains != null }
+
     private fun ApiFragment.AsEmbarkApiGraphQLQuery.getSuccessPassageName() =
         queryData.next?.fragments?.embarkLinkFragment?.name
 
@@ -139,4 +168,14 @@ class GraphQLQueryUseCaseImpl(
     private fun ApiFragment.AsEmbarkApiGraphQLMutation.getErrorPassageName() = mutationData
         .errors.first().fragments.graphQLErrorsFragment
         .next.fragments.embarkLinkFragment.name
+
+    private fun QueryResult.Success<JSONObject>.getErrorMessage(): String? {
+        return (data.get(ERROR_TITLE) as JSONArray).getJSONObject(0).getStringOrNull(ERROR_MESSAGE)
+    }
+
+    companion object {
+        private const val DATA_TITLE = "data"
+        private const val ERROR_TITLE = "errors"
+        private const val ERROR_MESSAGE = "message"
+    }
 }
