@@ -2,6 +2,18 @@ query HomeQuery($locale: Locale!, $languageCode: String!) {
   member {
     firstName
   }
+  claims {
+    id
+    contract {
+      id
+      displayName
+    }
+    status
+    outcome
+    payout {
+      ...MonetaryAmountFragment
+    }
+  }
   contracts {
     displayName
     upcomingRenewal {
