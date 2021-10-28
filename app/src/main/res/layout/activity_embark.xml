@@ -49,6 +49,7 @@
             android:layout_width="@dimen/loading_spinner_width"
             android:layout_height="@dimen/loading_spinner_height"
             android:layout_gravity="center"
+            android:id="@+id/loadingSpinner"
             layout="@layout/loading_spinner" />
 
     </FrameLayout>
