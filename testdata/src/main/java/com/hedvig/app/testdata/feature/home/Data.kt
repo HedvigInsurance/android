@@ -1,9 +1,7 @@
 package com.hedvig.app.testdata.feature.home
 
-import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.app.testdata.common.ContractStatus
 import com.hedvig.app.testdata.feature.home.builders.HomeDataBuilder
-import com.hedvig.app.testdata.feature.home.builders.HomeQueryClaimBuilder
 import com.hedvig.app.testdata.feature.home.builders.ImportantMessageBuilder
 import java.time.LocalDate
 
@@ -61,15 +59,4 @@ val HOME_DATA_ACTIVE_WITH_MULTIPLE_PSA = HomeDataBuilder(
             "COVID-19: Your insurance doesn’t cover trips to certain countries. See full list at UD."
         ).build()
     )
-).build()
-
-fun homeActiveContractWithClaim(
-    homeQueryClaimBuilder: HomeQueryClaimBuilder
-) = homeActiveContractWithClaim(listOf(homeQueryClaimBuilder))
-
-fun homeActiveContractWithClaim(
-    homeQueryClaimBuilders: List<HomeQueryClaimBuilder>,
-): HomeQuery.Data = HomeDataBuilder(
-    contracts = listOf(ContractStatus.ACTIVE),
-    homeQueryClaimBuilders = homeQueryClaimBuilders
 ).build()

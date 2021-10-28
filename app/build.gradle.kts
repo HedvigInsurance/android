@@ -137,9 +137,6 @@ dependencies {
     implementation(Libs.Coroutines.android)
     testImplementation(Libs.Coroutines.test)
 
-    implementation(Libs.Accompanist.pager)
-    implementation(Libs.Accompanist.pagerIndicators)
-
     implementation(Libs.AndroidX.appCompat)
     implementation(Libs.AndroidX.media)
     implementation(Libs.AndroidX.constraintLayout)

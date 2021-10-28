@@ -12,7 +12,6 @@ import com.hedvig.app.databinding.HomeFragmentBinding
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
 import com.hedvig.app.feature.home.service.HomeTracker
-import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusData
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
 import com.hedvig.app.feature.settings.MarketManager
@@ -150,12 +149,6 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                 val items = mutableListOf<HomeModel>().apply {
                     addAll(listOfNotNull(*psaItems(successData.importantMessages).toTypedArray()))
                     add(HomeModel.BigText.Active(firstName))
-                    // TODO think about showing this in other states as well? Not just on isActive(...)
-                    if (successData.claims.isNotEmpty()) {
-                        add(
-                            HomeModel.ClaimStatus(successData.claims.map(ClaimStatusData::fromHomeQueryClaim))
-                        )
-                    }
                     add(HomeModel.StartClaimContained)
                     add(HomeModel.HowClaimsWork(successData.howClaimsWork))
                     if (pendingAddress != null && pendingAddress.isNotBlank()) {
@@ -190,7 +183,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
         .filterNotNull()
         .map { HomeModel.PSA(it) }
 
-    private fun upcomingRenewals(contracts: List<HomeQuery.Contract1>) =
+    private fun upcomingRenewals(contracts: List<HomeQuery.Contract>) =
         contracts.mapNotNull { c ->
             c.upcomingRenewal?.let {
                 HomeModel.UpcomingRenewal(c.displayName, it)
@@ -217,23 +210,23 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
         }
 
     companion object {
-        private fun isPending(contracts: List<HomeQuery.Contract1>) =
+        private fun isPending(contracts: List<HomeQuery.Contract>) =
             contracts.all { it.status.asPendingStatus != null }
 
-        private fun isActiveInFuture(contracts: List<HomeQuery.Contract1>) =
+        private fun isActiveInFuture(contracts: List<HomeQuery.Contract>) =
             contracts.all {
                 it.status.asActiveInFutureStatus != null ||
                     it.status.asActiveInFutureAndTerminatedInFutureStatus != null
             }
 
-        private fun isActive(contracts: List<HomeQuery.Contract1>) =
+        private fun isActive(contracts: List<HomeQuery.Contract>) =
             contracts.any {
                 it.status.asActiveStatus != null ||
                     it.status.asTerminatedTodayStatus != null ||
                     it.status.asTerminatedInFutureStatus != null
             }
 
-        private fun isTerminated(contracts: List<HomeQuery.Contract1>) =
+        private fun isTerminated(contracts: List<HomeQuery.Contract>) =
             contracts.all { it.status.asTerminatedStatus != null }
     }
 }
