@@ -9,6 +9,13 @@ object Libs {
         const val test = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$version"
     }
 
+    object Accompanist {
+        private const val version = "0.19.0"
+        const val pager = "com.google.accompanist:accompanist-pager:$version"
+        const val pagerIndicators = "com.google.accompanist:accompanist-pager-indicators:$version"
+        const val insets = "com.google.accompanist:accompanist-insets:$version"
+    }
+
     object AndroidX {
         const val constraintLayout = "androidx.constraintlayout:constraintlayout:2.1.1"
         const val appCompat = "androidx.appcompat:appcompat:1.3.1"
@@ -62,11 +69,6 @@ object Libs {
             const val mdcAdapter = "com.google.android.material:compose-theme-adapter:$version"
             const val uiTestManifest = "androidx.compose.ui:ui-test-manifest:$version"
         }
-    }
-
-    object Accompanist {
-        private const val version = "0.19.0"
-        const val insets = "com.google.accompanist:accompanist-insets:$version"
     }
 
     const val materialComponents = "com.google.android.material:material:1.4.0"

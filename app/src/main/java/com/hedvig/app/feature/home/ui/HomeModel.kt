@@ -3,6 +3,7 @@ package com.hedvig.app.feature.home.ui
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
+import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusData
 import java.time.LocalDate
 
 sealed class HomeModel {
@@ -35,6 +36,10 @@ sealed class HomeModel {
         object ActiveInFuture : BodyText()
         object Terminated : BodyText()
     }
+
+    data class ClaimStatus(
+        val claimStatusDataList: List<ClaimStatusData>
+    ) : HomeModel()
 
     object StartClaimOutlined : HomeModel()
 
