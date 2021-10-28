@@ -61,10 +61,6 @@ abstract class EmbarkViewModel(
 
             totalSteps = getPassagesLeft(firstPassage)
             navigateToPassage(firstPassage.name)
-
-            firstPassage.tracks.forEach { track ->
-                tracker.track(track.eventName, trackingData(track))
-            }
         }
     }
 
