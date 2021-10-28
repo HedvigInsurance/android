@@ -69,7 +69,13 @@ class QuoteDetailActivity : BaseActivity(R.layout.quote_detail_activity) {
             val perilAdapter = PerilsAdapter(
                 fragmentManager = supportFragmentManager,
                 imageLoader = imageLoader,
-            ).also { it.submitList(perils) }
+            ).also {
+                it.submitList(
+                    listOf(
+                        PerilItem.Header.Simple(getString(R.string.cross_sell_info_coverage_title))
+                    ) + perils
+                )
+            }
 
             val insurableLimitAdapter = InsurableLimitsAdapter(
                 fragmentManager = supportFragmentManager

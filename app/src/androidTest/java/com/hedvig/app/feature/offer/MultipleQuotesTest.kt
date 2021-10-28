@@ -78,7 +78,7 @@ class MultipleQuotesTest : TestCase() {
         QuoteDetailScreen {
             toolbar { hasTitle(homeContentsDisplayName) }
             recycler {
-                childAt<PerilRecyclerItem>(0) {
+                childAt<PerilRecyclerItem>(1) {
                     label { hasText(homeContentsFirstPerilTitle) }
                 }
             }

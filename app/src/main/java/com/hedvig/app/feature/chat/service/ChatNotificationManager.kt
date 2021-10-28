@@ -77,11 +77,17 @@ object ChatNotificationManager {
         val chatIntent = Intent(context, ChatActivity::class.java)
         chatIntent.putExtra(ChatActivity.EXTRA_SHOW_CLOSE, true)
 
+        val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
+        } else {
+            PendingIntent.FLAG_UPDATE_CURRENT
+        }
+
         val pendingIntent: PendingIntent? = TaskStackBuilder
             .create(context)
             .run {
                 addNextIntentWithParentStack(chatIntent)
-                getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+                getPendingIntent(0, flags)
             }
         val replyRemoteInput = RemoteInput.Builder(CHAT_REPLY_KEY)
             .setLabel(context.getString(R.string.notifications_chat_reply_action))
@@ -96,7 +102,7 @@ object ChatNotificationManager {
                     CHAT_NOTIFICATION_ID
                 )
             },
-            PendingIntent.FLAG_UPDATE_CURRENT // Add `PendingIntent.FLAG_MUTABLE` when targeting SDK 31`
+            flags,
         )
 
         val replyAction = NotificationCompat.Action.Builder(
