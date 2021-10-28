@@ -39,9 +39,12 @@ class AudioRecorderFragment : Fragment() {
                     startRecording = model::startRecording,
                     clock = clock,
                     stopRecording = model::stopRecording,
-                    submit = { filePath ->
-                        embarkViewModel.putInStore(parameters.key, filePath)
-                        embarkViewModel.submitAction(parameters.link)
+                    submit = {
+                        val filePath = (state as? AudioRecorderViewModel.ViewState.Playback)?.filePath
+                        if (filePath != null) {
+                            embarkViewModel.putInStore(parameters.key, filePath)
+                            embarkViewModel.submitAction(parameters.link)
+                        }
                     },
                     redo = model::redo,
                     play = model::play,

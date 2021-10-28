@@ -28,8 +28,13 @@ class HonestyPledgeBottomSheet : BottomSheetDialogFragment() {
         binding.bottomSheetHonestyPledgeButton.setHapticClickListener {
             tracker.pledgeHonesty()
             viewLifecycleScope.launchWhenStarted {
-                // TODO string resources
-                startActivity(EmbarkActivity.newInstance(requireContext(), "claims", "Submit claim"))
+                startActivity(
+                    EmbarkActivity.newInstance(
+                        requireContext(),
+                        "claims",
+                        getString(R.string.CLAIMS_HONESTY_PLEDGE_BOTTOM_SHEET_BUTTON_LABEL)
+                    )
+                )
                 dismiss()
             }
         }

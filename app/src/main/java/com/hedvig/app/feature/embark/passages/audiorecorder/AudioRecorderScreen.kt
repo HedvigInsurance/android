@@ -39,7 +39,7 @@ fun AudioRecorderScreen(
     startRecording: () -> Unit,
     clock: Clock,
     stopRecording: () -> Unit,
-    submit: (String) -> Unit,
+    submit: () -> Unit,
     redo: () -> Unit,
     play: () -> Unit,
     pause: () -> Unit,
@@ -168,7 +168,7 @@ fun Recording(
 @Composable
 fun Playback(
     viewState: AudioRecorderViewModel.ViewState.Playback,
-    submit: (String) -> Unit,
+    submit: () -> Unit,
     redo: () -> Unit,
     play: () -> Unit,
     pause: () -> Unit,
@@ -191,7 +191,7 @@ fun Playback(
             )
         }
         LargeContainedButton(
-            onClick = { submit(viewState.filePath) },
+            onClick = submit,
             modifier = Modifier.padding(top = 16.dp),
         ) {
             Text("Submit Claim")
