@@ -9,11 +9,9 @@ data class ClaimTypeData(val displayableText: DisplayableText) {
     companion object {
         fun fromHomeQueryClaim(homeQueryClaim: HomeQuery.Claim): ClaimTypeData {
             return ClaimTypeData(
-                when {
-                    // TODO get the type from backend? It exists in Hope already, but not on GraphQL
-                    //  context: https://hedviginsurance.slack.com/archives/C01SCHY7W1W/p1634557500017900
-                    // claimStatus.perilType != null -> claimStatus.perilType.toProperReadableString
-                    homeQueryClaim.status == ClaimStatus.SUBMITTED -> {
+                // TODO add the claim type title when the copy is addressed https://hedvig.atlassian.net/browse/APP-995
+                when (homeQueryClaim.status) {
+                    ClaimStatus.SUBMITTED -> {
                         DisplayableText(R.string.claim_type_new_insurance_case)
                     }
                     else -> {

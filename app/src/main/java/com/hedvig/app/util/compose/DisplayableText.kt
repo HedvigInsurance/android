@@ -8,6 +8,7 @@ import com.hedvig.app.ui.compose.theme.LocalMarket
 import com.hedvig.app.util.apollo.format
 import javax.money.MonetaryAmount
 
+// TODO fix this at https://hedvig.atlassian.net/browse/APP-994
 sealed class DisplayableText private constructor() {
     @Composable
     abstract fun text(): String
