@@ -42,7 +42,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:id="@+id/fullScreenLoadingSpinnerLayout"
-        android:background="@color/color_background_95">
+        android:alpha="0.5"
+        android:background="@color/colorBackground">
 
         <include
             android:layout_marginTop="@dimen/base_margin_quintuple"
