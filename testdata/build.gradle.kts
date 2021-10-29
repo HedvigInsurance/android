@@ -4,7 +4,13 @@ plugins {
 }
 
 android {
-    commonConfig()
+    commonConfig(
+        AndroidVersions(
+            libs.versions.compileSdkVersion.get().toInt(),
+            libs.versions.minSdkVersion.get().toInt(),
+            libs.versions.targetSdkVersion.get().toInt(),
+        )
+    )
 
     buildFeatures {
         buildConfig = false
@@ -15,15 +21,11 @@ android {
         resValues = false
         shaders = false
     }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
 }
 
 dependencies {
-    implementation(Libs.kotlin)
-    coreLibraryDesugaring(Libs.coreLibraryDesugaring)
+    implementation(libs.kotlin.stdlib)
+    coreLibraryDesugaring(libs.coreLibraryDesugaring)
 
     implementation(project(":apollo"))
 }
