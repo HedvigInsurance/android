@@ -254,7 +254,13 @@ val applicationModule = module {
                 )
             }
         if (isDebug()) {
-            val logger = HttpLoggingInterceptor { message -> Timber.tag("OkHttp").i(message) }
+            val logger = HttpLoggingInterceptor { message ->
+                if (message.contains("Content-Disposition")) {
+                    Timber.tag("OkHttp").i("File upload omitted from log")
+                } else {
+                    Timber.tag("OkHttp").i(message)
+                }
+            }
             logger.level = HttpLoggingInterceptor.Level.BODY
             builder.addInterceptor(logger)
         }
