@@ -17,6 +17,8 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.widget.NestedScrollView
+import androidx.lifecycle.findViewTreeLifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.util.ControlFocusInsetsAnimationCallback
 import com.hedvig.app.util.RootViewDeferringInsetsCallback
@@ -24,9 +26,11 @@ import com.hedvig.app.util.TranslateDeferringInsetsAnimationCallback
 import com.hedvig.app.util.extensions.compatDrawable
 import dev.chrisbanes.insetter.applyInsetter
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
+import kotlinx.coroutines.launch
 
 fun View.show(): View {
     if (visibility != View.VISIBLE) {
@@ -41,6 +45,17 @@ fun View.hide(): View {
     }
 
     return this
+}
+
+fun View.hideWithDelay(timeMillis: Long) {
+    if (visibility != View.INVISIBLE) {
+        findViewTreeLifecycleOwner()
+            ?.lifecycleScope
+            ?.launch {
+                delay(timeMillis)
+                visibility = View.INVISIBLE
+            }
+    }
 }
 
 fun View.remove(): View {

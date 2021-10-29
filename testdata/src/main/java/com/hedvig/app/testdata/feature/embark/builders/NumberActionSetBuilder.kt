@@ -48,5 +48,6 @@ data class NumberActionSetBuilder(
             )
         ),
         asEmbarkDatePickerAction = null,
+        asEmbarkAudioRecorderAction = null,
     )
 }
