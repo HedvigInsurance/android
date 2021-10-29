@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.embark
+package com.hedvig.app.feature.embark.extensions
 
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 

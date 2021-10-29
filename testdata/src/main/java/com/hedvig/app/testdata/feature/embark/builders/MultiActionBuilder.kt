@@ -76,5 +76,6 @@ data class MultiActionBuilder(
                 )
             )
         ),
+        asEmbarkAudioRecorderAction = null,
     )
 }

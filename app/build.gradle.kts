@@ -40,7 +40,7 @@ android {
         applicationId = "com.hedvig"
 
         versionCode = 43
-        versionName = "6.2.2"
+        versionName = "6.2.3"
 
         vectorDrawables.useSupportLibrary = true
 
@@ -167,6 +167,36 @@ dependencies {
     androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation(libs.androidx.test.junit)
 
+    implementation(Libs.AndroidX.appCompat)
+    implementation(Libs.AndroidX.media)
+    implementation(Libs.AndroidX.constraintLayout)
+    implementation(Libs.AndroidX.dynamicAnimation)
+    implementation(Libs.AndroidX.preference)
+    implementation(Libs.AndroidX.core)
+    implementation(Libs.AndroidX.viewPager2)
+    implementation(Libs.AndroidX.swipeRefreshLayout)
+    implementation(Libs.AndroidX.recyclerView)
+    implementation(Libs.AndroidX.fragment)
+    implementation(Libs.AndroidX.browser)
+    implementation(Libs.AndroidX.Lifecycle.common)
+    implementation(Libs.AndroidX.Lifecycle.liveData)
+    implementation(Libs.AndroidX.Lifecycle.runtime)
+    implementation(Libs.AndroidX.Lifecycle.viewModel)
+    implementation(Libs.AndroidX.workManager)
+    implementation(Libs.AndroidX.DataStore.core)
+    implementation(Libs.AndroidX.DataStore.preferences)
+    implementation(Libs.AndroidX.startup)
+    androidTestImplementation(Libs.AndroidX.Espresso.core)
+    androidTestImplementation(Libs.AndroidX.Espresso.intents)
+    androidTestImplementation(Libs.AndroidX.Espresso.contrib)
+    testImplementation(Libs.AndroidX.Test.junit)
+    testImplementation(Libs.jsonTest)
+    androidTestImplementation(Libs.AndroidX.Test.runner)
+    androidTestImplementation(Libs.AndroidX.Test.rules)
+    androidTestImplementation(Libs.AndroidX.Test.junit)
+
+    implementation(libs.accompanist.pager)
+    implementation(libs.accompanist.pagerIndicators)
     implementation(libs.accompanist.insets)
     implementation(libs.accompanist.insetsUi)
 

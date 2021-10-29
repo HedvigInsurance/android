@@ -76,5 +76,6 @@ data class PreviousInsurerActionBuilder(
         asEmbarkNumberActionSet = null,
         asEmbarkDatePickerAction = null,
         asEmbarkMultiAction = null,
+        asEmbarkAudioRecorderAction = null,
     )
 }

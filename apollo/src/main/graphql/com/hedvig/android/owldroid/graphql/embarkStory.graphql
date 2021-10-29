@@ -197,6 +197,15 @@ query EmbarkStory($name: String!, $locale: String!) {
             }
           }
         }
+        ... on EmbarkAudioRecorderAction {
+          audioRecorderActionData: data {
+            storeKey
+            label
+            next {
+              ...EmbarkLinkFragment
+            }
+          }
+        }
       }
       api {
         ...ApiFragment
