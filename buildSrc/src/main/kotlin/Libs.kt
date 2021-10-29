@@ -67,6 +67,7 @@ object Libs {
     object Accompanist {
         private const val version = "0.19.0"
         const val insets = "com.google.accompanist:accompanist-insets:$version"
+        const val insetsUi = "com.google.accompanist:accompanist-insets-ui:$version"
     }
 
     const val materialComponents = "com.google.android.material:material:1.4.0"

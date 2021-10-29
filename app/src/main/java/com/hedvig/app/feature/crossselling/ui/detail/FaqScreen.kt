@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.app.R
 import com.hedvig.app.feature.faq.FAQCard
 import com.hedvig.app.feature.faq.FAQItem
-import com.hedvig.app.ui.compose.composables.TopAppBarWithBack
+import com.hedvig.app.ui.compose.composables.appbar.TopAppBarWithBack
 import com.hedvig.app.ui.compose.composables.buttons.LargeContainedButton
 import com.hedvig.app.ui.compose.composables.buttons.LargeOutlinedButton
 import com.hedvig.app.ui.compose.theme.HedvigTheme

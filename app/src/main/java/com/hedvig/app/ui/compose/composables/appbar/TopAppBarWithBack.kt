@@ -1,4 +1,4 @@
-package com.hedvig.app.ui.compose.composables
+package com.hedvig.app.ui.compose.composables.appbar
 
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton

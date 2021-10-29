@@ -111,6 +111,7 @@ class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activ
 
         val googlePayConfig =
             GooglePayConfiguration.Builder(this, getString(R.string.ADYEN_CLIENT_KEY))
+                .setEnvironment(getEnvironment())
                 .setGooglePayEnvironment(
                     if (isDebug()) {
                         GOOGLE_WALLET_ENVIRONMENT_TEST
@@ -119,6 +120,7 @@ class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activ
                     }
                 )
                 .build()
+
         val dropInConfiguration = DropInConfiguration
             .Builder(
                 this,
