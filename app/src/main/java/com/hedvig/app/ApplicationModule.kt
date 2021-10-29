@@ -4,7 +4,9 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.os.Build
+import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import coil.ImageLoader
 import coil.decode.GifDecoder
@@ -45,10 +47,12 @@ import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
 import com.hedvig.app.feature.crossselling.ui.CrossSellResultViewModel
 import com.hedvig.app.feature.crossselling.ui.CrossSellTracker
 import com.hedvig.app.feature.crossselling.ui.CrossSellingResult
+import com.hedvig.app.feature.crossselling.ui.detail.CrossSellFaqViewModel
 import com.hedvig.app.feature.embark.EmbarkRepository
 import com.hedvig.app.feature.embark.EmbarkTracker
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.EmbarkViewModelImpl
+import com.hedvig.app.feature.embark.GraphQLQueryUseCase
 import com.hedvig.app.feature.embark.ValueStore
 import com.hedvig.app.feature.embark.ValueStoreImpl
 import com.hedvig.app.feature.embark.passages.audiorecorder.AudioRecorderViewModel
@@ -172,6 +176,8 @@ import com.hedvig.app.feature.zignsec.usecase.StartDanishAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.StartNorwegianAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthStatusUseCase
 import com.hedvig.app.service.FileService
+import com.hedvig.app.service.badge.CrossSellNotificationBadgeService
+import com.hedvig.app.service.badge.NotificationBadgeService
 import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.app.service.push.managers.PaymentNotificationManager
 import com.hedvig.app.terminated.TerminatedTracker
@@ -248,7 +254,13 @@ val applicationModule = module {
                 )
             }
         if (isDebug()) {
-            val logger = HttpLoggingInterceptor { message -> Timber.tag("OkHttp").i(message) }
+            val logger = HttpLoggingInterceptor { message ->
+                if (message.contains("Content-Disposition")) {
+                    Timber.tag("OkHttp").i("File upload omitted from log")
+                } else {
+                    Timber.tag("OkHttp").i(message)
+                }
+            }
             logger.level = HttpLoggingInterceptor.Level.BODY
             builder.addInterceptor(logger)
         }
@@ -338,6 +350,7 @@ val viewModelModule = module {
     }
     viewModel { (result: CrossSellingResult) -> CrossSellResultViewModel(result, get()) }
     viewModel { AudioRecorderViewModel(get()) }
+    viewModel { CrossSellFaqViewModel(get()) }
 }
 
 val choosePlanModule = module {
@@ -361,7 +374,7 @@ val whatsNewModule = module {
 }
 
 val insuranceModule = module {
-    viewModel<InsuranceViewModel> { InsuranceViewModelImpl(get()) }
+    viewModel<InsuranceViewModel> { InsuranceViewModelImpl(get(), get()) }
     viewModel<ContractDetailViewModel> { ContractDetailViewModelImpl(get(), get(), get(), get()) }
 }
 
@@ -396,7 +409,16 @@ val adyenModule = module {
 }
 
 val embarkModule = module {
-    viewModel<EmbarkViewModel> { (storyName: String) -> EmbarkViewModelImpl(get(), get(), get(), get(), storyName) }
+    viewModel<EmbarkViewModel> { (storyName: String) ->
+        EmbarkViewModelImpl(
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            storyName
+        )
+    }
 }
 
 val valueStoreModule = module {
@@ -453,7 +475,11 @@ val serviceModule = module {
     single { FileService(get()) }
     single<LoginStatusService> { SharedPreferencesLoginStatusService(get(), get(), get()) }
     single<AuthenticationTokenService> { SharedPreferencesAuthenticationTokenService(get()) }
-    single { TabNotificationService(get(), get()) }
+
+    single { TabNotificationService(get()) }
+    single { CrossSellNotificationBadgeService(get(), get()) }
+    single { NotificationBadgeService(get()) }
+
     single { DeviceInformationService(get()) }
 }
 
@@ -472,7 +498,7 @@ val repositoriesModule = module {
     single { MarketRepository(get(), get(), get()) }
     single { MarketingRepository(get(), get()) }
     single { AdyenRepository(get(), get()) }
-    single { EmbarkRepository(get(), get(), get(), get()) }
+    single { EmbarkRepository(get(), get(), get(), get(), get()) }
     single { ReferralsRepository(get()) }
     single { LoggedInRepository(get(), get()) }
     single { HomeRepository(get(), get()) }
@@ -553,6 +579,7 @@ val useCaseModule = module {
     single { SubscribeToSwedishBankIdSignStatusUseCase(get()) }
     single { GetPostSignDependenciesUseCase(get()) }
     single { GetCrossSellsUseCase(get()) }
+    single { GraphQLQueryUseCase(get()) }
 }
 
 val cacheManagerModule = module {
@@ -591,7 +618,8 @@ val chatEventModule = module {
 }
 
 val dataStoreModule = module {
-    single {
+    @Suppress("RemoveExplicitTypeArguments")
+    single<DataStore<Preferences>> {
         PreferenceDataStoreFactory.create(
             produceFile = {
                 get<Context>().preferencesDataStoreFile("hedvig_data_store_preferences")

@@ -12,6 +12,7 @@ import com.hedvig.app.feature.insurance.ui.InsuranceModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
 import com.hedvig.app.util.extensions.viewLifecycle
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
@@ -28,11 +29,6 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
     private val binding by viewBinding(FragmentInsuranceBinding::bind)
     private var scroll = 0
 
-    override fun onResume() {
-        super.onResume()
-        loggedInViewModel.onScroll(scroll)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -40,13 +36,14 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
             scroll = 0
             addOnScrollListener(
                 ScrollPositionListener(
-                    { scrollPosition ->
+                    onScroll = { scrollPosition ->
                         scroll = scrollPosition
                         loggedInViewModel.onScroll(scrollPosition)
                     },
-                    viewLifecycleOwner
+                    lifecycleOwner = viewLifecycleOwner
                 )
             )
+            itemAnimator = ViewHolderReusingDefaultItemAnimator()
             adapter = InsuranceAdapter(tracker, marketManager, insuranceViewModel::load)
         }
 
@@ -55,10 +52,21 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
         }
 
         insuranceViewModel
-            .data
+            .viewState
             .flowWithLifecycle(viewLifecycle)
             .onEach { bind(it) }
             .launchIn(viewLifecycleScope)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loggedInViewModel.onScroll(scroll)
+        insuranceViewModel.load()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        insuranceViewModel.markCardCrossSellsAsSeen()
     }
 
     private fun bind(viewState: InsuranceViewModel.ViewState) {

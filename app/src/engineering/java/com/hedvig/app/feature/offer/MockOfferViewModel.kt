@@ -26,7 +26,7 @@ class MockOfferViewModel : OfferViewModel() {
         id: String,
     ) {
         val quote = mockData.quoteBundle.quotes.first { it.id == id }
-        _events.tryEmit(
+        _events.trySend(
             Event.OpenQuoteDetails(
                 QuoteDetailItems(
                     quote.displayName,
@@ -39,11 +39,11 @@ class MockOfferViewModel : OfferViewModel() {
     }
 
     override fun approveOffer() {
-        _events.tryEmit(Event.ApproveSuccessful(LocalDate.now(), PostSignScreen.MOVE, mockData.quoteBundle.displayName))
+        _events.trySend(Event.ApproveSuccessful(LocalDate.now(), PostSignScreen.MOVE, mockData.quoteBundle.displayName))
     }
 
     override fun onOpenCheckout() {
-        _events.tryEmit(
+        _events.trySend(
             Event.OpenCheckout(
                 CheckoutParameter(
                     quoteIds = listOf(mockData.quoteBundle.quotes[0].id)
@@ -58,7 +58,7 @@ class MockOfferViewModel : OfferViewModel() {
     }
 
     override fun onDiscardOffer() {
-        _events.tryEmit(Event.DiscardOffer)
+        _events.trySend(Event.DiscardOffer)
     }
 
     override fun onGoToDirectDebit() {
@@ -71,7 +71,7 @@ class MockOfferViewModel : OfferViewModel() {
         viewModelScope.launch {
             delay(650)
             if (shouldError) {
-                _events.tryEmit(Event.Error())
+                _events.trySend(Event.Error())
                 return@launch
             }
             val topOfferItems = OfferItemsBuilder.createTopOfferItems(mockData)

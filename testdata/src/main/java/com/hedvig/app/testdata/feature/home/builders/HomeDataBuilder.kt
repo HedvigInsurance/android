@@ -1,9 +1,13 @@
 package com.hedvig.app.testdata.feature.home.builders
 
 import com.hedvig.android.owldroid.fragment.IconVariantsFragment
+import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.graphql.HomeQuery
+import com.hedvig.android.owldroid.type.ClaimOutcome
+import com.hedvig.android.owldroid.type.ClaimStatus
 import com.hedvig.app.testdata.common.ContractStatus
 import java.time.LocalDate
+import java.util.UUID
 
 data class HomeDataBuilder(
     private val contracts: List<ContractStatus> = emptyList(),
@@ -17,14 +21,16 @@ data class HomeDataBuilder(
         CommonClaimBuilder(title = "Försenat bagage").build()
     ),
     private val importantMessages: List<HomeQuery.ImportantMessage> = emptyList(),
-    private val renewalDate: LocalDate? = null
+    private val renewalDate: LocalDate? = null,
+    private val homeQueryClaimBuilders: List<HomeQueryClaimBuilder> = emptyList()
 ) {
     fun build() = HomeQuery.Data(
         member = HomeQuery.Member(
             firstName = firstName
         ),
+        claims = homeQueryClaimBuilders.map(HomeQueryClaimBuilder::build),
         contracts = contracts.map { c ->
-            HomeQuery.Contract(
+            HomeQuery.Contract1(
                 displayName = CONTRACT_DISPLAY_NAME,
                 switchedFromInsuranceProvider = null,
                 status = HomeQuery.Status(
@@ -161,4 +167,35 @@ data class ImportantMessageBuilder(
         message = body,
         link = url
     )
+}
+
+data class HomeQueryClaimBuilder(
+    private val status: ClaimStatus,
+    private val outcome: ClaimOutcome? = null,
+    private val payout: HomeQuery.Payout? = null,
+) {
+    fun build() = HomeQuery.Claim(
+        id = UUID.randomUUID().toString(),
+        contract = null,
+        status = status,
+        outcome = outcome,
+        payout = payout,
+    )
+
+    companion object {
+        fun closed(outcome: ClaimOutcome): HomeQueryClaimBuilder = HomeQueryClaimBuilder(
+            status = ClaimStatus.CLOSED,
+            outcome = outcome
+        )
+
+        fun paid(amount: String, currency: String): HomeQueryClaimBuilder = HomeQueryClaimBuilder(
+            status = ClaimStatus.CLOSED,
+            outcome = ClaimOutcome.PAID,
+            payout = HomeQuery.Payout(
+                fragments = HomeQuery.Payout.Fragments(
+                    MonetaryAmountFragment(amount = amount, currency = currency)
+                )
+            )
+        )
+    }
 }

@@ -25,14 +25,13 @@ import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
 import com.hedvig.app.feature.perils.PerilItem
 import e
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
@@ -66,11 +65,8 @@ abstract class OfferViewModel : ViewModel() {
         object DiscardOffer : Event()
     }
 
-    protected val _events = MutableSharedFlow<Event>(
-        extraBufferCapacity = 1,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST,
-    )
-    val events: SharedFlow<Event> = _events
+    protected val _events = Channel<Event>(Channel.UNLIMITED)
+    val events = _events.receiveAsFlow()
 
     abstract fun removeDiscount()
     abstract fun writeDiscountToCache(data: RedeemReferralCodeMutation.Data)
@@ -142,7 +138,7 @@ class OfferViewModelImpl(
                     .onEach { response ->
                         when (response) {
                             is OfferRepository.OfferResult.Error -> {
-                                _events.tryEmit(Event.Error(response.message))
+                                _events.trySend(Event.Error(response.message))
                             }
                             is OfferRepository.OfferResult.Success -> {
                                 trackView(response.data)
@@ -152,12 +148,12 @@ class OfferViewModelImpl(
                         }
                     }
                     .catch {
-                        _events.tryEmit(Event.Error(it.message))
+                        _events.trySend(Event.Error(it.message))
                     }
                     .launchIn(viewModelScope)
             }
             is GetQuotesUseCase.Result.Error -> {
-                _events.tryEmit(Event.Error(idsResult.message))
+                _events.trySend(Event.Error(idsResult.message))
             }
         }
     }
@@ -173,7 +169,7 @@ class OfferViewModelImpl(
     }
 
     override fun onOpenCheckout() {
-        _events.tryEmit(
+        _events.trySend(
             Event.OpenCheckout(
                 CheckoutParameter(
                     quoteIds = _quoteIds
@@ -187,7 +183,7 @@ class OfferViewModelImpl(
             _viewState.value = _viewState.value.copy(isLoading = true)
             val postSignDependencies = getPostSignDependenciesUseCase.invoke(quoteIds)
             if (postSignDependencies !is GetPostSignDependenciesUseCase.Result.Success) {
-                _events.tryEmit(Event.Error())
+                _events.trySend(Event.Error())
                 return@launch
             }
             val event = when (val result = approveQuotesUseCase.approveQuotesAndClearCache(quoteIds)) {
@@ -202,7 +198,7 @@ class OfferViewModelImpl(
                         postSignDependencies.displayName
                     )
             }
-            _events.tryEmit(event)
+            _events.trySend(event)
         }
     }
 
@@ -256,10 +252,10 @@ class OfferViewModelImpl(
         viewModelScope.launch {
             when (val result = getQuoteUseCase(quoteIds, id)) {
                 GetQuoteUseCase.Result.Error -> {
-                    _events.tryEmit(Event.Error())
+                    _events.trySend(Event.Error())
                 }
                 is GetQuoteUseCase.Result.Success -> {
-                    _events.tryEmit(
+                    _events.trySend(
                         Event.OpenQuoteDetails(
                             QuoteDetailItems(
                                 result.quote.displayName,
@@ -283,14 +279,14 @@ class OfferViewModelImpl(
             when (val result = refreshQuotesUseCase(quoteIds)) {
                 RefreshQuotesUseCase.Result.Success -> {
                 }
-                is RefreshQuotesUseCase.Result.Error -> _events.tryEmit(Event.Error(result.message))
+                is RefreshQuotesUseCase.Result.Error -> _events.trySend(Event.Error(result.message))
             }
         }
     }
 
     override fun onDiscardOffer() {
         loginStatusService.isViewingOffer = false
-        _events.tryEmit(Event.DiscardOffer)
+        _events.trySend(Event.DiscardOffer)
     }
 
     override fun onGoToDirectDebit() {
@@ -299,7 +295,7 @@ class OfferViewModelImpl(
 
     override fun onSwedishBankIdSign() {
         viewModelScope.launch {
-            _events.emit(
+            _events.trySend(
                 when (val result = signQuotesUseCase.signQuotesAndClearCache(quoteIds)) {
                     is SignQuotesUseCase.SignQuoteResult.Error -> Event.Error(result.message)
                     is SignQuotesUseCase.SignQuoteResult.StartSwedishBankId ->

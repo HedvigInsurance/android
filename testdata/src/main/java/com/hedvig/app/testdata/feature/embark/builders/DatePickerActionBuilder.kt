@@ -21,5 +21,6 @@ data class DatePickerActionBuilder(
             next = EmbarkStoryQuery.Next1(fragments = EmbarkStoryQuery.Next1.Fragments(link))
         ),
         asEmbarkMultiAction = null,
+        asEmbarkAudioRecorderAction = null,
     )
 }

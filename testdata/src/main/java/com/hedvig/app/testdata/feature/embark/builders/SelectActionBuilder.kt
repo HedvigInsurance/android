@@ -20,6 +20,7 @@ data class SelectActionBuilder(
         asEmbarkNumberActionSet = null,
         asEmbarkDatePickerAction = null,
         asEmbarkMultiAction = null,
+        asEmbarkAudioRecorderAction = null,
     )
 }
 

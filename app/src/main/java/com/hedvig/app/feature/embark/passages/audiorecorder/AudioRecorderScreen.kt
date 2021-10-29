@@ -210,7 +210,12 @@ fun Playback(
 fun AudioRecorderScreenNotRecordingPreview() {
     HedvigTheme {
         AudioRecorderScreen(
-            parameters = AudioRecorderParameters(listOf("Hello", "World")),
+            parameters = AudioRecorderParameters(
+                messages = listOf("Hello", "World"),
+                key = "key",
+                label = "label",
+                link = "link"
+            ),
             viewState = AudioRecorderViewModel.ViewState.NotRecording,
             startRecording = {},
             clock = Clock.systemDefaultZone(),
@@ -228,7 +233,12 @@ fun AudioRecorderScreenNotRecordingPreview() {
 fun AudioRecorderScreenRecordingPreview() {
     HedvigTheme {
         AudioRecorderScreen(
-            parameters = AudioRecorderParameters(listOf("Hello", "World")),
+            parameters = AudioRecorderParameters(
+                messages = listOf("Hello", "World"),
+                key = "key",
+                label = "label",
+                link = "link"
+            ),
             viewState = AudioRecorderViewModel.ViewState.Recording(
                 listOf(
                     100, 200, 150, 250, 0,
@@ -274,7 +284,12 @@ fun AudioRecorderScreenRecordingPreview() {
 fun AudioRecorderScreenPlaybackPreview() {
     HedvigTheme {
         AudioRecorderScreen(
-            parameters = AudioRecorderParameters(listOf("Hello", "World")),
+            parameters = AudioRecorderParameters(
+                messages = listOf("Hello", "World"),
+                key = "key",
+                label = "label",
+                link = "link"
+            ),
             viewState = AudioRecorderViewModel.ViewState.Playback(
                 "",
                 isPlaying = false,

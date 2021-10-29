@@ -9,13 +9,16 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.time.Clock
 
 class AudioRecorderFragment : Fragment() {
-    private val model: AudioRecorderViewModel by sharedViewModel()
+    private val embarkViewModel: EmbarkViewModel by sharedViewModel()
+    private val model: AudioRecorderViewModel by viewModel()
     private val clock: Clock by inject()
 
     override fun onCreateView(
@@ -36,7 +39,13 @@ class AudioRecorderFragment : Fragment() {
                     startRecording = model::startRecording,
                     clock = clock,
                     stopRecording = model::stopRecording,
-                    submit = { /* TODO */ },
+                    submit = {
+                        val filePath = (state as? AudioRecorderViewModel.ViewState.Playback)?.filePath
+                        if (filePath != null) {
+                            embarkViewModel.putInStore(parameters.key, filePath)
+                            embarkViewModel.submitAction(parameters.link)
+                        }
+                    },
                     redo = model::redo,
                     play = model::play,
                     pause = model::pause,

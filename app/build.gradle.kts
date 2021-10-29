@@ -27,7 +27,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.0.1"
+        kotlinCompilerExtensionVersion = "1.0.3"
     }
 
     defaultConfig {
@@ -136,6 +136,9 @@ dependencies {
     implementation(Libs.Coroutines.core)
     implementation(Libs.Coroutines.android)
     testImplementation(Libs.Coroutines.test)
+
+    implementation(Libs.Accompanist.pager)
+    implementation(Libs.Accompanist.pagerIndicators)
 
     implementation(Libs.AndroidX.appCompat)
     implementation(Libs.AndroidX.media)

@@ -32,9 +32,9 @@ fun LargeOutlinedTextButton(
 
 @Composable
 fun LargeOutlinedButton(
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable RowScope.() -> Unit,
-    onClick: () -> Unit
 ) {
     OutlinedButton(
         onClick = onClick,
