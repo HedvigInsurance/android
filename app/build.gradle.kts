@@ -16,6 +16,16 @@ configure<com.jaredsburrows.license.LicenseReportExtension> {
     copyHtmlReportToAssets = true
 }
 
+val lokaliseProperties = Properties()
+lokaliseProperties.load(FileInputStream(rootProject.file("lokalise.properties")))
+
+lokalise {
+    id = lokaliseProperties.getProperty("id")
+    token = lokaliseProperties.getProperty("token")
+
+    downloadConfig = com.likandr.gradle.config.DownloadConfig()
+}
+
 android {
     commonConfig()
 
@@ -92,11 +102,21 @@ android {
         }
 
         named("pullrequest") {
-            initWith(getByName("staging"))
-            // Uncomment this to test locally
-            // signingConfig = signingConfigs.getByName("debug")
+//            Uncomment this to test locally
+            signingConfig = signingConfigs.getByName("debug")
 
-            proguardFile("proguard-rules-showkase.pro")
+            applicationIdSuffix = ".pullrequest.app"
+
+            manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
+
+            isMinifyEnabled = true
+            setProguardFiles(
+                listOf(
+                    getDefaultProguardFile("proguard-android.txt"),
+                    "proguard-rules.pro",
+                    "proguard-rules-showkase.pro"
+                )
+            )
         }
 
         named("debug") {
@@ -262,20 +282,8 @@ dependencies {
     androidTestImplementation(Libs.AndroidX.Compose.uiTestJunit)
     debugImplementation(Libs.AndroidX.Compose.uiTestManifest)
 
-    debugImplementation(Libs.Showkase.showkase)
-    "stagingImplementation"(Libs.Showkase.showkase)
-    kaptDebug(Libs.Showkase.processor)
-    "kaptStaging"(Libs.Showkase.processor)
-}
-
-val lokaliseProperties = Properties()
-lokaliseProperties.load(FileInputStream(rootProject.file("lokalise.properties")))
-
-lokalise {
-    id = lokaliseProperties.getProperty("id")
-    token = lokaliseProperties.getProperty("token")
-
-    downloadConfig = com.likandr.gradle.config.DownloadConfig()
+    implementation(Libs.Showkase.showkase)
+    kapt(Libs.Showkase.processor)
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
