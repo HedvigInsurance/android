@@ -8,7 +8,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import i
 import kotlin.math.sqrt
 
 @Composable

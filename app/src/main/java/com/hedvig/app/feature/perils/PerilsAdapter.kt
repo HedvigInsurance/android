@@ -63,11 +63,17 @@ class PerilsAdapter(
                 }
 
                 with(binding.root) {
-                    text =
-                        context.getString(
-                            R.string.CONTRACT_COVERAGE_CONTRACT_TYPE,
-                            data.displayName,
-                        )
+                    text = when (data) {
+                        is PerilItem.Header.CoversSuffix -> {
+                            context.getString(
+                                R.string.CONTRACT_COVERAGE_CONTRACT_TYPE,
+                                data.displayName,
+                            )
+                        }
+                        is PerilItem.Header.Simple -> {
+                            data.displayName
+                        }
+                    }
                 }
             }
         }
