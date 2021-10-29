@@ -52,6 +52,7 @@ import com.hedvig.app.feature.embark.EmbarkRepository
 import com.hedvig.app.feature.embark.EmbarkTracker
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.EmbarkViewModelImpl
+import com.hedvig.app.feature.embark.GraphQLQueryUseCase
 import com.hedvig.app.feature.embark.ValueStore
 import com.hedvig.app.feature.embark.ValueStoreImpl
 import com.hedvig.app.feature.embark.passages.audiorecorder.AudioRecorderViewModel
@@ -253,7 +254,13 @@ val applicationModule = module {
                 )
             }
         if (isDebug()) {
-            val logger = HttpLoggingInterceptor { message -> Timber.tag("OkHttp").i(message) }
+            val logger = HttpLoggingInterceptor { message ->
+                if (message.contains("Content-Disposition")) {
+                    Timber.tag("OkHttp").i("File upload omitted from log")
+                } else {
+                    Timber.tag("OkHttp").i(message)
+                }
+            }
             logger.level = HttpLoggingInterceptor.Level.BODY
             builder.addInterceptor(logger)
         }
@@ -402,7 +409,16 @@ val adyenModule = module {
 }
 
 val embarkModule = module {
-    viewModel<EmbarkViewModel> { (storyName: String) -> EmbarkViewModelImpl(get(), get(), get(), get(), storyName) }
+    viewModel<EmbarkViewModel> { (storyName: String) ->
+        EmbarkViewModelImpl(
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            storyName
+        )
+    }
 }
 
 val valueStoreModule = module {
@@ -563,6 +579,7 @@ val useCaseModule = module {
     single { SubscribeToSwedishBankIdSignStatusUseCase(get()) }
     single { GetPostSignDependenciesUseCase(get()) }
     single { GetCrossSellsUseCase(get()) }
+    single { GraphQLQueryUseCase(get()) }
 }
 
 val cacheManagerModule = module {

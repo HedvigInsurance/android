@@ -22,8 +22,6 @@ fun RecordingAmplitudeIndicator(amplitude: Int) {
         )
     )
 
-    i { "animated: $animated" }
-
     Canvas(modifier = Modifier) {
         drawCircle(
             color = color,

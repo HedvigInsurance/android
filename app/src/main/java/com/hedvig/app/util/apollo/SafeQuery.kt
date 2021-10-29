@@ -3,6 +3,9 @@ package com.hedvig.app.util.apollo
 import com.apollographql.apollo.ApolloCall
 import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.exception.ApolloException
+import okhttp3.Call
+import org.json.JSONObject
+import ru.gildor.coroutines.okhttp.await
 
 suspend fun <T> ApolloCall<T>.safeQuery(): QueryResult<T> {
     return try {
@@ -15,6 +18,25 @@ suspend fun <T> ApolloCall<T>.safeQuery(): QueryResult<T> {
         }
     } catch (apolloException: ApolloException) {
         QueryResult.Error.NetworkError(apolloException.localizedMessage)
+    } catch (throwable: Throwable) {
+        QueryResult.Error.GeneralError(throwable.localizedMessage)
+    }
+}
+
+suspend fun Call.safeCall(): QueryResult<JSONObject> {
+    return try {
+        val response = await()
+        when {
+            response.isSuccessful -> {
+                val json = response.body?.string()?.let { JSONObject(it) }
+                if (json == null) {
+                    QueryResult.Error.NoDataError("No data")
+                } else {
+                    QueryResult.Success(json)
+                }
+            }
+            else -> QueryResult.Error.NetworkError(response.message)
+        }
     } catch (throwable: Throwable) {
         QueryResult.Error.GeneralError(throwable.localizedMessage)
     }
