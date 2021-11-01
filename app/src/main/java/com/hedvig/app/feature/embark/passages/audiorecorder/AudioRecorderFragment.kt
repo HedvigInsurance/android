@@ -1,5 +1,7 @@
 package com.hedvig.app.feature.embark.passages.audiorecorder
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -11,6 +13,8 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.ui.compose.theme.HedvigTheme
+import com.hedvig.app.util.extensions.askForPermissions
+import com.hedvig.app.util.extensions.hasPermissions
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -36,7 +40,7 @@ class AudioRecorderFragment : Fragment() {
                 AudioRecorderScreen(
                     parameters = parameters,
                     viewState = state,
-                    startRecording = model::startRecording,
+                    startRecording = ::askForPermission,
                     clock = clock,
                     stopRecording = model::stopRecording,
                     submit = {
@@ -54,8 +58,36 @@ class AudioRecorderFragment : Fragment() {
         }
     }
 
+    private fun askForPermission() {
+        if (requireActivity().hasPermissions(Manifest.permission.RECORD_AUDIO)) {
+            model.startRecording()
+        } else {
+            requireActivity().askForPermissions(
+                arrayOf(Manifest.permission.RECORD_AUDIO),
+                REQUEST_AUDIO_PERMISSION
+            )
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        when (requestCode) {
+            REQUEST_AUDIO_PERMISSION ->
+                if ((grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }))
+                    model.startRecording()
+            else -> {
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+            }
+        }
+    }
+
     companion object {
         private const val PARAMETERS = "PARAMETERS"
+        private const val REQUEST_AUDIO_PERMISSION = 12994
+
         fun newInstance(parameters: AudioRecorderParameters) = AudioRecorderFragment().apply {
             arguments = bundleOf(
                 PARAMETERS to parameters,
