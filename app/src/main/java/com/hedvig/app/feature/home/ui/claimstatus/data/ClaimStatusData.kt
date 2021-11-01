@@ -1,26 +1,31 @@
 package com.hedvig.app.feature.home.ui.claimstatus.data
 
+import android.content.res.Resources
 import com.hedvig.android.owldroid.graphql.HomeQuery
-import com.hedvig.app.util.compose.DisplayableText
+import java.util.Locale
 
 data class ClaimStatusData(
     val id: String,
     val pillData: List<PillData>,
-    val title: DisplayableText,
-    val subtitle: DisplayableText,
+    val title: String,
+    val subtitle: String,
     val claimProgressData: List<ClaimProgressData>,
 ) {
     companion object {
-        fun fromHomeQueryClaim(homeQueryClaim: HomeQuery.Claim): ClaimStatusData {
-            val pillData = PillData.fromClaimStatus(homeQueryClaim)
-            val claimProgressData = ClaimProgressData.claimProgressDataListFromHomeQueryClaim(homeQueryClaim)
-            val claimType = ClaimTypeData.fromHomeQueryClaim(homeQueryClaim)
+        fun fromHomeQueryClaim(
+            homeQueryClaim: HomeQuery.Claim,
+            resources: Resources,
+            locale: Locale
+        ): ClaimStatusData {
+            val pillData = PillData.fromClaimStatus(homeQueryClaim, resources, locale)
+            val claimProgressData = ClaimProgressData.fromHomeQueryClaim(homeQueryClaim, resources)
+            val claimType = ClaimTypeData.fromHomeQueryClaim(homeQueryClaim, resources)
             val relatedContractType = RelatedContractTypeData.fromClaimStatus(homeQueryClaim)
             return ClaimStatusData(
                 id = homeQueryClaim.id,
                 pillData = pillData,
-                title = claimType.displayableText,
-                subtitle = relatedContractType.displayableText,
+                title = claimType.text,
+                subtitle = relatedContractType.text,
                 claimProgressData = claimProgressData
             )
         }

@@ -18,10 +18,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.app.feature.home.ui.claimstatus.data.PillData
 import com.hedvig.app.ui.compose.theme.HedvigTheme
-import com.hedvig.app.ui.compose.theme.LocalLanguage
 import com.hedvig.app.ui.compose.theme.hedvigContentColorFor
 import com.hedvig.app.util.compose.DarkAndLightColor
-import com.hedvig.app.util.compose.DisplayableText
 
 @Composable
 fun Pills(pillData: List<PillData>) {
@@ -33,7 +31,7 @@ fun Pills(pillData: List<PillData>) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             pillData.forEach { pillData: PillData ->
                 Pill(
-                    text = pillData.displayableText.text(),
+                    text = pillData.text,
                     pillType = pillData.type,
                 )
             }
@@ -75,9 +73,8 @@ private fun Pill(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            val currentLanguage = LocalLanguage.current
             Text(
-                text.uppercase(java.util.Locale.forLanguageTag(currentLanguage.toString())),
+                text,
                 style = MaterialTheme.typography.caption,
                 maxLines = 1
             )
@@ -96,10 +93,10 @@ fun PillsPreview() {
             Pills(
                 listOf(
                     PillData(
-                        DisplayableText("Reopened"),
+                        "Reopened",
                         PillData.PillType.Contained(DarkAndLightColor(Color(0xFFFE9650)))
                     ),
-                    PillData(DisplayableText("Claim"), PillData.PillType.Outlined),
+                    PillData("Claim", PillData.PillType.Outlined),
                 )
             )
         }

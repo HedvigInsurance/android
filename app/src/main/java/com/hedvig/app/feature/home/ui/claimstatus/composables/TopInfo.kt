@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.app.feature.home.ui.claimstatus.data.PillData
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.compose.DarkAndLightColor
-import com.hedvig.app.util.compose.DisplayableText
 
 @Composable
 fun TopInfo(
@@ -52,10 +51,10 @@ fun TopInfoPreview() {
             TopInfo(
                 pillDataList = listOf(
                     PillData(
-                        DisplayableText("Reopened"),
+                        "Reopened",
                         PillData.PillType.Contained(DarkAndLightColor(Color(0xFFFE9650)))
                     ),
-                    PillData(DisplayableText("Claim"), PillData.PillType.Outlined),
+                    PillData("Claim", PillData.PillType.Outlined),
                 ),
                 title = "All-risk",
                 subtitle = "Contents insurance",

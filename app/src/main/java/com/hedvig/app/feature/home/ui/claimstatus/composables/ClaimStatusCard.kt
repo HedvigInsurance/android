@@ -16,7 +16,6 @@ import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusColors
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusData
 import com.hedvig.app.feature.home.ui.claimstatus.data.PillData
 import com.hedvig.app.ui.compose.theme.HedvigTheme
-import com.hedvig.app.util.compose.DisplayableText
 import java.util.UUID
 
 @Composable
@@ -31,8 +30,8 @@ fun ClaimStatusCard(
         Column {
             TopInfo(
                 pillDataList = claimStatusData.pillData,
-                title = claimStatusData.title.text(),
-                subtitle = claimStatusData.subtitle.text(),
+                title = claimStatusData.title,
+                subtitle = claimStatusData.subtitle,
                 modifier = Modifier.padding(16.dp)
             )
             Divider()
@@ -55,15 +54,15 @@ fun ClaimStatusCardPreview() {
             val claimStatusData = ClaimStatusData(
                 id = UUID.randomUUID().toString(),
                 pillData = listOf(
-                    PillData(DisplayableText("Reopened"), PillData.PillType.Contained(ClaimStatusColors.Pill.reopened)),
-                    PillData(DisplayableText("Claim"), PillData.PillType.Outlined),
+                    PillData("Reopened", PillData.PillType.Contained(ClaimStatusColors.Pill.reopened)),
+                    PillData("Claim", PillData.PillType.Outlined),
                 ),
-                title = DisplayableText("All-risk"),
-                subtitle = DisplayableText("Contents insurance"),
+                title = "All-risk",
+                subtitle = "Contents insurance",
                 claimProgressData = listOf(
-                    ClaimProgressData(DisplayableText("Submitted"), ClaimProgressData.ClaimProgressType.PastInactive),
-                    ClaimProgressData(DisplayableText("Being Handled"), ClaimProgressData.ClaimProgressType.Paid),
-                    ClaimProgressData(DisplayableText("Closed"), ClaimProgressData.ClaimProgressType.FutureInactive),
+                    ClaimProgressData("Submitted", ClaimProgressData.ClaimProgressType.PastInactive),
+                    ClaimProgressData("Being Handled", ClaimProgressData.ClaimProgressType.Paid),
+                    ClaimProgressData("Closed", ClaimProgressData.ClaimProgressType.FutureInactive),
                 )
             )
             ClaimStatusCard(claimStatusData)

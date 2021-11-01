@@ -19,7 +19,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimProgressData
 import com.hedvig.app.ui.compose.theme.HedvigTheme
-import com.hedvig.app.util.compose.DisplayableText
 import com.hedvig.app.util.compose.fillWithColor
 
 @Composable
@@ -33,7 +32,7 @@ fun ClaimProgress(
     ) {
         claimProgressData.forEach { claimProgressData: ClaimProgressData ->
             ClaimProgress(
-                text = claimProgressData.displayableText.text(),
+                text = claimProgressData.text,
                 type = claimProgressData.type,
                 modifier = Modifier.weight(1f)
             )
@@ -78,15 +77,15 @@ fun BottomProgressPreview() {
             ClaimProgress(
                 listOf(
                     ClaimProgressData(
-                        DisplayableText("Submitted"),
+                        "Submitted",
                         ClaimProgressData.ClaimProgressType.PastInactive
                     ),
                     ClaimProgressData(
-                        DisplayableText("Being Handled"),
+                        "Being Handled",
                         ClaimProgressData.ClaimProgressType.Reopened
                     ),
                     ClaimProgressData(
-                        DisplayableText("Closed"),
+                        "Closed",
                         ClaimProgressData.ClaimProgressType.FutureInactive
                     ),
                 ),

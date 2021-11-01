@@ -16,6 +16,7 @@ import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusData
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.getLocale
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.featureflags.Feature
@@ -153,7 +154,15 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     // TODO think about showing this in other states as well? Not just on isActive(...)
                     if (successData.claims.isNotEmpty()) {
                         add(
-                            HomeModel.ClaimStatus(successData.claims.map(ClaimStatusData::fromHomeQueryClaim))
+                            HomeModel.ClaimStatus(
+                                successData.claims.map { claim ->
+                                    ClaimStatusData.fromHomeQueryClaim(
+                                        homeQueryClaim = claim,
+                                        resources = resources,
+                                        locale = getLocale(requireContext(), marketManager.market)
+                                    )
+                                }
+                            )
                         )
                     }
                     add(HomeModel.StartClaimContained)
