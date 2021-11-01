@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.LocalWindowInsets
@@ -102,7 +103,7 @@ fun NotRecording(startRecording: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxWidth(),
     ) {
-        val label = "Start Recording"
+        val label = stringResource(R.string.EMBARK_START_RECORDING)
         IconButton(
             onClick = startRecording,
             modifier = Modifier
@@ -140,7 +141,9 @@ fun Recording(
             modifier = Modifier
                 .padding(bottom = 24.dp)
         ) {
-            RecordingAmplitudeIndicator(amplitude = viewState.amplitudes.last())
+            if (viewState.amplitudes.isNotEmpty()) {
+                RecordingAmplitudeIndicator(amplitude = viewState.amplitudes.last())
+            }
             IconButton(
                 onClick = stopRecording,
                 modifier = Modifier.then(Modifier.size(72.dp))
@@ -149,7 +152,7 @@ fun Recording(
                     painter = painterResource(
                         R.drawable.ic_record_stop
                     ),
-                    contentDescription = "Stop Recording", // TODO: String Resource
+                    contentDescription = stringResource(R.string.EMBARK_STOP_RECORDING)
                 )
             }
         }
@@ -194,13 +197,13 @@ fun Playback(
             onClick = submit,
             modifier = Modifier.padding(top = 16.dp),
         ) {
-            Text("Submit Claim")
+            Text(stringResource(R.string.EMBARK_SUBMIT_CLAIM))
         }
         LargeTextButton(
             onClick = redo,
             modifier = Modifier.padding(top = 8.dp),
         ) {
-            Text("Record again")
+            Text(stringResource(R.string.EMBARK_RECORD_AGAIN))
         }
     }
 }
