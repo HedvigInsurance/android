@@ -34,8 +34,13 @@ fun Locale.toWebLocaleTag() = when (this) {
 fun MonetaryAmountFragment.toMonetaryAmount(): MonetaryAmount =
     Money.of(amount.toBigDecimal(), currency)
 
-fun MonetaryAmount.format(context: Context, market: Market?, minimumDecimals: Int = 0): String =
-    NumberFormat.getCurrencyInstance(getLocale(context, market)).also {
+fun MonetaryAmount.format(context: Context, market: Market?, minimumDecimals: Int = 0): String {
+    val locale = getLocale(context, market)
+    return format(locale, minimumDecimals)
+}
+
+fun MonetaryAmount.format(locale: java.util.Locale, minimumDecimals: Int = 0): String =
+    NumberFormat.getCurrencyInstance(locale).also {
         it.currency = Currency.getInstance(currency.currencyCode)
         it.minimumFractionDigits = minimumDecimals
     }.format(this.number.numberValueExact(BigDecimal::class.java))

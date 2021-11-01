@@ -1,15 +1,15 @@
 package com.hedvig.app.feature.home.ui.claimstatus.data
 
+import android.content.res.Resources
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.type.ClaimOutcome
 import com.hedvig.android.owldroid.type.ClaimStatus
 import com.hedvig.app.R
 import com.hedvig.app.util.compose.ContentAlpha
 import com.hedvig.app.util.compose.DarkAndLightColor
-import com.hedvig.app.util.compose.DisplayableText
 
 data class ClaimProgressData(
-    val displayableText: DisplayableText,
+    val text: String,
     val type: ClaimProgressType
 ) {
     sealed class ClaimProgressType {
@@ -53,14 +53,15 @@ data class ClaimProgressData(
     }
 
     companion object {
-        fun claimProgressDataListFromHomeQueryClaim(
-            homeQueryClaim: HomeQuery.Claim
+        fun fromHomeQueryClaim(
+            homeQueryClaim: HomeQuery.Claim,
+            resources: Resources,
         ): List<ClaimProgressData> {
             val (first, second, third) = claimProgressDataTripleFromHomeQueryClaim(homeQueryClaim)
             return listOf(
-                ClaimProgressData(DisplayableText(R.string.claim_status_bar_submitted), first),
-                ClaimProgressData(DisplayableText(R.string.claim_status_bar_being_handled), second),
-                ClaimProgressData(DisplayableText(R.string.claim_status_bar_closed), third),
+                ClaimProgressData(resources.getString(R.string.claim_status_bar_submitted), first),
+                ClaimProgressData(resources.getString(R.string.claim_status_bar_being_handled), second),
+                ClaimProgressData(resources.getString(R.string.claim_status_bar_closed), third),
             )
         }
 
