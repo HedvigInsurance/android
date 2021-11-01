@@ -69,7 +69,6 @@
     <dimen name="tab_bar_icon_size">26dp</dimen>
     <dimen name="expandable_content_view_collapsed_height">400dp</dimen>
     <dimen name="expandable_content_view_bottom_fade_out_height">100dp</dimen>
-    <dimen name="ratings_dialog_minimum_width">250dp</dimen>
     <dimen name="key_gear_card_height">200dp</dimen>
     <dimen name="create_key_gear_add_photo_height">250dp</dimen>
     <dimen name="pick_date_button_corner_radius">6dp</dimen>
