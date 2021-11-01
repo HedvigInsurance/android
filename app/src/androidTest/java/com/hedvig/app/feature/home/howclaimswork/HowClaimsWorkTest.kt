@@ -60,12 +60,12 @@ class HowClaimsWorkTest : TestCase() {
             }
         }
         onScreen<HonestyPledgeSheetScreen> {
-            chat { stub() }
+            embark { stub() }
             claim {
                 hasText(R.string.CLAIMS_HONESTY_PLEDGE_BOTTOM_SHEET_BUTTON_LABEL)
                 click()
             }
-            chat { intended() }
+            embark { intended() }
         }
     }
 }

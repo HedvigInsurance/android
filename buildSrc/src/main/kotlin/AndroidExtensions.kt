@@ -1,19 +1,26 @@
 import com.android.build.gradle.LibraryExtension
 import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import org.gradle.api.Action
 import org.gradle.api.JavaVersion
 
-fun LibraryExtension.commonConfig() {
-    compileSdk = AndroidVersions.compileSdkVersion
+data class AndroidVersions(
+    val compileSdk: Int = 31,
+    val minSdk: Int = 23,
+    val targetSdk: Int = 30,
+)
+
+fun LibraryExtension.commonConfig(androidVersions: AndroidVersions = AndroidVersions()) {
+    compileSdk = androidVersions.compileSdk
 
     defaultConfig {
-        minSdk = AndroidVersions.minSdkVersion
-        targetSdk = AndroidVersions.compileSdkVersion
+        minSdk = androidVersions.minSdk
+        targetSdk = androidVersions.compileSdk
     }
 
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
     buildTypes {
@@ -25,19 +32,39 @@ fun LibraryExtension.commonConfig() {
         named("pullrequest") {}
         named("release") {}
     }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_11.toString()
+    }
 }
 
-fun BaseAppModuleExtension.commonConfig() {
-    compileSdk = AndroidVersions.compileSdkVersion
+fun BaseAppModuleExtension.commonConfig(androidVersions: AndroidVersions = AndroidVersions()) {
+    compileSdk = androidVersions.compileSdk
 
     defaultConfig {
-        minSdk = AndroidVersions.minSdkVersion
-        targetSdk = AndroidVersions.compileSdkVersion
+        minSdk = androidVersions.minSdk
+        targetSdk = androidVersions.compileSdk
     }
 
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_11.toString()
+    }
+}
+
+fun LibraryExtension.kotlinOptions(
+    configure: Action<org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions>
+) {
+    (this as org.gradle.api.plugins.ExtensionAware).extensions.configure("kotlinOptions", configure)
+}
+
+fun BaseAppModuleExtension.kotlinOptions(
+    configure: Action<org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions>
+) {
+    (this as org.gradle.api.plugins.ExtensionAware).extensions.configure("kotlinOptions", configure)
 }

@@ -52,8 +52,10 @@ import com.hedvig.app.feature.embark.EmbarkRepository
 import com.hedvig.app.feature.embark.EmbarkTracker
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.EmbarkViewModelImpl
+import com.hedvig.app.feature.embark.GraphQLQueryUseCase
 import com.hedvig.app.feature.embark.ValueStore
 import com.hedvig.app.feature.embark.ValueStoreImpl
+import com.hedvig.app.feature.embark.passages.audiorecorder.AudioRecorderViewModel
 import com.hedvig.app.feature.embark.passages.datepicker.DatePickerViewModel
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionItem
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionParams
@@ -252,7 +254,13 @@ val applicationModule = module {
                 )
             }
         if (isDebug()) {
-            val logger = HttpLoggingInterceptor { message -> Timber.tag("OkHttp").i(message) }
+            val logger = HttpLoggingInterceptor { message ->
+                if (message.contains("Content-Disposition")) {
+                    Timber.tag("OkHttp").i("File upload omitted from log")
+                } else {
+                    Timber.tag("OkHttp").i(message)
+                }
+            }
             logger.level = HttpLoggingInterceptor.Level.BODY
             builder.addInterceptor(logger)
         }
@@ -341,6 +349,7 @@ val viewModelModule = module {
         SwedishBankIdSignViewModel(autoStartToken, quoteIds, get(), get(), get(), get())
     }
     viewModel { (result: CrossSellingResult) -> CrossSellResultViewModel(result, get()) }
+    viewModel { AudioRecorderViewModel(get()) }
     viewModel { CrossSellFaqViewModel(get()) }
 }
 
@@ -400,7 +409,16 @@ val adyenModule = module {
 }
 
 val embarkModule = module {
-    viewModel<EmbarkViewModel> { (storyName: String) -> EmbarkViewModelImpl(get(), get(), get(), get(), storyName) }
+    viewModel<EmbarkViewModel> { (storyName: String) ->
+        EmbarkViewModelImpl(
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            storyName
+        )
+    }
 }
 
 val valueStoreModule = module {
@@ -480,7 +498,7 @@ val repositoriesModule = module {
     single { MarketRepository(get(), get(), get()) }
     single { MarketingRepository(get(), get()) }
     single { AdyenRepository(get(), get()) }
-    single { EmbarkRepository(get(), get(), get(), get()) }
+    single { EmbarkRepository(get(), get(), get(), get(), get()) }
     single { ReferralsRepository(get()) }
     single { LoggedInRepository(get(), get()) }
     single { HomeRepository(get(), get()) }
@@ -561,6 +579,7 @@ val useCaseModule = module {
     single { SubscribeToSwedishBankIdSignStatusUseCase(get()) }
     single { GetPostSignDependenciesUseCase(get()) }
     single { GetCrossSellsUseCase(get()) }
+    single { GraphQLQueryUseCase(get()) }
 }
 
 val cacheManagerModule = module {
@@ -599,7 +618,6 @@ val chatEventModule = module {
 }
 
 val dataStoreModule = module {
-
     @Suppress("RemoveExplicitTypeArguments")
     single<DataStore<Preferences>> {
         PreferenceDataStoreFactory.create(

@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.embark
 
+import android.content.Intent
 import com.hedvig.app.MockActivity
 import com.hedvig.app.embarkModule
 import com.hedvig.app.feature.embark.passages.previousinsurer.askforprice.AskForPriceInfoActivity
@@ -19,7 +20,6 @@ import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_CLOSE_AND_CHAT
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_COMPUTED_VALUE
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_EQUALS_EXPRESSION
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_FOUR_TOOLTIP
-import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GRAPHQL_QUERY_API
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GREATER_THAN_EXPRESSION
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GREATER_THAN_OR_EQUALS_EXPRESSION
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GROUPED_RESPONSE
@@ -50,7 +50,6 @@ import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION_SET_FI
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION_SWEDISH_POSTAL_CODE
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_UNARY_EXPRESSIONS
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_UNARY_REDIRECT
-import com.hedvig.app.util.jsonObjectOf
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -58,12 +57,16 @@ class EmbarkMockActivity : MockActivity() {
     override val original = listOf(embarkModule, onboardingModule)
     override val mocks = listOf(
         module {
-            viewModel<EmbarkViewModel> { MockEmbarkViewModel(get()) }
+            viewModel<EmbarkViewModel> { MockEmbarkViewModel(get(), get()) }
             viewModel<MemberIdViewModel> { MockMemberIdViewModel() }
         }
     )
 
     override fun adapter() = genericDevelopmentAdapter {
+        header("Audio Recorder")
+        clickableItem("Open") {
+            startActivity(Intent(context, RecorderScaffoldActivity::class.java))
+        }
         header("Grouped Response")
         clickableItem("Regular items") {
             MockEmbarkViewModel.mockedData = STORY_WITH_GROUPED_RESPONSE
@@ -368,21 +371,6 @@ class EmbarkMockActivity : MockActivity() {
                 mockedData = STORY_WITH_PASSED_KEY_VALUE
             }
             startActivity(EmbarkActivity.newInstance(this@EmbarkMockActivity, this.javaClass.name, "Redirects"))
-        }
-        header("Api")
-        clickableItem("GraphQL Query") {
-            MockEmbarkViewModel.apply {
-                shouldLoad = true
-                mockedData = STORY_WITH_GRAPHQL_QUERY_API
-                graphQLQueryResponse = jsonObjectOf("hello" to "world")
-            }
-            startActivity(
-                EmbarkActivity.newInstance(
-                    this@EmbarkMockActivity,
-                    this.javaClass.name,
-                    "GraphQL Query",
-                )
-            )
         }
         header("More Options")
         clickableItem("More Options Error") {

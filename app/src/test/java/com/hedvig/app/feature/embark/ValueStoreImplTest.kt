@@ -62,4 +62,15 @@ class ValueStoreImplTest {
             )
         )
     }
+
+    @Test
+    fun `should clear store after roll back`() {
+        val store = ValueStoreImpl()
+
+        store.put("foo", "bar")
+        store.commitVersion()
+        store.rollbackVersion()
+
+        assertThat(store.get("foo")).isEqualTo(null)
+    }
 }

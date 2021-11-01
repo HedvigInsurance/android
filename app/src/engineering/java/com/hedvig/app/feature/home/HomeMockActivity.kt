@@ -1,6 +1,8 @@
 package com.hedvig.app.feature.home
 
 import android.content.Context
+import com.hedvig.android.owldroid.type.ClaimOutcome
+import com.hedvig.android.owldroid.type.ClaimStatus
 import com.hedvig.app.MockActivity
 import com.hedvig.app.feature.home.ui.HomeViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
@@ -22,6 +24,8 @@ import com.hedvig.app.testdata.feature.home.HOME_DATA_TERMINATED
 import com.hedvig.app.testdata.feature.home.HOME_DATA_TERMINATED_IN_FUTURE
 import com.hedvig.app.testdata.feature.home.HOME_DATA_TERMINATED_TODAY
 import com.hedvig.app.testdata.feature.home.HOME_DATA_UPCOMING_RENEWAL
+import com.hedvig.app.testdata.feature.home.builders.HomeQueryClaimBuilder
+import com.hedvig.app.testdata.feature.home.homeActiveContractWithClaim
 import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_ACTIVE
 import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_NEEDS_SETUP
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -125,6 +129,51 @@ class HomeMockActivity : MockActivity() {
             getSharedPreferences("hedvig_shared_preference", Context.MODE_PRIVATE)
                 .edit()
                 .putLong("shared_preference_last_open", 0).apply()
+            startActivity(LoggedInActivity.newInstance(this@HomeMockActivity))
+        }
+        header("Claims")
+        clickableItem("Submitted") {
+            MockHomeViewModel.apply {
+                homeMockData = homeActiveContractWithClaim(HomeQueryClaimBuilder(ClaimStatus.SUBMITTED))
+            }
+            startActivity(LoggedInActivity.newInstance(this@HomeMockActivity))
+        }
+        clickableItem("Being Handled") {
+            MockHomeViewModel.apply {
+                homeMockData = homeActiveContractWithClaim(HomeQueryClaimBuilder(ClaimStatus.BEING_HANDLED))
+            }
+            startActivity(LoggedInActivity.newInstance(this@HomeMockActivity))
+        }
+        clickableItem("Reopenned") {
+            MockHomeViewModel.apply {
+                homeMockData = homeActiveContractWithClaim(HomeQueryClaimBuilder(ClaimStatus.REOPENED))
+            }
+            startActivity(LoggedInActivity.newInstance(this@HomeMockActivity))
+        }
+        clickableItem("Paid (Closed)") {
+            MockHomeViewModel.apply {
+                homeMockData = homeActiveContractWithClaim(
+                    HomeQueryClaimBuilder.paid("200.00", "SEK")
+                )
+            }
+            startActivity(LoggedInActivity.newInstance(this@HomeMockActivity))
+        }
+        clickableItem("Not Compensated (Closed)") {
+            MockHomeViewModel.apply {
+                homeMockData = homeActiveContractWithClaim(HomeQueryClaimBuilder.closed(ClaimOutcome.NOT_COMPENSATED))
+            }
+            startActivity(LoggedInActivity.newInstance(this@HomeMockActivity))
+        }
+        clickableItem("Multiple claims") {
+            MockHomeViewModel.apply {
+                homeMockData = homeActiveContractWithClaim(
+                    listOf(
+                        HomeQueryClaimBuilder(ClaimStatus.SUBMITTED),
+                        HomeQueryClaimBuilder.closed(ClaimOutcome.NOT_COMPENSATED),
+                        HomeQueryClaimBuilder.paid("1400.00", "SEK"),
+                    )
+                )
+            }
             startActivity(LoggedInActivity.newInstance(this@HomeMockActivity))
         }
         header("Market")
