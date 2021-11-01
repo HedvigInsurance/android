@@ -153,8 +153,8 @@ dependencies {
     androidTestImplementation(project(":testdata"))
     testImplementation(project(":testdata"))
     debugImplementation(project(":testdata"))
-
     "stagingImplementation"(project(":testdata"))
+    "pullrequestImplementation"(project(":testdata"))
 
     coreLibraryDesugaring(libs.coreLibraryDesugaring)
     implementation(libs.kotlin.stdlib)
@@ -295,6 +295,7 @@ dependencies {
     debugImplementation(libs.leakCanary)
     debugImplementation(libs.shake)
     "stagingImplementation"(libs.shake)
+    "pullrequestImplementation"(libs.shake)
 
     implementation(libs.androidx.other.activityCompose)
     implementation(libs.androidx.compose.material)
