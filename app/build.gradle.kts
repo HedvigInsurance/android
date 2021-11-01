@@ -95,7 +95,7 @@ android {
 
         named("pullrequest") {
 //            Uncomment this to test locally
-            signingConfig = signingConfigs.getByName("debug")
+//            signingConfig = signingConfigs.getByName("debug")
 
             applicationIdSuffix = ".pullrequest.app"
 
