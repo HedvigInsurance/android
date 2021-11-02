@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 abstract class HomeViewModel : ViewModel() {
     sealed class ViewState {
         data class Success(
-            val homeData: HomeQuery.Data
+            val homeData: HomeQuery.Data,
         ) : ViewState()
 
         object Error : ViewState()
@@ -40,34 +40,32 @@ abstract class HomeViewModel : ViewModel() {
 
 class HomeViewModelImpl(
     private val homeRepository: HomeRepository,
-    private val payinStatusRepository: PayinStatusRepository
+    private val payinStatusRepository: PayinStatusRepository,
 ) : HomeViewModel() {
     init {
-        viewModelScope.launch {
-            homeRepository
-                .home()
-                .onEach { response ->
-                    response.errors?.let {
-                        _homeData.postValue(ViewState.Error)
-                        return@onEach
-                    }
-                    response.data?.let { _homeData.postValue(ViewState.Success(it)) }
-                }
-                .catch { err ->
-                    e(err)
+        homeRepository
+            .home()
+            .onEach { response ->
+                response.errors?.let {
                     _homeData.postValue(ViewState.Error)
+                    return@onEach
                 }
-                .launchIn(this)
+                response.data?.let { _homeData.postValue(ViewState.Success(it)) }
+            }
+            .catch { err ->
+                e(err)
+                _homeData.postValue(ViewState.Error)
+            }
+            .launchIn(viewModelScope)
 
-            payinStatusRepository
-                .payinStatus()
-                .onEach { response ->
-                    response.data?.let { _payinStatusData.postValue(it) }
-                }
-                .catch { err ->
-                    e(err)
-                }.launchIn(this)
-        }
+        payinStatusRepository
+            .payinStatus()
+            .onEach { response ->
+                response.data?.let { _payinStatusData.postValue(it) }
+            }
+            .catch { err ->
+                e(err)
+            }.launchIn(viewModelScope)
     }
 
     override fun load() {
