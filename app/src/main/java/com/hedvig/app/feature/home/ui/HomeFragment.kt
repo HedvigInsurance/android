@@ -181,7 +181,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                             )
                         )
                     }
-                    add(HomeModel.StartClaimContained)
+                    add(HomeModel.StartClaimOutlined)
                     add(HomeModel.HowClaimsWork(successData.howClaimsWork))
                     if (pendingAddress != null && pendingAddress.isNotBlank()) {
                         add(HomeModel.PendingAddressChange(pendingAddress))
