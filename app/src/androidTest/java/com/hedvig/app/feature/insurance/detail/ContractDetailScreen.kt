@@ -70,20 +70,10 @@ class ContractDetailScreen : Screen<ContractDetailScreen>() {
 
         class CoInsured(parent: Matcher<View>) : KRecyclerItem<CoInsured>(parent) {
             val title = KTextView(parent) { withId(R.id.title) }
-            val coInsuredLabel = KTextView(parent) { withId(R.id.coinsured_label) }
-            val coInsured = KTextView(parent) { withId(R.id.coinsured_amount) }
         }
 
         class Home(parent: Matcher<View>) : KRecyclerItem<Home>(parent) {
             val title = KTextView(parent) { withId(R.id.title) }
-            val addressLabel = KTextView(parent) { withId(R.id.coinsured_label) }
-            val address = KTextView(parent) { withId(R.id.address_value) }
-            val postCodeLabel = KTextView(parent) { withId(R.id.postcode_label) }
-            val postCode = KTextView(parent) { withId(R.id.postcode_value) }
-            val typeLabel = KTextView(parent) { withId(R.id.type_label) }
-            val type = KTextView(parent) { withId(R.id.type_value) }
-            val sizeLabel = KTextView(parent) { withId(R.id.size_label) }
-            val size = KTextView(parent) { withId(R.id.size_value) }
         }
 
         class ChangeAddressButton(parent: Matcher<View>) : KRecyclerItem<ChangeAddressButton>(parent) {
