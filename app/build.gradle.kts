@@ -94,7 +94,7 @@ android {
         }
 
         named("pullrequest") {
-            applicationIdSuffix = ".pullrequest.app"
+            applicationIdSuffix = ".test.app"
 
             manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
 
