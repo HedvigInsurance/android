@@ -25,9 +25,11 @@ fun LibraryExtension.commonConfig(androidVersions: AndroidVersions = AndroidVers
 
     buildTypes {
         maybeCreate("staging")
+        maybeCreate("pullrequest")
 
         named("debug") {}
         named("staging") {}
+        named("pullrequest") {}
         named("release") {}
     }
 

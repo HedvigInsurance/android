@@ -64,6 +64,7 @@ android {
 
     buildTypes {
         maybeCreate("staging")
+        maybeCreate("pullrequest")
         named("release") {
             applicationIdSuffix = ".app"
 
@@ -92,6 +93,21 @@ android {
             )
         }
 
+        named("pullrequest") {
+            applicationIdSuffix = ".test.app"
+
+            manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
+
+            isMinifyEnabled = true
+            setProguardFiles(
+                listOf(
+                    getDefaultProguardFile("proguard-android.txt"),
+                    "proguard-rules.pro",
+                    "proguard-rules-showkase.pro"
+                )
+            )
+        }
+
         named("debug") {
             applicationIdSuffix = ".dev.app"
 
@@ -108,6 +124,11 @@ android {
             manifest.srcFile("src/debug/AndroidManifest.xml")
         }
         named("staging") {
+            java.srcDir("src/engineering/java")
+            res.srcDir("src/engineering/res")
+            manifest.srcFile("src/debug/AndroidManifest.xml")
+        }
+        named("pullrequest") {
             java.srcDir("src/engineering/java")
             res.srcDir("src/engineering/res")
             manifest.srcFile("src/debug/AndroidManifest.xml")
@@ -129,8 +150,8 @@ dependencies {
     androidTestImplementation(project(":testdata"))
     testImplementation(project(":testdata"))
     debugImplementation(project(":testdata"))
-
     "stagingImplementation"(project(":testdata"))
+    "pullrequestImplementation"(project(":testdata"))
 
     coreLibraryDesugaring(libs.coreLibraryDesugaring)
     implementation(libs.kotlin.stdlib)
@@ -271,6 +292,7 @@ dependencies {
     debugImplementation(libs.leakCanary)
     debugImplementation(libs.shake)
     "stagingImplementation"(libs.shake)
+    "pullrequestImplementation"(libs.shake)
 
     implementation(libs.androidx.other.activityCompose)
     implementation(libs.androidx.compose.material)
@@ -281,10 +303,8 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.uiTestJunit)
     debugImplementation(libs.androidx.compose.uiTestManifest)
 
-    debugImplementation(libs.showkase.showkase)
-    "stagingImplementation"(libs.showkase.showkase)
-    kaptDebug(libs.showkase.processor)
-    "kaptStaging"(libs.showkase.processor)
+    implementation(libs.showkase.showkase)
+    kapt(libs.showkase.processor)
 }
 
 val lokaliseProperties = Properties()
