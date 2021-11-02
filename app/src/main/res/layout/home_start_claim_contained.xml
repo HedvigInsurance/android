@@ -6,5 +6,5 @@
     android:layout_marginStart="@dimen/base_margin_double"
     android:layout_marginTop="18dp"
     android:layout_marginEnd="@dimen/base_margin_double"
-    android:text="@string/home_tab.claim_button_text" />
+    android:text="@string/home.open_claim.start_new_claim_button" />
 
