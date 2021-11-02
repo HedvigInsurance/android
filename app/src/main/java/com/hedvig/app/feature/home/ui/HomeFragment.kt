@@ -150,7 +150,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                 val items = mutableListOf<HomeModel>().apply {
                     add(HomeModel.BigText.Terminated(firstName))
                     add(HomeModel.BodyText.Terminated)
-                    add(HomeModel.StartClaimOutlined)
+                    add(HomeModel.StartClaimOutlined.FirstClaim)
                     add(HomeModel.HowClaimsWork(successData.howClaimsWork))
                     if (pendingAddress != null && pendingAddress.isNotBlank()) {
                         add(HomeModel.PendingAddressChange(pendingAddress))
@@ -169,19 +169,11 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     add(HomeModel.BigText.Active(firstName))
                     // TODO think about showing this in other states as well? Not just on isActive(...)
                     if (successData.claims.isNotEmpty()) {
-                        add(
-                            HomeModel.ClaimStatus(
-                                successData.claims.map { claim ->
-                                    ClaimStatusData.fromHomeQueryClaim(
-                                        homeQueryClaim = claim,
-                                        resources = resources,
-                                        locale = getLocale(requireContext(), marketManager.market)
-                                    )
-                                }
-                            )
-                        )
+                        add(claimStatusCards(successData))
+                        add(HomeModel.StartClaimOutlined.NewClaim)
+                    } else {
+                        add(HomeModel.StartClaimContained.FirstClaim)
                     }
-                    add(HomeModel.StartClaimOutlined)
                     add(HomeModel.HowClaimsWork(successData.howClaimsWork))
                     if (pendingAddress != null && pendingAddress.isNotBlank()) {
                         add(HomeModel.PendingAddressChange(pendingAddress))
@@ -212,6 +204,16 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     private fun startEmbarkForResult(intent: Intent) {
         registerForActivityResult.launch(intent)
     }
+
+    private fun claimStatusCards(successData: HomeQuery.Data) = HomeModel.ClaimStatus(
+        successData.claims.map { claim ->
+            ClaimStatusData.fromHomeQueryClaim(
+                homeQueryClaim = claim,
+                resources = resources,
+                locale = getLocale(requireContext(), marketManager.market)
+            )
+        }
+    )
 
     private fun psaItems(
         importantMessages: List<HomeQuery.ImportantMessage?>,

@@ -81,8 +81,8 @@ class HomeAdapter(
         is HomeModel.BigText -> R.layout.home_big_text
         is HomeModel.BodyText -> R.layout.home_body_text
         is HomeModel.ClaimStatus -> ACTIVE_CLAIM
-        HomeModel.StartClaimOutlined -> R.layout.home_start_claim_outlined
-        HomeModel.StartClaimContained -> R.layout.home_start_claim_contained
+        is HomeModel.StartClaimOutlined -> R.layout.home_start_claim_outlined
+        is HomeModel.StartClaimContained -> R.layout.home_start_claim_contained
         is HomeModel.ConnectPayin -> R.layout.home_info_card
         is HomeModel.CommonClaim -> R.layout.home_common_claim
         HomeModel.Error -> R.layout.generic_error
@@ -231,10 +231,11 @@ class HomeAdapter(
                 tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
-                if (data != HomeModel.StartClaimOutlined) {
+                if (data !is HomeModel.StartClaimOutlined) {
                     return invalid(data)
                 }
 
+                binding.button.setText(data.textId)
                 root.setHapticClickListener {
                     tracker.startClaimOutlined()
                     HonestyPledgeBottomSheet
@@ -255,10 +256,11 @@ class HomeAdapter(
                 tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
-                if (data != HomeModel.StartClaimContained) {
+                if (data !is HomeModel.StartClaimContained) {
                     return invalid(data)
                 }
 
+                binding.button.setText(data.textId)
                 root.setHapticClickListener {
                     tracker.startClaimContained()
                     HonestyPledgeBottomSheet
