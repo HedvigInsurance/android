@@ -20,7 +20,7 @@ fun evaluateExpression(expression: ExpressionFragment, valueStore: ValueStore): 
             EmbarkExpressionTypeBinary.EQUALS -> {
                 if (binaryExpression.value == "null") {
                     return if (
-                        valueStore.get(binaryExpression.key) == null &&
+                        (valueStore.get(binaryExpression.key) == null || valueStore.get(binaryExpression.key) == "") &&
                         valueStore.getList(binaryExpression.key) == null
                     ) {
                         ExpressionResult.True(binaryExpression.text)
