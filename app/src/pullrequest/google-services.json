@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:50557424572:android:b13f4f0c701d8299",
         "android_client_info": {
-          "package_name": "com.hedvig.pullrequest.app"
+          "package_name": "com.hedvig.test.app"
         }
       },
       "oauth_client": [
