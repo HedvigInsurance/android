@@ -1,17 +1,17 @@
 package com.hedvig.app.service.badge
 
 import com.hedvig.android.owldroid.type.TypeOfContract
-import com.hedvig.app.feature.loggedin.service.GetCrossSellsUseCase
+import com.hedvig.app.feature.crossselling.usecase.GetCrossSellsContractTypesUseCase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 class CrossSellNotificationBadgeService(
-    private val getCrossSellsUseCase: GetCrossSellsUseCase,
+    private val getCrossSellsContractTypesUseCase: GetCrossSellsContractTypesUseCase,
     private val notificationBadgeService: NotificationBadgeService,
 ) {
     suspend fun getUnseenCrossSells(badgeType: CrossSellBadgeType): Flow<Set<TypeOfContract>> {
-        val potentialCrossSells = getCrossSellsUseCase.invoke()
+        val potentialCrossSells = getCrossSellsContractTypesUseCase.invoke()
         val tabNotifications = badgeType.associatedBadge
 
         return notificationBadgeService.getValue(tabNotifications)
@@ -25,7 +25,7 @@ class CrossSellNotificationBadgeService(
 
     suspend fun markCurrentCrossSellsAsSeen(badgeType: CrossSellBadgeType) {
         val associatedBadge = badgeType.associatedBadge
-        val potentialCrossSells = getCrossSellsUseCase.invoke().map(TypeOfContract::rawValue).toSet()
+        val potentialCrossSells = getCrossSellsContractTypesUseCase.invoke().map(TypeOfContract::rawValue).toSet()
         val alreadySeenCrossSells = notificationBadgeService
             .getValue(associatedBadge)
             .first()

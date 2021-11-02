@@ -39,6 +39,7 @@ query InsuranceQuery($locale: Locale!) {
       title
       description
       callToAction
+      type
       contractType
       action {
         ... on CrossSellEmbark {

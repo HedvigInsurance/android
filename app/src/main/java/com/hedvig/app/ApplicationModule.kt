@@ -48,6 +48,7 @@ import com.hedvig.app.feature.crossselling.ui.CrossSellResultViewModel
 import com.hedvig.app.feature.crossselling.ui.CrossSellTracker
 import com.hedvig.app.feature.crossselling.ui.CrossSellingResult
 import com.hedvig.app.feature.crossselling.ui.detail.CrossSellFaqViewModel
+import com.hedvig.app.feature.crossselling.usecase.GetCrossSellsContractTypesUseCase
 import com.hedvig.app.feature.embark.EmbarkRepository
 import com.hedvig.app.feature.embark.EmbarkTracker
 import com.hedvig.app.feature.embark.EmbarkViewModel
@@ -92,7 +93,6 @@ import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModelImpl
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModel
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModelImpl
-import com.hedvig.app.feature.loggedin.service.GetCrossSellsUseCase
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
 import com.hedvig.app.feature.loggedin.ui.LoggedInRepository
 import com.hedvig.app.feature.loggedin.ui.LoggedInTracker
@@ -179,6 +179,7 @@ import com.hedvig.app.service.FileService
 import com.hedvig.app.service.badge.CrossSellNotificationBadgeService
 import com.hedvig.app.service.badge.NotificationBadgeService
 import com.hedvig.app.service.push.PushTokenManager
+import com.hedvig.app.service.push.managers.CrossSellNotificationManager
 import com.hedvig.app.service.push.managers.PaymentNotificationManager
 import com.hedvig.app.terminated.TerminatedTracker
 import com.hedvig.app.util.LocaleManager
@@ -549,6 +550,7 @@ val marketManagerModule = module {
 
 val notificationModule = module {
     single { PaymentNotificationManager(get()) }
+    single { CrossSellNotificationManager(get()) }
 }
 
 val clockModule = module { single { Clock.systemDefaultZone() } }
@@ -578,7 +580,7 @@ val useCaseModule = module {
     single { ManuallyRecheckSwedishBankIdSignStatusUseCase(get()) }
     single { SubscribeToSwedishBankIdSignStatusUseCase(get()) }
     single { GetPostSignDependenciesUseCase(get()) }
-    single { GetCrossSellsUseCase(get()) }
+    single { GetCrossSellsContractTypesUseCase(get(), get()) }
     single { GraphQLQueryUseCase(get()) }
 }
 
