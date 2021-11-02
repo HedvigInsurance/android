@@ -39,6 +39,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     override fun onResume() {
         super.onResume()
         loggedInViewModel.onScroll(scroll)
+        model.load()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -51,6 +52,13 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             tracker,
             marketManager
         )
+
+        binding.swipeToRefresh.apply {
+            setOnRefreshListener {
+                model.load()
+                this.isRefreshing = false
+            }
+        }
 
         binding.recycler.apply {
             applyNavigationBarInsets()

@@ -12,7 +12,7 @@ class HomeRepository(
     private val apolloClient: ApolloClient,
     private val localeManager: LocaleManager,
 ) {
-    fun home() = apolloClient
+    fun homeQueryFlow() = apolloClient
         .query(homeQuery())
         .watcher()
         .toFlow()

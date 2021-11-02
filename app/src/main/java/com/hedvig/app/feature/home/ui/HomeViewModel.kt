@@ -44,7 +44,7 @@ class HomeViewModelImpl(
 ) : HomeViewModel() {
     init {
         homeRepository
-            .home()
+            .homeQueryFlow()
             .onEach { response ->
                 response.errors?.let {
                     _homeData.postValue(ViewState.Error)
