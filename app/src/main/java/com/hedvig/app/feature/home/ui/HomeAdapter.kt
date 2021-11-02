@@ -66,7 +66,7 @@ class HomeAdapter(
         R.layout.home_start_claim_contained -> ViewHolder.StartClaimContained(parent)
         R.layout.home_info_card -> ViewHolder.InfoCard(parent)
         R.layout.home_common_claim -> ViewHolder.CommonClaim(parent, imageLoader)
-        R.layout.generic_error -> ViewHolder.Error(parent)
+        R.layout.generic_error -> ViewHolder.Error(parent, retry)
         R.layout.how_claims_work_button -> ViewHolder.HowClaimsWorkButton(parent)
         R.layout.upcoming_renewal_card -> ViewHolder.UpcomingRenewal(parent)
         R.layout.home_change_address_button -> ViewHolder.ChangeAddress(parent)
@@ -96,7 +96,6 @@ class HomeAdapter(
         holder.bind(
             getItem(position),
             fragmentManager,
-            retry,
             tracker,
             marketManager
         )
@@ -112,7 +111,6 @@ class HomeAdapter(
         abstract fun bind(
             data: HomeModel,
             fragmentManager: FragmentManager,
-            retry: () -> Unit,
             tracker: HomeTracker,
             marketManager: MarketManager,
         )
@@ -131,7 +129,6 @@ class HomeAdapter(
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                retry: () -> Unit,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
@@ -174,7 +171,6 @@ class HomeAdapter(
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                retry: () -> Unit,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
@@ -206,7 +202,6 @@ class HomeAdapter(
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                retry: () -> Unit,
                 tracker: HomeTracker,
                 marketManager: MarketManager
             ) {
@@ -227,7 +222,6 @@ class HomeAdapter(
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                retry: () -> Unit,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
@@ -247,7 +241,6 @@ class HomeAdapter(
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                retry: () -> Unit,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
@@ -267,7 +260,6 @@ class HomeAdapter(
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                retry: () -> Unit,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
@@ -303,7 +295,6 @@ class HomeAdapter(
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                retry: () -> Unit,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
@@ -327,7 +318,6 @@ class HomeAdapter(
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                retry: () -> Unit,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
@@ -352,7 +342,6 @@ class HomeAdapter(
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                retry: () -> Unit,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
@@ -398,7 +387,6 @@ class HomeAdapter(
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                retry: () -> Unit,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
@@ -425,12 +413,14 @@ class HomeAdapter(
             }
         }
 
-        class Error(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.generic_error)) {
+        class Error(
+            parent: ViewGroup,
+            private val retry: () -> Unit,
+        ) : ViewHolder(parent.inflate(R.layout.generic_error)) {
             private val binding by viewBinding(GenericErrorBinding::bind)
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                retry: () -> Unit,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
@@ -446,7 +436,6 @@ class HomeAdapter(
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                retry: () -> Unit,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
@@ -493,7 +482,6 @@ class HomeAdapter(
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                retry: () -> Unit,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
@@ -515,7 +503,6 @@ class HomeAdapter(
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                retry: () -> Unit,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
