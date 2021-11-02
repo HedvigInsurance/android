@@ -27,8 +27,8 @@ class AudioRecorderFragment : Fragment() {
 
     private val permission = Manifest.permission.RECORD_AUDIO
 
-    private val permissionResultLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
-        if (it) {
+    private val permissionResultLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { permissionGranted ->
+        if (permissionGranted) {
             model.startRecording()
         } else {
             requireActivity().showPermissionExplanationDialog(permission)
