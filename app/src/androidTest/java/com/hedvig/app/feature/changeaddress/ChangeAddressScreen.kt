@@ -13,6 +13,4 @@ object ChangeAddressScreen : KScreen<ChangeAddressScreen>() {
     val title = KTextView { withId(R.id.title) }
     val subtitle = KTextView { withId(R.id.subtitle) }
     val continueButton = KButton { withId(R.id.continueButton) }
-
-    val type = KTextView { withId(R.id.type_label) }
 }
