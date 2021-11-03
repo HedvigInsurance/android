@@ -97,7 +97,7 @@ fun Activity.askForPermissions(
     }
 }
 
-private fun Activity.showPermissionExplanationDialog(permission: String) {
+fun Activity.showPermissionExplanationDialog(permission: String) {
     when (permission) {
         android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
         android.Manifest.permission.READ_EXTERNAL_STORAGE,
