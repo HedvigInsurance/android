@@ -49,6 +49,7 @@ import com.hedvig.app.feature.crossselling.ui.CrossSellTracker
 import com.hedvig.app.feature.crossselling.ui.CrossSellingResult
 import com.hedvig.app.feature.crossselling.ui.detail.CrossSellFaqViewModel
 import com.hedvig.app.feature.crossselling.usecase.GetCrossSellsContractTypesUseCase
+import com.hedvig.app.feature.crossselling.usecase.GetCrossSellsUseCase
 import com.hedvig.app.feature.embark.EmbarkRepository
 import com.hedvig.app.feature.embark.EmbarkTracker
 import com.hedvig.app.feature.embark.EmbarkViewModel
@@ -582,6 +583,7 @@ val useCaseModule = module {
     single { GetPostSignDependenciesUseCase(get()) }
     single { GetCrossSellsContractTypesUseCase(get(), get()) }
     single { GraphQLQueryUseCase(get()) }
+    single { GetCrossSellsUseCase(get(), get()) }
 }
 
 val cacheManagerModule = module {
