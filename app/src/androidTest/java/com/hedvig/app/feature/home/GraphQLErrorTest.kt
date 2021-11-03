@@ -14,6 +14,7 @@ import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.hasText
+import com.hedvig.app.util.jsonObjectOf
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.kakao.screen.Screen.Companion.onScreen
 import org.junit.Rule
@@ -35,7 +36,7 @@ class GraphQLErrorTest : TestCase() {
         HomeQuery.QUERY_DOCUMENT to apolloResponse {
             if (shouldFail) {
                 shouldFail = false
-                graphQLError("example")
+                graphQLError(jsonObjectOf("message" to "example"))
             } else {
                 success(HOME_DATA_PENDING)
             }
