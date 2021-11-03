@@ -252,6 +252,11 @@ val applicationModule = module {
                         .header("Accept-Language", makeLocaleString(context, marketManager.market))
                         .header("apollographql-client-name", BuildConfig.APPLICATION_ID)
                         .header("apollographql-client-version", BuildConfig.VERSION_NAME)
+                        .header("X-Build-Version", BuildConfig.VERSION_CODE.toString())
+                        .header("X-App-Version", BuildConfig.VERSION_NAME)
+                        .header("X-System-Version", Build.VERSION.SDK_INT.toString())
+                        .header("X-Platform", "ANDROID")
+                        .header("X-Model", "${Build.MANUFACTURER} ${Build.MODEL}")
                         .build()
                 )
             }
