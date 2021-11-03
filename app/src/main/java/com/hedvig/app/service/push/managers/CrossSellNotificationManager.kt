@@ -1,6 +1,5 @@
 package com.hedvig.app.service.push.managers
 
-import android.app.PendingIntent
 import android.content.Context
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -12,12 +11,12 @@ import com.hedvig.app.feature.crossselling.ui.detail.CrossSellDetailActivity
 import com.hedvig.app.feature.crossselling.usecase.GetCrossSellsUseCase
 import com.hedvig.app.service.push.DATA_MESSAGE_BODY
 import com.hedvig.app.service.push.DATA_MESSAGE_TITLE
+import com.hedvig.app.service.push.getImmutablePendingIntentFlags
 import com.hedvig.app.service.push.setupNotificationChannel
 import e
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.concurrent.atomic.AtomicInteger
 
 class CrossSellNotificationManager(
     private val crossSellsUseCase: GetCrossSellsUseCase
@@ -53,7 +52,7 @@ class CrossSellNotificationManager(
             .run {
                 val intent = CrossSellDetailActivity.newInstance(context, crossSell)
                 addNextIntentWithParentStack(intent)
-                getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+                getPendingIntent(0, getImmutablePendingIntentFlags())
             }
         val notification = NotificationCompat
             .Builder(
@@ -72,7 +71,7 @@ class CrossSellNotificationManager(
         NotificationManagerCompat
             .from(context)
             .notify(
-                id.getAndIncrement(),
+                CROSS_SELL_NOTIFICATION_ID,
                 notification
             )
     }
@@ -99,10 +98,9 @@ class CrossSellNotificationManager(
         else -> CrossSellData.CrossSellType.UNKNOWN
     }
 
-    private val id = AtomicInteger(100)
-
     companion object {
         private const val CROSS_SELL_CHANNEL_ID = "hedvig-cross-sell"
         private const val CROSS_SELL_TYPE = "CROSS_SELL_TYPE"
+        private const val CROSS_SELL_NOTIFICATION_ID = 11
     }
 }

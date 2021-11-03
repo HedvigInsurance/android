@@ -10,6 +10,7 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedActivity
+import com.hedvig.app.service.push.getImmutablePendingIntentFlags
 import com.hedvig.app.service.push.setupNotificationChannel
 
 object ReferralsNotificationManager {
@@ -25,7 +26,7 @@ object ReferralsNotificationManager {
                         initialTab = LoggedInTabs.REFERRALS
                     )
                 )
-                getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+                getPendingIntent(0, getImmutablePendingIntentFlags())
             }
 
         val notificationBuilder = NotificationCompat
@@ -67,7 +68,7 @@ object ReferralsNotificationManager {
                     )
                 )
                 addNextIntentWithParentStack(ReferralsActivatedActivity.newInstance(context))
-                getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+                getPendingIntent(0, getImmutablePendingIntentFlags())
             }
 
         val notificationBuilder = NotificationCompat

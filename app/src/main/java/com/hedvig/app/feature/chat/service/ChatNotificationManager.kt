@@ -21,6 +21,7 @@ import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.service.push.DATA_MESSAGE_BODY
 import com.hedvig.app.service.push.DATA_MESSAGE_TITLE
 import com.hedvig.app.service.push.PushNotificationService
+import com.hedvig.app.service.push.getMutablePendingIntentFlags
 import com.hedvig.app.service.push.setupNotificationChannel
 import com.hedvig.app.util.extensions.getStoredBoolean
 
@@ -77,11 +78,7 @@ object ChatNotificationManager {
         val chatIntent = Intent(context, ChatActivity::class.java)
         chatIntent.putExtra(ChatActivity.EXTRA_SHOW_CLOSE, true)
 
-        val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
-        } else {
-            PendingIntent.FLAG_UPDATE_CURRENT
-        }
+        val flags = getMutablePendingIntentFlags()
 
         val pendingIntent: PendingIntent? = TaskStackBuilder
             .create(context)
