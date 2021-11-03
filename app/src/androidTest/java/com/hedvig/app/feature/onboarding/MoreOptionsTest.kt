@@ -7,7 +7,6 @@ import com.hedvig.app.testdata.feature.onboarding.MEMBER_ID_DATA
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
-import com.hedvig.app.util.jsonObjectOf
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
@@ -24,7 +23,7 @@ class MoreOptionsTest : TestCase() {
         MemberIdQuery.QUERY_DOCUMENT to apolloResponse {
             if (shouldFail) {
                 shouldFail = false
-                graphQLError(jsonObjectOf("message" to "error"))
+                graphQLError("error")
             } else {
                 success(MEMBER_ID_DATA)
             }

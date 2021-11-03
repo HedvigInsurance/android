@@ -10,7 +10,6 @@ import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
-import com.hedvig.app.util.jsonObjectOf
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.kakao.screen.Screen.Companion.onScreen
 import org.junit.Rule
@@ -28,7 +27,7 @@ class ErrorTest : TestCase() {
         InsuranceQuery.QUERY_DOCUMENT to apolloResponse {
             if (shouldFail) {
                 shouldFail = false
-                graphQLError(jsonObjectOf("message" to "error"))
+                graphQLError("error")
             } else {
                 success(INSURANCE_DATA_ONE_ACTIVE_ONE_TERMINATED)
             }
