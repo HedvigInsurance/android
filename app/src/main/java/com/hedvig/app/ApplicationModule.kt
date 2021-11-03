@@ -17,7 +17,7 @@ import com.apollographql.apollo.cache.normalized.NormalizedCacheFactory
 import com.apollographql.apollo.cache.normalized.lru.EvictionPolicy
 import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCache
 import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCacheFactory
-import com.apollographql.apollo.interceptor.ApolloInterceptor
+import com.apollographql.apollo.interceptor.ApolloInterceptorFactory
 import com.apollographql.apollo.subscription.SubscriptionConnectionParams
 import com.apollographql.apollo.subscription.WebSocketSubscriptionTransport
 import com.google.firebase.analytics.ktx.analytics
@@ -273,7 +273,7 @@ val applicationModule = module {
         }
         builder.build()
     }
-    single { SunsettingInterceptor(get()) } bind ApolloInterceptor::class
+    single { SunsettingInterceptor.Factory(get()) } bind ApolloInterceptorFactory::class
     single {
         val builder = ApolloClient
             .builder()
@@ -294,8 +294,8 @@ val applicationModule = module {
 
         CUSTOM_TYPE_ADAPTERS.customAdapters.forEach { (t, a) -> builder.addCustomTypeAdapter(t, a) }
 
-        getAll<ApolloInterceptor>().distinct().forEach {
-            builder.addApplicationInterceptor(it)
+        getAll<ApolloInterceptorFactory>().distinct().forEach {
+            builder.addApplicationInterceptorFactory(it)
         }
 
         if (isDebug()) {

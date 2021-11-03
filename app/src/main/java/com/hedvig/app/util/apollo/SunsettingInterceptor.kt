@@ -2,9 +2,12 @@ package com.hedvig.app.util.apollo
 
 import android.content.Context
 import com.apollographql.apollo.api.Error
+import com.apollographql.apollo.api.Operation
+import com.apollographql.apollo.api.internal.ApolloLogger
 import com.apollographql.apollo.exception.ApolloException
 import com.apollographql.apollo.interceptor.ApolloInterceptor
 import com.apollographql.apollo.interceptor.ApolloInterceptorChain
+import com.apollographql.apollo.interceptor.ApolloInterceptorFactory
 import com.hedvig.app.feature.sunsetting.ForceUpgradeActivity
 import java.util.concurrent.Executor
 
@@ -31,7 +34,6 @@ class SunsettingInterceptor(
 
                     if (parsedResponse == null) {
                         callBack.onResponse(response)
-                        callBack.onCompleted()
                         return
                     }
 
@@ -39,7 +41,6 @@ class SunsettingInterceptor(
 
                     if (errors == null) {
                         callBack.onResponse(response)
-                        callBack.onCompleted()
                         return
                     }
 
@@ -50,7 +51,6 @@ class SunsettingInterceptor(
                     }
 
                     callBack.onResponse(response)
-                    callBack.onCompleted()
                 }
 
                 override fun onFetch(sourceType: ApolloInterceptor.FetchSourceType?) {
@@ -66,6 +66,7 @@ class SunsettingInterceptor(
                 }
 
                 override fun onCompleted() {
+                    callBack.onCompleted()
                 }
             }
         )
@@ -73,6 +74,13 @@ class SunsettingInterceptor(
 
     override fun dispose() {
         disposed = true
+    }
+
+    class Factory(
+        private val context: Context,
+    ) : ApolloInterceptorFactory {
+        override fun newInterceptor(logger: ApolloLogger, operation: Operation<*, *, *>) =
+            SunsettingInterceptor(context)
     }
 }
 
