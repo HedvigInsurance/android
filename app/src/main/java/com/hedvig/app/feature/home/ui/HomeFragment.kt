@@ -56,7 +56,6 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
         binding.swipeToRefresh.apply {
             setOnRefreshListener {
                 model.load()
-                this.isRefreshing = false
             }
         }
 
@@ -94,6 +93,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             if (homeData == null) {
                 return@observe
             }
+            binding.swipeToRefresh.isRefreshing = homeData is HomeViewModel.ViewState.Loading
             if (homeData is HomeViewModel.ViewState.Error) {
                 adapter.submitList(listOf(HomeModel.Error))
                 return@observe

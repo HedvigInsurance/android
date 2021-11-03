@@ -3,6 +3,7 @@ package com.hedvig.app.feature.home.ui
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
@@ -21,6 +22,7 @@ abstract class HomeViewModel : ViewModel() {
             val homeData: HomeQuery.Data,
         ) : ViewState()
 
+        object Loading : ViewState()
         object Error : ViewState()
     }
 
@@ -29,11 +31,12 @@ abstract class HomeViewModel : ViewModel() {
 
     // TODO Fetch address change in progress
     protected val _addressChangeInProgress = MutableLiveData("")
+
     val data: LiveData<Triple<ViewState?, PayinStatusQuery.Data?, String?>> = combineTuple(
         _homeData,
         _payinStatusData,
         _addressChangeInProgress
-    )
+    ).distinctUntilChanged()
 
     abstract fun load()
 }
@@ -43,21 +46,6 @@ class HomeViewModelImpl(
     private val payinStatusRepository: PayinStatusRepository,
 ) : HomeViewModel() {
     init {
-        homeRepository
-            .homeQueryFlow()
-            .onEach { response ->
-                response.errors?.let {
-                    _homeData.postValue(ViewState.Error)
-                    return@onEach
-                }
-                response.data?.let { _homeData.postValue(ViewState.Success(it)) }
-            }
-            .catch { err ->
-                e(err)
-                _homeData.postValue(ViewState.Error)
-            }
-            .launchIn(viewModelScope)
-
         payinStatusRepository
             .payinStatus()
             .onEach { response ->
@@ -70,7 +58,17 @@ class HomeViewModelImpl(
 
     override fun load() {
         viewModelScope.launch {
-            runCatching { homeRepository.reloadHome() }
+            _homeData.value = ViewState.Loading
+            runCatching {
+                val response = homeRepository.reloadHome()
+                response.errors?.let {
+                    _homeData.postValue(ViewState.Error)
+                    return@runCatching
+                }
+                response.data?.let { data ->
+                    _homeData.postValue(ViewState.Success(data))
+                }
+            }
             runCatching { payinStatusRepository.refreshPayinStatus() }
         }
     }
