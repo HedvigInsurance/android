@@ -17,6 +17,7 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.getLocale
+import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.featureflags.Feature
@@ -63,6 +64,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             applyNavigationBarInsets()
             applyStatusBarInsets()
 
+            itemAnimator = ViewHolderReusingDefaultItemAnimator()
             this.adapter = adapter
             (layoutManager as? GridLayoutManager)?.spanSizeLookup =
                 object : GridLayoutManager.SpanSizeLookup() {

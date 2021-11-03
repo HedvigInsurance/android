@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.FragmentManager
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
@@ -36,7 +37,6 @@ import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
 import com.hedvig.app.feature.home.ui.claimstatus.composables.ClaimStatusCards
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.ui.compose.theme.HedvigTheme
-import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.inflate
@@ -55,7 +55,7 @@ class HomeAdapter(
     private val imageLoader: ImageLoader,
     private val tracker: HomeTracker,
     private val marketManager: MarketManager,
-) : ListAdapter<HomeModel, HomeAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
+) : ListAdapter<HomeModel, HomeAdapter.ViewHolder>(HomeModelDiffUtilItemCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.home_psa -> ViewHolder.PSABox(parent)
@@ -203,7 +203,7 @@ class HomeAdapter(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
                 tracker: HomeTracker,
-                marketManager: MarketManager
+                marketManager: MarketManager,
             ) {
                 if (data !is HomeModel.ClaimStatus) {
                     return invalid(data)
@@ -336,7 +336,7 @@ class HomeAdapter(
 
         class CommonClaim(
             parent: ViewGroup,
-            private val imageLoader: ImageLoader
+            private val imageLoader: ImageLoader,
         ) : ViewHolder(parent.inflate(R.layout.home_common_claim)) {
             private val binding by viewBinding(HomeCommonClaimBinding::bind)
             override fun bind(
@@ -518,5 +518,17 @@ class HomeAdapter(
         const val ACTIVE_CLAIM = 1
 
         fun daysLeft(date: LocalDate): Int = ChronoUnit.DAYS.between(LocalDate.now(), date).toInt()
+
+        object HomeModelDiffUtilItemCallback : DiffUtil.ItemCallback<HomeModel>() {
+            override fun areItemsTheSame(oldItem: HomeModel, newItem: HomeModel): Boolean {
+                if (oldItem is HomeModel.ClaimStatus && newItem is HomeModel.ClaimStatus) {
+                    // Only a single ClaimStatus must appear in the list, therefore always true
+                    return true
+                }
+                return oldItem == newItem
+            }
+
+            override fun areContentsTheSame(oldItem: HomeModel, newItem: HomeModel) = oldItem == newItem
+        }
     }
 }
