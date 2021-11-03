@@ -17,6 +17,7 @@ import com.apollographql.apollo.cache.normalized.NormalizedCacheFactory
 import com.apollographql.apollo.cache.normalized.lru.EvictionPolicy
 import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCache
 import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCacheFactory
+import com.apollographql.apollo.interceptor.ApolloInterceptor
 import com.apollographql.apollo.subscription.SubscriptionConnectionParams
 import com.apollographql.apollo.subscription.WebSocketSubscriptionTransport
 import com.google.firebase.analytics.ktx.analytics
@@ -184,6 +185,7 @@ import com.hedvig.app.terminated.TerminatedTracker
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.ApolloTimberLogger
 import com.hedvig.app.util.apollo.CacheManager
+import com.hedvig.app.util.apollo.SunsettingInterceptor
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import okhttp3.OkHttpClient
@@ -271,6 +273,7 @@ val applicationModule = module {
         }
         builder.build()
     }
+    single { SunsettingInterceptor(get()) } bind ApolloInterceptor::class
     single {
         val builder = ApolloClient
             .builder()
@@ -290,6 +293,10 @@ val applicationModule = module {
             .normalizedCache(get())
 
         CUSTOM_TYPE_ADAPTERS.customAdapters.forEach { (t, a) -> builder.addCustomTypeAdapter(t, a) }
+
+        getAll<ApolloInterceptor>().distinct().forEach {
+            builder.addApplicationInterceptor(it)
+        }
 
         if (isDebug()) {
             builder.logger(ApolloTimberLogger())
