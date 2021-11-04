@@ -2,7 +2,6 @@ package com.hedvig.app.feature.crossselling.ui
 
 import android.os.Parcelable
 import com.hedvig.android.owldroid.fragment.CrossSellFragment
-import com.hedvig.android.owldroid.type.CrossSellType
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.faq.FAQItem
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
@@ -17,7 +16,7 @@ data class CrossSellData(
     val action: Action,
     val backgroundUrl: String,
     val backgroundBlurHash: String,
-    val crossSellType: CrossSellType,
+    val crossSellType: String,
     val typeOfContract: String,
     val displayName: String,
     val about: String,
@@ -49,10 +48,6 @@ data class CrossSellData(
         }
     }
 
-    enum class CrossSellType {
-        HOME_CONTENT, ACCIDENT, TRAVEL, UNKNOWN
-    }
-
     companion object {
         fun from(data: CrossSellFragment) = CrossSellData(
             title = data.title,
@@ -63,7 +58,7 @@ data class CrossSellData(
             } ?: Action.Chat,
             backgroundUrl = data.imageUrl,
             backgroundBlurHash = data.blurHash,
-            crossSellType = data.type.toCrossSellType(),
+            crossSellType = data.type.rawValue,
             typeOfContract = data.contractType.rawValue,
             displayName = data.info.displayName,
             about = data.info.aboutSection,
@@ -76,11 +71,4 @@ data class CrossSellData(
             }
         )
     }
-}
-
-fun CrossSellType.toCrossSellType() = when (this) {
-    CrossSellType.ACCIDENT -> CrossSellData.CrossSellType.ACCIDENT
-    CrossSellType.TRAVEL -> CrossSellData.CrossSellType.TRAVEL
-    CrossSellType.HOME_CONTENT -> CrossSellData.CrossSellType.HOME_CONTENT
-    CrossSellType.UNKNOWN__ -> CrossSellData.CrossSellType.UNKNOWN
 }

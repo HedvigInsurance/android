@@ -84,18 +84,10 @@ class CrossSellNotificationManager(
         )
     }
 
-    private suspend fun getCrossSell(typeString: String?): CrossSellData? {
-        val crossSellType = parseCrossSellType(typeString)
+    private suspend fun getCrossSell(crossSellType: String?): CrossSellData? {
         return crossSellsUseCase.invoke().firstOrNull {
             it.crossSellType == crossSellType
         }
-    }
-
-    private fun parseCrossSellType(type: String?) = when (type) {
-        "ACCIDENT" -> CrossSellData.CrossSellType.ACCIDENT
-        "TRAVEL" -> CrossSellData.CrossSellType.TRAVEL
-        "HOME_CONTENT" -> CrossSellData.CrossSellType.HOME_CONTENT
-        else -> CrossSellData.CrossSellType.UNKNOWN
     }
 
     companion object {
