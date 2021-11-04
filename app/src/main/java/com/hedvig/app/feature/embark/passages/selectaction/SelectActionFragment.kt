@@ -84,14 +84,13 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
         with(actionsComposeView) {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                val scope = rememberCoroutineScope()
                 var actionJob: Job? = null
                 HedvigTheme {
                     SelectActionView(
                         selectActions = data.actions,
                         onActionClick = { selectAction: SelectActionParameter.SelectAction, position: Int ->
                             actionJob?.cancel()
-                            actionJob = scope.launch {
+                            actionJob = viewLifecycleScope.launch {
                                 onActionSelected(selectAction, data, responseContainer)
                                 yield()
                                 model.submitAction(selectAction.link, position)
