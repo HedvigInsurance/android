@@ -54,10 +54,8 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             marketManager
         )
 
-        binding.swipeToRefresh.apply {
-            setOnRefreshListener {
-                model.load()
-            }
+        binding.swipeToRefresh.setOnRefreshListener {
+            model.load()
         }
 
         binding.recycler.apply {
