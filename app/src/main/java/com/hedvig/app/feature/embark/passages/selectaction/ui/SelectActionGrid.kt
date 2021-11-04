@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Placeable
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.hedvig.app.feature.embark.passages.selectaction.ui.InsideGridSpace
 
@@ -18,7 +19,9 @@ fun SelectActionGrid(
     content: @Composable () -> Unit,
 ) {
     Layout(
-        modifier = modifier.padding(contentPadding),
+        modifier = modifier
+            .padding(contentPadding)
+            .testTag("SelectActionGrid"),
         content = content
     ) { measurables, constraints ->
         val horizontalSpacingInPx = insideGridSpace.horizontal.roundToPx()
