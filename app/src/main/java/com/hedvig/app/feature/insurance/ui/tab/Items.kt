@@ -42,4 +42,4 @@ private fun amountOfTerminatedContracts(contracts: List<InsuranceQuery.Contract>
     contracts.filter { it.status.fragments.contractStatusFragment.asTerminatedStatus != null }.size
 
 private fun crossSell(potentialCrossSell: InsuranceQuery.PotentialCrossSell) =
-    InsuranceModel.CrossSellCard(CrossSellData.from(potentialCrossSell))
+    InsuranceModel.CrossSellCard(CrossSellData.from(potentialCrossSell.fragments.crossSellFragment))

@@ -1,8 +1,7 @@
 package com.hedvig.app.feature.crossselling.ui
 
 import android.os.Parcelable
-import com.hedvig.android.owldroid.graphql.CrossSellsQuery
-import com.hedvig.android.owldroid.graphql.InsuranceQuery
+import com.hedvig.android.owldroid.fragment.CrossSellFragment
 import com.hedvig.android.owldroid.type.CrossSellType
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.faq.FAQItem
@@ -42,12 +41,8 @@ data class CrossSellData(
         val description: String,
     ) : Parcelable {
         companion object {
-            fun from(data: InsuranceQuery.Highlight) = Highlight(
-                title = data.title,
-                description = data.description,
-            )
 
-            fun from(data: CrossSellsQuery.Highlight) = Highlight(
+            fun from(data: CrossSellFragment.Highlight) = Highlight(
                 title = data.title,
                 description = data.description,
             )
@@ -59,29 +54,7 @@ data class CrossSellData(
     }
 
     companion object {
-        fun from(data: InsuranceQuery.PotentialCrossSell) = CrossSellData(
-            title = data.title,
-            description = data.description,
-            callToAction = data.callToAction,
-            action = data.action.asCrossSellEmbark?.embarkStory?.let { story ->
-                Action.Embark(story.name, data.title)
-            } ?: Action.Chat,
-            backgroundUrl = data.imageUrl,
-            backgroundBlurHash = data.blurHash,
-            crossSellType = data.type.toCrossSellType(),
-            typeOfContract = data.contractType.rawValue,
-            displayName = data.info.displayName,
-            about = data.info.aboutSection,
-            perils = data.info.contractPerils.map { Peril.from(it.fragments.perilFragment) },
-            terms = data.info.insuranceTerms.map { DocumentItems.Document.from(it.fragments.insuranceTermFragment) },
-            highlights = data.info.highlights.map(Highlight::from),
-            faq = data.info.faq.map(FAQItem::from),
-            insurableLimits = data.info.insurableLimits.map {
-                InsurableLimitItem.InsurableLimit.from(it.fragments.insurableLimitsFragment)
-            }
-        )
-
-        fun from(data: CrossSellsQuery.PotentialCrossSell) = CrossSellData(
+        fun from(data: CrossSellFragment) = CrossSellData(
             title = data.title,
             description = data.description,
             callToAction = data.callToAction,

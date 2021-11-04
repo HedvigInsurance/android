@@ -32,7 +32,7 @@ class GetCrossSellsContractTypesUseCase(
         .flatMap { contractBundle ->
             contractBundle
                 .potentialCrossSells
-                .map(CrossSellsQuery.PotentialCrossSell::contractType)
+                .map { it.fragments.crossSellFragment.contractType }
         }
         .toSet()
 }

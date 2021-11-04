@@ -33,6 +33,6 @@ class GetCrossSellsUseCase(
         .flatMap { contractBundle ->
             contractBundle.potentialCrossSells
         }.map {
-            CrossSellData.from(it)
+            CrossSellData.from(it.fragments.crossSellFragment)
         }
 }
