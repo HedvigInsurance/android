@@ -62,8 +62,7 @@ private fun SelectActionCard(
                 text = text,
                 style = MaterialTheme.typography.subtitle1,
                 textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .align(Alignment.Center)
+                modifier = Modifier.align(Alignment.Center)
             )
         }
     }

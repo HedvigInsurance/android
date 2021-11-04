@@ -1,5 +1,10 @@
 package com.hedvig.app.feature.embark.api.graphqlmutation
 
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onChildren
+import androidx.compose.ui.test.onFirst
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
@@ -19,6 +24,9 @@ import org.junit.Test
 class SuccessTest : TestCase() {
     @get:Rule
     val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
+
+    @get:Rule
+    val compose = createComposeRule()
 
     @get:Rule
     val apolloMockServerRule = ApolloMockServerRule(
@@ -42,7 +50,11 @@ class SuccessTest : TestCase() {
         )
 
         onScreen<EmbarkScreen> {
-            selectActions { firstChild<EmbarkScreen.SelectAction> { click() } }
+            compose
+                .onNodeWithTag("SelectActionGrid")
+                .onChildren()
+                .onFirst()
+                .performClick()
             messages {
                 hasSize(1)
                 firstChild<EmbarkScreen.MessageRow> {

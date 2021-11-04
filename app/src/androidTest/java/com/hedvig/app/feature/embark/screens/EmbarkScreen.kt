@@ -19,8 +19,6 @@ class EmbarkScreen : Screen<EmbarkScreen>() {
 
     val response = KTextView { withId(R.id.response) }
 
-    val selectActions = KRecyclerView({ withId(R.id.actions_recycler_view) }, { itemType(::SelectAction) })
-
     val singleSelectAction = KButton { withId(R.id.singleActionButton) }
 
     val textActionSingleInput = KEditText { withId(R.id.input) }
@@ -34,10 +32,6 @@ class EmbarkScreen : Screen<EmbarkScreen>() {
 
     class MessageRow(parent: Matcher<View>) : KRecyclerItem<MessageRow>(parent) {
         val text = KTextView { withMatcher(parent) }
-    }
-
-    class SelectAction(parent: Matcher<View>) : KRecyclerItem<SelectAction>(parent) {
-        val button = KButton { withMatcher(parent) }
     }
 
     val continueButton = KButton { withId(R.id.continueButton) }
