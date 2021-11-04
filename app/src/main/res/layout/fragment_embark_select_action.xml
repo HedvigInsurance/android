@@ -38,19 +38,28 @@
         app:layout_constraintStart_toStartOf="parent"
         tools:text="Continue to offer" />
 
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/actions_compose_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/base_margin"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- TODO remove this recycler view along with adapting the tests to compose -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/actions_recycler_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/base_margin"
+        android:visibility="gone"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:visibility="gone"
-        tools:visibility="visible"
         app:spanCount="2"
         tools:itemCount="2"
-        tools:listitem="@layout/embark_select_action_item" />
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
