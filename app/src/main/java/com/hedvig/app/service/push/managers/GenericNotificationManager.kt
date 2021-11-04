@@ -1,6 +1,5 @@
 package com.hedvig.app.service.push.managers
 
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
@@ -11,6 +10,7 @@ import com.hedvig.app.R
 import com.hedvig.app.SplashActivity
 import com.hedvig.app.service.push.DATA_MESSAGE_BODY
 import com.hedvig.app.service.push.DATA_MESSAGE_TITLE
+import com.hedvig.app.service.push.getImmutablePendingIntentFlags
 import com.hedvig.app.service.push.setupNotificationChannel
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -27,7 +27,7 @@ object GenericNotificationManager {
                         SplashActivity::class.java
                     )
                 )
-                getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+                getPendingIntent(0, getImmutablePendingIntentFlags())
             }
         val notification = NotificationCompat
             .Builder(

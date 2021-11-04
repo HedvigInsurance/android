@@ -20,6 +20,7 @@ apollo {
     sealedClassesForEnumsMatching.set(
         listOf(
             "TypeOfContract",
+            "CrossSellType"
         )
     )
 }

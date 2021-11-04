@@ -10,6 +10,7 @@ import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.app.feature.chat.service.ChatNotificationManager
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.service.push.managers.CrossSellNotificationManager
 import com.hedvig.app.service.push.managers.GenericNotificationManager
 import com.hedvig.app.service.push.managers.PaymentNotificationManager
 import com.hedvig.app.service.push.managers.ReferralsNotificationManager
@@ -19,6 +20,7 @@ import java.util.concurrent.TimeUnit
 
 class PushNotificationService : FirebaseMessagingService() {
     private val paymentNotificationManager: PaymentNotificationManager by inject()
+    private val crossSellNotificationManager: CrossSellNotificationManager by inject()
     private val marketManager: MarketManager by inject()
 
     override fun attachBaseContext(base: Context) {
@@ -32,6 +34,7 @@ class PushNotificationService : FirebaseMessagingService() {
         ReferralsNotificationManager.createChannel(this)
         paymentNotificationManager.createChannel(this)
         GenericNotificationManager.createChannel(this)
+        crossSellNotificationManager.createChannel(this)
     }
 
     override fun onNewToken(token: String) {
@@ -68,17 +71,12 @@ class PushNotificationService : FirebaseMessagingService() {
             NOTIFICATION_TYPE_PAYMENT_FAILED ->
                 paymentNotificationManager
                     .sendPaymentFailedNotification(this)
-/*
-            NOTIFICATION_TYPE_CLAIM_PAID -> PaymentNotificationManager
-                .sendClaimPaidNotification(this, remoteMessage)
-            NOTIFICATION_TYPE_INSURANCE_POLICY_UPDATED -> InsurancePolicyNotificationManager
-                .sendInsurancePolicyUpdatedNotification(this)
-            NOTIFICATION_TYPE_INSURANCE_RENEWED -> InsurancePolicyNotificationManager
-                .sendInsuranceRenewedNotification(this)
-*/
             NOTIFICATION_TYPE_GENERIC_COMMUNICATION ->
                 GenericNotificationManager
                     .sendGenericNotification(this, remoteMessage)
+            NOTIFICATION_CROSS_SELL ->
+                crossSellNotificationManager
+                    .sendCrossSellNotification(this, remoteMessage)
             else ->
                 ChatNotificationManager
                     .sendDefaultNotification(this, remoteMessage)
@@ -99,5 +97,7 @@ class PushNotificationService : FirebaseMessagingService() {
         const val NOTIFICATION_TYPE_PAYMENT_FAILED = "PAYMENT_FAILED"
 
         const val NOTIFICATION_TYPE_GENERIC_COMMUNICATION = "GENERIC_COMMUNICATION"
+
+        const val NOTIFICATION_CROSS_SELL = "CROSS_SELL"
     }
 }

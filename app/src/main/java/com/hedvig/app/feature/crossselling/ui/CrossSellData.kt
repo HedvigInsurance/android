@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.crossselling.ui
 
 import android.os.Parcelable
-import com.hedvig.android.owldroid.graphql.InsuranceQuery
+import com.hedvig.android.owldroid.fragment.CrossSellFragment
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.faq.FAQItem
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
@@ -16,6 +16,7 @@ data class CrossSellData(
     val action: Action,
     val backgroundUrl: String,
     val backgroundBlurHash: String,
+    val crossSellType: String,
     val typeOfContract: String,
     val displayName: String,
     val about: String,
@@ -39,7 +40,8 @@ data class CrossSellData(
         val description: String,
     ) : Parcelable {
         companion object {
-            fun from(data: InsuranceQuery.Highlight) = Highlight(
+
+            fun from(data: CrossSellFragment.Highlight) = Highlight(
                 title = data.title,
                 description = data.description,
             )
@@ -47,7 +49,7 @@ data class CrossSellData(
     }
 
     companion object {
-        fun from(data: InsuranceQuery.PotentialCrossSell) = CrossSellData(
+        fun from(data: CrossSellFragment) = CrossSellData(
             title = data.title,
             description = data.description,
             callToAction = data.callToAction,
@@ -56,6 +58,7 @@ data class CrossSellData(
             } ?: Action.Chat,
             backgroundUrl = data.imageUrl,
             backgroundBlurHash = data.blurHash,
+            crossSellType = data.type.rawValue,
             typeOfContract = data.contractType.rawValue,
             displayName = data.info.displayName,
             about = data.info.aboutSection,
