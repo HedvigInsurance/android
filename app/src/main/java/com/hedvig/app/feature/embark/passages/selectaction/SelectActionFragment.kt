@@ -3,7 +3,6 @@ package com.hedvig.app.feature.embark.passages.selectaction
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.core.view.doOnNextLayout
