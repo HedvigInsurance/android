@@ -21,6 +21,7 @@ import com.hedvig.app.feature.onboarding.OnboardingMockActivity
 import com.hedvig.app.feature.payment.PaymentMockActivity
 import com.hedvig.app.feature.profile.ProfileMockActivity
 import com.hedvig.app.feature.referrals.ReferralsMockActivity
+import com.hedvig.app.feature.sunsetting.ForceUpgradeActivity
 import com.hedvig.app.feature.tracking.TrackingLogActivity
 import com.hedvig.app.feature.trustly.TrustlyMockActivity
 import com.hedvig.app.util.extensions.viewBinding
@@ -43,6 +44,9 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
                     },
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Showkase") {
                         startActivity(Showkase.getBrowserIntent(this))
+                    },
+                    DevelopmentScreenAdapter.DevelopmentScreenItem.Row("App Sunsetting-Screen") {
+                        startActivity(ForceUpgradeActivity.newInstance(this))
                     },
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Change address intro") {
                         startActivity(Intent(this, ChangeAddressMockActivity::class.java))
