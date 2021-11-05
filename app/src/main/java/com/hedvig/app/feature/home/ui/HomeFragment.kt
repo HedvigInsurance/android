@@ -1,7 +1,10 @@
 package com.hedvig.app.feature.home.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import coil.ImageLoader
@@ -17,6 +20,7 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.getLocale
+import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.featureflags.Feature
@@ -36,6 +40,11 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     private val marketManager: MarketManager by inject()
     private val featureRuntimeBehavior: FeatureManager by inject()
 
+    private val registerForActivityResult: ActivityResultLauncher<Intent> =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            model.load()
+        }
+
     override fun onResume() {
         super.onResume()
         loggedInViewModel.onScroll(scroll)
@@ -45,17 +54,23 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
         scroll = 0
 
         val adapter = HomeAdapter(
-            parentFragmentManager,
-            model::load,
-            imageLoader,
-            tracker,
-            marketManager
+            fragmentManager = parentFragmentManager,
+            retry = model::load,
+            startIntentForResult = ::startEmbarkForResult,
+            imageLoader = imageLoader,
+            tracker = tracker,
+            marketManager = marketManager
         )
+
+        binding.swipeToRefresh.setOnRefreshListener {
+            model.load()
+        }
 
         binding.recycler.apply {
             applyNavigationBarInsets()
             applyStatusBarInsets()
 
+            itemAnimator = ViewHolderReusingDefaultItemAnimator()
             this.adapter = adapter
             (layoutManager as? GridLayoutManager)?.spanSizeLookup =
                 object : GridLayoutManager.SpanSizeLookup() {
@@ -86,6 +101,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             if (homeData == null) {
                 return@observe
             }
+            binding.swipeToRefresh.isRefreshing = homeData is HomeViewModel.ViewState.Loading
             if (homeData is HomeViewModel.ViewState.Error) {
                 adapter.submitList(listOf(HomeModel.Error))
                 return@observe
@@ -191,6 +207,10 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                 adapter.submitList(items)
             }
         }
+    }
+
+    private fun startEmbarkForResult(intent: Intent) {
+        registerForActivityResult.launch(intent)
     }
 
     private fun psaItems(

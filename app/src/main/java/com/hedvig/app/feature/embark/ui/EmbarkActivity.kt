@@ -175,7 +175,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
     private fun setupToolbarMenu(
         progressToolbar: MaterialProgressToolbar,
         hasToolTips: Boolean,
-        isLoggedIn: Boolean
+        isLoggedIn: Boolean,
     ) {
         invalidateOptionsMenu()
         with(progressToolbar.toolbar) {
