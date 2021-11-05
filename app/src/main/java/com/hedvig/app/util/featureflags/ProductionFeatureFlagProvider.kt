@@ -14,6 +14,7 @@ class ProductionFeatureFlagProvider(
         return when (feature) {
             Feature.MOVING_FLOW -> marketManager.market == Market.SE
             Feature.INSURELY_EMBARK -> false
+            Feature.EMBARK_CLAIMS -> false
         }
     }
 

@@ -20,7 +20,7 @@ class ClaimsViewModel(
         fetchCommonClaims()
     }
 
-    fun fetchCommonClaims() {
+    private fun fetchCommonClaims() {
         viewModelScope.launch {
             val response = runCatching { claimsRepository.fetchCommonClaims() }
             if (response.isFailure) {
@@ -28,6 +28,15 @@ class ClaimsViewModel(
                 return@launch
             }
             data.postValue(response.getOrNull()?.data)
+        }
+    }
+
+    suspend fun triggerClaimsChat(claimTypeId: String? = null) {
+        val response =
+            runCatching { claimsRepository.triggerClaimsChat(claimTypeId) }
+        if (response.isFailure) {
+            response.exceptionOrNull()?.let { e(it) }
+            return
         }
     }
 
