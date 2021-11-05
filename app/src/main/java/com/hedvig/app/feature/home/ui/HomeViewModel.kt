@@ -46,6 +46,7 @@ class HomeViewModelImpl(
     private val payinStatusRepository: PayinStatusRepository,
 ) : HomeViewModel() {
     init {
+        load()
         payinStatusRepository
             .payinStatus()
             .onEach { response ->

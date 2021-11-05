@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.home.ui
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
@@ -52,6 +53,7 @@ import java.time.temporal.ChronoUnit
 class HomeAdapter(
     private val fragmentManager: FragmentManager,
     private val retry: () -> Unit,
+    private val startIntentForResult: (Intent) -> Unit,
     private val imageLoader: ImageLoader,
     private val tracker: HomeTracker,
     private val marketManager: MarketManager,
@@ -62,8 +64,8 @@ class HomeAdapter(
         R.layout.home_big_text -> ViewHolder.BigText(parent)
         R.layout.home_body_text -> ViewHolder.BodyText(parent)
         ACTIVE_CLAIM -> ViewHolder.ClaimStatus(ComposeView(parent.context))
-        R.layout.home_start_claim_outlined -> ViewHolder.StartClaimOutlined(parent)
-        R.layout.home_start_claim_contained -> ViewHolder.StartClaimContained(parent)
+        R.layout.home_start_claim_outlined -> ViewHolder.StartClaimOutlined(parent, startIntentForResult)
+        R.layout.home_start_claim_contained -> ViewHolder.StartClaimContained(parent, startIntentForResult)
         R.layout.home_info_card -> ViewHolder.InfoCard(parent)
         R.layout.home_common_claim -> ViewHolder.CommonClaim(parent, imageLoader)
         R.layout.generic_error -> ViewHolder.Error(parent, retry)
@@ -217,8 +219,12 @@ class HomeAdapter(
             }
         }
 
-        class StartClaimOutlined(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.home_start_claim_outlined)) {
+        class StartClaimOutlined(
+            parent: ViewGroup,
+            private val startIntentForResult: (Intent) -> Unit,
+        ) : ViewHolder(parent.inflate(R.layout.home_start_claim_outlined)) {
             private val binding by viewBinding(HomeStartClaimOutlinedBinding::bind)
+
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
@@ -231,12 +237,17 @@ class HomeAdapter(
 
                 root.setHapticClickListener {
                     tracker.startClaimOutlined()
-                    HonestyPledgeBottomSheet().show(fragmentManager, HonestyPledgeBottomSheet.TAG)
+                    HonestyPledgeBottomSheet
+                        .newInstance(startIntentForResult)
+                        .show(fragmentManager, HonestyPledgeBottomSheet.TAG)
                 }
             }
         }
 
-        class StartClaimContained(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.home_start_claim_contained)) {
+        class StartClaimContained(
+            parent: ViewGroup,
+            private val startIntentForResult: (Intent) -> Unit,
+        ) : ViewHolder(parent.inflate(R.layout.home_start_claim_contained)) {
             private val binding by viewBinding(HomeStartClaimContainedBinding::bind)
             override fun bind(
                 data: HomeModel,
@@ -250,7 +261,9 @@ class HomeAdapter(
 
                 root.setHapticClickListener {
                     tracker.startClaimContained()
-                    HonestyPledgeBottomSheet().show(fragmentManager, HonestyPledgeBottomSheet.TAG)
+                    HonestyPledgeBottomSheet
+                        .newInstance(startIntentForResult)
+                        .show(fragmentManager, HonestyPledgeBottomSheet.TAG)
                 }
             }
         }

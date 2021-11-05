@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.claims.ui.pledge
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,7 +15,9 @@ import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.android.ext.android.inject
 
-class HonestyPledgeBottomSheet : BottomSheetDialogFragment() {
+class HonestyPledgeBottomSheet(
+    private val customActivityLaunch: ((Intent) -> Unit)? = null,
+) : BottomSheetDialogFragment() {
     private val tracker: ClaimsTracker by inject()
     private val binding by viewBinding(BottomSheetHonestyPledgeBinding::bind)
 
@@ -28,21 +31,29 @@ class HonestyPledgeBottomSheet : BottomSheetDialogFragment() {
         binding.bottomSheetHonestyPledgeButton.setHapticClickListener {
             tracker.pledgeHonesty()
             viewLifecycleScope.launchWhenStarted {
-                startActivity(
-                    EmbarkActivity.newInstance(
-                        requireContext(),
-                        "claims",
-                        getString(R.string.CLAIMS_HONESTY_PLEDGE_BOTTOM_SHEET_BUTTON_LABEL)
-                    )
-                )
+                if (customActivityLaunch != null) {
+                    customActivityLaunch.invoke(getEmbarkIntent())
+                } else {
+                    startActivity(getEmbarkIntent())
+                }
                 dismiss()
             }
         }
     }
 
+    private fun getEmbarkIntent(): Intent {
+        return EmbarkActivity.newInstance(
+            requireContext(),
+            "claims",
+            getString(R.string.CLAIMS_HONESTY_PLEDGE_BOTTOM_SHEET_BUTTON_LABEL)
+        )
+    }
+
     companion object {
         const val TAG = "HonestyPledgeBottomSheet"
 
-        fun newInstance(): HonestyPledgeBottomSheet = HonestyPledgeBottomSheet()
+        fun newInstance(
+            customActivityLaunch: ((Intent) -> Unit)? = null,
+        ): HonestyPledgeBottomSheet = HonestyPledgeBottomSheet(customActivityLaunch)
     }
 }

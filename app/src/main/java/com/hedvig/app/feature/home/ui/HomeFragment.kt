@@ -1,7 +1,10 @@
 package com.hedvig.app.feature.home.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import coil.ImageLoader
@@ -37,21 +40,26 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     private val marketManager: MarketManager by inject()
     private val featureRuntimeBehavior: FeatureManager by inject()
 
+    private val registerForActivityResult: ActivityResultLauncher<Intent> =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            model.load()
+        }
+
     override fun onResume() {
         super.onResume()
         loggedInViewModel.onScroll(scroll)
-        model.load()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         scroll = 0
 
         val adapter = HomeAdapter(
-            parentFragmentManager,
-            model::load,
-            imageLoader,
-            tracker,
-            marketManager
+            fragmentManager = parentFragmentManager,
+            retry = model::load,
+            startIntentForResult = ::startEmbarkForResult,
+            imageLoader = imageLoader,
+            tracker = tracker,
+            marketManager = marketManager
         )
 
         binding.swipeToRefresh.setOnRefreshListener {
@@ -199,6 +207,10 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                 adapter.submitList(items)
             }
         }
+    }
+
+    private fun startEmbarkForResult(intent: Intent) {
+        registerForActivityResult.launch(intent)
     }
 
     private fun psaItems(
