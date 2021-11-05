@@ -38,7 +38,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     private val tracker: HomeTracker by inject()
     private val imageLoader: ImageLoader by inject()
     private val marketManager: MarketManager by inject()
-    private val featureRuntimeBehavior: FeatureManager by inject()
+    private val featureManager: FeatureManager by inject()
 
     private val registerForActivityResult: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -155,7 +155,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     if (pendingAddress != null && pendingAddress.isNotBlank()) {
                         add(HomeModel.PendingAddressChange(pendingAddress))
                     }
-                    if (featureRuntimeBehavior.isFeatureEnabled(Feature.MOVING_FLOW)) {
+                    if (featureManager.isFeatureEnabled(Feature.MOVING_FLOW)) {
                         add(HomeModel.Header(getString(R.string.home_tab_editing_section_title)))
                         add(HomeModel.ChangeAddress(pendingAddress))
                     }
@@ -199,7 +199,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                             ).toTypedArray()
                         )
                     )
-                    if (featureRuntimeBehavior.isFeatureEnabled(Feature.MOVING_FLOW)) {
+                    if (featureManager.isFeatureEnabled(Feature.MOVING_FLOW)) {
                         add(HomeModel.Header(getString(R.string.home_tab_editing_section_title)))
                         add(HomeModel.ChangeAddress(pendingAddress))
                     }
