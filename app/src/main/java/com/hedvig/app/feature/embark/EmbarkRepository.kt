@@ -22,6 +22,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okio.Buffer
 import org.json.JSONObject
 import java.io.File
+import java.util.concurrent.TimeUnit
 
 class EmbarkRepository(
     private val apolloClient: ApolloClient,
@@ -47,7 +48,15 @@ class EmbarkRepository(
             requestBody
         }
 
-        return okHttpClient
+        val modifiedOkHttpClient = if (files.isNotEmpty()) {
+            okHttpClient.newBuilder()
+                .readTimeout(0, TimeUnit.SECONDS)
+                .build()
+        } else {
+            okHttpClient
+        }
+
+        return modifiedOkHttpClient
             .newCall(
                 Request.Builder()
                     .url(application.graphqlUrl)
