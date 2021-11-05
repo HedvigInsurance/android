@@ -303,8 +303,13 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.uiTestJunit)
     debugImplementation(libs.androidx.compose.uiTestManifest)
 
-    implementation(libs.showkase.showkase)
-    kapt(libs.showkase.processor)
+    implementation(libs.showkase.annotation)
+    debugImplementation(libs.showkase.showkase)
+    "stagingImplementation"(libs.showkase.showkase)
+    "pullrequestImplementation"(libs.showkase.showkase)
+    kaptDebug(libs.showkase.processor)
+    "kaptStaging"(libs.showkase.processor)
+    "kaptPullrequest"(libs.showkase.processor)
 }
 
 val lokaliseProperties = Properties()
