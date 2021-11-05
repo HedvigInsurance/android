@@ -1,6 +1,8 @@
 package com.hedvig.app.feature.home.ui
 
+import androidx.annotation.StringRes
 import com.hedvig.android.owldroid.graphql.HomeQuery
+import com.hedvig.app.R
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusData
@@ -38,12 +40,36 @@ sealed class HomeModel {
     }
 
     data class ClaimStatus(
-        val claimStatusDataList: List<ClaimStatusData>
+        val claimStatusDataList: List<ClaimStatusData>,
     ) : HomeModel()
 
-    object StartClaimOutlined : HomeModel()
+    sealed class StartClaimOutlined : HomeModel() {
+        @get:StringRes abstract val textId: Int
 
-    object StartClaimContained : HomeModel()
+        object FirstClaim : StartClaimOutlined() {
+            override val textId: Int
+                get() = R.string.home_tab_claim_button_text
+        }
+
+        object NewClaim : StartClaimOutlined() {
+            override val textId: Int
+                get() = R.string.home_open_claim_start_new_claim_button
+        }
+    }
+
+    sealed class StartClaimContained : HomeModel() {
+        @get:StringRes abstract val textId: Int
+
+        object FirstClaim : StartClaimOutlined() {
+            override val textId: Int
+                get() = R.string.home_tab_claim_button_text
+        }
+
+        object NewClaim : StartClaimOutlined() {
+            override val textId: Int
+                get() = R.string.home_open_claim_start_new_claim_button
+        }
+    }
 
     object ConnectPayin : HomeModel()
 
