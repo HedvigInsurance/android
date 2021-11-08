@@ -42,7 +42,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
 
     private val registerForActivityResult: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            model.load()
+            model.reload()
         }
 
     override fun onResume() {
@@ -63,7 +63,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
         )
 
         binding.swipeToRefresh.setOnRefreshListener {
-            model.load()
+            model.reload()
         }
 
         binding.recycler.apply {

@@ -19,6 +19,10 @@ class MockHomeViewModel : HomeViewModel() {
         _payinStatusData.postValue(payinStatusData)
     }
 
+    override fun reload() {
+        load()
+    }
+
     companion object {
         var shouldError = false
         var homeMockData = HOME_DATA_PENDING

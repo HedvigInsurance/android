@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.app.data.debit.PayinStatusRepository
-import com.hedvig.app.feature.home.data.HomeRepository
+import com.hedvig.app.feature.home.data.GetHomeUseCase
 import com.zhuinden.livedatacombinetuplekt.combineTuple
 import e
 import kotlinx.coroutines.flow.catch
@@ -39,10 +39,11 @@ abstract class HomeViewModel : ViewModel() {
     ).distinctUntilChanged()
 
     abstract fun load()
+    abstract fun reload()
 }
 
 class HomeViewModelImpl(
-    private val homeRepository: HomeRepository,
+    private val getHomeUseCase: GetHomeUseCase,
     private val payinStatusRepository: PayinStatusRepository,
 ) : HomeViewModel() {
     init {
@@ -59,18 +60,24 @@ class HomeViewModelImpl(
 
     override fun load() {
         viewModelScope.launch {
-            _homeData.value = ViewState.Loading
-            runCatching {
-                val response = homeRepository.reloadHome()
-                response.errors?.let {
-                    _homeData.postValue(ViewState.Error)
-                    return@runCatching
-                }
-                response.data?.let { data ->
-                    _homeData.postValue(ViewState.Success(data))
-                }
-            }
-            runCatching { payinStatusRepository.refreshPayinStatus() }
+            createViewState(forceReload = false)
         }
+    }
+
+    override fun reload() {
+        viewModelScope.launch {
+            createViewState(forceReload = true)
+        }
+    }
+
+    private suspend fun createViewState(forceReload: Boolean) {
+        _homeData.value = ViewState.Loading
+        val viewState = when (val result = getHomeUseCase.invoke(forceReload)) {
+            is GetHomeUseCase.HomeResult.Error -> ViewState.Error
+            is GetHomeUseCase.HomeResult.Home -> ViewState.Success(result.home)
+        }
+        _homeData.postValue(viewState)
+
+        runCatching { payinStatusRepository.refreshPayinStatus() }
     }
 }
