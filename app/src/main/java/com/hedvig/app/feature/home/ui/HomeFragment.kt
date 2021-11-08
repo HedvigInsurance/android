@@ -117,7 +117,9 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                 val items = mutableListOf<HomeModel>().apply {
                     add(HomeModel.BigText.Pending(firstName))
                     add(HomeModel.BodyText.Pending)
-                    add(claimStatusCards(successData))
+                    if (featureManager.isFeatureEnabled(Feature.CLAIMS_STATUS)) {
+                        add(claimStatusCards(successData))
+                    }
                 }
                 adapter.submitList(items)
             }
@@ -138,7 +140,9 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                 val items = mutableListOf<HomeModel>().apply {
                     add(HomeModel.BigText.ActiveInFuture(firstName, firstInceptionDate))
                     add(HomeModel.BodyText.ActiveInFuture)
-                    add(claimStatusCards(successData))
+                    if (featureManager.isFeatureEnabled(Feature.CLAIMS_STATUS)) {
+                        add(claimStatusCards(successData))
+                    }
                 }
                 adapter.submitList(items)
             }
@@ -148,7 +152,9 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     add(HomeModel.BigText.Terminated(firstName))
                     add(HomeModel.BodyText.Terminated)
                     if (successData.claims.isNotEmpty()) {
-                        add(claimStatusCards(successData))
+                        if (featureManager.isFeatureEnabled(Feature.CLAIMS_STATUS)) {
+                            add(claimStatusCards(successData))
+                        }
                         add(HomeModel.StartClaimOutlined.NewClaim)
                     } else {
                         add(HomeModel.StartClaimOutlined.FirstClaim)
@@ -170,7 +176,9 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     addAll(listOfNotNull(*psaItems(successData.importantMessages).toTypedArray()))
                     add(HomeModel.BigText.Active(firstName))
                     if (successData.claims.isNotEmpty()) {
-                        add(claimStatusCards(successData))
+                        if (featureManager.isFeatureEnabled(Feature.CLAIMS_STATUS)) {
+                            add(claimStatusCards(successData))
+                        }
                         add(HomeModel.StartClaimOutlined.NewClaim)
                     } else {
                         add(HomeModel.StartClaimContained.FirstClaim)
