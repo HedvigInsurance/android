@@ -1,9 +1,5 @@
 package com.hedvig.app.feature.embark.selectaction
 
-import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onChildren
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.performClick
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
@@ -26,9 +22,6 @@ class MultipleOptionApi : TestCase() {
     val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
 
     @get:Rule
-    val compose = createComposeRule()
-
-    @get:Rule
     val apolloMockServerRule = ApolloMockServerRule(
         EmbarkStoryQuery.QUERY_DOCUMENT to apolloResponse { success(STORY_WITH_SELECT_ACTION_API_MULTIPLE_OPTIONS) },
         HELLO_QUERY to apolloResponse {
@@ -45,11 +38,7 @@ class MultipleOptionApi : TestCase() {
 
         onScreen<EmbarkScreen> {
             step("Click select option with API") {
-                compose
-                    .onNodeWithTag("SelectActionGrid")
-                    .onChildren()
-                    .get(1)
-                    .performClick()
+                selectActions { childAt<EmbarkScreen.SelectAction>(1) { click() } }
             }
             step("Verify that success-passage from API is redirected to") {
                 messages {
