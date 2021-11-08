@@ -24,6 +24,8 @@ import com.hedvig.app.testdata.feature.embark.builders.RedirectBuilder
 import com.hedvig.app.testdata.feature.embark.builders.SelectActionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.SelectOptionBuilder
 import com.hedvig.app.testdata.feature.embark.builders.TextActionBuilder
+import com.hedvig.app.testdata.feature.embark.builders.TextActionBuilder.Companion.EMAIL
+import com.hedvig.app.testdata.feature.embark.builders.TextActionBuilder.Companion.PERSONAL_NUMBER
 import com.hedvig.app.testdata.feature.embark.builders.TextActionSetBuilder
 import com.hedvig.app.testdata.feature.embark.builders.TrackBuilder
 import org.json.JSONObject
@@ -82,6 +84,9 @@ val STANDARD_FIRST_PASSAGE_BUILDER =
                 SelectOptionBuilder(
                     link = STANDARD_FIRST_LINK
                 ).build(),
+                SelectOptionBuilder(
+                    link = STANDARD_SECOND_LINK
+                ).build()
             )
         ).build()
     )
@@ -429,13 +434,13 @@ val STORY_WITH_TEXT_ACTION_SET_FIRST_TEXT_PERSONAL_NUMBER_SECOND_TEXT_EMAIL_VALI
                         placeholder = "901124-1234",
                         title = "Personal number",
                         key = "FOO",
-                        mask = TextActionBuilder.PERSONAL_NUMBER
+                        mask = PERSONAL_NUMBER
                     ).buildTextActionSetAction(),
                     TextActionBuilder(
                         placeholder = "example@email.com",
                         title = "Email",
                         key = "BAR",
-                        mask = TextActionBuilder.EMAIL
+                        mask = EMAIL
                     ).buildTextActionSetAction(),
                 )
             ).build()

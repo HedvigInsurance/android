@@ -38,13 +38,19 @@
         app:layout_constraintStart_toStartOf="parent"
         tools:text="Continue to offer" />
 
-    <androidx.compose.ui.platform.ComposeView
-        android:id="@+id/actions_compose_view"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/actions"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/base_margin"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:spanCount="2"
+        tools:itemCount="2"
+        tools:listitem="@layout/embark_select_action_item" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

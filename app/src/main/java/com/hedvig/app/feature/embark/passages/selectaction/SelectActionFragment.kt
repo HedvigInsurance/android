@@ -3,7 +3,6 @@ package com.hedvig.app.feature.embark.passages.selectaction
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.core.view.doOnNextLayout
 import androidx.core.view.isVisible
@@ -15,22 +14,17 @@ import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.Response
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.animateResponse
-import com.hedvig.app.feature.embark.passages.selectaction.ui.SelectActionView
 import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_MILLIS
-import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.hedvig.app.util.whenApiVersion
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import e
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.yield
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
@@ -49,7 +43,10 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
 
         binding.apply {
             whenApiVersion(Build.VERSION_CODES.R) {
-                actionsComposeView.setupInsetsForIme(root, actionsComposeView)
+                actions.setupInsetsForIme(
+                    root = root,
+                    actions,
+                )
             }
 
             if (data.actions.size == 1) {
@@ -67,7 +64,7 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
 
     private fun FragmentEmbarkSelectActionBinding.bindSingleButton(
         action: SelectActionParameter.SelectAction,
-        data: SelectActionParameter,
+        data: SelectActionParameter
     ) {
         with(singleActionButton) {
             isVisible = true
@@ -80,24 +77,19 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
     }
 
     private fun FragmentEmbarkSelectActionBinding.bindAdapter(data: SelectActionParameter) {
-        with(actionsComposeView) {
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                var actionJob: Job? = null
-                HedvigTheme {
-                    SelectActionView(
-                        selectActions = data.actions,
-                        onActionClick = { selectAction: SelectActionParameter.SelectAction, position: Int ->
-                            actionJob?.cancel()
-                            actionJob = viewLifecycleScope.launch {
-                                onActionSelected(selectAction, data, responseContainer)
-                                yield()
-                                model.submitAction(selectAction.link, position)
-                            }
-                        }
-                    )
-                }
+        with(actions) {
+            isVisible = true
+            adapter = SelectActionAdapter { selectAction: SelectActionParameter.SelectAction,
+                view: View,
+                position: Int ->
+                view.hapticClicks()
+                    .mapLatest { onActionSelected(selectAction, data, responseContainer) }
+                    .onEach { model.submitAction(selectAction.link, position) }
+                    .launchIn(viewLifecycleScope)
+            }.apply {
+                submitList(data.actions)
             }
+            addItemDecoration(SelectActionDecoration())
         }
     }
 
@@ -106,7 +98,7 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
         data: SelectActionParameter,
         responseBinding: EmbarkResponseBinding,
     ) {
-        (selectAction.keys zip selectAction.values).forEach { (key, value) ->
+        selectAction.keys.zip(selectAction.values).forEach { (key, value) ->
             model.putInStore(key, value)
         }
         model.putInStore("${data.passageName}Result", selectAction.label)

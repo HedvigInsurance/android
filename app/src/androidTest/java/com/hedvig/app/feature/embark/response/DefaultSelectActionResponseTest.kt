@@ -1,10 +1,5 @@
 package com.hedvig.app.feature.embark.response
 
-import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onChildren
-import androidx.compose.ui.test.onFirst
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.performClick
 import androidx.test.core.app.ApplicationProvider
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
@@ -26,9 +21,6 @@ class DefaultSelectActionResponseTest : TestCase() {
     val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
 
     @get:Rule
-    val compose = createComposeRule()
-
-    @get:Rule
     val apolloMockServerRule = ApolloMockServerRule(
         EmbarkStoryQuery.QUERY_DOCUMENT to apolloResponse { success(STANDARD_STORY) }
     )
@@ -47,11 +39,7 @@ class DefaultSelectActionResponseTest : TestCase() {
         )
 
         onScreen<EmbarkScreen> {
-            compose
-                .onNodeWithTag("SelectActionGrid")
-                .onChildren()
-                .onFirst()
-                .performClick()
+            selectActions { firstChild<EmbarkScreen.SelectAction> { click() } }
             response {
                 isVisible()
                 hasText("Another test passage")
