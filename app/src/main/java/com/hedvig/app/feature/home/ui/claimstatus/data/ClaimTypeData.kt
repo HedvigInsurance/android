@@ -11,12 +11,8 @@ data class ClaimTypeData(val text: String) {
             return ClaimTypeData(
                 // TODO add the claim type title when the copy is addressed https://hedvig.atlassian.net/browse/APP-995
                 when (homeQueryClaim.status) {
-                    ClaimStatus.SUBMITTED -> {
-                        resources.getString(R.string.claim_type_new_insurance_case)
-                    }
-                    else -> {
-                        resources.getString(R.string.claim_type_insurance_case)
-                    }
+                    ClaimStatus.SUBMITTED -> resources.getString(R.string.claim_casetype_new_insurance_case)
+                    else -> resources.getString(R.string.claim_casetype_insurance_case)
                 }
             )
         }
