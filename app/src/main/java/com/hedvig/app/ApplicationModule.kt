@@ -45,9 +45,11 @@ import com.hedvig.app.feature.claims.data.ClaimsRepository
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
+import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.feature.crossselling.ui.CrossSellResultViewModel
 import com.hedvig.app.feature.crossselling.ui.CrossSellTracker
 import com.hedvig.app.feature.crossselling.ui.CrossSellingResult
+import com.hedvig.app.feature.crossselling.ui.detail.CrossSellDetailViewModel
 import com.hedvig.app.feature.crossselling.ui.detail.CrossSellFaqViewModel
 import com.hedvig.app.feature.crossselling.usecase.GetCrossSellsContractTypesUseCase
 import com.hedvig.app.feature.crossselling.usecase.GetCrossSellsUseCase
@@ -365,6 +367,9 @@ val viewModelModule = module {
     viewModel { (result: CrossSellingResult) -> CrossSellResultViewModel(result, get()) }
     viewModel { AudioRecorderViewModel(get()) }
     viewModel { CrossSellFaqViewModel(get()) }
+    viewModel { (openedFromNotification: Boolean, crossSell: CrossSellData) ->
+        CrossSellDetailViewModel(openedFromNotification, crossSell, get())
+    }
 }
 
 val choosePlanModule = module {
@@ -563,7 +568,7 @@ val marketManagerModule = module {
 
 val notificationModule = module {
     single { PaymentNotificationManager(get()) }
-    single { CrossSellNotificationManager(get()) }
+    single { CrossSellNotificationManager(get(), get()) }
 }
 
 val clockModule = module { single { Clock.systemDefaultZone() } }

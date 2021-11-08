@@ -9,6 +9,7 @@ import androidx.core.app.TaskStackBuilder
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.app.R
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
+import com.hedvig.app.feature.crossselling.ui.CrossSellTracker
 import com.hedvig.app.feature.crossselling.ui.detail.CrossSellDetailActivity
 import com.hedvig.app.feature.crossselling.usecase.GetCrossSellsUseCase
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
@@ -22,7 +23,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class CrossSellNotificationManager(
-    private val crossSellsUseCase: GetCrossSellsUseCase
+    private val crossSellsUseCase: GetCrossSellsUseCase,
+    private val tracker: CrossSellTracker,
 ) {
     fun sendCrossSellNotification(context: Context, remoteMessage: RemoteMessage) {
         val title = remoteMessage.data[DATA_MESSAGE_TITLE]
@@ -31,6 +33,7 @@ class CrossSellNotificationManager(
 
         CoroutineScope(Dispatchers.IO).launch {
             val crossSell = getCrossSell(type)
+            tracker.notificationReceived(crossSell)
 
             val intent = if (crossSell != null) {
                 createCrossSellIntent(context, crossSell)
@@ -50,7 +53,11 @@ class CrossSellNotificationManager(
 
     private fun createCrossSellIntent(context: Context, crossSell: CrossSellData): PendingIntent? {
         val builder = TaskStackBuilder.create(context)
-        val intent = CrossSellDetailActivity.newInstance(context, crossSell)
+        val intent = CrossSellDetailActivity.newInstance(
+            context = context,
+            crossSell = crossSell,
+            openedFromNotification = true,
+        )
         builder.addNextIntentWithParentStack(intent)
         return builder.getPendingIntent(0, getImmutablePendingIntentFlags())
     }
