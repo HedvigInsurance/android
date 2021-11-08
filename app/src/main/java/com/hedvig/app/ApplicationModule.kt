@@ -69,7 +69,7 @@ import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionViewMo
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerViewModel
 import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
 import com.hedvig.app.feature.embark.passages.textaction.TextActionViewModel
-import com.hedvig.app.feature.home.data.HomeRepository
+import com.hedvig.app.feature.home.data.GetHomeUseCase
 import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.home.ui.HomeViewModel
 import com.hedvig.app.feature.home.ui.HomeViewModelImpl
@@ -515,7 +515,7 @@ val repositoriesModule = module {
     single { EmbarkRepository(get(), get(), get(), get(), get()) }
     single { ReferralsRepository(get()) }
     single { LoggedInRepository(get(), get()) }
-    single { HomeRepository(get(), get()) }
+    single { GetHomeUseCase(get(), get()) }
     single { TrustlyRepository(get()) }
     single { MemberIdRepository(get()) }
     single { PaymentRepository(get(), get()) }
