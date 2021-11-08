@@ -101,9 +101,6 @@ class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
                             error.root.isVisible = false
                             val contract = viewState.data
                             contract.bindTo(cardContainer, marketManager)
-                            terminationInfo.isVisible =
-                                contract.status.fragments.contractStatusFragment.asTerminatedStatus != null ||
-                                contract.status.fragments.contractStatusFragment.asTerminatedTodayStatus != null
                         }
                     }
                     startPostponedEnterTransition()
