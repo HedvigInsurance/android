@@ -27,4 +27,22 @@ class CrossSellTracker(
             }
         }
     }
+
+    fun notificationReceived(crossSell: CrossSellData?) {
+        trackingFacade.track(
+            "cross_sell_notification_receive",
+            jsonObjectOf(
+                "cross_sell_type" to (crossSell?.crossSellType ?: "UNKNOWN"),
+            )
+        )
+    }
+
+    fun notificationOpened(crossSell: CrossSellData) {
+        trackingFacade.track(
+            "cross_sell_notification_open",
+            jsonObjectOf(
+                "cross_sell_type" to crossSell.crossSellType,
+            ),
+        )
+    }
 }

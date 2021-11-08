@@ -12,13 +12,23 @@ import com.hedvig.app.feature.offer.quotedetail.QuoteDetailActivity
 import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
+import org.koin.androidx.viewmodel.ext.android.getViewModel
+import org.koin.core.parameter.parametersOf
 
 class CrossSellDetailActivity : BaseActivity() {
+    private val crossSell: CrossSellData
+        get() = intent.getParcelableExtra(CROSS_SELL)
+            ?: throw IllegalArgumentException("Programmer error: CROSS_SELL not passed to ${this.javaClass.name}")
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val crossSell = intent.getParcelableExtra<CrossSellData>(CROSS_SELL)
-            ?: throw IllegalArgumentException("Programmer error: CROSS_SELL not passed to ${this.javaClass.name}")
+        getViewModel<CrossSellDetailViewModel> {
+            parametersOf(
+                intent.getBooleanExtra(OPENED_FROM_NOTIFICATION, false),
+                crossSell.crossSellType,
+            )
+        }
 
         window.compatSetDecorFitsSystemWindows(false)
 
@@ -58,11 +68,17 @@ class CrossSellDetailActivity : BaseActivity() {
 
     companion object {
         private const val CROSS_SELL = "CROSS_SELL"
-        fun newInstance(context: Context, crossSell: CrossSellData) = Intent(
+        private const val OPENED_FROM_NOTIFICATION = "OPENED_FROM_NOTIFICATION"
+        fun newInstance(
+            context: Context,
+            crossSell: CrossSellData,
+            openedFromNotification: Boolean = false,
+        ) = Intent(
             context,
             CrossSellDetailActivity::class.java,
         ).apply {
             putExtra(CROSS_SELL, crossSell)
+            putExtra(OPENED_FROM_NOTIFICATION, openedFromNotification)
         }
     }
 }
