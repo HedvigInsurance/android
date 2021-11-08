@@ -205,6 +205,7 @@ shake = { module = "com.shakebugs:shake", version.ref = "shake" }
 shimmer = { module = "com.facebook.shimmer:shimmer", version.ref = "shimmer" }
 
 showkase-showkase = { module = "com.airbnb.android:showkase", version.ref = "showkase" }
+showkase-annotation = { module = "com.airbnb.android:showkase-annotation", version.ref = "showkase" }
 showkase-processor = { module = "com.airbnb.android:showkase-processor", version.ref = "showkase" }
 
 slimber = { module = "com.github.PaulWoitaschek:Slimber", version.ref = "slimber" }
