@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.claimstatus
+package com.hedvig.app.feature.claimstatus.ui
 
 import android.content.Context
 import android.content.Intent
@@ -7,12 +7,15 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.hedvig.app.BaseActivity
-import com.hedvig.app.feature.claimstatus.ui.ClaimStatusDetailScreen
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import e
+import org.koin.androidx.viewmodel.ext.android.getViewModel
+import org.koin.core.parameter.parametersOf
 
 class ClaimStatusDetailActivity : BaseActivity() {
 
@@ -27,13 +30,21 @@ class ClaimStatusDetailActivity : BaseActivity() {
             return
         }
 
+        val viewModel = getViewModel<ClaimStatusDetailViewModel> {
+            parametersOf(claimId)
+        }
+
         setContent {
+            val viewState by viewModel.viewState.collectAsState()
             HedvigTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    ClaimStatusDetailScreen(claimId)
+                    ClaimStatusDetailScreen(
+                        viewState = viewState,
+                        onBack = { finish() }
+                    )
                 }
             }
         }

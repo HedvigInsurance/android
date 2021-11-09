@@ -44,6 +44,8 @@ import com.hedvig.app.feature.chat.viewmodel.UserViewModel
 import com.hedvig.app.feature.claims.data.ClaimsRepository
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
+import com.hedvig.app.feature.claimstatus.ui.ClaimStatusDetailViewModel
+import com.hedvig.app.feature.claimstatus.usecase.GetClaimStatusDetailsUseCase
 import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.feature.crossselling.ui.CrossSellResultViewModel
@@ -371,6 +373,9 @@ val viewModelModule = module {
     viewModel { (notificationMetadata: CrossSellNotificationMetadata?, crossSell: CrossSellData) ->
         CrossSellDetailViewModel(notificationMetadata, crossSell, get())
     }
+    viewModel { (claimId: String) ->
+        ClaimStatusDetailViewModel(claimId, get())
+    }
 }
 
 val choosePlanModule = module {
@@ -521,7 +526,6 @@ val repositoriesModule = module {
     single { EmbarkRepository(get(), get(), get(), get(), get()) }
     single { ReferralsRepository(get()) }
     single { LoggedInRepository(get(), get()) }
-    single { GetHomeUseCase(get(), get()) }
     single { TrustlyRepository(get()) }
     single { MemberIdRepository(get()) }
     single { PaymentRepository(get(), get()) }
@@ -602,6 +606,8 @@ val useCaseModule = module {
     single { GetCrossSellsContractTypesUseCase(get(), get()) }
     single { GraphQLQueryUseCase(get()) }
     single { GetCrossSellsUseCase(get(), get()) }
+    single { GetHomeUseCase(get(), get()) }
+    single { GetClaimStatusDetailsUseCase(get()) }
 }
 
 val cacheManagerModule = module {

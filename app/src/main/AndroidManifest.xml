@@ -307,7 +307,7 @@
         <activity android:name=".feature.embark.passages.previousinsurer.askforprice.AskForPriceInfoActivity" />
         <activity android:name=".feature.crossselling.ui.detail.CrossSellDetailActivity" />
         <activity android:name=".feature.crossselling.ui.detail.CrossSellFaqActivity" />
-        <activity android:name=".feature.claimstatus.ClaimStatusDetailActivity" />
+        <activity android:name=".feature.claimstatus.ui.ClaimStatusDetailActivity" />
         <activity android:name=".feature.sunsetting.ForceUpgradeActivity" />
 
         <meta-data

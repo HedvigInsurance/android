@@ -1,0 +1,18 @@
+query ClaimStatusDetails {
+  claimStatusDetails: claims {
+    id
+    status
+    outcome
+    submittedAt
+    closedAt
+    files {
+      signedUrl
+      key
+      bucket
+    }
+    signedAudioURL
+    payout {
+      ...MonetaryAmountFragment
+    }
+  }
+}
