@@ -7,22 +7,25 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusColors
 import com.hedvig.app.feature.home.ui.claimstatus.data.PillData
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.ui.compose.theme.hedvigContentColorFor
-import com.hedvig.app.util.compose.DarkAndLightColor
 
 @Composable
-fun Pills(pillData: List<PillData>) {
+fun PillsAndArrowRow(pillData: List<PillData>) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -36,15 +39,14 @@ fun Pills(pillData: List<PillData>) {
                 )
             }
         }
-        // TODO: Uncomment and check figma layout when the card is clickable to go to detail screen
-//        Icon(Icons.Default.ArrowForward, contentDescription = null)
+        Icon(Icons.Default.ArrowForward, contentDescription = null)
     }
 }
 
 @Composable
 private fun Pill(
     text: String,
-    pillType: PillData.PillType
+    pillType: PillData.PillType,
 ) {
     val backgroundColor = when (pillType) {
         is PillData.PillType.Contained -> pillType.color.toComposableColor()
@@ -90,11 +92,11 @@ fun PillsPreview() {
         Surface(
             color = MaterialTheme.colors.background,
         ) {
-            Pills(
+            PillsAndArrowRow(
                 listOf(
                     PillData(
                         "Reopened",
-                        PillData.PillType.Contained(DarkAndLightColor(Color(0xFFFE9650)))
+                        PillData.PillType.Contained(ClaimStatusColors.Pill.reopened)
                     ),
                     PillData("Claim", PillData.PillType.Outlined),
                 )

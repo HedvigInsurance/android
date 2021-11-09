@@ -24,7 +24,7 @@ import com.hedvig.app.util.compose.fillWithColor
 @Composable
 fun ClaimProgress(
     claimProgressData: List<ClaimProgressData>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier,
@@ -76,18 +76,9 @@ fun BottomProgressPreview() {
         ) {
             ClaimProgress(
                 listOf(
-                    ClaimProgressData(
-                        "Submitted",
-                        ClaimProgressData.ClaimProgressType.PastInactive
-                    ),
-                    ClaimProgressData(
-                        "Being Handled",
-                        ClaimProgressData.ClaimProgressType.Reopened
-                    ),
-                    ClaimProgressData(
-                        "Closed",
-                        ClaimProgressData.ClaimProgressType.FutureInactive
-                    ),
+                    ClaimProgressData("Submitted", ClaimProgressData.ClaimProgressType.PastInactive),
+                    ClaimProgressData("Being Handled", ClaimProgressData.ClaimProgressType.Reopened),
+                    ClaimProgressData("Closed", ClaimProgressData.ClaimProgressType.FutureInactive),
                 ),
             )
         }
