@@ -26,7 +26,7 @@ class CrossSellDetailActivity : BaseActivity() {
         getViewModel<CrossSellDetailViewModel> {
             parametersOf(
                 intent.getParcelableExtra<CrossSellNotificationMetadata>(NOTIFICATION_METADATA),
-                crossSell.crossSellType,
+                crossSell,
             )
         }
 
