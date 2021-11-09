@@ -32,6 +32,7 @@ import com.hedvig.app.databinding.UpcomingRenewalCardBinding
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimActivity
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyActivity
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
+import com.hedvig.app.feature.claimstatus.ClaimStatusDetailActivity
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
@@ -44,7 +45,6 @@ import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.openUri
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
-import d
 import e
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -216,9 +216,12 @@ class HomeAdapter(
                     HedvigTheme {
                         ClaimStatusCards(
                             claimStatusDataList = data.claimStatusDataList,
-                            onClick = { id: String ->
-                                // todo open detail activity here
-                                d { "Stelios: Opening detail screen beep boop" }
+                            onClick = { claimId: String ->
+                                with(composeView.context) {
+                                    startActivity(
+                                        ClaimStatusDetailActivity.newInstance(this, claimId)
+                                    )
+                                }
                             }
                         )
                     }
