@@ -44,6 +44,7 @@ import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.openUri
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
+import d
 import e
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -213,7 +214,13 @@ class HomeAdapter(
 
                 composeView.setContent {
                     HedvigTheme {
-                        ClaimStatusCards(data.claimStatusDataList)
+                        ClaimStatusCards(
+                            claimStatusDataList = data.claimStatusDataList,
+                            onClick = { id: String ->
+                                // todo open detail activity here
+                                d { "Stelios: Opening detail screen beep boop" }
+                            }
+                        )
                     }
                 }
             }

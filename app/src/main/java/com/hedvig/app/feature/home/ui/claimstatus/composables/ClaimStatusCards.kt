@@ -17,7 +17,10 @@ import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusData
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun ClaimStatusCards(claimStatusDataList: List<ClaimStatusData>) {
+fun ClaimStatusCards(
+    claimStatusDataList: List<ClaimStatusData>,
+    onClick: (id: String) -> Unit,
+) {
     val pagerState = rememberPagerState()
     Column {
         HorizontalPager(
@@ -35,6 +38,7 @@ fun ClaimStatusCards(claimStatusDataList: List<ClaimStatusData>) {
             )
             ClaimStatusCard(
                 claimStatusData = claimStatusData,
+                onClick = onClick,
                 modifier = Modifier.padding(itemSpacingPadding),
             )
         }
@@ -42,7 +46,6 @@ fun ClaimStatusCards(claimStatusDataList: List<ClaimStatusData>) {
             Spacer(Modifier.height(14.dp))
         } else {
             Spacer(Modifier.height(16.dp))
-
             HorizontalPagerIndicator(
                 pagerState = pagerState,
                 modifier = Modifier.align(Alignment.CenterHorizontally)

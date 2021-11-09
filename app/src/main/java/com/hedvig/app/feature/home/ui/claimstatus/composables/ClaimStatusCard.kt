@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
@@ -18,12 +19,15 @@ import com.hedvig.app.feature.home.ui.claimstatus.data.PillData
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import java.util.UUID
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ClaimStatusCard(
     claimStatusData: ClaimStatusData,
+    onClick: (id: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
+        onClick = { onClick(claimStatusData.id) },
         modifier = modifier,
         elevation = 4.dp
     ) {
@@ -65,7 +69,7 @@ fun ClaimStatusCardPreview() {
                     ClaimProgressData("Closed", ClaimProgressData.ClaimProgressType.FutureInactive),
                 )
             )
-            ClaimStatusCard(claimStatusData)
+            ClaimStatusCard(claimStatusData, {})
         }
     }
 }
