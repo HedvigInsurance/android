@@ -11,6 +11,7 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.feature.crossselling.ui.CrossSellTracker
 import com.hedvig.app.feature.crossselling.ui.detail.CrossSellDetailActivity
+import com.hedvig.app.feature.crossselling.ui.detail.CrossSellNotificationMetadata
 import com.hedvig.app.feature.crossselling.usecase.GetCrossSellsUseCase
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
@@ -33,10 +34,17 @@ class CrossSellNotificationManager(
 
         CoroutineScope(Dispatchers.IO).launch {
             val crossSell = getCrossSell(type)
-            tracker.notificationReceived(crossSell)
+            val metadata = CrossSellNotificationMetadata(
+                title = title,
+                body = body,
+            )
+            tracker.notificationReceived(
+                metadata,
+                crossSell,
+            )
 
             val intent = if (crossSell != null) {
-                createCrossSellIntent(context, crossSell)
+                createCrossSellIntent(context, crossSell, metadata)
             } else {
                 createInsuranceTabIntent(context)
             }
@@ -51,12 +59,16 @@ class CrossSellNotificationManager(
         }
     }
 
-    private fun createCrossSellIntent(context: Context, crossSell: CrossSellData): PendingIntent? {
+    private fun createCrossSellIntent(
+        context: Context,
+        crossSell: CrossSellData,
+        notificationMetadata: CrossSellNotificationMetadata,
+    ): PendingIntent? {
         val builder = TaskStackBuilder.create(context)
         val intent = CrossSellDetailActivity.newInstance(
             context = context,
             crossSell = crossSell,
-            openedFromNotification = true,
+            notificationMetadata = notificationMetadata,
         )
         builder.addNextIntentWithParentStack(intent)
         return builder.getPendingIntent(0, getImmutablePendingIntentFlags())
