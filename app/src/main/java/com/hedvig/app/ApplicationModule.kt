@@ -51,6 +51,7 @@ import com.hedvig.app.feature.crossselling.ui.CrossSellTracker
 import com.hedvig.app.feature.crossselling.ui.CrossSellingResult
 import com.hedvig.app.feature.crossselling.ui.detail.CrossSellDetailViewModel
 import com.hedvig.app.feature.crossselling.ui.detail.CrossSellFaqViewModel
+import com.hedvig.app.feature.crossselling.ui.detail.CrossSellNotificationMetadata
 import com.hedvig.app.feature.crossselling.usecase.GetCrossSellsContractTypesUseCase
 import com.hedvig.app.feature.crossselling.usecase.GetCrossSellsUseCase
 import com.hedvig.app.feature.embark.EmbarkRepository
@@ -367,8 +368,8 @@ val viewModelModule = module {
     viewModel { (result: CrossSellingResult) -> CrossSellResultViewModel(result, get()) }
     viewModel { AudioRecorderViewModel(get()) }
     viewModel { CrossSellFaqViewModel(get()) }
-    viewModel { (openedFromNotification: Boolean, crossSell: CrossSellData) ->
-        CrossSellDetailViewModel(openedFromNotification, crossSell, get())
+    viewModel { (notificationMetadata: CrossSellNotificationMetadata?, crossSell: CrossSellData) ->
+        CrossSellDetailViewModel(notificationMetadata, crossSell, get())
     }
 }
 

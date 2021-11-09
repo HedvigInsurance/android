@@ -25,7 +25,7 @@ class CrossSellDetailActivity : BaseActivity() {
 
         getViewModel<CrossSellDetailViewModel> {
             parametersOf(
-                intent.getBooleanExtra(OPENED_FROM_NOTIFICATION, false),
+                intent.getParcelableExtra<CrossSellNotificationMetadata>(NOTIFICATION_METADATA),
                 crossSell.crossSellType,
             )
         }
@@ -68,17 +68,19 @@ class CrossSellDetailActivity : BaseActivity() {
 
     companion object {
         private const val CROSS_SELL = "CROSS_SELL"
-        private const val OPENED_FROM_NOTIFICATION = "OPENED_FROM_NOTIFICATION"
+        private const val NOTIFICATION_METADATA = "NOTIFICATION_METADATA"
         fun newInstance(
             context: Context,
             crossSell: CrossSellData,
-            openedFromNotification: Boolean = false,
+            notificationMetadata: CrossSellNotificationMetadata? = null,
         ) = Intent(
             context,
             CrossSellDetailActivity::class.java,
         ).apply {
             putExtra(CROSS_SELL, crossSell)
-            putExtra(OPENED_FROM_NOTIFICATION, openedFromNotification)
+            if (notificationMetadata != null) {
+                putExtra(NOTIFICATION_METADATA, notificationMetadata)
+            }
         }
     }
 }
