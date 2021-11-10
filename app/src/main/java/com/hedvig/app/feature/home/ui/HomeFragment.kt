@@ -1,7 +1,10 @@
 package com.hedvig.app.feature.home.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import coil.ImageLoader
@@ -12,9 +15,12 @@ import com.hedvig.app.databinding.HomeFragmentBinding
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
 import com.hedvig.app.feature.home.service.HomeTracker
+import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusData
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.getLocale
+import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.featureflags.Feature
@@ -32,7 +38,12 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     private val tracker: HomeTracker by inject()
     private val imageLoader: ImageLoader by inject()
     private val marketManager: MarketManager by inject()
-    private val featureRuntimeBehavior: FeatureManager by inject()
+    private val featureManager: FeatureManager by inject()
+
+    private val registerForActivityResult: ActivityResultLauncher<Intent> =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            model.reload()
+        }
 
     override fun onResume() {
         super.onResume()
@@ -43,17 +54,23 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
         scroll = 0
 
         val adapter = HomeAdapter(
-            parentFragmentManager,
-            model::load,
-            imageLoader,
-            tracker,
-            marketManager
+            fragmentManager = parentFragmentManager,
+            retry = model::load,
+            startIntentForResult = ::startEmbarkForResult,
+            imageLoader = imageLoader,
+            tracker = tracker,
+            marketManager = marketManager
         )
+
+        binding.swipeToRefresh.setOnRefreshListener {
+            model.reload()
+        }
 
         binding.recycler.apply {
             applyNavigationBarInsets()
             applyStatusBarInsets()
 
+            itemAnimator = ViewHolderReusingDefaultItemAnimator()
             this.adapter = adapter
             (layoutManager as? GridLayoutManager)?.spanSizeLookup =
                 object : GridLayoutManager.SpanSizeLookup() {
@@ -84,6 +101,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             if (homeData == null) {
                 return@observe
             }
+            binding.swipeToRefresh.isRefreshing = homeData is HomeViewModel.ViewState.Loading
             if (homeData is HomeViewModel.ViewState.Error) {
                 adapter.submitList(listOf(HomeModel.Error))
                 return@observe
@@ -96,14 +114,14 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                 return@observe
             }
             if (isPending(successData.contracts)) {
-                adapter.submitList(
-                    listOf(
-                        HomeModel.BigText.Pending(
-                            firstName
-                        ),
-                        HomeModel.BodyText.Pending
-                    )
-                )
+                val items = mutableListOf<HomeModel>().apply {
+                    add(HomeModel.BigText.Pending(firstName))
+                    add(HomeModel.BodyText.Pending)
+                    if (featureManager.isFeatureEnabled(Feature.CLAIMS_STATUS)) {
+                        add(claimStatusCards(successData))
+                    }
+                }
+                adapter.submitList(items)
             }
             if (isActiveInFuture(successData.contracts)) {
                 val firstInceptionDate = successData
@@ -119,27 +137,33 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     return@observe
                 }
 
-                adapter.submitList(
-                    listOf(
-                        HomeModel.BigText.ActiveInFuture(
-                            firstName,
-                            firstInceptionDate
-                        ),
-                        HomeModel.BodyText.ActiveInFuture
-                    )
-                )
+                val items = mutableListOf<HomeModel>().apply {
+                    add(HomeModel.BigText.ActiveInFuture(firstName, firstInceptionDate))
+                    add(HomeModel.BodyText.ActiveInFuture)
+                    if (featureManager.isFeatureEnabled(Feature.CLAIMS_STATUS)) {
+                        add(claimStatusCards(successData))
+                    }
+                }
+                adapter.submitList(items)
             }
 
             if (isTerminated(successData.contracts)) {
                 val items = mutableListOf<HomeModel>().apply {
                     add(HomeModel.BigText.Terminated(firstName))
                     add(HomeModel.BodyText.Terminated)
-                    add(HomeModel.StartClaimOutlined)
+                    if (successData.claims.isNotEmpty()) {
+                        if (featureManager.isFeatureEnabled(Feature.CLAIMS_STATUS)) {
+                            add(claimStatusCards(successData))
+                        }
+                        add(HomeModel.StartClaimOutlined.NewClaim)
+                    } else {
+                        add(HomeModel.StartClaimOutlined.FirstClaim)
+                    }
                     add(HomeModel.HowClaimsWork(successData.howClaimsWork))
                     if (pendingAddress != null && pendingAddress.isNotBlank()) {
                         add(HomeModel.PendingAddressChange(pendingAddress))
                     }
-                    if (featureRuntimeBehavior.isFeatureEnabled(Feature.MOVING_FLOW)) {
+                    if (featureManager.isFeatureEnabled(Feature.MOVING_FLOW)) {
                         add(HomeModel.Header(getString(R.string.home_tab_editing_section_title)))
                         add(HomeModel.ChangeAddress(pendingAddress))
                     }
@@ -151,7 +175,14 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                 val items = mutableListOf<HomeModel>().apply {
                     addAll(listOfNotNull(*psaItems(successData.importantMessages).toTypedArray()))
                     add(HomeModel.BigText.Active(firstName))
-                    add(HomeModel.StartClaimContained)
+                    if (successData.claims.isNotEmpty()) {
+                        if (featureManager.isFeatureEnabled(Feature.CLAIMS_STATUS)) {
+                            add(claimStatusCards(successData))
+                        }
+                        add(HomeModel.StartClaimOutlined.NewClaim)
+                    } else {
+                        add(HomeModel.StartClaimContained.FirstClaim)
+                    }
                     add(HomeModel.HowClaimsWork(successData.howClaimsWork))
                     if (pendingAddress != null && pendingAddress.isNotBlank()) {
                         add(HomeModel.PendingAddressChange(pendingAddress))
@@ -169,7 +200,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                             ).toTypedArray()
                         )
                     )
-                    if (featureRuntimeBehavior.isFeatureEnabled(Feature.MOVING_FLOW)) {
+                    if (featureManager.isFeatureEnabled(Feature.MOVING_FLOW)) {
                         add(HomeModel.Header(getString(R.string.home_tab_editing_section_title)))
                         add(HomeModel.ChangeAddress(pendingAddress))
                     }
@@ -179,13 +210,27 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
         }
     }
 
+    private fun startEmbarkForResult(intent: Intent) {
+        registerForActivityResult.launch(intent)
+    }
+
+    private fun claimStatusCards(successData: HomeQuery.Data) = HomeModel.ClaimStatus(
+        successData.claims.map { claim ->
+            ClaimStatusData.fromHomeQueryClaim(
+                homeQueryClaim = claim,
+                resources = resources,
+                locale = getLocale(requireContext(), marketManager.market)
+            )
+        }
+    )
+
     private fun psaItems(
         importantMessages: List<HomeQuery.ImportantMessage?>,
     ) = importantMessages
         .filterNotNull()
         .map { HomeModel.PSA(it) }
 
-    private fun upcomingRenewals(contracts: List<HomeQuery.Contract>) =
+    private fun upcomingRenewals(contracts: List<HomeQuery.Contract1>) =
         contracts.mapNotNull { c ->
             c.upcomingRenewal?.let {
                 HomeModel.UpcomingRenewal(c.displayName, it)
@@ -212,23 +257,23 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
         }
 
     companion object {
-        private fun isPending(contracts: List<HomeQuery.Contract>) =
+        private fun isPending(contracts: List<HomeQuery.Contract1>) =
             contracts.all { it.status.asPendingStatus != null }
 
-        private fun isActiveInFuture(contracts: List<HomeQuery.Contract>) =
+        private fun isActiveInFuture(contracts: List<HomeQuery.Contract1>) =
             contracts.all {
                 it.status.asActiveInFutureStatus != null ||
                     it.status.asActiveInFutureAndTerminatedInFutureStatus != null
             }
 
-        private fun isActive(contracts: List<HomeQuery.Contract>) =
+        private fun isActive(contracts: List<HomeQuery.Contract1>) =
             contracts.any {
                 it.status.asActiveStatus != null ||
                     it.status.asTerminatedTodayStatus != null ||
                     it.status.asTerminatedInFutureStatus != null
             }
 
-        private fun isTerminated(contracts: List<HomeQuery.Contract>) =
+        private fun isTerminated(contracts: List<HomeQuery.Contract1>) =
             contracts.all { it.status.asTerminatedStatus != null }
     }
 }

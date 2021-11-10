@@ -20,7 +20,7 @@ class ClaimsViewModel(
         fetchCommonClaims()
     }
 
-    fun fetchCommonClaims() {
+    private fun fetchCommonClaims() {
         viewModelScope.launch {
             val response = runCatching { claimsRepository.fetchCommonClaims() }
             if (response.isFailure) {

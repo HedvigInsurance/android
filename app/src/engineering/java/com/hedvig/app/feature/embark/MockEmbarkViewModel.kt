@@ -2,10 +2,11 @@ package com.hedvig.app.feature.embark
 
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.testdata.feature.embark.data.STANDARD_STORY
-import com.hedvig.app.util.jsonObjectOf
-import org.json.JSONObject
 
-class MockEmbarkViewModel(tracker: EmbarkTracker) : EmbarkViewModel(tracker, ValueStoreImpl()) {
+class MockEmbarkViewModel(
+    tracker: EmbarkTracker,
+    graphQLQueryUseCase: GraphQLQueryUseCase
+) : EmbarkViewModel(tracker, ValueStoreImpl(), graphQLQueryUseCase) {
     init {
         fetchStory("")
     }
@@ -18,12 +19,8 @@ class MockEmbarkViewModel(tracker: EmbarkTracker) : EmbarkViewModel(tracker, Val
         setInitialState(LoginStatus.ONBOARDING)
     }
 
-    override suspend fun callGraphQL(query: String, variables: JSONObject?) =
-        jsonObjectOf("data" to graphQLQueryResponse)
-
     companion object {
         var shouldLoad = true
         var mockedData = STANDARD_STORY
-        var graphQLQueryResponse: JSONObject? = null
     }
 }

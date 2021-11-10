@@ -1,0 +1,37 @@
+fragment CrossSellFragment on CrossSell {
+  title
+  description
+  callToAction
+  type
+  contractType
+  action {
+    ... on CrossSellEmbark {
+      embarkStory(locale: $locale) {
+        name
+      }
+    }
+  }
+  blurHash
+  imageUrl
+  info(locale: $locale) {
+    displayName
+    aboutSection
+    contractPerils {
+      ...PerilFragment
+    }
+    insuranceTerms {
+      ...InsuranceTermFragment
+    }
+    highlights {
+      title
+      description
+    }
+    faq {
+      headline
+      body
+    }
+    insurableLimits {
+      ...InsurableLimitsFragment
+    }
+  }
+}

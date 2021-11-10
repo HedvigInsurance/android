@@ -17,5 +17,17 @@ enum class Feature(
         "Fetch price information about a members previous insurance provider in embark after selecting an insurer in " +
             "PreviousInsurerBottomSheet",
         false
+    ),
+    EMBARK_CLAIMS(
+        "embark_claims",
+        "Embark claims",
+        "Use embark for claims and use new audio recorder action, instead of opening the chat",
+        false
+    ),
+    CLAIMS_STATUS(
+        "claims_status",
+        "Claims Status",
+        "Show the status of claims on the home screen as a carousel",
+        false,
     )
 }

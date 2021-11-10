@@ -184,6 +184,7 @@ fun CrossSellDetailScreenPreview() {
                 title = "Accident Insurance",
                 description = "179 kr/mo.",
                 callToAction = "Calculate price",
+                crossSellType = "ACCIDENT",
                 typeOfContract = "SE_ACCIDENT",
                 action = CrossSellData.Action.Chat,
                 backgroundUrl = "https://images.unsplash.com/photo-1628996796855-0b056a464e06",

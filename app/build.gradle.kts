@@ -17,7 +17,13 @@ configure<com.jaredsburrows.license.LicenseReportExtension> {
 }
 
 android {
-    commonConfig()
+    commonConfig(
+        AndroidVersions(
+            libs.versions.compileSdkVersion.get().toInt(),
+            libs.versions.minSdkVersion.get().toInt(),
+            libs.versions.targetSdkVersion.get().toInt(),
+        )
+    )
 
     buildFeatures {
         viewBinding = true
@@ -27,24 +33,20 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.0.3"
+        kotlinCompilerExtensionVersion = libs.versions.androidx.compose.get()
     }
 
     defaultConfig {
         applicationId = "com.hedvig"
 
         versionCode = 43
-        versionName = "6.2.3"
+        versionName = "6.2.4"
 
         vectorDrawables.useSupportLibrary = true
 
-        resConfigs("en", "en-rNO", "en-rSE", "en-rDK", "nb-rNO", "sv-rSE", "da-rDK")
+        resourceConfigurations.addAll(listOf("en", "en-rNO", "en-rSE", "en-rDK", "nb-rNO", "sv-rSE", "da-rDK"))
 
         testInstrumentationRunner = "com.hedvig.app.TestRunner"
-    }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
     }
 
     lint {
@@ -62,6 +64,7 @@ android {
 
     buildTypes {
         maybeCreate("staging")
+        maybeCreate("pullrequest")
         named("release") {
             applicationIdSuffix = ".app"
 
@@ -90,6 +93,21 @@ android {
             )
         }
 
+        named("pullrequest") {
+            applicationIdSuffix = ".test.app"
+
+            manifestPlaceholders["firebaseCrashlyticsCollectionEnabled"] = true
+
+            isMinifyEnabled = true
+            setProguardFiles(
+                listOf(
+                    getDefaultProguardFile("proguard-android.txt"),
+                    "proguard-rules.pro",
+                    "proguard-rules-showkase.pro"
+                )
+            )
+        }
+
         named("debug") {
             applicationIdSuffix = ".dev.app"
 
@@ -106,6 +124,11 @@ android {
             manifest.srcFile("src/debug/AndroidManifest.xml")
         }
         named("staging") {
+            java.srcDir("src/engineering/java")
+            res.srcDir("src/engineering/res")
+            manifest.srcFile("src/debug/AndroidManifest.xml")
+        }
+        named("pullrequest") {
             java.srcDir("src/engineering/java")
             res.srcDir("src/engineering/res")
             manifest.srcFile("src/debug/AndroidManifest.xml")
@@ -127,131 +150,166 @@ dependencies {
     androidTestImplementation(project(":testdata"))
     testImplementation(project(":testdata"))
     debugImplementation(project(":testdata"))
-
     "stagingImplementation"(project(":testdata"))
+    "pullrequestImplementation"(project(":testdata"))
 
-    coreLibraryDesugaring(Libs.coreLibraryDesugaring)
-    implementation(Libs.kotlin)
+    coreLibraryDesugaring(libs.coreLibraryDesugaring)
+    implementation(libs.kotlin.stdlib)
 
-    implementation(Libs.Coroutines.core)
-    implementation(Libs.Coroutines.android)
-    testImplementation(Libs.Coroutines.test)
+    implementation(libs.coroutines.core)
+    implementation(libs.coroutines.android)
+    testImplementation(libs.coroutines.test)
 
-    implementation(Libs.AndroidX.appCompat)
-    implementation(Libs.AndroidX.media)
-    implementation(Libs.AndroidX.constraintLayout)
-    implementation(Libs.AndroidX.dynamicAnimation)
-    implementation(Libs.AndroidX.preference)
-    implementation(Libs.AndroidX.core)
-    implementation(Libs.AndroidX.viewPager2)
-    implementation(Libs.AndroidX.swipeRefreshLayout)
-    implementation(Libs.AndroidX.recyclerView)
-    implementation(Libs.AndroidX.fragment)
-    implementation(Libs.AndroidX.browser)
-    implementation(Libs.AndroidX.Lifecycle.common)
-    implementation(Libs.AndroidX.Lifecycle.liveData)
-    implementation(Libs.AndroidX.Lifecycle.runtime)
-    implementation(Libs.AndroidX.Lifecycle.viewModel)
-    implementation(Libs.AndroidX.workManager)
-    implementation(Libs.AndroidX.DataStore.core)
-    implementation(Libs.AndroidX.DataStore.preferences)
-    implementation(Libs.AndroidX.startup)
-    androidTestImplementation(Libs.AndroidX.Espresso.core)
-    androidTestImplementation(Libs.AndroidX.Espresso.intents)
-    androidTestImplementation(Libs.AndroidX.Espresso.contrib)
-    testImplementation(Libs.AndroidX.Test.junit)
-    testImplementation(Libs.jsonTest)
-    androidTestImplementation(Libs.AndroidX.Test.runner)
-    androidTestImplementation(Libs.AndroidX.Test.rules)
-    androidTestImplementation(Libs.AndroidX.Test.junit)
+    implementation(libs.androidx.other.appCompat)
+    implementation(libs.androidx.other.media)
+    implementation(libs.androidx.other.constraintLayout)
+    implementation(libs.androidx.other.dynamicAnimation)
+    implementation(libs.androidx.other.preference)
+    implementation(libs.androidx.other.core)
+    implementation(libs.androidx.other.viewPager2)
+    implementation(libs.androidx.other.swipeRefreshLayout)
+    implementation(libs.androidx.other.recyclerView)
+    implementation(libs.androidx.other.fragment)
+    implementation(libs.androidx.other.browser)
+    implementation(libs.androidx.lifecycle.common)
+    implementation(libs.androidx.lifecycle.liveData)
+    implementation(libs.androidx.lifecycle.runtime)
+    implementation(libs.androidx.lifecycle.viewModel)
+    implementation(libs.androidx.other.workManager)
+    implementation(libs.androidx.datastore.core)
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.other.startup)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.espresso.intents)
+    androidTestImplementation(libs.androidx.espresso.contrib)
+    testImplementation(libs.androidx.test.junit)
+    testImplementation(libs.jsonTest)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.rules)
+    androidTestImplementation(libs.androidx.test.junit)
 
-    implementation(Libs.Accompanist.insets)
-    implementation(Libs.Accompanist.insetsUi)
+    implementation(libs.androidx.other.appCompat)
+    implementation(libs.androidx.other.media)
+    implementation(libs.androidx.other.constraintLayout)
+    implementation(libs.androidx.other.dynamicAnimation)
+    implementation(libs.androidx.other.preference)
+    implementation(libs.androidx.other.core)
+    implementation(libs.androidx.other.viewPager2)
+    implementation(libs.androidx.other.swipeRefreshLayout)
+    implementation(libs.androidx.other.recyclerView)
+    implementation(libs.androidx.other.fragment)
+    implementation(libs.androidx.other.browser)
+    implementation(libs.androidx.lifecycle.common)
+    implementation(libs.androidx.lifecycle.liveData)
+    implementation(libs.androidx.lifecycle.runtime)
+    implementation(libs.androidx.lifecycle.viewModel)
+    implementation(libs.androidx.other.workManager)
+    implementation(libs.androidx.datastore.core)
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.other.startup)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.espresso.intents)
+    androidTestImplementation(libs.androidx.espresso.contrib)
+    testImplementation(libs.androidx.test.junit)
+    testImplementation(libs.jsonTest)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.rules)
+    androidTestImplementation(libs.androidx.test.junit)
 
-    implementation(Libs.materialComponents)
-    implementation(Libs.flexbox)
+    implementation(libs.accompanist.pager)
+    implementation(libs.accompanist.pagerIndicators)
+    implementation(libs.accompanist.insets)
+    implementation(libs.accompanist.insetsUi)
 
-    implementation(Libs.playKtx)
+    implementation(libs.materialComponents)
+    implementation(libs.flexbox)
 
-    implementation(Libs.combineTuple)
-    implementation(Libs.fragmentViewBindingDelegate)
+    implementation(libs.playKtx)
 
-    implementation(Libs.OkHttp.loggingInterceptor)
-    implementation(Libs.OkHttp.coroutines)
-    androidTestImplementation(Libs.OkHttp.mockWebServer)
+    implementation(libs.combineTuple)
+    implementation(libs.fragmentViewBindingDelegate)
 
-    implementation(platform(Libs.Firebase.bom))
-    implementation(Libs.Firebase.playServicesBase)
-    implementation(Libs.Firebase.crashlytics)
-    implementation(Libs.Firebase.dynamicLinks)
-    implementation(Libs.Firebase.config)
-    implementation(Libs.Firebase.messaging)
-    implementation(Libs.Firebase.tracking)
+    implementation(libs.okhttp.loggingInterceptor)
+    implementation(libs.okhttp.coroutines)
+    androidTestImplementation(libs.okhttp.mockWebServer)
 
-    implementation(Libs.mixpanel)
+    // Todo: Look into if this is the proper way to use boms with version catalogs
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.playServicesBase)
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.dynamicLinks)
+    implementation(libs.firebase.config)
+    implementation(libs.firebase.messaging)
+    implementation(libs.firebase.tracking)
 
-    implementation(Libs.Koin.android)
-    androidTestImplementation(Libs.Koin.test)
+    implementation(libs.mixpanel)
 
-    implementation(Libs.timber)
-    implementation(Libs.slimber)
+    implementation(libs.koin.android)
+    androidTestImplementation(libs.koin.test)
 
-    implementation(Libs.lottie)
+    implementation(libs.timber)
+    implementation(libs.slimber)
 
-    implementation(Libs.ReactiveX.kotlin)
-    implementation(Libs.ReactiveX.android)
+    implementation(libs.lottie)
 
-    implementation(Libs.svg)
+    implementation(libs.reactiveX.kotlin)
+    implementation(libs.reactiveX.android)
 
-    implementation(Libs.Coil.coil)
-    implementation(Libs.Coil.svg)
-    implementation(Libs.Coil.gif)
-    implementation(Libs.Coil.compose)
-    implementation(Libs.Coil.transformations)
+    implementation(libs.svg)
 
-    implementation(Libs.tooltip)
+    implementation(libs.coil.coil)
+    implementation(libs.coil.svg)
+    implementation(libs.coil.gif)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.transformations)
 
-    implementation(Libs.ZXing)
+    implementation(libs.tooltip)
 
-    implementation(Libs.insetter)
+    implementation(libs.zXing)
 
-    implementation(Libs.Markwon.core)
-    implementation(Libs.Markwon.linkify)
+    implementation(libs.insetter)
 
-    implementation(Libs.adyen)
+    implementation(libs.markwon.core)
+    implementation(libs.markwon.linkify)
 
-    implementation(Libs.moneta)
+    implementation(libs.adyen)
 
-    implementation(Libs.shimmer)
+    implementation(libs.moneta)
 
-    implementation(Libs.concatAdapterExtension)
+    implementation(libs.shimmer)
 
-    androidTestImplementation(Libs.Apollo.idlingResource)
+    implementation(libs.concatAdapterExtension)
 
-    testImplementation(Libs.assertK)
-    androidTestImplementation(Libs.assertK)
-    androidTestImplementation(Libs.kaspresso)
+    androidTestImplementation(libs.apollo.idlingResource)
 
-    androidTestImplementation(Libs.MockK.android)
-    testImplementation(Libs.MockK.jvm)
+    testImplementation(libs.assertK)
+    androidTestImplementation(libs.assertK)
+    androidTestImplementation(libs.kaspresso)
 
-    debugImplementation(Libs.leakCanary)
-    debugImplementation(Libs.shake)
-    "stagingImplementation"(Libs.shake)
+    androidTestImplementation(libs.mockk.android)
+    testImplementation(libs.mockk.jvm)
 
-    implementation(Libs.AndroidX.activityCompose)
-    implementation(Libs.AndroidX.Compose.material)
-    implementation(Libs.AndroidX.Compose.animation)
-    implementation(Libs.AndroidX.Compose.mdcAdapter)
-    implementation(Libs.AndroidX.Compose.uiTooling)
-    implementation(Libs.AndroidX.Lifecycle.compose)
-    androidTestImplementation(Libs.AndroidX.Compose.uiTestJunit)
-    debugImplementation(Libs.AndroidX.Compose.uiTestManifest)
+    debugImplementation(libs.leakCanary)
+    debugImplementation(libs.shake)
+    "stagingImplementation"(libs.shake)
+    "pullrequestImplementation"(libs.shake)
 
-    debugImplementation(Libs.Showkase.showkase)
-    "stagingImplementation"(Libs.Showkase.showkase)
-    kaptDebug(Libs.Showkase.processor)
-    "kaptStaging"(Libs.Showkase.processor)
+    implementation(libs.androidx.other.activityCompose)
+    implementation(libs.androidx.compose.material)
+    implementation(libs.androidx.compose.animation)
+    implementation(libs.androidx.compose.mdcAdapter)
+    implementation(libs.androidx.compose.uiTooling)
+    implementation(libs.androidx.lifecycle.compose)
+    androidTestImplementation(libs.androidx.compose.uiTestJunit)
+    debugImplementation(libs.androidx.compose.uiTestManifest)
+
+    implementation(libs.showkase.annotation)
+    debugImplementation(libs.showkase.showkase)
+    "stagingImplementation"(libs.showkase.showkase)
+    "pullrequestImplementation"(libs.showkase.showkase)
+    kaptDebug(libs.showkase.processor)
+    "kaptStaging"(libs.showkase.processor)
+    "kaptPullrequest"(libs.showkase.processor)
 }
 
 val lokaliseProperties = Properties()

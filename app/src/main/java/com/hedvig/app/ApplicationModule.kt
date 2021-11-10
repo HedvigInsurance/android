@@ -17,6 +17,7 @@ import com.apollographql.apollo.cache.normalized.NormalizedCacheFactory
 import com.apollographql.apollo.cache.normalized.lru.EvictionPolicy
 import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCache
 import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCacheFactory
+import com.apollographql.apollo.interceptor.ApolloInterceptorFactory
 import com.apollographql.apollo.subscription.SubscriptionConnectionParams
 import com.apollographql.apollo.subscription.WebSocketSubscriptionTransport
 import com.google.firebase.analytics.ktx.analytics
@@ -44,16 +45,23 @@ import com.hedvig.app.feature.claims.data.ClaimsRepository
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
+import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.feature.crossselling.ui.CrossSellResultViewModel
 import com.hedvig.app.feature.crossselling.ui.CrossSellTracker
 import com.hedvig.app.feature.crossselling.ui.CrossSellingResult
+import com.hedvig.app.feature.crossselling.ui.detail.CrossSellDetailViewModel
 import com.hedvig.app.feature.crossselling.ui.detail.CrossSellFaqViewModel
+import com.hedvig.app.feature.crossselling.ui.detail.CrossSellNotificationMetadata
+import com.hedvig.app.feature.crossselling.usecase.GetCrossSellsContractTypesUseCase
+import com.hedvig.app.feature.crossselling.usecase.GetCrossSellsUseCase
 import com.hedvig.app.feature.embark.EmbarkRepository
 import com.hedvig.app.feature.embark.EmbarkTracker
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.EmbarkViewModelImpl
+import com.hedvig.app.feature.embark.GraphQLQueryUseCase
 import com.hedvig.app.feature.embark.ValueStore
 import com.hedvig.app.feature.embark.ValueStoreImpl
+import com.hedvig.app.feature.embark.passages.audiorecorder.AudioRecorderViewModel
 import com.hedvig.app.feature.embark.passages.datepicker.DatePickerViewModel
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionItem
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionParams
@@ -64,7 +72,7 @@ import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionViewMo
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerViewModel
 import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
 import com.hedvig.app.feature.embark.passages.textaction.TextActionViewModel
-import com.hedvig.app.feature.home.data.HomeRepository
+import com.hedvig.app.feature.home.data.GetHomeUseCase
 import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.home.ui.HomeViewModel
 import com.hedvig.app.feature.home.ui.HomeViewModelImpl
@@ -90,7 +98,6 @@ import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModelImpl
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModel
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModelImpl
-import com.hedvig.app.feature.loggedin.service.GetCrossSellsUseCase
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
 import com.hedvig.app.feature.loggedin.ui.LoggedInRepository
 import com.hedvig.app.feature.loggedin.ui.LoggedInTracker
@@ -177,11 +184,13 @@ import com.hedvig.app.service.FileService
 import com.hedvig.app.service.badge.CrossSellNotificationBadgeService
 import com.hedvig.app.service.badge.NotificationBadgeService
 import com.hedvig.app.service.push.PushTokenManager
+import com.hedvig.app.service.push.managers.CrossSellNotificationManager
 import com.hedvig.app.service.push.managers.PaymentNotificationManager
 import com.hedvig.app.terminated.TerminatedTracker
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.ApolloTimberLogger
 import com.hedvig.app.util.apollo.CacheManager
+import com.hedvig.app.util.apollo.SunsettingInterceptor
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import okhttp3.OkHttpClient
@@ -248,16 +257,28 @@ val applicationModule = module {
                         .header("Accept-Language", makeLocaleString(context, marketManager.market))
                         .header("apollographql-client-name", BuildConfig.APPLICATION_ID)
                         .header("apollographql-client-version", BuildConfig.VERSION_NAME)
+                        .header("X-Build-Version", BuildConfig.VERSION_CODE.toString())
+                        .header("X-App-Version", BuildConfig.VERSION_NAME)
+                        .header("X-System-Version", Build.VERSION.SDK_INT.toString())
+                        .header("X-Platform", "ANDROID")
+                        .header("X-Model", "${Build.MANUFACTURER} ${Build.MODEL}")
                         .build()
                 )
             }
         if (isDebug()) {
-            val logger = HttpLoggingInterceptor { message -> Timber.tag("OkHttp").i(message) }
+            val logger = HttpLoggingInterceptor { message ->
+                if (message.contains("Content-Disposition")) {
+                    Timber.tag("OkHttp").i("File upload omitted from log")
+                } else {
+                    Timber.tag("OkHttp").i(message)
+                }
+            }
             logger.level = HttpLoggingInterceptor.Level.BODY
             builder.addInterceptor(logger)
         }
         builder.build()
     }
+    single { SunsettingInterceptor.Factory(get()) } bind ApolloInterceptorFactory::class
     single {
         val builder = ApolloClient
             .builder()
@@ -277,6 +298,10 @@ val applicationModule = module {
             .normalizedCache(get())
 
         CUSTOM_TYPE_ADAPTERS.customAdapters.forEach { (t, a) -> builder.addCustomTypeAdapter(t, a) }
+
+        getAll<ApolloInterceptorFactory>().distinct().forEach {
+            builder.addApplicationInterceptorFactory(it)
+        }
 
         if (isDebug()) {
             builder.logger(ApolloTimberLogger())
@@ -341,7 +366,11 @@ val viewModelModule = module {
         SwedishBankIdSignViewModel(autoStartToken, quoteIds, get(), get(), get(), get())
     }
     viewModel { (result: CrossSellingResult) -> CrossSellResultViewModel(result, get()) }
+    viewModel { AudioRecorderViewModel(get()) }
     viewModel { CrossSellFaqViewModel(get()) }
+    viewModel { (notificationMetadata: CrossSellNotificationMetadata?, crossSell: CrossSellData) ->
+        CrossSellDetailViewModel(notificationMetadata, crossSell, get())
+    }
 }
 
 val choosePlanModule = module {
@@ -400,7 +429,16 @@ val adyenModule = module {
 }
 
 val embarkModule = module {
-    viewModel<EmbarkViewModel> { (storyName: String) -> EmbarkViewModelImpl(get(), get(), get(), get(), storyName) }
+    viewModel<EmbarkViewModel> { (storyName: String) ->
+        EmbarkViewModelImpl(
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            storyName
+        )
+    }
 }
 
 val valueStoreModule = module {
@@ -480,10 +518,10 @@ val repositoriesModule = module {
     single { MarketRepository(get(), get(), get()) }
     single { MarketingRepository(get(), get()) }
     single { AdyenRepository(get(), get()) }
-    single { EmbarkRepository(get(), get(), get(), get()) }
+    single { EmbarkRepository(get(), get(), get(), get(), get()) }
     single { ReferralsRepository(get()) }
     single { LoggedInRepository(get(), get()) }
-    single { HomeRepository(get(), get()) }
+    single { GetHomeUseCase(get(), get()) }
     single { TrustlyRepository(get()) }
     single { MemberIdRepository(get()) }
     single { PaymentRepository(get(), get()) }
@@ -531,6 +569,7 @@ val marketManagerModule = module {
 
 val notificationModule = module {
     single { PaymentNotificationManager(get()) }
+    single { CrossSellNotificationManager(get(), get()) }
 }
 
 val clockModule = module { single { Clock.systemDefaultZone() } }
@@ -560,7 +599,9 @@ val useCaseModule = module {
     single { ManuallyRecheckSwedishBankIdSignStatusUseCase(get()) }
     single { SubscribeToSwedishBankIdSignStatusUseCase(get()) }
     single { GetPostSignDependenciesUseCase(get()) }
-    single { GetCrossSellsUseCase(get()) }
+    single { GetCrossSellsContractTypesUseCase(get(), get()) }
+    single { GraphQLQueryUseCase(get()) }
+    single { GetCrossSellsUseCase(get(), get()) }
 }
 
 val cacheManagerModule = module {
@@ -599,7 +640,6 @@ val chatEventModule = module {
 }
 
 val dataStoreModule = module {
-
     @Suppress("RemoveExplicitTypeArguments")
     single<DataStore<Preferences>> {
         PreferenceDataStoreFactory.create(

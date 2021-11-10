@@ -13,6 +13,7 @@ import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
+import com.hedvig.app.util.jsonObjectOf
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
@@ -36,7 +37,7 @@ class Error : TestCase() {
         KeyGearItemsQuery.QUERY_DOCUMENT to apolloResponse {
             if (shouldFail) {
                 shouldFail = false
-                graphQLError("error")
+                graphQLError(jsonObjectOf("message" to "error"))
             } else {
                 success(KEY_GEAR_DATA)
             }

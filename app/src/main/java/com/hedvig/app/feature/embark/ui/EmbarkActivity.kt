@@ -6,10 +6,12 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.transition.Transition
+import androidx.transition.TransitionManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
@@ -21,6 +23,8 @@ import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.NavigationDirection
 import com.hedvig.app.feature.embark.passages.UpgradeAppFragment
+import com.hedvig.app.feature.embark.passages.audiorecorder.AudioRecorderFragment
+import com.hedvig.app.feature.embark.passages.audiorecorder.AudioRecorderParameters
 import com.hedvig.app.feature.embark.passages.datepicker.DatePickerFragment
 import com.hedvig.app.feature.embark.passages.datepicker.DatePickerParams
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionComponent
@@ -38,7 +42,10 @@ import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
+import com.hedvig.app.util.extensions.view.hide
+import com.hedvig.app.util.extensions.view.hideWithDelay
 import com.hedvig.app.util.extensions.view.remove
+import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.whenApiVersion
 import kotlinx.coroutines.flow.launchIn
@@ -73,19 +80,19 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
             }
             progressToolbar.toolbar.title = storyTitle
 
-            model.data.observe(this@EmbarkActivity) { embarkData ->
+            model.viewState.observe(this@EmbarkActivity) { viewState ->
                 loadingSpinnerLayout.loadingSpinner.remove()
                 setupToolbarMenu(
                     progressToolbar,
-                    embarkData.hasTooltips,
-                    embarkData.isLoggedIn
+                    viewState.hasTooltips,
+                    viewState.isLoggedIn
                 )
-                progressToolbar.setProgress(embarkData.progress)
+                progressToolbar.setProgress(viewState.progress)
 
-                val passage = embarkData.passage
+                val passage = viewState.passage
                 actionBar?.title = passage?.name
 
-                transitionToNextPassage(embarkData.navigationDirection, passage)
+                transitionToNextPassage(viewState.navigationDirection, passage)
             }
 
             model
@@ -93,18 +100,22 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 .flowWithLifecycle(lifecycle)
                 .onEach { event ->
                     when (event) {
-                        EmbarkViewModel.Event.Close -> finish()
-                        EmbarkViewModel.Event.Chat -> startActivity(
-                            ChatActivity.newInstance(this@EmbarkActivity)
-                        )
-                        is EmbarkViewModel.Event.Offer -> startActivity(
-                            OfferActivity.newInstance(
-                                context = this@EmbarkActivity,
-                                quoteIds = event.ids,
-                                shouldShowOnNextAppStart = true
+                        EmbarkViewModel.Event.Chat -> {
+                            startActivity(ChatActivity.newInstance(this@EmbarkActivity))
+                            fullScreenLoadingSpinnerLayout.hideWithDelay(500)
+                        }
+                        is EmbarkViewModel.Event.Offer -> {
+                            startActivity(
+                                OfferActivity.newInstance(
+                                    context = this@EmbarkActivity,
+                                    quoteIds = event.ids,
+                                    shouldShowOnNextAppStart = true
+                                )
                             )
-                        )
+                            fullScreenLoadingSpinnerLayout.hideWithDelay(500)
+                        }
                         is EmbarkViewModel.Event.Error -> {
+                            fullScreenLoadingSpinnerLayout.hide()
                             AlertDialog.Builder(this@EmbarkActivity)
                                 .setTitle(R.string.error_dialog_title)
                                 .setMessage(event.message ?: getString(R.string.NETWORK_ERROR_ALERT_MESSAGE))
@@ -113,6 +124,14 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                                 }
                                 .create()
                                 .show()
+                        }
+                        is EmbarkViewModel.Event.Loading -> {
+                            TransitionManager.beginDelayedTransition(root)
+                            fullScreenLoadingSpinnerLayout.isVisible = event.show
+                        }
+                        EmbarkViewModel.Event.Close -> {
+                            fullScreenLoadingSpinnerLayout.hide()
+                            finish()
                         }
                     }
                 }
@@ -135,7 +154,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
             true
         }
         R.id.tooltip -> {
-            model.data.value?.passage?.tooltips?.let {
+            model.viewState.value?.passage?.tooltips?.let {
                 TooltipBottomSheet.newInstance(it).show(
                     supportFragmentManager, TooltipBottomSheet.TAG
                 )
@@ -156,7 +175,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
     private fun setupToolbarMenu(
         progressToolbar: MaterialProgressToolbar,
         hasToolTips: Boolean,
-        isLoggedIn: Boolean
+        isLoggedIn: Boolean,
     ) {
         invalidateOptionsMenu()
         with(progressToolbar.toolbar) {
@@ -325,6 +344,16 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 submitLabel = multiAction.multiActionData.link.fragments.embarkLinkFragment.label,
             )
             return MultiActionFragment.newInstance(params)
+        }
+
+        passage?.action?.asEmbarkAudioRecorderAction?.let { audioRecorderAction ->
+            val params = AudioRecorderParameters(
+                messages = passage.messages.map { it.fragments.messageFragment.text },
+                key = audioRecorderAction.audioRecorderActionData.storeKey,
+                label = audioRecorderAction.audioRecorderActionData.label,
+                link = audioRecorderAction.audioRecorderActionData.next.fragments.embarkLinkFragment.name,
+            )
+            return AudioRecorderFragment.newInstance(params)
         }
 
         return UpgradeAppFragment.newInstance()

@@ -22,13 +22,17 @@ buildscript {
     }
 
     dependencies {
-        classpath(BuildLibs.AndroidGradlePlugin)
-        classpath(BuildLibs.GoogleServicesPlugin)
-        classpath(BuildLibs.CrashlyticsPlugin)
-        classpath(BuildLibs.KotlinPlugin)
-        classpath(BuildLibs.ApolloPlugin)
-        classpath(BuildLibs.LicensesPlugin)
-        classpath(BuildLibs.LokalisePlugin)
+        val libs = project
+            .extensions
+            .getByType<VersionCatalogsExtension>()
+            .named("libs") as org.gradle.accessors.dm.LibrariesForLibs
+        classpath(libs.android.gradlePlugin)
+        classpath(libs.apollo.gradlePlugin)
+        classpath(libs.crashlytics.gradlePlugin)
+        classpath(libs.googleServices.gradlePlugin)
+        classpath(libs.kotlin.gradlePlugin)
+        classpath(libs.licenses.gradlePlugin)
+        classpath(libs.lokalise.gradlePlugin)
     }
 }
 

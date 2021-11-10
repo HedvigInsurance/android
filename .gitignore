@@ -15,7 +15,6 @@ sentry.properties
 mapping.txt
 
 # graphql
-.graphqlconfig
 schema.json
 schema.graphqls
 
