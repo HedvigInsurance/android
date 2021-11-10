@@ -1,3 +1,5 @@
+@file:Suppress("RemoveExplicitTypeArguments")
+
 package com.hedvig.app
 
 import android.content.Context
@@ -607,7 +609,7 @@ val useCaseModule = module {
     single { GraphQLQueryUseCase(get()) }
     single { GetCrossSellsUseCase(get(), get()) }
     single { GetHomeUseCase(get(), get()) }
-    single { GetClaimStatusDetailsUseCase(get()) }
+    single { GetClaimStatusDetailsUseCase(get(), get()) }
 }
 
 val cacheManagerModule = module {
@@ -627,7 +629,7 @@ val featureRuntimeBehaviorModule = module {
 }
 
 val coilModule = module {
-    single {
+    single<ImageLoader> {
         ImageLoader.Builder(get())
             .componentRegistry {
                 add(SvgDecoder(get()))

@@ -1,6 +1,16 @@
-query ClaimStatusDetails {
+query ClaimStatusDetails($locale: Locale!) {
   claimStatusDetails: claims {
     id
+    contract {
+      contractPerils(locale: $locale) {
+        icon {
+          variants {
+            ...IconVariantsFragment
+          }
+        }
+      }
+      displayName
+    }
     status
     outcome
     submittedAt

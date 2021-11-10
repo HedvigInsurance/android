@@ -2,7 +2,7 @@ package com.hedvig.app.feature.claimstatus.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.owldroid.graphql.ClaimStatusDetailsQuery
+import com.hedvig.app.feature.claimstatus.model.ClaimStatusDetailData
 import com.hedvig.app.feature.claimstatus.usecase.GetClaimStatusDetailsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,22 +24,19 @@ class ClaimStatusDetailViewModel(
     fun load() {
         viewModelScope.launch {
             _viewState.value = ViewState.Loading
-            val data = getClaimStatusDetailsUseCase.invoke(claimId)
-            _viewState.value = if (data == null) {
-                ViewState.Error
-            } else {
-                ViewState.Data(data)
+            val result = getClaimStatusDetailsUseCase.invoke(claimId)
+            _viewState.value = when (result) {
+                GetClaimStatusDetailsUseCase.ClaimStatusDetailResult.Error -> ViewState.Error
+                is GetClaimStatusDetailsUseCase.ClaimStatusDetailResult.Success -> ViewState.Data(result.data)
             }
         }
     }
 
-    companion object {
-        sealed class ViewState {
-            object Loading : ViewState()
-            object Error : ViewState()
-            data class Data(
-                val claimStatusDetail: ClaimStatusDetailsQuery.ClaimStatusDetail,
-            ) : ViewState()
-        }
+    sealed class ViewState {
+        object Loading : ViewState()
+        object Error : ViewState()
+        data class Data(
+            val claimStatusDetailData: ClaimStatusDetailData,
+        ) : ViewState()
     }
 }
