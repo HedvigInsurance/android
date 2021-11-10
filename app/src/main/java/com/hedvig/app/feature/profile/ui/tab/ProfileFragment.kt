@@ -8,7 +8,6 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.graphql.ProfileQuery
-import com.hedvig.android.owldroid.type.DirectDebitStatus
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ProfileFragmentBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
@@ -19,7 +18,6 @@ import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppActivity
 import com.hedvig.app.feature.profile.ui.charity.CharityActivity
 import com.hedvig.app.feature.profile.ui.myinfo.MyInfoActivity
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
-import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.apollo.format
@@ -160,25 +158,11 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
             .launchIn(lifecycleScope)
     }
 
-    private fun getPriceCaption(data: ProfileQuery.Data, monetaryMonthlyNet: String) =
-        when (marketManager.market) {
-            Market.SE -> when (data.bankAccount?.directDebitStatus) {
-                DirectDebitStatus.ACTIVE -> getString(R.string.Direct_Debit_Connected, monetaryMonthlyNet)
-                DirectDebitStatus.NEEDS_SETUP,
-                DirectDebitStatus.PENDING,
-                DirectDebitStatus.UNKNOWN__,
-                null,
-                -> getString(R.string.Direct_Debit_Not_Connected, monetaryMonthlyNet)
-            }
-            Market.DK,
-            Market.NO,
-            -> if (data.activePaymentMethods == null) {
-                getString(R.string.Card_Not_Connected, monetaryMonthlyNet)
-            } else {
-                getString(R.string.Card_Connected, monetaryMonthlyNet)
-            }
-            null -> ""
-        }
+    private fun getPriceCaption(data: ProfileQuery.Data, monetaryMonthlyNet: String): String {
+        return marketManager.market?.getPriceCaption(data)?.let {
+            getString(it, monetaryMonthlyNet)
+        } ?: ""
+    }
 
     companion object {
         val CostFragment.monetaryMonthlyNet: MonetaryAmount

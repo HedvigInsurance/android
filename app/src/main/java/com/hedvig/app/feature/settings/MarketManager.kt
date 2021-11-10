@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
+import com.hedvig.app.util.featureflags.Feature
+import com.hedvig.app.util.featureflags.FeatureManager.isFeatureEnabled
 
 interface MarketManager {
     val enabledMarkets: List<Market>
@@ -12,7 +14,7 @@ interface MarketManager {
 }
 
 class MarketManagerImpl(
-    context: Context,
+    context: Context
 ) : MarketManager {
 
     private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
@@ -21,6 +23,7 @@ class MarketManagerImpl(
         Market.SE,
         Market.NO,
         Market.DK,
+        if (isFeatureEnabled(Feature.FRANCE_MARKET, market)) Market.FR else null
     )
 
     override var market: Market?

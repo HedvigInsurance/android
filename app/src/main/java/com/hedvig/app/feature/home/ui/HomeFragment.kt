@@ -24,7 +24,7 @@ import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.featureflags.Feature
-import com.hedvig.app.util.featureflags.FeatureManager
+import com.hedvig.app.util.featureflags.FeatureManager.isFeatureEnabled
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
@@ -38,7 +38,6 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     private val tracker: HomeTracker by inject()
     private val imageLoader: ImageLoader by inject()
     private val marketManager: MarketManager by inject()
-    private val featureManager: FeatureManager by inject()
 
     private val registerForActivityResult: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -117,7 +116,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                 val items = mutableListOf<HomeModel>().apply {
                     add(HomeModel.BigText.Pending(firstName))
                     add(HomeModel.BodyText.Pending)
-                    if (featureManager.isFeatureEnabled(Feature.CLAIMS_STATUS)) {
+                    if (isFeatureEnabled(Feature.CLAIMS_STATUS, marketManager.market)) {
                         add(claimStatusCards(successData))
                     }
                 }
@@ -140,7 +139,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                 val items = mutableListOf<HomeModel>().apply {
                     add(HomeModel.BigText.ActiveInFuture(firstName, firstInceptionDate))
                     add(HomeModel.BodyText.ActiveInFuture)
-                    if (featureManager.isFeatureEnabled(Feature.CLAIMS_STATUS)) {
+                    if (isFeatureEnabled(Feature.CLAIMS_STATUS, marketManager.market)) {
                         add(claimStatusCards(successData))
                     }
                 }
@@ -152,7 +151,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     add(HomeModel.BigText.Terminated(firstName))
                     add(HomeModel.BodyText.Terminated)
                     if (successData.claims.isNotEmpty()) {
-                        if (featureManager.isFeatureEnabled(Feature.CLAIMS_STATUS)) {
+                        if (isFeatureEnabled(Feature.CLAIMS_STATUS, marketManager.market)) {
                             add(claimStatusCards(successData))
                         }
                         add(HomeModel.StartClaimOutlined.NewClaim)
@@ -163,7 +162,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     if (pendingAddress != null && pendingAddress.isNotBlank()) {
                         add(HomeModel.PendingAddressChange(pendingAddress))
                     }
-                    if (featureManager.isFeatureEnabled(Feature.MOVING_FLOW)) {
+                    if (isFeatureEnabled(Feature.MOVING_FLOW, marketManager.market)) {
                         add(HomeModel.Header(getString(R.string.home_tab_editing_section_title)))
                         add(HomeModel.ChangeAddress(pendingAddress))
                     }
@@ -176,7 +175,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     addAll(listOfNotNull(*psaItems(successData.importantMessages).toTypedArray()))
                     add(HomeModel.BigText.Active(firstName))
                     if (successData.claims.isNotEmpty()) {
-                        if (featureManager.isFeatureEnabled(Feature.CLAIMS_STATUS)) {
+                        if (isFeatureEnabled(Feature.CLAIMS_STATUS, marketManager.market)) {
                             add(claimStatusCards(successData))
                         }
                         add(HomeModel.StartClaimOutlined.NewClaim)
@@ -200,7 +199,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                             ).toTypedArray()
                         )
                     )
-                    if (featureManager.isFeatureEnabled(Feature.MOVING_FLOW)) {
+                    if (isFeatureEnabled(Feature.MOVING_FLOW, marketManager.market)) {
                         add(HomeModel.Header(getString(R.string.home_tab_editing_section_title)))
                         add(HomeModel.ChangeAddress(pendingAddress))
                     }

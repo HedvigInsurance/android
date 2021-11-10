@@ -16,7 +16,6 @@ import com.hedvig.app.connectPaymentModule
 import com.hedvig.app.dataStoreModule
 import com.hedvig.app.embarkModule
 import com.hedvig.app.embarkTrackerModule
-import com.hedvig.app.featureRuntimeBehaviorModule
 import com.hedvig.app.homeModule
 import com.hedvig.app.insuranceModule
 import com.hedvig.app.keyGearModule
@@ -96,7 +95,6 @@ class KoinInitializer : Initializer<KoinApplication> {
                 checkoutModule,
                 cacheManagerModule,
                 sharedPreferencesModule,
-                featureRuntimeBehaviorModule,
                 coilModule,
                 embarkTrackerModule,
                 chatEventModule,
