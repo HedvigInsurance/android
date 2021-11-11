@@ -28,6 +28,7 @@ class GenericAuthActivity : BaseActivity() {
                     onUpClick = ::finish,
                     onInputChanged = model::setInput,
                     onSubmitEmail = {},
+                    onClear = {},
                     inputValue = value,
                     error = null, // TODO
                 )
