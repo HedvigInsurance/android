@@ -20,18 +20,18 @@ import java.util.Locale
 
 @Composable
 fun ClaimInfo(
-    claimInfoData: ClaimStatusDetailData.ClaimInfoData,
+    topInfoData: ClaimStatusDetailData.TopInfoData,
     locale: Locale,
 ) {
     Column {
         ClaimType(
-            themedIconUrls = claimInfoData.themedIconUrls,
-            claimType = claimInfoData.claimType,
+            themedIconUrls = topInfoData.themedIconUrls,
+            claimType = topInfoData.claimType,
         )
         Spacer(Modifier.height(16.dp))
         ClaimDates(
-            submittedAt = claimInfoData.submittedAt,
-            closedAt = claimInfoData.closedAt,
+            submittedAt = topInfoData.submittedAt,
+            closedAt = topInfoData.closedAt,
             locale = locale,
         )
     }
@@ -46,9 +46,9 @@ fun ClaimInfoPreview() {
             color = MaterialTheme.colors.background,
         ) {
             ClaimInfo(
-                ClaimStatusDetailData.ClaimInfoData(
+                ClaimStatusDetailData.TopInfoData(
                     themedIconUrls = ThemedIconUrls.previewData(),
-                    claimType = ClaimStatusDetailData.ClaimInfoData.ClaimType.previewData(),
+                    claimType = ClaimStatusDetailData.TopInfoData.ClaimType.previewData(),
                     submittedAt = Instant.now().minus(10, ChronoUnit.DAYS),
                     closedAt = Instant.now().minus(1, ChronoUnit.DAYS),
                 ),

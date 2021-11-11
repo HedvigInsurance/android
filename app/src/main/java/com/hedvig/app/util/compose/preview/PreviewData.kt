@@ -8,8 +8,8 @@ fun ThemedIconUrls.Companion.previewData(): ThemedIconUrls = ThemedIconUrls(
     lightUrl = "/app-content-service/all_risk.svg"
 )
 
-fun ClaimStatusDetailData.ClaimInfoData.ClaimType.Companion.previewData() =
-    ClaimStatusDetailData.ClaimInfoData.ClaimType.Known(
+fun ClaimStatusDetailData.TopInfoData.ClaimType.Companion.previewData(): ClaimStatusDetailData.TopInfoData.ClaimType =
+    ClaimStatusDetailData.TopInfoData.ClaimType.Known(
         title = "All-risk",
         insuranceType = "Contents Insurance",
     )

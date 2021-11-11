@@ -85,7 +85,7 @@ private fun ClaimStatusDetailScreen(
         ) {
             Spacer(Modifier.height(24.dp))
             ClaimInfo(
-                claimInfoData = data.claimInfoData,
+                topInfoData = data.topInfoData,
                 locale = locale,
             )
             Spacer(Modifier.height(24.dp))

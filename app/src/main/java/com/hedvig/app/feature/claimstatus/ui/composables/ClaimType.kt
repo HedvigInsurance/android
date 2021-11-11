@@ -29,7 +29,7 @@ import com.hedvig.app.util.compose.preview.previewData
 @Composable
 fun ClaimType(
     themedIconUrls: ThemedIconUrls,
-    claimType: ClaimStatusDetailData.ClaimInfoData.ClaimType,
+    claimType: ClaimStatusDetailData.TopInfoData.ClaimType,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -44,7 +44,7 @@ fun ClaimType(
             modifier = Modifier.size(24.dp)
         )
         when (claimType) {
-            is ClaimStatusDetailData.ClaimInfoData.ClaimType.Known -> {
+            is ClaimStatusDetailData.TopInfoData.ClaimType.Known -> {
                 Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     Text(
                         text = claimType.title,
@@ -58,7 +58,7 @@ fun ClaimType(
                     }
                 }
             }
-            ClaimStatusDetailData.ClaimInfoData.ClaimType.Unknown -> {
+            ClaimStatusDetailData.TopInfoData.ClaimType.Unknown -> {
                 Text(
                     text = stringResource(R.string.claim_casetype_insurance_case),
                     style = MaterialTheme.typography.h6
@@ -78,7 +78,7 @@ fun ClaimTypePreview() {
         ) {
             ClaimType(
                 themedIconUrls = ThemedIconUrls.previewData(),
-                claimType = ClaimStatusDetailData.ClaimInfoData.ClaimType.previewData()
+                claimType = ClaimStatusDetailData.TopInfoData.ClaimType.previewData()
             )
         }
     }
@@ -93,7 +93,7 @@ fun ClaimTypePreview2() {
         ) {
             ClaimType(
                 themedIconUrls = ThemedIconUrls.previewData(),
-                claimType = ClaimStatusDetailData.ClaimInfoData.ClaimType.Unknown
+                claimType = ClaimStatusDetailData.TopInfoData.ClaimType.Unknown
             )
         }
     }

@@ -5,7 +5,7 @@ import com.hedvig.app.util.apollo.ThemedIconUrls
 import java.time.Instant
 
 data class ClaimStatusDetailData(
-    val claimInfoData: ClaimInfoData,
+    val topInfoData: TopInfoData,
 ) {
     companion object {
         fun fromQueryModel(
@@ -17,12 +17,12 @@ data class ClaimStatusDetailData(
             @Suppress("NAME_SHADOWING")
             val queryModel = queryModel.claimStatusDetails.first { it.id == claimId }
             return ClaimStatusDetailData(
-                claimInfoData = ClaimInfoData.fromQuery(queryModel)
+                topInfoData = TopInfoData.fromQuery(queryModel)
             )
         }
     }
 
-    data class ClaimInfoData(
+    data class TopInfoData(
         val themedIconUrls: ThemedIconUrls,
         val claimType: ClaimType,
         val submittedAt: Instant,
@@ -31,8 +31,8 @@ data class ClaimStatusDetailData(
         companion object {
             fun fromQuery(
                 queryModel: ClaimStatusDetailsQuery.ClaimStatusDetail,
-            ): ClaimInfoData {
-                return ClaimInfoData(
+            ): TopInfoData {
+                return TopInfoData(
                     themedIconUrls = if (queryModel.contract != null) {
                         ThemedIconUrls.from(
                             queryModel.contract!!.contractPerils.first().icon.variants.fragments.iconVariantsFragment
