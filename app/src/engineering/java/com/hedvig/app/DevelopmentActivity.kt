@@ -11,6 +11,7 @@ import com.hedvig.app.feature.changeaddress.ChangeAddressMockActivity
 import com.hedvig.app.feature.chat.ChatMockActivity
 import com.hedvig.app.feature.checkout.CheckoutMockActivity
 import com.hedvig.app.feature.embark.EmbarkMockActivity
+import com.hedvig.app.feature.genericauth.GenericAuthMockActivity
 import com.hedvig.app.feature.home.HomeMockActivity
 import com.hedvig.app.feature.insurance.InsuranceMockActivity
 import com.hedvig.app.feature.loggedin.LoggedInMockActivity
@@ -47,6 +48,9 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
                     },
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Row("App Sunsetting-Screen") {
                         startActivity(ForceUpgradeActivity.newInstance(this))
+                    },
+                    DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Generic Auth") {
+                        startActivity(Intent(this, GenericAuthMockActivity::class.java))
                     },
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Change address intro") {
                         startActivity(Intent(this, ChangeAddressMockActivity::class.java))

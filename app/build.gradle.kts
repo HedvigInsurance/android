@@ -296,6 +296,7 @@ dependencies {
 
     implementation(libs.androidx.other.activityCompose)
     implementation(libs.androidx.compose.material)
+    implementation(libs.androidx.compose.materialIconsExtended)
     implementation(libs.androidx.compose.animation)
     implementation(libs.androidx.compose.mdcAdapter)
     implementation(libs.androidx.compose.uiTooling)
