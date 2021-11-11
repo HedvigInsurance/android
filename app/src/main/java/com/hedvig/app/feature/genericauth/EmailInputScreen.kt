@@ -23,6 +23,8 @@ import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.navigationBarsWithImePadding
@@ -36,8 +38,9 @@ fun EmailInputScreen(
     onInputChanged: (String) -> Unit,
     onSubmitEmail: () -> Unit,
     onClear: () -> Unit,
+    onBlur: () -> Unit,
     inputValue: String,
-    error: String?,
+    error: GenericAuthViewModel.ViewState.InputError?,
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -75,13 +78,20 @@ fun EmailInputScreen(
                 OutlinedTextField(
                     value = inputValue,
                     onValueChange = onInputChanged,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .onFocusChanged { state ->
+                            if (!state.isFocused) {
+                                onBlur()
+                            }
+                        },
                     placeholder = { Text("Email address") },
                     trailingIcon = {
                         if (error != null) {
                             Image(
                                 imageVector = Icons.Outlined.ErrorOutline,
-                                contentDescription = null // TODO: We need a content description here for sure
+                                contentDescription = null, // TODO: We need a content description here for sure
+                                colorFilter = ColorFilter.tint(color = MaterialTheme.colors.error),
                             )
                         } else {
                             IconButton(onClick = onClear) {
@@ -96,7 +106,7 @@ fun EmailInputScreen(
                 )
                 if (error != null) {
                     Text(
-                        text = error,
+                        text = errorMessage(error),
                         style = MaterialTheme.typography.caption.copy(color = MaterialTheme.colors.error),
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
@@ -116,6 +126,12 @@ fun EmailInputScreen(
     }
 }
 
+@Composable
+private fun errorMessage(error: GenericAuthViewModel.ViewState.InputError) = when (error) {
+    GenericAuthViewModel.ViewState.InputError.EMPTY -> "Enter email address to continue"
+    GenericAuthViewModel.ViewState.InputError.INVALID_EMAIL -> "Email address not valid"
+}
+
 @Preview(showBackground = true)
 @Composable
 fun EmailInputScreenValidPreview() {
@@ -125,7 +141,8 @@ fun EmailInputScreenValidPreview() {
             onInputChanged = {},
             onSubmitEmail = {},
             onClear = {},
-            inputValue = "johndoe@gmail.com",
+            onBlur = {},
+            inputValue = "example@example.com",
             error = null,
         )
     }
@@ -140,8 +157,9 @@ fun EmailInputScreenInvalidPreview() {
             onInputChanged = {},
             onSubmitEmail = {},
             onClear = {},
-            inputValue = "johndoe@gmail.com",
-            error = "Email address not valid"
+            onBlur = {},
+            inputValue = "example.com",
+            error = GenericAuthViewModel.ViewState.InputError.INVALID_EMAIL,
         )
     }
 }
