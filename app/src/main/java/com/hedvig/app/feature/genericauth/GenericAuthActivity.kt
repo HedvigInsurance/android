@@ -6,12 +6,9 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.lifecycle.ViewModel
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class GenericAuthActivity : BaseActivity() {
@@ -22,15 +19,16 @@ class GenericAuthActivity : BaseActivity() {
         window.compatSetDecorFitsSystemWindows(false)
 
         setContent {
-            val value by model.input.collectAsState()
+            val viewState by model.viewState.collectAsState()
             HedvigTheme {
                 EmailInputScreen(
                     onUpClick = ::finish,
                     onInputChanged = model::setInput,
                     onSubmitEmail = {},
-                    onClear = {},
-                    inputValue = value,
-                    error = null, // TODO
+                    onClear = model::clear,
+                    onBlur = model::blur,
+                    inputValue = viewState.input,
+                    error = viewState.error,
                 )
             }
         }
@@ -38,14 +36,5 @@ class GenericAuthActivity : BaseActivity() {
 
     companion object {
         fun newInstance(context: Context) = Intent(context, GenericAuthActivity::class.java)
-    }
-}
-
-class GenericAuthViewModel : ViewModel() {
-    private val _input = MutableStateFlow("")
-    val input = _input.asStateFlow()
-
-    fun setInput(value: String) {
-        _input.value = value
     }
 }
