@@ -75,6 +75,18 @@ enum class Language {
         EN_DK -> R.string.english_danish
     }
 
+    /**
+     * Returns the IETF BCP 47 language tag string for the current [Language]
+     */
+    fun getLanguageTag(): String = when (this) {
+        SV_SE -> "sv-SE"
+        EN_SE -> "en-SE"
+        NB_NO -> "nb-NO"
+        EN_NO -> "en-NO"
+        DA_DK -> "da-DK"
+        EN_DK -> "en-DK"
+    }
+
     override fun toString() = when (this) {
         SV_SE -> SETTING_SV_SE
         EN_SE -> SETTING_EN_SE

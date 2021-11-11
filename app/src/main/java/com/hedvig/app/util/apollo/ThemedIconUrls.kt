@@ -15,7 +15,7 @@ data class ThemedIconUrls(
 ) : Parcelable {
 
     @Composable
-    fun iconByTheme() = if (isSystemInDarkTheme()) {
+    fun iconUrl() = if (isSystemInDarkTheme()) {
         darkUrl
     } else {
         lightUrl

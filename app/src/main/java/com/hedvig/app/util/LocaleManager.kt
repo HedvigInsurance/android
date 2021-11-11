@@ -10,6 +10,10 @@ class LocaleManager(
     private val marketManager: MarketManager,
     private val context: Context
 ) {
+    fun getLanguageTag(): String {
+        return Language.fromSettings(context, marketManager.market).getLanguageTag()
+    }
+
     fun defaultLocale(): Locale {
         val localeFromSettings = Language.fromSettings(context, marketManager.market).apply(context)
         val locale = getLocale(localeFromSettings, marketManager.market)

@@ -2,6 +2,7 @@ package com.hedvig.app.feature.claimstatus.model
 
 import com.hedvig.android.owldroid.graphql.ClaimStatusDetailsQuery
 import com.hedvig.app.util.apollo.ThemedIconUrls
+import java.time.Instant
 
 data class ClaimStatusDetailData(
     val claimInfoData: ClaimInfoData,
@@ -25,6 +26,8 @@ data class ClaimStatusDetailData(
         val themedIconUrls: ThemedIconUrls,
         val claimType: String,
         val insuranceType: String,
+        val submittedAt: Instant,
+        val closedAt: Instant?, // todo update terminology when decision is made for "Closed/handled" claims
     ) {
         companion object {
             fun fromQuery(
@@ -44,6 +47,8 @@ data class ClaimStatusDetailData(
                     },
                     claimType = "Some Claim Type", // todo when claim type finally is arriving from the backend
                     insuranceType = queryModel.contract?.displayName ?: String(),
+                    submittedAt = queryModel.submittedAt,
+                    closedAt = queryModel.closedAt,
                 )
             }
         }

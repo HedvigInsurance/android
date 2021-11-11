@@ -22,10 +22,12 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.claimstatus.model.ClaimStatusDetailData
 import com.hedvig.app.feature.claimstatus.ui.composables.ClaimInfo
 import com.hedvig.app.ui.compose.composables.appbar.TopAppBarWithBack
+import java.util.Locale
 
 @Composable
 fun ClaimStatusDetailScreen(
     viewState: ClaimStatusDetailViewModel.ViewState,
+    locale: Locale,
     onBack: () -> Unit,
 ) {
     Scaffold(
@@ -51,6 +53,7 @@ fun ClaimStatusDetailScreen(
             is ClaimStatusDetailViewModel.ViewState.Data -> {
                 ClaimStatusDetailScreen(
                     data = viewState.claimStatusDetailData,
+                    locale = locale,
                     modifier = Modifier.padding(contentPadding),
                 )
             }
@@ -71,6 +74,7 @@ fun ClaimStatusDetailScreen(
 @Composable
 private fun ClaimStatusDetailScreen(
     data: ClaimStatusDetailData,
+    locale: Locale,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -80,9 +84,8 @@ private fun ClaimStatusDetailScreen(
             modifier = Modifier.verticalScroll(rememberScrollState())
         ) {
             ClaimInfo(
-                themedIconUrls = data.claimInfoData.themedIconUrls,
-                claimType = data.claimInfoData.claimType,
-                insuranceType = data.claimInfoData.insuranceType,
+                claimInfoData = data.claimInfoData,
+                locale = locale,
             )
             Spacer(Modifier.height(24.dp))
             ClaimStatusDetailCard()

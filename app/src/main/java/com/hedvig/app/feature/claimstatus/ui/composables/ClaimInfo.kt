@@ -1,57 +1,39 @@
 package com.hedvig.app.feature.claimstatus.ui.composables
 
 import android.content.res.Configuration
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.LocalContentAlpha
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberImagePainter
+import com.hedvig.app.feature.claimstatus.model.ClaimStatusDetailData
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.apollo.ThemedIconUrls
+import java.time.Instant
+import java.time.temporal.ChronoUnit
+import java.util.Locale
 
 @Composable
 fun ClaimInfo(
-    themedIconUrls: ThemedIconUrls,
-    claimType: String,
-    insuranceType: String,
+    claimInfoData: ClaimStatusDetailData.ClaimInfoData,
+    locale: Locale,
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Image(
-            painter = rememberImagePainter(
-                data = /*stringResource(R.string.BASE_URL) + */themedIconUrls.iconByTheme(),
-            ),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.size(24.dp)
+    Column {
+        ClaimType(
+            themedIconUrls = claimInfoData.themedIconUrls,
+            claimType = claimInfoData.claimType,
+            insuranceType = claimInfoData.insuranceType,
         )
-        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(
-                text = claimType,
-                style = MaterialTheme.typography.h6
-            )
-            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                Text(
-                    text = insuranceType,
-                    style = MaterialTheme.typography.subtitle2
-                )
-            }
-        }
+        Spacer(Modifier.height(16.dp))
+        ClaimDates(
+            submittedAt = claimInfoData.submittedAt,
+            closedAt = claimInfoData.closedAt,
+            locale = locale,
+        )
     }
 }
 
@@ -64,12 +46,17 @@ fun ClaimInfoPreview() {
             color = MaterialTheme.colors.background,
         ) {
             ClaimInfo(
-                themedIconUrls = ThemedIconUrls(
-                    darkUrl = "/app-content-service/all_risk_dark.svg",
-                    lightUrl = "/app-content-service/all_risk.svg"
+                ClaimStatusDetailData.ClaimInfoData(
+                    themedIconUrls = ThemedIconUrls(
+                        darkUrl = "/app-content-service/all_risk_dark.svg",
+                        lightUrl = "/app-content-service/all_risk.svg"
+                    ),
+                    claimType = "All-risk",
+                    insuranceType = "Contents Insurance",
+                    submittedAt = Instant.now().minus(10, ChronoUnit.DAYS),
+                    closedAt = Instant.now().minus(1, ChronoUnit.DAYS),
                 ),
-                claimType = "All-risk",
-                insuranceType = "Contents Insurance"
+                Locale.forLanguageTag("sv_SE")
             )
         }
     }
