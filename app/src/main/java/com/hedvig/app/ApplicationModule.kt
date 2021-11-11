@@ -74,6 +74,7 @@ import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
 import com.hedvig.app.feature.embark.passages.textaction.TextActionViewModel
 import com.hedvig.app.feature.genericauth.CreateOtpAttemptUseCase
 import com.hedvig.app.feature.genericauth.GenericAuthViewModel
+import com.hedvig.app.feature.genericauth.otpinput.OtpInputViewModel
 import com.hedvig.app.feature.home.data.GetHomeUseCase
 import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.home.ui.HomeViewModel
@@ -374,6 +375,7 @@ val viewModelModule = module {
         CrossSellDetailViewModel(notificationMetadata, crossSell, get())
     }
     viewModel { GenericAuthViewModel(get()) }
+    viewModel { OtpInputViewModel() }
 }
 
 val choosePlanModule = module {
