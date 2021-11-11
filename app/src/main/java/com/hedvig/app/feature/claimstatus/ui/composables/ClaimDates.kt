@@ -107,7 +107,7 @@ fun ClaimDatesPreview() {
             ClaimDates(
                 submittedAt = Instant.now().minus(10, ChronoUnit.DAYS),
                 closedAt = Instant.now().minus(1, ChronoUnit.DAYS),
-                locale = Locale.forLanguageTag("en_SE")
+                locale = Locale.forLanguageTag("en-SE")
             )
         }
     }

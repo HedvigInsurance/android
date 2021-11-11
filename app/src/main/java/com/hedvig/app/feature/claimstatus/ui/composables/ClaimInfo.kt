@@ -56,7 +56,7 @@ fun ClaimInfoPreview() {
                     submittedAt = Instant.now().minus(10, ChronoUnit.DAYS),
                     closedAt = Instant.now().minus(1, ChronoUnit.DAYS),
                 ),
-                Locale.forLanguageTag("sv_SE")
+                Locale.forLanguageTag("sv-SE")
             )
         }
     }
