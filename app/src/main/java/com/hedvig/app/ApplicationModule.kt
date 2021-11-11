@@ -72,6 +72,7 @@ import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionViewMo
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerViewModel
 import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
 import com.hedvig.app.feature.embark.passages.textaction.TextActionViewModel
+import com.hedvig.app.feature.genericauth.GenericAuthViewModel
 import com.hedvig.app.feature.home.data.GetHomeUseCase
 import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.home.ui.HomeViewModel
@@ -371,6 +372,7 @@ val viewModelModule = module {
     viewModel { (notificationMetadata: CrossSellNotificationMetadata?, crossSell: CrossSellData) ->
         CrossSellDetailViewModel(notificationMetadata, crossSell, get())
     }
+    viewModel { GenericAuthViewModel() }
 }
 
 val choosePlanModule = module {
