@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.app.feature.claimstatus.model.ClaimStatusDetailData
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.apollo.ThemedIconUrls
+import com.hedvig.app.util.compose.preview.previewData
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import java.util.Locale
@@ -26,7 +27,6 @@ fun ClaimInfo(
         ClaimType(
             themedIconUrls = claimInfoData.themedIconUrls,
             claimType = claimInfoData.claimType,
-            insuranceType = claimInfoData.insuranceType,
         )
         Spacer(Modifier.height(16.dp))
         ClaimDates(
@@ -47,12 +47,8 @@ fun ClaimInfoPreview() {
         ) {
             ClaimInfo(
                 ClaimStatusDetailData.ClaimInfoData(
-                    themedIconUrls = ThemedIconUrls(
-                        darkUrl = "/app-content-service/all_risk_dark.svg",
-                        lightUrl = "/app-content-service/all_risk.svg"
-                    ),
-                    claimType = "All-risk",
-                    insuranceType = "Contents Insurance",
+                    themedIconUrls = ThemedIconUrls.previewData(),
+                    claimType = ClaimStatusDetailData.ClaimInfoData.ClaimType.previewData(),
                     submittedAt = Instant.now().minus(10, ChronoUnit.DAYS),
                     closedAt = Instant.now().minus(1, ChronoUnit.DAYS),
                 ),

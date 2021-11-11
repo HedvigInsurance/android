@@ -24,8 +24,7 @@ data class ClaimStatusDetailData(
 
     data class ClaimInfoData(
         val themedIconUrls: ThemedIconUrls,
-        val claimType: String,
-        val insuranceType: String,
+        val claimType: ClaimType,
         val submittedAt: Instant,
         val closedAt: Instant?, // todo update terminology when decision is made for "Closed/handled" claims
     ) {
@@ -39,17 +38,39 @@ data class ClaimStatusDetailData(
                             queryModel.contract!!.contractPerils.first().icon.variants.fragments.iconVariantsFragment
                         )
                     } else {
-                        // todo valid defaults? Make this non-nullable on the type?
+                        // todo valid defaults? Make this non-nullable on the type? Optimally add it to the GraphQL type
                         ThemedIconUrls(
                             darkUrl = "/app-content-service/all_risk_dark.svg",
                             lightUrl = "/app-content-service/all_risk.svg"
                         )
                     },
-                    claimType = "Some Claim Type", // todo when claim type finally is arriving from the backend
-                    insuranceType = queryModel.contract?.displayName ?: String(),
+                    claimType = ClaimType.fromQuery(queryModel),
                     submittedAt = queryModel.submittedAt,
                     closedAt = queryModel.closedAt,
                 )
+            }
+        }
+
+        sealed class ClaimType {
+            object Unknown : ClaimType()
+            data class Known(
+                val title: String,
+                val insuranceType: String,
+            ) : ClaimType()
+
+            companion object {
+                fun fromQuery(queryModel: ClaimStatusDetailsQuery.ClaimStatusDetail): ClaimType {
+                    val displayName = queryModel.contract?.displayName
+                    // todo when claim type finally is arriving from the backend
+                    return if (/*if claim type is not null &&*/false && displayName != null) {
+                        Known(
+                            title = String(),
+                            insuranceType = displayName
+                        )
+                    } else {
+                        Unknown
+                    }
+                }
             }
         }
     }

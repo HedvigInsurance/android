@@ -83,6 +83,7 @@ private fun ClaimStatusDetailScreen(
         Column(
             modifier = Modifier.verticalScroll(rememberScrollState())
         ) {
+            Spacer(Modifier.height(24.dp))
             ClaimInfo(
                 claimInfoData = data.claimInfoData,
                 locale = locale,
