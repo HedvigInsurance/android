@@ -312,6 +312,10 @@
             android:name=".feature.genericauth.GenericAuthActivity"
             android:windowSoftInputMode="adjustResize" />
 
+        <activity
+            android:name=".feature.genericauth.otpinput.OtpInputActivity"
+            android:windowSoftInputMode="adjustResize"/>
+
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_hedvig_h" />
