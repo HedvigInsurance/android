@@ -24,7 +24,7 @@ class GenericAuthActivity : BaseActivity() {
                 EmailInputScreen(
                     onUpClick = ::finish,
                     onInputChanged = model::setInput,
-                    onSubmitEmail = {},
+                    onSubmitEmail = model::submitEmail,
                     onClear = model::clear,
                     onBlur = model::blur,
                     inputValue = viewState.input,
