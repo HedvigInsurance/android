@@ -20,18 +20,18 @@ import java.util.Locale
 
 @Composable
 fun ClaimInfo(
-    topInfoData: ClaimStatusDetailData.TopInfoData,
+    data: ClaimStatusDetailData.TopInfoData,
     locale: Locale,
 ) {
     Column {
         ClaimType(
-            themedIconUrls = topInfoData.themedIconUrls,
-            claimType = topInfoData.claimType,
+            themedIconUrls = data.themedIconUrls,
+            claimType = data.claimType,
         )
         Spacer(Modifier.height(16.dp))
         ClaimDates(
-            submittedAt = topInfoData.submittedAt,
-            closedAt = topInfoData.closedAt,
+            submittedAt = data.submittedAt,
+            closedAt = data.closedAt,
             locale = locale,
         )
     }

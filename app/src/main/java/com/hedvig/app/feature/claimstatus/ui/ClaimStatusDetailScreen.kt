@@ -20,6 +20,7 @@ import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.ui.Scaffold
 import com.hedvig.app.R
 import com.hedvig.app.feature.claimstatus.model.ClaimStatusDetailData
+import com.hedvig.app.feature.claimstatus.ui.composables.ClaimDetailCard
 import com.hedvig.app.feature.claimstatus.ui.composables.ClaimInfo
 import com.hedvig.app.ui.compose.composables.appbar.TopAppBarWithBack
 import java.util.Locale
@@ -29,6 +30,7 @@ fun ClaimStatusDetailScreen(
     viewState: ClaimStatusDetailViewModel.ViewState,
     locale: Locale,
     onBack: () -> Unit,
+    openChat: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -54,6 +56,7 @@ fun ClaimStatusDetailScreen(
                 ClaimStatusDetailScreen(
                     data = viewState.claimStatusDetailData,
                     locale = locale,
+                    openChat = openChat,
                     modifier = Modifier.padding(contentPadding),
                 )
             }
@@ -75,6 +78,7 @@ fun ClaimStatusDetailScreen(
 private fun ClaimStatusDetailScreen(
     data: ClaimStatusDetailData,
     locale: Locale,
+    openChat: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -85,22 +89,20 @@ private fun ClaimStatusDetailScreen(
         ) {
             Spacer(Modifier.height(24.dp))
             ClaimInfo(
-                topInfoData = data.topInfoData,
+                data = data.topInfoData,
                 locale = locale,
             )
             Spacer(Modifier.height(24.dp))
-            ClaimStatusDetailCard()
+            ClaimDetailCard(
+                data = data.cardData,
+                openChat = openChat
+            )
             Spacer(Modifier.height(56.dp))
             PaymentDetails()
             Spacer(Modifier.height(56.dp))
             Files()
         }
     }
-}
-
-@Composable
-fun ClaimStatusDetailCard() {
-    Text(text = "ClaimStatusDetailCard")
 }
 
 @Composable

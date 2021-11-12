@@ -55,7 +55,8 @@ class ClaimStatusDetailActivity : BaseActivity() {
                         ClaimStatusDetailScreen(
                             viewState = viewState,
                             locale = Locale.forLanguageTag(localeManager.getLanguageTag()),
-                            onBack = { finish() }
+                            onBack = { finish() },
+                            openChat = { },
                         )
                     }
                 }

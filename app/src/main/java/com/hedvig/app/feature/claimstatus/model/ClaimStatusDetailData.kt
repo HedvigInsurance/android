@@ -6,6 +6,7 @@ import java.time.Instant
 
 data class ClaimStatusDetailData(
     val topInfoData: TopInfoData,
+    val cardData: CardData,
 ) {
     companion object {
         fun fromQueryModel(
@@ -17,7 +18,8 @@ data class ClaimStatusDetailData(
             @Suppress("NAME_SHADOWING")
             val queryModel = queryModel.claimStatusDetails.first { it.id == claimId }
             return ClaimStatusDetailData(
-                topInfoData = TopInfoData.fromQuery(queryModel)
+                topInfoData = TopInfoData.fromQuery(queryModel),
+                cardData = CardData.fromQuery(queryModel)
             )
         }
     }
@@ -71,6 +73,27 @@ data class ClaimStatusDetailData(
                         Unknown
                     }
                 }
+            }
+        }
+    }
+
+    data class CardData(
+        val progress: Unit, /*List<ClaimProgressData>*/
+        val informationText: String,
+    ) {
+        companion object {
+            fun fromQuery(
+                queryModel: ClaimStatusDetailsQuery.ClaimStatusDetail,
+            ): CardData {
+                // TODO properly map from query model to view model
+                return CardData(
+                    progress = Unit,
+                    informationText = """
+                        We got you covered. The payment should be in your bank account by now.
+                        
+                        Scroll down to see how we calculated.
+                    """
+                )
             }
         }
     }
