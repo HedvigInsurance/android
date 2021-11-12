@@ -4,49 +4,92 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.compose.material.Scaffold
+import androidx.compose.material.rememberScaffoldState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.lifecycle.ViewModel
+import androidx.compose.ui.Modifier
+import com.google.accompanist.insets.systemBarsPadding
 import com.hedvig.app.BaseActivity
+import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.app.ui.compose.composables.appbar.TopAppBarWithBack
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import com.hedvig.app.util.extensions.openEmail
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class OtpInputActivity : BaseActivity() {
-    val model: OtpInputViewModel by viewModel()
+
+    val model: OtpInputViewModel by viewModel {
+        parametersOf(
+            intent.getStringExtra(OTP_ID_EXTRA) ?: throw IllegalArgumentException(
+                "Programmer error: Missing OTP_ID in ${this.javaClass.name}"
+            ),
+            intent.getStringExtra(CREDENTIAL_EXTRA) ?: throw IllegalArgumentException(
+                "Programmer error: Missing OTP_ID in ${this.javaClass.name}"
+            )
+        )
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         window.compatSetDecorFitsSystemWindows(false)
 
         setContent {
-            val value by model.input.collectAsState()
+            val scaffoldState = rememberScaffoldState()
+
             HedvigTheme {
-                OtpInputScreen(
-                    onUpClick = ::finish,
-                    onInputChanged = model::setInput,
-                    onOpenExternalApp = {},
-                    onResendCode = {},
-                    onSubmitCode = {},
-                    inputValue = value,
-                    error = null, // TODO
-                )
+                Scaffold(
+                    topBar = {
+                        TopAppBarWithBack(
+                            onClick = ::onBackPressed,
+                            title = "Log in"
+                        )
+                    },
+                    scaffoldState = scaffoldState,
+                    modifier = Modifier.systemBarsPadding(top = true),
+                ) {
+                    val viewState by model.viewState.collectAsState()
+                    val events = model.eventsFlow.collectAsState(initial = null)
+
+                    LaunchedEffect(events.value) {
+                        when (events.value) {
+                            is OtpInputViewModel.Event.Success -> startLoggedIn()
+                            OtpInputViewModel.Event.CodeResent -> launch {
+                                scaffoldState.snackbarHostState.showSnackbar("Code resent")
+                            }
+                            OtpInputViewModel.Event.None -> return@LaunchedEffect
+                        }
+                    }
+
+                    OtpInputScreen(
+                        onInputChanged = model::setInput,
+                        onOpenExternalApp = ::openEmail,
+                        onSubmitCode = model::submitCode,
+                        onResendCode = model::resendCode,
+                        inputValue = viewState.input,
+                        error = viewState.error,
+                        loadingResend = viewState.loadingResend,
+                        loadingCode = viewState.loadingCode
+                    )
+                }
             }
         }
     }
 
-    companion object {
-        fun newInstance(context: Context) = Intent(context, OtpInputActivity::class.java)
+    private fun startLoggedIn() {
+        val intent = LoggedInActivity.newInstance(this, withoutHistory = true)
+        startActivity(intent)
     }
-}
 
-class OtpInputViewModel : ViewModel() {
-    private val _input = MutableStateFlow("")
-    val input = _input.asStateFlow()
+    companion object {
+        private const val OTP_ID_EXTRA = "OTP_ID_EXTRA"
+        private const val CREDENTIAL_EXTRA = "OTP_ID_EXTRA"
 
-    fun setInput(value: String) {
-        _input.value = value
+        fun newInstance(context: Context) = Intent(context, OtpInputActivity::class.java)
     }
 }

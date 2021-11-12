@@ -133,6 +133,11 @@ private fun Activity.openAppSettings() {
     startActivity(intent)
 }
 
+fun Activity.openEmail() {
+    val intent = Intent(Intent.ACTION_SEND)
+    startActivity(Intent.createChooser(intent, "View code"))
+}
+
 fun AppCompatActivity.handleSingleSelectLink(value: String) = when (value) {
     "message.forslag.dashboard" -> {
         startActivity(

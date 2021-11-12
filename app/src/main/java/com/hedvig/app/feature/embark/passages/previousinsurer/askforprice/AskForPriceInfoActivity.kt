@@ -26,7 +26,7 @@ class AskForPriceInfoActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            HedvigTheme() {
+            HedvigTheme {
                 Scaffold(
                     topBar = {
                         TopAppBarWithBack(
