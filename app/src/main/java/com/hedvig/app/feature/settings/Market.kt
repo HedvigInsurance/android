@@ -3,11 +3,11 @@ package com.hedvig.app.feature.settings
 import android.content.Context
 import androidx.fragment.app.FragmentManager
 import com.hedvig.app.R
+import com.hedvig.app.authenticate.AuthenticateDialog
 import com.hedvig.app.feature.adyen.AdyenCurrency
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinActivity
 import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutActivity
 import com.hedvig.app.feature.chat.ui.ChatActivity
-import com.hedvig.app.feature.genericauth.GenericAuthActivity
 import com.hedvig.app.feature.onboarding.ui.ChoosePlanActivity
 import com.hedvig.app.feature.trustly.TrustlyConnectPayinActivity
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
@@ -47,7 +47,7 @@ enum class Market {
     fun openAuth(context: Context, fragmentManager: FragmentManager) {
         when (this) {
             SE -> {
-                context.startActivity(GenericAuthActivity.newInstance(context))
+                AuthenticateDialog().show(fragmentManager, AuthenticateDialog.TAG)
             }
             NO, DK -> {
                 context.startActivity(SimpleSignAuthenticationActivity.newInstance(context, this))
