@@ -2,7 +2,9 @@ package com.hedvig.app.util.extensions
 
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.LabeledIntent
 import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
@@ -22,6 +24,7 @@ import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.util.extensions.view.setupToolbar
 import e
+import timber.log.Timber
 
 val Activity.screenWidth: Int
     get() = window.decorView.measuredWidth
@@ -134,9 +137,33 @@ private fun Activity.openAppSettings() {
 }
 
 fun Activity.openEmail(title: String) {
-    val intent = Intent(Intent.ACTION_SEND)
-    startActivity(Intent.createChooser(intent, title))
+    val emailIntent = Intent(Intent.ACTION_VIEW, Uri.parse("mailto:"))
+
+    val resInfo = packageManager.queryIntentActivities(emailIntent, 0)
+    if (resInfo.isNotEmpty()) {
+        // First create an intent with only the package name of the first registered email app
+        // and build a picked based on it
+        val intentChooser = packageManager.getLaunchIntentForPackage(
+            resInfo.first().activityInfo.packageName
+        )
+        val openInChooser = Intent.createChooser(intentChooser, title)
+
+        // Then create a list of LabeledIntent for the rest of the registered email apps
+        val emailApps = resInfo.toLabeledIntentArray(packageManager)
+
+        // Add the rest of the email apps to the picker selection
+        openInChooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, emailApps)
+        startActivity(openInChooser)
+    } else {
+        Timber.e("No email app found")
+    }
 }
+
+private fun List<ResolveInfo>.toLabeledIntentArray(packageManager: PackageManager): Array<LabeledIntent> = map {
+    val packageName = it.activityInfo.packageName
+    val intent = packageManager.getLaunchIntentForPackage(packageName)
+    LabeledIntent(intent, packageName, it.loadLabel(packageManager), it.icon)
+}.toTypedArray()
 
 fun AppCompatActivity.handleSingleSelectLink(value: String) = when (value) {
     "message.forslag.dashboard" -> {

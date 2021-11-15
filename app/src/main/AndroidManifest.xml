@@ -314,7 +314,8 @@
 
         <activity
             android:name=".feature.genericauth.otpinput.OtpInputActivity"
-            android:windowSoftInputMode="adjustResize"/>
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize" />
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
@@ -368,6 +369,10 @@
         <intent>
             <action android:name="android.intent.action.VIEW" />
             <data android:scheme="https" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="mailto" />
         </intent>
     </queries>
 
