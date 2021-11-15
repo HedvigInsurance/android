@@ -92,7 +92,6 @@ class OtpInputViewModel(
     }
 
     private fun ReSendOtpCodeUseCase.ResendOtpResult.Error.handleError() {
-        eventChannel.trySend(Event.CodeResent)
         _viewState.update {
             it.copy(error = message, loadingResend = false)
         }

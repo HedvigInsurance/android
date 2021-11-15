@@ -29,7 +29,7 @@ class OtpInputActivity : BaseActivity() {
                 "Programmer error: Missing OTP_ID in ${this.javaClass.name}"
             ),
             intent.getStringExtra(CREDENTIAL_EXTRA) ?: throw IllegalArgumentException(
-                "Programmer error: Missing OTP_ID in ${this.javaClass.name}"
+                "Programmer error: Missing CREDENTIAL in ${this.javaClass.name}"
             )
         )
     }
@@ -88,8 +88,15 @@ class OtpInputActivity : BaseActivity() {
 
     companion object {
         private const val OTP_ID_EXTRA = "OTP_ID_EXTRA"
-        private const val CREDENTIAL_EXTRA = "OTP_ID_EXTRA"
+        private const val CREDENTIAL_EXTRA = "CREDENTIAL_EXTRA"
 
-        fun newInstance(context: Context) = Intent(context, OtpInputActivity::class.java)
+        fun newInstance(
+            context: Context,
+            id: String,
+            credential: String
+        ) = Intent(context, OtpInputActivity::class.java).apply {
+            putExtra(OTP_ID_EXTRA, id)
+            putExtra(CREDENTIAL_EXTRA, credential)
+        }
     }
 }

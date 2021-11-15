@@ -3,14 +3,23 @@ package com.hedvig.app.feature.genericauth
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.app.feature.embark.EMAIL_REGEX
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class GenericAuthViewModel(
     private val createOtpAttemptUseCase: CreateOtpAttemptUseCase,
 ) : ViewModel() {
+    private val eventChannel = Channel<Event>(Channel.UNLIMITED)
+    val eventsFlow = eventChannel.receiveAsFlow()
+
+    sealed class Event {
+        data class SubmitEmailSuccess(val id: String, val credential: String) : Event()
+    }
+
     private val _viewState = MutableStateFlow(
         ViewState(
             input = "",
@@ -61,7 +70,7 @@ class GenericAuthViewModel(
             val email = viewState.value.input
             when (val result = createOtpAttemptUseCase.invoke(email)) {
                 is CreateOtpAttemptUseCase.Result.Success -> {
-                    // TODO: Show the OTP input screen, maintain the token in the ViewModel
+                    eventChannel.trySend(Event.SubmitEmailSuccess(result.id, email))
                 }
                 CreateOtpAttemptUseCase.Result.Error -> {
                     _viewState.update { it.copy(error = ViewState.TextFieldError.INVALID_EMAIL) }

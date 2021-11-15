@@ -10,7 +10,7 @@ class CreateOtpAttemptUseCase(
 ) {
     sealed class Result {
         data class Success(
-            val token: String,
+            val id: String,
         ) : Result()
 
         object Error : Result()
