@@ -1,34 +1,72 @@
 package com.hedvig.app.ui.compose.composables
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.ExperimentalUnitApi
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import com.hedvig.app.R
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 
-@OptIn(ExperimentalUnitApi::class)
+@OptIn(ExperimentalUnitApi::class, ExperimentalAnimationApi::class)
 @Composable
-fun FullScreenProgressOverlay() {
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = colorResource(id = R.color.progress_overlay)
+fun FullScreenProgressOverlay(show: Boolean) {
+    AnimatedVisibility(
+        visible = show,
+        enter = fadeIn(animationSpec = tween(500)),
+        exit = fadeOut(animationSpec = tween(500, delayMillis = 400))
     ) {
-        Box(
-            contentAlignment = Alignment.Center,
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colors.onPrimary,
         ) {
-            Text(text = "H", fontSize = TextUnit(26f, TextUnitType.Sp))
-            CircularProgressIndicator(strokeWidth = 2.dp)
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                val infiniteTransition = rememberInfiniteTransition()
+                val angle by infiniteTransition.animateFloat(
+                    initialValue = 0F,
+                    targetValue = 360F,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(1200, easing = LinearEasing)
+                    )
+                )
+
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_hedvig_h_progress),
+                    modifier = Modifier
+                        .rotate(angle)
+                        .animateEnterExit(
+                            enter = fadeIn(animationSpec = tween(200, delayMillis = 700)),
+                            exit = fadeOut(animationSpec = tween(200))
+                        )
+                        .width(32.dp)
+                        .height(32.dp),
+                    contentDescription = "Resend code"
+                )
+            }
         }
     }
 }
@@ -37,6 +75,6 @@ fun FullScreenProgressOverlay() {
 @Composable
 fun FullScreenProgressOverlayPreview() {
     HedvigTheme {
-        FullScreenProgressOverlay()
+        FullScreenProgressOverlay(true)
     }
 }

@@ -9,10 +9,13 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.google.accompanist.insets.systemBarsPadding
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.app.ui.compose.composables.ErrorDialog
 import com.hedvig.app.ui.compose.composables.appbar.TopAppBarWithBack
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
@@ -55,6 +58,7 @@ class OtpInputActivity : BaseActivity() {
                 ) {
                     val viewState by model.viewState.collectAsState()
                     val events = model.eventsFlow.collectAsState(initial = null)
+                    val openDialog = remember { mutableStateOf(false) }
 
                     LaunchedEffect(events.value) {
                         when (events.value) {
@@ -63,7 +67,12 @@ class OtpInputActivity : BaseActivity() {
                                 scaffoldState.snackbarHostState.showSnackbar("Code resent")
                             }
                             OtpInputViewModel.Event.None -> return@LaunchedEffect
+                            OtpInputViewModel.Event.ShowDialog -> openDialog.value = true
                         }
+                    }
+
+                    if (openDialog.value) {
+                        ErrorDialog(show = openDialog, message = viewState.errorMessage)
                     }
 
                     OtpInputScreen(
@@ -72,7 +81,7 @@ class OtpInputActivity : BaseActivity() {
                         onSubmitCode = model::submitCode,
                         onResendCode = model::resendCode,
                         inputValue = viewState.input,
-                        error = viewState.error,
+                        otpErrorMessage = viewState.otpError?.getErrorResource()?.let(::getString),
                         loadingResend = viewState.loadingResend,
                         loadingCode = viewState.loadingCode
                     )

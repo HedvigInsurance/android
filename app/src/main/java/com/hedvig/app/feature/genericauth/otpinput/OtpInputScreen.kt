@@ -7,8 +7,6 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -57,7 +55,7 @@ fun OtpInputScreen(
     onSubmitCode: (String) -> Unit,
     onResendCode: () -> Unit,
     inputValue: String,
-    error: String?,
+    otpErrorMessage: String?,
     loadingResend: Boolean,
     loadingCode: Boolean
 ) {
@@ -100,7 +98,7 @@ fun OtpInputScreen(
                             onSubmitCode(it)
                         }
                     },
-                    isError = error != null,
+                    isError = otpErrorMessage != null,
                     shape = MaterialTheme.shapes.medium,
                     textStyle = LocalTextStyle.current.copy(
                         letterSpacing = TextUnit(20f, TextUnitType.Sp),
@@ -119,10 +117,9 @@ fun OtpInputScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Spacer(Modifier.height(8.dp))
-
-                AnimatedVisibility(visible = error != null) {
+                AnimatedVisibility(visible = otpErrorMessage != null) {
                     Text(
-                        text = error ?: "",
+                        text = otpErrorMessage ?: "",
                         style = MaterialTheme.typography.caption.copy(color = MaterialTheme.colors.error),
                         modifier = Modifier
                             .fillMaxSize()
@@ -178,13 +175,8 @@ fun OtpInputScreen(
             Text(text = "Open email app")
         }
     }
-    AnimatedVisibility(
-        visible = loadingCode,
-        enter = fadeIn(),
-        exit = fadeOut()
-    ) {
-        FullScreenProgressOverlay()
-    }
+
+    FullScreenProgressOverlay(show = loadingCode)
 }
 
 @Preview(showBackground = true)
@@ -197,7 +189,7 @@ fun OtpInputScreenValidPreview() {
             onSubmitCode = {},
             onResendCode = {},
             inputValue = "0123456",
-            error = null,
+            otpErrorMessage = null,
             loadingResend = false,
             loadingCode = true,
         )
@@ -214,7 +206,7 @@ fun OtpInputScreenInvalidPreview() {
             onSubmitCode = {},
             onResendCode = {},
             inputValue = "0123456",
-            error = "Code has expired",
+            otpErrorMessage = "Code has expired",
             loadingResend = false,
             loadingCode = false,
         )
