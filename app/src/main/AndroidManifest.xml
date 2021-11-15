@@ -314,7 +314,6 @@
 
         <activity
             android:name=".feature.genericauth.otpinput.OtpInputActivity"
-            android:exported="true"
             android:windowSoftInputMode="adjustResize"/>
 
         <meta-data

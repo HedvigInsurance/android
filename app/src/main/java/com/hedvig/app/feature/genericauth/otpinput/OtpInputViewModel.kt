@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.util.ErrorEvent
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -53,7 +52,6 @@ class OtpInputViewModel(
             it.copy(loadingCode = true, errorMessage = null)
         }
         viewModelScope.launch {
-            delay(4000)
             when (val result = sendOtpCodeUseCase.invoke(otpId, code)) {
                 is SendOtpCodeUseCase.OtpResult.NetworkError -> result.handleNetworkError()
                 is SendOtpCodeUseCase.OtpResult.OtpError -> result.handleOtpError()
@@ -68,7 +66,6 @@ class OtpInputViewModel(
             it.copy(errorMessage = null, loadingResend = true)
         }
         viewModelScope.launch {
-            delay(2000)
             when (val result = reSendOtpCodeUseCase.invoke(credential)) {
                 is ReSendOtpCodeUseCase.ResendOtpResult.Error -> result.handleError()
                 is ReSendOtpCodeUseCase.ResendOtpResult.Success -> result.handleSuccess()
