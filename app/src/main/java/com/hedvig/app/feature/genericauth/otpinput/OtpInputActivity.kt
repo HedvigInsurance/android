@@ -81,7 +81,7 @@ class OtpInputActivity : BaseActivity() {
                         onSubmitCode = model::submitCode,
                         onResendCode = model::resendCode,
                         inputValue = viewState.input,
-                        otpErrorMessage = viewState.otpError?.getErrorResource()?.let(::getString),
+                        otpErrorMessage = viewState.errorEvent?.getErrorResource()?.let(::getString),
                         loadingResend = viewState.loadingResend,
                         loadingCode = viewState.loadingCode
                     )

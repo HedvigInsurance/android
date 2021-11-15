@@ -3,6 +3,7 @@ package com.hedvig.app.feature.genericauth.otpinput
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.app.authenticate.AuthenticationTokenService
+import com.hedvig.app.util.ErrorEvent
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +28,7 @@ class OtpInputViewModel(
     data class ViewState(
         val input: String = "",
         val errorMessage: String? = null,
-        val otpError: SendOtpCodeUseCase.OtpErrorEvent? = null,
+        val errorEvent: ErrorEvent? = null,
         val loadingResend: Boolean = false,
         val loadingCode: Boolean = false
     )
@@ -98,7 +99,7 @@ class OtpInputViewModel(
 
     private fun SendOtpCodeUseCase.OtpResult.OtpError.handleOtpError() {
         _viewState.update {
-            it.copy(otpError = error, loadingCode = false)
+            it.copy(errorEvent = error, loadingCode = false)
         }
     }
 

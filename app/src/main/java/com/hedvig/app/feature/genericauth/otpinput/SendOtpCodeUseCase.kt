@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.SendOtpCodeMutation
 import com.hedvig.app.R
+import com.hedvig.app.util.ErrorEvent
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
 
@@ -38,7 +39,7 @@ class SendOtpCodeUseCase(
     sealed class OtpResult {
         data class Success(val authToken: String) : OtpResult()
         data class NetworkError(val message: String?) : OtpResult()
-        data class OtpError(val error: OtpErrorEvent) : OtpResult()
+        data class OtpError(val error: ErrorEvent) : OtpResult()
     }
 
     enum class OtpErrorEvent(@StringRes private val resourceId: Int) : ErrorEvent {
@@ -50,9 +51,4 @@ class SendOtpCodeUseCase(
 
         override fun getErrorResource() = resourceId
     }
-}
-
-interface ErrorEvent {
-    @StringRes
-    fun getErrorResource(): Int
 }
