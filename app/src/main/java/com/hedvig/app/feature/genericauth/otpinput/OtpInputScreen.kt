@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -55,6 +56,7 @@ fun OtpInputScreen(
     onSubmitCode: (String) -> Unit,
     onResendCode: () -> Unit,
     inputValue: String,
+    credential: String,
     otpErrorMessage: String?,
     loadingResend: Boolean,
     loadingCode: Boolean
@@ -73,13 +75,12 @@ fun OtpInputScreen(
         ) {
             Spacer(Modifier.height(60.dp))
             Text(
-                text = "Check your email",
+                text = stringResource(R.string.login_title_check_your_email),
                 style = MaterialTheme.typography.h4,
             )
             Spacer(Modifier.height(16.dp))
             Text(
-                text = "Click the log in button in the email or enter the " +
-                    "6-digit code we've sent to johndoe@gmail.com.",
+                text = stringResource(R.string.login_subtitle_verification_code_email, credential),
                 style = MaterialTheme.typography.body1,
             )
 
@@ -135,7 +136,8 @@ fun OtpInputScreen(
                             onClick = {
                                 onResendCode()
                                 keyboardController?.hide()
-                            }
+                            },
+                            enabled = !loadingResend
                         )
                         .padding(8.dp),
                     horizontalArrangement = Arrangement.Center,
@@ -153,12 +155,12 @@ fun OtpInputScreen(
                     Icon(
                         modifier = if (loadingResend) Modifier.rotate(angle) else Modifier,
                         painter = painterResource(id = R.drawable.ic_refresh),
-                        contentDescription = "Resend code"
+                        contentDescription = stringResource(R.string.login_smedium_button_active_resend_code)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         modifier = Modifier.align(Alignment.CenterVertically),
-                        text = "Resend code",
+                        text = stringResource(R.string.login_smedium_button_active_resend_code),
                         style = MaterialTheme.typography.caption,
                         textAlign = TextAlign.Center,
                     )
@@ -172,7 +174,7 @@ fun OtpInputScreen(
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 16.dp)
         ) {
-            Text(text = "Open email app")
+            Text(text = stringResource(R.string.login_open_email_app_button))
         }
     }
 
@@ -189,9 +191,10 @@ fun OtpInputScreenValidPreview() {
             onSubmitCode = {},
             onResendCode = {},
             inputValue = "0123456",
+            credential = "john@doe.com",
             otpErrorMessage = null,
-            loadingResend = false,
-            loadingCode = true,
+            loadingCode = false,
+            loadingResend = false
         )
     }
 }
@@ -206,9 +209,10 @@ fun OtpInputScreenInvalidPreview() {
             onSubmitCode = {},
             onResendCode = {},
             inputValue = "0123456",
+            credential = "john@doe.com",
             otpErrorMessage = "Code has expired",
-            loadingResend = false,
             loadingCode = false,
+            loadingResend = false
         )
     }
 }

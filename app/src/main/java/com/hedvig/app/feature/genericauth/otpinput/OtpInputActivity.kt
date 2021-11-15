@@ -12,14 +12,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import com.google.accompanist.insets.systemBarsPadding
 import com.hedvig.app.BaseActivity
+import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.ui.compose.composables.ErrorDialog
 import com.hedvig.app.ui.compose.composables.appbar.TopAppBarWithBack
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.openEmail
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -50,7 +53,7 @@ class OtpInputActivity : BaseActivity() {
                     topBar = {
                         TopAppBarWithBack(
                             onClick = ::onBackPressed,
-                            title = "Log in"
+                            title = stringResource(R.string.login_navigation_bar_center_element_title)
                         )
                     },
                     scaffoldState = scaffoldState,
@@ -64,7 +67,9 @@ class OtpInputActivity : BaseActivity() {
                         when (events.value) {
                             is OtpInputViewModel.Event.Success -> startLoggedIn()
                             OtpInputViewModel.Event.CodeResent -> launch {
-                                scaffoldState.snackbarHostState.showSnackbar("Code resent")
+                                delay(1000)
+                                val message = getString(R.string.login_snackbar_code_resent)
+                                scaffoldState.snackbarHostState.showSnackbar(message)
                             }
                             OtpInputViewModel.Event.None -> return@LaunchedEffect
                             OtpInputViewModel.Event.ShowDialog -> openDialog.value = true
@@ -77,10 +82,11 @@ class OtpInputActivity : BaseActivity() {
 
                     OtpInputScreen(
                         onInputChanged = model::setInput,
-                        onOpenExternalApp = { openEmail("View code") },
+                        onOpenExternalApp = { openEmail(getString(R.string.login_bottom_sheet_view_code)) },
                         onSubmitCode = model::submitCode,
                         onResendCode = model::resendCode,
                         inputValue = viewState.input,
+                        credential = viewState.credential,
                         otpErrorMessage = viewState.errorEvent?.getErrorResource()?.let(::getString),
                         loadingResend = viewState.loadingResend,
                         loadingCode = viewState.loadingCode
