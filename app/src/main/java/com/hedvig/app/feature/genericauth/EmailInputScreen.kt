@@ -27,11 +27,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.google.accompanist.insets.systemBarsPadding
+import com.hedvig.app.R
 import com.hedvig.app.ui.compose.composables.buttons.LargeContainedButton
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.compose.submitOnEnter
@@ -50,7 +52,7 @@ fun EmailInputScreen(
         modifier = Modifier.fillMaxSize(),
     ) {
         TopAppBar(
-            title = { Text(text = "Log in") },
+            title = { Text(text = stringResource(R.string.login_navigation_bar_center_element_title)) },
             navigationIcon = {
                 IconButton(onClick = onUpClick) {
                     Icon(
@@ -75,7 +77,7 @@ fun EmailInputScreen(
             ) {
                 Spacer(Modifier.height(60.dp))
                 Text(
-                    text = "Please enter your email address below.",
+                    text = stringResource(R.string.login_enter_your_email_address),
                     style = MaterialTheme.typography.h4,
                 )
                 Spacer(Modifier.height(40.dp))
@@ -90,7 +92,7 @@ fun EmailInputScreen(
                             }
                         }
                         .submitOnEnter(onSubmitEmail),
-                    label = { Text("Email address") },
+                    label = { Text(stringResource(R.string.login_text_input_email_address)) },
                     trailingIcon = {
                         if (error != null) {
                             Image(
@@ -130,7 +132,7 @@ fun EmailInputScreen(
                     .padding(bottom = 16.dp)
                     .navigationBarsWithImePadding(),
             ) {
-                Text(text = "Continue")
+                Text(text = stringResource(R.string.login_continue_button))
             }
         }
     }
@@ -138,8 +140,10 @@ fun EmailInputScreen(
 
 @Composable
 private fun errorMessage(error: GenericAuthViewModel.ViewState.TextFieldError) = when (error) {
-    GenericAuthViewModel.ViewState.TextFieldError.EMPTY -> "Enter email address to continue"
-    GenericAuthViewModel.ViewState.TextFieldError.INVALID_EMAIL -> "Email address not valid"
+    GenericAuthViewModel.ViewState.TextFieldError.EMPTY ->
+        stringResource(R.string.login_text_input_email_error_enter_email)
+    GenericAuthViewModel.ViewState.TextFieldError.INVALID_EMAIL ->
+        stringResource(R.string.login_text_input_email_error_not_valid)
 }
 
 @Preview(showBackground = true)
