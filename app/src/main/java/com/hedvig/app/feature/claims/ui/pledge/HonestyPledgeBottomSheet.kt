@@ -24,9 +24,9 @@ class HonestyPledgeBottomSheet(
     private val customActivityLaunch: ((Intent) -> Unit)? = null,
 ) : BottomSheetDialogFragment() {
     private val tracker: ClaimsTracker by inject()
-    private val featureManager: FeatureManager by inject()
     private val claimsViewModel: ClaimsViewModel by sharedViewModel()
     private val binding by viewBinding(BottomSheetHonestyPledgeBinding::bind)
+    private val featureManager: FeatureManager by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater,

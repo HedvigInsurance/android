@@ -29,5 +29,11 @@ enum class Feature(
         "Claims Status",
         "Show the status of claims on the home screen as a carousel",
         false,
-    )
+    ),
+    FRANCE_MARKET(
+        "france_market",
+        "France Market",
+        "Used to select french market in app",
+        false
+    ),
 }

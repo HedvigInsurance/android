@@ -395,7 +395,7 @@ val whatsNewModule = module {
 
 val insuranceModule = module {
     viewModel<InsuranceViewModel> { InsuranceViewModelImpl(get(), get()) }
-    viewModel<ContractDetailViewModel> { ContractDetailViewModelImpl(get(), get(), get(), get()) }
+    viewModel<ContractDetailViewModel> { ContractDetailViewModelImpl(get(), get(), get()) }
 }
 
 val marketingModule = module {
@@ -616,8 +616,8 @@ val sharedPreferencesModule = module {
     single<SharedPreferences> { get<Context>().getSharedPreferences("hedvig_shared_preference", MODE_PRIVATE) }
 }
 
-val featureRuntimeBehaviorModule = module {
-    single { FeatureManager(get(), isDebug()) }
+val featureManagerModule = module {
+    single { FeatureManager(get()) }
 }
 
 val coilModule = module {

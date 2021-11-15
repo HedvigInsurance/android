@@ -15,6 +15,7 @@ class DebugFeatureFlagProvider(
             Feature.INSURELY_EMBARK -> true
             Feature.EMBARK_CLAIMS -> true
             Feature.CLAIMS_STATUS -> true
+            Feature.FRANCE_MARKET -> true
         }
     }
 
