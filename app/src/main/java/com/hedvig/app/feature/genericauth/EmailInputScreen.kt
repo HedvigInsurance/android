@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.genericauth
 
-import android.view.KeyEvent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,13 +24,9 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.input.key.onKeyEvent
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -39,6 +34,7 @@ import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.google.accompanist.insets.systemBarsPadding
 import com.hedvig.app.ui.compose.composables.buttons.LargeContainedButton
 import com.hedvig.app.ui.compose.theme.HedvigTheme
+import com.hedvig.app.util.compose.submitOnEnter
 
 @Composable
 fun EmailInputScreen(
@@ -94,7 +90,7 @@ fun EmailInputScreen(
                             }
                         }
                         .submitOnEnter(onSubmitEmail),
-                    placeholder = { Text("Email address") },
+                    label = { Text("Email address") },
                     trailingIcon = {
                         if (error != null) {
                             Image(
@@ -175,19 +171,5 @@ fun EmailInputScreenInvalidPreview() {
             inputValue = "example.com",
             error = GenericAuthViewModel.ViewState.TextFieldError.INVALID_EMAIL,
         )
-    }
-}
-
-@OptIn(ExperimentalComposeUiApi::class)
-fun Modifier.submitOnEnter(action: () -> Unit) = composed {
-    val keyboardController = LocalSoftwareKeyboardController.current
-    onKeyEvent {
-        if (it.nativeKeyEvent.keyCode == KeyEvent.KEYCODE_ENTER) {
-            keyboardController?.hide()
-            action()
-            true
-        } else {
-            false
-        }
     }
 }
