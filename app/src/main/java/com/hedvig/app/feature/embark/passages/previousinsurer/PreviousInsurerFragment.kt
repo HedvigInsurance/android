@@ -15,11 +15,10 @@ import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.previousinsurer.askforprice.AskForPriceInfoActivity
 import com.hedvig.app.feature.embark.passages.previousinsurer.askforprice.AskForPriceInfoParameter
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
 import com.hedvig.app.util.featureflags.Feature
-import com.hedvig.app.util.featureflags.FeatureManager.isFeatureEnabled
+import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.app.util.whenApiVersion
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.android.ext.android.inject
@@ -30,7 +29,7 @@ class PreviousInsurerFragment : Fragment(R.layout.previous_insurer_fragment) {
     private val binding by viewBinding(PreviousInsurerFragmentBinding::bind)
     private val model: EmbarkViewModel by sharedViewModel()
     private val previousInsurerViewModel: PreviousInsurerViewModel by sharedViewModel()
-    private val marketManager: MarketManager by inject()
+    private val featureManager: FeatureManager by inject()
 
     private val startForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
@@ -62,7 +61,7 @@ class PreviousInsurerFragment : Fragment(R.layout.previous_insurer_fragment) {
                 onShowInsurers()
             }
             continueButton.setHapticClickListener {
-                if (isFeatureEnabled(Feature.INSURELY_EMBARK, marketManager.market)) {
+                if (featureManager.isFeatureEnabled(Feature.INSURELY_EMBARK)) {
                     startAskForPrice()
                 } else {
                     onContinue()

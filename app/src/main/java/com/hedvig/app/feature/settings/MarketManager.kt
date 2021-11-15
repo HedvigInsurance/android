@@ -4,8 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
-import com.hedvig.app.util.featureflags.Feature
-import com.hedvig.app.util.featureflags.FeatureManager.isFeatureEnabled
+import com.hedvig.app.isDebug
 
 interface MarketManager {
     val enabledMarkets: List<Market>
@@ -23,7 +22,7 @@ class MarketManagerImpl(
         Market.SE,
         Market.NO,
         Market.DK,
-        if (isFeatureEnabled(Feature.FRANCE_MARKET, market)) Market.FR else null
+        if (isDebug()) Market.FR else null
     )
 
     override var market: Market?

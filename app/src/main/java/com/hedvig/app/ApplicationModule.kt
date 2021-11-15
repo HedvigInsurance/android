@@ -191,6 +191,7 @@ import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.ApolloTimberLogger
 import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.apollo.SunsettingInterceptor
+import com.hedvig.app.util.featureflags.FeatureManager
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -613,6 +614,10 @@ val pushTokenManagerModule = module {
 
 val sharedPreferencesModule = module {
     single<SharedPreferences> { get<Context>().getSharedPreferences("hedvig_shared_preference", MODE_PRIVATE) }
+}
+
+val featureManagerModule = module {
+    single { FeatureManager(get()) }
 }
 
 val coilModule = module {

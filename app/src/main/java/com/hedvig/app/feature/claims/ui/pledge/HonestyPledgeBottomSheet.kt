@@ -11,12 +11,11 @@ import com.hedvig.app.databinding.BottomSheetHonestyPledgeBinding
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.hedvig.app.util.featureflags.Feature
-import com.hedvig.app.util.featureflags.FeatureManager.isFeatureEnabled
+import com.hedvig.app.util.featureflags.FeatureManager
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
@@ -26,8 +25,8 @@ class HonestyPledgeBottomSheet(
 ) : BottomSheetDialogFragment() {
     private val tracker: ClaimsTracker by inject()
     private val claimsViewModel: ClaimsViewModel by sharedViewModel()
-    private val marketManager: MarketManager by inject()
     private val binding by viewBinding(BottomSheetHonestyPledgeBinding::bind)
+    private val featureManager: FeatureManager by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,7 +45,7 @@ class HonestyPledgeBottomSheet(
     }
 
     private suspend fun startClaimsFlow() {
-        if (isFeatureEnabled(Feature.EMBARK_CLAIMS, marketManager.market)) {
+        if (featureManager.isFeatureEnabled(Feature.EMBARK_CLAIMS)) {
             startEmbarkClaims()
         } else {
             claimsViewModel.triggerClaimsChat()

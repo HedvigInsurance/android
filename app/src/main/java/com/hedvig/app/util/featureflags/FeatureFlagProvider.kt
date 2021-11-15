@@ -1,10 +1,8 @@
 package com.hedvig.app.util.featureflags
 
-import com.hedvig.app.feature.settings.Market
-
 interface FeatureFlagProvider {
     val priority: Int
-    fun isFeatureEnabled(feature: Feature, market: Market?): Boolean
+    fun isFeatureEnabled(feature: Feature): Boolean
     fun hasFeature(feature: Feature): Boolean
 }
 

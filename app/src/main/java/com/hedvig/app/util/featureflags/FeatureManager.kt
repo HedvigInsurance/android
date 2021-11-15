@@ -1,27 +1,29 @@
 package com.hedvig.app.util.featureflags
 
 import androidx.annotation.VisibleForTesting
-import com.hedvig.app.feature.settings.Market
+import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.isDebug
 import java.util.concurrent.CopyOnWriteArrayList
 
-object FeatureManager {
+data class FeatureManager(
+    private val marketManager: MarketManager
+) {
 
     @VisibleForTesting
     internal val providers = CopyOnWriteArrayList<FeatureFlagProvider>()
 
     init {
         if (isDebug()) {
-            addProvider(DebugFeatureFlagProvider())
+            addProvider(DebugFeatureFlagProvider(marketManager))
         } else {
-            addProvider(ProductionFeatureFlagProvider())
+            addProvider(ProductionFeatureFlagProvider(marketManager))
         }
     }
 
-    fun isFeatureEnabled(feature: Feature, market: Market?): Boolean {
+    fun isFeatureEnabled(feature: Feature): Boolean {
         return providers.filter { it.hasFeature(feature) }
             .minByOrNull(FeatureFlagProvider::priority)
-            ?.isFeatureEnabled(feature, market)
+            ?.isFeatureEnabled(feature)
             ?: feature.enabledByDefault
     }
 
