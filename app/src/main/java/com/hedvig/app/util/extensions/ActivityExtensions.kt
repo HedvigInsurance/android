@@ -133,9 +133,9 @@ private fun Activity.openAppSettings() {
     startActivity(intent)
 }
 
-fun Activity.openEmail() {
+fun Activity.openEmail(title: String) {
     val intent = Intent(Intent.ACTION_SEND)
-    startActivity(Intent.createChooser(intent, "View code"))
+    startActivity(Intent.createChooser(intent, title))
 }
 
 fun AppCompatActivity.handleSingleSelectLink(value: String) = when (value) {

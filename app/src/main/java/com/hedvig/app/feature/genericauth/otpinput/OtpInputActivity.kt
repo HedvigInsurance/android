@@ -68,7 +68,7 @@ class OtpInputActivity : BaseActivity() {
 
                     OtpInputScreen(
                         onInputChanged = model::setInput,
-                        onOpenExternalApp = ::openEmail,
+                        onOpenExternalApp = { openEmail("View code") },
                         onSubmitCode = model::submitCode,
                         onResendCode = model::resendCode,
                         inputValue = viewState.input,
