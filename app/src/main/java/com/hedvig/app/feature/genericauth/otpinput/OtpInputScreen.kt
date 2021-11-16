@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import com.hedvig.app.R
+import com.hedvig.app.ui.compose.composables.ErrorDialog
 import com.hedvig.app.ui.compose.composables.FullScreenProgressOverlay
 import com.hedvig.app.ui.compose.composables.buttons.LargeContainedButton
 import com.hedvig.app.ui.compose.theme.HedvigTheme
@@ -55,9 +56,11 @@ fun OtpInputScreen(
     onOpenExternalApp: () -> Unit,
     onSubmitCode: (String) -> Unit,
     onResendCode: () -> Unit,
+    onDismissError: () -> Unit,
     inputValue: String,
     credential: String,
     otpErrorMessage: String?,
+    networkErrorMessage: String?,
     loadingResend: Boolean,
     loadingCode: Boolean
 ) {
@@ -178,6 +181,10 @@ fun OtpInputScreen(
         }
     }
 
+    if (networkErrorMessage != null) {
+        ErrorDialog(onDismiss = onDismissError, message = networkErrorMessage)
+    }
+
     FullScreenProgressOverlay(show = loadingCode)
 }
 
@@ -190,11 +197,13 @@ fun OtpInputScreenValidPreview() {
             onOpenExternalApp = {},
             onSubmitCode = {},
             onResendCode = {},
+            onDismissError = {},
             inputValue = "0123456",
             credential = "john@doe.com",
             otpErrorMessage = null,
-            loadingCode = false,
-            loadingResend = false
+            networkErrorMessage = null,
+            loadingResend = false,
+            loadingCode = false
         )
     }
 }
@@ -208,11 +217,13 @@ fun OtpInputScreenInvalidPreview() {
             onOpenExternalApp = {},
             onSubmitCode = {},
             onResendCode = {},
+            onDismissError = {},
             inputValue = "0123456",
             credential = "john@doe.com",
             otpErrorMessage = "Code has expired",
-            loadingCode = false,
-            loadingResend = false
+            networkErrorMessage = null,
+            loadingResend = false,
+            loadingCode = false
         )
     }
 }

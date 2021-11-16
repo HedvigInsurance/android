@@ -9,21 +9,18 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.google.accompanist.insets.systemBarsPadding
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.ui.compose.composables.ErrorDialog
 import com.hedvig.app.ui.compose.composables.appbar.TopAppBarWithBack
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.openEmail
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -49,6 +46,20 @@ class OtpInputActivity : BaseActivity() {
             val scaffoldState = rememberScaffoldState()
 
             HedvigTheme {
+
+                LaunchedEffect(key1 = Unit) {
+                    model.eventsFlow.collectLatest { event ->
+                        when (event) {
+                            is OtpInputViewModel.Event.Success -> startLoggedIn()
+                            OtpInputViewModel.Event.CodeResent -> {
+                                delay(1000)
+                                val message = getString(R.string.login_snackbar_code_resent)
+                                scaffoldState.snackbarHostState.showSnackbar(message)
+                            }
+                        }
+                    }
+                }
+
                 Scaffold(
                     topBar = {
                         TopAppBarWithBack(
@@ -60,34 +71,17 @@ class OtpInputActivity : BaseActivity() {
                     modifier = Modifier.systemBarsPadding(top = true),
                 ) {
                     val viewState by model.viewState.collectAsState()
-                    val events = model.eventsFlow.collectAsState(initial = null)
-                    val openDialog = remember { mutableStateOf(false) }
-
-                    LaunchedEffect(events.value) {
-                        when (events.value) {
-                            is OtpInputViewModel.Event.Success -> startLoggedIn()
-                            OtpInputViewModel.Event.CodeResent -> launch {
-                                delay(1000)
-                                val message = getString(R.string.login_snackbar_code_resent)
-                                scaffoldState.snackbarHostState.showSnackbar(message)
-                            }
-                            OtpInputViewModel.Event.None -> return@LaunchedEffect
-                            OtpInputViewModel.Event.ShowDialog -> openDialog.value = true
-                        }
-                    }
-
-                    if (openDialog.value) {
-                        ErrorDialog(show = openDialog, message = viewState.errorMessage)
-                    }
 
                     OtpInputScreen(
                         onInputChanged = model::setInput,
                         onOpenExternalApp = { openEmail(getString(R.string.login_bottom_sheet_view_code)) },
                         onSubmitCode = model::submitCode,
                         onResendCode = model::resendCode,
+                        onDismissError = model::dismissError,
                         inputValue = viewState.input,
                         credential = viewState.credential,
-                        otpErrorMessage = viewState.errorEvent?.getErrorResource()?.let(::getString),
+                        otpErrorMessage = viewState.otpError?.let(::getString),
+                        networkErrorMessage = viewState.networkErrorMessage,
                         loadingResend = viewState.loadingResend,
                         loadingCode = viewState.loadingCode
                     )

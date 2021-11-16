@@ -4,20 +4,17 @@ import androidx.compose.material.AlertDialog
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.res.stringResource
 import com.hedvig.app.R
 
 @Composable
 fun ErrorDialog(
-    show: MutableState<Boolean>,
-    title: String = "Error",
+    onDismiss: () -> Unit,
+    title: String = stringResource(R.string.error_dialog_title),
     message: String?
 ) {
     AlertDialog(
-        onDismissRequest = {
-            show.value = false
-        },
+        onDismissRequest = onDismiss,
         title = {
             Text(title)
         },
@@ -25,8 +22,8 @@ fun ErrorDialog(
             Text(message ?: stringResource(id = R.string.general_unknown_error))
         },
         confirmButton = {
-            TextButton(onClick = { show.value = false }) {
-                Text("Close")
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.error_dialog_button))
             }
         }
     )
