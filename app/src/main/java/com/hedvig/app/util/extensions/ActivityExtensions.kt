@@ -24,7 +24,6 @@ import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.util.extensions.view.setupToolbar
 import e
-import timber.log.Timber
 
 val Activity.screenWidth: Int
     get() = window.decorView.measuredWidth
@@ -155,7 +154,7 @@ fun Activity.openEmail(title: String) {
         openInChooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, emailApps)
         startActivity(openInChooser)
     } else {
-        Timber.e("No email app found")
+        e { "No email app found" }
     }
 }
 

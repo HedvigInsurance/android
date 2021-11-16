@@ -21,8 +21,8 @@ class OtpInputViewModel(
     private val _viewState = MutableStateFlow(ViewState(credential = credential))
     val viewState = _viewState.asStateFlow()
 
-    private val eventChannel = Channel<Event>(Channel.UNLIMITED)
-    val eventsFlow = eventChannel.receiveAsFlow()
+    private val _events = Channel<Event>(Channel.UNLIMITED)
+    val events = _events.receiveAsFlow()
 
     data class ViewState(
         val input: String = "",
@@ -77,14 +77,14 @@ class OtpInputViewModel(
 
     private fun SendOtpCodeUseCase.OtpResult.Success.handleSuccess() {
         authenticationTokenService.authenticationToken = authToken
-        eventChannel.trySend(Event.Success(authToken))
+        _events.trySend(Event.Success(authToken))
         _viewState.update {
             it.copy(loadingCode = false)
         }
     }
 
     private fun ReSendOtpCodeUseCase.ResendOtpResult.Success.handleSuccess() {
-        eventChannel.trySend(Event.CodeResent)
+        _events.trySend(Event.CodeResent)
         _viewState.update {
             it.copy(otpError = null, input = "", loadingResend = false)
         }

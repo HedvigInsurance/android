@@ -48,7 +48,7 @@ class OtpInputActivity : BaseActivity() {
             HedvigTheme {
 
                 LaunchedEffect(key1 = Unit) {
-                    model.eventsFlow.collectLatest { event ->
+                    model.events.collectLatest { event ->
                         when (event) {
                             is OtpInputViewModel.Event.Success -> startLoggedIn()
                             OtpInputViewModel.Event.CodeResent -> {
