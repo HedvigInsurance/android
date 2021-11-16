@@ -97,14 +97,16 @@ fun EmailInputScreen(
                         if (error != null) {
                             Image(
                                 imageVector = Icons.Outlined.ErrorOutline,
-                                contentDescription = null, // TODO: We need a content description here for sure
+                                contentDescription = null,
                                 colorFilter = ColorFilter.tint(color = MaterialTheme.colors.error),
                             )
                         } else {
                             IconButton(onClick = onClear) {
                                 Image(
                                     imageVector = Icons.Filled.Clear,
-                                    contentDescription = null, // TODO: We need a content description here for sure
+                                    contentDescription = stringResource(
+                                        R.string.login_text_input_email_address_icon_description_clear_all,
+                                    ),
                                 )
                             }
                         }
@@ -139,12 +141,14 @@ fun EmailInputScreen(
 }
 
 @Composable
-private fun errorMessage(error: GenericAuthViewModel.ViewState.TextFieldError) = when (error) {
-    GenericAuthViewModel.ViewState.TextFieldError.EMPTY ->
-        stringResource(R.string.login_text_input_email_error_enter_email)
-    GenericAuthViewModel.ViewState.TextFieldError.INVALID_EMAIL ->
-        stringResource(R.string.login_text_input_email_error_not_valid)
-}
+private fun errorMessage(error: GenericAuthViewModel.ViewState.TextFieldError) = stringResource(
+    when (error) {
+        GenericAuthViewModel.ViewState.TextFieldError.EMPTY ->
+            R.string.login_text_input_email_error_enter_email
+        GenericAuthViewModel.ViewState.TextFieldError.INVALID_EMAIL ->
+            R.string.login_text_input_email_error_not_valid
+    }
+)
 
 @Preview(showBackground = true)
 @Composable
