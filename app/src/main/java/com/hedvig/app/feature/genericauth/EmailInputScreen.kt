@@ -46,7 +46,7 @@ fun EmailInputScreen(
     onClear: () -> Unit,
     onBlur: () -> Unit,
     inputValue: String,
-    error: GenericAuthViewModel.ViewState.TextFieldError?,
+    error: String?,
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -120,7 +120,7 @@ fun EmailInputScreen(
                 )
                 if (error != null) {
                     Text(
-                        text = errorMessage(error),
+                        text = error,
                         style = MaterialTheme.typography.caption.copy(color = MaterialTheme.colors.error),
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
@@ -139,16 +139,6 @@ fun EmailInputScreen(
         }
     }
 }
-
-@Composable
-private fun errorMessage(error: GenericAuthViewModel.ViewState.TextFieldError) = stringResource(
-    when (error) {
-        GenericAuthViewModel.ViewState.TextFieldError.EMPTY ->
-            R.string.login_text_input_email_error_enter_email
-        GenericAuthViewModel.ViewState.TextFieldError.INVALID_EMAIL ->
-            R.string.login_text_input_email_error_not_valid
-    }
-)
 
 @Preview(showBackground = true)
 @Composable
@@ -177,7 +167,7 @@ fun EmailInputScreenInvalidPreview() {
             onClear = {},
             onBlur = {},
             inputValue = "example.com",
-            error = GenericAuthViewModel.ViewState.TextFieldError.INVALID_EMAIL,
+            error = "Invalid email",
         )
     }
 }
