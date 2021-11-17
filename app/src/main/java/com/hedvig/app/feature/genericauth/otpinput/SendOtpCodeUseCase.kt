@@ -2,7 +2,6 @@ package com.hedvig.app.feature.genericauth.otpinput
 
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.SendOtpCodeMutation
-import com.hedvig.app.R
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
 
@@ -51,12 +50,4 @@ sealed class OtpResult {
             object Unknown : OtpError()
         }
     }
-}
-
-fun OtpResult.Error.OtpError.toStringRes() = when (this) {
-    OtpResult.Error.OtpError.AlreadyCompleted -> R.string.login_code_input_error_msg_code_already_used
-    OtpResult.Error.OtpError.Expired -> R.string.login_code_input_error_msg_expired
-    OtpResult.Error.OtpError.TooManyAttempts -> R.string.login_code_input_error_msg_too_many_wrong_attempts
-    OtpResult.Error.OtpError.Unknown -> R.string.general_unknown_error
-    OtpResult.Error.OtpError.WrongOtp -> R.string.login_code_input_error_msg_code_not_valid
 }

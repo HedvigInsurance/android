@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.genericauth.otpinput
 
-import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.app.authenticate.AuthenticationTokenService
@@ -28,8 +27,7 @@ class OtpInputViewModel(
         val input: String = "",
         val credential: String,
         val networkErrorMessage: String? = null,
-        @StringRes
-        val otpError: Int? = null,
+        val otpError: OtpResult.Error.OtpError? = null,
         val loadingResend: Boolean = false,
         val loadingCode: Boolean = false
     )
@@ -99,7 +97,7 @@ class OtpInputViewModel(
             }
             is OtpResult.Error.OtpError -> {
                 _viewState.update {
-                    it.copy(otpError = error.toStringRes(), loadingCode = false)
+                    it.copy(otpError = error, loadingCode = false)
                 }
             }
         }
