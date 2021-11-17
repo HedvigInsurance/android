@@ -51,8 +51,8 @@ class OtpInputViewModel(
         }
         viewModelScope.launch {
             when (val result = sendOtpCodeUseCase.invoke(otpId, code)) {
-                is SendOtpCodeUseCase.OtpResult.Error -> result.handleError()
-                is SendOtpCodeUseCase.OtpResult.Success -> result.handleSuccess()
+                is OtpResult.Error -> result.handleError()
+                is OtpResult.Success -> result.handleSuccess()
             }
         }
     }
@@ -63,8 +63,8 @@ class OtpInputViewModel(
         }
         viewModelScope.launch {
             when (val result = reSendOtpCodeUseCase.invoke(credential)) {
-                is ReSendOtpCodeUseCase.ResendOtpResult.Error -> result.handleError()
-                is ReSendOtpCodeUseCase.ResendOtpResult.Success -> result.handleSuccess()
+                is ResendOtpResult.Error -> result.handleError()
+                is ResendOtpResult.Success -> result.handleSuccess()
             }
         }
     }
@@ -75,7 +75,7 @@ class OtpInputViewModel(
         }
     }
 
-    private fun SendOtpCodeUseCase.OtpResult.Success.handleSuccess() {
+    private fun OtpResult.Success.handleSuccess() {
         authenticationTokenService.authenticationToken = authToken
         _events.trySend(Event.Success(authToken))
         _viewState.update {
@@ -83,21 +83,21 @@ class OtpInputViewModel(
         }
     }
 
-    private fun ReSendOtpCodeUseCase.ResendOtpResult.Success.handleSuccess() {
+    private fun ResendOtpResult.Success.handleSuccess() {
         _events.trySend(Event.CodeResent)
         _viewState.update {
             it.copy(otpError = null, input = "", loadingResend = false)
         }
     }
 
-    private fun SendOtpCodeUseCase.OtpResult.Error.handleError() {
+    private fun OtpResult.Error.handleError() {
         when (val error = this) {
-            is SendOtpCodeUseCase.OtpResult.Error.NetworkError -> {
+            is OtpResult.Error.NetworkError -> {
                 _viewState.update {
                     it.copy(networkErrorMessage = error.message, loadingCode = false)
                 }
             }
-            is SendOtpCodeUseCase.OtpResult.Error.OtpError -> {
+            is OtpResult.Error.OtpError -> {
                 _viewState.update {
                     it.copy(otpError = error.toStringRes(), loadingCode = false)
                 }
@@ -105,7 +105,7 @@ class OtpInputViewModel(
         }
     }
 
-    private fun ReSendOtpCodeUseCase.ResendOtpResult.Error.handleError() {
+    private fun ResendOtpResult.Error.handleError() {
         _viewState.update {
             it.copy(networkErrorMessage = message, loadingResend = false)
         }

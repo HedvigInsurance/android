@@ -75,8 +75,8 @@ import com.hedvig.app.feature.embark.passages.textaction.TextActionViewModel
 import com.hedvig.app.feature.genericauth.CreateOtpAttemptUseCase
 import com.hedvig.app.feature.genericauth.GenericAuthViewModel
 import com.hedvig.app.feature.genericauth.otpinput.OtpInputViewModel
-import com.hedvig.app.feature.genericauth.otpinput.ReSendOtpCodeUseCase
-import com.hedvig.app.feature.genericauth.otpinput.SendOtpCodeUseCase
+import com.hedvig.app.feature.genericauth.otpinput.ReSendOtpCodeUseCaseImpl
+import com.hedvig.app.feature.genericauth.otpinput.SendOtpCodeUseCaseImpl
 import com.hedvig.app.feature.home.data.GetHomeUseCase
 import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.home.ui.HomeViewModel
@@ -610,8 +610,8 @@ val useCaseModule = module {
     single { GraphQLQueryUseCase(get()) }
     single { GetCrossSellsUseCase(get(), get()) }
     single { CreateOtpAttemptUseCase(get()) }
-    single { SendOtpCodeUseCase(get()) }
-    single { ReSendOtpCodeUseCase(get()) }
+    single { SendOtpCodeUseCaseImpl(get()) }
+    single { ReSendOtpCodeUseCaseImpl(get()) }
 }
 
 val cacheManagerModule = module {
