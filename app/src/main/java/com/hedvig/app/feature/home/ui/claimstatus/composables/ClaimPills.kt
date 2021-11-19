@@ -21,9 +21,12 @@ import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.compose.preview.previewData
 
 @Composable
-fun ClaimPills(pillData: List<PillData>) {
+fun ClaimPills(
+    pillData: List<PillData>,
+    modifier: Modifier = Modifier,
+) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier,
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Top,
     ) {
