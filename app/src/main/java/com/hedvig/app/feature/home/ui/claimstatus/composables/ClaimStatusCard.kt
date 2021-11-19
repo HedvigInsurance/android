@@ -55,7 +55,7 @@ fun ClaimStatusCardPreview() {
                 id = UUID.randomUUID().toString(),
                 pillData = PillData.previewData(),
                 title = "All-risk",
-                subtitle = "Contents insurance",
+                subtitle = "Home Insurance Renter",
                 claimProgressData = ClaimProgressData.previewData()
             )
             ClaimStatusCard(claimStatusData)

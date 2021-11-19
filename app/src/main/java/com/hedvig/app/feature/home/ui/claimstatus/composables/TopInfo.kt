@@ -50,7 +50,7 @@ fun TopInfoPreview() {
             TopInfo(
                 pillDataList = PillData.previewData(),
                 title = "All-risk",
-                subtitle = "Contents insurance",
+                subtitle = "Home Insurance Renter",
             )
         }
     }

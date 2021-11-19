@@ -45,7 +45,7 @@ fun Pill(
     }
 }
 
-@Preview(group = "Pills", name = "Contained")
+@Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun PillPreview() {
