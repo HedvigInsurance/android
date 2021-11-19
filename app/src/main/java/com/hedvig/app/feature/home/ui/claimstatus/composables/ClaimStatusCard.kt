@@ -12,15 +12,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimProgressData
-import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusColors
-import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusData
+import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusCardData
 import com.hedvig.app.feature.home.ui.claimstatus.data.PillData
 import com.hedvig.app.ui.compose.theme.HedvigTheme
+import com.hedvig.app.util.compose.preview.previewData
 import java.util.UUID
 
 @Composable
 fun ClaimStatusCard(
-    claimStatusData: ClaimStatusData,
+    claimStatusCardData: ClaimStatusCardData,
     modifier: Modifier = Modifier,
 ) {
     Card(
@@ -29,14 +29,14 @@ fun ClaimStatusCard(
     ) {
         Column {
             TopInfo(
-                pillDataList = claimStatusData.pillData,
-                title = claimStatusData.title,
-                subtitle = claimStatusData.subtitle,
+                pillDataList = claimStatusCardData.pillData,
+                title = claimStatusCardData.title,
+                subtitle = claimStatusCardData.subtitle,
                 modifier = Modifier.padding(16.dp)
             )
             Divider()
             ClaimProgress(
-                claimProgressData = claimStatusData.claimProgressData,
+                claimProgressData = claimStatusCardData.claimProgressData,
                 modifier = Modifier.padding(16.dp)
             )
         }
@@ -51,19 +51,12 @@ fun ClaimStatusCardPreview() {
         Surface(
             color = MaterialTheme.colors.background,
         ) {
-            val claimStatusData = ClaimStatusData(
+            val claimStatusData = ClaimStatusCardData(
                 id = UUID.randomUUID().toString(),
-                pillData = listOf(
-                    PillData("Reopened", PillData.PillType.Contained(ClaimStatusColors.Pill.reopened)),
-                    PillData("Claim", PillData.PillType.Outlined),
-                ),
+                pillData = PillData.previewData(),
                 title = "All-risk",
                 subtitle = "Contents insurance",
-                claimProgressData = listOf(
-                    ClaimProgressData("Submitted", ClaimProgressData.ClaimProgressType.PastInactive),
-                    ClaimProgressData("Being Handled", ClaimProgressData.ClaimProgressType.Paid),
-                    ClaimProgressData("Closed", ClaimProgressData.ClaimProgressType.FutureInactive),
-                )
+                claimProgressData = ClaimProgressData.previewData()
             )
             ClaimStatusCard(claimStatusData)
         }
