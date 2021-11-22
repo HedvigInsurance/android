@@ -5,7 +5,7 @@ import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
-import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusData
+import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusCardData
 import java.time.LocalDate
 
 sealed class HomeModel {
@@ -40,7 +40,7 @@ sealed class HomeModel {
     }
 
     data class ClaimStatus(
-        val claimStatusDataList: List<ClaimStatusData>,
+        val claimStatusCardDataList: List<ClaimStatusCardData>,
     ) : HomeModel()
 
     sealed class StartClaimOutlined : HomeModel() {
