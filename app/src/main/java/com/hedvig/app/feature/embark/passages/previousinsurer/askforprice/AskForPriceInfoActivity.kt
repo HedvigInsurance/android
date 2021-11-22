@@ -68,7 +68,7 @@ class AskForPriceInfoActivity : BaseActivity() {
     }
 }
 
-@ExperimentalAnimationApi
+@OptIn(ExperimentalAnimationApi::class)
 @Preview
 @Composable
 fun AskForPriceScreenPreview() {
@@ -79,7 +79,7 @@ fun AskForPriceScreenPreview() {
     )
 }
 
-@ExperimentalAnimationApi
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AskForPriceScreen(
     selectedInsurance: String,

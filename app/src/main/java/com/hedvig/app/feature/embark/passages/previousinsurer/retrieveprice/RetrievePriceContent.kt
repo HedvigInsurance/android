@@ -13,14 +13,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import com.hedvig.app.R
-import com.hedvig.app.ui.compose.composables.PrimaryTextButton
 import com.hedvig.app.ui.compose.composables.buttons.LargeContainedTextButton
 
 @Composable
 fun RetrievePriceContent(
     onRetrievePriceInfo: () -> Unit,
     onIdentityInput: (String) -> Unit,
-    viewState: RetrievePriceViewModel.ViewState,
+    input: String,
+    title: String,
+    placeholder: String,
+    label: String,
+    inputErrorMessage: String?
 ) {
     val baseMargin = dimensionResource(R.dimen.base_margin)
     val baseMarginDouble = dimensionResource(R.dimen.base_margin_double)
@@ -34,26 +37,22 @@ fun RetrievePriceContent(
     ) {
         Text(
             modifier = Modifier.padding(top = baseMargin),
-            text = stringResource(viewState.ssnTitleTextKey),
+            text = title,
             style = MaterialTheme.typography.h6
         )
         TextField(
             modifier = Modifier.fillMaxWidth(),
-            value = viewState.input,
+            value = input,
             onValueChange = { onIdentityInput(it) },
             singleLine = true,
-            placeholder = { Text(stringResource(viewState.ssnAssistTextKey)) },
+            placeholder = { Text(placeholder) },
             label = {
-                Text(
-                    viewState.inputError?.let {
-                        stringResource(id = it.errorTextKey)
-                    } ?: stringResource(viewState.ssnInputLabelTextKey)
-                )
+                Text(inputErrorMessage ?: label)
             },
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = MaterialTheme.colors.background
             ),
-            isError = viewState.isError
+            isError = inputErrorMessage != null
         )
         LargeContainedTextButton(
             modifier = Modifier.padding(top = baseMarginQuadruple),

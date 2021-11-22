@@ -11,12 +11,19 @@ import com.hedvig.app.util.apollo.safeQuery
 import java.lang.IllegalArgumentException
 import java.util.UUID
 
-class StartDataCollectionUseCase(
+interface StartDataCollectionUseCase {
+    suspend fun startDataCollection(
+        personalNumber: String,
+        insuranceProvider: String,
+    ): DataCollectionResult
+}
+
+class StartDataCollectionUseCaseImpl(
     val apolloClient: ApolloClient,
     val marketManager: MarketManager
-) {
+) : StartDataCollectionUseCase {
 
-    suspend fun startDataCollection(
+    override suspend fun startDataCollection(
         personalNumber: String,
         insuranceProvider: String,
     ): DataCollectionResult {
@@ -30,7 +37,7 @@ class StartDataCollectionUseCase(
 
         return when (val result = apolloClient.mutate(mutation).safeQuery()) {
             is QueryResult.Success -> getCollectionStatus(reference)
-            is QueryResult.Error -> DataCollectionResult.Error(result.message)
+            is QueryResult.Error -> DataCollectionResult.Error.NetworkError(result.message)
         }
     }
 
@@ -48,9 +55,9 @@ class StartDataCollectionUseCase(
                     ?.asNorwegianBankIdExtraInfo
                     ?.norwegianBankIdWords
                     ?.let { DataCollectionResult.Success.NorwegianBankId(it) }
-                    ?: throw IllegalArgumentException("Could not get extra info from dataCollectionStatusV2")
+                    ?: DataCollectionResult.Error.NoData
             }
-            is QueryResult.Error -> DataCollectionResult.Error(result.message)
+            is QueryResult.Error -> DataCollectionResult.Error.QueryError
         }
     }
 
@@ -65,25 +72,30 @@ class StartDataCollectionUseCase(
             personalNumber = personalNumber
         )
         null,
-        Market.DK,
         Market.SE -> InitiateDataCollectionSEMutation(
             reference = reference,
             insuranceProvider = insuranceProvider,
             personalNumber = personalNumber
         )
+        Market.DK,
+        Market.FR -> throw IllegalArgumentException("Can not start data collection for ${marketManager.market}")
+    }
+}
+
+sealed class DataCollectionResult {
+    sealed class Success : DataCollectionResult() {
+        data class SwedishBankId(
+            val autoStartToken: String
+        ) : Success()
+
+        data class NorwegianBankId(
+            val norwegianBankIdWords: String
+        ) : Success()
     }
 
-    sealed class DataCollectionResult {
-        sealed class Success : DataCollectionResult() {
-            data class SwedishBankId(
-                val autoStartToken: String
-            ) : Success()
-
-            data class NorwegianBankId(
-                val norwegianBankIdWords: String
-            ) : Success()
-        }
-
-        data class Error(val message: String?) : DataCollectionResult()
+    sealed class Error : DataCollectionResult() {
+        data class NetworkError(val message: String?) : Error()
+        object QueryError : Error()
+        object NoData : Error()
     }
 }

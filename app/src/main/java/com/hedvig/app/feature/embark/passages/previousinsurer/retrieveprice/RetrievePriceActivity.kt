@@ -7,17 +7,17 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.Scaffold
-import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hedvig.app.R
+import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.ui.compose.composables.CenteredProgressIndicator
+import com.hedvig.app.ui.compose.composables.ErrorDialog
 import com.hedvig.app.ui.compose.composables.FadeWhen
-import com.hedvig.app.ui.compose.composables.TopAppBarWithBack
+import com.hedvig.app.ui.compose.composables.appbar.TopAppBarWithBack
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -25,7 +25,7 @@ class RetrievePriceInfoActivity : ComponentActivity() {
 
     private val viewModel: RetrievePriceViewModel by viewModel()
 
-    @ExperimentalAnimationApi
+    @OptIn(ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -59,13 +59,10 @@ fun RetrievePriceScreen(
     val viewState by viewModel.viewState.collectAsState()
 
     if (viewState.showAuth) {
-    } else if (viewState.error != null) {
-        Dialog(
-            onDismissRequest = {},
-            content = {
-                TextField(value = viewState.error)
-            }
-        )
+    }
+
+    viewState.error?.getStringResource()?.let {
+        ErrorDialog(onDismiss = viewModel::onDismissError, message = stringResource(id = it))
     }
 
     FadeWhen(visible = viewState.isLoading) {
@@ -76,7 +73,38 @@ fun RetrievePriceScreen(
         RetrievePriceContent(
             onRetrievePriceInfo = viewModel::onRetrievePriceInfo,
             onIdentityInput = { viewModel.onIdentityInput(it) },
-            viewState = viewState
+            input = viewState.input,
+            title = viewState.market?.titleRes()?.let { stringResource(it) } ?: "",
+            placeholder = viewState.market?.placeHolderRes()?.let { stringResource(it) } ?: "",
+            label = viewState.market?.labelRes()?.let { stringResource(it) } ?: "",
+            inputErrorMessage = viewState.inputError?.errorTextKey?.let { stringResource(it) },
         )
     }
+}
+
+private fun Market.titleRes() = when (this) {
+    Market.SE -> R.string.insurely_se_ssn_title
+    Market.NO -> R.string.insurely_no_ssn_title
+    Market.FR,
+    Market.DK -> throw IllegalArgumentException("No string resource for $this")
+}
+
+private fun Market.placeHolderRes() = when (this) {
+    Market.SE -> R.string.insurely_se_ssn_assistive_text
+    Market.NO -> R.string.insurely_no_ssn_assistive_text
+    Market.FR,
+    Market.DK -> throw IllegalArgumentException("No string resource for $this")
+}
+
+private fun Market.labelRes() = when (this) {
+    Market.SE -> R.string.insurely_se_ssn_input_label
+    Market.NO -> R.string.insurely_no_ssn_input_label
+    Market.FR,
+    Market.DK -> throw IllegalArgumentException("No string resource for $this")
+}
+
+private fun DataCollectionResult.Error.getStringResource() = when (this) {
+    is DataCollectionResult.Error.NetworkError -> R.string.NETWORK_ERROR_ALERT_MESSAGE
+    DataCollectionResult.Error.NoData -> R.string.general_unknown_error
+    DataCollectionResult.Error.QueryError -> R.string.insurely_failure_title
 }
