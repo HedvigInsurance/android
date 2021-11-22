@@ -15,11 +15,10 @@ import com.hedvig.app.databinding.HomeFragmentBinding
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
 import com.hedvig.app.feature.home.service.HomeTracker
-import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusData
+import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusCardData
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
 import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.getLocale
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
@@ -151,7 +150,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                 val items = mutableListOf<HomeModel>().apply {
                     add(HomeModel.BigText.Terminated(firstName))
                     add(HomeModel.BodyText.Terminated)
-                    if (successData.claims.isNotEmpty()) {
+                    if (successData.claimStatusCards.isNotEmpty()) {
                         if (featureManager.isFeatureEnabled(Feature.CLAIMS_STATUS)) {
                             add(claimStatusCards(successData))
                         }
@@ -175,7 +174,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                 val items = mutableListOf<HomeModel>().apply {
                     addAll(listOfNotNull(*psaItems(successData.importantMessages).toTypedArray()))
                     add(HomeModel.BigText.Active(firstName))
-                    if (successData.claims.isNotEmpty()) {
+                    if (successData.claimStatusCards.isNotEmpty()) {
                         if (featureManager.isFeatureEnabled(Feature.CLAIMS_STATUS)) {
                             add(claimStatusCards(successData))
                         }
@@ -214,14 +213,8 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
         registerForActivityResult.launch(intent)
     }
 
-    private fun claimStatusCards(successData: HomeQuery.Data) = HomeModel.ClaimStatus(
-        successData.claims.map { claim ->
-            ClaimStatusData.fromHomeQueryClaim(
-                homeQueryClaim = claim,
-                resources = resources,
-                locale = getLocale(requireContext(), marketManager.market)
-            )
-        }
+    private fun claimStatusCards(successData: HomeQuery.Data): HomeModel.ClaimStatus = HomeModel.ClaimStatus(
+        successData.claimStatusCards.map(ClaimStatusCardData::fromClaimStatusCardsQuery)
     )
 
     private fun psaItems(
@@ -230,7 +223,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
         .filterNotNull()
         .map { HomeModel.PSA(it) }
 
-    private fun upcomingRenewals(contracts: List<HomeQuery.Contract1>) =
+    private fun upcomingRenewals(contracts: List<HomeQuery.Contract>): List<HomeModel.UpcomingRenewal> =
         contracts.mapNotNull { c ->
             c.upcomingRenewal?.let {
                 HomeModel.UpcomingRenewal(c.displayName, it)
@@ -257,23 +250,23 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
         }
 
     companion object {
-        private fun isPending(contracts: List<HomeQuery.Contract1>) =
+        private fun isPending(contracts: List<HomeQuery.Contract>) =
             contracts.all { it.status.asPendingStatus != null }
 
-        private fun isActiveInFuture(contracts: List<HomeQuery.Contract1>) =
+        private fun isActiveInFuture(contracts: List<HomeQuery.Contract>) =
             contracts.all {
                 it.status.asActiveInFutureStatus != null ||
                     it.status.asActiveInFutureAndTerminatedInFutureStatus != null
             }
 
-        private fun isActive(contracts: List<HomeQuery.Contract1>) =
+        private fun isActive(contracts: List<HomeQuery.Contract>) =
             contracts.any {
                 it.status.asActiveStatus != null ||
                     it.status.asTerminatedTodayStatus != null ||
                     it.status.asTerminatedInFutureStatus != null
             }
 
-        private fun isTerminated(contracts: List<HomeQuery.Contract1>) =
+        private fun isTerminated(contracts: List<HomeQuery.Contract>) =
             contracts.all { it.status.asTerminatedStatus != null }
     }
 }

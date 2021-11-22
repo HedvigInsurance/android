@@ -1,5 +1,6 @@
 package com.hedvig.app.ui.compose.theme
 
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -27,6 +28,7 @@ fun hedvigContentColorFor(backgroundColor: Color): Color {
     return when (backgroundColor) {
         colorResource(R.color.lavender_400) -> Color.Black
         colorResource(R.color.forever_orange_500) -> Color.Black
+        Color.Transparent -> contentColorFor(MaterialTheme.colors.background)
         else -> contentColorFor(backgroundColor)
     }
 }

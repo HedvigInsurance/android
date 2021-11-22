@@ -16,7 +16,6 @@ import com.hedvig.app.feature.insurance.ui.detail.coverage.createCoverageItems
 import com.hedvig.app.feature.insurance.ui.detail.coverage.createInsurableLimitsItems
 import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoModel
 import com.hedvig.app.feature.insurance.ui.detail.yourinfo.yourInfoItems
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.table.Table
 import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
@@ -62,8 +61,7 @@ abstract class ContractDetailViewModel : ViewModel() {
 class ContractDetailViewModelImpl(
     private val getContractsUseCase: GetContractsUseCase,
     private val chatRepository: ChatRepository,
-    private val marketManager: MarketManager,
-    private val featureRuntimeBehavior: FeatureManager
+    private val featureManager: FeatureManager,
 ) : ContractDetailViewModel() {
 
     override fun loadContract(id: String) {
@@ -79,7 +77,7 @@ class ContractDetailViewModelImpl(
                             _data.value = ViewState.Success(contract)
                             _yourInfoList.value = yourInfoItems(
                                 contract,
-                                featureRuntimeBehavior.isFeatureEnabled(Feature.MOVING_FLOW)
+                                featureManager.isFeatureEnabled(Feature.MOVING_FLOW)
                             )
                             _documentsList.postValue(createDocumentItems(contract))
                             _coverageViewState.postValue(
