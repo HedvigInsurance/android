@@ -14,8 +14,6 @@ val hedvigDarkGray = Color(0xff505050)
 val background = Color(0xffF6F6F6)
 
 val whiteHighEmphasis = Color(0xFFFAFAFA)
-val lavender300 = Color(0xffC9ABF5)
-val lavender400 = Color(0xffBE9BF3)
 
 val errorLight = Color(0xffDD2727)
 val errorDark = Color(0xffE24646)

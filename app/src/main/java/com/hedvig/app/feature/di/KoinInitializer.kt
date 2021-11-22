@@ -102,7 +102,6 @@ class KoinInitializer : Initializer<KoinApplication> {
                 chatEventModule,
                 dataStoreModule,
                 featureManagerModule,
-                embarkTrackerModule,
                 retrievePriceModule,
             )
         )

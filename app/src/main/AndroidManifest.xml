@@ -308,23 +308,8 @@
         <activity android:name=".feature.crossselling.ui.detail.CrossSellFaqActivity" />
         <activity android:name=".feature.sunsetting.ForceUpgradeActivity" />
 
-        <activity
-            android:name=".feature.embark.passages.previousinsurer.askforprice.AskForPriceInfoActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
-        <activity
-            android:name=".feature.embark.passages.previousinsurer.retrieveprice.RetrievePriceInfoActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".feature.embark.passages.previousinsurer.askforprice.AskForPriceInfoActivity" />
+        <activity android:name=".feature.embark.passages.previousinsurer.retrieveprice.RetrievePriceInfoActivity" />
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
