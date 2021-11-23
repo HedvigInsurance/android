@@ -128,10 +128,11 @@ class GraphQLQueryUseCase(
         arrayValues: MutableList<Pair<String, List<String>>>,
         objectValues: MutableList<Pair<String, String?>>
     ) {
-        when (val value = response.getWithDotNotation(accessor)) {
+        val value = response.getWithDotNotation(accessor)
+        when (value) {
             is JSONArray -> arrayValues.add(Pair(key, value.toStringArray()))
             is JSONObject -> objectValues.add(Pair(key, value.toString()))
-            equals(null) -> objectValues.add(Pair(key, null))
+            JSONObject.NULL -> objectValues.add(Pair(key, null))
             else -> objectValues.add(Pair(key, value.toString()))
         }
     }
