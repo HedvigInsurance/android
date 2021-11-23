@@ -12,13 +12,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.feature.embark.passages.previousinsurer.retrieveprice.RetrievePriceInfoActivity
 import com.hedvig.app.ui.compose.composables.appbar.TopAppBarWithBack
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 
 class AskForPriceInfoActivity : BaseActivity() {
 
     private val parameter by lazy {
-        intent.getParcelableExtra<AskForPriceInfoParameter>(PARAMETER)
+        intent.getParcelableExtra(PARAMETER)
+            ?: AskForPriceInfoParameter("Test")
             ?: throw Error("Programmer error: DATA is null in ${this.javaClass.name}")
     }
 
@@ -26,7 +28,7 @@ class AskForPriceInfoActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            HedvigTheme() {
+            HedvigTheme {
                 Scaffold(
                     topBar = {
                         TopAppBarWithBack(
@@ -46,7 +48,7 @@ class AskForPriceInfoActivity : BaseActivity() {
     }
 
     private fun startRetrievePriceActivity() {
-        // startActivity(RetrievePriceInfoActivity.createIntent(this))
+        startActivity(RetrievePriceInfoActivity.createIntent(this))
     }
 
     private fun finishWithResult() {
@@ -66,16 +68,7 @@ class AskForPriceInfoActivity : BaseActivity() {
     }
 }
 
-@Preview
-@Composable
-fun AskForPriceScreenPreview() {
-    AskForPriceScreen(
-        "Test",
-        onSkipRetrievePriceInfo = { },
-        onNavigateToRetrievePrice = { }
-    )
-}
-
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AskForPriceScreen(
     selectedInsurance: String,
@@ -86,5 +79,15 @@ fun AskForPriceScreen(
         selectedInsurance = selectedInsurance,
         onNavigateToRetrievePriceInfo = { onNavigateToRetrievePrice() },
         onSkipRetrievePriceInfo = onSkipRetrievePriceInfo
+    )
+}
+
+@Preview
+@Composable
+fun AskForPriceScreenPreview() {
+    AskForPriceScreen(
+        "Test",
+        onSkipRetrievePriceInfo = { },
+        onNavigateToRetrievePrice = { }
     )
 }

@@ -70,6 +70,9 @@ import com.hedvig.app.feature.embark.passages.multiaction.add.AddComponentViewMo
 import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionParams
 import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionViewModel
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerViewModel
+import com.hedvig.app.feature.embark.passages.previousinsurer.retrieveprice.RetrievePriceViewModel
+import com.hedvig.app.feature.embark.passages.previousinsurer.retrieveprice.StartDataCollectionUseCase
+import com.hedvig.app.feature.embark.passages.previousinsurer.retrieveprice.StartDataCollectionUseCaseImpl
 import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
 import com.hedvig.app.feature.embark.passages.textaction.TextActionViewModel
 import com.hedvig.app.feature.home.data.GetHomeUseCase
@@ -491,6 +494,10 @@ val checkoutModule = module {
     viewModel { (ids: List<String>) -> CheckoutViewModel(ids, get(), get(), get()) }
 }
 
+val retrievePriceModule = module {
+    viewModel { RetrievePriceViewModel(get(), get()) }
+}
+
 val serviceModule = module {
     single { FileService(get()) }
     single<LoginStatusService> { SharedPreferencesLoginStatusService(get(), get(), get()) }
@@ -602,6 +609,7 @@ val useCaseModule = module {
     single { GetCrossSellsContractTypesUseCase(get(), get()) }
     single { GraphQLQueryUseCase(get()) }
     single { GetCrossSellsUseCase(get(), get()) }
+    single<StartDataCollectionUseCase> { StartDataCollectionUseCaseImpl(get(), get()) }
 }
 
 val cacheManagerModule = module {

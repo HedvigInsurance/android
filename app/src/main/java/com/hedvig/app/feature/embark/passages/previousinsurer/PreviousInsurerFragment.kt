@@ -31,7 +31,7 @@ class PreviousInsurerFragment : Fragment(R.layout.previous_insurer_fragment) {
     private val previousInsurerViewModel: PreviousInsurerViewModel by sharedViewModel()
     private val featureManager: FeatureManager by inject()
 
-    private val startForResult =
+    private val askForPriceActivityResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_CANCELED) {
                 onContinue()
@@ -83,7 +83,7 @@ class PreviousInsurerFragment : Fragment(R.layout.previous_insurer_fragment) {
 
     private fun startAskForPrice() {
         previousInsurerViewModel.previousInsurer.value?.name?.let {
-            startForResult.launch(
+            askForPriceActivityResultLauncher.launch(
                 AskForPriceInfoActivity.createIntent(
                     requireContext(),
                     AskForPriceInfoParameter(it)

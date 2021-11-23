@@ -37,6 +37,7 @@ import com.hedvig.app.profileModule
 import com.hedvig.app.pushTokenManagerModule
 import com.hedvig.app.referralsModule
 import com.hedvig.app.repositoriesModule
+import com.hedvig.app.retrievePriceModule
 import com.hedvig.app.serviceModule
 import com.hedvig.app.sharedPreferencesModule
 import com.hedvig.app.textActionSetModule
@@ -100,7 +101,8 @@ class KoinInitializer : Initializer<KoinApplication> {
                 embarkTrackerModule,
                 chatEventModule,
                 dataStoreModule,
-                featureManagerModule
+                featureManagerModule,
+                retrievePriceModule,
             )
         )
     }
