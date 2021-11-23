@@ -12,7 +12,7 @@ import java.lang.IllegalArgumentException
 import java.util.UUID
 
 interface StartDataCollectionUseCase {
-    suspend fun startDataCollection(
+    suspend fun startDataCollectionAndGetCollectionStatus(
         personalNumber: String,
         insuranceProvider: String,
     ): DataCollectionResult
@@ -23,7 +23,7 @@ class StartDataCollectionUseCaseImpl(
     val marketManager: MarketManager
 ) : StartDataCollectionUseCase {
 
-    override suspend fun startDataCollection(
+    override suspend fun startDataCollectionAndGetCollectionStatus(
         personalNumber: String,
         insuranceProvider: String,
     ): DataCollectionResult {
@@ -48,14 +48,13 @@ class StartDataCollectionUseCaseImpl(
         return when (val result = apolloClient.query(query).safeQuery()) {
             is QueryResult.Success -> {
                 val extraInfo = result.data?.externalInsuranceProvider?.dataCollectionStatusV2?.extraInformation
-                extraInfo
-                    ?.asSwedishBankIdExtraInfo
-                    ?.autoStartToken
-                    ?.let { DataCollectionResult.Success.SwedishBankId(it) } ?: extraInfo
-                    ?.asNorwegianBankIdExtraInfo
-                    ?.norwegianBankIdWords
-                    ?.let { DataCollectionResult.Success.NorwegianBankId(it) }
-                    ?: DataCollectionResult.Error.NoData
+                val swedishAutoStartToken = extraInfo?.asSwedishBankIdExtraInfo?.autoStartToken
+                val norwegianBankIdWords = extraInfo?.asNorwegianBankIdExtraInfo?.norwegianBankIdWords
+                return when {
+                    swedishAutoStartToken != null -> DataCollectionResult.Success.SwedishBankId(swedishAutoStartToken)
+                    norwegianBankIdWords != null -> DataCollectionResult.Success.NorwegianBankId(norwegianBankIdWords)
+                    else -> DataCollectionResult.Error.NoData
+                }
             }
             is QueryResult.Error -> DataCollectionResult.Error.QueryError
         }

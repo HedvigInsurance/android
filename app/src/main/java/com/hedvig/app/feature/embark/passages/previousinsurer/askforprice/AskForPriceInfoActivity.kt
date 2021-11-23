@@ -19,7 +19,7 @@ import com.hedvig.app.ui.compose.theme.HedvigTheme
 class AskForPriceInfoActivity : BaseActivity() {
 
     private val parameter by lazy {
-        intent.getParcelableExtra<AskForPriceInfoParameter>(PARAMETER)
+        intent.getParcelableExtra(PARAMETER)
             ?: AskForPriceInfoParameter("Test")
             ?: throw Error("Programmer error: DATA is null in ${this.javaClass.name}")
     }
@@ -69,17 +69,6 @@ class AskForPriceInfoActivity : BaseActivity() {
 }
 
 @OptIn(ExperimentalAnimationApi::class)
-@Preview
-@Composable
-fun AskForPriceScreenPreview() {
-    AskForPriceScreen(
-        "Test",
-        onSkipRetrievePriceInfo = { },
-        onNavigateToRetrievePrice = { }
-    )
-}
-
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AskForPriceScreen(
     selectedInsurance: String,
@@ -90,5 +79,15 @@ fun AskForPriceScreen(
         selectedInsurance = selectedInsurance,
         onNavigateToRetrievePriceInfo = { onNavigateToRetrievePrice() },
         onSkipRetrievePriceInfo = onSkipRetrievePriceInfo
+    )
+}
+
+@Preview
+@Composable
+fun AskForPriceScreenPreview() {
+    AskForPriceScreen(
+        "Test",
+        onSkipRetrievePriceInfo = { },
+        onNavigateToRetrievePrice = { }
     )
 }

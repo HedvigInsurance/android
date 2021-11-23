@@ -3,15 +3,14 @@ package com.hedvig.app.feature.embark.passages.previousinsurer.retrieveprice
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.ui.compose.composables.CenteredProgressIndicator
@@ -21,11 +20,10 @@ import com.hedvig.app.ui.compose.composables.appbar.TopAppBarWithBack
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class RetrievePriceInfoActivity : ComponentActivity() {
+class RetrievePriceInfoActivity : BaseActivity() {
 
     private val viewModel: RetrievePriceViewModel by viewModel()
 
-    @OptIn(ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -33,7 +31,7 @@ class RetrievePriceInfoActivity : ComponentActivity() {
                 Scaffold(
                     topBar = {
                         TopAppBarWithBack(
-                            onClick = { onBackPressed() },
+                            onClick = ::onBackPressed,
                             title = stringResource(R.string.insurely_title)
                         )
                     }
@@ -51,7 +49,6 @@ class RetrievePriceInfoActivity : ComponentActivity() {
     }
 }
 
-@ExperimentalAnimationApi
 @Composable
 fun RetrievePriceScreen(
     viewModel: RetrievePriceViewModel = viewModel()

@@ -36,7 +36,7 @@ class RetrievePriceViewModelTest {
     }
 
     private val startDataCollectionUseCase = object : StartDataCollectionUseCase {
-        override suspend fun startDataCollection(
+        override suspend fun startDataCollectionAndGetCollectionStatus(
             personalNumber: String,
             insuranceProvider: String
         ): DataCollectionResult {

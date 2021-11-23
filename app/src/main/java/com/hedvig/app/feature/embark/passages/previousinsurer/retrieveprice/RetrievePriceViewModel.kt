@@ -25,7 +25,7 @@ class RetrievePriceViewModel(
 
         viewModelScope.launch {
             _viewState.update { it.copy(isLoading = true) }
-            val result = startDataCollectionUseCase.startDataCollection(
+            val result = startDataCollectionUseCase.startDataCollectionAndGetCollectionStatus(
                 personalNumber = viewState.value.input,
                 insuranceProvider = "ICA"
             )
