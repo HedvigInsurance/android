@@ -10,11 +10,11 @@ import androidx.core.view.doOnNextLayout
 import androidx.fragment.app.Fragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hedvig.app.R
-import com.hedvig.app.databinding.PreviousInsurerFragmentBinding
+import com.hedvig.app.databinding.PreviousOrExternalInsurerFragmentBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.passages.MessageAdapter
-import com.hedvig.app.feature.embark.passages.previousinsurer.askforprice.AskForPriceInfoActivity
-import com.hedvig.app.feature.embark.passages.previousinsurer.askforprice.AskForPriceInfoParameter
+import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.AskForPriceInfoActivity
+import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.AskForPriceInfoParameter
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
 import com.hedvig.app.util.featureflags.Feature
@@ -24,9 +24,9 @@ import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
-class PreviousInsurerFragment : Fragment(R.layout.previous_insurer_fragment) {
+class PreviousInsurerFragment : Fragment(R.layout.previous_or_external_insurer_fragment) {
 
-    private val binding by viewBinding(PreviousInsurerFragmentBinding::bind)
+    private val binding by viewBinding(PreviousOrExternalInsurerFragmentBinding::bind)
     private val model: EmbarkViewModel by sharedViewModel()
     private val previousInsurerViewModel: PreviousInsurerViewModel by sharedViewModel()
     private val featureManager: FeatureManager by inject()

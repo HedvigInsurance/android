@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.embark.passages.previousinsurer.askforprice
+package com.hedvig.app.feature.embark.passages.externalinsurer.askforprice
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

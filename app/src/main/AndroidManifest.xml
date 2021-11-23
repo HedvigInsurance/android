@@ -308,8 +308,8 @@
         <activity android:name=".feature.crossselling.ui.detail.CrossSellFaqActivity" />
         <activity android:name=".feature.sunsetting.ForceUpgradeActivity" />
 
-        <activity android:name=".feature.embark.passages.previousinsurer.askforprice.AskForPriceInfoActivity" />
-        <activity android:name=".feature.embark.passages.previousinsurer.retrieveprice.RetrievePriceInfoActivity" />
+        <activity android:name="com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.AskForPriceInfoActivity" />
+        <activity android:name="com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceInfoActivity" />
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"

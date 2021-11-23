@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.embark.passages.previousinsurer.retrieveprice
+package com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice
 
 import android.content.Context
 import android.content.Intent

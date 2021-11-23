@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.embark.passages.previousinsurer.askforprice
+package com.hedvig.app.feature.embark.passages.externalinsurer.askforprice
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

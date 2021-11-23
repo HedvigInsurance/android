@@ -27,6 +27,8 @@ import com.hedvig.app.feature.embark.passages.audiorecorder.AudioRecorderFragmen
 import com.hedvig.app.feature.embark.passages.audiorecorder.AudioRecorderParameters
 import com.hedvig.app.feature.embark.passages.datepicker.DatePickerFragment
 import com.hedvig.app.feature.embark.passages.datepicker.DatePickerParams
+import com.hedvig.app.feature.embark.passages.externalinsurer.ExternalInsurerFragment
+import com.hedvig.app.feature.embark.passages.externalinsurer.ExternalInsurerParameter
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionComponent
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionFragment
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionParams
@@ -246,6 +248,14 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 previousInsuranceAction
             )
             return PreviousInsurerFragment.newInstance(parameter)
+        }
+
+        passage?.action?.asEmbarkExternalInsuranceProviderAction?.let { externalInsuranceAction ->
+            val parameter = ExternalInsurerParameter.from(
+                passage.messages.map { it.fragments.messageFragment.text },
+                externalInsuranceAction
+            )
+            return ExternalInsurerFragment.newInstance(parameter)
         }
 
         passage?.action?.asEmbarkNumberAction?.numberActionData?.let { numberAction ->

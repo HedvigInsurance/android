@@ -3,9 +3,9 @@ package com.hedvig.app.feature.embark.passages
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import com.hedvig.app.R
-import com.hedvig.app.feature.embark.passages.previousinsurer.retrieveprice.DataCollectionResult
-import com.hedvig.app.feature.embark.passages.previousinsurer.retrieveprice.RetrievePriceViewModel
-import com.hedvig.app.feature.embark.passages.previousinsurer.retrieveprice.StartDataCollectionUseCase
+import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.DataCollectionResult
+import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceViewModel
+import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.StartDataCollectionUseCase
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.coroutines.MainCoroutineRule
