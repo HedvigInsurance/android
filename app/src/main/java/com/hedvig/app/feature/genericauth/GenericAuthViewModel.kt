@@ -39,6 +39,7 @@ class GenericAuthViewModel(
         enum class TextFieldError {
             EMPTY,
             INVALID_EMAIL,
+            NETWORK_ERROR,
         }
     }
 
@@ -73,7 +74,7 @@ class GenericAuthViewModel(
                     eventChannel.trySend(Event.SubmitEmailSuccess(result.id, email))
                 }
                 CreateOtpAttemptUseCase.Result.Error -> {
-                    _viewState.update { it.copy(error = ViewState.TextFieldError.INVALID_EMAIL) }
+                    _viewState.update { it.copy(error = ViewState.TextFieldError.NETWORK_ERROR) }
                 }
             }
             // TODO: Remove Loading-state, once one exists
