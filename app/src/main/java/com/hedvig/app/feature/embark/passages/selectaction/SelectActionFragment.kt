@@ -55,7 +55,7 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
             if (data.actions.size == 1) {
                 bindSingleButton(data.actions.first(), data)
             } else {
-                bindAdapter(data)
+                bindButtonGrid(data)
             }
 
             messages.adapter = MessageAdapter(data.messages)
@@ -79,7 +79,7 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
         }
     }
 
-    private fun FragmentEmbarkSelectActionBinding.bindAdapter(data: SelectActionParameter) {
+    private fun FragmentEmbarkSelectActionBinding.bindButtonGrid(data: SelectActionParameter) {
         with(actionsComposeView) {
             isVisible = true
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
