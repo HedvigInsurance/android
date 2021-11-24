@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.embark.masking
 
-import com.hedvig.app.feature.embark.BIRTH_DATE_REVERSE
+import com.hedvig.app.feature.embark.util.BIRTH_DATE_REVERSE
 import java.time.Clock
 import java.time.LocalDate
 import java.time.Period
