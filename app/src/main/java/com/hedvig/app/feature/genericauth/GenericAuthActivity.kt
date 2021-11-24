@@ -10,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.feature.genericauth.otpinput.OtpInputActivity
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -23,7 +24,13 @@ class GenericAuthActivity : BaseActivity() {
 
         setContent {
             val viewState by model.viewState.collectAsState()
+            val events = model.eventsFlow.collectAsState(initial = null)
+
             HedvigTheme {
+                when (val value = events.value) {
+                    is GenericAuthViewModel.Event.SubmitEmailSuccess -> startOtpInputActivity(value)
+                }
+
                 EmailInputScreen(
                     onUpClick = ::finish,
                     onInputChanged = model::setInput,
@@ -46,6 +53,11 @@ class GenericAuthActivity : BaseActivity() {
                 R.string.login_text_input_email_error_not_valid
         }
     )
+
+    private fun startOtpInputActivity(value: GenericAuthViewModel.Event.SubmitEmailSuccess) {
+        val intent = OtpInputActivity.newInstance(this, value.id, value.credential)
+        startActivity(intent)
+    }
 
     companion object {
         fun newInstance(context: Context) = Intent(context, GenericAuthActivity::class.java)

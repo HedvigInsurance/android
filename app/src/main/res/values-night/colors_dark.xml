@@ -38,4 +38,5 @@
     <item name="blur_spring_fog" type="color">#ec955f</item>
     <item name="default_insurance_card" type="color">#505050</item>
 
+    <item name="progress_overlay" type="color">#FA000000</item>
 </resources>
