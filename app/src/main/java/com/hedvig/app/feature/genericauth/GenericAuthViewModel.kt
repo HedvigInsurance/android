@@ -2,7 +2,7 @@ package com.hedvig.app.feature.genericauth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.app.feature.embark.EMAIL_REGEX
+import com.hedvig.app.util.EMAIL_REGEX
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -93,7 +93,7 @@ class GenericAuthViewModel(
             return ViewState.TextFieldError.EMPTY
         }
 
-        if (!EMAIL_REGEX.matcher(value).find()) { // TODO: Move the regex out to a common package
+        if (!EMAIL_REGEX.matcher(value).find()) {
             return ViewState.TextFieldError.INVALID_EMAIL
         }
         return null
