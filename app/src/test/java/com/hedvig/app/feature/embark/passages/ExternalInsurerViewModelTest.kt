@@ -8,6 +8,7 @@ import com.hedvig.app.feature.embark.passages.externalinsurer.InsuranceProvider
 import com.hedvig.app.feature.embark.passages.externalinsurer.InsuranceProvidersResult
 import com.hedvig.app.util.coroutines.MainCoroutineRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Rule
 import org.junit.Test
@@ -29,6 +30,7 @@ class ExternalInsurerViewModelTest {
 
     private val getInsuranceProvidersUseCase = object : GetInsuranceProvidersUseCase {
         override suspend fun getInsuranceProviders(): InsuranceProvidersResult {
+            delay(100)
             return insuranceProvidersResult
         }
     }
@@ -41,7 +43,16 @@ class ExternalInsurerViewModelTest {
         assertThat(viewModel.viewState.value.isLoading).isEqualTo(true)
 
         advanceUntilIdle()
-        assertThat(viewModel.viewState.value.insuranceProviders).isEqualTo(insuranceProviders)
+        assertThat(viewModel.viewState.value.isLoading).isEqualTo(false)
+    }
+
+    @Test
+    fun testShowInsuranceProviders() = mainCoroutineRule.dispatcher.runBlockingTest {
+        insuranceProvidersResult = InsuranceProvidersResult.Success(insuranceProviders)
+        val viewModel = ExternalInsurerViewModel(getInsuranceProvidersUseCase)
+
+        viewModel.showInsuranceProviders()
+        assertThat(viewModel.viewState.value.showInsuranceProviders).isEqualTo(listOf())
     }
 
     @Test
@@ -53,6 +64,7 @@ class ExternalInsurerViewModelTest {
         assertThat(viewModel.viewState.value.isLoading).isEqualTo(true)
 
         advanceUntilIdle()
+        assertThat(viewModel.viewState.value.isLoading).isEqualTo(false)
         assertThat(viewModel.viewState.value.error).isEqualTo(InsuranceProvidersResult.Error.NetworkError)
     }
 
@@ -63,6 +75,7 @@ class ExternalInsurerViewModelTest {
         viewModel.selectInsuranceProvider(InsuranceProvider("1", "Test1"))
 
         assertThat(viewModel.viewState.value.selectedProvider).isEqualTo(InsuranceProvider("1", "Test1"))
+        assertThat(viewModel.viewState.value.showInsuranceProviders).isEqualTo(null)
     }
 
     @Test
@@ -72,6 +85,7 @@ class ExternalInsurerViewModelTest {
 
         viewModel.onContinue()
 
+        assertThat(viewModel.viewState.value.isLoading).isEqualTo(false)
         assertThat(viewModel.viewState.value.continueEvent).isEqualTo(null)
     }
 

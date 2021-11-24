@@ -1,30 +1,75 @@
 package com.hedvig.app.feature.embark.passages.externalinsurer
 
+import android.app.Activity
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.doOnNextLayout
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.hedvig.app.R
 import com.hedvig.app.databinding.PreviousOrExternalInsurerFragmentBinding
+import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.AskForPriceInfoActivity
 import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.AskForPriceInfoParameter
-import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerBottomSheet
+import com.hedvig.app.feature.embark.passages.previousinsurer.InsurerProviderBottomSheet
+import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerParameter
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
 import com.hedvig.app.util.whenApiVersion
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_fragment) {
 
     private val binding by viewBinding(PreviousOrExternalInsurerFragmentBinding::bind)
+
+    private val embarkViewModel: EmbarkViewModel by sharedViewModel()
     private val viewModel: ExternalInsurerViewModel by sharedViewModel()
+
+    private val askForPriceActivityResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_CANCELED) {
+                onContinue()
+            }
+        }
 
     private val insurerData by lazy {
         requireArguments()
             .getParcelable<ExternalInsurerParameter>(DATA)
             ?: throw IllegalArgumentException("No argument passed to ${this.javaClass.name}")
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel.viewState
+            .flowWithLifecycle(lifecycle)
+            .onEach { viewState ->
+                binding.progress.isVisible = viewState.isLoading
+
+                viewState.continueEvent?.let {
+                    startAskForPrice(it.providerId)
+                }
+
+                viewState.error?.let {
+                }
+
+                viewState.showInsuranceProviders?.let {
+                    onShowInsurers(it)
+                }
+
+                viewState.selectedProvider?.let {
+                    binding.currentInsurerLabel.text = it.name
+                }
+            }
+            .launchIn(lifecycleScope)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -44,19 +89,47 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
             messages.doOnNextLayout {
                 startPostponedEnterTransition()
             }
+
+            currentInsurerContainer.setOnClickListener {
+                viewModel.showInsuranceProviders()
+            }
+            continueButton.setOnClickListener {
+                viewModel.onContinue()
+            }
+
+            setFragmentResultListener(InsurerProviderBottomSheet.REQUEST_KEY) { requestKey: String, bundle: Bundle ->
+                if (requestKey == InsurerProviderBottomSheet.REQUEST_KEY) {
+                    // embarkViewModel.putInStore(insurerData.storeKey, item.id)
+                    viewModel.selectInsuranceProvider(
+                        InsuranceProvider(
+                            id = bundle.getString(InsurerProviderBottomSheet.INSURER_ID_KEY)!!,
+                            name = bundle.getString(InsurerProviderBottomSheet.INSURER_NAME_KEY)!!
+                        )
+                    )
+                }
+            }
         }
     }
 
-    private fun startAskForPrice() {
-        AskForPriceInfoActivity.createIntent(
+    private fun startAskForPrice(providerId: String) {
+        val intent = AskForPriceInfoActivity.createIntent(
             requireContext(),
-            AskForPriceInfoParameter("testId")
+            AskForPriceInfoParameter(providerId)
         )
+        askForPriceActivityResultLauncher.launch(intent)
     }
 
-    private fun onShowInsurers() {
-        val fragment = PreviousInsurerBottomSheet.newInstance(listOf())
-        fragment.show(parentFragmentManager, PreviousInsurerBottomSheet.TAG)
+    private fun onShowInsurers(insuranceProviders: List<InsuranceProvider>) {
+        val fragment = InsurerProviderBottomSheet.newInstance(
+            insuranceProviders.map {
+                PreviousInsurerParameter.PreviousInsurer(it.name, "", it.id)
+            }
+        )
+        fragment.show(parentFragmentManager, InsurerProviderBottomSheet.TAG)
+    }
+
+    private fun onContinue() {
+        embarkViewModel.submitAction(insurerData.next)
     }
 
     companion object {

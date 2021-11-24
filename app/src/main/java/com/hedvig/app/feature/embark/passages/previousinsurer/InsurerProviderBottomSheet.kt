@@ -3,14 +3,13 @@ package com.hedvig.app.feature.embark.passages.previousinsurer
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
 import coil.ImageLoader
 import com.hedvig.app.ui.view.ExpandableBottomSheet
 import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
-class PreviousInsurerBottomSheet : ExpandableBottomSheet() {
+class InsurerProviderBottomSheet : ExpandableBottomSheet() {
 
-    private val viewModel: PreviousInsurerViewModel by sharedViewModel()
     private val imageLoader: ImageLoader by inject()
 
     private val insurers by lazy {
@@ -30,17 +29,26 @@ class PreviousInsurerBottomSheet : ExpandableBottomSheet() {
     }
 
     private fun onInsurerSelected(item: PreviousInsurerItem.Insurer) {
-        viewModel.setPreviousInsurer(item)
+        setFragmentResult(
+            REQUEST_KEY,
+            bundleOf(
+                Pair(INSURER_ID_KEY, item.id),
+                Pair(INSURER_NAME_KEY, item.name)
+            )
+        )
         dismiss()
     }
 
     companion object {
 
-        val TAG: String = PreviousInsurerBottomSheet::class.java.name
+        val TAG: String = InsurerProviderBottomSheet::class.java.name
+        const val REQUEST_KEY = "INSURER_BOTTOM_SHEET_KEY"
+        const val INSURER_ID_KEY = "INSURER_ID_KEY"
+        const val INSURER_NAME_KEY = "INSURER_NAME_KEY"
         private const val PREVIOUS_INSURERS = "PREVIOUS_INSURERS"
 
         fun newInstance(previousInsurers: List<PreviousInsurerParameter.PreviousInsurer>) =
-            PreviousInsurerBottomSheet().apply {
+            InsurerProviderBottomSheet().apply {
                 arguments = bundleOf(PREVIOUS_INSURERS to previousInsurers)
             }
     }
