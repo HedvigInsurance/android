@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.embark.passages.externalinsurer.askforprice
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -24,7 +23,6 @@ class AskForPriceInfoActivity : BaseActivity() {
             ?: throw Error("Programmer error: DATA is null in ${this.javaClass.name}")
     }
 
-    @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -52,11 +50,12 @@ class AskForPriceInfoActivity : BaseActivity() {
     }
 
     private fun finishWithResult() {
-        setResult(Activity.RESULT_CANCELED)
+        setResult(RESULT_SKIP)
         finish()
     }
 
     companion object {
+        const val RESULT_SKIP = 1242
         private const val PARAMETER = "parameter"
 
         fun createIntent(
