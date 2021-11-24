@@ -81,6 +81,7 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
 
     private fun FragmentEmbarkSelectActionBinding.bindAdapter(data: SelectActionParameter) {
         with(actionsComposeView) {
+            isVisible = true
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             var actionJob: Job? = null
             setContent {
