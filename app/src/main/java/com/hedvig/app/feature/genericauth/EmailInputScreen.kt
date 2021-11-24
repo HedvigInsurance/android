@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.genericauth
 
+import android.view.KeyEvent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -22,9 +25,14 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.navigationBarsWithImePadding
@@ -40,7 +48,7 @@ fun EmailInputScreen(
     onClear: () -> Unit,
     onBlur: () -> Unit,
     inputValue: String,
-    error: GenericAuthViewModel.ViewState.InputError?,
+    error: GenericAuthViewModel.ViewState.TextFieldError?,
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -84,7 +92,8 @@ fun EmailInputScreen(
                             if (!state.isFocused) {
                                 onBlur()
                             }
-                        },
+                        }
+                        .submitOnEnter(onSubmitEmail),
                     placeholder = { Text("Email address") },
                     trailingIcon = {
                         if (error != null) {
@@ -103,6 +112,11 @@ fun EmailInputScreen(
                         }
                     },
                     isError = error != null,
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Done,
+                    ),
+                    keyboardActions = KeyboardActions(onDone = { onSubmitEmail() }),
+                    singleLine = true,
                 )
                 if (error != null) {
                     Text(
@@ -127,9 +141,9 @@ fun EmailInputScreen(
 }
 
 @Composable
-private fun errorMessage(error: GenericAuthViewModel.ViewState.InputError) = when (error) {
-    GenericAuthViewModel.ViewState.InputError.EMPTY -> "Enter email address to continue"
-    GenericAuthViewModel.ViewState.InputError.INVALID_EMAIL -> "Email address not valid"
+private fun errorMessage(error: GenericAuthViewModel.ViewState.TextFieldError) = when (error) {
+    GenericAuthViewModel.ViewState.TextFieldError.EMPTY -> "Enter email address to continue"
+    GenericAuthViewModel.ViewState.TextFieldError.INVALID_EMAIL -> "Email address not valid"
 }
 
 @Preview(showBackground = true)
@@ -159,7 +173,21 @@ fun EmailInputScreenInvalidPreview() {
             onClear = {},
             onBlur = {},
             inputValue = "example.com",
-            error = GenericAuthViewModel.ViewState.InputError.INVALID_EMAIL,
+            error = GenericAuthViewModel.ViewState.TextFieldError.INVALID_EMAIL,
         )
+    }
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+fun Modifier.submitOnEnter(action: () -> Unit) = composed {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    onKeyEvent {
+        if (it.nativeKeyEvent.keyCode == KeyEvent.KEYCODE_ENTER) {
+            keyboardController?.hide()
+            action()
+            true
+        } else {
+            false
+        }
     }
 }

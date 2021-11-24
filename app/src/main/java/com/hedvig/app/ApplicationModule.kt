@@ -75,6 +75,7 @@ import com.hedvig.app.feature.embark.passages.previousinsurer.retrieveprice.Star
 import com.hedvig.app.feature.embark.passages.previousinsurer.retrieveprice.StartDataCollectionUseCaseImpl
 import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
 import com.hedvig.app.feature.embark.passages.textaction.TextActionViewModel
+import com.hedvig.app.feature.genericauth.CreateOtpAttemptUseCase
 import com.hedvig.app.feature.genericauth.GenericAuthViewModel
 import com.hedvig.app.feature.home.data.GetHomeUseCase
 import com.hedvig.app.feature.home.service.HomeTracker
@@ -375,7 +376,7 @@ val viewModelModule = module {
     viewModel { (notificationMetadata: CrossSellNotificationMetadata?, crossSell: CrossSellData) ->
         CrossSellDetailViewModel(notificationMetadata, crossSell, get())
     }
-    viewModel { GenericAuthViewModel() }
+    viewModel { GenericAuthViewModel(get()) }
 }
 
 val choosePlanModule = module {
@@ -612,6 +613,7 @@ val useCaseModule = module {
     single { GraphQLQueryUseCase(get()) }
     single { GetCrossSellsUseCase(get(), get()) }
     single<StartDataCollectionUseCase> { StartDataCollectionUseCaseImpl(get(), get()) }
+    single { CreateOtpAttemptUseCase(get()) }
 }
 
 val cacheManagerModule = module {

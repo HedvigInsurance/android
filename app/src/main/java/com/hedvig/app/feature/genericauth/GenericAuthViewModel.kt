@@ -1,16 +1,20 @@
 package com.hedvig.app.feature.genericauth
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.hedvig.app.feature.embark.EMAIL_REGEX
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-class GenericAuthViewModel : ViewModel() {
+class GenericAuthViewModel(
+    private val createOtpAttemptUseCase: CreateOtpAttemptUseCase,
+) : ViewModel() {
     private val _viewState = MutableStateFlow(
         ViewState(
             input = "",
-            error = ViewState.InputError.EMPTY,
+            error = ViewState.TextFieldError.EMPTY,
             dirty = false,
             touched = false,
         )
@@ -19,11 +23,11 @@ class GenericAuthViewModel : ViewModel() {
 
     data class ViewState(
         val input: String,
-        val error: InputError?,
+        val error: TextFieldError?,
         val dirty: Boolean,
         val touched: Boolean,
     ) {
-        enum class InputError {
+        enum class TextFieldError {
             EMPTY,
             INVALID_EMAIL,
         }
@@ -51,6 +55,22 @@ class GenericAuthViewModel : ViewModel() {
         }
     }
 
+    fun submitEmail() {
+        viewModelScope.launch {
+            // TODO: Set Loading-state, once one exists
+            val email = viewState.value.input
+            when (val result = createOtpAttemptUseCase.invoke(email)) {
+                is CreateOtpAttemptUseCase.Result.Success -> {
+                    // TODO: Show the OTP input screen, maintain the token in the ViewModel
+                }
+                CreateOtpAttemptUseCase.Result.Error -> {
+                    _viewState.update { it.copy(error = ViewState.TextFieldError.INVALID_EMAIL) }
+                }
+            }
+            // TODO: Remove Loading-state, once one exists
+        }
+    }
+
     private fun computeError(state: ViewState, value: String) =
         if (state.touched && state.dirty) {
             validate(value)
@@ -58,13 +78,13 @@ class GenericAuthViewModel : ViewModel() {
             null
         }
 
-    private fun validate(value: String): ViewState.InputError? {
+    private fun validate(value: String): ViewState.TextFieldError? {
         if (value.isBlank()) {
-            return ViewState.InputError.EMPTY
+            return ViewState.TextFieldError.EMPTY
         }
 
         if (!EMAIL_REGEX.matcher(value).find()) { // TODO: Move the regex out to a common package
-            return ViewState.InputError.INVALID_EMAIL
+            return ViewState.TextFieldError.INVALID_EMAIL
         }
         return null
     }
