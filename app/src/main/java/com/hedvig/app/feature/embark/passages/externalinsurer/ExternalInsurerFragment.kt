@@ -39,7 +39,7 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
     private val askForPriceActivityResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == RESULT_SKIP) {
-                onContinue()
+                continueEmbark()
             }
         }
 
@@ -54,16 +54,10 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
         viewModel.events
             .flowWithLifecycle(lifecycle)
             .onEach { event ->
-                if (event is ExternalInsurerViewModel.Event.Continue) {
-                    if (event.providerId == getString(R.string.EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION)) {
-                        MaterialAlertDialogBuilder(requireContext())
-                            .setTitle(getString(R.string.EXTERNAL_INSURANCE_PROVIDER_ALERT_TITLE))
-                            .setMessage(getString(R.string.EXTERNAL_INSURANCE_PROVIDER_ALERT_MESSAGE))
-                            .setPositiveButton(getString(R.string.ALERT_OK)) { _, _ -> onContinue() }
-                            .show()
-                    } else {
-                        startAskForPrice(event.providerId)
-                    }
+                when (event) {
+                    is ExternalInsurerViewModel.Event.Error -> context?.showErrorDialog(
+                        getString(event.errorResult.getStringRes())
+                    ) {}
                 }
             }
             .launchIn(lifecycleScope)
@@ -73,16 +67,19 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
             .onEach { viewState ->
                 binding.progress.isVisible = viewState.isLoading
 
-                viewState.error?.let {
-                    context?.showErrorDialog(getString(it.getStringRes())) { }
-                }
-
-                viewState.showInsuranceProviders?.let {
-                    onShowInsurers(it)
-                }
-
                 viewState.selectedProvider?.let {
                     binding.currentInsurerLabel.text = it.name
+                }
+
+                binding.currentInsurerContainer.setOnClickListener {
+                    viewState.insuranceProviders?.let(::showInsurers)
+                }
+
+                binding.continueButton.isEnabled = viewState.canContinue()
+                binding.continueButton.setOnClickListener {
+                    viewState.selectedProvider?.let {
+                        continueWithProvider(it.id)
+                    }
                 }
             }
             .launchIn(lifecycleScope)
@@ -104,13 +101,6 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
 
             messages.doOnNextLayout {
                 startPostponedEnterTransition()
-            }
-
-            currentInsurerContainer.setOnClickListener {
-                viewModel.showInsuranceProviders()
-            }
-            continueButton.setOnClickListener {
-                viewModel.onContinue()
             }
 
             setFragmentResultListener(InsurerProviderBottomSheet.REQUEST_KEY) { requestKey: String, bundle: Bundle ->
@@ -137,7 +127,7 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
         askForPriceActivityResultLauncher.launch(intent)
     }
 
-    private fun onShowInsurers(insuranceProviders: List<InsuranceProvider>) {
+    private fun showInsurers(insuranceProviders: List<InsuranceProvider>) {
         val fragment = InsurerProviderBottomSheet.newInstance(
             insuranceProviders.map {
                 PreviousInsurerParameter.PreviousInsurer(it.name, "", it.id)
@@ -146,7 +136,19 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
         fragment.show(parentFragmentManager, InsurerProviderBottomSheet.TAG)
     }
 
-    private fun onContinue() {
+    private fun continueWithProvider(providerId: String) {
+        if (providerId == getString(R.string.EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION)) {
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle(getString(R.string.EXTERNAL_INSURANCE_PROVIDER_ALERT_TITLE))
+                .setMessage(getString(R.string.EXTERNAL_INSURANCE_PROVIDER_ALERT_MESSAGE))
+                .setPositiveButton(getString(R.string.ALERT_OK)) { _, _ -> continueEmbark() }
+                .show()
+        } else {
+            startAskForPrice(providerId)
+        }
+    }
+
+    private fun continueEmbark() {
         embarkViewModel.submitAction(insurerData.next)
     }
 

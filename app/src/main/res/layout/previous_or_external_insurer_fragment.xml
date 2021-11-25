@@ -82,6 +82,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/base_margin_double"
+        android:enabled="false"
         android:text="@string/onboarding_norway_current_insurer.bottom_sheet_continue_button"
         app:layout_constraintBottom_toBottomOf="parent" />
 

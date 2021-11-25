@@ -14,15 +14,12 @@ class ExternalInsurerViewModel(
     private val getInsuranceProvidersUseCase: GetInsuranceProvidersUseCase
 ) : ViewModel() {
 
-    private var insuranceProviders: List<InsuranceProvider> = emptyList()
-
     private val _events = Channel<Event>(Channel.UNLIMITED)
     val events = _events.receiveAsFlow()
 
     sealed class Event {
-        data class Continue(
-            val providerId: String,
-            val providerName: String
+        data class Error(
+            val errorResult: InsuranceProvidersResult.Error
         ) : Event()
     }
 
@@ -31,9 +28,8 @@ class ExternalInsurerViewModel(
 
     data class ViewState(
         val isLoading: Boolean = false,
-        val showInsuranceProviders: List<InsuranceProvider>? = null,
+        val insuranceProviders: List<InsuranceProvider>? = null,
         val selectedProvider: InsuranceProvider? = null,
-        val error: InsuranceProvidersResult.Error? = null
     ) {
         fun canContinue() = selectedProvider != null
     }
@@ -43,35 +39,17 @@ class ExternalInsurerViewModel(
             _viewState.update { it.copy(isLoading = true) }
             when (val result = getInsuranceProvidersUseCase.getInsuranceProviders()) {
                 is InsuranceProvidersResult.Success -> _viewState.update {
-                    insuranceProviders = result.providers
-                    it.copy(isLoading = false)
+                    it.copy(isLoading = false, insuranceProviders = result.providers)
                 }
-                is InsuranceProvidersResult.Error -> _viewState.update {
-                    it.copy(error = result, isLoading = false)
+                is InsuranceProvidersResult.Error -> {
+                    _viewState.update { it.copy(isLoading = false) }
+                    _events.trySend(Event.Error(result))
                 }
             }
         }
     }
 
-    fun showInsuranceProviders() {
-        _viewState.update {
-            it.copy(showInsuranceProviders = insuranceProviders)
-        }
-    }
-
     fun selectInsuranceProvider(provider: InsuranceProvider) {
-        _viewState.update { it.copy(selectedProvider = provider, showInsuranceProviders = null) }
-    }
-
-    fun onContinue() {
-        val selectedProvider = _viewState.value.selectedProvider
-        if (viewState.value.canContinue() && selectedProvider != null) {
-            _events.trySend(
-                Event.Continue(
-                    providerId = selectedProvider.id,
-                    providerName = selectedProvider.name
-                )
-            )
-        }
+        _viewState.update { it.copy(selectedProvider = provider) }
     }
 }

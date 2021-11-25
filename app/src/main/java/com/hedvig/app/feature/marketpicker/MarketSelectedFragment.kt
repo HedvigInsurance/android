@@ -14,6 +14,8 @@ import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsetsMargin
 import com.hedvig.app.util.extensions.view.applyStatusBarInsetsMargin
 import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.util.featureflags.Feature
+import com.hedvig.app.util.featureflags.FeatureManager
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
@@ -23,6 +25,7 @@ class MarketSelectedFragment : Fragment(R.layout.fragment_market_selected) {
     private val binding by viewBinding(FragmentMarketSelectedBinding::bind)
     private val tracker: MarketingTracker by inject()
     private val marketManager: MarketManager by inject()
+    private val featureManager: FeatureManager by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.apply {
@@ -51,7 +54,10 @@ class MarketSelectedFragment : Fragment(R.layout.fragment_market_selected) {
 
             signUp.setHapticClickListener {
                 tracker.signUp()
-                marketManager.market?.onboarding(requireContext())?.let { startActivity(it) }
+                marketManager.market?.onboarding(
+                    requireContext(),
+                    featureManager.isFeatureEnabled(Feature.SE_EMBARK_ONBOARDING)
+                )?.let { startActivity(it) }
             }
 
             logIn.setHapticClickListener {

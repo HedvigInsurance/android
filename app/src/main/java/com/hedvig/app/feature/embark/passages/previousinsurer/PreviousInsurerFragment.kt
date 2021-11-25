@@ -17,7 +17,6 @@ import com.hedvig.app.util.whenApiVersion
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import d
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
-import timber.log.Timber.Forest.d
 
 class PreviousInsurerFragment : Fragment(R.layout.previous_or_external_insurer_fragment) {
 
