@@ -14,6 +14,7 @@ license = "0.8.90"
 lokalise = "1.4.1"
 
 # Other versions sorted alphabetically
+accompanistPager = "0.18.0" # Use 18 until https://github.com/google/accompanist/issues/847 is fixed
 accompanist = "0.20.0"
 androidx-compose = "1.0.4"
 androidx-datastore = "1.0.0"
@@ -87,8 +88,8 @@ kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk7", version.re
 
 accompanist-insets = { module = "com.google.accompanist:accompanist-insets", version.ref = "accompanist" }
 accompanist-insetsUi = { module = "com.google.accompanist:accompanist-insets-ui", version.ref = "accompanist" }
-accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanist" }
-accompanist-pagerIndicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanist" }
+accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPager" }
+accompanist-pagerIndicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanistPager" }
 
 adyen = { module = "com.adyen.checkout:drop-in", version.ref = "adyen" }
 
