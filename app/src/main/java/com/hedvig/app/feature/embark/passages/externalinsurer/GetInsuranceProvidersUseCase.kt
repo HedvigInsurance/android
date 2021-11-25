@@ -6,10 +6,6 @@ import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
 
-interface GetInsuranceProvidersUseCase {
-    suspend fun getInsuranceProviders(): InsuranceProvidersResult
-}
-
 sealed class InsuranceProvidersResult {
     data class Success(val providers: List<InsuranceProvider>) : InsuranceProvidersResult()
     sealed class Error : InsuranceProvidersResult() {
@@ -22,11 +18,11 @@ data class InsuranceProvider(
     val name: String
 )
 
-class GetInsuranceProvidersUseCaseImpl(
+class GetInsuranceProvidersUseCase(
     private val apolloClient: ApolloClient,
     private val localeManager: LocaleManager
-) : GetInsuranceProvidersUseCase {
-    override suspend fun getInsuranceProviders(): InsuranceProvidersResult {
+) {
+    suspend fun getInsuranceProviders(): InsuranceProvidersResult {
         val insuranceProviders = InsuranceProvidersQuery(localeManager.defaultLocale())
         return when (val result = apolloClient.query(insuranceProviders).safeQuery()) {
             is QueryResult.Success -> InsuranceProvidersResult.Success(

@@ -11,7 +11,6 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runBlockingTest
@@ -46,16 +45,6 @@ class ExternalInsurerViewModelTest {
 
         advanceUntilIdle()
         assertThat(viewModel.viewState.value.isLoading).isEqualTo(false)
-    }
-
-    @Test
-    fun testLoadInsuranceProviders() = mainCoroutineRule.dispatcher.runBlockingTest {
-        coEvery { getInsuranceProvidersUseCase.getInsuranceProviders() } returns
-            InsuranceProvidersResult.Success(insuranceProviders)
-
-        val viewModel = ExternalInsurerViewModel(getInsuranceProvidersUseCase)
-
-        assertThat(viewModel.viewState.value.insuranceProviders).isEqualTo(insuranceProviders)
     }
 
     @Test

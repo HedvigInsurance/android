@@ -39,6 +39,7 @@ import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.feature.chat.service.ChatTracker
+import com.hedvig.app.feature.chat.usecase.TriggerFreeTextChatUseCase
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
 import com.hedvig.app.feature.chat.viewmodel.UserViewModel
 import com.hedvig.app.feature.claims.data.ClaimsRepository
@@ -65,7 +66,6 @@ import com.hedvig.app.feature.embark.passages.audiorecorder.AudioRecorderViewMod
 import com.hedvig.app.feature.embark.passages.datepicker.DatePickerViewModel
 import com.hedvig.app.feature.embark.passages.externalinsurer.ExternalInsurerViewModel
 import com.hedvig.app.feature.embark.passages.externalinsurer.GetInsuranceProvidersUseCase
-import com.hedvig.app.feature.embark.passages.externalinsurer.GetInsuranceProvidersUseCaseImpl
 import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceViewModel
 import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.StartDataCollectionUseCase
 import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.StartDataCollectionUseCaseImpl
@@ -77,6 +77,13 @@ import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionParams
 import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionViewModel
 import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
 import com.hedvig.app.feature.embark.passages.textaction.TextActionViewModel
+import com.hedvig.app.feature.genericauth.CreateOtpAttemptUseCase
+import com.hedvig.app.feature.genericauth.GenericAuthViewModel
+import com.hedvig.app.feature.genericauth.otpinput.OtpInputViewModel
+import com.hedvig.app.feature.genericauth.otpinput.ReSendOtpCodeUseCase
+import com.hedvig.app.feature.genericauth.otpinput.ReSendOtpCodeUseCaseImpl
+import com.hedvig.app.feature.genericauth.otpinput.SendOtpCodeUseCase
+import com.hedvig.app.feature.genericauth.otpinput.SendOtpCodeUseCaseImpl
 import com.hedvig.app.feature.home.data.GetHomeUseCase
 import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.home.ui.HomeViewModel
@@ -376,6 +383,8 @@ val viewModelModule = module {
     viewModel { (notificationMetadata: CrossSellNotificationMetadata?, crossSell: CrossSellData) ->
         CrossSellDetailViewModel(notificationMetadata, crossSell, get())
     }
+    viewModel { GenericAuthViewModel(get()) }
+    viewModel { (otpId: String, credential: String) -> OtpInputViewModel(otpId, credential, get(), get(), get()) }
 }
 
 val choosePlanModule = module {
@@ -436,6 +445,7 @@ val adyenModule = module {
 val embarkModule = module {
     viewModel<EmbarkViewModel> { (storyName: String) ->
         EmbarkViewModelImpl(
+            get(),
             get(),
             get(),
             get(),
@@ -612,7 +622,11 @@ val useCaseModule = module {
     single { GraphQLQueryUseCase(get()) }
     single { GetCrossSellsUseCase(get(), get()) }
     single<StartDataCollectionUseCase> { StartDataCollectionUseCaseImpl(get(), get()) }
-    single<GetInsuranceProvidersUseCase> { GetInsuranceProvidersUseCaseImpl(get(), get()) }
+    single { GetInsuranceProvidersUseCase(get(), get()) }
+    single { CreateOtpAttemptUseCase(get()) }
+    single<SendOtpCodeUseCase> { SendOtpCodeUseCaseImpl(get()) }
+    single<ReSendOtpCodeUseCase> { ReSendOtpCodeUseCaseImpl(get()) }
+    single { TriggerFreeTextChatUseCase(get()) }
 }
 
 val cacheManagerModule = module {
