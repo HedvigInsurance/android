@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.embark.passages.externalinsurer
 
-
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.InsuranceProvidersQuery
 import com.hedvig.app.util.LocaleManager
