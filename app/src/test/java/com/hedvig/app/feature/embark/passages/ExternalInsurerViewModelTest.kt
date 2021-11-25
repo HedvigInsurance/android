@@ -7,6 +7,8 @@ import com.hedvig.app.feature.embark.passages.externalinsurer.GetInsuranceProvid
 import com.hedvig.app.feature.embark.passages.externalinsurer.InsuranceProvider
 import com.hedvig.app.feature.embark.passages.externalinsurer.InsuranceProvidersResult
 import com.hedvig.app.util.coroutines.MainCoroutineRule
+import io.mockk.coEvery
+import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Rule
@@ -20,21 +22,17 @@ class ExternalInsurerViewModelTest {
         InsuranceProvider("3", "Test3")
     )
 
-    private var insuranceProvidersResult: InsuranceProvidersResult =
-        InsuranceProvidersResult.Success(insuranceProviders)
-
     @ExperimentalCoroutinesApi
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
 
-    private val getInsuranceProvidersUseCase = object : GetInsuranceProvidersUseCase {
-        override suspend fun getInsuranceProviders(): InsuranceProvidersResult {
-            return insuranceProvidersResult
-        }
-    }
+    private val getInsuranceProvidersUseCase = mockk<GetInsuranceProvidersUseCase>()
 
     @Test
     fun testLoadingInsurers() = mainCoroutineRule.dispatcher.runBlockingTest {
+        coEvery { getInsuranceProvidersUseCase.getInsuranceProviders() } returns
+            InsuranceProvidersResult.Success(insuranceProviders)
+
         val viewModel = ExternalInsurerViewModel(getInsuranceProvidersUseCase)
 
         advanceTimeBy(1)
@@ -46,7 +44,9 @@ class ExternalInsurerViewModelTest {
 
     @Test
     fun testErrorState() = mainCoroutineRule.dispatcher.runBlockingTest {
-        insuranceProvidersResult = InsuranceProvidersResult.Error.NetworkError
+        coEvery { getInsuranceProvidersUseCase.getInsuranceProviders() } returns
+            InsuranceProvidersResult.Error.NetworkError
+
         val viewModel = ExternalInsurerViewModel(getInsuranceProvidersUseCase)
 
         advanceTimeBy(1)
@@ -58,7 +58,9 @@ class ExternalInsurerViewModelTest {
 
     @Test
     fun testSelectProvider() = mainCoroutineRule.dispatcher.runBlockingTest {
-        insuranceProvidersResult = InsuranceProvidersResult.Success(insuranceProviders)
+        coEvery { getInsuranceProvidersUseCase.getInsuranceProviders() } returns
+            InsuranceProvidersResult.Success(insuranceProviders)
+
         val viewModel = ExternalInsurerViewModel(getInsuranceProvidersUseCase)
         viewModel.selectInsuranceProvider(InsuranceProvider("1", "Test1"))
 

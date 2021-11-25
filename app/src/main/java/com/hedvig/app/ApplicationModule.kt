@@ -64,7 +64,6 @@ import com.hedvig.app.feature.embark.ValueStoreImpl
 import com.hedvig.app.feature.embark.passages.audiorecorder.AudioRecorderViewModel
 import com.hedvig.app.feature.embark.passages.datepicker.DatePickerViewModel
 import com.hedvig.app.feature.embark.passages.externalinsurer.GetInsuranceProvidersUseCase
-import com.hedvig.app.feature.embark.passages.externalinsurer.GetInsuranceProvidersUseCaseImpl
 import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceViewModel
 import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.StartDataCollectionUseCase
 import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.StartDataCollectionUseCaseImpl
@@ -612,7 +611,7 @@ val useCaseModule = module {
     single { GraphQLQueryUseCase(get()) }
     single { GetCrossSellsUseCase(get(), get()) }
     single<StartDataCollectionUseCase> { StartDataCollectionUseCaseImpl(get(), get()) }
-    single<GetInsuranceProvidersUseCase> { GetInsuranceProvidersUseCaseImpl(get(), get()) }
+    single { GetInsuranceProvidersUseCase(get(), get()) }
 }
 
 val cacheManagerModule = module {
