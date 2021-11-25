@@ -17,11 +17,11 @@ import com.hedvig.app.feature.embark.masking.remask
 import com.hedvig.app.feature.embark.masking.unmask
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.animateResponse
-import com.hedvig.app.feature.embark.setInputType
-import com.hedvig.app.feature.embark.setValidationFormatter
 import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.KEY_BOARD_DELAY_MILLIS
 import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_MILLIS
-import com.hedvig.app.feature.embark.validationCheck
+import com.hedvig.app.feature.embark.util.setInputType
+import com.hedvig.app.feature.embark.util.setValidationFormatter
+import com.hedvig.app.feature.embark.util.validationCheck
 import com.hedvig.app.util.extensions.addViews
 import com.hedvig.app.util.extensions.hideKeyboardWithDelay
 import com.hedvig.app.util.extensions.onChange

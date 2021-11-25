@@ -307,9 +307,18 @@
         <activity android:name=".feature.crossselling.ui.detail.CrossSellDetailActivity" />
         <activity android:name=".feature.crossselling.ui.detail.CrossSellFaqActivity" />
         <activity android:name=".feature.sunsetting.ForceUpgradeActivity" />
+        <activity
+            android:name=".feature.genericauth.GenericAuthActivity"
+            android:windowSoftInputMode="adjustResize" />
+
 
         <activity android:name=".feature.embark.passages.externalinsurer.askforprice.AskForPriceInfoActivity" />
         <activity android:name=".feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceInfoActivity" />
+
+        <activity
+            android:name=".feature.genericauth.otpinput.OtpInputActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize" />
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
@@ -363,6 +372,10 @@
         <intent>
             <action android:name="android.intent.action.VIEW" />
             <data android:scheme="https" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="mailto" />
         </intent>
     </queries>
 

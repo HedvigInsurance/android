@@ -40,7 +40,7 @@ android {
         applicationId = "com.hedvig"
 
         versionCode = 43
-        versionName = "6.2.5"
+        versionName = "6.3.0"
 
         vectorDrawables.useSupportLibrary = true
 
@@ -296,6 +296,7 @@ dependencies {
 
     implementation(libs.androidx.other.activityCompose)
     implementation(libs.androidx.compose.material)
+    implementation(libs.androidx.compose.materialIconsExtended)
     implementation(libs.androidx.compose.animation)
     implementation(libs.androidx.compose.mdcAdapter)
     implementation(libs.androidx.compose.uiTooling)
