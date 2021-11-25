@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.embark
+package com.hedvig.app.feature.embark.util
 
 import android.os.Build
 import android.text.Editable
@@ -7,6 +7,7 @@ import android.text.TextWatcher
 import android.text.method.DigitsKeyListener
 import android.view.View.AUTOFILL_HINT_EMAIL_ADDRESS
 import com.google.android.material.textfield.TextInputEditText
+import com.hedvig.app.util.EMAIL_REGEX
 import com.hedvig.app.util.whenApiVersion
 import java.util.regex.Pattern
 
@@ -19,7 +20,6 @@ const val NORWEGIAN_POSTAL_CODE = "NorwegianPostalCode"
 
 val PERSONAL_NUMBER_REGEX: Pattern = Pattern.compile("^\\d{6}-\\d{4}\$", Pattern.CASE_INSENSITIVE)
 val SWEDISH_POSTAL_CODE_REGEX: Pattern = Pattern.compile("^\\d{3} \\d{2}$", Pattern.CASE_INSENSITIVE)
-val EMAIL_REGEX: Pattern = Pattern.compile("^.+@.+\\..+\$", Pattern.CASE_INSENSITIVE)
 val NORWEGIAN_POSTAL_CODE_REGEX: Pattern = Pattern.compile("^\\d{4}$", Pattern.CASE_INSENSITIVE)
 val BIRTH_DATE_REGEX: Pattern = Pattern.compile(
     "^[12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$",

@@ -33,4 +33,6 @@
 
     <item name="colorTooltip" type="color">@color/lavender_300</item>
 
+    <item name="progress_overlay" type="color">#66000000</item>
+
 </resources>

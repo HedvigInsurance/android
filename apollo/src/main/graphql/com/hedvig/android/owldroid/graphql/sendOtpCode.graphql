@@ -1,0 +1,10 @@
+mutation SendOtpCode($id: ID!, $otp: String!) {
+  login_verifyOtpAttempt(id: $id, otp: $otp) {
+    ... on VerifyOtpLoginAttemptSuccess {
+      accessToken
+    }
+    ... on VerifyOtpLoginAttemptError {
+      errorCode
+    }
+  }
+}
