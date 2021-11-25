@@ -63,6 +63,7 @@ import com.hedvig.app.feature.embark.ValueStore
 import com.hedvig.app.feature.embark.ValueStoreImpl
 import com.hedvig.app.feature.embark.passages.audiorecorder.AudioRecorderViewModel
 import com.hedvig.app.feature.embark.passages.datepicker.DatePickerViewModel
+import com.hedvig.app.feature.embark.passages.externalinsurer.GetInsuranceProvidersUseCase
 import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceViewModel
 import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.StartDataCollectionUseCase
 import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.StartDataCollectionUseCaseImpl
@@ -619,6 +620,7 @@ val useCaseModule = module {
     single { GraphQLQueryUseCase(get()) }
     single { GetCrossSellsUseCase(get(), get()) }
     single<StartDataCollectionUseCase> { StartDataCollectionUseCaseImpl(get(), get()) }
+    single { GetInsuranceProvidersUseCase(get(), get()) }
     single { CreateOtpAttemptUseCase(get()) }
     single<SendOtpCodeUseCase> { SendOtpCodeUseCaseImpl(get()) }
     single<ReSendOtpCodeUseCase> { ReSendOtpCodeUseCaseImpl(get()) }
