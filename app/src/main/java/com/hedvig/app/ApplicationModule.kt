@@ -39,6 +39,7 @@ import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.feature.chat.service.ChatTracker
+import com.hedvig.app.feature.chat.usecase.TriggerFreeTextChatUseCase
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
 import com.hedvig.app.feature.chat.viewmodel.UserViewModel
 import com.hedvig.app.feature.claims.data.ClaimsRepository
@@ -449,6 +450,7 @@ val embarkModule = module {
             get(),
             get(),
             get(),
+            get(),
             storyName
         )
     }
@@ -624,6 +626,7 @@ val useCaseModule = module {
     single { CreateOtpAttemptUseCase(get()) }
     single<SendOtpCodeUseCase> { SendOtpCodeUseCaseImpl(get()) }
     single<ReSendOtpCodeUseCase> { ReSendOtpCodeUseCaseImpl(get()) }
+    single { TriggerFreeTextChatUseCase(get()) }
 }
 
 val cacheManagerModule = module {
