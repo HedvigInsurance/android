@@ -3,8 +3,8 @@ package com.hedvig.app.feature.embark
 import android.content.Intent
 import com.hedvig.app.MockActivity
 import com.hedvig.app.embarkModule
-import com.hedvig.app.feature.embark.passages.previousinsurer.askforprice.AskForPriceInfoActivity
-import com.hedvig.app.feature.embark.passages.previousinsurer.askforprice.AskForPriceInfoParameter
+import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.AskForPriceInfoActivity
+import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.AskForPriceInfoParameter
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
 import com.hedvig.app.feature.onboarding.MemberIdViewModel

@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.embark.passages.previousinsurer.askforprice
+package com.hedvig.app.feature.embark.passages.externalinsurer.askforprice
 
 import android.app.Activity
 import android.content.Context
@@ -12,7 +12,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
-import com.hedvig.app.feature.embark.passages.previousinsurer.retrieveprice.RetrievePriceInfoActivity
+import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceInfoActivity
 import com.hedvig.app.ui.compose.composables.appbar.TopAppBarWithBack
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 

@@ -130,6 +130,16 @@ query EmbarkStory($name: String!, $locale: String!) {
             }
           }
         }
+        ... on EmbarkExternalInsuranceProviderAction {
+          externalInsurerData: data {
+            next {
+              ...EmbarkLinkFragment
+            }
+            skip {
+              ...EmbarkLinkFragment
+            }
+          }
+        }
         ... on EmbarkNumberAction {
           numberActionData: data {
             ...EmbarkNumberActionFragment

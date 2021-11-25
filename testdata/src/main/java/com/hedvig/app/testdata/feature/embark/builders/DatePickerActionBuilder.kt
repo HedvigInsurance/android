@@ -18,9 +18,10 @@ data class DatePickerActionBuilder(
         asEmbarkDatePickerAction = EmbarkStoryQuery.AsEmbarkDatePickerAction(
             storeKey = key,
             label = label,
-            next = EmbarkStoryQuery.Next1(fragments = EmbarkStoryQuery.Next1.Fragments(link))
+            next = EmbarkStoryQuery.Next2(fragments = EmbarkStoryQuery.Next2.Fragments(link))
         ),
         asEmbarkMultiAction = null,
         asEmbarkAudioRecorderAction = null,
+        asEmbarkExternalInsuranceProviderAction = null,
     )
 }

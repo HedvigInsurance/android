@@ -63,6 +63,9 @@ import com.hedvig.app.feature.embark.ValueStore
 import com.hedvig.app.feature.embark.ValueStoreImpl
 import com.hedvig.app.feature.embark.passages.audiorecorder.AudioRecorderViewModel
 import com.hedvig.app.feature.embark.passages.datepicker.DatePickerViewModel
+import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceViewModel
+import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.StartDataCollectionUseCase
+import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.StartDataCollectionUseCaseImpl
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionItem
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionParams
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionViewModel
@@ -70,9 +73,6 @@ import com.hedvig.app.feature.embark.passages.multiaction.add.AddComponentViewMo
 import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionParams
 import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionViewModel
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerViewModel
-import com.hedvig.app.feature.embark.passages.previousinsurer.retrieveprice.RetrievePriceViewModel
-import com.hedvig.app.feature.embark.passages.previousinsurer.retrieveprice.StartDataCollectionUseCase
-import com.hedvig.app.feature.embark.passages.previousinsurer.retrieveprice.StartDataCollectionUseCaseImpl
 import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
 import com.hedvig.app.feature.embark.passages.textaction.TextActionViewModel
 import com.hedvig.app.feature.genericauth.CreateOtpAttemptUseCase

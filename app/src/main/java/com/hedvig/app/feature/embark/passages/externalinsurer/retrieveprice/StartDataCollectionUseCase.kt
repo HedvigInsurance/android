@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.embark.passages.previousinsurer.retrieveprice
+package com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice
 
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.ExternalInsuranceProviderV2Query

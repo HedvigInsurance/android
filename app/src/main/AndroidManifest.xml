@@ -311,8 +311,10 @@
             android:name=".feature.genericauth.GenericAuthActivity"
             android:windowSoftInputMode="adjustResize" />
 
-        <activity android:name=".feature.embark.passages.previousinsurer.askforprice.AskForPriceInfoActivity" />
-        <activity android:name=".feature.embark.passages.previousinsurer.retrieveprice.RetrievePriceInfoActivity" />
+
+        <activity android:name=".feature.embark.passages.externalinsurer.askforprice.AskForPriceInfoActivity" />
+        <activity android:name=".feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceInfoActivity" />
+
         <activity
             android:name=".feature.genericauth.otpinput.OtpInputActivity"
             android:exported="true"
