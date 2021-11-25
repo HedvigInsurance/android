@@ -12,6 +12,7 @@ import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.type.EmbarkExternalRedirectLocation
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.authenticate.LoginStatusService
+import com.hedvig.app.feature.chat.usecase.TriggerFreeTextChatUseCase
 import com.hedvig.app.feature.embark.extensions.api
 import com.hedvig.app.feature.embark.extensions.getComputedValues
 import com.hedvig.app.feature.embark.util.VariableExtractor
@@ -29,7 +30,8 @@ import kotlin.math.max
 abstract class EmbarkViewModel(
     private val tracker: EmbarkTracker,
     private val valueStore: ValueStore,
-    private val graphQLQueryUseCase: GraphQLQueryUseCase
+    private val graphQLQueryUseCase: GraphQLQueryUseCase,
+    private val triggerFreeTextChatUseCase: TriggerFreeTextChatUseCase,
 ) : ViewModel() {
     private val _viewState = MutableLiveData<ViewState>()
     val viewState: LiveData<ViewState> = _viewState
@@ -153,7 +155,10 @@ abstract class EmbarkViewModel(
                 _events.trySend(Event.Close)
             }
             EmbarkExternalRedirectLocation.CHAT -> {
-                _events.trySend(Event.Chat)
+                viewModelScope.launch {
+                    triggerFreeTextChatUseCase.invoke()
+                    _events.trySend(Event.Chat)
+                }
             }
             else -> {
                 // Do nothing
@@ -508,10 +513,11 @@ class EmbarkViewModelImpl(
     private val embarkRepository: EmbarkRepository,
     private val loginStatusService: LoginStatusService,
     graphQLQueryUseCase: GraphQLQueryUseCase,
+    triggerFreeTextChatUseCase: TriggerFreeTextChatUseCase,
     tracker: EmbarkTracker,
     valueStore: ValueStore,
     storyName: String,
-) : EmbarkViewModel(tracker, valueStore, graphQLQueryUseCase) {
+) : EmbarkViewModel(tracker, valueStore, graphQLQueryUseCase, triggerFreeTextChatUseCase) {
 
     init {
         fetchStory(storyName)
