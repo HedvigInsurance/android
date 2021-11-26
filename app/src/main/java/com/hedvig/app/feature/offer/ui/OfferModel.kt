@@ -54,13 +54,30 @@ sealed class OfferModel {
         object Coverage : Paragraph()
     }
 
+    sealed class InsurelyCard : OfferModel() {
+        abstract val insuranceProvider: String?
+
+        data class Loading(override val insuranceProvider: String?) : InsurelyCard()
+        data class FailedToRetrieve(override val insuranceProvider: String?) : InsurelyCard()
+        data class Retrieved(
+            override val insuranceProvider: String?,
+            val currentInsurances: List<CurrentInsurance>,
+            val cheaperBy: MonetaryAmount?,
+        ) : InsurelyCard() {
+            data class CurrentInsurance(
+                val name: String,
+                val amount: MonetaryAmount,
+            )
+        }
+    }
+
     data class QuoteDetails(
         val name: String,
         val id: String,
     ) : OfferModel()
 
     data class FAQ(
-        val items: List<FAQItem>
+        val items: List<FAQItem>,
     ) : OfferModel()
 
     object AutomaticSwitchCard : OfferModel()
