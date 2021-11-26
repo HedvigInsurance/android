@@ -3,6 +3,8 @@ package com.hedvig.app.feature.offer.ui
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.doOnNextLayout
 import androidx.core.view.isVisible
 import androidx.core.view.updatePaddingRelative
@@ -30,8 +32,10 @@ import com.hedvig.app.feature.faq.FAQBottomSheet
 import com.hedvig.app.feature.offer.OfferRedeemCodeBottomSheet
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheet
+import com.hedvig.app.feature.offer.ui.composable.insurely.InsurelyCard
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.table.generateTable
+import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.extensions.colorAttr
@@ -54,7 +58,7 @@ class OfferAdapter(
     private val onRemoveDiscount: () -> Unit,
     private val onSign: (SignMethod) -> Unit,
     private val reload: () -> Unit,
-    private val openChat: () -> Unit
+    private val openChat: () -> Unit,
 ) : ListAdapter<OfferModel, OfferAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
@@ -71,6 +75,7 @@ class OfferAdapter(
         R.layout.offer_footer -> ViewHolder.Footer(parent, openChat)
         R.layout.text_headline5 -> ViewHolder.Subheading(parent)
         R.layout.text_body2 -> ViewHolder.Paragraph(parent)
+        INSURELY_CARD -> ViewHolder.InsurelyCardViewHolder(ComposeView(parent.context))
         R.layout.text_subtitle1 -> ViewHolder.QuoteDetails(parent, openQuoteDetails)
         R.layout.offer_faq -> ViewHolder.FAQ(parent, fragmentManager)
         R.layout.info_card -> ViewHolder.InfoCard(parent)
@@ -79,13 +84,14 @@ class OfferAdapter(
         else -> throw Error("Invalid viewType: $viewType")
     }
 
-    override fun getItemViewType(position: Int) = when (getItem(position)) {
+    override fun getItemViewType(position: Int): Int = when (getItem(position)) {
         is OfferModel.Header -> R.layout.offer_header
         is OfferModel.Facts -> R.layout.offer_fact_area
         is OfferModel.CurrentInsurer -> R.layout.offer_switch
         is OfferModel.Footer -> R.layout.offer_footer
         is OfferModel.Subheading -> R.layout.text_headline5
         is OfferModel.Paragraph -> R.layout.text_body2
+        is OfferModel.InsurelyCard -> INSURELY_CARD
         is OfferModel.QuoteDetails -> R.layout.text_subtitle1
         is OfferModel.FAQ -> R.layout.offer_faq
         OfferModel.AutomaticSwitchCard -> R.layout.info_card
@@ -97,6 +103,12 @@ class OfferAdapter(
         holder.bind(getItem(position))
     }
 
+    override fun onViewRecycled(holder: ViewHolder) {
+        if (holder is ViewHolder.InsurelyCardViewHolder) {
+            holder.composeView.disposeComposition()
+        }
+    }
+
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         abstract fun bind(data: OfferModel)
 
@@ -106,7 +118,7 @@ class OfferAdapter(
             private val fragmentManager: FragmentManager,
             private val tracker: OfferTracker,
             private val onSign: (SignMethod) -> Unit,
-            private val onRemoveDiscount: () -> Unit
+            private val onRemoveDiscount: () -> Unit,
         ) : ViewHolder(parent.inflate(R.layout.offer_header)) {
             private val binding by viewBinding(OfferHeaderBinding::bind)
 
@@ -224,7 +236,7 @@ class OfferAdapter(
 
         class Footer(
             parent: ViewGroup,
-            openChat: () -> Unit
+            openChat: () -> Unit,
         ) : ViewHolder(parent.inflate(R.layout.offer_footer)) {
             private val binding by viewBinding(OfferFooterBinding::bind)
 
@@ -318,21 +330,42 @@ class OfferAdapter(
             }
 
             override fun bind(data: OfferModel) = with(binding.root) {
-                if (data !is OfferModel.Paragraph) {
+                if (data !is OfferModel.Paragraph.Coverage) {
                     return invalid(data)
                 }
 
-                setText(
-                    when (data) {
-                        OfferModel.Paragraph.Coverage -> R.string.offer_screen_MULTIPLE_INSURANCES_coverage_paragraph
-                    }
+                setText(R.string.offer_screen_MULTIPLE_INSURANCES_coverage_paragraph)
+            }
+        }
+
+        class InsurelyCardViewHolder(
+            val composeView: ComposeView,
+        ) : ViewHolder(composeView) {
+            init {
+                composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                // todo make sure paddings work with all possible variations
+                composeView.updatePaddingRelative(
+                    start = BASE_MARGIN_DOUBLE,
+                    top = BASE_MARGIN_DOUBLE,
+                    end = BASE_MARGIN_DOUBLE,
+                    bottom = BASE_MARGIN_DOUBLE,
                 )
+            }
+
+            override fun bind(data: OfferModel) {
+                val model = data
+                if (model !is OfferModel.InsurelyCard) return invalid(data)
+                composeView.setContent {
+                    HedvigTheme {
+                        InsurelyCard(model)
+                    }
+                }
             }
         }
 
         class FAQ(
             parent: ViewGroup,
-            private val fragmentManager: FragmentManager
+            private val fragmentManager: FragmentManager,
         ) : ViewHolder(parent.inflate(R.layout.offer_faq)) {
             private val binding by viewBinding(OfferFaqBinding::bind)
 
@@ -417,5 +450,9 @@ class OfferAdapter(
                 setHapticClickListener { reload() }
             }
         }
+    }
+
+    companion object {
+        const val INSURELY_CARD = 1
     }
 }
