@@ -50,7 +50,7 @@ flexbox = "3.0.0"
 fragmentViewBindingDelegate = "1.0.0"
 insetter = "0.6.0"
 jsonTest = "20210307"
-kaspresso = "1.2.1"
+kaspresso = "1.3.0"
 koin = "3.1.2"
 leakCanary = "2.7"
 lottie = "4.2.0"
@@ -64,6 +64,7 @@ okhttpCoroutines = "1.0"
 playKtx = "1.8.1"
 reactiveX-Android = "2.1.1"
 reactiveX-Kotlin = "2.4.0"
+robolectric = "4.7.2"
 shake = "15.0.0"
 shimmer = "0.5.0"
 showkase = "1.0.0-beta05"
@@ -201,6 +202,8 @@ playKtx = { module = "com.google.android.play:core-ktx", version.ref = "playKtx"
 
 reactiveX-android = { module = "io.reactivex.rxjava2:rxandroid", version.ref = "reactiveX-Android" }
 reactiveX-kotlin = { module = "io.reactivex.rxjava2:rxkotlin", version.ref = "reactiveX-Kotlin" }
+
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 
 shake = { module = "com.shakebugs:shake", version.ref = "shake" }
 

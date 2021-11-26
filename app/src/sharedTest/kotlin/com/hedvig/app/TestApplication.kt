@@ -3,7 +3,7 @@ package com.hedvig.app
 import androidx.test.espresso.IdlingRegistry
 import com.apollographql.apollo.test.espresso.ApolloIdlingResource
 
-class TestApplication : HedvigApplication() {
+open class TestApplication : HedvigApplication() {
     override val graphqlUrl = "http://localhost:$PORT/"
     override val graphqlSubscriptionUrl = "http://localhost:$PORT/"
     override val isTestBuild = true

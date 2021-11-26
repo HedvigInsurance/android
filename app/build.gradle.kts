@@ -133,6 +133,13 @@ android {
             res.srcDir("src/engineering/res")
             manifest.srcFile("src/debug/AndroidManifest.xml")
         }
+
+        named("test") {
+            kotlin.srcDirs("src/sharedTest/kotlin")
+        }
+        named("androidTest") {
+            kotlin.srcDirs("src/sharedTest/kotlin")
+        }
     }
 
     configurations.all {
@@ -141,6 +148,12 @@ android {
             "org.hamcrest:hamcrest-library:2.1",
             "org.hamcrest:hamcrest:2.1"
         )
+    }
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
     }
 }
 
@@ -207,14 +220,24 @@ dependencies {
     implementation(libs.androidx.datastore.core)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.other.startup)
+
+    testImplementation(libs.androidx.test.junit)
+    testImplementation(libs.jsonTest)
+
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.espresso.intents)
     androidTestImplementation(libs.androidx.espresso.contrib)
-    testImplementation(libs.androidx.test.junit)
-    testImplementation(libs.jsonTest)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.test.rules)
     androidTestImplementation(libs.androidx.test.junit)
+
+    testImplementation(libs.androidx.espresso.core)
+    testImplementation(libs.androidx.espresso.intents)
+    testImplementation(libs.androidx.espresso.contrib)
+    testImplementation(libs.androidx.test.runner)
+    testImplementation(libs.androidx.test.rules)
+    testImplementation(libs.androidx.test.junit)
+    testImplementation(libs.robolectric)
 
     implementation(libs.accompanist.pager)
     implementation(libs.accompanist.pagerIndicators)
@@ -231,6 +254,7 @@ dependencies {
 
     implementation(libs.okhttp.loggingInterceptor)
     implementation(libs.okhttp.coroutines)
+    testImplementation(libs.okhttp.mockWebServer)
     androidTestImplementation(libs.okhttp.mockWebServer)
 
     // Todo: Look into if this is the proper way to use boms with version catalogs
@@ -245,6 +269,7 @@ dependencies {
     implementation(libs.mixpanel)
 
     implementation(libs.koin.android)
+    testImplementation(libs.koin.test)
     androidTestImplementation(libs.koin.test)
 
     implementation(libs.timber)
@@ -280,10 +305,12 @@ dependencies {
 
     implementation(libs.concatAdapterExtension)
 
+    testImplementation(libs.apollo.idlingResource)
     androidTestImplementation(libs.apollo.idlingResource)
 
     testImplementation(libs.assertK)
     androidTestImplementation(libs.assertK)
+    testImplementation(libs.kaspresso)
     androidTestImplementation(libs.kaspresso)
 
     androidTestImplementation(libs.mockk.android)
