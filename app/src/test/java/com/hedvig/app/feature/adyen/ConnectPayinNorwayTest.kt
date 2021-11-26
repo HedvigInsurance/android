@@ -3,6 +3,7 @@ package com.hedvig.app.feature.adyen
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
+import com.hedvig.app.RobolectricTestApplication
 import com.hedvig.app.feature.home.screens.HomeTabScreen
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.settings.Market
@@ -20,7 +21,12 @@ import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.kakao.screen.Screen
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
+@RunWith(RobolectricTestRunner::class)
+@Config(application = RobolectricTestApplication::class, sdk = [28], instrumentedPackages = ["androidx.loader.content"])
 class ConnectPayinNorwayTest : TestCase() {
     @get:Rule
     val activityRule = LazyIntentsActivityScenarioRule(LoggedInActivity::class.java)
