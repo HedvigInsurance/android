@@ -36,4 +36,10 @@ enum class Feature(
         "Used to select french market in app",
         false
     ),
+    SE_EMBARK_ONBOARDING(
+        "se_embark_onboarding",
+        "Embark onboarding for Swedish market",
+        "Will replace bot service",
+        false
+    )
 }

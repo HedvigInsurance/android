@@ -74,9 +74,15 @@ enum class Market {
         }
     }
 
-    fun onboarding(context: Context) = when (this) {
-        SE -> ChatActivity.newInstance(context)
-            .apply { putExtra(ChatActivity.EXTRA_SHOW_RESTART, true) }
+    fun onboarding(context: Context, seEmbarkOnboarding: Boolean) = when (this) {
+        SE -> {
+            if (seEmbarkOnboarding) {
+                ChoosePlanActivity.newInstance(context)
+            } else {
+                ChatActivity.newInstance(context)
+                    .apply { putExtra(ChatActivity.EXTRA_SHOW_RESTART, true) }
+            }
+        }
         NO -> {
             ChoosePlanActivity.newInstance(context)
         }

@@ -14,6 +14,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import com.hedvig.app.R
 import com.hedvig.app.ui.compose.composables.buttons.LargeContainedTextButton
+import com.hedvig.app.ui.compose.textutil.SwedishSSNVisualTransformation
 
 @Composable
 fun RetrievePriceContent(
@@ -43,7 +44,11 @@ fun RetrievePriceContent(
         TextField(
             modifier = Modifier.fillMaxWidth(),
             value = input,
-            onValueChange = { onIdentityInput(it) },
+            onValueChange = {
+                if (it.length <= 10) {
+                    onIdentityInput(it)
+                }
+            },
             singleLine = true,
             placeholder = { Text(placeholder) },
             label = {
@@ -52,7 +57,8 @@ fun RetrievePriceContent(
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = MaterialTheme.colors.background
             ),
-            isError = inputErrorMessage != null
+            isError = inputErrorMessage != null,
+            visualTransformation = SwedishSSNVisualTransformation()
         )
         LargeContainedTextButton(
             modifier = Modifier.padding(top = baseMarginQuadruple),

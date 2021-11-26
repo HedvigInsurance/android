@@ -10,6 +10,9 @@ import com.hedvig.app.util.coroutines.MainCoroutineRule
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Rule
 import org.junit.Test
@@ -30,8 +33,10 @@ class ExternalInsurerViewModelTest {
 
     @Test
     fun testLoadingInsurers() = mainCoroutineRule.dispatcher.runBlockingTest {
-        coEvery { getInsuranceProvidersUseCase.getInsuranceProviders() } returns
+        coEvery { getInsuranceProvidersUseCase.getInsuranceProviders() } coAnswers {
+            delay(100)
             InsuranceProvidersResult.Success(insuranceProviders)
+        }
 
         val viewModel = ExternalInsurerViewModel(getInsuranceProvidersUseCase)
 
@@ -39,21 +44,56 @@ class ExternalInsurerViewModelTest {
         assertThat(viewModel.viewState.value.isLoading).isEqualTo(true)
 
         advanceUntilIdle()
-        assertThat(viewModel.viewState.value.insuranceProviders).isEqualTo(insuranceProviders)
+        assertThat(viewModel.viewState.value.isLoading).isEqualTo(false)
     }
 
     @Test
     fun testErrorState() = mainCoroutineRule.dispatcher.runBlockingTest {
-        coEvery { getInsuranceProvidersUseCase.getInsuranceProviders() } returns
+        coEvery { getInsuranceProvidersUseCase.getInsuranceProviders() } coAnswers {
+            delay(100)
             InsuranceProvidersResult.Error.NetworkError
+        }
 
         val viewModel = ExternalInsurerViewModel(getInsuranceProvidersUseCase)
+
+        val events = mutableListOf<ExternalInsurerViewModel.Event>()
+        val job = launch {
+            viewModel.events.toList(events)
+        }
 
         advanceTimeBy(1)
         assertThat(viewModel.viewState.value.isLoading).isEqualTo(true)
 
         advanceUntilIdle()
-        assertThat(viewModel.viewState.value.error).isEqualTo(InsuranceProvidersResult.Error.NetworkError)
+        assertThat(viewModel.viewState.value.isLoading).isEqualTo(false)
+        assertThat(events.first())
+            .isEqualTo(ExternalInsurerViewModel.Event.Error(InsuranceProvidersResult.Error.NetworkError))
+
+        job.cancel()
+    }
+
+    @Test
+    fun testNoErrorState() = mainCoroutineRule.dispatcher.runBlockingTest {
+        coEvery { getInsuranceProvidersUseCase.getInsuranceProviders() } coAnswers {
+            delay(100)
+            InsuranceProvidersResult.Success(insuranceProviders)
+        }
+
+        val viewModel = ExternalInsurerViewModel(getInsuranceProvidersUseCase)
+
+        val events = mutableListOf<ExternalInsurerViewModel.Event>()
+        val job = launch {
+            viewModel.events.toList(events)
+        }
+
+        advanceTimeBy(1)
+        assertThat(viewModel.viewState.value.isLoading).isEqualTo(true)
+
+        advanceUntilIdle()
+        assertThat(viewModel.viewState.value.isLoading).isEqualTo(false)
+        assertThat(events.isEmpty()).isEqualTo(true)
+
+        job.cancel()
     }
 
     @Test
@@ -69,27 +109,25 @@ class ExternalInsurerViewModelTest {
 
     @Test
     fun testContinueIfNoProviderSelected() = mainCoroutineRule.dispatcher.runBlockingTest {
+        coEvery { getInsuranceProvidersUseCase.getInsuranceProviders() } returns
+            InsuranceProvidersResult.Success(insuranceProviders)
+
         val viewModel = ExternalInsurerViewModel(getInsuranceProvidersUseCase)
         advanceUntilIdle()
 
-        viewModel.onContinue()
-
-        assertThat(viewModel.viewState.value.continueEvent).isEqualTo(null)
+        assertThat(viewModel.viewState.value.isLoading).isEqualTo(false)
+        assertThat(viewModel.viewState.value.canContinue()).isEqualTo(false)
     }
 
     @Test
     fun testContinueIfProviderSelected() = mainCoroutineRule.dispatcher.runBlockingTest {
+        coEvery { getInsuranceProvidersUseCase.getInsuranceProviders() } returns
+            InsuranceProvidersResult.Success(insuranceProviders)
+
         val viewModel = ExternalInsurerViewModel(getInsuranceProvidersUseCase)
         advanceUntilIdle()
 
         viewModel.selectInsuranceProvider(InsuranceProvider("1", "Test1"))
-        viewModel.onContinue()
-
-        assertThat(viewModel.viewState.value.continueEvent).isEqualTo(
-            ExternalInsurerViewModel.ViewState.ContinueEvent(
-                providerId = "1",
-                providerName = "Test1"
-            )
-        )
+        assertThat(viewModel.viewState.value.canContinue()).isEqualTo(true)
     }
 }

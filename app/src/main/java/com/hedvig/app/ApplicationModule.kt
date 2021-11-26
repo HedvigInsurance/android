@@ -64,6 +64,7 @@ import com.hedvig.app.feature.embark.ValueStore
 import com.hedvig.app.feature.embark.ValueStoreImpl
 import com.hedvig.app.feature.embark.passages.audiorecorder.AudioRecorderViewModel
 import com.hedvig.app.feature.embark.passages.datepicker.DatePickerViewModel
+import com.hedvig.app.feature.embark.passages.externalinsurer.ExternalInsurerViewModel
 import com.hedvig.app.feature.embark.passages.externalinsurer.GetInsuranceProvidersUseCase
 import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceViewModel
 import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.StartDataCollectionUseCase
@@ -74,7 +75,6 @@ import com.hedvig.app.feature.embark.passages.multiaction.MultiActionViewModel
 import com.hedvig.app.feature.embark.passages.multiaction.add.AddComponentViewModel
 import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionParams
 import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionViewModel
-import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerViewModel
 import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
 import com.hedvig.app.feature.embark.passages.textaction.TextActionViewModel
 import com.hedvig.app.feature.genericauth.CreateOtpAttemptUseCase
@@ -460,10 +460,6 @@ val valueStoreModule = module {
     factory<ValueStore> { ValueStoreImpl() }
 }
 
-val previousInsViewModel = module {
-    viewModel { PreviousInsurerViewModel() }
-}
-
 val textActionSetModule = module {
     viewModel { (data: TextActionParameter) -> TextActionViewModel(data) }
 }
@@ -508,6 +504,10 @@ val checkoutModule = module {
 
 val retrievePriceModule = module {
     viewModel { RetrievePriceViewModel(get(), get()) }
+}
+
+val externalInsuranceModule = module {
+    viewModel { ExternalInsurerViewModel(get()) }
 }
 
 val serviceModule = module {

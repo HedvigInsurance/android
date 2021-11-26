@@ -14,6 +14,16 @@
         tools:itemCount="3"
         tools:listitem="@layout/embark_message_item" />
 
+    <androidx.core.widget.ContentLoadingProgressBar
+        android:id="@+id/progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="gone" />
+
     <TextView
         android:id="@+id/response"
         android:layout_width="wrap_content"
@@ -72,6 +82,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/base_margin_double"
+        android:enabled="false"
         android:text="@string/onboarding_norway_current_insurer.bottom_sheet_continue_button"
         app:layout_constraintBottom_toBottomOf="parent" />
 
