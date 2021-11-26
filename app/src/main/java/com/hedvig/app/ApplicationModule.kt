@@ -211,6 +211,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.parameter.ParametersHolder
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import timber.log.Timber
@@ -419,8 +420,14 @@ val marketingModule = module {
 }
 
 val offerModule = module {
-    viewModel<OfferViewModel> { (ids: List<String>, shouldShowOnNextAppStart: Boolean) ->
-        OfferViewModelImpl(ids, get(), get(), get(), get(), get(), get(), get(), shouldShowOnNextAppStart, get(), get())
+    viewModel<OfferViewModel> { parametersHolder: ParametersHolder ->
+        val (
+            ids: List<String>, shouldShowOnNextAppStart: Boolean, insurelyDataCollectionReferenceUUID: String?,
+        ) = parametersHolder
+        OfferViewModelImpl(
+            ids, get(), get(), get(), get(), get(), get(), get(), shouldShowOnNextAppStart, get(), get(),
+            insurelyDataCollectionReferenceUUID,
+        )
     }
 }
 
