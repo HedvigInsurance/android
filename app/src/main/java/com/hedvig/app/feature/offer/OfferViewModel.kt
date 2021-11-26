@@ -117,6 +117,7 @@ class OfferViewModelImpl(
     shouldShowOnNextAppStart: Boolean,
     private val getPostSignDependenciesUseCase: GetPostSignDependenciesUseCase,
     private val tracker: OfferTracker,
+    private val insurelyDataCollectionReferenceUUID: String?,
 ) : OfferViewModel() {
 
     private lateinit var quoteIds: List<String>
