@@ -2,6 +2,7 @@ package com.hedvig.app.feature.embark.passages.selectaction
 
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
@@ -29,6 +30,8 @@ class SelectActionAdapter(
         ) {
             binding.apply {
                 text.text = item.label
+                badge.text = item.badge
+                badge.isVisible = item.badge != null
                 onActionSelected(item, root, bindingAdapterPosition)
             }
         }
