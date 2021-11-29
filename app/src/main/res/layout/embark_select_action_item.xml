@@ -25,6 +25,7 @@
             android:visibility="gone"
             tools:visibility="visible"
             android:textAppearance="?textAppearanceCaption"
+            android:textAlignment="center"
             android:id="@+id/badge"
             tools:text="Most popular" />
 
