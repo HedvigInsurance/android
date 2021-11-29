@@ -138,10 +138,12 @@ import com.hedvig.app.feature.offer.ui.changestartdate.EditStartDateUseCase
 import com.hedvig.app.feature.offer.ui.checkout.ApproveQuotesUseCase
 import com.hedvig.app.feature.offer.ui.checkout.CheckoutViewModel
 import com.hedvig.app.feature.offer.ui.checkout.SignQuotesUseCase
+import com.hedvig.app.feature.offer.usecase.ExternalInsuranceDataCollectionUseCase
 import com.hedvig.app.feature.offer.usecase.GetPostSignDependenciesUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
+import com.hedvig.app.feature.offer.usecase.insurelydatacollection.SubscribeToInsurelyDataCollectionUseCase
 import com.hedvig.app.feature.onboarding.ChoosePlanRepository
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModelImpl
@@ -425,10 +427,26 @@ val offerModule = module {
             ids: List<String>, shouldShowOnNextAppStart: Boolean, insurelyDataCollectionReferenceUUID: String?,
         ) = parametersHolder
         OfferViewModelImpl(
-            ids, get(), get(), get(), get(), get(), get(), get(), shouldShowOnNextAppStart, get(), get(),
-            insurelyDataCollectionReferenceUUID,
+            _quoteIds = ids,
+            offerRepository = get(),
+            getQuotesUseCase = get(),
+            getQuoteUseCase = get(),
+            loginStatusService = get(),
+            approveQuotesUseCase = get(),
+            refreshQuotesUseCase = get(),
+            signQuotesUseCase = get(),
+            shouldShowOnNextAppStart = shouldShowOnNextAppStart,
+            getPostSignDependenciesUseCase = get(),
+            subscribeToInsurelyDataCollectionUseCase = get(),
+            externalInsuranceDataCollectionUseCase = get(),
+            tracker = get(),
+            insurelyDataCollectionReferenceUUID = insurelyDataCollectionReferenceUUID,
         )
     }
+    single { ApproveQuotesUseCase(get(), get(), get(), get()) }
+    single { RefreshQuotesUseCase(get()) }
+    single { SubscribeToInsurelyDataCollectionUseCase(get()) }
+    single { ExternalInsuranceDataCollectionUseCase(get()) }
 }
 
 val profileModule = module {
@@ -630,8 +648,6 @@ val useCaseModule = module {
     single { GetQuoteUseCase(get()) }
     single { EditStartDateUseCase(get(), get()) }
     single { SignQuotesUseCase(get(), get(), get()) }
-    single { ApproveQuotesUseCase(get(), get(), get(), get()) }
-    single { RefreshQuotesUseCase(get()) }
     single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GetContractsUseCase(get(), get()) }
     single { ManuallyRecheckSwedishBankIdSignStatusUseCase(get()) }

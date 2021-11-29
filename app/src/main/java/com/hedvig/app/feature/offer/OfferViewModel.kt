@@ -19,35 +19,41 @@ import com.hedvig.app.feature.offer.ui.checkout.ApproveQuotesUseCase
 import com.hedvig.app.feature.offer.ui.checkout.CheckoutParameter
 import com.hedvig.app.feature.offer.ui.checkout.SignQuotesUseCase
 import com.hedvig.app.feature.offer.ui.checkoutLabel
+import com.hedvig.app.feature.offer.usecase.ExternalInsuranceDataCollectionUseCase
 import com.hedvig.app.feature.offer.usecase.GetPostSignDependenciesUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
+import com.hedvig.app.feature.offer.usecase.insurelydatacollection.DataCollectionResult
+import com.hedvig.app.feature.offer.usecase.insurelydatacollection.SubscribeToInsurelyDataCollectionUseCase
 import com.hedvig.app.feature.perils.PerilItem
+import com.hedvig.app.util.LCE
 import e
+import java.time.LocalDate
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 
 abstract class OfferViewModel : ViewModel() {
-    protected val _viewState = MutableStateFlow(ViewState(isLoading = true))
-    val viewState: StateFlow<ViewState> = _viewState
+    abstract val viewState: StateFlow<ViewState>
 
     sealed class Event {
-        data class Error(val message: String? = null) : Event()
-
         data class OpenQuoteDetails(
             val quoteDetailItems: QuoteDetailItems,
         ) : Event()
 
         data class OpenCheckout(
-            val checkoutParameter: CheckoutParameter
+            val checkoutParameter: CheckoutParameter,
         ) : Event()
 
         data class ApproveError(
@@ -85,18 +91,21 @@ abstract class OfferViewModel : ViewModel() {
 
     abstract fun approveOffer()
 
-    data class ViewState(
-        val topOfferItems: List<OfferModel> = emptyList(),
-        val perils: List<PerilItem> = emptyList(),
-        val documents: List<DocumentItems> = emptyList(),
-        val insurableLimitsItems: List<InsurableLimitItem> = emptyList(),
-        val bottomOfferItems: List<OfferModel> = emptyList(),
-        val signMethod: SignMethod = SignMethod.SIMPLE_SIGN,
-        val checkoutLabel: CheckoutLabel = CheckoutLabel.CONFIRM,
-        val title: QuoteBundleAppConfigurationTitle = QuoteBundleAppConfigurationTitle.LOGO,
-        val loginStatus: LoginStatus = LoginStatus.LOGGED_IN,
-        val isLoading: Boolean = false,
-    )
+    sealed class ViewState {
+        object Loading : ViewState()
+        object Error : ViewState()
+        data class Content(
+            val topOfferItems: List<OfferModel> = emptyList(),
+            val perils: List<PerilItem> = emptyList(),
+            val documents: List<DocumentItems> = emptyList(),
+            val insurableLimitsItems: List<InsurableLimitItem> = emptyList(),
+            val bottomOfferItems: List<OfferModel> = emptyList(),
+            val signMethod: SignMethod = SignMethod.SIMPLE_SIGN,
+            val checkoutLabel: CheckoutLabel = CheckoutLabel.CONFIRM,
+            val title: QuoteBundleAppConfigurationTitle = QuoteBundleAppConfigurationTitle.LOGO,
+            val loginStatus: LoginStatus = LoginStatus.LOGGED_IN,
+        ) : ViewState()
+    }
 
     abstract fun onOpenCheckout()
     abstract fun reload()
@@ -116,6 +125,8 @@ class OfferViewModelImpl(
     private val signQuotesUseCase: SignQuotesUseCase,
     shouldShowOnNextAppStart: Boolean,
     private val getPostSignDependenciesUseCase: GetPostSignDependenciesUseCase,
+    subscribeToInsurelyDataCollectionUseCase: SubscribeToInsurelyDataCollectionUseCase,
+    private val externalInsuranceDataCollectionUseCase: ExternalInsuranceDataCollectionUseCase,
     private val tracker: OfferTracker,
     private val insurelyDataCollectionReferenceUUID: String?,
 ) : OfferViewModel() {
@@ -130,6 +141,40 @@ class OfferViewModelImpl(
         }
     }
 
+    private val offerResponse: MutableStateFlow<LCE<Pair<OfferQuery.Data, LoginStatus>>> = MutableStateFlow(LCE.Loading)
+
+    private val dataCollectionValue: Flow<LCE<DataCollectionResult>> =
+        if (insurelyDataCollectionReferenceUUID != null) {
+            subscribeToInsurelyDataCollectionUseCase.invoke(insurelyDataCollectionReferenceUUID)
+        } else {
+            flowOf(LCE.Error)
+        }
+
+    override val viewState: StateFlow<ViewState> = combine(
+        offerResponse,
+        dataCollectionValue,
+    ) { offerResponse, dataCollectionValue ->
+        return@combine when (offerResponse) {
+            LCE.Error -> ViewState.Error
+            LCE.Loading -> ViewState.Loading
+            is LCE.Content -> {
+                val (offerData: OfferQuery.Data, loginStatus: LoginStatus) = offerResponse.data
+                val externalInsuranceData =
+                    if (dataCollectionValue is LCE.Content && insurelyDataCollectionReferenceUUID != null) {
+                        externalInsuranceDataCollectionUseCase.invoke(insurelyDataCollectionReferenceUUID)
+                    } else {
+                        ExternalInsuranceDataCollectionUseCase.Result.Error
+                    }
+                produceViewState(offerData, loginStatus, dataCollectionValue, externalInsuranceData)
+            }
+        }
+    }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = ViewState.Loading,
+        )
+
     private suspend fun loadQuoteIds() {
         when (val idsResult = getQuotesUseCase.invoke(_quoteIds)) {
             is GetQuotesUseCase.Result.Success -> {
@@ -139,22 +184,22 @@ class OfferViewModelImpl(
                     .onEach { response ->
                         when (response) {
                             is OfferRepository.OfferResult.Error -> {
-                                _events.trySend(Event.Error(response.message))
+                                offerResponse.value = LCE.Error
                             }
                             is OfferRepository.OfferResult.Success -> {
                                 trackView(response.data)
                                 val loginStatus = loginStatusService.getLoginStatus()
-                                _viewState.value = toViewState(response.data, loginStatus)
+                                offerResponse.value = LCE.Content(response.data to loginStatus)
                             }
                         }
                     }
                     .catch {
-                        _events.trySend(Event.Error(it.message))
+                        offerResponse.value = LCE.Error
                     }
                     .launchIn(viewModelScope)
             }
             is GetQuotesUseCase.Result.Error -> {
-                _events.trySend(Event.Error(idsResult.message))
+                offerResponse.value = LCE.Error
             }
         }
     }
@@ -165,51 +210,49 @@ class OfferViewModelImpl(
             return
         }
         hasTrackedView = true
-
         tracker.viewOffer(data.quoteBundle.quotes.map { it.typeOfContract.rawValue })
     }
 
     override fun onOpenCheckout() {
-        _events.trySend(
-            Event.OpenCheckout(
-                CheckoutParameter(
-                    quoteIds = _quoteIds
-                )
-            )
-        )
+        _events.trySend(Event.OpenCheckout(CheckoutParameter(quoteIds = _quoteIds)))
     }
 
     override fun approveOffer() {
         viewModelScope.launch {
-            _viewState.value = _viewState.value.copy(isLoading = true)
+            offerResponse.value = LCE.Loading
             val postSignDependencies = getPostSignDependenciesUseCase.invoke(quoteIds)
             if (postSignDependencies !is GetPostSignDependenciesUseCase.Result.Success) {
-                _events.trySend(Event.Error())
+                offerResponse.value = LCE.Error
                 return@launch
             }
-            val event = when (val result = approveQuotesUseCase.approveQuotesAndClearCache(quoteIds)) {
-                is ApproveQuotesUseCase.ApproveQuotesResult.Error.GeneralError -> Event.Error(result.message)
-                ApproveQuotesUseCase.ApproveQuotesResult.Error.ApproveError -> Event.ApproveError(
-                    postSignDependencies.postSignScreen
+            when (val result = approveQuotesUseCase.approveQuotesAndClearCache(quoteIds)) {
+                is ApproveQuotesUseCase.ApproveQuotesResult.Error.GeneralError -> offerResponse.value = LCE.Error
+                ApproveQuotesUseCase.ApproveQuotesResult.Error.ApproveError -> _events.trySend(
+                    Event.ApproveError(postSignDependencies.postSignScreen)
                 )
-                is ApproveQuotesUseCase.ApproveQuotesResult.Success ->
+                is ApproveQuotesUseCase.ApproveQuotesResult.Success -> _events.trySend(
                     Event.ApproveSuccessful(
                         result.date,
                         postSignDependencies.postSignScreen,
                         postSignDependencies.displayName
                     )
+                )
             }
-            _events.trySend(event)
         }
     }
 
-    private fun toViewState(data: OfferQuery.Data, loginStatus: LoginStatus): ViewState {
+    private fun produceViewState(
+        data: OfferQuery.Data,
+        loginStatus: LoginStatus,
+        dataCollectionValue: LCE<DataCollectionResult>, //todo add info from data collection to the produced UI
+        externalInsuranceData: ExternalInsuranceDataCollectionUseCase.Result,
+    ): ViewState {
         val topOfferItems = OfferItemsBuilder.createTopOfferItems(data)
         val perilItems = OfferItemsBuilder.createPerilItems(data.quoteBundle.quotes)
         val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(data.quoteBundle.quotes)
         val documentItems = OfferItemsBuilder.createDocumentItems(data.quoteBundle.quotes)
         val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems(data)
-        return ViewState(
+        return ViewState.Content(
             topOfferItems = topOfferItems,
             perils = perilItems,
             documents = documentItems,
@@ -253,7 +296,7 @@ class OfferViewModelImpl(
         viewModelScope.launch {
             when (val result = getQuoteUseCase(quoteIds, id)) {
                 GetQuoteUseCase.Result.Error -> {
-                    _events.trySend(Event.Error())
+                    offerResponse.value = LCE.Error
                 }
                 is GetQuoteUseCase.Result.Success -> {
                     _events.trySend(
@@ -272,15 +315,15 @@ class OfferViewModelImpl(
     }
 
     override fun reload() {
-        _viewState.value = _viewState.value.copy(isLoading = true)
+        offerResponse.value = LCE.Loading
         viewModelScope.launch {
             if (!::quoteIds.isInitialized) {
                 loadQuoteIds()
             }
-            when (val result = refreshQuotesUseCase(quoteIds)) {
+            when (refreshQuotesUseCase.invoke(quoteIds)) {
                 RefreshQuotesUseCase.Result.Success -> {
                 }
-                is RefreshQuotesUseCase.Result.Error -> _events.trySend(Event.Error(result.message))
+                is RefreshQuotesUseCase.Result.Error -> offerResponse.value = LCE.Error
             }
         }
     }
@@ -296,14 +339,13 @@ class OfferViewModelImpl(
 
     override fun onSwedishBankIdSign() {
         viewModelScope.launch {
-            _events.trySend(
-                when (val result = signQuotesUseCase.signQuotesAndClearCache(quoteIds)) {
-                    is SignQuotesUseCase.SignQuoteResult.Error -> Event.Error(result.message)
-                    is SignQuotesUseCase.SignQuoteResult.StartSwedishBankId ->
-                        Event.StartSwedishBankIdSign(quoteIds, result.autoStartToken)
-                    SignQuotesUseCase.SignQuoteResult.Success -> Event.Error()
-                }
-            )
+            when (val result = signQuotesUseCase.signQuotesAndClearCache(quoteIds)) {
+                is SignQuotesUseCase.SignQuoteResult.Error -> offerResponse.value = LCE.Error
+                is SignQuotesUseCase.SignQuoteResult.StartSwedishBankId -> _events.trySend(
+                    Event.StartSwedishBankIdSign(quoteIds, result.autoStartToken)
+                )
+                SignQuotesUseCase.SignQuoteResult.Success -> offerResponse.value = LCE.Error
+            }
         }
     }
 }

@@ -10,6 +10,9 @@ import com.hedvig.app.feature.offer.ui.checkout.CheckoutParameter
 import com.hedvig.app.feature.offer.ui.checkoutLabel
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
@@ -17,6 +20,9 @@ class MockOfferViewModel : OfferViewModel() {
     init {
         load()
     }
+
+    private val _viewState: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.Loading)
+    override val viewState: StateFlow<ViewState> = _viewState.asStateFlow()
 
     override fun removeDiscount() = Unit
     override fun writeDiscountToCache(data: RedeemReferralCodeMutation.Data) = Unit
@@ -71,7 +77,7 @@ class MockOfferViewModel : OfferViewModel() {
         viewModelScope.launch {
             delay(650)
             if (shouldError) {
-                _events.trySend(Event.Error())
+                _viewState.value = ViewState.Error
                 return@launch
             }
             val topOfferItems = OfferItemsBuilder.createTopOfferItems(mockData)
@@ -80,7 +86,7 @@ class MockOfferViewModel : OfferViewModel() {
             val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(mockData.quoteBundle.quotes)
             val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems(mockData)
             _viewState.value =
-                ViewState(
+                ViewState.Content(
                     topOfferItems = topOfferItems,
                     perils = perilItems,
                     documents = documentItems,
