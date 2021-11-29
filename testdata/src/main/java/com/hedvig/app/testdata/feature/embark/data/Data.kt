@@ -1832,3 +1832,24 @@ val STORY_WITH_SELECT_ACTION_API_MULTIPLE_OPTIONS = EmbarkStoryDataBuilder(
             .build()
     )
 ).build()
+
+val STORY_WITH_SELECT_ACTION_BADGE = EmbarkStoryDataBuilder(
+    passages = listOf(
+        STANDARD_FIRST_PASSAGE_BUILDER
+            .copy(
+                action = SelectActionBuilder(
+                    options = listOf(
+                        SelectOptionBuilder(
+                            link = STANDARD_FIRST_LINK,
+                            badge = "Badge",
+                        ).build(),
+                        SelectOptionBuilder(
+                            link = STANDARD_FIRST_LINK,
+                        ).build(),
+                    )
+                ).build()
+            )
+            .build(),
+        STANDARD_SECOND_PASSAGE_BUILDER.build()
+    )
+).build()

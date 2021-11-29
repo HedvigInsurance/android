@@ -36,6 +36,7 @@ import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_NUMBER_ACTION_AND_
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_OR_EXPRESSION
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_PASSED_KEY_VALUE
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_SELECT_ACTION_AND_CUSTOM_RESPONSE
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_SELECT_ACTION_BADGE
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_SINGLE_TOOLTIP
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEMPLATE_MESSAGE
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION
@@ -119,6 +120,13 @@ class EmbarkMockActivity : MockActivity() {
                 mockedData = STORY_WITH_SELECT_ACTION_AND_CUSTOM_RESPONSE
             }
             startActivity(EmbarkActivity.newInstance(context, this.javaClass.name, "Custom Response"))
+        }
+        clickableItem("Badge") {
+            MockEmbarkViewModel.apply {
+                shouldLoad = true
+                mockedData = STORY_WITH_SELECT_ACTION_BADGE
+            }
+            startActivity(EmbarkActivity.newInstance(context, this.javaClass.name, "Select Action + Badge"))
         }
         header("Number Action")
         clickableItem("Regular") {
