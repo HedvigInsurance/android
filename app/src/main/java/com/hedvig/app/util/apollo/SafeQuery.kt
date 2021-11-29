@@ -15,9 +15,7 @@ import ru.gildor.coroutines.okhttp.await
 
 suspend fun <T> ApolloCall<T>.safeQuery(): QueryResult<T> {
     return try {
-        val response = await()
-        val data = response.data
-        mapResponseToResult(response, data)
+        await().toQueryResult()
     } catch (apolloException: ApolloException) {
         QueryResult.Error.NetworkError(apolloException.localizedMessage)
     } catch (throwable: Throwable) {
@@ -28,7 +26,7 @@ suspend fun <T> ApolloCall<T>.safeQuery(): QueryResult<T> {
 fun <T> ApolloSubscriptionCall<T>.safeSubscription(): Flow<QueryResult<T>> {
     return try {
         toFlow().map { response ->
-            mapResponseToResult(response, response.data)
+            response.toQueryResult()
         }
     } catch (apolloException: ApolloException) {
         flowOf(QueryResult.Error.NetworkError(apolloException.localizedMessage))
@@ -37,13 +35,13 @@ fun <T> ApolloSubscriptionCall<T>.safeSubscription(): Flow<QueryResult<T>> {
     }
 }
 
-private fun <T> mapResponseToResult(
-    response: Response<T>,
-    data: T?
-): QueryResult<T> = when {
-    response.hasErrors() -> QueryResult.Error.QueryError(response.errors?.first()?.message)
-    data != null -> QueryResult.Success(data)
-    else -> QueryResult.Error.NoDataError("No data")
+fun <T> Response<T>.toQueryResult(): QueryResult<T> {
+    val data = data
+    return when {
+        hasErrors() -> QueryResult.Error.QueryError(errors?.first()?.message)
+        data != null -> QueryResult.Success(data)
+        else -> QueryResult.Error.NoDataError("No data")
+    }
 }
 
 suspend fun Call.safeCall(): QueryResult<JSONObject> {

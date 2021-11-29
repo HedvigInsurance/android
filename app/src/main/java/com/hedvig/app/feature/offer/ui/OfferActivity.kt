@@ -158,22 +158,35 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 .viewState
                 .flowWithLifecycle(lifecycle)
                 .onEach { viewState ->
+                    binding.progressBar.isVisible = viewState is OfferViewModel.ViewState.Loading
+                    binding.offerScroll.isVisible = viewState !is OfferViewModel.ViewState.Loading
+                    when (viewState) {
+                        is OfferViewModel.ViewState.Loading -> {}
+                        is OfferViewModel.ViewState.Error -> {
+                            perilsAdapter.submitList(emptyList())
+                            insurableLimitsAdapter.submitList(emptyList())
+                            documentAdapter.submitList(emptyList())
+                            bottomOfferAdapter.submitList(emptyList())
+                            topOfferAdapter.submitList(listOf(OfferModel.Error))
+                            binding.progressBar.isVisible = false
+                            binding.offerScroll.isVisible = true
+                        }
+                        is OfferViewModel.ViewState.Content -> {
+                            topOfferAdapter.submitList(viewState.topOfferItems)
+                            perilsAdapter.submitList(viewState.perils)
+                            insurableLimitsAdapter.submitList(viewState.insurableLimitsItems)
+                            documentAdapter.submitList(viewState.documents)
+                            bottomOfferAdapter.submitList(viewState.bottomOfferItems)
+                            setSignButtonState(viewState.signMethod, viewState.checkoutLabel)
 
-                    topOfferAdapter.submitList(viewState.topOfferItems)
-                    perilsAdapter.submitList(viewState.perils)
-                    insurableLimitsAdapter.submitList(viewState.insurableLimitsItems)
-                    documentAdapter.submitList(viewState.documents)
-                    bottomOfferAdapter.submitList(viewState.bottomOfferItems)
-                    setSignButtonState(viewState.signMethod, viewState.checkoutLabel)
+                            TransitionManager.beginDelayedTransition(binding.offerToolbar)
+                            setTitleVisibility(viewState)
+                            inflateMenu(viewState.loginStatus)
 
-                    TransitionManager.beginDelayedTransition(binding.offerToolbar)
-                    setTitleVisibility(viewState)
-                    inflateMenu(viewState.loginStatus)
-                    binding.progressBar.isVisible = viewState.isLoading
-                    binding.offerScroll.isVisible = !viewState.isLoading
-
-                    if (!hasStartedRecyclerAnimation) {
-                        scheduleEnterAnimation()
+                            if (!hasStartedRecyclerAnimation) {
+                                scheduleEnterAnimation()
+                            }
+                        }
                     }
                 }
                 .launchIn(lifecycleScope)
@@ -183,15 +196,6 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 .flowWithLifecycle(lifecycle)
                 .onEach { event ->
                     when (event) {
-                        is OfferViewModel.Event.Error -> {
-                            perilsAdapter.submitList(emptyList())
-                            insurableLimitsAdapter.submitList(emptyList())
-                            documentAdapter.submitList(emptyList())
-                            bottomOfferAdapter.submitList(emptyList())
-                            topOfferAdapter.submitList(listOf(OfferModel.Error))
-                            binding.progressBar.isVisible = false
-                            binding.offerScroll.isVisible = true
-                        }
                         is OfferViewModel.Event.OpenQuoteDetails -> {
                             startActivity(
                                 QuoteDetailActivity.newInstance(
@@ -278,7 +282,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         }
     }
 
-    private fun setTitleVisibility(viewState: OfferViewModel.ViewState) {
+    private fun setTitleVisibility(viewState: OfferViewModel.ViewState.Content) {
         when (viewState.title) {
             QuoteBundleAppConfigurationTitle.LOGO -> {
                 binding.toolbarLogo.isVisible = true
