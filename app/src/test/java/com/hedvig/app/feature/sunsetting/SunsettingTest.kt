@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.sunsetting
 
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.app.RobolectricTestApplication
@@ -16,10 +17,9 @@ import io.github.kakaocup.kakao.intent.KIntent
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-@RunWith(RobolectricTestRunner::class)
+@RunWith(AndroidJUnit4::class)
 @Config(application = RobolectricTestApplication::class, sdk = [28], instrumentedPackages = ["androidx.loader.content"])
 class SunsettingTestRobolectric : TestCase() {
     @get:Rule

@@ -1,8 +1,10 @@
 package com.hedvig.app.feature.changeaddress
 
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.hedvig.android.owldroid.graphql.ActiveContractBundlesQuery
 import com.hedvig.android.owldroid.graphql.UpcomingAgreementQuery
 import com.hedvig.app.R
+import com.hedvig.app.RobolectricTestApplication
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
 import com.hedvig.app.testdata.feature.changeaddress.SELF_CHANGE_ELIGIBILITY
 import com.hedvig.app.testdata.feature.changeaddress.UPCOMING_AGREEMENT_NONE
@@ -14,7 +16,11 @@ import com.hedvig.app.util.context
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.annotation.Config
 
+@RunWith(AndroidJUnit4::class)
+@Config(application = RobolectricTestApplication::class, sdk = [28], instrumentedPackages = ["androidx.loader.content"])
 class ChangeAddressTest : TestCase() {
 
     @get:Rule
