@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -15,6 +16,7 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticateDialog
 import com.hedvig.app.authenticate.insurely.InsurelyDialog
+import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.AskForPriceInfoActivity
 import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.InsuranceProviderParameter
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.ui.compose.composables.CenteredProgressIndicator
@@ -22,7 +24,6 @@ import com.hedvig.app.ui.compose.composables.ErrorDialog
 import com.hedvig.app.ui.compose.composables.FadeWhen
 import com.hedvig.app.ui.compose.composables.appbar.TopAppBarWithBack
 import com.hedvig.app.ui.compose.theme.HedvigTheme
-import d
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -38,17 +39,16 @@ class RetrievePriceInfoActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         supportFragmentManager.setFragmentResultListener(
             InsurelyDialog.REQUEST_KEY,
             this,
             { _, result ->
                 val success = result.getBoolean(InsurelyDialog.RESULT_KEY)
                 if (success) {
-                    // Show collection started view
-                    d { "auth: SUCCESS" }
+                    viewModel.onCollectionStarted()
                 } else {
-                    // No-op
-                    d { "auth: FAILURE" }
+                    viewModel.onCollectionFailed()
                 }
             }
         )
@@ -65,11 +65,17 @@ class RetrievePriceInfoActivity : BaseActivity() {
                 ) {
                     RetrievePriceScreen(
                         viewModel = viewModel,
-                        fragmentManager = supportFragmentManager
+                        fragmentManager = supportFragmentManager,
+                        onContinue = ::onContinue
                     )
                 }
             }
         }
+    }
+
+    private fun onContinue() {
+        setResult(AskForPriceInfoActivity.RESULT_CONTINUE)
+        finish()
     }
 
     companion object {
@@ -82,36 +88,51 @@ class RetrievePriceInfoActivity : BaseActivity() {
     }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun RetrievePriceScreen(
     viewModel: RetrievePriceViewModel = viewModel(),
-    fragmentManager: FragmentManager
+    onContinue: () -> Unit,
+    fragmentManager: FragmentManager,
 ) {
     val viewState by viewModel.viewState.collectAsState()
+    val events = viewModel.events.collectAsState(initial = null)
 
-    viewState.authInformation?.let { authInformation ->
-        InsurelyDialog.newInstance(authInformation.reference)
-            .show(fragmentManager, AuthenticateDialog.TAG)
+    when (val event = events.value) {
+        is RetrievePriceViewModel.Event.Error -> {
+            ErrorDialog(
+                onDismiss = {},
+                message = stringResource(id = event.errorResult.getStringResource())
+            )
+        }
+        is RetrievePriceViewModel.Event.AuthInformation -> {
+            InsurelyDialog.newInstance(event.reference)
+                .show(fragmentManager, AuthenticateDialog.TAG)
+        }
     }
 
-    viewState.error?.getStringResource()?.let {
-        ErrorDialog(onDismiss = viewModel::onDismissError, message = stringResource(id = it))
-    }
+    when {
+        viewState.collectionStarted -> RetrievePriceSuccess(onContinue = onContinue)
+        viewState.collectionFailed -> {
+            // Show price collection failed
+        }
+        else -> {
+            FadeWhen(visible = viewState.isLoading) {
+                CenteredProgressIndicator()
+            }
 
-    FadeWhen(visible = viewState.isLoading) {
-        CenteredProgressIndicator()
-    }
-
-    FadeWhen(visible = !viewState.isLoading) {
-        RetrievePriceContent(
-            onRetrievePriceInfo = viewModel::onRetrievePriceInfo,
-            onIdentityInput = { viewModel.onIdentityInput(it) },
-            input = viewState.input,
-            title = viewState.market?.titleRes()?.let { stringResource(it) } ?: "",
-            placeholder = viewState.market?.placeHolderRes()?.let { stringResource(it) } ?: "",
-            label = viewState.market?.labelRes()?.let { stringResource(it) } ?: "",
-            inputErrorMessage = viewState.inputError?.errorTextKey?.let { stringResource(it) },
-        )
+            FadeWhen(visible = !viewState.isLoading) {
+                RetrievePriceContent(
+                    onRetrievePriceInfo = viewModel::onRetrievePriceInfo,
+                    onIdentityInput = viewModel::onIdentityInput,
+                    input = viewState.input,
+                    title = viewState.market?.titleRes()?.let { stringResource(it) } ?: "",
+                    placeholder = viewState.market?.placeHolderRes()?.let { stringResource(it) } ?: "",
+                    label = viewState.market?.labelRes()?.let { stringResource(it) } ?: "",
+                    inputErrorMessage = viewState.inputError?.errorTextKey?.let { stringResource(it) },
+                )
+            }
+        }
     }
 }
 

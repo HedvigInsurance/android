@@ -5,8 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.validateNationalIdentityNumber
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -15,6 +17,19 @@ class RetrievePriceViewModel(
     marketManager: MarketManager,
     private val startDataCollectionUseCase: StartDataCollectionUseCase
 ) : ViewModel() {
+
+    private val _events = Channel<Event>(Channel.UNLIMITED)
+    val events = _events.receiveAsFlow()
+
+    sealed class Event {
+        data class Error(
+            val errorResult: DataCollectionResult.Error
+        ) : Event()
+
+        data class AuthInformation(
+            val reference: String
+        ) : Event()
+    }
 
     private val _viewState = MutableStateFlow(ViewState(market = marketManager.market))
     val viewState: StateFlow<ViewState> = _viewState
@@ -32,17 +47,17 @@ class RetrievePriceViewModel(
             )
 
             when (result) {
-                is DataCollectionResult.Error -> _viewState.update {
-                    it.copy(
-                        error = result,
-                        isLoading = false
-                    )
+                is DataCollectionResult.Error -> {
+                    _events.trySend(Event.Error(result))
+                    _viewState.update {
+                        it.copy(isLoading = false)
+                    }
                 }
-                is DataCollectionResult.Success -> _viewState.update {
-                    it.copy(
-                        authInformation = ViewState.AuthInformation(result.reference),
-                        isLoading = false
-                    )
+                is DataCollectionResult.Success -> {
+                    _events.trySend(Event.AuthInformation(result.reference))
+                    _viewState.update {
+                        it.copy(isLoading = false)
+                    }
                 }
             }
         }
@@ -62,25 +77,25 @@ class RetrievePriceViewModel(
         )
     }
 
-    fun onDismissError() {
-        _viewState.update { it.copy(error = null) }
+    fun onCollectionStarted() {
+        _viewState.update { it.copy(collectionStarted = true) }
+    }
+
+    fun onCollectionFailed() {
+        _viewState.update { it.copy(collectionFailed = true) }
     }
 
     data class ViewState(
         val input: String = "",
-        val error: DataCollectionResult.Error? = null,
         val inputError: InputError? = null,
         val market: Market?,
         val isLoading: Boolean = false,
-        val authInformation: AuthInformation? = null,
+        val collectionStarted: Boolean = false,
+        val collectionFailed: Boolean = false
     ) {
 
         data class InputError(
             val errorTextKey: Int,
-        )
-
-        data class AuthInformation(
-            val reference: String,
         )
     }
 }
