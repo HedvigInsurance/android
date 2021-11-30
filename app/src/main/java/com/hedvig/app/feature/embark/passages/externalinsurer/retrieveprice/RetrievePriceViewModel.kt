@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class RetrievePriceViewModel(
+    private val collectionId: String,
     marketManager: MarketManager,
     private val startDataCollectionUseCase: StartDataCollectionUseCase
 ) : ViewModel() {
@@ -25,17 +26,21 @@ class RetrievePriceViewModel(
 
         viewModelScope.launch {
             _viewState.update { it.copy(isLoading = true) }
-            val result = startDataCollectionUseCase.startDataCollectionAndGetCollectionStatus(
+            val result = startDataCollectionUseCase.startDataCollection(
                 personalNumber = viewState.value.input,
-                insuranceProvider = "ICA"
+                insuranceProvider = collectionId
             )
 
             when (result) {
-                is DataCollectionResult.Error -> _viewState.update { it.copy(error = result, isLoading = false) }
-                is DataCollectionResult.Success.SwedishBankId,
-                is DataCollectionResult.Success.NorwegianBankId -> _viewState.update {
+                is DataCollectionResult.Error -> _viewState.update {
                     it.copy(
-                        showAuth = true,
+                        error = result,
+                        isLoading = false
+                    )
+                }
+                is DataCollectionResult.Success -> _viewState.update {
+                    it.copy(
+                        authInformation = ViewState.AuthInformation(result.reference),
                         isLoading = false
                     )
                 }
@@ -67,11 +72,15 @@ class RetrievePriceViewModel(
         val inputError: InputError? = null,
         val market: Market?,
         val isLoading: Boolean = false,
-        val showAuth: Boolean = false,
+        val authInformation: AuthInformation? = null,
     ) {
 
         data class InputError(
             val errorTextKey: Int,
+        )
+
+        data class AuthInformation(
+            val reference: String,
         )
     }
 }

@@ -15,7 +15,8 @@ sealed class InsuranceProvidersResult {
 
 data class InsuranceProvider(
     val id: String,
-    val name: String
+    val name: String,
+    val collectionId: String? = null,
 )
 
 class GetInsuranceProvidersUseCase(
@@ -29,7 +30,8 @@ class GetInsuranceProvidersUseCase(
                 result.data.insuranceProviders.map {
                     InsuranceProvider(
                         it.id,
-                        it.name
+                        it.name,
+                        it.externalCollectionId
                     )
                 }
             )

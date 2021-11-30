@@ -18,8 +18,7 @@ import com.hedvig.app.ui.compose.theme.HedvigTheme
 class AskForPriceInfoActivity : BaseActivity() {
 
     private val parameter by lazy {
-        intent.getParcelableExtra(PARAMETER)
-            ?: AskForPriceInfoParameter("Test")
+        intent.getParcelableExtra<InsuranceProviderParameter>(PARAMETER)
             ?: throw Error("Programmer error: DATA is null in ${this.javaClass.name}")
     }
 
@@ -36,7 +35,7 @@ class AskForPriceInfoActivity : BaseActivity() {
                     }
                 ) {
                     AskForPriceScreen(
-                        parameter.selectedInsuranceProvider,
+                        parameter.selectedInsuranceProviderCollectionId,
                         onSkipRetrievePriceInfo = ::finishWithResult,
                         onNavigateToRetrievePrice = ::startRetrievePriceActivity
                     )
@@ -46,7 +45,7 @@ class AskForPriceInfoActivity : BaseActivity() {
     }
 
     private fun startRetrievePriceActivity() {
-        startActivity(RetrievePriceInfoActivity.createIntent(this))
+        startActivity(RetrievePriceInfoActivity.createIntent(this, parameter))
     }
 
     private fun finishWithResult() {
@@ -60,7 +59,7 @@ class AskForPriceInfoActivity : BaseActivity() {
 
         fun createIntent(
             context: Context,
-            parameter: AskForPriceInfoParameter
+            parameter: InsuranceProviderParameter
         ) = Intent(context, AskForPriceInfoActivity::class.java).apply {
             putExtra(PARAMETER, parameter)
         }

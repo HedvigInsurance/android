@@ -18,7 +18,7 @@ import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.AskForPriceInfoActivity
 import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.AskForPriceInfoActivity.Companion.RESULT_SKIP
-import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.AskForPriceInfoParameter
+import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.InsuranceProviderParameter
 import com.hedvig.app.feature.embark.passages.previousinsurer.InsurerProviderBottomSheet
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerParameter
 import com.hedvig.app.util.extensions.showErrorDialog
@@ -78,7 +78,7 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
                 binding.continueButton.isEnabled = viewState.canContinue()
                 binding.continueButton.setOnClickListener {
                     viewState.selectedProvider?.let {
-                        continueWithProvider(it.id)
+                        continueWithProvider(it.collectionId)
                     }
                 }
             }
@@ -118,15 +118,16 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
         viewModel.selectInsuranceProvider(
             InsuranceProvider(
                 id = id,
+                collectionId = id,
                 name = name
             )
         )
     }
 
-    private fun startAskForPrice(providerId: String) {
+    private fun startAskForPrice(collectionId: String) {
         val intent = AskForPriceInfoActivity.createIntent(
             requireContext(),
-            AskForPriceInfoParameter(providerId)
+            InsuranceProviderParameter(collectionId)
         )
         askForPriceActivityResultLauncher.launch(intent)
     }
@@ -134,21 +135,21 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
     private fun showInsurers(insuranceProviders: List<InsuranceProvider>) {
         val fragment = InsurerProviderBottomSheet.newInstance(
             insuranceProviders.map {
-                PreviousInsurerParameter.PreviousInsurer(it.name, "", it.id)
+                PreviousInsurerParameter.PreviousInsurer(it.name, "", it.collectionId ?: "")
             }
         )
         fragment.show(parentFragmentManager, InsurerProviderBottomSheet.TAG)
     }
 
-    private fun continueWithProvider(providerId: String) {
-        if (providerId == getString(R.string.EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION)) {
+    private fun continueWithProvider(collectionId: String?) {
+        if (collectionId == getString(R.string.EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION) || collectionId == null) {
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle(getString(R.string.EXTERNAL_INSURANCE_PROVIDER_ALERT_TITLE))
                 .setMessage(getString(R.string.EXTERNAL_INSURANCE_PROVIDER_ALERT_MESSAGE))
                 .setPositiveButton(getString(R.string.ALERT_OK)) { _, _ -> continueEmbark() }
                 .show()
         } else {
-            startAskForPrice(providerId)
+            startAskForPrice(collectionId)
         }
     }
 

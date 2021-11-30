@@ -1,0 +1,18 @@
+subscription externalInsuranceProviderV2(
+  $reference: ID!
+) {
+  dataCollectionStatusV2(reference: $reference) {
+    status
+    id
+    insuranceCompany
+    extraInformation {
+      ...on SwedishBankIdExtraInfo {
+        autoStartToken
+        swedishBankIdQrCode
+      }
+      ...on NorwegianBankIdExtraInfo {
+        norwegianBankIdWords
+      }
+    }
+  }
+}
