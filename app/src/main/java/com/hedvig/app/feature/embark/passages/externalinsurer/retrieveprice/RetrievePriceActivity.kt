@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
@@ -46,7 +45,8 @@ class RetrievePriceInfoActivity : BaseActivity() {
             { _, result ->
                 val success = result.getBoolean(InsurelyDialog.RESULT_KEY)
                 if (success) {
-                    viewModel.onCollectionStarted()
+                    // viewModel.onCollectionStarted()
+                    viewModel.onCollectionFailed()
                 } else {
                     viewModel.onCollectionFailed()
                 }
@@ -63,9 +63,23 @@ class RetrievePriceInfoActivity : BaseActivity() {
                         )
                     }
                 ) {
+                    val events = viewModel.events.collectAsState(initial = null)
+
+                    when (val event = events.value) {
+                        is RetrievePriceViewModel.Event.Error -> {
+                            ErrorDialog(
+                                onDismiss = {},
+                                message = stringResource(id = event.errorResult.getStringResource())
+                            )
+                        }
+                        is RetrievePriceViewModel.Event.AuthInformation -> {
+                            InsurelyDialog.newInstance(event.reference)
+                                .show(supportFragmentManager, AuthenticateDialog.TAG)
+                        }
+                    }
+
                     RetrievePriceScreen(
                         viewModel = viewModel,
-                        fragmentManager = supportFragmentManager,
                         onContinue = ::onContinue
                     )
                 }
@@ -93,29 +107,12 @@ class RetrievePriceInfoActivity : BaseActivity() {
 fun RetrievePriceScreen(
     viewModel: RetrievePriceViewModel = viewModel(),
     onContinue: () -> Unit,
-    fragmentManager: FragmentManager,
 ) {
     val viewState by viewModel.viewState.collectAsState()
-    val events = viewModel.events.collectAsState(initial = null)
-
-    when (val event = events.value) {
-        is RetrievePriceViewModel.Event.Error -> {
-            ErrorDialog(
-                onDismiss = {},
-                message = stringResource(id = event.errorResult.getStringResource())
-            )
-        }
-        is RetrievePriceViewModel.Event.AuthInformation -> {
-            InsurelyDialog.newInstance(event.reference)
-                .show(fragmentManager, AuthenticateDialog.TAG)
-        }
-    }
 
     when {
         viewState.collectionStarted -> RetrievePriceSuccess(onContinue = onContinue)
-        viewState.collectionFailed -> {
-            // Show price collection failed
-        }
+        viewState.collectionFailed -> RetrievePriceFailed(onRetry = viewModel::onRetry, onSkip = onContinue)
         else -> {
             FadeWhen(visible = viewState.isLoading) {
                 CenteredProgressIndicator()

@@ -85,6 +85,10 @@ class RetrievePriceViewModel(
         _viewState.update { it.copy(collectionFailed = true) }
     }
 
+    fun onRetry() {
+        _viewState.update { it.copy(collectionFailed = false, collectionStarted = false) }
+    }
+
     data class ViewState(
         val input: String = "",
         val inputError: InputError? = null,
