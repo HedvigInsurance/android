@@ -138,7 +138,8 @@ query EmbarkStory($name: String!, $locale: String!) {
             }
             skip {
               ...EmbarkLinkFragment
-            }
+            },
+            storeKey
           }
         }
         ... on EmbarkNumberAction {

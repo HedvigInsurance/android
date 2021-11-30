@@ -103,20 +103,24 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
                 startPostponedEnterTransition()
             }
 
-            setFragmentResultListener(InsurerProviderBottomSheet.REQUEST_KEY) { requestKey: String, bundle: Bundle ->
-                val id = bundle.getString(InsurerProviderBottomSheet.INSURER_ID_KEY)
-                val name = bundle.getString(InsurerProviderBottomSheet.INSURER_NAME_KEY)
-                if (requestKey == InsurerProviderBottomSheet.REQUEST_KEY && id != null && name != null) {
-                    // embarkViewModel.putInStore(insurerData.storeKey, item.id)
-                    viewModel.selectInsuranceProvider(
-                        InsuranceProvider(
-                            id = id,
-                            name = name
-                        )
-                    )
-                }
+            setFragmentResultListener(InsurerProviderBottomSheet.REQUEST_KEY) { _: String, bundle: Bundle ->
+                handleInsurerProviderBottomSheetResult(bundle)
             }
         }
+    }
+
+    private fun handleInsurerProviderBottomSheetResult(bundle: Bundle) {
+        val id = bundle.getString(InsurerProviderBottomSheet.INSURER_ID_KEY)
+            ?: throw IllegalArgumentException("Id not found in bundle from InsurerProviderBottomSheet")
+        val name = bundle.getString(InsurerProviderBottomSheet.INSURER_NAME_KEY)
+            ?: throw IllegalArgumentException("Name not found in bundle from InsurerProviderBottomSheet")
+        embarkViewModel.putInStore(insurerData.storeKey, id)
+        viewModel.selectInsuranceProvider(
+            InsuranceProvider(
+                id = id,
+                name = name
+            )
+        )
     }
 
     private fun startAskForPrice(providerId: String) {
