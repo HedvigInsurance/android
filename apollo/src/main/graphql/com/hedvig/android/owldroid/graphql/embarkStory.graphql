@@ -73,6 +73,7 @@ query EmbarkStory($name: String!, $locale: String!) {
               }
               keys
               values
+              badge
               api {
                 ...ApiFragment
               }

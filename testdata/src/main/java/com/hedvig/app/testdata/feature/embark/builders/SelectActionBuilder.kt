@@ -29,6 +29,7 @@ data class SelectOptionBuilder(
     private val link: EmbarkLinkFragment,
     private val keyValues: List<Pair<String, String>> = emptyList(),
     private val api: ApiFragment? = null,
+    private val badge: String? = null,
 ) {
     fun build() = EmbarkStoryQuery.Option(
         link = EmbarkStoryQuery.Link(
@@ -36,6 +37,7 @@ data class SelectOptionBuilder(
         ),
         keys = keyValues.map { it.first },
         values = keyValues.map { it.second },
+        badge = badge,
         api = api?.let { EmbarkStoryQuery.Api(fragments = EmbarkStoryQuery.Api.Fragments(it)) },
     )
 }
