@@ -45,8 +45,7 @@ class RetrievePriceInfoActivity : BaseActivity() {
             { _, result ->
                 val success = result.getBoolean(InsurelyDialog.RESULT_KEY)
                 if (success) {
-                    // viewModel.onCollectionStarted()
-                    viewModel.onCollectionFailed()
+                    viewModel.onCollectionStarted()
                 } else {
                     viewModel.onCollectionFailed()
                 }
