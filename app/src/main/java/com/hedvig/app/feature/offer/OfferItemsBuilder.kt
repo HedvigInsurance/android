@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.offer
 
+import com.hedvig.android.owldroid.graphql.DataCollectionResultQuery
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.documents.DocumentItems
@@ -13,52 +14,30 @@ import com.hedvig.app.feature.offer.ui.checkoutLabel
 import com.hedvig.app.feature.offer.ui.gradientType
 import com.hedvig.app.feature.offer.ui.grossMonthlyCost
 import com.hedvig.app.feature.offer.ui.netMonthlyCost
+import com.hedvig.app.feature.offer.usecase.insurelydatacollection.DataCollectionResult
+import com.hedvig.app.feature.offer.usecase.insurelydatacollection.DataCollectionResult.DataCollectionStatus.COMPLETE
+import com.hedvig.app.feature.offer.usecase.insurelydatacollection.DataCollectionResult.DataCollectionStatus.FAILED
+import com.hedvig.app.feature.offer.usecase.insurelydatacollection.DataCollectionResult.DataCollectionStatus.IN_PROGRESS
+import com.hedvig.app.feature.offer.usecase.insurelydatacollection.SubscribeToDataCollectionUseCase
+import com.hedvig.app.feature.offer.usecase.insurelydatacollection.SubscribeToDataCollectionUseCase.Status.Content
+import com.hedvig.app.feature.offer.usecase.insurelydatacollection.SubscribeToDataCollectionUseCase.Status.Error
 import com.hedvig.app.feature.perils.Peril
 import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.feature.table.intoTable
+import com.hedvig.app.util.apollo.toMonetaryAmount
+import com.hedvig.app.util.minus
+import javax.money.MonetaryAmount
 
 object OfferItemsBuilder {
-    fun createTopOfferItems(data: OfferQuery.Data): List<OfferModel> = ArrayList<OfferModel>().apply {
-        add(
-            OfferModel.Header(
-                title = data.quoteBundle.displayName,
-                startDate = data.quoteBundle.inception.getStartDate(),
-                startDateLabel = data
-                    .quoteBundle
-                    .inception
-                    .getStartDateLabel(data.quoteBundle.appConfiguration.startDateTerminology),
-                premium = if (data.quoteBundle.appConfiguration.ignoreCampaigns) {
-                    data.grossMonthlyCost()
-                } else {
-                    data.netMonthlyCost()
-                },
-                originalPremium = data.grossMonthlyCost(),
-                hasDiscountedPrice = !data.grossMonthlyCost().isEqualTo(data.netMonthlyCost()) &&
-                    !data.quoteBundle.appConfiguration.ignoreCampaigns,
-                incentiveDisplayValue = data
-                    .redeemedCampaigns
-                    .mapNotNull { it.fragments.incentiveFragment.displayValue },
-                hasCampaigns = data.redeemedCampaigns.isNotEmpty(),
-                changeDateBottomSheetData = data.quoteBundle.inception.toChangeDateBottomSheetData(),
-                checkoutLabel = data.checkoutLabel(),
-                signMethod = data.signMethodForQuotes,
-                approveButtonTerminology = data.quoteBundle.appConfiguration.approveButtonTerminology,
-                showCampaignManagement = data.quoteBundle.appConfiguration.showCampaignManagement,
-                ignoreCampaigns = data.quoteBundle.appConfiguration.ignoreCampaigns,
-                gradientType = data.gradientType(),
-            ),
-        )
-        add(
-            OfferModel.Facts(data.quoteBundle.quotes[0].detailsTable.fragments.tableFragment.intoTable()),
-        )
-        add(OfferModel.Subheading.Coverage)
-        if (data.quoteBundle.quotes.size > 1) {
-            add(OfferModel.Paragraph.Coverage)
-            data.quoteBundle.quotes.forEach { quote ->
-                add(OfferModel.QuoteDetails(quote.displayName, quote.id))
-            }
-        }
-    }
+    fun createTopOfferItems(
+        offerData: OfferQuery.Data,
+        dataCollectionStatus: SubscribeToDataCollectionUseCase.Status? = null,
+        externalInsuranceData: DataCollectionResultQuery.Data? = null,
+    ): List<OfferModel> = TopOfferItemsBuilder.createTopOfferItems(
+        offerData,
+        dataCollectionStatus,
+        externalInsuranceData
+    )
 
     fun createDocumentItems(data: List<OfferQuery.Quote>): List<DocumentItems> {
         if (data.size != 1) {
@@ -157,4 +136,141 @@ object OfferItemsBuilder {
     } else {
         emptyList()
     }
+}
+
+object TopOfferItemsBuilder {
+    fun createTopOfferItems(
+        offerData: OfferQuery.Data,
+        dataCollectionStatus: SubscribeToDataCollectionUseCase.Status? = null,
+        externalInsuranceData: DataCollectionResultQuery.Data? = null,
+    ): List<OfferModel> = ArrayList<OfferModel>().apply {
+        add(
+            OfferModel.Header(
+                title = offerData.quoteBundle.displayName,
+                startDate = offerData.quoteBundle.inception.getStartDate(),
+                startDateLabel = offerData
+                    .quoteBundle
+                    .inception
+                    .getStartDateLabel(offerData.quoteBundle.appConfiguration.startDateTerminology),
+                premium = offerData.finalPremium,
+                originalPremium = offerData.grossMonthlyCost(),
+                hasDiscountedPrice = !offerData.grossMonthlyCost().isEqualTo(offerData.netMonthlyCost()) &&
+                    !offerData.quoteBundle.appConfiguration.ignoreCampaigns,
+                incentiveDisplayValue = offerData
+                    .redeemedCampaigns
+                    .mapNotNull { it.fragments.incentiveFragment.displayValue },
+                hasCampaigns = offerData.redeemedCampaigns.isNotEmpty(),
+                changeDateBottomSheetData = offerData.quoteBundle.inception.toChangeDateBottomSheetData(),
+                checkoutLabel = offerData.checkoutLabel(),
+                signMethod = offerData.signMethodForQuotes,
+                approveButtonTerminology = offerData.quoteBundle.appConfiguration.approveButtonTerminology,
+                showCampaignManagement = offerData.quoteBundle.appConfiguration.showCampaignManagement,
+                ignoreCampaigns = offerData.quoteBundle.appConfiguration.ignoreCampaigns,
+                gradientType = offerData.gradientType(),
+            ),
+        )
+        addInsurelyCard(offerData, dataCollectionStatus, externalInsuranceData)
+        add(
+            OfferModel.Facts(offerData.quoteBundle.quotes[0].detailsTable.fragments.tableFragment.intoTable()),
+        )
+        add(OfferModel.Subheading.Coverage)
+        if (offerData.quoteBundle.quotes.size > 1) {
+            add(OfferModel.Paragraph.Coverage)
+            offerData.quoteBundle.quotes.forEach { quote ->
+                add(OfferModel.QuoteDetails(quote.displayName, quote.id))
+            }
+        }
+    }
+
+    private fun ArrayList<OfferModel>.addInsurelyCard(
+        offerData: OfferQuery.Data,
+        dataCollectionStatus: SubscribeToDataCollectionUseCase.Status?,
+        externalInsuranceData: DataCollectionResultQuery.Data?,
+    ) {
+        if (dataCollectionStatus == null) return
+        add(
+            when (dataCollectionStatus) {
+                Error -> OfferModel.InsurelyCard.FailedToRetrieve()
+                is Content -> {
+                    mapContentToInsurelyCard(
+                        dataCollectionStatus.dataCollectionResult,
+                        externalInsuranceData,
+                        offerData
+                    )
+                }
+            }
+        )
+    }
+
+    private fun mapContentToInsurelyCard(
+        result: DataCollectionResult,
+        externalInsuranceData: DataCollectionResultQuery.Data?,
+        offerData: OfferQuery.Data,
+    ) = when (result.status) {
+        IN_PROGRESS -> OfferModel.InsurelyCard.Loading(result.insuranceCompany)
+        FAILED -> OfferModel.InsurelyCard.FailedToRetrieve(result.insuranceCompany)
+        COMPLETE -> {
+            val collectedData: List<DataCollectionResultQuery.DataCollectionV2InsuranceDataCollectionV2>? =
+                externalInsuranceData
+                    ?.externalInsuranceProvider
+                    ?.dataCollectionV2
+                    ?.mapNotNull { data ->
+                        when {
+                            data.asHouseInsuranceCollection != null -> data.asHouseInsuranceCollection
+                            data.asPersonTravelInsuranceCollection != null -> data.asPersonTravelInsuranceCollection
+                            else -> null
+                        }
+                    }
+            if (collectedData == null) {
+                OfferModel.InsurelyCard.FailedToRetrieve(result.insuranceCompany)
+            } else {
+                val currentInsurances = collectedData
+                    .mapNotNull { externalInsurance ->
+                        val name = externalInsurance.name
+                        val finalPremium = externalInsurance.netPremium
+                        if (name == null || finalPremium == null) return@mapNotNull null
+                        OfferModel.InsurelyCard.Retrieved.CurrentInsurance(name, finalPremium)
+                    }
+                val ourPremium = offerData.finalPremium
+                val otherPremium = collectedData
+                    .mapNotNull { it.netPremium }
+                    .reduce(MonetaryAmount::add)
+                val cheaperBy = otherPremium.minus(ourPremium)
+                OfferModel.InsurelyCard.Retrieved(
+                    insuranceProvider = result.insuranceCompany,
+                    currentInsurances = currentInsurances,
+                    cheaperBy = cheaperBy,
+                )
+            }
+        }
+    }
+
+    private val OfferQuery.Data.finalPremium: MonetaryAmount
+        get() = if (quoteBundle.appConfiguration.ignoreCampaigns) {
+            grossMonthlyCost()
+        } else {
+            netMonthlyCost()
+        }
+
+    private val DataCollectionResultQuery.DataCollectionV2InsuranceDataCollectionV2.netPremium: MonetaryAmount?
+        get() = when (this) {
+            is DataCollectionResultQuery.AsHouseInsuranceCollection -> {
+                this.monthlyNetPremium?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+            }
+            is DataCollectionResultQuery.AsPersonTravelInsuranceCollection -> {
+                this.monthlyNetPremium?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
+            }
+            else -> null
+        }
+
+    private val DataCollectionResultQuery.DataCollectionV2InsuranceDataCollectionV2.name: String?
+        get() = when (this) {
+            is DataCollectionResultQuery.AsHouseInsuranceCollection -> {
+                this.insuranceName
+            }
+            is DataCollectionResultQuery.AsPersonTravelInsuranceCollection -> {
+                this.insuranceName
+            }
+            else -> null
+        }
 }

@@ -2,6 +2,7 @@ package com.hedvig.app.feature.offer
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hedvig.android.owldroid.graphql.DataCollectionResultQuery
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationTitle
@@ -24,12 +25,10 @@ import com.hedvig.app.feature.offer.usecase.GetPostSignDependenciesUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
-import com.hedvig.app.feature.offer.usecase.insurelydatacollection.DataCollectionResult
-import com.hedvig.app.feature.offer.usecase.insurelydatacollection.SubscribeToInsurelyDataCollectionUseCase
+import com.hedvig.app.feature.offer.usecase.insurelydatacollection.SubscribeToDataCollectionUseCase
 import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.util.LCE
 import e
-import java.time.LocalDate
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,6 +42,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 abstract class OfferViewModel : ViewModel() {
     abstract val viewState: StateFlow<ViewState>
@@ -125,7 +125,7 @@ class OfferViewModelImpl(
     private val signQuotesUseCase: SignQuotesUseCase,
     shouldShowOnNextAppStart: Boolean,
     private val getPostSignDependenciesUseCase: GetPostSignDependenciesUseCase,
-    subscribeToInsurelyDataCollectionUseCase: SubscribeToInsurelyDataCollectionUseCase,
+    subscribeToDataCollectionUseCase: SubscribeToDataCollectionUseCase,
     private val externalInsuranceDataCollectionUseCase: ExternalInsuranceDataCollectionUseCase,
     private val tracker: OfferTracker,
     private val insurelyDataCollectionReferenceUUID: String?,
@@ -143,29 +143,37 @@ class OfferViewModelImpl(
 
     private val offerResponse: MutableStateFlow<LCE<Pair<OfferQuery.Data, LoginStatus>>> = MutableStateFlow(LCE.Loading)
 
-    private val dataCollectionValue: Flow<LCE<DataCollectionResult>> =
+    private val dataCollectionSubscription: Flow<SubscribeToDataCollectionUseCase.Status?> =
         if (insurelyDataCollectionReferenceUUID != null) {
-            subscribeToInsurelyDataCollectionUseCase.invoke(insurelyDataCollectionReferenceUUID)
+            subscribeToDataCollectionUseCase.invoke(insurelyDataCollectionReferenceUUID)
         } else {
-            flowOf(LCE.Error)
+            flowOf(null)
         }
 
     override val viewState: StateFlow<ViewState> = combine(
         offerResponse,
-        dataCollectionValue,
-    ) { offerResponse, dataCollectionValue ->
+        dataCollectionSubscription,
+    ) { offerResponse, dataCollectionStatus ->
         return@combine when (offerResponse) {
             LCE.Error -> ViewState.Error
             LCE.Loading -> ViewState.Loading
             is LCE.Content -> {
                 val (offerData: OfferQuery.Data, loginStatus: LoginStatus) = offerResponse.data
                 val externalInsuranceData =
-                    if (dataCollectionValue is LCE.Content && insurelyDataCollectionReferenceUUID != null) {
-                        externalInsuranceDataCollectionUseCase.invoke(insurelyDataCollectionReferenceUUID)
+                    if (
+                        dataCollectionStatus != null &&
+                        dataCollectionStatus !is SubscribeToDataCollectionUseCase.Status.Error &&
+                        insurelyDataCollectionReferenceUUID != null
+                    ) {
+                        externalInsuranceDataCollectionUseCase
+                            .invoke(insurelyDataCollectionReferenceUUID)
+                            .let { result ->
+                                (result as? ExternalInsuranceDataCollectionUseCase.Result.Success)?.data
+                            }
                     } else {
-                        ExternalInsuranceDataCollectionUseCase.Result.Error
+                        null
                     }
-                produceViewState(offerData, loginStatus, dataCollectionValue, externalInsuranceData)
+                produceViewState(offerData, loginStatus, dataCollectionStatus, externalInsuranceData)
             }
         }
     }
@@ -244,10 +252,14 @@ class OfferViewModelImpl(
     private fun produceViewState(
         data: OfferQuery.Data,
         loginStatus: LoginStatus,
-        dataCollectionValue: LCE<DataCollectionResult>, //todo add info from data collection to the produced UI
-        externalInsuranceData: ExternalInsuranceDataCollectionUseCase.Result,
+        dataCollectionStatus: SubscribeToDataCollectionUseCase.Status?,
+        externalInsuranceData: DataCollectionResultQuery.Data?,
     ): ViewState {
-        val topOfferItems = OfferItemsBuilder.createTopOfferItems(data)
+        val topOfferItems = OfferItemsBuilder.createTopOfferItems(
+            data,
+            dataCollectionStatus,
+            externalInsuranceData
+        )
         val perilItems = OfferItemsBuilder.createPerilItems(data.quoteBundle.quotes)
         val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(data.quoteBundle.quotes)
         val documentItems = OfferItemsBuilder.createDocumentItems(data.quoteBundle.quotes)
