@@ -9,6 +9,8 @@ import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.Star
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.coroutines.MainCoroutineRule
+import io.mockk.coEvery
+import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runBlockingTest
@@ -22,8 +24,6 @@ class RetrievePriceViewModelTest {
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
 
-    var dataCollectionResult: DataCollectionResult = DataCollectionResult.Success.SwedishBankId("test1234")
-
     private val marketManager = object : MarketManager {
         override val enabledMarkets: List<Market>
             get() = listOf(Market.SE, Market.NO, Market.DK)
@@ -35,15 +35,7 @@ class RetrievePriceViewModelTest {
             set(value) {}
     }
 
-    private val startDataCollectionUseCase = object : StartDataCollectionUseCase {
-        override suspend fun startDataCollectionAndGetCollectionStatus(
-            personalNumber: String,
-            insuranceProvider: String
-        ): DataCollectionResult {
-            delay(100)
-            return dataCollectionResult
-        }
-    }
+    private val startDataCollectionUseCase = mockk<StartDataCollectionUseCase>()
 
     private lateinit var viewModel: RetrievePriceViewModel
 
@@ -51,13 +43,13 @@ class RetrievePriceViewModelTest {
     fun setup() {
         viewModel = RetrievePriceViewModel(
             marketManager = marketManager,
-            startDataCollectionUseCase = startDataCollectionUseCase
+            startDataCollectionUseCase = startDataCollectionUseCase,
+            collectionId = "testCollectionId"
         )
     }
 
     @Test
     fun testInput() = mainCoroutineRule.dispatcher.runBlockingTest {
-
         viewModel.onIdentityInput("1")
         assertThat(viewModel.viewState.value.input).isEqualTo("1")
 
@@ -70,7 +62,16 @@ class RetrievePriceViewModelTest {
 
     @Test
     fun testErrorDataCollectionError() = mainCoroutineRule.dispatcher.runBlockingTest {
-        dataCollectionResult = DataCollectionResult.Error.NoData
+        coEvery {
+            startDataCollectionUseCase.startDataCollection(
+                "9101131093",
+                "testCollectionId"
+            )
+        } coAnswers {
+            delay(100)
+            DataCollectionResult.Error.NoData
+        }
+
         viewModel.onIdentityInput("9101131093")
         assertThat(viewModel.viewState.value.inputError).isEqualTo(null)
 
@@ -86,7 +87,16 @@ class RetrievePriceViewModelTest {
 
     @Test
     fun testErrorDataCollectionSuccess() = mainCoroutineRule.dispatcher.runBlockingTest {
-        dataCollectionResult = DataCollectionResult.Success.SwedishBankId("testToken")
+        coEvery {
+            startDataCollectionUseCase.startDataCollection(
+                "9101131093",
+                "testCollectionId"
+            )
+        } coAnswers {
+            delay(100)
+            DataCollectionResult.Success("testToken")
+        }
+
         viewModel.onIdentityInput("9101131093")
         assertThat(viewModel.viewState.value.inputError).isEqualTo(null)
 
@@ -94,6 +104,10 @@ class RetrievePriceViewModelTest {
         advanceTimeBy(1)
         assertThat(viewModel.viewState.value.isLoading).isEqualTo(true)
         advanceUntilIdle()
-        assertThat(viewModel.viewState.value.showAuth).isEqualTo(true)
+        assertThat(viewModel.viewState.value.authInformation).isEqualTo(
+            RetrievePriceViewModel.ViewState.AuthInformation(
+                "testToken"
+            )
+        )
     }
 }

@@ -28,6 +28,8 @@ import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.authenticate.SharedPreferencesAuthenticationTokenService
 import com.hedvig.app.authenticate.SharedPreferencesLoginStatusService
+import com.hedvig.app.authenticate.insurely.GetDataCollectionUseCase
+import com.hedvig.app.authenticate.insurely.InsurelyAuthViewModel
 import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModel
@@ -66,9 +68,9 @@ import com.hedvig.app.feature.embark.passages.audiorecorder.AudioRecorderViewMod
 import com.hedvig.app.feature.embark.passages.datepicker.DatePickerViewModel
 import com.hedvig.app.feature.embark.passages.externalinsurer.ExternalInsurerViewModel
 import com.hedvig.app.feature.embark.passages.externalinsurer.GetInsuranceProvidersUseCase
+import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.InsuranceProviderParameter
 import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceViewModel
 import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.StartDataCollectionUseCase
-import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.StartDataCollectionUseCaseImpl
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionItem
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionParams
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionViewModel
@@ -503,11 +505,21 @@ val checkoutModule = module {
 }
 
 val retrievePriceModule = module {
-    viewModel { RetrievePriceViewModel(get(), get()) }
+    viewModel { (data: InsuranceProviderParameter) ->
+        RetrievePriceViewModel(
+            data.selectedInsuranceProviderCollectionId,
+            get(),
+            get()
+        )
+    }
 }
 
 val externalInsuranceModule = module {
     viewModel { ExternalInsurerViewModel(get()) }
+}
+
+val insurelyAuthModule = module {
+    viewModel { (reference: String) -> InsurelyAuthViewModel(reference, get()) }
 }
 
 val serviceModule = module {
@@ -621,12 +633,13 @@ val useCaseModule = module {
     single { GetCrossSellsContractTypesUseCase(get(), get()) }
     single { GraphQLQueryUseCase(get()) }
     single { GetCrossSellsUseCase(get(), get()) }
-    single<StartDataCollectionUseCase> { StartDataCollectionUseCaseImpl(get(), get()) }
+    single { StartDataCollectionUseCase(get(), get()) }
     single { GetInsuranceProvidersUseCase(get(), get()) }
     single { CreateOtpAttemptUseCase(get()) }
     single<SendOtpCodeUseCase> { SendOtpCodeUseCaseImpl(get()) }
     single<ReSendOtpCodeUseCase> { ReSendOtpCodeUseCaseImpl(get()) }
     single { TriggerFreeTextChatUseCase(get()) }
+    single { GetDataCollectionUseCase(get(), get()) }
 }
 
 val cacheManagerModule = module {

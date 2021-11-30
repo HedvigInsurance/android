@@ -6,6 +6,7 @@ import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.type.DirectDebitStatus
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticateDialog
+import com.hedvig.app.authenticate.LoginDialog
 import com.hedvig.app.feature.adyen.AdyenCurrency
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinActivity
 import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutActivity
@@ -63,7 +64,7 @@ enum class Market {
     fun openAuth(context: Context, fragmentManager: FragmentManager) {
         when (this) {
             SE -> {
-                AuthenticateDialog().show(fragmentManager, AuthenticateDialog.TAG)
+                LoginDialog().show(fragmentManager, AuthenticateDialog.TAG)
             }
             NO, DK -> {
                 context.startActivity(SimpleSignAuthenticationActivity.newInstance(context, this))

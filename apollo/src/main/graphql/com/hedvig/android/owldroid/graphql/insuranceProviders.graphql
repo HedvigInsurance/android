@@ -2,5 +2,6 @@ query InsuranceProviders($locale: Locale!) {
   insuranceProviders(locale: $locale) {
     id
     name
+    externalCollectionId
   }
 }
