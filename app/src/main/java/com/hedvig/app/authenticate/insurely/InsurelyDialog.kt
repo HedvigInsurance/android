@@ -26,12 +26,19 @@ class InsurelyDialog : AuthenticateDialog() {
         viewModel.viewState
             .flowWithLifecycle(lifecycle)
             .onEach { viewState ->
-                viewState.autoStartToken?.let(::handleAutoStartToken)
-                viewState.authStatus?.let(::bindNewStatus)
-                viewState.error?.let {
-                    context?.showErrorDialog(getString(R.string.OFFER_COMPARISION_ERROR)) {
-                        setResult(success = false)
+                when (viewState) {
+                    is InsurelyAuthViewModel.ViewState.Error -> {
+                        binding.progress.hide()
+                        context?.showErrorDialog(getString(R.string.OFFER_COMPARISION_ERROR)) {
+                            setResult(success = false)
+                        }
                     }
+                    is InsurelyAuthViewModel.ViewState.Success -> {
+                        binding.progress.hide()
+                        bindNewStatus(viewState.authStatus)
+                        viewState.autoStartToken?.let(::handleAutoStartToken)
+                    }
+                    InsurelyAuthViewModel.ViewState.Loading -> binding.progress.show()
                 }
             }
             .launchIn(lifecycleScope)

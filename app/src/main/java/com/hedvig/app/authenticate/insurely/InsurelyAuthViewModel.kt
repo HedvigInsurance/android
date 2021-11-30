@@ -2,52 +2,47 @@ package com.hedvig.app.authenticate.insurely
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 
 class InsurelyAuthViewModel(
-    private val reference: String,
-    private val getDataCollectionUseCase: GetDataCollectionUseCase
+    reference: String,
+    getDataCollectionUseCase: GetDataCollectionUseCase
 ) : ViewModel() {
 
-    private val _viewState = MutableStateFlow(ViewState())
-    val viewState: StateFlow<ViewState>
-        get() = _viewState
-
-    data class ViewState(
-        val autoStartToken: String? = null,
-        val authStatus: DataCollectionResult.Success.CollectionStatus? = null,
-        val error: DataCollectionResult.Error? = null,
-    )
-
-    init {
-        viewModelScope.launch {
-            getDataCollectionUseCase.getCollectionStatus(reference).collect { result ->
-                when (result) {
-                    is DataCollectionResult.Error -> _viewState.update {
-                        it.copy(
-                            error = it.error
-                        )
-                    }
-                    is DataCollectionResult.Success.NorwegianBankId -> _viewState.update {
-                        it.copy(
-                            autoStartToken = result.norwegianBankIdWords,
-                            authStatus = result.status,
-                            error = null
-                        )
-                    }
-                    is DataCollectionResult.Success.SwedishBankId -> _viewState.update {
-                        it.copy(
-                            autoStartToken = result.autoStartToken,
-                            authStatus = result.status,
-                            error = null
-                        )
-                    }
-                }
+    val viewState: StateFlow<ViewState> = getDataCollectionUseCase
+        .getCollectionStatus(reference)
+        .map { result ->
+            when (result) {
+                is DataCollectionResult.Error -> ViewState.Error(result)
+                is DataCollectionResult.Success.NorwegianBankId -> ViewState.Success(
+                    autoStartToken = result.norwegianBankIdWords,
+                    authStatus = result.status,
+                )
+                is DataCollectionResult.Success.SwedishBankId -> ViewState.Success(
+                    autoStartToken = result.autoStartToken,
+                    authStatus = result.status,
+                )
             }
         }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = ViewState.Loading
+        )
+
+    sealed class ViewState {
+        object Loading : ViewState()
+
+        data class Error(
+            val error: DataCollectionResult.Error
+        ) : ViewState()
+
+        data class Success(
+            val autoStartToken: String?,
+            val authStatus: DataCollectionResult.Success.CollectionStatus,
+        ) : ViewState()
     }
 }
