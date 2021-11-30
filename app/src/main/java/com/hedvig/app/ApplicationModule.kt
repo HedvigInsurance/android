@@ -143,7 +143,7 @@ import com.hedvig.app.feature.offer.usecase.GetPostSignDependenciesUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
-import com.hedvig.app.feature.offer.usecase.insurelydatacollection.SubscribeToInsurelyDataCollectionUseCase
+import com.hedvig.app.feature.offer.usecase.insurelydatacollection.SubscribeToDataCollectionUseCase
 import com.hedvig.app.feature.onboarding.ChoosePlanRepository
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModelImpl
@@ -437,7 +437,7 @@ val offerModule = module {
             signQuotesUseCase = get(),
             shouldShowOnNextAppStart = shouldShowOnNextAppStart,
             getPostSignDependenciesUseCase = get(),
-            subscribeToInsurelyDataCollectionUseCase = get(),
+            subscribeToDataCollectionUseCase = get(),
             externalInsuranceDataCollectionUseCase = get(),
             tracker = get(),
             insurelyDataCollectionReferenceUUID = insurelyDataCollectionReferenceUUID,
@@ -445,7 +445,7 @@ val offerModule = module {
     }
     single { ApproveQuotesUseCase(get(), get(), get(), get()) }
     single { RefreshQuotesUseCase(get()) }
-    single { SubscribeToInsurelyDataCollectionUseCase(get()) }
+    single { SubscribeToDataCollectionUseCase(get()) }
     single { ExternalInsuranceDataCollectionUseCase(get()) }
 }
 

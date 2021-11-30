@@ -58,7 +58,7 @@ sealed class OfferModel {
         abstract val insuranceProvider: String?
 
         data class Loading(override val insuranceProvider: String?) : InsurelyCard()
-        data class FailedToRetrieve(override val insuranceProvider: String?) : InsurelyCard()
+        data class FailedToRetrieve(override val insuranceProvider: String? = null) : InsurelyCard()
         data class Retrieved(
             override val insuranceProvider: String?,
             val currentInsurances: List<CurrentInsurance>,

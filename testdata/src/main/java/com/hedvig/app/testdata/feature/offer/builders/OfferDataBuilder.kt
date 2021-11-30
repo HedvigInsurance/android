@@ -2,7 +2,12 @@ package com.hedvig.app.testdata.feature.offer.builders
 
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.TableFragment
+import com.hedvig.android.owldroid.graphql.DataCollectionResultQuery
+import com.hedvig.android.owldroid.graphql.DataCollectionResultQuery.AsHouseInsuranceCollection
+import com.hedvig.android.owldroid.graphql.DataCollectionResultQuery.AsPersonTravelInsuranceCollection
+import com.hedvig.android.owldroid.graphql.DataCollectionStatusSubscription
 import com.hedvig.android.owldroid.graphql.OfferQuery
+import com.hedvig.android.owldroid.type.DataCollectionStatus
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationApproveButtonTerminology
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationPostSignStep
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationStartDateTerminology
@@ -86,7 +91,7 @@ data class AppConfigurationBuilder(
     private val startDateTerminology: QuoteBundleAppConfigurationStartDateTerminology =
         QuoteBundleAppConfigurationStartDateTerminology.START_DATE,
     private val postSignStep: QuoteBundleAppConfigurationPostSignStep =
-        QuoteBundleAppConfigurationPostSignStep.CONNECT_PAYIN
+        QuoteBundleAppConfigurationPostSignStep.CONNECT_PAYIN,
 ) {
     fun build() = OfferQuery.AppConfiguration(
         showCampaignManagement = showCampaignManagement,
@@ -110,4 +115,39 @@ data class FaqBuilder(
         headline = headline,
         body = body
     )
+}
+
+data class DataCollectionStatusSubscriptionBuilder(
+    private val id: String = "id",
+    private val status: DataCollectionStatus = DataCollectionStatus.UNKNOWN__,
+    private val insuranceCompany: String = "Some Insurance Company",
+) {
+    fun build(): DataCollectionStatusSubscription.Data {
+        return DataCollectionStatusSubscription.Data(
+            dataCollectionStatusV2 = DataCollectionStatusSubscription.DataCollectionStatusV2(
+                id = id,
+                status = status,
+                insuranceCompany = insuranceCompany,
+            )
+        )
+    }
+}
+
+data class DataCollectionResultQueryBuilder(
+    private val asHouseInsuranceCollection: List<AsHouseInsuranceCollection> = emptyList(),
+    private val asPersonTravelInsuranceCollection: List<AsPersonTravelInsuranceCollection> = emptyList(),
+) {
+    fun build(): DataCollectionResultQuery.Data {
+        return DataCollectionResultQuery.Data(
+            externalInsuranceProvider = DataCollectionResultQuery.ExternalInsuranceProvider(
+                dataCollectionV2 =
+                (asHouseInsuranceCollection + asPersonTravelInsuranceCollection).map {
+                    DataCollectionResultQuery.DataCollectionV2(
+                        asHouseInsuranceCollection = it as? AsHouseInsuranceCollection,
+                        asPersonTravelInsuranceCollection = it as? AsPersonTravelInsuranceCollection,
+                    )
+                }
+            )
+        )
+    }
 }
