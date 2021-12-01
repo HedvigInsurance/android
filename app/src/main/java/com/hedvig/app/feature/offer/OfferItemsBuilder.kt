@@ -228,7 +228,7 @@ object TopOfferItemsBuilder {
                 val otherPremium = collectedData
                     .mapNotNull { it.netPremium }
                     .reduceOrNull(MonetaryAmount::add)
-                val savedWithHedvig = otherPremium?.minus(ourPremium)
+                val savedWithHedvig = otherPremium?.minus(ourPremium)?.takeIf { it.isPositive }
                 OfferModel.InsurelyCard.Retrieved(
                     insuranceProvider = result.insuranceCompany,
                     currentInsurances = currentInsurances,

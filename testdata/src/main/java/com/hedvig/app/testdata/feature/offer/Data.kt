@@ -164,7 +164,7 @@ val INSURELY_COMPARISON_WITH_DATA_COLLECTION_COMPLETED: DataCollectionStatusSubs
 val DATA_COLLECTION_RESULT_ONE_RESULT: DataCollectionResultQuery.Data = DataCollectionResultQueryBuilder().build()
 val DATA_COLLECTION_RESULT_TWO_RESULTS: DataCollectionResultQuery.Data = DataCollectionResultQueryBuilder(
     payouts = List(2) {
-        MonetaryAmountFragment(amount = ((it + 1) + 19).toString(), currency = "SEK")
+        MonetaryAmountFragment(amount = ((it + 1) * 179).toString(), currency = "SEK")
     }
 ).build()
 
