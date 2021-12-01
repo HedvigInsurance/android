@@ -30,7 +30,7 @@ fun InsurelyCard(data: OfferModel.InsurelyCard) {
         targetValue = if (data is FailedToRetrieve) {
             colorResource(R.color.colorWarning)
         } else {
-            MaterialTheme.colors.background
+            MaterialTheme.colors.surface
         }
     )
     Card(
