@@ -353,11 +353,10 @@ class OfferAdapter(
             }
 
             override fun bind(data: OfferModel) {
-                val model = data
-                if (model !is OfferModel.InsurelyCard) return invalid(data)
+                if (data !is OfferModel.InsurelyCard) return invalid(data)
                 composeView.setContent {
                     HedvigTheme {
-                        InsurelyCard(model)
+                        InsurelyCard(data)
                     }
                 }
             }

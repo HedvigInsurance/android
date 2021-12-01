@@ -62,12 +62,18 @@ sealed class OfferModel {
         data class Retrieved(
             override val insuranceProvider: String?,
             val currentInsurances: List<CurrentInsurance>,
-            val cheaperBy: MonetaryAmount?,
+            val savedWithHedvig: MonetaryAmount?,
         ) : InsurelyCard() {
+            val totalNetPremium: MonetaryAmount = currentInsurances
+                .map(CurrentInsurance::amount)
+                .reduce(MonetaryAmount::add)
+
             data class CurrentInsurance(
                 val name: String,
                 val amount: MonetaryAmount,
             )
+
+            companion object
         }
     }
 
