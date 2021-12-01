@@ -3,8 +3,11 @@ package com.hedvig.app.feature.offer.ui
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.unit.dp
 import androidx.core.view.doOnNextLayout
 import androidx.core.view.isVisible
 import androidx.core.view.updatePaddingRelative
@@ -343,20 +346,17 @@ class OfferAdapter(
         ) : ViewHolder(composeView) {
             init {
                 composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-                // todo make sure paddings work with all possible variations
-                composeView.updatePaddingRelative(
-                    start = BASE_MARGIN_DOUBLE,
-                    top = BASE_MARGIN_DOUBLE,
-                    end = BASE_MARGIN_DOUBLE,
-                    bottom = BASE_MARGIN_DOUBLE,
-                )
             }
 
             override fun bind(data: OfferModel) {
                 if (data !is OfferModel.InsurelyCard) return invalid(data)
+                // todo make sure paddings work with all possible variations
                 composeView.setContent {
                     HedvigTheme {
-                        InsurelyCard(data)
+                        InsurelyCard(
+                            data = data,
+                            modifier = Modifier.padding(16.dp)
+                        )
                     }
                 }
             }
