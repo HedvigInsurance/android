@@ -45,7 +45,8 @@ class RetrievePriceViewModelTest {
         viewModel = RetrievePriceViewModel(
             marketManager = marketManager,
             startDataCollectionUseCase = startDataCollectionUseCase,
-            collectionId = "testCollectionId"
+            collectionId = "testCollectionId",
+            insurerName = "testInsurerName",
         )
     }
 
