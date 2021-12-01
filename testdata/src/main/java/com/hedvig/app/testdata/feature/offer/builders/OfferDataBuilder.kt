@@ -1,10 +1,10 @@
 package com.hedvig.app.testdata.feature.offer.builders
 
 import com.hedvig.android.owldroid.fragment.CostFragment
+import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.fragment.TableFragment
 import com.hedvig.android.owldroid.graphql.DataCollectionResultQuery
 import com.hedvig.android.owldroid.graphql.DataCollectionResultQuery.AsHouseInsuranceCollection
-import com.hedvig.android.owldroid.graphql.DataCollectionResultQuery.AsPersonTravelInsuranceCollection
 import com.hedvig.android.owldroid.graphql.DataCollectionStatusSubscription
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.type.DataCollectionStatus
@@ -134,17 +134,35 @@ data class DataCollectionStatusSubscriptionBuilder(
 }
 
 data class DataCollectionResultQueryBuilder(
-    private val asHouseInsuranceCollection: List<AsHouseInsuranceCollection> = emptyList(),
-    private val asPersonTravelInsuranceCollection: List<AsPersonTravelInsuranceCollection> = emptyList(),
+    private val insuranceProvider: String = "insuranceProvider",
+    private val insuranceName: String = "insuranceName",
+    private val payouts: List<MonetaryAmountFragment> = listOf(MonetaryAmountFragment(amount = "19", currency = "SEK")),
 ) {
     fun build(): DataCollectionResultQuery.Data {
         return DataCollectionResultQuery.Data(
             externalInsuranceProvider = DataCollectionResultQuery.ExternalInsuranceProvider(
-                dataCollectionV2 =
-                (asHouseInsuranceCollection + asPersonTravelInsuranceCollection).map {
+                dataCollectionV2 = payouts.map { payout ->
                     DataCollectionResultQuery.DataCollectionV2(
-                        asHouseInsuranceCollection = it as? AsHouseInsuranceCollection,
-                        asPersonTravelInsuranceCollection = it as? AsPersonTravelInsuranceCollection,
+                        asHouseInsuranceCollection = AsHouseInsuranceCollection(
+                            insuranceProvider = insuranceProvider,
+                            insuranceHolderAddress = null,
+                            insuranceHolderName = null,
+                            insuranceName = insuranceName,
+                            insuranceSubType = null,
+                            insuranceType = null,
+                            renewalDate = null,
+                            monthlyNetPremium = DataCollectionResultQuery.MonthlyNetPremium(
+                                fragments = DataCollectionResultQuery.MonthlyNetPremium.Fragments(
+                                    monetaryAmountFragment = payout
+                                )
+                            ),
+                            monthlyGrossPremium = null,
+                            monthlyDiscount = null,
+                            insuranceObjectAddress = null,
+                            livingArea = null,
+                            postalCode = null,
+                        ),
+                        asPersonTravelInsuranceCollection = null,
                     )
                 }
             )

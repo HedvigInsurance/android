@@ -2,6 +2,7 @@ package com.hedvig.app.feature.offer
 
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.DataCollectionResultQuery
+import com.hedvig.android.owldroid.graphql.DataCollectionStatusSubscription
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.app.authenticate.LoginStatus
@@ -10,6 +11,7 @@ import com.hedvig.app.feature.offer.quotedetail.buildInsurableLimits
 import com.hedvig.app.feature.offer.quotedetail.buildPerils
 import com.hedvig.app.feature.offer.ui.checkout.CheckoutParameter
 import com.hedvig.app.feature.offer.ui.checkoutLabel
+import com.hedvig.app.feature.offer.usecase.insurelydatacollection.DataCollectionResult
 import com.hedvig.app.feature.offer.usecase.insurelydatacollection.SubscribeToDataCollectionUseCase
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
 import kotlinx.coroutines.delay
@@ -72,51 +74,64 @@ class MockOfferViewModel : OfferViewModel() {
         _events.trySend(Event.DiscardOffer)
     }
 
-    override fun onGoToDirectDebit() {
-    }
-
-    override fun onSwedishBankIdSign() {
-    }
+    override fun onGoToDirectDebit() {}
+    override fun onSwedishBankIdSign() {}
 
     private fun load() {
         viewModelScope.launch {
             delay(650)
-            if (shouldError) {
-                _viewState.value = ViewState.Error
-                return@launch
-            }
-            val topOfferItems = OfferItemsBuilder.createTopOfferItems(
-                mockData.offer,
-                mockData.dataCollectionValue,
-                mockData.externalInsuranceData
-            )
-            val perilItems = OfferItemsBuilder.createPerilItems(mockData.offer.quoteBundle.quotes)
-            val documentItems = OfferItemsBuilder.createDocumentItems(mockData.offer.quoteBundle.quotes)
-            val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(mockData.offer.quoteBundle.quotes)
-            val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems(mockData.offer)
-            _viewState.value =
-                ViewState.Content(
-                    topOfferItems = topOfferItems,
-                    perils = perilItems,
-                    documents = documentItems,
-                    insurableLimitsItems = insurableLimitsItems,
-                    bottomOfferItems = bottomOfferItems,
-                    signMethod = mockData.offer.signMethodForQuotes,
-                    checkoutLabel = mockData.offer.checkoutLabel(),
-                    title = mockData.offer.quoteBundle.appConfiguration.title,
-                    loginStatus = LoginStatus.LOGGED_IN
+            do {
+                if (shouldError) {
+                    _viewState.value = ViewState.Error
+                    return@launch
+                }
+                val topOfferItems = OfferItemsBuilder.createTopOfferItems(
+                    mockData.offer,
+                    mockData.dataCollectionValue,
+                    mockData.externalInsuranceData
                 )
+                val perilItems = OfferItemsBuilder.createPerilItems(mockData.offer.quoteBundle.quotes)
+                val documentItems = OfferItemsBuilder.createDocumentItems(mockData.offer.quoteBundle.quotes)
+                val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(mockData.offer.quoteBundle.quotes)
+                val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems(mockData.offer)
+                _viewState.value =
+                    ViewState.Content(
+                        topOfferItems = topOfferItems,
+                        perils = perilItems,
+                        documents = documentItems,
+                        insurableLimitsItems = insurableLimitsItems,
+                        bottomOfferItems = bottomOfferItems,
+                        signMethod = mockData.offer.signMethodForQuotes,
+                        checkoutLabel = mockData.offer.checkoutLabel(),
+                        title = mockData.offer.quoteBundle.appConfiguration.title,
+                        loginStatus = LoginStatus.LOGGED_IN
+                    )
+                delay(2000)
+            } while (mockRefreshEvery2Seconds)
         }
     }
 
     companion object {
         var shouldError = false
         var mockData: OfferMockData = OfferMockData(OFFER_DATA_SWEDISH_APARTMENT)
+        var mockRefreshEvery2Seconds = false
 
         data class OfferMockData(
             val offer: OfferQuery.Data,
             val dataCollectionValue: SubscribeToDataCollectionUseCase.Status? = null,
             val externalInsuranceData: DataCollectionResultQuery.Data? = null,
-        )
+        ) {
+            constructor(
+                offer: OfferQuery.Data = OFFER_DATA_SWEDISH_APARTMENT,
+                dataCollectionValue: DataCollectionStatusSubscription.Data,
+                externalInsuranceData: DataCollectionResultQuery.Data? = null,
+            ) : this(
+                offer = offer,
+                dataCollectionValue = SubscribeToDataCollectionUseCase.Status.Content(
+                    DataCollectionResult.fromDto(dataCollectionValue.dataCollectionStatusV2)
+                ),
+                externalInsuranceData = externalInsuranceData,
+            )
+        }
     }
 }
