@@ -169,7 +169,20 @@ object TopOfferItemsBuilder {
                 gradientType = offerData.gradientType(),
             ),
         )
-        addInsurelyCard(offerData, dataCollectionStatus, externalInsuranceData)
+        if (dataCollectionStatus != null) {
+            add(
+                when (dataCollectionStatus) {
+                    Error -> OfferModel.InsurelyCard.FailedToRetrieve()
+                    is Content -> {
+                        mapContentToInsurelyCard(
+                            dataCollectionStatus.dataCollectionResult,
+                            externalInsuranceData,
+                            offerData
+                        )
+                    }
+                }
+            )
+        }
         add(
             OfferModel.Facts(offerData.quoteBundle.quotes[0].detailsTable.fragments.tableFragment.intoTable()),
         )
@@ -180,26 +193,6 @@ object TopOfferItemsBuilder {
                 add(OfferModel.QuoteDetails(quote.displayName, quote.id))
             }
         }
-    }
-
-    private fun ArrayList<OfferModel>.addInsurelyCard(
-        offerData: OfferQuery.Data,
-        dataCollectionStatus: SubscribeToDataCollectionUseCase.Status?,
-        externalInsuranceData: DataCollectionResultQuery.Data?,
-    ) {
-        if (dataCollectionStatus == null) return
-        add(
-            when (dataCollectionStatus) {
-                Error -> OfferModel.InsurelyCard.FailedToRetrieve()
-                is Content -> {
-                    mapContentToInsurelyCard(
-                        dataCollectionStatus.dataCollectionResult,
-                        externalInsuranceData,
-                        offerData
-                    )
-                }
-            }
-        )
     }
 
     private fun mapContentToInsurelyCard(
@@ -234,12 +227,12 @@ object TopOfferItemsBuilder {
                 val ourPremium = offerData.finalPremium
                 val otherPremium = collectedData
                     .mapNotNull { it.netPremium }
-                    .reduce(MonetaryAmount::add)
-                val cheaperBy = otherPremium.minus(ourPremium)
+                    .reduceOrNull(MonetaryAmount::add)
+                val savedWithHedvig = otherPremium?.minus(ourPremium)
                 OfferModel.InsurelyCard.Retrieved(
                     insuranceProvider = result.insuranceCompany,
                     currentInsurances = currentInsurances,
-                    cheaperBy = cheaperBy,
+                    savedWithHedvig = savedWithHedvig,
                 )
             }
         }
