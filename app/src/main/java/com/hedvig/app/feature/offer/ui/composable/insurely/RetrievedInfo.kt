@@ -71,27 +71,7 @@ fun RetrievedInfo(data: OfferModel.InsurelyCard.Retrieved) {
             Spacer(Modifier.height(16.dp))
             Divider()
             Spacer(Modifier.height(16.dp))
-            data.currentInsurances.forEach { insurance ->
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier
-                        .height(48.dp)
-                        .fillMaxWidth(),
-                ) {
-                    Text(
-                        text = insurance.name,
-                        style = MaterialTheme.typography.subtitle1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                        Text(
-                            text = insurance.amount.toString(), // todo locale formatting
-                            style = MaterialTheme.typography.body1
-                        )
-                    }
-                }
-            }
+            CurrentInsurancesList(data)
         }
     }
 }
@@ -107,6 +87,31 @@ private fun SavedWithHedvigChip(savedWithHedvig: MonetaryAmount) {
             style = MaterialTheme.typography.overline,
             modifier = Modifier.padding(vertical = 4.dp, horizontal = 6.dp)
         )
+    }
+}
+
+@Composable
+private fun CurrentInsurancesList(data: OfferModel.InsurelyCard.Retrieved) {
+    data.currentInsurances.forEach { insurance ->
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .height(48.dp)
+                .fillMaxWidth(),
+        ) {
+            Text(
+                text = insurance.name,
+                style = MaterialTheme.typography.subtitle1,
+                overflow = TextOverflow.Ellipsis
+            )
+            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                Text(
+                    text = insurance.amount.toString(), // todo locale formatting
+                    style = MaterialTheme.typography.body1
+                )
+            }
+        }
     }
 }
 
