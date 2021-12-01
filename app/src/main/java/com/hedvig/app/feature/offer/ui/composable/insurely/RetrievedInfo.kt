@@ -56,7 +56,7 @@ fun RetrievedInfo(data: OfferModel.InsurelyCard.Retrieved) {
         }
         Spacer(Modifier.height(24.dp))
         Text(
-            text = "${data.totalNetPremium} SEK", // todo locale formatting
+            text = "${data.totalNetPremium}", // todo locale formatting
             style = MaterialTheme.typography.h4,
         )
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
@@ -86,7 +86,7 @@ fun RetrievedInfo(data: OfferModel.InsurelyCard.Retrieved) {
                     )
                     CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                         Text(
-                            text = "${insurance.amount} SEK", // todo locale formatting
+                            text = insurance.amount.toString(), // todo locale formatting
                             style = MaterialTheme.typography.body1
                         )
                     }
@@ -103,7 +103,7 @@ private fun SavedWithHedvigChip(savedWithHedvig: MonetaryAmount) {
         backgroundColor = MaterialTheme.colors.secondary,
     ) {
         Text(
-            text = "SAVE ${savedWithHedvig.number}/MONTH WITH HEDVIG", // todo format locale
+            text = "SAVE $savedWithHedvig/MONTH WITH HEDVIG", // todo format locale
             style = MaterialTheme.typography.overline,
             modifier = Modifier.padding(vertical = 4.dp, horizontal = 6.dp)
         )
