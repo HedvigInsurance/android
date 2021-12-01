@@ -44,7 +44,7 @@ class AskForPriceInfoActivity : BaseActivity() {
                     }
                 ) {
                     AskForPriceScreen(
-                        parameter.selectedInsuranceProviderCollectionId,
+                        parameter.selectedInsuranceProviderName,
                         onSkipRetrievePriceInfo = ::finishWithResult,
                         onNavigateToRetrievePrice = ::startRetrievePriceActivity
                     )

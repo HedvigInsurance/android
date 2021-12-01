@@ -29,8 +29,7 @@ import org.koin.core.parameter.parametersOf
 class RetrievePriceInfoActivity : BaseActivity() {
 
     private val parameter by lazy {
-        intent.getParcelableExtra(PARAMETER)
-            ?: InsuranceProviderParameter("Test")
+        intent.getParcelableExtra<InsuranceProviderParameter>(PARAMETER)
             ?: throw Error("Programmer error: DATA is null in ${this.javaClass.name}")
     }
 
@@ -111,7 +110,11 @@ fun RetrievePriceScreen(
 
     when {
         viewState.collectionStarted -> RetrievePriceSuccess(onContinue = onContinue)
-        viewState.collectionFailed -> RetrievePriceFailed(onRetry = viewModel::onRetry, onSkip = onContinue)
+        viewState.collectionFailed != null -> RetrievePriceFailed(
+            onRetry = viewModel::onRetry,
+            onSkip = onContinue,
+            viewState.collectionFailed!!.insurerName
+        )
         else -> {
             FadeWhen(visible = viewState.isLoading) {
                 CenteredProgressIndicator()

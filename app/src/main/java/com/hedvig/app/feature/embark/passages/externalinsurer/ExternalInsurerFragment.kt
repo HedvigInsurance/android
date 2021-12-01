@@ -78,7 +78,7 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
                 binding.continueButton.isEnabled = viewState.canContinue()
                 binding.continueButton.setOnClickListener {
                     viewState.selectedProvider?.let {
-                        continueWithProvider(it.collectionId)
+                        continueWithProvider(it)
                     }
                 }
             }
@@ -124,10 +124,10 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
         )
     }
 
-    private fun startAskForPrice(collectionId: String) {
+    private fun startAskForPrice(collectionId: String, name: String) {
         val intent = AskForPriceInfoActivity.createIntent(
             requireContext(),
-            InsuranceProviderParameter(collectionId)
+            InsuranceProviderParameter(collectionId, name)
         )
         askForPriceActivityResultLauncher.launch(intent)
     }
@@ -141,15 +141,17 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
         fragment.show(parentFragmentManager, InsurerProviderBottomSheet.TAG)
     }
 
-    private fun continueWithProvider(collectionId: String?) {
-        if (collectionId == getString(R.string.EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION) || collectionId == null) {
+    private fun continueWithProvider(provider: InsuranceProvider) {
+        if (provider.collectionId == getString(R.string.EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION) ||
+            provider.collectionId == null
+        ) {
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle(getString(R.string.EXTERNAL_INSURANCE_PROVIDER_ALERT_TITLE))
                 .setMessage(getString(R.string.EXTERNAL_INSURANCE_PROVIDER_ALERT_MESSAGE))
                 .setPositiveButton(getString(R.string.ALERT_OK)) { _, _ -> continueEmbark() }
                 .show()
         } else {
-            startAskForPrice(collectionId)
+            startAskForPrice(provider.collectionId, provider.name)
         }
     }
 

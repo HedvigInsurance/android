@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 
 class RetrievePriceViewModel(
     private val collectionId: String,
+    private val insurerName: String,
     marketManager: MarketManager,
     private val startDataCollectionUseCase: StartDataCollectionUseCase
 ) : ViewModel() {
@@ -82,11 +83,16 @@ class RetrievePriceViewModel(
     }
 
     fun onCollectionFailed() {
-        _viewState.update { it.copy(collectionFailed = true) }
+        _viewState.update { it.copy(collectionFailed = ViewState.CollectionFailedState(insurerName)) }
     }
 
     fun onRetry() {
-        _viewState.update { it.copy(collectionFailed = false, collectionStarted = false) }
+        _viewState.update {
+            it.copy(
+                collectionFailed = null,
+                collectionStarted = false
+            )
+        }
     }
 
     data class ViewState(
@@ -95,8 +101,12 @@ class RetrievePriceViewModel(
         val market: Market?,
         val isLoading: Boolean = false,
         val collectionStarted: Boolean = false,
-        val collectionFailed: Boolean = false
+        val collectionFailed: CollectionFailedState? = null
     ) {
+
+        data class CollectionFailedState(
+            val insurerName: String
+        )
 
         data class InputError(
             val errorTextKey: Int,
