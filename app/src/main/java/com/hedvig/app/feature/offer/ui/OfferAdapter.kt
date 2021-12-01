@@ -9,6 +9,7 @@ import androidx.core.view.doOnNextLayout
 import androidx.core.view.isVisible
 import androidx.core.view.updatePaddingRelative
 import androidx.fragment.app.FragmentManager
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.type.SignMethod
@@ -36,7 +37,6 @@ import com.hedvig.app.feature.offer.ui.composable.insurely.InsurelyCard
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.table.generateTable
 import com.hedvig.app.ui.compose.theme.HedvigTheme
-import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatDrawable
@@ -59,7 +59,7 @@ class OfferAdapter(
     private val onSign: (SignMethod) -> Unit,
     private val reload: () -> Unit,
     private val openChat: () -> Unit,
-) : ListAdapter<OfferModel, OfferAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
+) : ListAdapter<OfferModel, OfferAdapter.ViewHolder>(OfferDiffUtilCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.offer_header -> ViewHolder.Header(
@@ -453,5 +453,17 @@ class OfferAdapter(
 
     companion object {
         const val INSURELY_CARD = 1
+
+        class OfferDiffUtilCallback : DiffUtil.ItemCallback<OfferModel>() {
+            override fun areItemsTheSame(oldItem: OfferModel, newItem: OfferModel): Boolean {
+                if (oldItem is OfferModel.InsurelyCard && newItem is OfferModel.InsurelyCard) {
+                    // Only a single InsurelyCard must appear in the list, therefore always true
+                    return true
+                }
+                return oldItem == newItem
+            }
+
+            override fun areContentsTheSame(oldItem: OfferModel, newItem: OfferModel) = oldItem == newItem
+        }
     }
 }

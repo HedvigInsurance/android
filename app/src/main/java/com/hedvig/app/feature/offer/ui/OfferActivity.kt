@@ -38,6 +38,7 @@ import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignDialog
+import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.showAlert
@@ -148,6 +149,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             )
 
             binding.offerScroll.adapter = concatAdapter
+            binding.offerScroll.itemAnimator = ViewHolderReusingDefaultItemAnimator()
             binding.offerScroll.addItemDecoration(ConcatItemDecoration { concatAdapter.adapters })
             (binding.offerScroll.layoutManager as? GridLayoutManager)?.let { gridLayoutManager ->
                 gridLayoutManager.spanSizeLookup =
