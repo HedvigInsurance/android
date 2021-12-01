@@ -1,9 +1,9 @@
 package com.hedvig.app.feature.offer.ui.composable.insurely
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -21,11 +21,15 @@ import com.hedvig.app.feature.offer.ui.OfferModel.InsurelyCard.Retrieved
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.ui.compose.theme.hedvigBlack12percent
 import com.hedvig.app.ui.compose.theme.hedvigContentColorFor
+import com.hedvig.app.ui.compose.util.animateContentSizeWithoutClipping
 import com.hedvig.app.util.compose.preview.previewData
 
 // TODO string resources
 @Composable
-fun InsurelyCard(data: OfferModel.InsurelyCard) {
+fun InsurelyCard(
+    data: OfferModel.InsurelyCard,
+    modifier: Modifier = Modifier,
+) {
     val backgroundColor by animateColorAsState(
         targetValue = if (data is FailedToRetrieve) {
             colorResource(R.color.colorWarning)
@@ -37,7 +41,9 @@ fun InsurelyCard(data: OfferModel.InsurelyCard) {
         border = BorderStroke(1.dp, hedvigBlack12percent),
         backgroundColor = backgroundColor,
         contentColor = hedvigContentColorFor(backgroundColor),
-        modifier = Modifier.animateContentSize()
+        modifier = modifier
+            .fillMaxWidth()
+            .animateContentSizeWithoutClipping(),
     ) {
         when (data) {
             is FailedToRetrieve -> FailedToRetrieveInfo(data.insuranceProvider)
