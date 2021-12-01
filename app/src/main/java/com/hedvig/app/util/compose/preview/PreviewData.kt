@@ -33,7 +33,7 @@ fun OfferModel.InsurelyCard.Retrieved.Companion.previewData(): OfferModel.Insure
             OfferModel.InsurelyCard.Retrieved.CurrentInsurance(
                 "SmthInsrnce",
                 Money.of(
-                    it * 12,
+                    (it + 1) * 12,
                     fakeSekCurrency
                 )
             )
