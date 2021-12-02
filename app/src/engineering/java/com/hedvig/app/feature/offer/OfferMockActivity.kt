@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.offer
 
+import androidx.lifecycle.lifecycleScope
 import com.hedvig.app.MockActivity
 import com.hedvig.app.feature.offer.MockOfferViewModel.Companion.OfferMockData
 import com.hedvig.app.feature.offer.ui.OfferActivity
@@ -24,8 +25,6 @@ import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT_WITH_C
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_SWITCHABLE
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_HOUSE
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_HOUSE_WITH_DISCOUNT
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -172,7 +171,7 @@ class OfferMockActivity : MockActivity() {
             startActivity(OfferActivity.newInstance(context = context))
         }
         clickableItem("All three states changing every 2 seconds") {
-            CoroutineScope(Dispatchers.Main).launch {
+            lifecycleScope.launch {
                 MockOfferViewModel.mockRefreshEvery2Seconds = true
                 while (true) {
                     listOf(
