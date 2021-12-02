@@ -54,6 +54,8 @@ sealed class OfferModel {
         object Coverage : Paragraph()
     }
 
+    data class InsurelyHeader(val amountOfCurrentInsurances: Int = 1) : OfferModel()
+
     sealed class InsurelyCard : OfferModel() {
         abstract val insuranceProvider: String?
 
