@@ -151,6 +151,25 @@ class OfferMockActivity : MockActivity() {
             startActivity(OfferActivity.newInstance(context))
         }
         header("With insurely data collection")
+        clickableItem("Failed to fetch") {
+            MockOfferViewModel.mockData = OfferMockData(
+                dataCollectionValue = INSURELY_COMPARISON_WITH_DATA_COLLECTION_FAILED
+            )
+            startActivity(OfferActivity.newInstance(context = context))
+        }
+        clickableItem("With two insurance results") {
+            MockOfferViewModel.mockData = OfferMockData(
+                dataCollectionValue = INSURELY_COMPARISON_WITH_DATA_COLLECTION_COMPLETED
+            )
+            startActivity(OfferActivity.newInstance(context = context))
+        }
+        clickableItem("Failed to fetch") {
+            MockOfferViewModel.mockData = OfferMockData(
+                dataCollectionValue = INSURELY_COMPARISON_WITH_DATA_COLLECTION_COMPLETED,
+                externalInsuranceData = DATA_COLLECTION_RESULT_TWO_RESULTS,
+            )
+            startActivity(OfferActivity.newInstance(context = context))
+        }
         clickableItem("All three states changing every 2 seconds") {
             CoroutineScope(Dispatchers.Main).launch {
                 MockOfferViewModel.mockRefreshEvery2Seconds = true
@@ -172,9 +191,7 @@ class OfferMockActivity : MockActivity() {
                     }
                 }
             }.invokeOnCompletion { MockOfferViewModel.mockRefreshEvery2Seconds = false }
-            startActivity(
-                OfferActivity.newInstance(context = context)
-            )
+            startActivity(OfferActivity.newInstance(context = context))
         }
     }
 }
