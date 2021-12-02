@@ -125,7 +125,6 @@ data class DataCollectionStatusSubscriptionBuilder(
     fun build(): DataCollectionStatusSubscription.Data {
         return DataCollectionStatusSubscription.Data(
             dataCollectionStatusV2 = DataCollectionStatusSubscription.DataCollectionStatusV2(
-                id = id,
                 status = status,
                 insuranceCompany = insuranceCompany,
             )

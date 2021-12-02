@@ -14,8 +14,11 @@ class SubscribeToDataCollectionUseCase(
 ) {
 
     sealed class Status {
-        object Error : Status()
+        abstract val id: String
+
+        data class Error(override val id: String) : Status()
         data class Content(
+            override val id: String,
             val dataCollectionResult: DataCollectionResult,
         ) : Status()
     }
@@ -27,8 +30,9 @@ class SubscribeToDataCollectionUseCase(
             .map(Response<DataCollectionStatusSubscription.Data>::toQueryResult)
             .map { queryResult ->
                 when (queryResult) {
-                    is QueryResult.Error -> Status.Error
+                    is QueryResult.Error -> Status.Error(referenceUUID)
                     is QueryResult.Success -> Status.Content(
+                        referenceUUID,
                         DataCollectionResult.fromDto(queryResult.data.dataCollectionStatusV2),
                     )
                 }

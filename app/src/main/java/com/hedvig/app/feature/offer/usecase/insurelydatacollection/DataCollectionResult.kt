@@ -3,14 +3,12 @@ package com.hedvig.app.feature.offer.usecase.insurelydatacollection
 import com.hedvig.android.owldroid.graphql.DataCollectionStatusSubscription
 
 data class DataCollectionResult(
-    val id: String,
     val insuranceCompany: String?,
     val status: DataCollectionStatus,
 ) {
     companion object {
         fun fromDto(dto: DataCollectionStatusSubscription.DataCollectionStatusV2): DataCollectionResult {
             return DataCollectionResult(
-                dto.id,
                 dto.insuranceCompany,
                 DataCollectionStatus.fromDto(dto.status)
             )

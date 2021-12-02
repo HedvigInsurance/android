@@ -23,6 +23,7 @@ import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.ui.compose.theme.hedvigBlack12percent
 import com.hedvig.app.ui.compose.theme.hedvigContentColorFor
 import com.hedvig.app.util.compose.preview.previewData
+import java.util.UUID
 
 // TODO string resources
 @Composable
@@ -64,8 +65,8 @@ fun InsurelyCardPreview() {
             Column {
                 val insuranceProvider = "insuranceProvider"
                 listOf(
-                    Loading(insuranceProvider),
-                    FailedToRetrieve(insuranceProvider),
+                    Loading(UUID.randomUUID().toString(), insuranceProvider),
+                    FailedToRetrieve(UUID.randomUUID().toString(), insuranceProvider),
                     Retrieved.previewData(),
                 ).forEach {
                     InsurelyCard(it)
