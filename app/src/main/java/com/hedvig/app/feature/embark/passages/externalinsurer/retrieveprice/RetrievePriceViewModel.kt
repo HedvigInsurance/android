@@ -23,10 +23,6 @@ class RetrievePriceViewModel(
     val events = _events.receiveAsFlow()
 
     sealed class Event {
-        data class Error(
-            val errorResult: DataCollectionResult.Error
-        ) : Event()
-
         data class AuthInformation(
             val reference: String
         ) : Event()
@@ -49,9 +45,8 @@ class RetrievePriceViewModel(
 
             when (result) {
                 is DataCollectionResult.Error -> {
-                    _events.trySend(Event.Error(result))
                     _viewState.update {
-                        it.copy(isLoading = false)
+                        it.copy(isLoading = false, error = result)
                     }
                 }
                 is DataCollectionResult.Success -> {
@@ -66,16 +61,22 @@ class RetrievePriceViewModel(
 
     fun onIdentityInput(input: String) {
         val validationResult = validateNationalIdentityNumber(input)
-        _viewState.value = _viewState.value.copy(
-            input = input,
-            inputError = if (!validationResult.isSuccessful) {
-                ViewState.InputError(
-                    errorTextKey = validationResult.errorTextKey ?: 0
-                )
-            } else {
-                null
-            },
-        )
+        _viewState.update {
+            it.copy(
+                input = input,
+                inputError = if (!validationResult.isSuccessful) {
+                    ViewState.InputError(
+                        errorTextKey = validationResult.errorTextKey ?: 0
+                    )
+                } else {
+                    null
+                },
+            )
+        }
+    }
+
+    fun onDismissError() {
+        _viewState.update { it.copy(error = null) }
     }
 
     fun onCollectionStarted() {
@@ -100,6 +101,7 @@ class RetrievePriceViewModel(
         val inputError: InputError? = null,
         val market: Market?,
         val isLoading: Boolean = false,
+        val error: DataCollectionResult.Error? = null,
         val collectionStarted: Boolean = false,
         val collectionFailed: CollectionFailedState? = null
     ) {
