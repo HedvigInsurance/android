@@ -1,9 +1,10 @@
 package com.hedvig.app.feature.offer.ui.composable.insurely
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -21,7 +22,6 @@ import com.hedvig.app.feature.offer.ui.OfferModel.InsurelyCard.Retrieved
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.ui.compose.theme.hedvigBlack12percent
 import com.hedvig.app.ui.compose.theme.hedvigContentColorFor
-import com.hedvig.app.ui.compose.util.animateContentSizeWithoutClipping
 import com.hedvig.app.util.compose.preview.previewData
 
 // TODO string resources
@@ -41,14 +41,15 @@ fun InsurelyCard(
         border = BorderStroke(1.dp, hedvigBlack12percent),
         backgroundColor = backgroundColor,
         contentColor = hedvigContentColorFor(backgroundColor),
-        modifier = modifier
-            .fillMaxWidth()
-            .animateContentSizeWithoutClipping(),
+        elevation = 0.dp,
+        modifier = modifier,
     ) {
-        when (data) {
-            is FailedToRetrieve -> FailedToRetrieveInfo(data.insuranceProvider)
-            is Loading -> LoadingRetrieval(data.insuranceProvider)
-            is Retrieved -> RetrievedInfo(data)
+        Box(Modifier.animateContentSize()) {
+            when (data) {
+                is FailedToRetrieve -> FailedToRetrieveInfo(data.insuranceProvider)
+                is Loading -> LoadingRetrieval(data.insuranceProvider)
+                is Retrieved -> RetrievedInfo(data)
+            }
         }
     }
 }

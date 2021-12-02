@@ -34,7 +34,9 @@ import javax.money.MonetaryAmount
 fun RetrievedInfo(data: OfferModel.InsurelyCard.Retrieved) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(16.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
     ) {
         if (data.savedWithHedvig != null) {
             SavedWithHedvigChip(data.savedWithHedvig)
