@@ -54,14 +54,21 @@ sealed class OfferModel {
         object Coverage : Paragraph()
     }
 
-    data class InsurelyHeader(val amountOfCurrentInsurances: Int = 1) : OfferModel()
+    data class InsurelyHeader(val id: String, val amountOfCurrentInsurances: Int = 1) : OfferModel()
 
     sealed class InsurelyCard : OfferModel() {
+        abstract val id: String
         abstract val insuranceProvider: String?
 
-        data class Loading(override val insuranceProvider: String?) : InsurelyCard()
-        data class FailedToRetrieve(override val insuranceProvider: String? = null) : InsurelyCard()
+        data class Loading(override val id: String, override val insuranceProvider: String?) : InsurelyCard()
+
+        data class FailedToRetrieve(
+            override val id: String,
+            override val insuranceProvider: String? = null,
+        ) : InsurelyCard()
+
         data class Retrieved(
+            override val id: String,
             override val insuranceProvider: String?,
             val currentInsurances: List<CurrentInsurance>,
             val savedWithHedvig: MonetaryAmount?,

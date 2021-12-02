@@ -487,12 +487,16 @@ class OfferAdapter(
         const val INSURELY_HEADER = 2
 
         class OfferDiffUtilCallback : DiffUtil.ItemCallback<OfferModel>() {
-            override fun areItemsTheSame(oldItem: OfferModel, newItem: OfferModel): Boolean {
-                if (oldItem is OfferModel.InsurelyCard && newItem is OfferModel.InsurelyCard) {
-                    // Only a single InsurelyCard must appear in the list, therefore always true
-                    return true
+            override fun areItemsTheSame(oldItem: OfferModel, newItem: OfferModel): Boolean = when {
+                oldItem is OfferModel.InsurelyCard && newItem is OfferModel.InsurelyCard -> {
+                    oldItem.id == newItem.id
                 }
-                return oldItem == newItem
+                oldItem is OfferModel.InsurelyHeader && newItem is OfferModel.InsurelyHeader -> {
+                    oldItem.id == newItem.id
+                }
+                else -> {
+                    oldItem == newItem
+                }
             }
 
             override fun areContentsTheSame(oldItem: OfferModel, newItem: OfferModel) = oldItem == newItem

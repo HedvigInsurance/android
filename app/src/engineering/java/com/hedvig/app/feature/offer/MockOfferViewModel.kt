@@ -122,12 +122,14 @@ class MockOfferViewModel : OfferViewModel() {
             val externalInsuranceData: DataCollectionResultQuery.Data? = null,
         ) {
             constructor(
+                id: String = "id",
                 offer: OfferQuery.Data = OFFER_DATA_SWEDISH_APARTMENT,
                 dataCollectionValue: DataCollectionStatusSubscription.Data,
                 externalInsuranceData: DataCollectionResultQuery.Data? = null,
             ) : this(
                 offer = offer,
                 dataCollectionValue = SubscribeToDataCollectionUseCase.Status.Content(
+                    id,
                     DataCollectionResult.fromDto(dataCollectionValue.dataCollectionStatusV2)
                 ),
                 externalInsuranceData = externalInsuranceData,
