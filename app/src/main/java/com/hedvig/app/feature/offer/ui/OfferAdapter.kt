@@ -4,6 +4,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -78,7 +80,8 @@ class OfferAdapter(
         R.layout.offer_footer -> ViewHolder.Footer(parent, openChat)
         R.layout.text_headline5 -> ViewHolder.Subheading(parent)
         R.layout.text_body2 -> ViewHolder.Paragraph(parent)
-        INSURELY_CARD -> ViewHolder.InsurelyCardViewHolder(ComposeView(parent.context))
+        INSURELY_HEADER -> ViewHolder.InsurelyHeader(ComposeView(parent.context))
+        INSURELY_CARD -> ViewHolder.InsurelyCard(ComposeView(parent.context))
         R.layout.text_subtitle1 -> ViewHolder.QuoteDetails(parent, openQuoteDetails)
         R.layout.offer_faq -> ViewHolder.FAQ(parent, fragmentManager)
         R.layout.info_card -> ViewHolder.InfoCard(parent)
@@ -94,6 +97,7 @@ class OfferAdapter(
         is OfferModel.Footer -> R.layout.offer_footer
         is OfferModel.Subheading -> R.layout.text_headline5
         is OfferModel.Paragraph -> R.layout.text_body2
+        is OfferModel.InsurelyHeader -> INSURELY_HEADER
         is OfferModel.InsurelyCard -> INSURELY_CARD
         is OfferModel.QuoteDetails -> R.layout.text_subtitle1
         is OfferModel.FAQ -> R.layout.offer_faq
@@ -107,8 +111,9 @@ class OfferAdapter(
     }
 
     override fun onViewRecycled(holder: ViewHolder) {
-        if (holder is ViewHolder.InsurelyCardViewHolder) {
-            holder.composeView.disposeComposition()
+        val itemView = holder.itemView
+        if (itemView is ComposeView) {
+            itemView.disposeComposition()
         }
     }
 
@@ -261,7 +266,7 @@ class OfferAdapter(
             }
         }
 
-        class Subheading(parent: ViewGroup) : OfferAdapter.ViewHolder(parent.inflate(R.layout.text_headline5)) {
+        class Subheading(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.text_headline5)) {
             private val binding by viewBinding(TextHeadline5Binding::bind)
 
             init {
@@ -296,7 +301,7 @@ class OfferAdapter(
         class QuoteDetails(
             parent: ViewGroup,
             private val openQuoteDetails: (quoteID: String) -> Unit,
-        ) : OfferAdapter.ViewHolder(parent.inflate(R.layout.text_subtitle1)) {
+        ) : ViewHolder(parent.inflate(R.layout.text_subtitle1)) {
             private val binding by viewBinding(TextSubtitle1Binding::bind)
 
             init {
@@ -320,7 +325,7 @@ class OfferAdapter(
             }
         }
 
-        class Paragraph(parent: ViewGroup) : OfferAdapter.ViewHolder(parent.inflate(R.layout.text_body2)) {
+        class Paragraph(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.text_body2)) {
             private val binding by viewBinding(TextBody2Binding::bind)
 
             init {
@@ -341,8 +346,35 @@ class OfferAdapter(
             }
         }
 
-        class InsurelyCardViewHolder(
-            val composeView: ComposeView,
+        class InsurelyHeader(
+            private val composeView: ComposeView,
+        ) : ViewHolder(composeView) {
+            init {
+                composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            }
+
+            override fun bind(data: OfferModel) {
+                if (data !is OfferModel.InsurelyHeader) return invalid(data)
+                val resources = composeView.context.resources
+                composeView.setContent {
+                    HedvigTheme {
+                        Text(
+                            text = resources.getQuantityString(
+                                R.plurals.offer_switcher_title,
+                                data.amountOfCurrentInsurances,
+                            ),
+                            style = MaterialTheme.typography.h6,
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .padding(top = 48.dp)
+                        )
+                    }
+                }
+            }
+        }
+
+        class InsurelyCard(
+            private val composeView: ComposeView,
         ) : ViewHolder(composeView) {
             init {
                 composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
@@ -350,7 +382,6 @@ class OfferAdapter(
 
             override fun bind(data: OfferModel) {
                 if (data !is OfferModel.InsurelyCard) return invalid(data)
-                // todo make sure paddings work with all possible variations
                 composeView.setContent {
                     HedvigTheme {
                         InsurelyCard(
@@ -405,7 +436,7 @@ class OfferAdapter(
             }
         }
 
-        class InfoCard(parent: ViewGroup) : OfferAdapter.ViewHolder(parent.inflate(R.layout.info_card)) {
+        class InfoCard(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.info_card)) {
             private val binding by viewBinding(InfoCardBinding::bind)
 
             override fun bind(data: OfferModel) = with(binding) {
@@ -453,6 +484,7 @@ class OfferAdapter(
 
     companion object {
         const val INSURELY_CARD = 1
+        const val INSURELY_HEADER = 2
 
         class OfferDiffUtilCallback : DiffUtil.ItemCallback<OfferModel>() {
             override fun areItemsTheSame(oldItem: OfferModel, newItem: OfferModel): Boolean {

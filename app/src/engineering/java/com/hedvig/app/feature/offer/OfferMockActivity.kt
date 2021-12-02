@@ -150,16 +150,17 @@ class OfferMockActivity : MockActivity() {
             MockOfferViewModel.mockData = OfferMockData(BUNDLE_WITH_APPROVE)
             startActivity(OfferActivity.newInstance(context))
         }
+
         header("With insurely data collection")
-        clickableItem("Failed to fetch") {
+        clickableItem("Loading") {
             MockOfferViewModel.mockData = OfferMockData(
-                dataCollectionValue = INSURELY_COMPARISON_WITH_DATA_COLLECTION_FAILED
+                dataCollectionValue = INSURELY_COMPARISON_WITH_DATA_COLLECTION_COLLECTING
             )
             startActivity(OfferActivity.newInstance(context = context))
         }
         clickableItem("With two insurance results") {
             MockOfferViewModel.mockData = OfferMockData(
-                dataCollectionValue = INSURELY_COMPARISON_WITH_DATA_COLLECTION_COMPLETED
+                dataCollectionValue = INSURELY_COMPARISON_WITH_DATA_COLLECTION_FAILED
             )
             startActivity(OfferActivity.newInstance(context = context))
         }

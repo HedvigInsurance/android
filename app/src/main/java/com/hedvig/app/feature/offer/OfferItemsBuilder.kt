@@ -170,18 +170,21 @@ object TopOfferItemsBuilder {
             ),
         )
         if (dataCollectionStatus != null) {
-            add(
-                when (dataCollectionStatus) {
-                    Error -> OfferModel.InsurelyCard.FailedToRetrieve()
-                    is Content -> {
-                        mapContentToInsurelyCard(
+            when (dataCollectionStatus) {
+                Error -> {
+                    add(OfferModel.InsurelyHeader())
+                    add(OfferModel.InsurelyCard.FailedToRetrieve())
+                }
+                is Content -> {
+                    addAll(
+                        mapContentToInsurelyCardItems(
                             dataCollectionStatus.dataCollectionResult,
                             externalInsuranceData,
                             offerData
                         )
-                    }
+                    )
                 }
-            )
+            }
         }
         add(
             OfferModel.Facts(offerData.quoteBundle.quotes[0].detailsTable.fragments.tableFragment.intoTable()),
@@ -195,13 +198,19 @@ object TopOfferItemsBuilder {
         }
     }
 
-    private fun mapContentToInsurelyCard(
+    private fun mapContentToInsurelyCardItems(
         result: DataCollectionResult,
         externalInsuranceData: DataCollectionResultQuery.Data?,
         offerData: OfferQuery.Data,
-    ) = when (result.status) {
-        IN_PROGRESS -> OfferModel.InsurelyCard.Loading(result.insuranceCompany)
-        FAILED -> OfferModel.InsurelyCard.FailedToRetrieve(result.insuranceCompany)
+    ): List<OfferModel> = when (result.status) {
+        IN_PROGRESS -> listOf(
+            OfferModel.InsurelyHeader(),
+            OfferModel.InsurelyCard.Loading(result.insuranceCompany)
+        )
+        FAILED -> listOf(
+            OfferModel.InsurelyHeader(),
+            OfferModel.InsurelyCard.FailedToRetrieve(result.insuranceCompany)
+        )
         COMPLETE -> {
             val collectedData: List<DataCollectionResultQuery.DataCollectionV2InsuranceDataCollectionV2>? =
                 externalInsuranceData
@@ -215,7 +224,10 @@ object TopOfferItemsBuilder {
                         }
                     }
             if (collectedData == null) {
-                OfferModel.InsurelyCard.FailedToRetrieve(result.insuranceCompany)
+                listOf(
+                    OfferModel.InsurelyHeader(),
+                    OfferModel.InsurelyCard.FailedToRetrieve(result.insuranceCompany),
+                )
             } else {
                 val currentInsurances = collectedData
                     .mapNotNull { externalInsurance ->
@@ -229,10 +241,13 @@ object TopOfferItemsBuilder {
                     .mapNotNull { it.netPremium }
                     .reduceOrNull(MonetaryAmount::add)
                 val savedWithHedvig = otherPremium?.minus(ourPremium)?.takeIf { it.isPositive }
-                OfferModel.InsurelyCard.Retrieved(
-                    insuranceProvider = result.insuranceCompany,
-                    currentInsurances = currentInsurances,
-                    savedWithHedvig = savedWithHedvig,
+                listOf(
+                    OfferModel.InsurelyHeader(currentInsurances.size),
+                    OfferModel.InsurelyCard.Retrieved(
+                        insuranceProvider = result.insuranceCompany,
+                        currentInsurances = currentInsurances,
+                        savedWithHedvig = savedWithHedvig,
+                    )
                 )
             }
         }
