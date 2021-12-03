@@ -29,6 +29,7 @@ import com.hedvig.app.databinding.HomeStartClaimContainedBinding
 import com.hedvig.app.databinding.HomeStartClaimOutlinedBinding
 import com.hedvig.app.databinding.HowClaimsWorkButtonBinding
 import com.hedvig.app.databinding.UpcomingRenewalCardBinding
+import com.hedvig.app.feature.claimdetail.ClaimDetailActivity
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimActivity
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyActivity
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
@@ -213,7 +214,18 @@ class HomeAdapter(
 
                 composeView.setContent {
                     HedvigTheme {
-                        ClaimStatusCards(data.claimStatusCardDataList)
+                        ClaimStatusCards(
+                            onCardClick = { claimStatusCardData ->
+                                // TODO: Feature-flag
+                                composeView.context.startActivity(
+                                    ClaimDetailActivity.newInstance(
+                                        composeView.context,
+                                        claimStatusCardData.detailParameter,
+                                    )
+                                )
+                            },
+                            claimStatusCardDataList = data.claimStatusCardDataList,
+                        )
                     }
                 }
             }

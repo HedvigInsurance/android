@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.home.ui.claimstatus.composables
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -19,6 +20,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
+import com.hedvig.app.feature.claimdetail.ClaimDetailParameter
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimProgressData
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusCardData
 import com.hedvig.app.feature.home.ui.claimstatus.data.PillData
@@ -28,7 +30,10 @@ import java.util.UUID
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun ClaimStatusCards(claimStatusCardDataList: List<ClaimStatusCardData>) {
+fun ClaimStatusCards(
+    onCardClick: ((ClaimStatusCardData) -> Unit)?,
+    claimStatusCardDataList: List<ClaimStatusCardData>,
+) {
     val pagerState = rememberPagerState(claimStatusCardDataList.size)
     Column {
         val screenWidth = LocalConfiguration.current.screenWidthDp.dp
@@ -48,6 +53,9 @@ fun ClaimStatusCards(claimStatusCardDataList: List<ClaimStatusCardData>) {
                 modifier = Modifier
                     .width(itemWidth)
                     .padding(itemSpacingPadding)
+                    .clickable(enabled = onCardClick != null, onClick = {
+                        onCardClick?.invoke(claimStatusData)
+                    })
             )
         }
         if (claimStatusCardDataList.size == 1) {
@@ -75,9 +83,13 @@ fun ClaimStatusCardsPreview() {
                 pillData = PillData.previewData(),
                 title = "All-risk",
                 subtitle = "Contents insurance",
-                claimProgressData = ClaimProgressData.previewData()
+                claimProgressData = ClaimProgressData.previewData(),
+                detailParameter = ClaimDetailParameter.previewData(),
             )
-            ClaimStatusCards(listOf(claimStatusData))
+            ClaimStatusCards(
+                onCardClick = {},
+                claimStatusCardDataList = listOf(claimStatusData),
+            )
         }
     }
 }

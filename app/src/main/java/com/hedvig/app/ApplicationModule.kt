@@ -42,6 +42,7 @@ import com.hedvig.app.feature.chat.service.ChatTracker
 import com.hedvig.app.feature.chat.usecase.TriggerFreeTextChatUseCase
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
 import com.hedvig.app.feature.chat.viewmodel.UserViewModel
+import com.hedvig.app.feature.claimdetail.ClaimDetailViewModel
 import com.hedvig.app.feature.claims.data.ClaimsRepository
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
@@ -385,6 +386,7 @@ val viewModelModule = module {
     }
     viewModel { GenericAuthViewModel(get()) }
     viewModel { (otpId: String, credential: String) -> OtpInputViewModel(otpId, credential, get(), get(), get()) }
+    viewModel { ClaimDetailViewModel(get()) }
 }
 
 val choosePlanModule = module {
