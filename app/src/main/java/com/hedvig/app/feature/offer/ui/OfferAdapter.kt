@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.ui.Modifier
@@ -81,6 +82,7 @@ class OfferAdapter(
         R.layout.text_headline5 -> ViewHolder.Subheading(parent)
         R.layout.text_body2 -> ViewHolder.Paragraph(parent)
         INSURELY_HEADER -> ViewHolder.InsurelyHeader(ComposeView(parent.context))
+        INSURELY_DIVIDER -> ViewHolder.InsurelyDivider(ComposeView(parent.context))
         INSURELY_CARD -> ViewHolder.InsurelyCard(ComposeView(parent.context))
         R.layout.text_subtitle1 -> ViewHolder.QuoteDetails(parent, openQuoteDetails)
         R.layout.offer_faq -> ViewHolder.FAQ(parent, fragmentManager)
@@ -98,6 +100,7 @@ class OfferAdapter(
         is OfferModel.Subheading -> R.layout.text_headline5
         is OfferModel.Paragraph -> R.layout.text_body2
         is OfferModel.InsurelyHeader -> INSURELY_HEADER
+        is OfferModel.InsurelyDivider -> INSURELY_DIVIDER
         is OfferModel.InsurelyCard -> INSURELY_CARD
         is OfferModel.QuoteDetails -> R.layout.text_subtitle1
         is OfferModel.FAQ -> R.layout.offer_faq
@@ -373,6 +376,27 @@ class OfferAdapter(
             }
         }
 
+        class InsurelyDivider(
+            private val composeView: ComposeView,
+        ) : ViewHolder(composeView) {
+            init {
+                composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            }
+
+            override fun bind(data: OfferModel) {
+                if (data !is OfferModel.InsurelyDivider) return invalid(data)
+                composeView.setContent {
+                    HedvigTheme {
+                        Divider(
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .padding(top = data.topPadding)
+                        )
+                    }
+                }
+            }
+        }
+
         class InsurelyCard(
             private val composeView: ComposeView,
         ) : ViewHolder(composeView) {
@@ -485,6 +509,7 @@ class OfferAdapter(
     companion object {
         const val INSURELY_CARD = 1
         const val INSURELY_HEADER = 2
+        const val INSURELY_DIVIDER = 3
 
         class OfferDiffUtilCallback : DiffUtil.ItemCallback<OfferModel>() {
             override fun areItemsTheSame(oldItem: OfferModel, newItem: OfferModel): Boolean = when {

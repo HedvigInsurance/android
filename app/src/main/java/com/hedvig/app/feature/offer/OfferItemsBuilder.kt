@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.offer
 
+import androidx.compose.ui.unit.dp
 import com.hedvig.android.owldroid.graphql.DataCollectionResultQuery
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.R
@@ -184,6 +185,7 @@ object TopOfferItemsBuilder {
                     )
                 }
             }
+            add(OfferModel.InsurelyDivider(topPadding = 40.dp))
         }
         add(
             OfferModel.Facts(offerData.quoteBundle.quotes[0].detailsTable.fragments.tableFragment.intoTable()),
