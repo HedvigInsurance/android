@@ -238,7 +238,7 @@ abstract class EmbarkViewModel(
         _events.trySend(Event.Loading(show = false))
 
         when (result) {
-            // TODO Handle errors 
+            // TODO Handle errors
             is GraphQLQueryResult.Error -> navigateToPassage(result.passageName)
             is GraphQLQueryResult.ValuesFromResponse -> {
                 result.arrayValues.forEach {
