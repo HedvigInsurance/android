@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.offer.ui
 
 import android.content.Context
+import androidx.compose.ui.unit.Dp
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationApproveButtonTerminology
 import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.R
@@ -53,6 +54,8 @@ sealed class OfferModel {
     sealed class Paragraph : OfferModel() {
         object Coverage : Paragraph()
     }
+
+    data class InsurelyDivider(val topPadding: Dp) : OfferModel()
 
     data class InsurelyHeader(val id: String, val amountOfCurrentInsurances: Int = 1) : OfferModel()
 
