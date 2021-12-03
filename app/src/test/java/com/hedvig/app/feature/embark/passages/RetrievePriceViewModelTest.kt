@@ -13,6 +13,7 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Rule
@@ -79,10 +80,9 @@ class RetrievePriceViewModelTest {
         advanceTimeBy(1)
         assertThat(viewModel.viewState.value.isLoading).isEqualTo(true)
         advanceUntilIdle()
-        assertThat(viewModel.viewState.value.error).isEqualTo(DataCollectionResult.Error.NoData)
-
-        viewModel.onDismissError()
-        assertThat(viewModel.viewState.value.error).isEqualTo(null)
+        assertThat(viewModel.events.first()).isEqualTo(
+            RetrievePriceViewModel.Event.Error(DataCollectionResult.Error.NoData)
+        )
     }
 
     @Test
@@ -104,8 +104,9 @@ class RetrievePriceViewModelTest {
         advanceTimeBy(1)
         assertThat(viewModel.viewState.value.isLoading).isEqualTo(true)
         advanceUntilIdle()
-        assertThat(viewModel.viewState.value.authInformation).isEqualTo(
-            RetrievePriceViewModel.ViewState.AuthInformation(
+
+        assertThat(viewModel.events.first()).isEqualTo(
+            RetrievePriceViewModel.Event.AuthInformation(
                 "testToken"
             )
         )
