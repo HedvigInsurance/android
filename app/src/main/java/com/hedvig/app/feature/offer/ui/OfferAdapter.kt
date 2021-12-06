@@ -81,7 +81,7 @@ class OfferAdapter(
         R.layout.offer_footer -> ViewHolder.Footer(parent, openChat)
         R.layout.text_headline5 -> ViewHolder.Subheading(parent)
         R.layout.text_body2 -> ViewHolder.Paragraph(parent)
-        INSURELY_HEADER -> ViewHolder.InsurelyHeader(ComposeView(parent.context))
+        INSURELY_HEADER -> ViewHolder.CurrentInsurancesHeader(ComposeView(parent.context))
         INSURELY_DIVIDER -> ViewHolder.InsurelyDivider(ComposeView(parent.context))
         INSURELY_CARD -> ViewHolder.InsurelyCard(ComposeView(parent.context))
         R.layout.text_subtitle1 -> ViewHolder.QuoteDetails(parent, openQuoteDetails)
@@ -342,7 +342,7 @@ class OfferAdapter(
             }
         }
 
-        class InsurelyHeader(
+        class CurrentInsurancesHeader(
             private val composeView: ComposeView,
         ) : ViewHolder(composeView) {
             init {
@@ -359,7 +359,7 @@ class OfferAdapter(
                                 R.plurals.offer_switcher_title,
                                 data.amountOfCurrentInsurances,
                             ),
-                            style = MaterialTheme.typography.h6,
+                            style = MaterialTheme.typography.h5,
                             modifier = Modifier
                                 .padding(horizontal = 16.dp)
                                 .padding(top = 48.dp)
