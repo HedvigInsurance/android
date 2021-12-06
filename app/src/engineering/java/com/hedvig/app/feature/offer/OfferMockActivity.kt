@@ -157,13 +157,13 @@ class OfferMockActivity : MockActivity() {
             )
             startActivity(OfferActivity.newInstance(context = context))
         }
-        clickableItem("With two insurance results") {
+        clickableItem("Failed to fetch") {
             MockOfferViewModel.mockData = OfferMockData(
                 dataCollectionValue = INSURELY_COMPARISON_WITH_DATA_COLLECTION_FAILED
             )
             startActivity(OfferActivity.newInstance(context = context))
         }
-        clickableItem("Failed to fetch") {
+        clickableItem("With two insurance results") {
             MockOfferViewModel.mockData = OfferMockData(
                 dataCollectionValue = INSURELY_COMPARISON_WITH_DATA_COLLECTION_COMPLETED,
                 externalInsuranceData = DATA_COLLECTION_RESULT_TWO_RESULTS,
