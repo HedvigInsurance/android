@@ -170,6 +170,17 @@ class OfferMockActivity : MockActivity() {
             )
             startActivity(OfferActivity.newInstance(context = context))
         }
+        clickableItem("Denmark, Home Contents + Travel + Accident, All with Previous Insurer, Mixed Switchable + Insurely with two results") { // ktlint-disable max-line-length
+            MockOfferViewModel.apply {
+                mockData = OfferMockData(
+                    offer = OFFER_DATA_DENMARK_BUNDLE_HOME_CONTENTS_TRAVEL_ACCIDENT_MULTIPLE_PREVIOUS_INSURERS_MIXED_SWITCHABLE, // ktlint-disable max-line-length
+                    dataCollectionValue = INSURELY_COMPARISON_WITH_DATA_COLLECTION_COMPLETED,
+                    externalInsuranceData = DATA_COLLECTION_RESULT_TWO_RESULTS,
+                )
+                shouldError = false
+            }
+            startActivity(OfferActivity.newInstance(context))
+        }
         clickableItem("All three states changing every 2 seconds") {
             lifecycleScope.launch {
                 MockOfferViewModel.mockRefreshEvery2Seconds = true
