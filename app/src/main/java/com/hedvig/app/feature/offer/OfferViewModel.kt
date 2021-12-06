@@ -128,7 +128,7 @@ class OfferViewModelImpl(
     subscribeToDataCollectionUseCase: SubscribeToDataCollectionUseCase,
     private val externalInsuranceDataCollectionUseCase: ExternalInsuranceDataCollectionUseCase,
     private val tracker: OfferTracker,
-    private val insurelyDataCollectionReferenceUUID: String?,
+    private val insurelyDataCollectionReferenceUuid: String?,
 ) : OfferViewModel() {
 
     private lateinit var quoteIds: List<String>
@@ -144,8 +144,8 @@ class OfferViewModelImpl(
     private val offerResponse: MutableStateFlow<LCE<Pair<OfferQuery.Data, LoginStatus>>> = MutableStateFlow(LCE.Loading)
 
     private val dataCollectionSubscription: Flow<SubscribeToDataCollectionUseCase.Status?> =
-        if (insurelyDataCollectionReferenceUUID != null) {
-            subscribeToDataCollectionUseCase.invoke(insurelyDataCollectionReferenceUUID)
+        if (insurelyDataCollectionReferenceUuid != null) {
+            subscribeToDataCollectionUseCase.invoke(insurelyDataCollectionReferenceUuid)
         } else {
             flowOf(null)
         }
@@ -163,17 +163,22 @@ class OfferViewModelImpl(
                     if (
                         dataCollectionStatus != null &&
                         dataCollectionStatus !is SubscribeToDataCollectionUseCase.Status.Error &&
-                        insurelyDataCollectionReferenceUUID != null
+                        insurelyDataCollectionReferenceUuid != null
                     ) {
                         externalInsuranceDataCollectionUseCase
-                            .invoke(insurelyDataCollectionReferenceUUID)
+                            .invoke(insurelyDataCollectionReferenceUuid)
                             .let { result ->
                                 (result as? ExternalInsuranceDataCollectionUseCase.Result.Success)?.data
                             }
                     } else {
                         null
                     }
-                produceViewState(offerData, loginStatus, dataCollectionStatus, externalInsuranceData)
+                produceViewState(
+                    offerData,
+                    loginStatus,
+                    dataCollectionStatus,
+                    externalInsuranceData
+                )
             }
         }
     }

@@ -424,7 +424,7 @@ val marketingModule = module {
 val offerModule = module {
     viewModel<OfferViewModel> { parametersHolder: ParametersHolder ->
         val (
-            ids: List<String>, shouldShowOnNextAppStart: Boolean, insurelyDataCollectionReferenceUUID: String?,
+            ids: List<String>, shouldShowOnNextAppStart: Boolean, insurelyDataCollectionReferenceUuid: String?,
         ) = parametersHolder
         OfferViewModelImpl(
             _quoteIds = ids,
@@ -440,7 +440,7 @@ val offerModule = module {
             subscribeToDataCollectionUseCase = get(),
             externalInsuranceDataCollectionUseCase = get(),
             tracker = get(),
-            insurelyDataCollectionReferenceUUID = insurelyDataCollectionReferenceUUID,
+            insurelyDataCollectionReferenceUuid = insurelyDataCollectionReferenceUuid,
         )
     }
     single { ApproveQuotesUseCase(get(), get(), get(), get()) }

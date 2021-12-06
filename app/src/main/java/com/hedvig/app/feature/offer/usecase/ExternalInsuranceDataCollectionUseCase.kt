@@ -9,17 +9,19 @@ class ExternalInsuranceDataCollectionUseCase(
     private val apolloClient: ApolloClient,
 ) {
     sealed class Result {
-        data class Success(val data: DataCollectionResultQuery.Data) : Result()
-        object Error : Result()
+        abstract val referenceUuid: String
+
+        data class Success(override val referenceUuid: String, val data: DataCollectionResultQuery.Data) : Result()
+        data class Error(override val referenceUuid: String) : Result()
     }
 
-    suspend operator fun invoke(referenceUUID: String): Result {
+    suspend operator fun invoke(referenceUuid: String): Result {
         val result = apolloClient
-            .query(DataCollectionResultQuery(referenceUUID))
+            .query(DataCollectionResultQuery(referenceUuid))
             .safeQuery()
         return when (result) {
-            is QueryResult.Error -> Result.Error
-            is QueryResult.Success -> Result.Success(result.data)
+            is QueryResult.Error -> Result.Error(referenceUuid)
+            is QueryResult.Success -> Result.Success(referenceUuid, result.data)
         }
     }
 }

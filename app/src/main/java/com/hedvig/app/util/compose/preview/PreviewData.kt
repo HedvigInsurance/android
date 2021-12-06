@@ -29,8 +29,9 @@ fun OfferModel.InsurelyCard.Retrieved.Companion.previewData(): OfferModel.Insure
         override fun getContext(): CurrencyContext? = null
     }
     return OfferModel.InsurelyCard.Retrieved(
-        UUID.randomUUID().toString(),
-        "Some Insurance",
+        id = UUID.randomUUID().toString(),
+        insuranceProvider = "Some Insurance",
+        insurelyDataCollectionReferenceUuid = "asd",
         currentInsurances = List(2) {
             OfferModel.InsurelyCard.Retrieved.CurrentInsurance(
                 "SmthInsrnce",
@@ -40,6 +41,6 @@ fun OfferModel.InsurelyCard.Retrieved.Companion.previewData(): OfferModel.Insure
                 )
             )
         },
-        savedWithHedvig = Money.of(19, fakeSekCurrency)
+        savedWithHedvig = Money.of(19, fakeSekCurrency),
     )
 }
