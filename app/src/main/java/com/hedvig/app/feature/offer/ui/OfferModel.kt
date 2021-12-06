@@ -48,7 +48,6 @@ sealed class OfferModel {
 
     sealed class Subheading : OfferModel() {
         object Coverage : Subheading()
-        data class Switcher(val amountOfCurrentInsurers: Int) : Subheading()
     }
 
     sealed class Paragraph : OfferModel() {
@@ -57,7 +56,7 @@ sealed class OfferModel {
 
     data class InsurelyDivider(val topPadding: Dp) : OfferModel()
 
-    data class InsurelyHeader(val id: String, val amountOfCurrentInsurances: Int = 1) : OfferModel()
+    data class CurrentInsurancesHeader(val amountOfCurrentInsurances: Int = 1) : OfferModel()
 
     sealed class InsurelyCard : OfferModel() {
         abstract val id: String
@@ -73,6 +72,7 @@ sealed class OfferModel {
         data class Retrieved(
             override val id: String,
             override val insuranceProvider: String?,
+            val insurelyDataCollectionReferenceUuid: String,
             val currentInsurances: List<CurrentInsurance>,
             val savedWithHedvig: MonetaryAmount?,
         ) : InsurelyCard() {

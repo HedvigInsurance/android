@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.offer
 
-import androidx.compose.ui.unit.dp
 import com.hedvig.android.owldroid.graphql.DataCollectionResultQuery
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.R
@@ -36,7 +35,7 @@ object OfferItemsBuilder {
     ): List<OfferModel> = TopOfferItemsBuilder.createTopOfferItems(
         offerData,
         dataCollectionStatus,
-        externalInsuranceData
+        externalInsuranceData,
     )
 
     fun createDocumentItems(data: List<OfferQuery.Quote>): List<DocumentItems> {
@@ -62,7 +61,9 @@ object OfferItemsBuilder {
         emptyList()
     }
 
-    fun createBottomOfferItems(data: OfferQuery.Data) = ArrayList<OfferModel>().apply {
+    fun createBottomOfferItems(
+        data: OfferQuery.Data,
+    ) = ArrayList<OfferModel>().apply {
         val bundle = data.quoteBundle
         if (bundle.frequentlyAskedQuestions.isNotEmpty() && bundle.appConfiguration.showFAQ) {
             add(
@@ -70,57 +71,6 @@ object OfferItemsBuilder {
                     bundle.frequentlyAskedQuestions.mapNotNull { FAQItem.from(it) }
                 )
             )
-        }
-        if (bundle.quotes.any { it.currentInsurer != null }) {
-            add(OfferModel.Subheading.Switcher(bundle.quotes.count { it.currentInsurer?.displayName != null }))
-            val nonSwitchables = bundle.quotes.mapNotNull {
-                it.currentInsurer?.let { currentInsurer ->
-                    if (currentInsurer.switchable == false) {
-                        currentInsurer to it.displayName
-                    } else {
-                        null
-                    }
-                }
-            }
-            nonSwitchables.forEach { (currentInsurer, associatedQuote) ->
-                add(
-                    OfferModel.CurrentInsurer(
-                        displayName = currentInsurer.displayName,
-                        associatedQuote = if (bundle.quotes.size > 1) {
-                            associatedQuote
-                        } else {
-                            null
-                        }
-                    )
-                )
-            }
-            if (nonSwitchables.isNotEmpty()) {
-                add(OfferModel.ManualSwitchCard)
-            }
-            val switchables = bundle.quotes.mapNotNull {
-                it.currentInsurer?.let { currentInsurer ->
-                    if (currentInsurer.switchable == true) {
-                        currentInsurer to it.displayName
-                    } else {
-                        null
-                    }
-                }
-            }
-            switchables.forEach { (currentInsurer, associatedQuote) ->
-                add(
-                    OfferModel.CurrentInsurer(
-                        displayName = currentInsurer.displayName,
-                        associatedQuote = if (bundle.quotes.size > 1) {
-                            associatedQuote
-                        } else {
-                            null
-                        }
-                    )
-                )
-            }
-            if (switchables.isNotEmpty()) {
-                add(OfferModel.AutomaticSwitchCard)
-            }
         }
         add(OfferModel.Footer(data.checkoutLabel()))
     }
@@ -144,78 +94,72 @@ object TopOfferItemsBuilder {
         dataCollectionStatus: SubscribeToDataCollectionUseCase.Status? = null,
         externalInsuranceData: DataCollectionResultQuery.Data? = null,
     ): List<OfferModel> = ArrayList<OfferModel>().apply {
+        val bundle = offerData.quoteBundle
         add(
             OfferModel.Header(
-                title = offerData.quoteBundle.displayName,
-                startDate = offerData.quoteBundle.inception.getStartDate(),
-                startDateLabel = offerData
-                    .quoteBundle
+                title = bundle.displayName,
+                startDate = bundle.inception.getStartDate(),
+                startDateLabel = bundle
                     .inception
-                    .getStartDateLabel(offerData.quoteBundle.appConfiguration.startDateTerminology),
+                    .getStartDateLabel(bundle.appConfiguration.startDateTerminology),
                 premium = offerData.finalPremium,
                 originalPremium = offerData.grossMonthlyCost(),
                 hasDiscountedPrice = !offerData.grossMonthlyCost().isEqualTo(offerData.netMonthlyCost()) &&
-                    !offerData.quoteBundle.appConfiguration.ignoreCampaigns,
+                    !bundle.appConfiguration.ignoreCampaigns,
                 incentiveDisplayValue = offerData
                     .redeemedCampaigns
                     .mapNotNull { it.fragments.incentiveFragment.displayValue },
                 hasCampaigns = offerData.redeemedCampaigns.isNotEmpty(),
-                changeDateBottomSheetData = offerData.quoteBundle.inception.toChangeDateBottomSheetData(),
+                changeDateBottomSheetData = bundle.inception.toChangeDateBottomSheetData(),
                 checkoutLabel = offerData.checkoutLabel(),
                 signMethod = offerData.signMethodForQuotes,
-                approveButtonTerminology = offerData.quoteBundle.appConfiguration.approveButtonTerminology,
-                showCampaignManagement = offerData.quoteBundle.appConfiguration.showCampaignManagement,
-                ignoreCampaigns = offerData.quoteBundle.appConfiguration.ignoreCampaigns,
+                approveButtonTerminology = bundle.appConfiguration.approveButtonTerminology,
+                showCampaignManagement = bundle.appConfiguration.showCampaignManagement,
+                ignoreCampaigns = bundle.appConfiguration.ignoreCampaigns,
                 gradientType = offerData.gradientType(),
             ),
         )
-        if (dataCollectionStatus != null) {
+        val showInsurelyInformation = dataCollectionStatus != null
+        val showInsuranceSwitchableStates = bundle.quotes.any { quote -> quote.currentInsurer != null }
+        if (showInsurelyInformation || showInsuranceSwitchableStates) {
+            add(OfferModel.CurrentInsurancesHeader(bundle.quotes.count { quote -> quote.isDisplayable }))
+        }
+        if (showInsurelyInformation) {
             when (dataCollectionStatus) {
                 is Error -> {
-                    add(OfferModel.InsurelyHeader(dataCollectionStatus.id))
-                    add(OfferModel.InsurelyCard.FailedToRetrieve(dataCollectionStatus.id))
+                    add(OfferModel.InsurelyCard.FailedToRetrieve(dataCollectionStatus.referenceUuid))
                 }
                 is Content -> {
-                    addAll(
-                        mapContentToInsurelyViewModels(
-                            dataCollectionStatus,
-                            externalInsuranceData,
-                            offerData
-                        )
-                    )
+                    add(mapContentToInsurelyCard(dataCollectionStatus, externalInsuranceData, offerData))
                 }
             }
-            add(OfferModel.InsurelyDivider(topPadding = 40.dp))
+        }
+        if (showInsuranceSwitchableStates) {
+            addAll(currentInsuranceSwitchableStates(bundle.quotes))
         }
         add(
-            OfferModel.Facts(offerData.quoteBundle.quotes[0].detailsTable.fragments.tableFragment.intoTable()),
+            OfferModel.Facts(bundle.quotes[0].detailsTable.fragments.tableFragment.intoTable()),
         )
         add(OfferModel.Subheading.Coverage)
-        if (offerData.quoteBundle.quotes.size > 1) {
+        if (bundle.quotes.size > 1) {
             add(OfferModel.Paragraph.Coverage)
-            offerData.quoteBundle.quotes.forEach { quote ->
+            bundle.quotes.forEach { quote ->
                 add(OfferModel.QuoteDetails(quote.displayName, quote.id))
             }
         }
     }
 
-    private fun mapContentToInsurelyViewModels(
+    private fun mapContentToInsurelyCard(
         content: Content,
         externalInsuranceData: DataCollectionResultQuery.Data?,
         offerData: OfferQuery.Data,
-    ): List<OfferModel> {
-        val id = content.id
+    ): OfferModel.InsurelyCard {
+        val referenceUuid = content.referenceUuid
         val result = content.dataCollectionResult
 
         return when (result.status) {
-            IN_PROGRESS -> listOf(
-                OfferModel.InsurelyHeader(id),
-                OfferModel.InsurelyCard.Loading(id, result.insuranceCompany)
-            )
-            FAILED -> listOf(
-                OfferModel.InsurelyHeader(id),
-                OfferModel.InsurelyCard.FailedToRetrieve(id, result.insuranceCompany)
-            )
+            IN_PROGRESS -> OfferModel.InsurelyCard.Loading(referenceUuid, result.insuranceCompany)
+            FAILED -> OfferModel.InsurelyCard.FailedToRetrieve(referenceUuid, result.insuranceCompany)
             COMPLETE -> {
                 val collectedData: List<DataCollectionResultQuery.DataCollectionV2InsuranceDataCollectionV2>? =
                     externalInsuranceData
@@ -229,10 +173,7 @@ object TopOfferItemsBuilder {
                             }
                         }
                 if (collectedData == null) {
-                    listOf(
-                        OfferModel.InsurelyHeader(id),
-                        OfferModel.InsurelyCard.FailedToRetrieve(id, result.insuranceCompany)
-                    )
+                    OfferModel.InsurelyCard.FailedToRetrieve(referenceUuid, result.insuranceCompany)
                 } else {
                     val currentInsurances = collectedData
                         .mapNotNull { externalInsurance ->
@@ -246,17 +187,70 @@ object TopOfferItemsBuilder {
                         .mapNotNull { it.netPremium }
                         .reduceOrNull(MonetaryAmount::add)
                     val savedWithHedvig = otherPremium?.minus(ourPremium)?.takeIf { it.isPositive }
-                    listOf(
-                        OfferModel.InsurelyHeader(id, currentInsurances.size),
-                        OfferModel.InsurelyCard.Retrieved(
-                            id = id,
-                            insuranceProvider = result.insuranceCompany,
-                            currentInsurances = currentInsurances,
-                            savedWithHedvig = savedWithHedvig,
-                        )
+                    OfferModel.InsurelyCard.Retrieved(
+                        id = referenceUuid,
+                        insuranceProvider = result.insuranceCompany,
+                        insurelyDataCollectionReferenceUuid = "",
+                        currentInsurances = currentInsurances,
+                        savedWithHedvig = savedWithHedvig
                     )
                 }
             }
+        }
+    }
+
+    @OptIn(ExperimentalStdlibApi::class)
+    private fun currentInsuranceSwitchableStates(
+        quotes: List<OfferQuery.Quote>,
+    ): List<OfferModel> = buildList {
+        val nonSwitchables = quotes
+            .mapNotNull { quote ->
+                quote.currentInsurer?.let { currentInsurer ->
+                    if (currentInsurer.switchable == false) {
+                        currentInsurer to quote.displayName
+                    } else {
+                        null
+                    }
+                }
+            }
+        nonSwitchables.forEach { (currentInsurer, associatedQuote) ->
+            add(
+                OfferModel.CurrentInsurer(
+                    displayName = currentInsurer.displayName,
+                    associatedQuote = if (quotes.size > 1) {
+                        associatedQuote
+                    } else {
+                        null
+                    }
+                )
+            )
+        }
+        if (nonSwitchables.isNotEmpty()) {
+            add(OfferModel.ManualSwitchCard)
+        }
+        val switchables = quotes.mapNotNull { quote ->
+            quote.currentInsurer?.let { currentInsurer ->
+                if (currentInsurer.switchable == true) {
+                    currentInsurer to quote.displayName
+                } else {
+                    null
+                }
+            }
+        }
+        switchables.forEach { (currentInsurer, associatedQuote) ->
+            add(
+                OfferModel.CurrentInsurer(
+                    displayName = currentInsurer.displayName,
+                    associatedQuote = if (quotes.size > 1) {
+                        associatedQuote
+                    } else {
+                        null
+                    }
+                )
+            )
+        }
+        if (switchables.isNotEmpty()) {
+            add(OfferModel.AutomaticSwitchCard)
         }
     }
 
@@ -288,4 +282,7 @@ object TopOfferItemsBuilder {
             }
             else -> null
         }
+
+    private val OfferQuery.Quote.isDisplayable: Boolean
+        get() = currentInsurer?.displayName != null
 }
