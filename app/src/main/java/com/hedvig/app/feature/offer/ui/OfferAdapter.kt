@@ -99,7 +99,7 @@ class OfferAdapter(
         is OfferModel.Footer -> R.layout.offer_footer
         is OfferModel.Subheading -> R.layout.text_headline5
         is OfferModel.Paragraph -> R.layout.text_body2
-        is OfferModel.InsurelyHeader -> INSURELY_HEADER
+        is OfferModel.CurrentInsurancesHeader -> INSURELY_HEADER
         is OfferModel.InsurelyDivider -> INSURELY_DIVIDER
         is OfferModel.InsurelyCard -> INSURELY_CARD
         is OfferModel.QuoteDetails -> R.layout.text_subtitle1
@@ -290,13 +290,6 @@ class OfferAdapter(
                         setText(R.string.offer_screen_coverage_title)
                         updateMargin(bottom = BASE_MARGIN)
                     }
-                    is OfferModel.Subheading.Switcher -> {
-                        text = context.resources.getQuantityString(
-                            R.plurals.offer_switcher_title,
-                            data.amountOfCurrentInsurers
-                        )
-                        updateMargin(bottom = BASE_MARGIN_DOUBLE)
-                    }
                 }
             }
         }
@@ -357,7 +350,7 @@ class OfferAdapter(
             }
 
             override fun bind(data: OfferModel) {
-                if (data !is OfferModel.InsurelyHeader) return invalid(data)
+                if (data !is OfferModel.CurrentInsurancesHeader) return invalid(data)
                 val resources = composeView.context.resources
                 composeView.setContent {
                     HedvigTheme {
@@ -516,8 +509,9 @@ class OfferAdapter(
                 oldItem is OfferModel.InsurelyCard && newItem is OfferModel.InsurelyCard -> {
                     oldItem.id == newItem.id
                 }
-                oldItem is OfferModel.InsurelyHeader && newItem is OfferModel.InsurelyHeader -> {
-                    oldItem.id == newItem.id
+                oldItem is OfferModel.CurrentInsurancesHeader && newItem is OfferModel.CurrentInsurancesHeader -> {
+                    // Should only display 1 CurrentInsurancesHeader ever
+                    true
                 }
                 else -> {
                     oldItem == newItem

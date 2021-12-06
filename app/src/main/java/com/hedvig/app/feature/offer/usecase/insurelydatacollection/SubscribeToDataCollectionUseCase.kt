@@ -14,25 +14,25 @@ class SubscribeToDataCollectionUseCase(
 ) {
 
     sealed class Status {
-        abstract val id: String
+        abstract val referenceUuid: String
 
-        data class Error(override val id: String) : Status()
+        data class Error(override val referenceUuid: String) : Status()
         data class Content(
-            override val id: String,
+            override val referenceUuid: String,
             val dataCollectionResult: DataCollectionResult,
         ) : Status()
     }
 
-    operator fun invoke(referenceUUID: String): Flow<Status> {
+    operator fun invoke(referenceUuid: String): Flow<Status> {
         return apolloClient
-            .subscribe(DataCollectionStatusSubscription(referenceUUID))
+            .subscribe(DataCollectionStatusSubscription(referenceUuid))
             .toFlow()
             .map(Response<DataCollectionStatusSubscription.Data>::toQueryResult)
             .map { queryResult ->
                 when (queryResult) {
-                    is QueryResult.Error -> Status.Error(referenceUUID)
+                    is QueryResult.Error -> Status.Error(referenceUuid)
                     is QueryResult.Success -> Status.Content(
-                        referenceUUID,
+                        referenceUuid,
                         DataCollectionResult.fromDto(queryResult.data.dataCollectionStatusV2),
                     )
                 }
