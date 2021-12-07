@@ -81,7 +81,7 @@ class OfferAdapter(
         R.layout.offer_footer -> ViewHolder.Footer(parent, openChat)
         R.layout.text_headline5 -> ViewHolder.Subheading(parent)
         R.layout.text_body2 -> ViewHolder.Paragraph(parent)
-        INSURELY_HEADER -> ViewHolder.CurrentInsurancesHeader(ComposeView(parent.context))
+        CURRENT_INSURANCES_HEADER -> ViewHolder.CurrentInsurancesHeader(ComposeView(parent.context))
         INSURELY_DIVIDER -> ViewHolder.InsurelyDivider(ComposeView(parent.context))
         INSURELY_CARD -> ViewHolder.InsurelyCard(ComposeView(parent.context))
         R.layout.text_subtitle1 -> ViewHolder.QuoteDetails(parent, openQuoteDetails)
@@ -99,7 +99,7 @@ class OfferAdapter(
         is OfferModel.Footer -> R.layout.offer_footer
         is OfferModel.Subheading -> R.layout.text_headline5
         is OfferModel.Paragraph -> R.layout.text_body2
-        is OfferModel.CurrentInsurancesHeader -> INSURELY_HEADER
+        is OfferModel.CurrentInsurancesHeader -> CURRENT_INSURANCES_HEADER
         is OfferModel.InsurelyDivider -> INSURELY_DIVIDER
         is OfferModel.InsurelyCard -> INSURELY_CARD
         is OfferModel.QuoteDetails -> R.layout.text_subtitle1
@@ -501,7 +501,7 @@ class OfferAdapter(
 
     companion object {
         const val INSURELY_CARD = 1
-        const val INSURELY_HEADER = 2
+        const val CURRENT_INSURANCES_HEADER = 2
         const val INSURELY_DIVIDER = 3
 
         class OfferDiffUtilCallback : DiffUtil.ItemCallback<OfferModel>() {
