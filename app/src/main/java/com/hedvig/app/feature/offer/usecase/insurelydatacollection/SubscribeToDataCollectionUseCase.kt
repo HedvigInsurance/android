@@ -1,11 +1,9 @@
 package com.hedvig.app.feature.offer.usecase.insurelydatacollection
 
 import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.api.Response
-import com.apollographql.apollo.coroutines.toFlow
 import com.hedvig.android.owldroid.graphql.DataCollectionStatusSubscription
 import com.hedvig.app.util.apollo.QueryResult
-import com.hedvig.app.util.apollo.toQueryResult
+import com.hedvig.app.util.apollo.safeSubscription
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -26,8 +24,7 @@ class SubscribeToDataCollectionUseCase(
     operator fun invoke(referenceUuid: String): Flow<Status> {
         return apolloClient
             .subscribe(DataCollectionStatusSubscription(referenceUuid))
-            .toFlow()
-            .map(Response<DataCollectionStatusSubscription.Data>::toQueryResult)
+            .safeSubscription()
             .map { queryResult ->
                 when (queryResult) {
                     is QueryResult.Error -> Status.Error(referenceUuid)
