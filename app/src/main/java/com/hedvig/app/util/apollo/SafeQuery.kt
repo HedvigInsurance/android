@@ -25,9 +25,7 @@ suspend fun <T> ApolloCall<T>.safeQuery(): QueryResult<T> {
 
 fun <T> ApolloSubscriptionCall<T>.safeSubscription(): Flow<QueryResult<T>> {
     return try {
-        toFlow().map { response ->
-            response.toQueryResult()
-        }
+        toFlow().map(Response<T>::toQueryResult)
     } catch (apolloException: ApolloException) {
         flowOf(QueryResult.Error.NetworkError(apolloException.localizedMessage))
     } catch (throwable: Throwable) {
