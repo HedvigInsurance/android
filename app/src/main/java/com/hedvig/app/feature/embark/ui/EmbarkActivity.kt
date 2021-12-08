@@ -43,9 +43,7 @@ import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.hide
-import com.hedvig.app.util.extensions.view.hideWithDelay
 import com.hedvig.app.util.extensions.view.remove
-import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.whenApiVersion
 import kotlinx.coroutines.flow.launchIn
@@ -81,7 +79,8 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
             progressToolbar.toolbar.title = storyTitle
 
             model.viewState.observe(this@EmbarkActivity) { viewState ->
-                loadingSpinnerLayout.loadingSpinner.remove()
+                loadingSpinnerLayout.loadingSpinner.remove() // Removing inner spinner on first available viewState
+                fullScreenLoadingSpinnerLayout.isVisible = viewState.loading
                 setupToolbarMenu(
                     progressToolbar,
                     viewState.hasTooltips,
@@ -102,7 +101,6 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                     when (event) {
                         EmbarkViewModel.Event.Chat -> {
                             startActivity(ChatActivity.newInstance(this@EmbarkActivity))
-                            fullScreenLoadingSpinnerLayout.hideWithDelay(500)
                         }
                         is EmbarkViewModel.Event.Offer -> {
                             startActivity(
@@ -112,7 +110,6 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                                     shouldShowOnNextAppStart = true
                                 )
                             )
-                            fullScreenLoadingSpinnerLayout.hideWithDelay(500)
                         }
                         is EmbarkViewModel.Event.Error -> {
                             fullScreenLoadingSpinnerLayout.hide()
@@ -125,12 +122,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                                 .create()
                                 .show()
                         }
-                        is EmbarkViewModel.Event.Loading -> {
-                            TransitionManager.beginDelayedTransition(root)
-                            fullScreenLoadingSpinnerLayout.isVisible = event.show
-                        }
                         EmbarkViewModel.Event.Close -> {
-                            fullScreenLoadingSpinnerLayout.hide()
                             finish()
                         }
                     }
