@@ -20,20 +20,22 @@ fun LargeContainedTextButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
 ) {
     LargeContainedButton(
-        content = {
-            Text(text = text)
-        },
         onClick = onClick,
         modifier = modifier,
-    )
+        enabled = enabled,
+    ) {
+        Text(text = text)
+    }
 }
 
 @Composable
 fun LargeContainedButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     colors: ButtonColors = ButtonDefaults.buttonColors(
         backgroundColor = if (MaterialTheme.colors.isLight) {
             MaterialTheme.colors.primary
@@ -46,6 +48,7 @@ fun LargeContainedButton(
 ) {
     Button(
         onClick = onClick,
+        enabled = enabled,
         modifier = Modifier
             .fillMaxWidth()
             .then(modifier),
