@@ -39,6 +39,17 @@ abstract class EmbarkViewModel(
     protected val _events = Channel<Event>(Channel.UNLIMITED)
     val events = _events.receiveAsFlow()
 
+    data class ViewState(
+        val passage: EmbarkStoryQuery.Passage?,
+        val navigationDirection: NavigationDirection,
+        val progress: Percent,
+        val isLoggedIn: Boolean,
+        val hasTooltips: Boolean,
+        val loading: Loading?,
+    ) {
+        data class Loading(val show: Boolean) : Event()
+    }
+
     sealed class Event {
         data class Offer(val ids: List<String>) : Event()
         data class Error(val message: String? = null) : Event()
