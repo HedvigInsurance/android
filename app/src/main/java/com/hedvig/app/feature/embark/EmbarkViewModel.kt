@@ -20,8 +20,6 @@ import com.hedvig.app.feature.embark.util.evaluateExpression
 import com.hedvig.app.util.Percent
 import com.hedvig.app.util.plus
 import com.hedvig.app.util.safeLet
-import java.util.Stack
-import kotlin.math.max
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,6 +28,8 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import java.util.Stack
+import kotlin.math.max
 
 abstract class EmbarkViewModel(
     private val tracker: EmbarkTracker,
