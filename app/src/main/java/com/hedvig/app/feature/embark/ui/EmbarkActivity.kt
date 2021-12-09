@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.transition.Transition
-import androidx.transition.TransitionManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
@@ -80,7 +79,6 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
 
             model.viewState.observe(this@EmbarkActivity) { viewState ->
                 loadingSpinnerLayout.loadingSpinner.remove() // Removing inner spinner on first available viewState
-                fullScreenLoadingSpinnerLayout.isVisible = viewState.loading
                 setupToolbarMenu(
                     progressToolbar,
                     viewState.hasTooltips,
@@ -93,6 +91,14 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
 
                 transitionToNextPassage(viewState.navigationDirection, passage)
             }
+
+            model
+                .loadingState
+                .flowWithLifecycle(lifecycle)
+                .onEach { isLoading ->
+                    fullScreenLoadingSpinnerLayout.isVisible = isLoading
+                }
+                .launchIn(lifecycleScope)
 
             model
                 .events
