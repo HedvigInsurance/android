@@ -146,7 +146,7 @@ fun Recording(
             }
             IconButton(
                 onClick = stopRecording,
-                modifier = Modifier.then(Modifier.size(72.dp))
+                modifier = Modifier.size(72.dp)
             ) {
                 Image(
                     painter = painterResource(
