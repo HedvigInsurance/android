@@ -21,7 +21,11 @@ import com.hedvig.app.util.Percent
 import com.hedvig.app.util.plus
 import com.hedvig.app.util.safeLet
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.util.Stack
@@ -39,10 +43,20 @@ abstract class EmbarkViewModel(
     protected val _events = Channel<Event>(Channel.UNLIMITED)
     val events = _events.receiveAsFlow()
 
+    private val _loadingState: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val loadingState: StateFlow<Boolean> = _loadingState.asStateFlow()
+
+    data class ViewState(
+        val passage: EmbarkStoryQuery.Passage?,
+        val navigationDirection: NavigationDirection,
+        val progress: Percent,
+        val isLoggedIn: Boolean,
+        val hasTooltips: Boolean,
+    )
+
     sealed class Event {
         data class Offer(val ids: List<String>) : Event()
         data class Error(val message: String? = null) : Event()
-        data class Loading(val show: Boolean) : Event()
         object Close : Event()
         object Chat : Event()
     }
@@ -123,22 +137,28 @@ abstract class EmbarkViewModel(
             navigationDirection = NavigationDirection.FORWARDS,
             progress = currentProgress(nextPassage),
             isLoggedIn = loginStatus == LoginStatus.LOGGED_IN,
-            hasTooltips = nextPassage.tooltips.isNotEmpty()
+            hasTooltips = nextPassage.tooltips.isNotEmpty(),
         )
         _viewState.postValue(state)
+        _loadingState.update { false }
         nextPassage.tracks.forEach { track ->
             tracker.track(track.eventName, trackingData(track))
         }
     }
 
     private fun callApi(apiFragment: ApiFragment) {
-        _events.trySend(Event.Loading(show = true))
+        _loadingState.update { true }
 
-        apiFragment.asEmbarkApiGraphQLQuery?.let { graphQLQuery ->
-            handleGraphQLQuery(graphQLQuery)
-        } ?: apiFragment.asEmbarkApiGraphQLMutation?.let { graphQLMutation ->
-            handleGraphQLMutation(graphQLMutation)
-        } ?: _events.trySend(Event.Error())
+        val graphQLQuery = apiFragment.asEmbarkApiGraphQLQuery
+        val graphQLMutation = apiFragment.asEmbarkApiGraphQLMutation
+        when {
+            graphQLQuery != null -> handleGraphQLQuery(graphQLQuery)
+            graphQLMutation != null -> handleGraphQLMutation(graphQLMutation)
+            else -> {
+                _loadingState.update { false }
+                _events.trySend(Event.Error())
+            }
+        }
     }
 
     private fun handleRedirectLocation(location: EmbarkExternalRedirectLocation) {
@@ -235,7 +255,8 @@ abstract class EmbarkViewModel(
     }
 
     private fun handleQueryResult(result: GraphQLQueryResult) {
-        _events.trySend(Event.Loading(show = false))
+        // todo there was an empty Loading event here that was just to trigger the beginDelayedTransition or what?
+        _loadingState.update { false }
 
         when (result) {
             // TODO Handle errors 
@@ -271,8 +292,9 @@ abstract class EmbarkViewModel(
                 navigationDirection = NavigationDirection.BACKWARDS,
                 progress = currentProgress(nextPassage),
                 isLoggedIn = loginStatus == LoginStatus.LOGGED_IN,
-                hasTooltips = nextPassage?.tooltips?.isNotEmpty() == true
+                hasTooltips = nextPassage?.tooltips?.isNotEmpty() == true,
             )
+            _loadingState.update { false }
             _viewState.postValue(model)
 
             valueStore.rollbackVersion()
