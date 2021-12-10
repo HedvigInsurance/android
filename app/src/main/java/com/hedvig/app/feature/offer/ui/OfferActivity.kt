@@ -216,9 +216,11 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                                         ?.let { startActivity(it) }
                                 }
                                 PostSignScreen.MOVE -> {
-                                    ChangeAddressResultActivity.newInstance(
-                                        this@OfferActivity,
-                                        ChangeAddressResultActivity.Result.Success(event.startDate),
+                                    startActivity(
+                                        ChangeAddressResultActivity.newInstance(
+                                            this@OfferActivity,
+                                            ChangeAddressResultActivity.Result.Success(event.startDate),
+                                        )
                                     )
                                 }
                                 PostSignScreen.CROSS_SELL -> {
