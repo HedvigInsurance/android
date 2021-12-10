@@ -138,12 +138,12 @@ import com.hedvig.app.feature.offer.ui.changestartdate.EditStartDateUseCase
 import com.hedvig.app.feature.offer.ui.checkout.ApproveQuotesUseCase
 import com.hedvig.app.feature.offer.ui.checkout.CheckoutViewModel
 import com.hedvig.app.feature.offer.ui.checkout.SignQuotesUseCase
-import com.hedvig.app.feature.offer.usecase.ExternalInsuranceDataCollectionUseCase
 import com.hedvig.app.feature.offer.usecase.GetPostSignDependenciesUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
-import com.hedvig.app.feature.offer.usecase.insurelydatacollection.SubscribeToDataCollectionUseCase
+import com.hedvig.app.feature.offer.usecase.datacollectionresult.GetDataCollectionResultUseCase
+import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToDataCollectionStatusUseCase
 import com.hedvig.app.feature.onboarding.ChoosePlanRepository
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModelImpl
@@ -437,16 +437,16 @@ val offerModule = module {
             signQuotesUseCase = get(),
             shouldShowOnNextAppStart = shouldShowOnNextAppStart,
             getPostSignDependenciesUseCase = get(),
-            subscribeToDataCollectionUseCase = get(),
-            externalInsuranceDataCollectionUseCase = get(),
+            subscribeToDataCollectionStatusUseCase = get(),
+            getDataCollectionResultUseCase = get(),
             tracker = get(),
             insurelyDataCollectionReferenceUuid = insurelyDataCollectionReferenceUuid,
         )
     }
     single { ApproveQuotesUseCase(get(), get(), get(), get()) }
     single { RefreshQuotesUseCase(get()) }
-    single { SubscribeToDataCollectionUseCase(get()) }
-    single { ExternalInsuranceDataCollectionUseCase(get()) }
+    single { SubscribeToDataCollectionStatusUseCase(get()) }
+    single { GetDataCollectionResultUseCase(get()) }
 }
 
 val profileModule = module {

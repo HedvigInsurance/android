@@ -1,28 +1,28 @@
-package com.hedvig.app.feature.offer.usecase.insurelydatacollection
+package com.hedvig.app.feature.offer.usecase.datacollectionstatus
 
 import com.hedvig.android.owldroid.graphql.DataCollectionStatusSubscription
 
-data class DataCollectionResult(
+data class DataCollectionStatus(
     val insuranceCompany: String?,
-    val status: DataCollectionStatus,
+    val subscriptionStatus: DataCollectionSubscriptionStatus,
 ) {
     companion object {
-        fun fromDto(dto: DataCollectionStatusSubscription.DataCollectionStatusV2): DataCollectionResult {
-            return DataCollectionResult(
-                dto.insuranceCompany,
-                DataCollectionStatus.fromDto(dto.status)
+        fun fromDto(dto: DataCollectionStatusSubscription.Data): DataCollectionStatus {
+            return DataCollectionStatus(
+                dto.dataCollectionStatusV2.insuranceCompany,
+                DataCollectionSubscriptionStatus.fromDto(dto.dataCollectionStatusV2.status)
             )
         }
     }
 
-    enum class DataCollectionStatus {
+    enum class DataCollectionSubscriptionStatus {
         IN_PROGRESS,
         COMPLETE,
         FAILED,
         ;
 
         companion object {
-            fun fromDto(dto: com.hedvig.android.owldroid.type.DataCollectionStatus): DataCollectionStatus {
+            fun fromDto(dto: com.hedvig.android.owldroid.type.DataCollectionStatus): DataCollectionSubscriptionStatus {
                 return when (dto) {
                     com.hedvig.android.owldroid.type.DataCollectionStatus.COLLECTING,
                     com.hedvig.android.owldroid.type.DataCollectionStatus.RUNNING,
