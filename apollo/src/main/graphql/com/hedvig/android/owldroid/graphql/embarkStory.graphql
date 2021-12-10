@@ -235,6 +235,15 @@ query EmbarkStory($name: String!, $locale: String!) {
         includeAllKeys
         customData
       }
+      variantedOfferRedirects {
+        data {
+          selectedKeys
+          allKeys
+          expression {
+            ...ExpressionFragment
+          }
+        }
+      }
     }
   }
 }
