@@ -99,7 +99,14 @@ class EmbarkMockActivity : MockActivity() {
             startActivity(EmbarkActivity.newInstance(context, this.javaClass.name, "Previous Insurer"))
         }
         clickableItem("Ask for price info") {
-            startActivity(AskForPriceInfoActivity.createIntent(context, InsuranceProviderParameter(("Test Insurance"))))
+            startActivity(
+                AskForPriceInfoActivity.createIntent(
+                    context,
+                    InsuranceProviderParameter(
+                        "Test ID", "Test Name"
+                    )
+                )
+            )
         }
         header("Embark Screen")
         clickableItem("Loading") {

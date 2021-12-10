@@ -10,7 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
-import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
@@ -20,18 +21,18 @@ import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.AskFor
 import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.InsuranceProviderParameter
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.ui.compose.composables.CenteredProgressIndicator
-import com.hedvig.app.ui.compose.composables.ErrorDialog
 import com.hedvig.app.ui.compose.composables.FadeWhen
 import com.hedvig.app.ui.compose.composables.appbar.TopAppBarWithBack
 import com.hedvig.app.ui.compose.theme.HedvigTheme
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 class RetrievePriceInfoActivity : BaseActivity() {
 
     private val parameter by lazy {
-        intent.getParcelableExtra(PARAMETER)
-            ?: InsuranceProviderParameter("Test")
+        intent.getParcelableExtra<InsuranceProviderParameter>(PARAMETER)
             ?: throw Error("Programmer error: DATA is null in ${this.javaClass.name}")
     }
 
@@ -53,6 +54,18 @@ class RetrievePriceInfoActivity : BaseActivity() {
             }
         )
 
+        viewModel.events
+            .flowWithLifecycle(lifecycle)
+            .onEach { event ->
+                when (event) {
+                    is RetrievePriceViewModel.Event.AuthInformation -> {
+                        InsurelyDialog.newInstance(event.reference)
+                            .show(supportFragmentManager, AuthenticateDialog.TAG)
+                    }
+                }
+            }
+            .launchIn(lifecycleScope)
+
         setContent {
             HedvigTheme {
                 Scaffold(
@@ -65,7 +78,6 @@ class RetrievePriceInfoActivity : BaseActivity() {
                 ) {
                     RetrievePriceScreen(
                         viewModel = viewModel,
-                        fragmentManager = supportFragmentManager,
                         onContinue = ::onContinue
                     )
                 }
@@ -93,29 +105,16 @@ class RetrievePriceInfoActivity : BaseActivity() {
 fun RetrievePriceScreen(
     viewModel: RetrievePriceViewModel = viewModel(),
     onContinue: () -> Unit,
-    fragmentManager: FragmentManager,
 ) {
     val viewState by viewModel.viewState.collectAsState()
-    val events = viewModel.events.collectAsState(initial = null)
-
-    when (val event = events.value) {
-        is RetrievePriceViewModel.Event.Error -> {
-            ErrorDialog(
-                onDismiss = {},
-                message = stringResource(id = event.errorResult.getStringResource())
-            )
-        }
-        is RetrievePriceViewModel.Event.AuthInformation -> {
-            InsurelyDialog.newInstance(event.reference)
-                .show(fragmentManager, AuthenticateDialog.TAG)
-        }
-    }
 
     when {
         viewState.collectionStarted -> RetrievePriceSuccess(onContinue = onContinue)
-        viewState.collectionFailed -> {
-            // Show price collection failed
-        }
+        viewState.collectionFailed != null -> RetrievePriceFailed(
+            onRetry = viewModel::onRetry,
+            onSkip = onContinue,
+            viewState.collectionFailed!!.insurerName
+        )
         else -> {
             FadeWhen(visible = viewState.isLoading) {
                 CenteredProgressIndicator()
@@ -125,11 +124,13 @@ fun RetrievePriceScreen(
                 RetrievePriceContent(
                     onRetrievePriceInfo = viewModel::onRetrievePriceInfo,
                     onIdentityInput = viewModel::onIdentityInput,
+                    onDismissError = viewModel::onDismissError,
                     input = viewState.input,
                     title = viewState.market?.titleRes()?.let { stringResource(it) } ?: "",
                     placeholder = viewState.market?.placeHolderRes()?.let { stringResource(it) } ?: "",
                     label = viewState.market?.labelRes()?.let { stringResource(it) } ?: "",
                     inputErrorMessage = viewState.inputError?.errorTextKey?.let { stringResource(it) },
+                    errorMessage = viewState.inputError?.errorTextKey?.let { stringResource(it) }
                 )
             }
         }

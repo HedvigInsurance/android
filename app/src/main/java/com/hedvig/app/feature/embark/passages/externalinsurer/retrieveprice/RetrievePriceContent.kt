@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import com.hedvig.app.R
+import com.hedvig.app.ui.compose.composables.ErrorDialog
 import com.hedvig.app.ui.compose.composables.buttons.LargeContainedTextButton
 import com.hedvig.app.ui.compose.textutil.SwedishSSNVisualTransformation
 
@@ -20,11 +21,13 @@ import com.hedvig.app.ui.compose.textutil.SwedishSSNVisualTransformation
 fun RetrievePriceContent(
     onRetrievePriceInfo: () -> Unit,
     onIdentityInput: (String) -> Unit,
+    onDismissError: () -> Unit,
     input: String,
     title: String,
     placeholder: String,
     label: String,
-    inputErrorMessage: String?
+    inputErrorMessage: String?,
+    errorMessage: String?
 ) {
     val baseMargin = dimensionResource(R.dimen.base_margin)
     val baseMarginDouble = dimensionResource(R.dimen.base_margin_double)
@@ -65,5 +68,9 @@ fun RetrievePriceContent(
             text = stringResource(R.string.insurely_ssn_continue_button_text),
             onClick = onRetrievePriceInfo
         )
+    }
+
+    if (errorMessage != null) {
+        ErrorDialog(onDismiss = onDismissError, message = errorMessage)
     }
 }

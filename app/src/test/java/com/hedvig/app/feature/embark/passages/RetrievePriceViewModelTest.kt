@@ -45,7 +45,8 @@ class RetrievePriceViewModelTest {
         viewModel = RetrievePriceViewModel(
             marketManager = marketManager,
             startDataCollectionUseCase = startDataCollectionUseCase,
-            collectionId = "testCollectionId"
+            collectionId = "testCollectionId",
+            insurerName = "testInsurerName",
         )
     }
 
@@ -80,9 +81,7 @@ class RetrievePriceViewModelTest {
         advanceTimeBy(1)
         assertThat(viewModel.viewState.value.isLoading).isEqualTo(true)
         advanceUntilIdle()
-        assertThat(viewModel.events.first()).isEqualTo(
-            RetrievePriceViewModel.Event.Error(DataCollectionResult.Error.NoData)
-        )
+        assertThat(viewModel.viewState.value.error).isEqualTo(DataCollectionResult.Error.NoData)
     }
 
     @Test

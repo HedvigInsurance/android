@@ -507,9 +507,10 @@ val checkoutModule = module {
 val retrievePriceModule = module {
     viewModel { (data: InsuranceProviderParameter) ->
         RetrievePriceViewModel(
-            data.selectedInsuranceProviderCollectionId,
-            get(),
-            get()
+            collectionId = data.selectedInsuranceProviderCollectionId,
+            insurerName = data.selectedInsuranceProviderName,
+            marketManager = get(),
+            startDataCollectionUseCase = get()
         )
     }
 }

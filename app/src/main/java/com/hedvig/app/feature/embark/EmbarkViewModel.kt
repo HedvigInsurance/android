@@ -5,8 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.fragment.ApiFragment
-import com.hedvig.android.owldroid.fragment.BasicExpressionFragment
-import com.hedvig.android.owldroid.fragment.ExpressionFragment
 import com.hedvig.android.owldroid.fragment.MessageFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.type.EmbarkExternalRedirectLocation
@@ -17,6 +15,8 @@ import com.hedvig.app.feature.embark.extensions.api
 import com.hedvig.app.feature.embark.extensions.getComputedValues
 import com.hedvig.app.feature.embark.util.VariableExtractor
 import com.hedvig.app.feature.embark.util.evaluateExpression
+import com.hedvig.app.feature.embark.util.getOfferKeysOrNull
+import com.hedvig.app.feature.embark.util.toExpressionFragment
 import com.hedvig.app.util.Percent
 import com.hedvig.app.util.plus
 import com.hedvig.app.util.safeLet
@@ -110,9 +110,9 @@ abstract class EmbarkViewModel(
     private fun navigateToPassage(passageName: String) {
         val nextPassage = storyData.embarkStory?.passages?.find { it.name == passageName }
         val redirectPassage = getRedirectPassageAndPutInStore(nextPassage?.redirects)
-        val keys = nextPassage?.offerRedirect?.data?.keys?.takeIf { it.isNotEmpty() }
         val location = nextPassage?.externalRedirect?.data?.location
         val api = nextPassage?.api?.fragments?.apiFragment
+        val keys = nextPassage?.getOfferKeysOrNull(valueStore)
 
         when {
             storyData.embarkStory == null || nextPassage == null -> _events.trySend(Event.Error())
@@ -188,7 +188,7 @@ abstract class EmbarkViewModel(
 
     private fun getRedirectPassageAndPutInStore(redirects: List<EmbarkStoryQuery.Redirect>?): String? {
         redirects?.forEach { redirect ->
-            if (evaluateExpression(redirect.into(), valueStore) is ExpressionResult.True) {
+            if (evaluateExpression(redirect.toExpressionFragment(), valueStore) is ExpressionResult.True) {
                 redirect.passedKeyValue?.let { (key, value) -> putInStore(key, value) }
                 redirect.to?.let { to ->
                     return to
@@ -259,7 +259,7 @@ abstract class EmbarkViewModel(
         _loadingState.update { false }
 
         when (result) {
-            // TODO Handle errors 
+            // TODO Handle errors
             is GraphQLQueryResult.Error -> navigateToPassage(result.passageName)
             is GraphQLQueryResult.ValuesFromResponse -> {
                 result.arrayValues.forEach {
@@ -431,71 +431,6 @@ abstract class EmbarkViewModel(
 
     companion object {
         private val REPLACEMENT_FINDER = Regex("\\{[\\w.]+\\}")
-
-        private fun EmbarkStoryQuery.Redirect.into(): ExpressionFragment =
-            ExpressionFragment(
-                fragments = ExpressionFragment.Fragments(
-                    BasicExpressionFragment(
-                        asEmbarkExpressionUnary = asEmbarkRedirectUnaryExpression?.let {
-                            BasicExpressionFragment.AsEmbarkExpressionUnary(
-                                unaryType = it.unaryType,
-                                text = null
-                            )
-                        },
-                        asEmbarkExpressionBinary = asEmbarkRedirectBinaryExpression?.let {
-                            BasicExpressionFragment.AsEmbarkExpressionBinary(
-                                binaryType = it.binaryType,
-                                key = it.key,
-                                value = it.value,
-                                text = null
-                            )
-                        },
-                    )
-                ),
-                asEmbarkExpressionMultiple = asEmbarkRedirectMultipleExpressions?.let {
-                    ExpressionFragment.AsEmbarkExpressionMultiple(
-                        multipleType = it.multipleExpressionType,
-                        text = null,
-                        subExpressions = it.subExpressions.map { se ->
-                            ExpressionFragment.SubExpression2(
-                                fragments = ExpressionFragment.SubExpression2.Fragments(
-                                    se.fragments.expressionFragment.fragments.basicExpressionFragment
-                                ),
-                                asEmbarkExpressionMultiple1 = se
-                                    .fragments.expressionFragment.asEmbarkExpressionMultiple?.let { asMulti ->
-                                        ExpressionFragment.AsEmbarkExpressionMultiple1(
-                                            multipleType = asMulti.multipleType,
-                                            text = asMulti.text,
-                                            subExpressions = asMulti.subExpressions.map { se2 ->
-                                                ExpressionFragment.SubExpression1(
-                                                    fragments = ExpressionFragment.SubExpression1.Fragments(
-                                                        se2.fragments.basicExpressionFragment
-                                                    ),
-                                                    asEmbarkExpressionMultiple2 = se2
-                                                        .asEmbarkExpressionMultiple1?.let { asMulti2 ->
-                                                            ExpressionFragment.AsEmbarkExpressionMultiple2(
-                                                                multipleType = asMulti2.multipleType,
-                                                                text = asMulti2.text,
-                                                                subExpressions = asMulti2.subExpressions.map { se3 ->
-                                                                    ExpressionFragment.SubExpression(
-                                                                        fragments = ExpressionFragment
-                                                                            .SubExpression
-                                                                            .Fragments(
-                                                                                se3.fragments.basicExpressionFragment
-                                                                            )
-                                                                    )
-                                                                }
-                                                            )
-                                                        }
-                                                )
-                                            }
-                                        )
-                                    }
-                            )
-                        }
-                    )
-                }
-            )
 
         private val EmbarkStoryQuery.Redirect.to: String?
             get() {
