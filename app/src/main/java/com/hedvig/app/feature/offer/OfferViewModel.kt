@@ -27,7 +27,6 @@ import com.hedvig.app.feature.offer.usecase.datacollectionresult.DataCollectionR
 import com.hedvig.app.feature.offer.usecase.datacollectionresult.GetDataCollectionResultUseCase
 import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToDataCollectionStatusUseCase
 import com.hedvig.app.feature.perils.PerilItem
-import com.hedvig.app.util.LCE
 import e
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -107,6 +106,15 @@ abstract class OfferViewModel : ViewModel() {
         ) : ViewState()
     }
 
+    protected sealed class OfferAndLoginStatus {
+        object Loading : OfferAndLoginStatus()
+        object Error : OfferAndLoginStatus()
+        data class Content(
+            val offerData: OfferQuery.Data,
+            val loginStatus: LoginStatus,
+        ) : OfferAndLoginStatus()
+    }
+
     abstract fun onOpenCheckout()
     abstract fun reload()
     abstract fun onDiscardOffer()
@@ -141,7 +149,8 @@ class OfferViewModelImpl(
         }
     }
 
-    private val offerResponse: MutableStateFlow<LCE<Pair<OfferQuery.Data, LoginStatus>>> = MutableStateFlow(LCE.Loading)
+    private val offerAndLoginStatus: MutableStateFlow<OfferAndLoginStatus> =
+        MutableStateFlow(OfferAndLoginStatus.Loading)
 
     private val dataCollectionStatus: Flow<SubscribeToDataCollectionStatusUseCase.Status?> =
         if (insurelyDataCollectionReferenceUuid != null) {
@@ -151,14 +160,13 @@ class OfferViewModelImpl(
         }
 
     override val viewState: StateFlow<ViewState> = combine(
-        offerResponse,
+        offerAndLoginStatus,
         dataCollectionStatus,
     ) { offerResponse, dataCollectionStatus ->
         return@combine when (offerResponse) {
-            LCE.Error -> ViewState.Error
-            LCE.Loading -> ViewState.Loading
-            is LCE.Content -> {
-                val (offerData: OfferQuery.Data, loginStatus: LoginStatus) = offerResponse.data
+            OfferAndLoginStatus.Error -> ViewState.Error
+            OfferAndLoginStatus.Loading -> ViewState.Loading
+            is OfferAndLoginStatus.Content -> {
                 val dataCollectionResult =
                     if (
                         dataCollectionStatus != null &&
@@ -174,8 +182,8 @@ class OfferViewModelImpl(
                         null
                     }
                 produceViewState(
-                    offerData,
-                    loginStatus,
+                    offerResponse.offerData,
+                    offerResponse.loginStatus,
                     dataCollectionStatus,
                     dataCollectionResult,
                 )
@@ -197,22 +205,22 @@ class OfferViewModelImpl(
                     .onEach { response ->
                         when (response) {
                             is OfferRepository.OfferResult.Error -> {
-                                offerResponse.value = LCE.Error
+                                offerAndLoginStatus.value = OfferAndLoginStatus.Error
                             }
                             is OfferRepository.OfferResult.Success -> {
                                 trackView(response.data)
                                 val loginStatus = loginStatusService.getLoginStatus()
-                                offerResponse.value = LCE.Content(response.data to loginStatus)
+                                offerAndLoginStatus.value = OfferAndLoginStatus.Content(response.data, loginStatus)
                             }
                         }
                     }
                     .catch {
-                        offerResponse.value = LCE.Error
+                        offerAndLoginStatus.value = OfferAndLoginStatus.Error
                     }
                     .launchIn(viewModelScope)
             }
             is GetQuotesUseCase.Result.Error -> {
-                offerResponse.value = LCE.Error
+                offerAndLoginStatus.value = OfferAndLoginStatus.Error
             }
         }
     }
@@ -232,14 +240,16 @@ class OfferViewModelImpl(
 
     override fun approveOffer() {
         viewModelScope.launch {
-            offerResponse.value = LCE.Loading
+            offerAndLoginStatus.value = OfferAndLoginStatus.Loading
             val postSignDependencies = getPostSignDependenciesUseCase.invoke(quoteIds)
             if (postSignDependencies !is GetPostSignDependenciesUseCase.Result.Success) {
-                offerResponse.value = LCE.Error
+                offerAndLoginStatus.value = OfferAndLoginStatus.Error
                 return@launch
             }
             when (val result = approveQuotesUseCase.approveQuotesAndClearCache(quoteIds)) {
-                is ApproveQuotesUseCase.ApproveQuotesResult.Error.GeneralError -> offerResponse.value = LCE.Error
+                is ApproveQuotesUseCase.ApproveQuotesResult.Error.GeneralError ->
+                    offerAndLoginStatus.value =
+                        OfferAndLoginStatus.Error
                 ApproveQuotesUseCase.ApproveQuotesResult.Error.ApproveError -> _events.trySend(
                     Event.ApproveError(postSignDependencies.postSignScreen)
                 )
@@ -313,7 +323,7 @@ class OfferViewModelImpl(
         viewModelScope.launch {
             when (val result = getQuoteUseCase(quoteIds, id)) {
                 GetQuoteUseCase.Result.Error -> {
-                    offerResponse.value = LCE.Error
+                    offerAndLoginStatus.value = OfferAndLoginStatus.Error
                 }
                 is GetQuoteUseCase.Result.Success -> {
                     _events.trySend(
@@ -332,7 +342,7 @@ class OfferViewModelImpl(
     }
 
     override fun reload() {
-        offerResponse.value = LCE.Loading
+        offerAndLoginStatus.value = OfferAndLoginStatus.Loading
         viewModelScope.launch {
             if (!::quoteIds.isInitialized) {
                 loadQuoteIds()
@@ -340,7 +350,7 @@ class OfferViewModelImpl(
             when (refreshQuotesUseCase.invoke(quoteIds)) {
                 RefreshQuotesUseCase.Result.Success -> {
                 }
-                is RefreshQuotesUseCase.Result.Error -> offerResponse.value = LCE.Error
+                is RefreshQuotesUseCase.Result.Error -> offerAndLoginStatus.value = OfferAndLoginStatus.Error
             }
         }
     }
@@ -357,11 +367,11 @@ class OfferViewModelImpl(
     override fun onSwedishBankIdSign() {
         viewModelScope.launch {
             when (val result = signQuotesUseCase.signQuotesAndClearCache(quoteIds)) {
-                is SignQuotesUseCase.SignQuoteResult.Error -> offerResponse.value = LCE.Error
+                is SignQuotesUseCase.SignQuoteResult.Error -> offerAndLoginStatus.value = OfferAndLoginStatus.Error
                 is SignQuotesUseCase.SignQuoteResult.StartSwedishBankId -> _events.trySend(
                     Event.StartSwedishBankIdSign(quoteIds, result.autoStartToken)
                 )
-                SignQuotesUseCase.SignQuoteResult.Success -> offerResponse.value = LCE.Error
+                SignQuotesUseCase.SignQuoteResult.Success -> offerAndLoginStatus.value = OfferAndLoginStatus.Error
             }
         }
     }
