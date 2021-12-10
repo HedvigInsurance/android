@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.offer
 
-import com.hedvig.android.owldroid.graphql.DataCollectionResultQuery
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.documents.DocumentItems
@@ -14,28 +13,28 @@ import com.hedvig.app.feature.offer.ui.checkoutLabel
 import com.hedvig.app.feature.offer.ui.gradientType
 import com.hedvig.app.feature.offer.ui.grossMonthlyCost
 import com.hedvig.app.feature.offer.ui.netMonthlyCost
-import com.hedvig.app.feature.offer.usecase.insurelydatacollection.DataCollectionResult.DataCollectionStatus.COMPLETE
-import com.hedvig.app.feature.offer.usecase.insurelydatacollection.DataCollectionResult.DataCollectionStatus.FAILED
-import com.hedvig.app.feature.offer.usecase.insurelydatacollection.DataCollectionResult.DataCollectionStatus.IN_PROGRESS
-import com.hedvig.app.feature.offer.usecase.insurelydatacollection.SubscribeToDataCollectionUseCase
-import com.hedvig.app.feature.offer.usecase.insurelydatacollection.SubscribeToDataCollectionUseCase.Status.Content
-import com.hedvig.app.feature.offer.usecase.insurelydatacollection.SubscribeToDataCollectionUseCase.Status.Error
+import com.hedvig.app.feature.offer.usecase.datacollectionresult.DataCollectionResult
+import com.hedvig.app.feature.offer.usecase.datacollectionstatus.DataCollectionStatus.DataCollectionSubscriptionStatus.COMPLETE
+import com.hedvig.app.feature.offer.usecase.datacollectionstatus.DataCollectionStatus.DataCollectionSubscriptionStatus.FAILED
+import com.hedvig.app.feature.offer.usecase.datacollectionstatus.DataCollectionStatus.DataCollectionSubscriptionStatus.IN_PROGRESS
+import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToDataCollectionStatusUseCase
+import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToDataCollectionStatusUseCase.Status.Content
+import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToDataCollectionStatusUseCase.Status.Error
 import com.hedvig.app.feature.perils.Peril
 import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.feature.table.intoTable
-import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.minus
 import javax.money.MonetaryAmount
 
 object OfferItemsBuilder {
     fun createTopOfferItems(
         offerData: OfferQuery.Data,
-        dataCollectionStatus: SubscribeToDataCollectionUseCase.Status? = null,
-        externalInsuranceData: DataCollectionResultQuery.Data? = null,
+        dataCollectionStatus: SubscribeToDataCollectionStatusUseCase.Status? = null,
+        dataCollectionResult: DataCollectionResult? = null,
     ): List<OfferModel> = TopOfferItemsBuilder.createTopOfferItems(
         offerData,
         dataCollectionStatus,
-        externalInsuranceData,
+        dataCollectionResult,
     )
 
     fun createDocumentItems(data: List<OfferQuery.Quote>): List<DocumentItems> {
@@ -88,12 +87,13 @@ object OfferItemsBuilder {
     }
 }
 
+@OptIn(ExperimentalStdlibApi::class)
 object TopOfferItemsBuilder {
     fun createTopOfferItems(
         offerData: OfferQuery.Data,
-        dataCollectionStatus: SubscribeToDataCollectionUseCase.Status? = null,
-        externalInsuranceData: DataCollectionResultQuery.Data? = null,
-    ): List<OfferModel> = ArrayList<OfferModel>().apply {
+        dataCollectionStatus: SubscribeToDataCollectionStatusUseCase.Status? = null,
+        dataCollectionResult: DataCollectionResult? = null,
+    ): List<OfferModel> = buildList {
         val bundle = offerData.quoteBundle
         add(
             OfferModel.Header(
@@ -130,7 +130,7 @@ object TopOfferItemsBuilder {
                     add(OfferModel.InsurelyCard.FailedToRetrieve(dataCollectionStatus.referenceUuid))
                 }
                 is Content -> {
-                    add(mapContentToInsurelyCard(dataCollectionStatus, externalInsuranceData, offerData))
+                    add(mapContentToInsurelyCard(dataCollectionStatus, dataCollectionResult, offerData))
                 }
             }
         }
@@ -150,40 +150,30 @@ object TopOfferItemsBuilder {
     }
 
     private fun mapContentToInsurelyCard(
-        content: Content,
-        externalInsuranceData: DataCollectionResultQuery.Data?,
+        dataCollectionStatusContent: Content,
+        dataCollectionResult: DataCollectionResult?,
         offerData: OfferQuery.Data,
     ): OfferModel.InsurelyCard {
-        val referenceUuid = content.referenceUuid
-        val result = content.dataCollectionResult
+        val referenceUuid = dataCollectionStatusContent.referenceUuid
+        val result = dataCollectionStatusContent.dataCollectionStatus
 
-        return when (result.status) {
+        return when (result.subscriptionStatus) {
             IN_PROGRESS -> OfferModel.InsurelyCard.Loading(referenceUuid, result.insuranceCompany)
             FAILED -> OfferModel.InsurelyCard.FailedToRetrieve(referenceUuid, result.insuranceCompany)
             COMPLETE -> {
-                val collectedData: List<DataCollectionResultQuery.DataCollectionV2InsuranceDataCollectionV2>? =
-                    externalInsuranceData
-                        ?.externalInsuranceProvider
-                        ?.dataCollectionV2
-                        ?.mapNotNull { data ->
-                            when {
-                                data.asHouseInsuranceCollection != null -> data.asHouseInsuranceCollection
-                                data.asPersonTravelInsuranceCollection != null -> data.asPersonTravelInsuranceCollection
-                                else -> null
-                            }
-                        }
-                if (collectedData == null) {
+                val collectionResult = dataCollectionResult?.collectedList
+                if (collectionResult == null) {
                     OfferModel.InsurelyCard.FailedToRetrieve(referenceUuid, result.insuranceCompany)
                 } else {
-                    val currentInsurances = collectedData
-                        .mapNotNull { externalInsurance ->
-                            val name = externalInsurance.name
-                            val finalPremium = externalInsurance.netPremium
+                    val currentInsurances = collectionResult
+                        .mapNotNull { collectedInsuranceData ->
+                            val name = collectedInsuranceData.name
+                            val finalPremium = collectedInsuranceData.netPremium
                             if (name == null || finalPremium == null) return@mapNotNull null
                             OfferModel.InsurelyCard.Retrieved.CurrentInsurance(name, finalPremium)
                         }
                     val ourPremium = offerData.finalPremium
-                    val otherPremium = collectedData
+                    val otherPremium = collectionResult
                         .mapNotNull { it.netPremium }
                         .reduceOrNull(MonetaryAmount::add)
                     val savedWithHedvig = otherPremium?.minus(ourPremium)?.takeIf { it.isPositive }
@@ -199,7 +189,6 @@ object TopOfferItemsBuilder {
         }
     }
 
-    @OptIn(ExperimentalStdlibApi::class)
     private fun currentInsuranceSwitchableStates(
         quotes: List<OfferQuery.Quote>,
     ): List<OfferModel> = buildList {
@@ -259,28 +248,6 @@ object TopOfferItemsBuilder {
             grossMonthlyCost()
         } else {
             netMonthlyCost()
-        }
-
-    private val DataCollectionResultQuery.DataCollectionV2InsuranceDataCollectionV2.netPremium: MonetaryAmount?
-        get() = when (this) {
-            is DataCollectionResultQuery.AsHouseInsuranceCollection -> {
-                this.monthlyNetPremium?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
-            }
-            is DataCollectionResultQuery.AsPersonTravelInsuranceCollection -> {
-                this.monthlyNetPremium?.fragments?.monetaryAmountFragment?.toMonetaryAmount()
-            }
-            else -> null
-        }
-
-    private val DataCollectionResultQuery.DataCollectionV2InsuranceDataCollectionV2.name: String?
-        get() = when (this) {
-            is DataCollectionResultQuery.AsHouseInsuranceCollection -> {
-                this.insuranceName
-            }
-            is DataCollectionResultQuery.AsPersonTravelInsuranceCollection -> {
-                this.insuranceName
-            }
-            else -> null
         }
 
     private val OfferQuery.Quote.isDisplayable: Boolean

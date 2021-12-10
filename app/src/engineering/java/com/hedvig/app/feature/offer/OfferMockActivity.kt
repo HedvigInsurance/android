@@ -166,7 +166,7 @@ class OfferMockActivity : MockActivity() {
         clickableItem("With two insurance results") {
             MockOfferViewModel.mockData = OfferMockData(
                 dataCollectionValue = INSURELY_COMPARISON_WITH_DATA_COLLECTION_COMPLETED,
-                externalInsuranceData = DATA_COLLECTION_RESULT_TWO_RESULTS,
+                dataCollectionResult = DATA_COLLECTION_RESULT_TWO_RESULTS,
             )
             startActivity(OfferActivity.newInstance(context = context))
         }
@@ -175,7 +175,7 @@ class OfferMockActivity : MockActivity() {
                 mockData = OfferMockData(
                     offer = OFFER_DATA_DENMARK_BUNDLE_HOME_CONTENTS_TRAVEL_ACCIDENT_MULTIPLE_PREVIOUS_INSURERS_MIXED_SWITCHABLE, // ktlint-disable max-line-length
                     dataCollectionValue = INSURELY_COMPARISON_WITH_DATA_COLLECTION_COMPLETED,
-                    externalInsuranceData = DATA_COLLECTION_RESULT_TWO_RESULTS,
+                    dataCollectionResult = DATA_COLLECTION_RESULT_TWO_RESULTS,
                 )
                 shouldError = false
             }
@@ -190,11 +190,11 @@ class OfferMockActivity : MockActivity() {
                         OfferMockData(dataCollectionValue = INSURELY_COMPARISON_WITH_DATA_COLLECTION_FAILED),
                         OfferMockData(
                             dataCollectionValue = INSURELY_COMPARISON_WITH_DATA_COLLECTION_COMPLETED,
-                            externalInsuranceData = DATA_COLLECTION_RESULT_ONE_RESULT,
+                            dataCollectionResult = DATA_COLLECTION_RESULT_ONE_RESULT,
                         ),
                         OfferMockData(
                             dataCollectionValue = INSURELY_COMPARISON_WITH_DATA_COLLECTION_COMPLETED,
-                            externalInsuranceData = DATA_COLLECTION_RESULT_TWO_RESULTS,
+                            dataCollectionResult = DATA_COLLECTION_RESULT_TWO_RESULTS,
                         ),
                     ).forEach {
                         MockOfferViewModel.mockData = it

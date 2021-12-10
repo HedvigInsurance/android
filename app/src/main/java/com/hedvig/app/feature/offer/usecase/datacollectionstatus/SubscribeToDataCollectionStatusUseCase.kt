@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.offer.usecase.insurelydatacollection
+package com.hedvig.app.feature.offer.usecase.datacollectionstatus
 
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.DataCollectionStatusSubscription
@@ -7,7 +7,7 @@ import com.hedvig.app.util.apollo.safeSubscription
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class SubscribeToDataCollectionUseCase(
+class SubscribeToDataCollectionStatusUseCase(
     private val apolloClient: ApolloClient,
 ) {
 
@@ -17,7 +17,7 @@ class SubscribeToDataCollectionUseCase(
         data class Error(override val referenceUuid: String) : Status()
         data class Content(
             override val referenceUuid: String,
-            val dataCollectionResult: DataCollectionResult,
+            val dataCollectionStatus: DataCollectionStatus,
         ) : Status()
     }
 
@@ -30,7 +30,7 @@ class SubscribeToDataCollectionUseCase(
                     is QueryResult.Error -> Status.Error(referenceUuid)
                     is QueryResult.Success -> Status.Content(
                         referenceUuid,
-                        DataCollectionResult.fromDto(queryResult.data.dataCollectionStatusV2),
+                        DataCollectionStatus.fromDto(queryResult.data),
                     )
                 }
             }

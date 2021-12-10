@@ -2,7 +2,6 @@ package com.hedvig.app.feature.offer
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.owldroid.graphql.DataCollectionResultQuery
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationTitle
@@ -20,12 +19,13 @@ import com.hedvig.app.feature.offer.ui.checkout.ApproveQuotesUseCase
 import com.hedvig.app.feature.offer.ui.checkout.CheckoutParameter
 import com.hedvig.app.feature.offer.ui.checkout.SignQuotesUseCase
 import com.hedvig.app.feature.offer.ui.checkoutLabel
-import com.hedvig.app.feature.offer.usecase.ExternalInsuranceDataCollectionUseCase
 import com.hedvig.app.feature.offer.usecase.GetPostSignDependenciesUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
-import com.hedvig.app.feature.offer.usecase.insurelydatacollection.SubscribeToDataCollectionUseCase
+import com.hedvig.app.feature.offer.usecase.datacollectionresult.DataCollectionResult
+import com.hedvig.app.feature.offer.usecase.datacollectionresult.GetDataCollectionResultUseCase
+import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToDataCollectionStatusUseCase
 import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.util.LCE
 import e
@@ -125,8 +125,8 @@ class OfferViewModelImpl(
     private val signQuotesUseCase: SignQuotesUseCase,
     shouldShowOnNextAppStart: Boolean,
     private val getPostSignDependenciesUseCase: GetPostSignDependenciesUseCase,
-    subscribeToDataCollectionUseCase: SubscribeToDataCollectionUseCase,
-    private val externalInsuranceDataCollectionUseCase: ExternalInsuranceDataCollectionUseCase,
+    subscribeToDataCollectionStatusUseCase: SubscribeToDataCollectionStatusUseCase,
+    private val getDataCollectionResultUseCase: GetDataCollectionResultUseCase,
     private val tracker: OfferTracker,
     private val insurelyDataCollectionReferenceUuid: String?,
 ) : OfferViewModel() {
@@ -143,32 +143,32 @@ class OfferViewModelImpl(
 
     private val offerResponse: MutableStateFlow<LCE<Pair<OfferQuery.Data, LoginStatus>>> = MutableStateFlow(LCE.Loading)
 
-    private val dataCollectionSubscription: Flow<SubscribeToDataCollectionUseCase.Status?> =
+    private val dataCollectionStatus: Flow<SubscribeToDataCollectionStatusUseCase.Status?> =
         if (insurelyDataCollectionReferenceUuid != null) {
-            subscribeToDataCollectionUseCase.invoke(insurelyDataCollectionReferenceUuid)
+            subscribeToDataCollectionStatusUseCase.invoke(insurelyDataCollectionReferenceUuid)
         } else {
             flowOf(null)
         }
 
     override val viewState: StateFlow<ViewState> = combine(
         offerResponse,
-        dataCollectionSubscription,
+        dataCollectionStatus,
     ) { offerResponse, dataCollectionStatus ->
         return@combine when (offerResponse) {
             LCE.Error -> ViewState.Error
             LCE.Loading -> ViewState.Loading
             is LCE.Content -> {
                 val (offerData: OfferQuery.Data, loginStatus: LoginStatus) = offerResponse.data
-                val externalInsuranceData =
+                val dataCollectionResult =
                     if (
                         dataCollectionStatus != null &&
-                        dataCollectionStatus !is SubscribeToDataCollectionUseCase.Status.Error &&
+                        dataCollectionStatus !is SubscribeToDataCollectionStatusUseCase.Status.Error &&
                         insurelyDataCollectionReferenceUuid != null
                     ) {
-                        externalInsuranceDataCollectionUseCase
+                        getDataCollectionResultUseCase
                             .invoke(insurelyDataCollectionReferenceUuid)
                             .let { result ->
-                                (result as? ExternalInsuranceDataCollectionUseCase.Result.Success)?.data
+                                (result as? GetDataCollectionResultUseCase.Result.Success)?.data
                             }
                     } else {
                         null
@@ -177,7 +177,7 @@ class OfferViewModelImpl(
                     offerData,
                     loginStatus,
                     dataCollectionStatus,
-                    externalInsuranceData
+                    dataCollectionResult,
                 )
             }
         }
@@ -257,13 +257,13 @@ class OfferViewModelImpl(
     private fun produceViewState(
         data: OfferQuery.Data,
         loginStatus: LoginStatus,
-        dataCollectionStatus: SubscribeToDataCollectionUseCase.Status?,
-        externalInsuranceData: DataCollectionResultQuery.Data?,
+        dataCollectionStatus: SubscribeToDataCollectionStatusUseCase.Status?,
+        dataCollectionResult: DataCollectionResult?,
     ): ViewState {
         val topOfferItems = OfferItemsBuilder.createTopOfferItems(
             data,
             dataCollectionStatus,
-            externalInsuranceData
+            dataCollectionResult
         )
         val perilItems = OfferItemsBuilder.createPerilItems(data.quoteBundle.quotes)
         val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(data.quoteBundle.quotes)

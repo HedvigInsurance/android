@@ -11,8 +11,10 @@ import com.hedvig.app.feature.offer.quotedetail.buildInsurableLimits
 import com.hedvig.app.feature.offer.quotedetail.buildPerils
 import com.hedvig.app.feature.offer.ui.checkout.CheckoutParameter
 import com.hedvig.app.feature.offer.ui.checkoutLabel
-import com.hedvig.app.feature.offer.usecase.insurelydatacollection.DataCollectionResult
-import com.hedvig.app.feature.offer.usecase.insurelydatacollection.SubscribeToDataCollectionUseCase
+import com.hedvig.app.feature.offer.usecase.datacollectionresult.DataCollectionResult
+import com.hedvig.app.feature.offer.usecase.datacollectionresult.GetDataCollectionResultUseCase
+import com.hedvig.app.feature.offer.usecase.datacollectionstatus.DataCollectionStatus
+import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToDataCollectionStatusUseCase
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -87,8 +89,8 @@ class MockOfferViewModel : OfferViewModel() {
                 }
                 val topOfferItems = OfferItemsBuilder.createTopOfferItems(
                     mockData.offer,
-                    mockData.dataCollectionValue,
-                    mockData.externalInsuranceData
+                    mockData.dataCollectionStatus,
+                    mockData.dataCollectionResult?.data
                 )
                 val perilItems = OfferItemsBuilder.createPerilItems(mockData.offer.quoteBundle.quotes)
                 val documentItems = OfferItemsBuilder.createDocumentItems(mockData.offer.quoteBundle.quotes)
@@ -118,21 +120,28 @@ class MockOfferViewModel : OfferViewModel() {
 
         data class OfferMockData(
             val offer: OfferQuery.Data,
-            val dataCollectionValue: SubscribeToDataCollectionUseCase.Status? = null,
-            val externalInsuranceData: DataCollectionResultQuery.Data? = null,
+            val dataCollectionStatus: SubscribeToDataCollectionStatusUseCase.Status? = null,
+            val dataCollectionResult: GetDataCollectionResultUseCase.Result.Success? = null,
         ) {
             constructor(
                 id: String = "id",
                 offer: OfferQuery.Data = OFFER_DATA_SWEDISH_APARTMENT,
                 dataCollectionValue: DataCollectionStatusSubscription.Data,
-                externalInsuranceData: DataCollectionResultQuery.Data? = null,
+                dataCollectionResult: DataCollectionResultQuery.Data? = null,
             ) : this(
                 offer = offer,
-                dataCollectionValue = SubscribeToDataCollectionUseCase.Status.Content(
+                dataCollectionStatus = SubscribeToDataCollectionStatusUseCase.Status.Content(
                     id,
-                    DataCollectionResult.fromDto(dataCollectionValue.dataCollectionStatusV2)
+                    DataCollectionStatus.fromDto(dataCollectionValue)
                 ),
-                externalInsuranceData = externalInsuranceData,
+                dataCollectionResult = if (dataCollectionResult != null) {
+                    GetDataCollectionResultUseCase.Result.Success(
+                        id,
+                        DataCollectionResult.fromDto(dataCollectionResult)
+                    )
+                } else {
+                    null
+                },
             )
         }
     }
