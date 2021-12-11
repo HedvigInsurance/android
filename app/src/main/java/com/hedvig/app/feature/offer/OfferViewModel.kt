@@ -136,7 +136,6 @@ class OfferViewModelImpl(
     subscribeToDataCollectionStatusUseCase: SubscribeToDataCollectionStatusUseCase,
     private val getDataCollectionResultUseCase: GetDataCollectionResultUseCase,
     private val tracker: OfferTracker,
-    private val insurelyDataCollectionReferenceUuid: String?,
 ) : OfferViewModel() {
 
     private lateinit var quoteIds: List<String>
