@@ -62,11 +62,9 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         get() = intent.getStringArrayExtra(QUOTE_IDS)?.toList() ?: emptyList()
     private val shouldShowOnNextAppStart: Boolean
         get() = intent.getBooleanExtra(SHOULD_SHOW_ON_NEXT_APP_START, false)
-    private val insurelyDataCollectionReferenceUuid: String?
-        get() = intent.getStringExtra(INSURELY_DATA_COLLECTION_REFERENCE)
 
     private val model: OfferViewModel by viewModel {
-        parametersOf(quoteIds, shouldShowOnNextAppStart, insurelyDataCollectionReferenceUuid)
+        parametersOf(quoteIds, shouldShowOnNextAppStart)
     }
     private val binding by viewBinding(ActivityOfferBinding::bind)
     private val imageLoader: ImageLoader by inject()
@@ -384,18 +382,14 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     companion object {
         private const val QUOTE_IDS = "QUOTE_IDS"
         private const val SHOULD_SHOW_ON_NEXT_APP_START = "SHOULD_SHOW_ON_NEXT_APP_START"
-        private const val INSURELY_DATA_COLLECTION_REFERENCE =
-            "com.hedvig.app.feature.offer.ui.INSURELY_DATA_COLLECTION_REFERENCE"
 
         fun newInstance(
             context: Context,
             quoteIds: List<String> = emptyList(),
             shouldShowOnNextAppStart: Boolean = false,
-            insurelyDataCollectionReferenceUuid: String? = null,
         ) = Intent(context, OfferActivity::class.java).apply {
             putExtra(QUOTE_IDS, quoteIds.toTypedArray())
             putExtra(SHOULD_SHOW_ON_NEXT_APP_START, shouldShowOnNextAppStart)
-            putExtra(INSURELY_DATA_COLLECTION_REFERENCE, insurelyDataCollectionReferenceUuid)
         }
     }
 }
