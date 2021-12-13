@@ -22,8 +22,8 @@
         <item name="android:textColorPrimary">@color/textColorPrimary</item>
         <item name="android:textColorSecondary">@color/colorPrimary</item>
         <item name="android:textColorTertiary">@color/textColorThird</item>
-        <item name="fontFamily">@font/favorit_book</item>
-        <item name="android:fontFamily">@font/favorit_book</item>
+<!--        <item name="fontFamily">@font/hedvigbeta_sans</item>-->
+<!--        <item name="android:fontFamily">@font/hedvigbeta_sans</item>-->
 
         <item name="android:windowActivityTransitions">true</item>
 
