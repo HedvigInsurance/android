@@ -15,6 +15,9 @@ import java.time.Clock
 import java.time.format.DateTimeFormatter
 
 class CrossSellingResultActivity : BaseActivity() {
+
+    override val screenName = "cross_sell_result"
+
     private val clock: Clock by inject()
     private val tracker: CrossSellTracker by inject()
     private val crossSellingResult: CrossSellingResult

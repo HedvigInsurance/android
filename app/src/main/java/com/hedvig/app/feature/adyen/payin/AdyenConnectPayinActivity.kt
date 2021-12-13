@@ -27,6 +27,9 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activity) {
+
+    override val screenName = "connect_payment_adyen"
+
     private val connectPaymentViewModel: ConnectPaymentViewModel by viewModel()
     private val adyenConnectPayinViewModel: AdyenConnectPayinViewModel by viewModel()
 
