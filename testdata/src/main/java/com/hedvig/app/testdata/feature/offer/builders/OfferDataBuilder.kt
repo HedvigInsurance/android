@@ -52,7 +52,7 @@ data class OfferDataBuilder(
 data class QuoteBuilder(
     private val startDate: LocalDate? = null,
     private val id: String = "ea656f5f-40b2-4953-85d9-752b33e69e38",
-    private val dataCollectionId: String = "ab755e2a-21a3-5132-42b1-231c89f21a81",
+    private val dataCollectionId: String? = null,
     private val typeOfContract: TypeOfContract = TypeOfContract.SE_APARTMENT_RENT,
     private val currentInsurer: OfferQuery.CurrentInsurer? = null,
     private val perils: List<OfferQuery.ContractPeril> = PerilBuilder().offerQueryBuild(5),
