@@ -22,7 +22,7 @@ class MockContractDetailViewModel : ContractDetailViewModel() {
                 _data.value = ViewState.Success(it)
                 _yourInfoList.value = yourInfoItems(mockData.contracts[0], true)
                 _documentsList.value = listOfNotNull(
-                    it.currentAgreement.asAgreementCore?.certificateUrl?.let { certificateUrl ->
+                    it.currentAgreement?.asAgreementCore?.certificateUrl?.let { certificateUrl ->
                         DocumentItems.Document(
                             titleRes = R.string.MY_DOCUMENTS_INSURANCE_CERTIFICATE,
                             subTitleRes = R.string.insurance_details_view_documents_full_terms_subtitle,
