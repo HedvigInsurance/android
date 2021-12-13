@@ -35,21 +35,21 @@ class MultipleNonSwitchableSwitcherTest : TestCase() {
 
         OfferScreen {
             scroll {
-                childAt<OfferScreen.SwitcherItem>(8) {
+                childAt<OfferScreen.SwitcherItem>(2) {
                     associatedQuote {
                         isVisible()
                         hasText(quoteDisplayName(0))
                     }
                     currentInsurer { hasText(previousInsurerNameForQuote(0)) }
                 }
-                childAt<OfferScreen.SwitcherItem>(9) {
+                childAt<OfferScreen.SwitcherItem>(3) {
                     associatedQuote {
                         isVisible()
                         hasText(quoteDisplayName(1))
                     }
                     currentInsurer { hasText(previousInsurerNameForQuote(1)) }
                 }
-                childAt<OfferScreen.WarningCard>(10) { isShown() }
+                childAt<OfferScreen.WarningCard>(4) { isShown() }
             }
         }
     }
