@@ -29,17 +29,16 @@ import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToData
 import com.hedvig.app.feature.perils.PerilItem
 import e
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
@@ -151,41 +150,41 @@ class OfferViewModelImpl(
     private val offerAndLoginStatus: MutableStateFlow<OfferAndLoginStatus> =
         MutableStateFlow(OfferAndLoginStatus.Loading)
 
-    private val dataCollectionStatus: Flow<SubscribeToDataCollectionStatusUseCase.Status?> =
-        if (insurelyDataCollectionReferenceUuid != null) {
-            subscribeToDataCollectionStatusUseCase.invoke(insurelyDataCollectionReferenceUuid)
-        } else {
-            flowOf(null)
-        }
-
-    override val viewState: StateFlow<ViewState> = combine(
-        offerAndLoginStatus,
-        dataCollectionStatus,
-    ) { offerResponse, dataCollectionStatus ->
-        return@combine when (offerResponse) {
-            OfferAndLoginStatus.Error -> ViewState.Error
-            OfferAndLoginStatus.Loading -> ViewState.Loading
+    override val viewState: StateFlow<ViewState> = offerAndLoginStatus.transformLatest { offerResponse ->
+        when (offerResponse) {
+            OfferAndLoginStatus.Error -> emit(ViewState.Error)
+            OfferAndLoginStatus.Loading -> emit(ViewState.Loading)
             is OfferAndLoginStatus.Content -> {
-                val dataCollectionResult =
-                    if (
-                        dataCollectionStatus != null &&
-                        dataCollectionStatus !is SubscribeToDataCollectionStatusUseCase.Status.Error &&
-                        insurelyDataCollectionReferenceUuid != null
-                    ) {
-                        getDataCollectionResultUseCase
-                            .invoke(insurelyDataCollectionReferenceUuid)
-                            .let { result ->
-                                (result as? GetDataCollectionResultUseCase.Result.Success)?.data
-                            }
-                    } else {
-                        null
-                    }
-                produceViewState(
-                    offerResponse.offerData,
-                    offerResponse.loginStatus,
-                    dataCollectionStatus,
-                    dataCollectionResult,
-                )
+                // When we do more than one insurance comparison we will want to get all the dataCollectionIds instead.
+                val insurelyDataCollectionReferenceUuid =
+                    offerResponse.offerData.quoteBundle.quotes.firstNotNullOfOrNull(OfferQuery.Quote::dataCollectionId)
+                if (insurelyDataCollectionReferenceUuid == null) {
+                    emit(
+                        produceViewState(
+                            offerResponse.offerData,
+                            offerResponse.loginStatus,
+                            null,
+                            null,
+                        )
+                    )
+                } else {
+                    subscribeToDataCollectionStatusUseCase.invoke(insurelyDataCollectionReferenceUuid)
+                        .collect { dataCollectionStatus ->
+                            val dataCollectionResult = getDataCollectionResultUseCase
+                                .invoke(insurelyDataCollectionReferenceUuid)
+                                .let { result ->
+                                    (result as? GetDataCollectionResultUseCase.Result.Success)?.data
+                                }
+                            emit(
+                                produceViewState(
+                                    offerResponse.offerData,
+                                    offerResponse.loginStatus,
+                                    dataCollectionStatus,
+                                    dataCollectionResult,
+                                )
+                            )
+                        }
+                }
             }
         }
     }
