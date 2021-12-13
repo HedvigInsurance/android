@@ -15,8 +15,8 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.authenticate.UserViewModel
 import com.hedvig.app.databinding.ActivitySettingsBinding
-import com.hedvig.app.feature.chat.viewmodel.UserViewModel
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.makeLocaleString
 import com.hedvig.app.util.LocaleManager

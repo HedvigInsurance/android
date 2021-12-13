@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import com.hedvig.android.owldroid.type.AuthState
 import com.hedvig.app.R
-import com.hedvig.app.feature.chat.viewmodel.UserViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.app.util.extensions.viewLifecycleScope

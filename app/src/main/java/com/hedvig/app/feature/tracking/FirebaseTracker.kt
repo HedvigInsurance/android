@@ -14,4 +14,8 @@ class FirebaseTracker(
     override fun identify(id: String) {
         firebaseAnalytics.setUserId(id)
     }
+
+    override fun setProperty(name: String, value: String) {
+        firebaseAnalytics.setUserProperty(name, value)
+    }
 }
