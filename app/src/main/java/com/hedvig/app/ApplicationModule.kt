@@ -572,7 +572,7 @@ val trackerModule = module {
     single { TrustlyTracker(get()) }
     single { PaymentTracker(get()) }
     single { RatingsTracker(get()) }
-    single { LoggedInTracker(get()) }
+    single { LoggedInTracker(get(), get()) }
     single { KeyGearTracker(get()) }
     single { InsuranceTracker(get()) }
     single { MarketingTracker(get()) }

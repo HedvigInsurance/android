@@ -17,12 +17,14 @@ abstract class BaseActivity : AppCompatActivity {
     constructor(@LayoutRes layout: Int) : super(layout)
 
     open val preventRecreation = false
+    open val screenName: String = javaClass.simpleName
 
     private val screenTracker: ScreenTracker by inject()
+
     private val marketManager: MarketManager by inject()
 
     override fun onResume() {
-        screenTracker.screenView(javaClass.simpleName)
+        screenTracker.screenView(screenName)
         super.onResume()
     }
 

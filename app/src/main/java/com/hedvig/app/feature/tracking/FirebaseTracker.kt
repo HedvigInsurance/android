@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.tracking
 
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.logEvent
 import com.hedvig.app.util.toBundle
 import org.json.JSONObject
 

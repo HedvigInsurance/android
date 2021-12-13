@@ -19,6 +19,9 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
 class ChangeAddressResultActivity : BaseActivity(R.layout.change_address_result_activity) {
+
+    override val screenName = "moving_flow_signed"
+
     private val binding by viewBinding(ChangeAddressResultActivityBinding::bind)
 
     override fun onCreate(savedInstanceState: Bundle?) {
