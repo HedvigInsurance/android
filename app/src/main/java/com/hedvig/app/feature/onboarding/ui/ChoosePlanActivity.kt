@@ -29,6 +29,9 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
+
+    override val screenName = "choose_insurance_type"
+
     private val binding by viewBinding(ActivityChoosePlanBinding::bind)
     private val marketProvider: MarketManager by inject()
     private val viewModel: ChoosePlanViewModel by viewModel()

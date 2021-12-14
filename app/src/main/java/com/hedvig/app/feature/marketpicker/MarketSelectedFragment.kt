@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import com.hedvig.app.R
+import com.hedvig.app.ScreenTracker
 import com.hedvig.app.databinding.FragmentMarketSelectedBinding
 import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
@@ -28,8 +29,10 @@ class MarketSelectedFragment : Fragment(R.layout.fragment_market_selected) {
     private val trackingFacade: TrackingFacade by inject()
     private val marketManager: MarketManager by inject()
     private val featureManager: FeatureManager by inject()
+    private val screenTracker: ScreenTracker by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        screenTracker.screenView("login_screen")
         binding.apply {
             logIn.applyNavigationBarInsetsMargin()
             flag.applyStatusBarInsetsMargin()

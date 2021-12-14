@@ -7,6 +7,7 @@ class InsuranceTracker(
     private val trackingFacade: TrackingFacade,
 ) {
     fun retry() = trackingFacade.track("home_tab.error_button_text")
+
     fun crossSellCard(typeOfContract: String) = trackingFacade.track(
         "card_clicked",
         jsonObjectOf(

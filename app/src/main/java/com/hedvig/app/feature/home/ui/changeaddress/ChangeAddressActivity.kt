@@ -36,6 +36,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
 
+    override val screenName = "moving_flow_start"
+
     private val binding by viewBinding(ChangeAddressActivityBinding::bind)
     private val model: ChangeAddressViewModel by viewModel()
     private val trackingFacade: TrackingFacade by inject()

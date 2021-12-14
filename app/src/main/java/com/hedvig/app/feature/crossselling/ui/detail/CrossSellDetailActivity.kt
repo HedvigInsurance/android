@@ -19,6 +19,9 @@ import org.koin.core.parameter.parametersOf
 
 class CrossSellDetailActivity : BaseActivity() {
     private val trackingFacade: TrackingFacade by inject()
+
+    override val screenName = "cross_sell_detail"
+
     private val crossSell: CrossSellData
         get() = intent.getParcelableExtra(CROSS_SELL)
             ?: throw IllegalArgumentException("Programmer error: CROSS_SELL not passed to ${this.javaClass.name}")
