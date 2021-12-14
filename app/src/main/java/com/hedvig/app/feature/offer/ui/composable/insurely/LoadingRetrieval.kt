@@ -17,14 +17,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.app.R
 import com.hedvig.app.ui.compose.theme.HedvigTheme
+import java.util.Locale
 
 @Composable
-fun LoadingRetrieval() {
+fun LoadingRetrieval(locale: Locale) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -34,7 +34,7 @@ fun LoadingRetrieval() {
         val resources = LocalContext.current.resources
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
             Text(
-                text = resources.getQuantityString(R.plurals.offer_switcher_title, 2).uppercase(),
+                text = resources.getQuantityString(R.plurals.offer_switcher_title, 2).uppercase(locale),
                 style = MaterialTheme.typography.caption,
             )
         }
@@ -45,8 +45,6 @@ fun LoadingRetrieval() {
             Text(
                 text = stringResource(R.string.offer_screen_insurely_card_loading_support_text),
                 style = MaterialTheme.typography.body2,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
             )
         }
     }
@@ -59,7 +57,7 @@ fun LoadingRetrievalPreview() {
         Surface(
             color = MaterialTheme.colors.background,
         ) {
-            LoadingRetrieval()
+            LoadingRetrieval(Locale.ENGLISH)
         }
     }
 }

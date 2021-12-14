@@ -38,6 +38,7 @@ import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignDialog
+import com.hedvig.app.getLocale
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
@@ -107,10 +108,11 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             offerToolbar.setNavigationOnClickListener { onBackPressed() }
             offerToolbar.setOnMenuItemClickListener(::handleMenuItem)
 
+            val locale = getLocale(this@OfferActivity, marketManager.market)
             val topOfferAdapter = OfferAdapter(
                 fragmentManager = supportFragmentManager,
                 tracker = tracker,
-                marketManager = marketManager,
+                locale = locale,
                 openQuoteDetails = model::onOpenQuoteDetails,
                 onRemoveDiscount = model::removeDiscount,
                 onSign = ::onSign,
@@ -130,7 +132,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             val bottomOfferAdapter = OfferAdapter(
                 fragmentManager = supportFragmentManager,
                 tracker = tracker,
-                marketManager = marketManager,
+                locale = locale,
                 openQuoteDetails = model::onOpenQuoteDetails,
                 onRemoveDiscount = model::removeDiscount,
                 onSign = ::onSign,

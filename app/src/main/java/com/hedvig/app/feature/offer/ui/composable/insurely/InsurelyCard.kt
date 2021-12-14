@@ -23,11 +23,13 @@ import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.ui.compose.theme.hedvigBlack12percent
 import com.hedvig.app.ui.compose.theme.hedvigContentColorFor
 import com.hedvig.app.util.compose.preview.previewData
+import java.util.Locale
 import java.util.UUID
 
 @Composable
 fun InsurelyCard(
     data: OfferModel.InsurelyCard,
+    locale: Locale,
     modifier: Modifier = Modifier,
 ) {
     val backgroundColor by animateColorAsState(
@@ -47,8 +49,8 @@ fun InsurelyCard(
         Box(Modifier.animateContentSize()) {
             when (data) {
                 is FailedToRetrieve -> FailedToRetrieveInfo(data.insuranceProvider)
-                is Loading -> LoadingRetrieval()
-                is Retrieved -> RetrievedInfo(data)
+                is Loading -> LoadingRetrieval(locale)
+                is Retrieved -> RetrievedInfo(data, locale)
             }
         }
     }
@@ -68,7 +70,7 @@ fun InsurelyCardPreview() {
                     FailedToRetrieve(UUID.randomUUID().toString(), insuranceProvider),
                     Retrieved.previewData(),
                 ).forEach {
-                    InsurelyCard(it)
+                    InsurelyCard(it, Locale.ENGLISH)
                 }
             }
         }

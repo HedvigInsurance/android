@@ -41,7 +41,6 @@ import com.hedvig.app.feature.offer.OfferRedeemCodeBottomSheet
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheet
 import com.hedvig.app.feature.offer.ui.composable.insurely.InsurelyCard
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.table.generateTable
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.apollo.format
@@ -56,11 +55,12 @@ import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
+import java.util.Locale
 
 class OfferAdapter(
     private val fragmentManager: FragmentManager,
     private val tracker: OfferTracker,
-    private val marketManager: MarketManager,
+    private val locale: Locale,
     private val openQuoteDetails: (quoteID: String) -> Unit,
     private val onRemoveDiscount: () -> Unit,
     private val onSign: (SignMethod) -> Unit,
@@ -71,7 +71,7 @@ class OfferAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.offer_header -> ViewHolder.Header(
             parent,
-            marketManager,
+            locale,
             fragmentManager,
             tracker,
             onSign,
@@ -84,7 +84,7 @@ class OfferAdapter(
         R.layout.text_body2 -> ViewHolder.Paragraph(parent)
         PRICE_COMPARISON_HEADER -> ViewHolder.PriceComparisonHeader(ComposeView(parent.context))
         INSURELY_DIVIDER -> ViewHolder.InsurelyDivider(ComposeView(parent.context))
-        INSURELY_CARD -> ViewHolder.InsurelyCard(ComposeView(parent.context))
+        INSURELY_CARD -> ViewHolder.InsurelyCard(ComposeView(parent.context), locale)
         R.layout.text_subtitle1 -> ViewHolder.QuoteDetails(parent, openQuoteDetails)
         R.layout.offer_faq -> ViewHolder.FAQ(parent, fragmentManager)
         R.layout.info_card -> ViewHolder.InfoCard(parent)
@@ -126,7 +126,7 @@ class OfferAdapter(
 
         class Header(
             parent: ViewGroup,
-            private val marketManager: MarketManager,
+            private val locale: Locale,
             private val fragmentManager: FragmentManager,
             private val tracker: OfferTracker,
             private val onSign: (SignMethod) -> Unit,
@@ -141,14 +141,14 @@ class OfferAdapter(
                 binding.apply {
                     title.text = data.title ?: itemView.context.getString(R.string.OFFER_INSURANCE_BUNDLE_TITLE)
 
-                    premium.text = data.premium.format(premium.context, marketManager.market)
+                    premium.text = data.premium.format(locale)
                     premiumPeriod.text = premiumPeriod.context.getString(R.string.OFFER_PRICE_PER_MONTH)
 
                     originalPremium.isVisible = data.hasDiscountedPrice
                     if (data.hasDiscountedPrice) {
                         originalPremium.setStrikethrough(true)
                         originalPremium.text =
-                            data.originalPremium.format(originalPremium.context, marketManager.market)
+                            data.originalPremium.format(locale)
                     }
 
                     startDateContainer.setHapticClickListener {
@@ -396,6 +396,7 @@ class OfferAdapter(
 
         class InsurelyCard(
             private val composeView: ComposeView,
+            private val locale: Locale,
         ) : ViewHolder(composeView) {
             init {
                 composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
@@ -407,6 +408,7 @@ class OfferAdapter(
                     HedvigTheme {
                         InsurelyCard(
                             data = data,
+                            locale = locale,
                             modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 0.dp)
                         )
                     }
