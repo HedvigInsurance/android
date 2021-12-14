@@ -25,7 +25,6 @@ import com.hedvig.app.ui.compose.theme.hedvigContentColorFor
 import com.hedvig.app.util.compose.preview.previewData
 import java.util.UUID
 
-// TODO string resources
 @Composable
 fun InsurelyCard(
     data: OfferModel.InsurelyCard,
@@ -48,7 +47,7 @@ fun InsurelyCard(
         Box(Modifier.animateContentSize()) {
             when (data) {
                 is FailedToRetrieve -> FailedToRetrieveInfo(data.insuranceProvider)
-                is Loading -> LoadingRetrieval(data.insuranceProvider)
+                is Loading -> LoadingRetrieval()
                 is Retrieved -> RetrievedInfo(data)
             }
         }

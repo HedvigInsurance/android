@@ -15,22 +15,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hedvig.app.R
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 
 @Composable
-fun LoadingRetrieval(insuranceProvider: String?) {
+fun LoadingRetrieval() {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 24.dp),
     ) {
+        val resources = LocalContext.current.resources
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
             Text(
-                text = "YOUR CURRENT INSURANCES",
+                text = resources.getQuantityString(R.plurals.offer_switcher_title, 2).uppercase(),
                 style = MaterialTheme.typography.caption,
             )
         }
@@ -39,7 +43,7 @@ fun LoadingRetrieval(insuranceProvider: String?) {
         Spacer(Modifier.height(16.dp))
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
             Text(
-                text = "Still retrieving price information${insuranceProvider?.let { " from $it" }}",
+                text = stringResource(R.string.offer_screen_insurely_card_loading_support_text),
                 style = MaterialTheme.typography.body2,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -55,7 +59,7 @@ fun LoadingRetrievalPreview() {
         Surface(
             color = MaterialTheme.colors.background,
         ) {
-            LoadingRetrieval("SomeCompany")
+            LoadingRetrieval()
         }
     }
 }

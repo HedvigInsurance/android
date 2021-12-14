@@ -44,15 +44,19 @@ fun RetrievedInfo(data: OfferModel.InsurelyCard.Retrieved) {
         }
         Spacer(Modifier.height(8.dp))
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+            val resources = LocalContext.current.resources
             Text(
-                text = if (data.currentInsurances.size > 1) {
-                    LocalContext.current.resources.getQuantityString(
-                        R.plurals.offer_switcher_title,
-                        data.currentInsurances.size
-                    )
-                } else {
-                    "YOUR INSURANCE${data.insuranceProvider?.let { " WITH $it" }}"
-                },
+                text = when {
+                    data.currentInsurances.size > 1 -> {
+                        resources.getQuantityString(R.plurals.offer_switcher_title, data.currentInsurances.size)
+                    }
+                    data.insuranceProvider == null -> {
+                        resources.getQuantityString(R.plurals.offer_switcher_title, 1)
+                    }
+                    else -> {
+                        stringResource(R.string.offer_screen_insurely_card_your_insurance_with, data.insuranceProvider)
+                    }
+                }.uppercase(),
                 style = MaterialTheme.typography.caption
             )
         }
@@ -85,7 +89,7 @@ private fun SavedWithHedvigChip(savedWithHedvig: MonetaryAmount) {
         backgroundColor = MaterialTheme.colors.secondary,
     ) {
         Text(
-            text = "SAVE $savedWithHedvig/MONTH WITH HEDVIG", // todo format locale
+            text = stringResource(R.string.offer_screen_insurely_card_cost_difference_info, savedWithHedvig.number),
             style = MaterialTheme.typography.overline,
             modifier = Modifier.padding(vertical = 4.dp, horizontal = 6.dp)
         )

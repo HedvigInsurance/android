@@ -16,6 +16,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.app.R
@@ -40,18 +41,18 @@ fun FailedToRetrieveInfo(insuranceProvider: String?) {
         ) {
             Text(
                 text = if (insuranceProvider != null) {
-                    "Couldn't retrieve info from $insuranceProvider"
+                    stringResource(R.string.offer_screen_insurely_error_title, insuranceProvider)
                 } else {
-                    "Couldn't retrieve price info"
+                    stringResource(R.string.offer_screen_insurely_multiple_error_title)
                 },
                 style = MaterialTheme.typography.subtitle1,
             )
             CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                 Text(
                     text = if (insuranceProvider != null) {
-                        "We were unable to retrieve your price info from $insuranceProvider. Sorry about that."
+                        stringResource(R.string.offer_screen_insurely_error_description, insuranceProvider)
                     } else {
-                        "We were unable to retrieve your price info from your current insurers. Sorry about that."
+                        stringResource(R.string.offer_screen_insurely_multiple_error_description)
                     },
                     style = MaterialTheme.typography.body2,
                 )
@@ -67,7 +68,10 @@ fun FailedToRetrieveInfoPreview() {
         Surface(
             color = MaterialTheme.colors.background,
         ) {
-            FailedToRetrieveInfo(null)
+            Column {
+                FailedToRetrieveInfo(null)
+                FailedToRetrieveInfo("FakeInsuranceProvider")
+            }
         }
     }
 }
