@@ -8,10 +8,10 @@ class MockChoosePlanViewModel : ChoosePlanViewModel() {
     }
 
     override fun load() {
-        _data.value = ViewState.Success(mockData)
+        _viewState.value = ViewState.Success(mockData)
     }
 
     companion object {
-        var mockData = CHOOSE_PLAN_DATA.embarkStories
+        var mockData = CHOOSE_PLAN_DATA.mapToSuccess().toModel()
     }
 }

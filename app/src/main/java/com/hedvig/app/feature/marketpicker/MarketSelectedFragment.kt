@@ -57,10 +57,10 @@ class MarketSelectedFragment : Fragment(R.layout.fragment_market_selected) {
 
             signUp.setHapticClickListener {
                 tracker.signUp()
-                marketManager.market?.onboarding(
+                marketManager.market?.openOnboarding(
                     requireContext(),
-                    featureManager.isFeatureEnabled(Feature.SE_EMBARK_ONBOARDING)
-                )?.let { startActivity(it) }
+                    featureManager.isFeatureEnabled(Feature.SE_EMBARK_ONBOARDING),
+                )
             }
 
             logIn.setHapticClickListener {

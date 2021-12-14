@@ -41,7 +41,7 @@ import com.hedvig.app.util.extensions.getLastOpen
 import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.setLastOpen
 import com.hedvig.app.util.extensions.showReviewDialog
-import com.hedvig.app.util.extensions.startClosableChat
+import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.performOnTapHapticFeedback
@@ -275,7 +275,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             -> {
                 lifecycleScope.launch {
                     claimsViewModel.triggerFreeTextChat()
-                    startClosableChat()
+                    startChat()
                 }
             }
             LoggedInTabs.REFERRALS -> {

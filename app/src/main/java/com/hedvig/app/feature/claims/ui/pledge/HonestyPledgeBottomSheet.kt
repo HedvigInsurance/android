@@ -11,7 +11,7 @@ import com.hedvig.app.databinding.BottomSheetHonestyPledgeBinding
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
-import com.hedvig.app.util.extensions.startClosableChat
+import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.hedvig.app.util.featureflags.Feature
@@ -49,7 +49,7 @@ class HonestyPledgeBottomSheet(
             startEmbarkClaims()
         } else {
             claimsViewModel.triggerClaimsChat()
-            requireActivity().startClosableChat()
+            requireActivity().startChat()
         }
     }
 

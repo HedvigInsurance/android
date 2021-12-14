@@ -6,10 +6,7 @@ import com.hedvig.app.util.jsonObjectOf
 class OfferTracker(
     private val trackingFacade: TrackingFacade
 ) {
-    fun signQuotes(quoteIds: List<String>) = trackingFacade.track(
-        "QUOTES_SIGNED",
-        jsonObjectOf("quoteIds" to quoteIds),
-    )
+    fun signQuotes() = trackingFacade.track("signed_customer")
 
     fun openChat() = trackingFacade.track("OFFER_OPEN_CHAT")
 
@@ -31,11 +28,12 @@ class OfferTracker(
         )
     )
 
-    fun viewOffer(typesOfContract: List<String>) {
+    fun viewOffer(typesOfContract: List<String>, postSignStep: String) {
         trackingFacade.track(
-            "offer_viewed",
+            "offer_created",
             jsonObjectOf(
-                "types_of_contract" to typesOfContract.joinToString(",")
+                "types_of_contract" to typesOfContract.joinToString(","),
+                "flow_Type" to postSignStep
             )
         )
     }
