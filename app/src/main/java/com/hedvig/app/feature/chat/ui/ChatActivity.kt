@@ -79,7 +79,9 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        trackingFacade.track("click_start_chat")
+        if (savedInstanceState == null) {
+            trackingFacade.track("click_start_chat")
+        }
 
         keyboardHeight = resources.getDimensionPixelSize(R.dimen.default_attach_file_height)
         isKeyboardBreakPoint =
