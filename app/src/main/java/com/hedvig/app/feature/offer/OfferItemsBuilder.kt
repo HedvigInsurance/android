@@ -60,20 +60,6 @@ object OfferItemsBuilder {
         emptyList()
     }
 
-    fun createBottomOfferItems(
-        data: OfferQuery.Data,
-    ) = ArrayList<OfferModel>().apply {
-        val bundle = data.quoteBundle
-        if (bundle.frequentlyAskedQuestions.isNotEmpty() && bundle.appConfiguration.showFAQ) {
-            add(
-                OfferModel.FAQ(
-                    bundle.frequentlyAskedQuestions.mapNotNull { FAQItem.from(it) }
-                )
-            )
-        }
-        add(OfferModel.Footer(data.checkoutLabel()))
-    }
-
     fun createPerilItems(data: List<OfferQuery.Quote>) = if (data.size == 1) {
         data[0]
             .contractPerils
@@ -85,6 +71,10 @@ object OfferItemsBuilder {
     } else {
         emptyList()
     }
+
+    fun createBottomOfferItems(
+        data: OfferQuery.Data,
+    ): List<OfferModel> = BottomOfferItemsBuilder.createBottomOfferItems(data)
 }
 
 @OptIn(ExperimentalStdlibApi::class)
@@ -131,13 +121,7 @@ object TopOfferItemsBuilder {
                 }
             }
         }
-        val showInsuranceSwitchableStates = bundle.quotes.any { quote -> quote.currentInsurer != null }
-        if (showInsuranceSwitchableStates) {
-            addAll(currentInsuranceSwitchableStates(bundle.quotes))
-        }
-        add(
-            OfferModel.Facts(bundle.quotes[0].detailsTable.fragments.tableFragment.intoTable()),
-        )
+        add(OfferModel.Facts(bundle.quotes[0].detailsTable.fragments.tableFragment.intoTable()))
         add(OfferModel.Subheading.Coverage)
         if (bundle.quotes.size > 1) {
             add(OfferModel.Paragraph.Coverage)
@@ -187,6 +171,35 @@ object TopOfferItemsBuilder {
         }
     }
 
+    private val OfferQuery.Data.finalPremium: MonetaryAmount
+        get() = if (quoteBundle.appConfiguration.ignoreCampaigns) {
+            grossMonthlyCost()
+        } else {
+            netMonthlyCost()
+        }
+}
+
+@OptIn(ExperimentalStdlibApi::class)
+object BottomOfferItemsBuilder {
+    fun createBottomOfferItems(
+        offerData: OfferQuery.Data,
+    ): List<OfferModel> = buildList {
+        val bundle = offerData.quoteBundle
+        val showInsuranceSwitchableStates = bundle.quotes.any { quote -> quote.currentInsurer != null }
+        if (showInsuranceSwitchableStates) {
+            add(OfferModel.Subheading.Switcher(bundle.quotes.count { it.isDisplayable }))
+            addAll(currentInsuranceSwitchableStates(bundle.quotes))
+        }
+        if (bundle.frequentlyAskedQuestions.isNotEmpty() && bundle.appConfiguration.showFAQ) {
+            add(
+                OfferModel.FAQ(
+                    bundle.frequentlyAskedQuestions.mapNotNull { FAQItem.from(it) }
+                )
+            )
+        }
+        add(OfferModel.Footer(offerData.checkoutLabel()))
+    }
+
     private fun currentInsuranceSwitchableStates(
         quotes: List<OfferQuery.Quote>,
     ): List<OfferModel> = buildList {
@@ -200,19 +213,19 @@ object TopOfferItemsBuilder {
                     }
                 }
             }
-        nonSwitchables.forEach { (currentInsurer, associatedQuote) ->
-            add(
-                OfferModel.CurrentInsurer(
-                    displayName = currentInsurer.displayName,
-                    associatedQuote = if (quotes.size > 1) {
-                        associatedQuote
-                    } else {
-                        null
-                    }
-                )
-            )
-        }
         if (nonSwitchables.isNotEmpty()) {
+            nonSwitchables.forEach { (currentInsurer, associatedQuote) ->
+                add(
+                    OfferModel.CurrentInsurer(
+                        displayName = currentInsurer.displayName,
+                        associatedQuote = if (quotes.size > 1) {
+                            associatedQuote
+                        } else {
+                            null
+                        }
+                    )
+                )
+            }
             add(OfferModel.ManualSwitchCard)
         }
         val switchables = quotes.mapNotNull { quote ->
@@ -224,29 +237,22 @@ object TopOfferItemsBuilder {
                 }
             }
         }
-        switchables.forEach { (currentInsurer, associatedQuote) ->
-            add(
-                OfferModel.CurrentInsurer(
-                    displayName = currentInsurer.displayName,
-                    associatedQuote = if (quotes.size > 1) {
-                        associatedQuote
-                    } else {
-                        null
-                    }
-                )
-            )
-        }
         if (switchables.isNotEmpty()) {
+            switchables.forEach { (currentInsurer, associatedQuote) ->
+                add(
+                    OfferModel.CurrentInsurer(
+                        displayName = currentInsurer.displayName,
+                        associatedQuote = if (quotes.size > 1) {
+                            associatedQuote
+                        } else {
+                            null
+                        }
+                    )
+                )
+            }
             add(OfferModel.AutomaticSwitchCard)
         }
     }
-
-    private val OfferQuery.Data.finalPremium: MonetaryAmount
-        get() = if (quoteBundle.appConfiguration.ignoreCampaigns) {
-            grossMonthlyCost()
-        } else {
-            netMonthlyCost()
-        }
 
     private val OfferQuery.Quote.isDisplayable: Boolean
         get() = currentInsurer?.displayName != null
