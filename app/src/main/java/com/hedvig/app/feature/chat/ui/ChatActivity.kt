@@ -2,7 +2,6 @@ package com.hedvig.app.feature.chat.ui
 
 import android.Manifest
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -78,6 +77,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        tracker.closeChat()
         keyboardHeight = resources.getDimensionPixelSize(R.dimen.default_attach_file_height)
         isKeyboardBreakPoint =
             resources.getDimensionPixelSize(R.dimen.is_keyboard_brake_point_height)
@@ -492,7 +492,6 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
     }
 
     companion object {
-        fun newInstance(context: Context) = Intent(context, ChatActivity::class.java)
 
         private const val REQUEST_WRITE_PERMISSION = 35134
         private const val REQUEST_CAMERA_PERMISSION = 54332
@@ -504,12 +503,5 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
         const val EXTRA_SHOW_RESTART = "extra_show_restart"
 
         const val ACTIVITY_IS_IN_FOREGROUND = "chat_activity_is_in_foreground"
-
-        fun newInstance(context: Context, showClose: Boolean = false) =
-            Intent(context, ChatActivity::class.java).apply {
-                if (showClose) {
-                    putExtra(EXTRA_SHOW_CLOSE, true)
-                }
-            }
     }
 }

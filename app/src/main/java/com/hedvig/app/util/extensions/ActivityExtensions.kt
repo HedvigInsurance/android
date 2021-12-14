@@ -15,13 +15,11 @@ import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
-import androidx.core.app.ActivityOptionsCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticateDialog
 import com.hedvig.app.authenticate.LoginDialog
-import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.util.extensions.view.setupToolbar
 import e
@@ -58,24 +56,6 @@ fun AppCompatActivity.setupToolbar(
         rootLayout = rootLayout,
         backAction = backAction
     )
-}
-
-fun Activity.startClosableChat(restartable: Boolean = false) {
-    val intent = Intent(this, ChatActivity::class.java)
-    intent.putExtra(ChatActivity.EXTRA_SHOW_CLOSE, true)
-
-    if (restartable) {
-        intent.putExtra(ChatActivity.EXTRA_SHOW_RESTART, true)
-    }
-
-    val options =
-        ActivityOptionsCompat.makeCustomAnimation(
-            this,
-            R.anim.chat_slide_up_in,
-            R.anim.stay_in_place
-        )
-
-    ActivityCompat.startActivity(this, intent, options.toBundle())
 }
 
 fun Activity.askForPermissions(

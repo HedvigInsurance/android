@@ -33,7 +33,7 @@ class ApproveQuotesUseCase(
                 approveResponseResponse?.approved?.let { approved ->
                     if (approved) {
                         val startDate = readCachedStartDate(quoteIds)
-                        tracker.signQuotes(quoteIds)
+                        tracker.signQuotes()
                         cacheManager.clearCache()
                         ApproveQuotesResult.Success(startDate)
                     } else {

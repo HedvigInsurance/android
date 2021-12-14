@@ -25,7 +25,6 @@ import kotlin.time.ExperimentalTime
 @OptIn(ExperimentalTime::class)
 class SwedishBankIdSignViewModel(
     autoStartToken: String,
-    private val quoteIds: List<String>,
     subscribeToSwedishBankIdSignStatusUseCase: SubscribeToSwedishBankIdSignStatusUseCase,
     private val manuallyRecheckSwedishBankIdSignStatusUseCase: ManuallyRecheckSwedishBankIdSignStatusUseCase,
     private val tracker: OfferTracker,
@@ -78,7 +77,7 @@ class SwedishBankIdSignViewModel(
         _viewState.value = newViewState
         if (newViewState is ViewState.Success && !hasCompletedSign) {
             hasCompletedSign = true
-            tracker.signQuotes(quoteIds)
+            tracker.signQuotes()
             loginStatusService.isViewingOffer = false
             loginStatusService.isLoggedIn = true
             viewModelScope.launch {

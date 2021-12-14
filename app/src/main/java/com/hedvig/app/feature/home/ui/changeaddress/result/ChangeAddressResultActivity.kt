@@ -8,18 +8,21 @@ import androidx.core.view.isVisible
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ChangeAddressResultActivityBinding
-import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.app.feature.tracking.TrackingFacade
+import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import e
 import kotlinx.parcelize.Parcelize
+import org.koin.android.ext.android.inject
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
 class ChangeAddressResultActivity : BaseActivity(R.layout.change_address_result_activity) {
     private val binding by viewBinding(ChangeAddressResultActivityBinding::bind)
+    private val trackingFacade: TrackingFacade by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,12 +61,7 @@ class ChangeAddressResultActivity : BaseActivity(R.layout.change_address_result_
                     continueButton.setText(R.string.moving_uw_failure_button_text)
                     continueButton.setIconResource(R.drawable.ic_chat_white)
                     continueButton.setHapticClickListener {
-                        startActivity(
-                            ChatActivity.newInstance(
-                                this@ChangeAddressResultActivity,
-                                showClose = true
-                            )
-                        )
+                        startChat(trackingFacade)
                     }
                 }
             }

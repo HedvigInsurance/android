@@ -38,11 +38,12 @@ import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignDialog
+import com.hedvig.app.feature.tracking.TrackingFacade
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.showErrorDialog
-import com.hedvig.app.util.extensions.startClosableChat
+import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsetsMargin
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.hide
@@ -66,6 +67,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     private val binding by viewBinding(ActivityOfferBinding::bind)
     private val imageLoader: ImageLoader by inject()
     private val tracker: OfferTracker by inject()
+    private val trackingFacade: TrackingFacade by inject()
     private val marketManager: MarketManager by inject()
     private var hasStartedRecyclerAnimation: Boolean = false
 
@@ -265,7 +267,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                         }
                         is OfferViewModel.Event.StartSwedishBankIdSign -> {
                             SwedishBankIdSignDialog
-                                .newInstance(event.autoStartToken, event.quoteIds)
+                                .newInstance(event.autoStartToken)
                                 .show(supportFragmentManager, SwedishBankIdSignDialog.TAG)
                         }
                     }
@@ -291,7 +293,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     private fun openChat() {
         lifecycleScope.launch {
             model.triggerOpenChat()
-            startClosableChat(true)
+            startChat(trackingFacade)
         }
     }
 

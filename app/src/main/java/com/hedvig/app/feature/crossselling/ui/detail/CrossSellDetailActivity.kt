@@ -10,12 +10,15 @@ import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.feature.offer.quotedetail.QuoteDetailAction
 import com.hedvig.app.feature.offer.quotedetail.QuoteDetailActivity
 import com.hedvig.app.feature.perils.PerilItem
+import com.hedvig.app.feature.tracking.TrackingFacade
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.core.parameter.parametersOf
 
 class CrossSellDetailActivity : BaseActivity() {
+    private val trackingFacade: TrackingFacade by inject()
     private val crossSell: CrossSellData
         get() = intent.getParcelableExtra(CROSS_SELL)
             ?: throw IllegalArgumentException("Programmer error: CROSS_SELL not passed to ${this.javaClass.name}")
@@ -35,7 +38,7 @@ class CrossSellDetailActivity : BaseActivity() {
         setContent {
             HedvigTheme {
                 CrossSellDetailScreen(
-                    onCtaClick = { handleAction(this, crossSell.action) },
+                    onCtaClick = { handleAction(this, crossSell.action, trackingFacade) },
                     onUpClick = { finish() },
                     onCoverageClick = { openCoverage(crossSell) },
                     onFaqClick = { openFaq(crossSell) },

@@ -1,58 +1,80 @@
 package com.hedvig.app.feature.onboarding
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.owldroid.graphql.ChoosePlanQuery
-import com.hedvig.android.owldroid.type.EmbarkStoryType
+import com.hedvig.app.util.extensions.replace
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 abstract class ChoosePlanViewModel : ViewModel() {
+
     sealed class ViewState {
-        data class Success(val data: List<ChoosePlanQuery.EmbarkStory>) : ViewState()
+        data class Success(val bundleItems: List<OnboardingModel.BundleItem>) : ViewState()
         object Loading : ViewState()
         object Error : ViewState()
     }
 
-    protected val _data = MutableStateFlow<ViewState>(ViewState.Loading)
-    val data = _data.asStateFlow()
+    protected val _viewState = MutableStateFlow<ViewState>(ViewState.Loading)
+    val viewState = _viewState.asStateFlow()
+
+    sealed class Event {
+        data class Continue(val storyName: String, val storyTitle: String) : Event()
+    }
+
+    protected val _events = Channel<Event>(Channel.UNLIMITED)
+    val events = _events.receiveAsFlow()
 
     abstract fun load()
 
-    private val _selectedQuoteType = MutableLiveData<OnboardingModel.Bundle>()
-    val selectedQuoteType: LiveData<OnboardingModel.Bundle> = _selectedQuoteType
+    fun onBundleSelected(bundleItem: OnboardingModel.BundleItem) {
+        (_viewState.value as? ViewState.Success)?.let { viewState ->
+            val updatedBundleItems = viewState.bundleItems
+                .map { it.copy(selected = false) }
+                .replace(bundleItem.copy(selected = true)) { oldItem ->
+                    oldItem.bundle.storyName == bundleItem.bundle.storyName
+                }
+            _viewState.value = ViewState.Success(updatedBundleItems)
+        }
+    }
 
-    fun setSelectedQuoteType(type: OnboardingModel.Bundle) {
-        _selectedQuoteType.postValue(type)
+    fun onContinue() {
+        val selectedBundle = (_viewState.value as? ViewState.Success)?.bundleItems?.firstOrNull { it.selected }?.bundle
+        if (selectedBundle != null) {
+            _events.trySend(
+                Event.Continue(
+                    storyName = selectedBundle.storyName,
+                    storyTitle = selectedBundle.storyTitle
+                )
+            )
+        }
     }
 }
 
 class ChoosePlanViewModelImpl(
-    private val repository: ChoosePlanRepository
+    private val getBundlesUseCase: GetBundlesUseCase
 ) : ChoosePlanViewModel() {
+
     init {
         load()
     }
 
     override fun load() {
         viewModelScope.launch {
-            val response = runCatching { repository.bundles() }
-            if (response.isFailure) {
-                response.exceptionOrNull()?.let {
-                    _data.value = ViewState.Error
-                }
-                return@launch
+            val state = when (val result = getBundlesUseCase.invoke()) {
+                BundlesResult.Error -> ViewState.Error
+                is BundlesResult.Success -> ViewState.Success(result.toModel())
             }
-            if (response.getOrNull()?.hasErrors() == true) {
-                _data.value = ViewState.Error
-                return@launch
-            }
-            val onlyAppStories =
-                response.getOrNull()?.data?.embarkStories?.filter { it.type == EmbarkStoryType.APP_ONBOARDING }
-            onlyAppStories?.let { _data.value = ViewState.Success(it) }
+            _viewState.value = state
         }
     }
+}
+
+fun BundlesResult.Success.toModel() = bundles.mapIndexed { index, bundle ->
+    OnboardingModel.BundleItem(
+        selected = index == 0,
+        bundle = bundle
+    )
 }

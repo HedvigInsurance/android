@@ -10,11 +10,12 @@ import com.hedvig.app.authenticate.LoginDialog
 import com.hedvig.app.feature.adyen.AdyenCurrency
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinActivity
 import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutActivity
-import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.onboarding.ui.ChoosePlanActivity
+import com.hedvig.app.feature.tracking.TrackingFacade
 import com.hedvig.app.feature.trustly.TrustlyConnectPayinActivity
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationActivity
+import com.hedvig.app.util.extensions.startChat
 
 enum class Market {
     SE,
@@ -75,23 +76,22 @@ enum class Market {
         }
     }
 
-    fun onboarding(context: Context, seEmbarkOnboarding: Boolean) = when (this) {
+    fun openOnboarding(context: Context, seEmbarkOnboarding: Boolean, trackingFacade: TrackingFacade) = when (this) {
         SE -> {
             if (seEmbarkOnboarding) {
-                ChoosePlanActivity.newInstance(context)
+                context.startActivity(ChoosePlanActivity.newInstance(context))
             } else {
-                ChatActivity.newInstance(context)
-                    .apply { putExtra(ChatActivity.EXTRA_SHOW_RESTART, true) }
+                context.startChat(closable = false, restartable = true, trackingFacade = trackingFacade)
             }
         }
         NO -> {
-            ChoosePlanActivity.newInstance(context)
+            context.startActivity(ChoosePlanActivity.newInstance(context))
         }
         DK -> {
-            WebOnboardingActivity.newInstance(context)
+            context.startActivity(WebOnboardingActivity.newInstance(context))
         }
         FR -> {
-            WebOnboardingActivity.newInstance(context)
+            context.startActivity(WebOnboardingActivity.newInstance(context))
         }
     }
 

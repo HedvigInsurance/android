@@ -11,7 +11,8 @@ import com.hedvig.app.databinding.BottomSheetHonestyPledgeBinding
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
-import com.hedvig.app.util.extensions.startClosableChat
+import com.hedvig.app.feature.tracking.TrackingFacade
+import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.hedvig.app.util.featureflags.Feature
@@ -24,6 +25,7 @@ class HonestyPledgeBottomSheet(
     private val customActivityLaunch: ((Intent) -> Unit)? = null,
 ) : BottomSheetDialogFragment() {
     private val tracker: ClaimsTracker by inject()
+    private val trackingFacade: TrackingFacade by inject()
     private val claimsViewModel: ClaimsViewModel by sharedViewModel()
     private val binding by viewBinding(BottomSheetHonestyPledgeBinding::bind)
     private val featureManager: FeatureManager by inject()
@@ -49,7 +51,7 @@ class HonestyPledgeBottomSheet(
             startEmbarkClaims()
         } else {
             claimsViewModel.triggerClaimsChat()
-            requireActivity().startClosableChat()
+            requireActivity().startChat(trackingFacade)
         }
     }
 

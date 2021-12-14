@@ -9,16 +9,18 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.ChangeAddressButtonBinding
 import com.hedvig.app.databinding.ChangeAddressPendingChangeCardBinding
 import com.hedvig.app.databinding.YourInfoChangeBinding
-import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
+import com.hedvig.app.feature.tracking.TrackingFacade
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.invalid
+import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 
 class YourInfoAdapter(
-    private val fragmentManager: FragmentManager
+    private val fragmentManager: FragmentManager,
+    private val trackingFacade: TrackingFacade,
 ) : ListAdapter<YourInfoModel, YourInfoAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun getItemViewType(position: Int) = when (currentList[position]) {
@@ -29,7 +31,7 @@ class YourInfoAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.change_address_button -> ViewHolder.ChangeAddressButton(parent)
-        R.layout.your_info_change -> ViewHolder.Change(parent)
+        R.layout.your_info_change -> ViewHolder.Change(parent, trackingFacade)
         R.layout.change_address_pending_change_card -> ViewHolder.PendingAddressChange(parent)
         else -> throw Error("Invalid view type")
     }
@@ -41,11 +43,14 @@ class YourInfoAdapter(
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         abstract fun bind(data: YourInfoModel, fragmentManager: FragmentManager): Any?
 
-        class Change(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.your_info_change)) {
+        class Change(
+            parent: ViewGroup,
+            val trackingFacade: TrackingFacade
+        ) : ViewHolder(parent.inflate(R.layout.your_info_change)) {
             private val binding by viewBinding(YourInfoChangeBinding::bind)
             override fun bind(data: YourInfoModel, fragmentManager: FragmentManager) = with(binding) {
                 openChatButton.setHapticClickListener {
-                    root.context.startActivity(ChatActivity.newInstance(root.context, true))
+                    root.context.startChat(trackingFacade)
                 }
             }
         }

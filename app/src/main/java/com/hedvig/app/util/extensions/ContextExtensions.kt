@@ -24,6 +24,7 @@ import androidx.annotation.FontRes
 import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.core.content.res.ResourcesCompat
@@ -32,8 +33,10 @@ import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hedvig.app.R
 import com.hedvig.app.SplashActivity
+import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.SettingsActivity
+import com.hedvig.app.feature.tracking.TrackingFacade
 import kotlinx.coroutines.delay
 import kotlin.system.exitProcess
 
@@ -284,4 +287,24 @@ fun Context.tryOpenUri(uri: Uri) {
     } else {
         showError()
     }
+}
+
+fun Context.startChat(
+    trackingFacade: TrackingFacade,
+    closable: Boolean = true,
+    restartable: Boolean = false
+) {
+    val intent = Intent(this, ChatActivity::class.java)
+    intent.putExtra(ChatActivity.EXTRA_SHOW_CLOSE, closable)
+    intent.putExtra(ChatActivity.EXTRA_SHOW_RESTART, restartable)
+
+    val options =
+        ActivityOptionsCompat.makeCustomAnimation(
+            this,
+            R.anim.chat_slide_up_in,
+            R.anim.stay_in_place
+        )
+
+    ActivityCompat.startActivity(this, intent, options.toBundle())
+    trackingFacade.track("click_start_chat")
 }

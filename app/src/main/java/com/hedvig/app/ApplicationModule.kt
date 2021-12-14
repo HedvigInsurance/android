@@ -142,9 +142,9 @@ import com.hedvig.app.feature.offer.usecase.GetPostSignDependenciesUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
-import com.hedvig.app.feature.onboarding.ChoosePlanRepository
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModelImpl
+import com.hedvig.app.feature.onboarding.GetBundlesUseCase
 import com.hedvig.app.feature.onboarding.MemberIdRepository
 import com.hedvig.app.feature.onboarding.MemberIdViewModel
 import com.hedvig.app.feature.onboarding.MemberIdViewModelImpl
@@ -376,8 +376,8 @@ val viewModelModule = module {
         )
     }
     viewModel { TerminatedContractsViewModel(get()) }
-    viewModel { (autoStartToken: String, quoteIds: List<String>) ->
-        SwedishBankIdSignViewModel(autoStartToken, quoteIds, get(), get(), get(), get())
+    viewModel { (autoStartToken: String) ->
+        SwedishBankIdSignViewModel(autoStartToken, get(), get(), get(), get())
     }
     viewModel { (result: CrossSellingResult) -> CrossSellResultViewModel(result, get()) }
     viewModel { AudioRecorderViewModel(get()) }
@@ -557,7 +557,7 @@ val repositoriesModule = module {
     single { TrustlyRepository(get()) }
     single { MemberIdRepository(get()) }
     single { PaymentRepository(get(), get()) }
-    single { ChoosePlanRepository(get(), get()) }
+    single { GetBundlesUseCase(get(), get()) }
 }
 
 val trackerModule = module {

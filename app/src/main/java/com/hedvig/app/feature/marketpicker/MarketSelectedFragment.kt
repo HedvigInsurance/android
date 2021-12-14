@@ -10,6 +10,7 @@ import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.marketing.ui.MarketingViewModel
 import com.hedvig.app.feature.marketing.ui.NavigationState
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.feature.tracking.TrackingFacade
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsetsMargin
 import com.hedvig.app.util.extensions.view.applyStatusBarInsetsMargin
@@ -24,6 +25,7 @@ class MarketSelectedFragment : Fragment(R.layout.fragment_market_selected) {
     private val viewModel: MarketingViewModel by sharedViewModel()
     private val binding by viewBinding(FragmentMarketSelectedBinding::bind)
     private val tracker: MarketingTracker by inject()
+    private val trackingFacade: TrackingFacade by inject()
     private val marketManager: MarketManager by inject()
     private val featureManager: FeatureManager by inject()
 
@@ -54,10 +56,11 @@ class MarketSelectedFragment : Fragment(R.layout.fragment_market_selected) {
 
             signUp.setHapticClickListener {
                 tracker.signUp()
-                marketManager.market?.onboarding(
+                marketManager.market?.openOnboarding(
                     requireContext(),
-                    featureManager.isFeatureEnabled(Feature.SE_EMBARK_ONBOARDING)
-                )?.let { startActivity(it) }
+                    featureManager.isFeatureEnabled(Feature.SE_EMBARK_ONBOARDING),
+                    trackingFacade
+                )
             }
 
             logIn.setHapticClickListener {

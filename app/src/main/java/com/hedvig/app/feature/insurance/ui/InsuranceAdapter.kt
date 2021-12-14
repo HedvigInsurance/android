@@ -25,6 +25,7 @@ import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
 import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.feature.tracking.TrackingFacade
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.extensions.getActivity
 import com.hedvig.app.util.extensions.inflate
@@ -34,13 +35,14 @@ import com.hedvig.app.util.extensions.viewBinding
 
 class InsuranceAdapter(
     private val tracker: InsuranceTracker,
+    private val trackingFacade: TrackingFacade,
     private val marketManager: MarketManager,
     private val retry: () -> Unit
 ) : ListAdapter<InsuranceModel, InsuranceAdapter.ViewHolder>(InsuranceAdapterDiffUtilItemCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.insurance_contract_card -> ViewHolder.ContractViewHolder(parent)
-        CROSS_SELL -> ViewHolder.CrossSellViewHolder(ComposeView(parent.context), tracker)
+        CROSS_SELL -> ViewHolder.CrossSellViewHolder(ComposeView(parent.context), tracker, trackingFacade)
         R.layout.insurance_header -> ViewHolder.TitleViewHolder(parent)
         R.layout.generic_error -> ViewHolder.Error(parent, tracker)
         SUBHEADING -> ViewHolder.SubheadingViewHolder(ComposeView(parent.context))
@@ -81,6 +83,7 @@ class InsuranceAdapter(
         class CrossSellViewHolder(
             private val composeView: ComposeView,
             private val tracker: InsuranceTracker,
+            private val trackingFacade: TrackingFacade
         ) : ViewHolder(composeView) {
             init {
                 composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
@@ -109,7 +112,7 @@ class InsuranceAdapter(
                                     typeOfContract = data.inner.typeOfContract,
                                     label = label,
                                 )
-                                handleAction(context, data.inner.action)
+                                handleAction(context, data.inner.action, trackingFacade)
                             }
                         )
                     }
