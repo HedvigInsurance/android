@@ -24,4 +24,8 @@ class EngineeringTracker : TrackerSink {
             )
         }
     }
+
+    override fun setProperty(name: String, value: String) {
+        // Not implemented
+    }
 }
