@@ -380,7 +380,7 @@ val viewModelModule = module {
         SwedishBankIdSignViewModel(autoStartToken, quoteIds, get(), get(), get(), get())
     }
     viewModel { (result: CrossSellingResult) -> CrossSellResultViewModel(result, get()) }
-    viewModel { AudioRecorderViewModel(get()) }
+    viewModel { AudioRecorderViewModel(get(), get()) }
     viewModel { CrossSellFaqViewModel(get()) }
     viewModel { (notificationMetadata: CrossSellNotificationMetadata?, crossSell: CrossSellData) ->
         CrossSellDetailViewModel(notificationMetadata, crossSell, get())
