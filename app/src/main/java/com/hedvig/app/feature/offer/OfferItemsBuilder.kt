@@ -120,11 +120,8 @@ object TopOfferItemsBuilder {
             ),
         )
         val showInsurelyInformation = dataCollectionStatus != null
-        val showInsuranceSwitchableStates = bundle.quotes.any { quote -> quote.currentInsurer != null }
-        if (showInsurelyInformation || showInsuranceSwitchableStates) {
-            add(OfferModel.PriceComparisonHeader)
-        }
         if (showInsurelyInformation) {
+            add(OfferModel.PriceComparisonHeader)
             when (dataCollectionStatus) {
                 is Error -> {
                     add(OfferModel.InsurelyCard.FailedToRetrieve(dataCollectionStatus.referenceUuid))
@@ -134,6 +131,7 @@ object TopOfferItemsBuilder {
                 }
             }
         }
+        val showInsuranceSwitchableStates = bundle.quotes.any { quote -> quote.currentInsurer != null }
         if (showInsuranceSwitchableStates) {
             addAll(currentInsuranceSwitchableStates(bundle.quotes))
         }
