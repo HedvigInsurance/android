@@ -20,7 +20,6 @@ import com.hedvig.app.feature.home.ui.changeaddress.ViewState.ManualChangeAddres
 import com.hedvig.app.feature.home.ui.changeaddress.ViewState.SelfChangeAddress
 import com.hedvig.app.feature.home.ui.changeaddress.ViewState.SelfChangeError
 import com.hedvig.app.feature.home.ui.changeaddress.ViewState.UpcomingAgreementError
-import com.hedvig.app.feature.tracking.TrackingFacade
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.startChat
@@ -31,16 +30,12 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
 
-    override val screenName = "moving_flow_start"
-
     private val binding by viewBinding(ChangeAddressActivityBinding::bind)
     private val model: ChangeAddressViewModel by viewModel()
-    private val trackingFacade: TrackingFacade by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,7 +86,7 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
                 subtitleText = getString(R.string.moving_intro_manual_handling_description),
                 buttonText = getString(R.string.moving_intro_manual_handling_button_text),
                 buttonIcon = R.drawable.ic_chat_white,
-                onContinue = { startChat(trackingFacade) }
+                onContinue = { startChat() }
             )
             is ChangeAddressInProgress -> setUpcomingChangeContent(
                 titleText = getString(R.string.moving_intro_existing_move_title),
@@ -101,7 +96,7 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
                 onContinue = {
                     lifecycleScope.launch {
                         model.triggerFreeTextChat()
-                        startChat(trackingFacade)
+                        startChat()
                     }
                 },
                 viewState.upcomingAgreementResult

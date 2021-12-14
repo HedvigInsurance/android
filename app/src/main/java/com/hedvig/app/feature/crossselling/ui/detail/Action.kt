@@ -3,16 +3,14 @@ package com.hedvig.app.feature.crossselling.ui.detail
 import android.content.Context
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
-import com.hedvig.app.feature.tracking.TrackingFacade
 import com.hedvig.app.util.extensions.startChat
 
 fun handleAction(
     context: Context,
-    action: CrossSellData.Action,
-    trackingFacade: TrackingFacade
+    action: CrossSellData.Action
 ) {
     when (action) {
-        CrossSellData.Action.Chat -> context.startChat(trackingFacade)
+        CrossSellData.Action.Chat -> context.startChat()
         is CrossSellData.Action.Embark ->
             openEmbark(context, action.embarkStoryId, action.title)
     }

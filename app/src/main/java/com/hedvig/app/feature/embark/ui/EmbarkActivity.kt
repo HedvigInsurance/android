@@ -40,7 +40,6 @@ import com.hedvig.app.feature.embark.passages.textaction.TextActionFragment
 import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.feature.tracking.TrackingFacade
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
@@ -55,8 +54,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
-
-    private val trackingFacade: TrackingFacade by inject()
 
     private val storyTitle: String by lazy {
         intent.getStringExtra(STORY_TITLE)
@@ -110,7 +107,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 .flowWithLifecycle(lifecycle)
                 .onEach { event ->
                     when (event) {
-                        EmbarkViewModel.Event.Chat -> startChat(trackingFacade)
+                        EmbarkViewModel.Event.Chat -> startChat()
                         is EmbarkViewModel.Event.Offer -> {
                             startActivity(
                                 OfferActivity.newInstance(

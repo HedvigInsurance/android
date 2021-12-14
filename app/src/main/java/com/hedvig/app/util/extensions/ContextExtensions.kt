@@ -36,7 +36,6 @@ import com.hedvig.app.SplashActivity
 import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.SettingsActivity
-import com.hedvig.app.feature.tracking.TrackingFacade
 import kotlinx.coroutines.delay
 import kotlin.system.exitProcess
 
@@ -290,7 +289,6 @@ fun Context.tryOpenUri(uri: Uri) {
 }
 
 fun Context.startChat(
-    trackingFacade: TrackingFacade,
     closable: Boolean = true,
     restartable: Boolean = false
 ) {
@@ -306,5 +304,4 @@ fun Context.startChat(
         )
 
     ActivityCompat.startActivity(this, intent, options.toBundle())
-    trackingFacade.track("click_start_chat")
 }

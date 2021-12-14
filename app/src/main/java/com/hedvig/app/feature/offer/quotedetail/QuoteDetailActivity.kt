@@ -23,7 +23,6 @@ import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.insurablelimits.InsurableLimitsAdapter
 import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.feature.perils.PerilsAdapter
-import com.hedvig.app.feature.tracking.TrackingFacade
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.toArrayList
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -37,7 +36,6 @@ import org.koin.android.ext.android.inject
 class QuoteDetailActivity : BaseActivity(R.layout.quote_detail_activity) {
     private val binding by viewBinding(QuoteDetailActivityBinding::bind)
     private val imageLoader: ImageLoader by inject()
-    private val trackingFacade: TrackingFacade by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -122,7 +120,7 @@ class QuoteDetailActivity : BaseActivity(R.layout.quote_detail_activity) {
                 action.isVisible = true
                 action.text = actionData.label
                 action.setHapticClickListener {
-                    handleAction(this@QuoteDetailActivity, actionData.action, trackingFacade)
+                    handleAction(this@QuoteDetailActivity, actionData.action)
                 }
             }
         }

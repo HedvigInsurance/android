@@ -145,7 +145,7 @@ import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModelImpl
 import com.hedvig.app.feature.onboarding.GetBundlesUseCase
-import com.hedvig.app.feature.onboarding.MemberIdRepository
+import com.hedvig.app.feature.onboarding.GetMemberIdUseCase
 import com.hedvig.app.feature.onboarding.MemberIdViewModel
 import com.hedvig.app.feature.onboarding.MemberIdViewModelImpl
 import com.hedvig.app.feature.profile.data.ProfileRepository

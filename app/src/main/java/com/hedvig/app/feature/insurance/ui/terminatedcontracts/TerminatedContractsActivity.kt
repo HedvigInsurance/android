@@ -18,7 +18,6 @@ import com.hedvig.app.feature.insurance.service.InsuranceTracker
 import com.hedvig.app.feature.insurance.ui.InsuranceAdapter
 import com.hedvig.app.feature.insurance.ui.InsuranceModel
 import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.feature.tracking.TrackingFacade
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
@@ -35,7 +34,6 @@ class TerminatedContractsActivity : BaseActivity(R.layout.terminated_contracts_a
     private val binding by viewBinding(TerminatedContractsActivityBinding::bind)
     private val model: TerminatedContractsViewModel by viewModel()
     private val tracker: InsuranceTracker by inject()
-    private val trackingFacade: TrackingFacade by inject()
     private val marketManager: MarketManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,7 +49,7 @@ class TerminatedContractsActivity : BaseActivity(R.layout.terminated_contracts_a
             toolbar.applyStatusBarInsets()
             recycler.applyNavigationBarInsets()
             toolbar.setNavigationOnClickListener { onBackPressed() }
-            val adapter = InsuranceAdapter(tracker, trackingFacade, marketManager, model::load)
+            val adapter = InsuranceAdapter(tracker, marketManager, model::load)
             recycler.adapter = adapter
             model
                 .viewState

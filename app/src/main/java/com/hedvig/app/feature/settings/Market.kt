@@ -11,7 +11,6 @@ import com.hedvig.app.feature.adyen.AdyenCurrency
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinActivity
 import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutActivity
 import com.hedvig.app.feature.onboarding.ui.ChoosePlanActivity
-import com.hedvig.app.feature.tracking.TrackingFacade
 import com.hedvig.app.feature.trustly.TrustlyConnectPayinActivity
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationActivity
@@ -76,12 +75,12 @@ enum class Market {
         }
     }
 
-    fun openOnboarding(context: Context, seEmbarkOnboarding: Boolean, trackingFacade: TrackingFacade) = when (this) {
+    fun openOnboarding(context: Context, seEmbarkOnboarding: Boolean) = when (this) {
         SE -> {
             if (seEmbarkOnboarding) {
                 context.startActivity(ChoosePlanActivity.newInstance(context))
             } else {
-                context.startChat(closable = false, restartable = true, trackingFacade = trackingFacade)
+                context.startChat(closable = false, restartable = true)
             }
         }
         NO -> {

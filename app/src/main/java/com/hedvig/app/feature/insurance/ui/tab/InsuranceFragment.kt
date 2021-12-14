@@ -12,7 +12,6 @@ import com.hedvig.app.feature.insurance.ui.InsuranceModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
 import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.feature.tracking.TrackingFacade
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
 import com.hedvig.app.util.extensions.viewLifecycle
 import com.hedvig.app.util.extensions.viewLifecycleScope
@@ -26,7 +25,6 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
     private val insuranceViewModel: InsuranceViewModel by sharedViewModel()
     private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
     private val tracker: InsuranceTracker by inject()
-    private val trackingFacade: TrackingFacade by inject()
     private val marketManager: MarketManager by inject()
     private val binding by viewBinding(FragmentInsuranceBinding::bind)
     private var scroll = 0
@@ -46,7 +44,7 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
                 )
             )
             itemAnimator = ViewHolderReusingDefaultItemAnimator()
-            adapter = InsuranceAdapter(tracker, trackingFacade, marketManager, insuranceViewModel::load)
+            adapter = InsuranceAdapter(tracker, marketManager, insuranceViewModel::load)
         }
 
         binding.swipeToRefresh.setOnRefreshListener {

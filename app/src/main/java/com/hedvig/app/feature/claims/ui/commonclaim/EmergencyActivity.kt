@@ -12,7 +12,6 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityEmergencyBinding
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
-import com.hedvig.app.feature.tracking.TrackingFacade
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.makeACall
 import com.hedvig.app.util.extensions.startChat
@@ -32,7 +31,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class EmergencyActivity : BaseActivity(R.layout.activity_emergency) {
     private val claimsViewModel: ClaimsViewModel by viewModel()
     private val tracker: ClaimsTracker by inject()
-    private val trackingFacade: TrackingFacade by inject()
     private val binding by viewBinding(ActivityEmergencyBinding::bind)
     private val imageLoader: ImageLoader by inject()
 
@@ -77,7 +75,7 @@ class EmergencyActivity : BaseActivity(R.layout.activity_emergency) {
                 tracker.emergencyChat()
                 lifecycleScope.launch {
                     claimsViewModel.triggerFreeTextChat()
-                    startChat(trackingFacade)
+                    startChat()
                 }
             }
         }

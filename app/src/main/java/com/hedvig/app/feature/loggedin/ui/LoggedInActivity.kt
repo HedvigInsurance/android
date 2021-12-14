@@ -25,7 +25,6 @@ import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.onboarding.MemberIdViewModel
 import com.hedvig.app.feature.ratings.RatingsTracker
 import com.hedvig.app.feature.referrals.ui.ReferralsInformationActivity
-import com.hedvig.app.feature.tracking.TrackingFacade
 import com.hedvig.app.feature.welcome.WelcomeDialog
 import com.hedvig.app.feature.welcome.WelcomeViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewDialog
@@ -68,7 +67,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
     private val loggedInTracker: LoggedInTracker by inject()
     private val ratingsTracker: RatingsTracker by inject()
-    private val trackingFacade: TrackingFacade by inject()
 
     private val binding by viewBinding(ActivityLoggedInBinding::bind)
 
@@ -277,7 +275,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             -> {
                 lifecycleScope.launch {
                     claimsViewModel.triggerFreeTextChat()
-                    startChat(trackingFacade)
+                    startChat()
                 }
             }
             LoggedInTabs.REFERRALS -> {

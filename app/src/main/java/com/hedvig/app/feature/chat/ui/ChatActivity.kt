@@ -25,6 +25,7 @@ import com.hedvig.app.feature.chat.ParagraphInput
 import com.hedvig.app.feature.chat.service.ChatTracker
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
 import com.hedvig.app.feature.settings.SettingsActivity
+import com.hedvig.app.feature.tracking.TrackingFacade
 import com.hedvig.app.util.extensions.askForPermissions
 import com.hedvig.app.util.extensions.calculateNonFullscreenHeightDiff
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
@@ -53,6 +54,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
     private val chatViewModel: ChatViewModel by viewModel()
     private val binding by viewBinding(ActivityChatBinding::bind)
 
+    private val trackingFacade: TrackingFacade by inject()
     private val tracker: ChatTracker by inject()
     private val imageLoader: ImageLoader by inject()
 
@@ -77,7 +79,8 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        tracker.closeChat()
+        trackingFacade.track("click_start_chat")
+
         keyboardHeight = resources.getDimensionPixelSize(R.dimen.default_attach_file_height)
         isKeyboardBreakPoint =
             resources.getDimensionPixelSize(R.dimen.is_keyboard_brake_point_height)

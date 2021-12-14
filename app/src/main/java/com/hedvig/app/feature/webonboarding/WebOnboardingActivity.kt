@@ -21,7 +21,6 @@ import com.hedvig.app.databinding.ActivityWebOnboardingBinding
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
-import com.hedvig.app.feature.tracking.TrackingFacade
 import com.hedvig.app.makeUserAgent
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.extensions.startChat
@@ -37,7 +36,6 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
     private val localeManager: LocaleManager by inject()
     private val loginStatusService: LoginStatusService by inject()
     private val authenticationTokenService: AuthenticationTokenService by inject()
-    private val trackingFacade: TrackingFacade by inject()
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,7 +47,7 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
             }
 
             openChat.setHapticClickListener {
-                startChat(trackingFacade)
+                startChat()
             }
 
             webOnboarding.settings.apply {
