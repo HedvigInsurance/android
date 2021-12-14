@@ -12,10 +12,6 @@ class OfferTracker(
     )
 
     fun openChat() = trackingFacade.track("OFFER_OPEN_CHAT")
-    fun openOfferLink(displayName: String) = trackingFacade.track(
-        "OFFER_OPEN_LINK",
-        jsonObjectOf("link_label" to displayName)
-    )
 
     fun removeDiscount() = trackingFacade.track("OFFER_REMOVE_DISCOUNT_BUTTON")
     fun addDiscount() = trackingFacade.track("OFFER_ADD_DISCOUNT_BUTTON")

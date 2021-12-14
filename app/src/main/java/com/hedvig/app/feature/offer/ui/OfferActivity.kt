@@ -38,6 +38,7 @@ import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignDialog
+import com.hedvig.app.feature.tracking.TrackingFacade
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.showAlert
@@ -66,6 +67,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     private val binding by viewBinding(ActivityOfferBinding::bind)
     private val imageLoader: ImageLoader by inject()
     private val tracker: OfferTracker by inject()
+    private val trackingFacade: TrackingFacade by inject()
     private val marketManager: MarketManager by inject()
     private var hasStartedRecyclerAnimation: Boolean = false
 
@@ -116,14 +118,13 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             )
             val perilsAdapter = PerilsAdapter(
                 fragmentManager = supportFragmentManager,
-                imageLoader = imageLoader
+                imageLoader = imageLoader,
+                trackingFacade = trackingFacade,
             )
             val insurableLimitsAdapter = InsurableLimitsAdapter(
                 fragmentManager = supportFragmentManager
             )
-            val documentAdapter = DocumentAdapter(
-                trackClick = tracker::openOfferLink
-            )
+            val documentAdapter = DocumentAdapter(trackingFacade)
             val bottomOfferAdapter = OfferAdapter(
                 fragmentManager = supportFragmentManager,
                 tracker = tracker,

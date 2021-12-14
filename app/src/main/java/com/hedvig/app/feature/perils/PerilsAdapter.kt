@@ -16,16 +16,19 @@ import com.hedvig.app.BASE_MARGIN_HALF
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ContractDetailCoverageHeaderBinding
 import com.hedvig.app.databinding.PerilDetailBinding
+import com.hedvig.app.feature.tracking.TrackingFacade
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.invalid
 import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
+import com.hedvig.app.util.jsonObjectOf
 
 class PerilsAdapter(
     private val fragmentManager: FragmentManager,
     private val imageLoader: ImageLoader,
+    private val trackingFacade: TrackingFacade,
 ) : ListAdapter<PerilItem, PerilsAdapter.ViewHolder>(GenericDiffUtilItemCallback()),
     SpanSizeLookupOwner,
     ItemDecorationOwner {
@@ -37,7 +40,7 @@ class PerilsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.contract_detail_coverage_header -> ViewHolder.Header(parent)
-        R.layout.peril_detail -> ViewHolder.Peril(parent, imageLoader)
+        R.layout.peril_detail -> ViewHolder.Peril(parent, imageLoader, trackingFacade)
         else -> throw Error("Invalid viewType: $viewType")
     }
 
@@ -81,6 +84,7 @@ class PerilsAdapter(
         class Peril(
             parent: ViewGroup,
             private val imageLoader: ImageLoader,
+            private val trackingFacade: TrackingFacade,
         ) :
             ViewHolder(parent.inflate(R.layout.peril_detail)) {
             private val binding by viewBinding(PerilDetailBinding::bind)
@@ -104,6 +108,10 @@ class PerilsAdapter(
                 }
 
                 root.setHapticClickListener {
+                    trackingFacade.track(
+                        "perils_tab_click",
+                        jsonObjectOf("type" to data.inner.title)
+                    )
                     PerilBottomSheet
                         .newInstance(data.inner)
                         .show(

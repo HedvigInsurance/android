@@ -21,7 +21,9 @@ import com.hedvig.app.feature.connectpayin.ConnectPaymentScreenState
 import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
 import com.hedvig.app.feature.connectpayin.TransitionType
 import com.hedvig.app.feature.connectpayin.showConfirmCloseDialog
+import com.hedvig.app.feature.tracking.TrackingFacade
 import com.hedvig.app.util.onBackPressedCallback
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -29,6 +31,7 @@ class TrustlyConnectFragment : Fragment(R.layout.trustly_connect_fragment) {
     private var binding: TrustlyConnectFragmentBinding? = null
     private val trustlyViewModel: TrustlyViewModel by viewModel()
     private val connectPaymentViewModel: ConnectPaymentViewModel by sharedViewModel()
+    private val trackingFacade: TrackingFacade by inject()
 
     private var hasLoadedWebView = false
 
@@ -115,6 +118,7 @@ class TrustlyConnectFragment : Fragment(R.layout.trustly_connect_fragment) {
                             loadingContainer.isVisible = false
                             trustly.isVisible = true
                             hasLoadedWebView = true
+                            trackingFacade.track("connect_payment_visible")
                         }
                     }
                 }

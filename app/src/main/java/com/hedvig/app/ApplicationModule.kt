@@ -485,7 +485,7 @@ val homeModule = module {
 }
 
 val connectPaymentModule = module {
-    viewModel { ConnectPaymentViewModel(get(), get()) }
+    viewModel { ConnectPaymentViewModel(get(), get(), get()) }
 }
 
 val trustlyModule = module {
