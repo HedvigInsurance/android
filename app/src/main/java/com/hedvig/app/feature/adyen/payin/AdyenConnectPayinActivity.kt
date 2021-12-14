@@ -20,6 +20,7 @@ import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
 import com.hedvig.app.feature.connectpayin.PostSignExplainerFragment
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.feature.tracking.TrackingFacade
 import com.hedvig.app.getLocale
 import com.hedvig.app.isDebug
 import e
@@ -33,6 +34,7 @@ class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activ
     private val connectPaymentViewModel: ConnectPaymentViewModel by viewModel()
     private val adyenConnectPayinViewModel: AdyenConnectPayinViewModel by viewModel()
 
+    private val trackingFacade: TrackingFacade by inject()
     private val marketManager: MarketManager by inject()
     private lateinit var paymentMethods: PaymentMethodsApiResponse
     private lateinit var currency: AdyenCurrency
@@ -137,6 +139,7 @@ class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activ
             .build()
 
         DropIn.startPayment(this, paymentMethods, dropInConfiguration)
+        trackingFacade.track("connect_payment_visible")
     }
 
     private fun getEnvironment() = if (isDebug()) {
