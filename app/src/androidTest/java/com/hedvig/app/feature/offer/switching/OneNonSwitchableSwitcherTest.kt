@@ -35,11 +35,11 @@ class OneNonSwitchableSwitcherTest : TestCase() {
 
         OfferScreen {
             scroll {
-                childAt<OfferScreen.SwitcherItem>(2) {
+                childAt<OfferScreen.SwitcherItem>(12) {
                     associatedQuote { isGone() }
                     currentInsurer { hasText(previousInsurerName) }
                 }
-                childAt<OfferScreen.WarningCard>(3) { isShown() }
+                childAt<OfferScreen.WarningCard>(13) { isShown() }
             }
         }
     }

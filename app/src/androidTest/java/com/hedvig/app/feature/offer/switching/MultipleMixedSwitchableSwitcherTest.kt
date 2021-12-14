@@ -36,25 +36,26 @@ class MultipleMixedSwitchableSwitcherTest : TestCase() {
 
         OfferScreen {
             scroll {
-                childAt<OfferScreen.SwitcherItem>(2) {
+                val startIndex = 7
+                childAt<OfferScreen.SwitcherItem>(startIndex) {
                     associatedQuote {
                         isVisible()
                         hasText(quoteDisplayName(0))
                     }
                     currentInsurer { hasText(previousInsurerNameForQuote(0)) }
                 }
-                childAt<OfferScreen.WarningCard>(3) {
+                childAt<OfferScreen.WarningCard>(startIndex + 1) {
                     title { hasText(R.string.offer_manual_switch_card_title) }
                     body { hasText(R.string.offer_manual_switch_card_body) }
                 }
-                childAt<OfferScreen.SwitcherItem>(4) {
+                childAt<OfferScreen.SwitcherItem>(startIndex + 2) {
                     associatedQuote {
                         isVisible()
                         hasText(quoteDisplayName(1))
                     }
                     currentInsurer { hasText(previousInsurerNameForQuote(1)) }
                 }
-                childAt<OfferScreen.InfoCard>(5) { isShown() }
+                childAt<OfferScreen.InfoCard>(startIndex + 3) { isShown() }
             }
         }
     }
