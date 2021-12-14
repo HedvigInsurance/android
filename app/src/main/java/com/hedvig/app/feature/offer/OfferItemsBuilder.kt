@@ -122,7 +122,7 @@ object TopOfferItemsBuilder {
         val showInsurelyInformation = dataCollectionStatus != null
         val showInsuranceSwitchableStates = bundle.quotes.any { quote -> quote.currentInsurer != null }
         if (showInsurelyInformation || showInsuranceSwitchableStates) {
-            add(OfferModel.CurrentInsurancesHeader(bundle.quotes.count { quote -> quote.isDisplayable }))
+            add(OfferModel.PriceComparisonHeader)
         }
         if (showInsurelyInformation) {
             when (dataCollectionStatus) {

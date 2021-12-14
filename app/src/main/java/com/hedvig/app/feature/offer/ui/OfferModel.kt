@@ -56,7 +56,7 @@ sealed class OfferModel {
 
     data class InsurelyDivider(val topPadding: Dp) : OfferModel()
 
-    data class CurrentInsurancesHeader(val amountOfCurrentInsurances: Int = 1) : OfferModel()
+    object PriceComparisonHeader : OfferModel()
 
     sealed class InsurelyCard : OfferModel() {
         abstract val id: String

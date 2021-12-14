@@ -10,6 +10,7 @@ import androidx.compose.material.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.view.doOnNextLayout
 import androidx.core.view.isVisible
@@ -81,7 +82,7 @@ class OfferAdapter(
         R.layout.offer_footer -> ViewHolder.Footer(parent, openChat)
         R.layout.text_headline5 -> ViewHolder.Subheading(parent)
         R.layout.text_body2 -> ViewHolder.Paragraph(parent)
-        CURRENT_INSURANCES_HEADER -> ViewHolder.CurrentInsurancesHeader(ComposeView(parent.context))
+        PRICE_COMPARISON_HEADER -> ViewHolder.PriceComparisonHeader(ComposeView(parent.context))
         INSURELY_DIVIDER -> ViewHolder.InsurelyDivider(ComposeView(parent.context))
         INSURELY_CARD -> ViewHolder.InsurelyCard(ComposeView(parent.context))
         R.layout.text_subtitle1 -> ViewHolder.QuoteDetails(parent, openQuoteDetails)
@@ -99,7 +100,7 @@ class OfferAdapter(
         is OfferModel.Footer -> R.layout.offer_footer
         is OfferModel.Subheading -> R.layout.text_headline5
         is OfferModel.Paragraph -> R.layout.text_body2
-        is OfferModel.CurrentInsurancesHeader -> CURRENT_INSURANCES_HEADER
+        OfferModel.PriceComparisonHeader -> PRICE_COMPARISON_HEADER
         is OfferModel.InsurelyDivider -> INSURELY_DIVIDER
         is OfferModel.InsurelyCard -> INSURELY_CARD
         is OfferModel.QuoteDetails -> R.layout.text_subtitle1
@@ -342,7 +343,7 @@ class OfferAdapter(
             }
         }
 
-        class CurrentInsurancesHeader(
+        class PriceComparisonHeader(
             private val composeView: ComposeView,
         ) : ViewHolder(composeView) {
             init {
@@ -350,15 +351,11 @@ class OfferAdapter(
             }
 
             override fun bind(data: OfferModel) {
-                if (data !is OfferModel.CurrentInsurancesHeader) return invalid(data)
-                val resources = composeView.context.resources
+                if (data !is OfferModel.PriceComparisonHeader) return invalid(data)
                 composeView.setContent {
                     HedvigTheme {
                         Text(
-                            text = resources.getQuantityString(
-                                R.plurals.offer_switcher_title,
-                                data.amountOfCurrentInsurances,
-                            ),
+                            text = stringResource(R.string.OFFER_PRICE_COMPARISION_HEADER),
                             style = MaterialTheme.typography.h5,
                             modifier = Modifier
                                 .padding(horizontal = 16.dp)
@@ -501,7 +498,7 @@ class OfferAdapter(
 
     companion object {
         const val INSURELY_CARD = 1
-        const val CURRENT_INSURANCES_HEADER = 2
+        const val PRICE_COMPARISON_HEADER = 2
         const val INSURELY_DIVIDER = 3
 
         class OfferDiffUtilCallback : DiffUtil.ItemCallback<OfferModel>() {
@@ -509,8 +506,8 @@ class OfferAdapter(
                 oldItem is OfferModel.InsurelyCard && newItem is OfferModel.InsurelyCard -> {
                     oldItem.id == newItem.id
                 }
-                oldItem is OfferModel.CurrentInsurancesHeader && newItem is OfferModel.CurrentInsurancesHeader -> {
-                    // Should only display 1 CurrentInsurancesHeader ever
+                oldItem is OfferModel.PriceComparisonHeader && newItem is OfferModel.PriceComparisonHeader -> {
+                    // Should only display 1 PriceComparisonHeader ever
                     true
                 }
                 else -> {
