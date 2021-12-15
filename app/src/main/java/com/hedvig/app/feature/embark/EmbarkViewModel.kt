@@ -5,8 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.fragment.ApiFragment
-import com.hedvig.android.owldroid.fragment.BasicExpressionFragment
-import com.hedvig.android.owldroid.fragment.ExpressionFragment
 import com.hedvig.android.owldroid.fragment.MessageFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.type.EmbarkExternalRedirectLocation
@@ -17,11 +15,17 @@ import com.hedvig.app.feature.embark.extensions.api
 import com.hedvig.app.feature.embark.extensions.getComputedValues
 import com.hedvig.app.feature.embark.util.VariableExtractor
 import com.hedvig.app.feature.embark.util.evaluateExpression
+import com.hedvig.app.feature.embark.util.getOfferKeysOrNull
+import com.hedvig.app.feature.embark.util.toExpressionFragment
 import com.hedvig.app.util.Percent
 import com.hedvig.app.util.plus
 import com.hedvig.app.util.safeLet
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.util.Stack
@@ -39,10 +43,20 @@ abstract class EmbarkViewModel(
     protected val _events = Channel<Event>(Channel.UNLIMITED)
     val events = _events.receiveAsFlow()
 
+    private val _loadingState: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val loadingState: StateFlow<Boolean> = _loadingState.asStateFlow()
+
+    data class ViewState(
+        val passage: EmbarkStoryQuery.Passage?,
+        val navigationDirection: NavigationDirection,
+        val progress: Percent,
+        val isLoggedIn: Boolean,
+        val hasTooltips: Boolean,
+    )
+
     sealed class Event {
         data class Offer(val ids: List<String>) : Event()
         data class Error(val message: String? = null) : Event()
-        data class Loading(val show: Boolean) : Event()
         object Close : Event()
         object Chat : Event()
     }
@@ -96,9 +110,9 @@ abstract class EmbarkViewModel(
     private fun navigateToPassage(passageName: String) {
         val nextPassage = storyData.embarkStory?.passages?.find { it.name == passageName }
         val redirectPassage = getRedirectPassageAndPutInStore(nextPassage?.redirects)
-        val keys = nextPassage?.offerRedirect?.data?.keys?.takeIf { it.isNotEmpty() }
         val location = nextPassage?.externalRedirect?.data?.location
         val api = nextPassage?.api?.fragments?.apiFragment
+        val keys = nextPassage?.getOfferKeysOrNull(valueStore)
 
         when {
             storyData.embarkStory == null || nextPassage == null -> _events.trySend(Event.Error())
@@ -123,22 +137,28 @@ abstract class EmbarkViewModel(
             navigationDirection = NavigationDirection.FORWARDS,
             progress = currentProgress(nextPassage),
             isLoggedIn = loginStatus == LoginStatus.LOGGED_IN,
-            hasTooltips = nextPassage.tooltips.isNotEmpty()
+            hasTooltips = nextPassage.tooltips.isNotEmpty(),
         )
         _viewState.postValue(state)
+        _loadingState.update { false }
         nextPassage.tracks.forEach { track ->
             tracker.track(track.eventName, trackingData(track))
         }
     }
 
     private fun callApi(apiFragment: ApiFragment) {
-        _events.trySend(Event.Loading(show = true))
+        _loadingState.update { true }
 
-        apiFragment.asEmbarkApiGraphQLQuery?.let { graphQLQuery ->
-            handleGraphQLQuery(graphQLQuery)
-        } ?: apiFragment.asEmbarkApiGraphQLMutation?.let { graphQLMutation ->
-            handleGraphQLMutation(graphQLMutation)
-        } ?: _events.trySend(Event.Error())
+        val graphQLQuery = apiFragment.asEmbarkApiGraphQLQuery
+        val graphQLMutation = apiFragment.asEmbarkApiGraphQLMutation
+        when {
+            graphQLQuery != null -> handleGraphQLQuery(graphQLQuery)
+            graphQLMutation != null -> handleGraphQLMutation(graphQLMutation)
+            else -> {
+                _loadingState.update { false }
+                _events.trySend(Event.Error())
+            }
+        }
     }
 
     private fun handleRedirectLocation(location: EmbarkExternalRedirectLocation) {
@@ -168,7 +188,7 @@ abstract class EmbarkViewModel(
 
     private fun getRedirectPassageAndPutInStore(redirects: List<EmbarkStoryQuery.Redirect>?): String? {
         redirects?.forEach { redirect ->
-            if (evaluateExpression(redirect.into(), valueStore) is ExpressionResult.True) {
+            if (evaluateExpression(redirect.toExpressionFragment(), valueStore) is ExpressionResult.True) {
                 redirect.passedKeyValue?.let { (key, value) -> putInStore(key, value) }
                 redirect.to?.let { to ->
                     return to
@@ -235,10 +255,11 @@ abstract class EmbarkViewModel(
     }
 
     private fun handleQueryResult(result: GraphQLQueryResult) {
-        _events.trySend(Event.Loading(show = false))
+        // todo there was an empty Loading event here that was just to trigger the beginDelayedTransition or what?
+        _loadingState.update { false }
 
         when (result) {
-            // TODO Handle errors 
+            // TODO Handle errors
             is GraphQLQueryResult.Error -> navigateToPassage(result.passageName)
             is GraphQLQueryResult.ValuesFromResponse -> {
                 result.arrayValues.forEach {
@@ -271,8 +292,9 @@ abstract class EmbarkViewModel(
                 navigationDirection = NavigationDirection.BACKWARDS,
                 progress = currentProgress(nextPassage),
                 isLoggedIn = loginStatus == LoginStatus.LOGGED_IN,
-                hasTooltips = nextPassage?.tooltips?.isNotEmpty() == true
+                hasTooltips = nextPassage?.tooltips?.isNotEmpty() == true,
             )
+            _loadingState.update { false }
             _viewState.postValue(model)
 
             valueStore.rollbackVersion()
@@ -409,71 +431,6 @@ abstract class EmbarkViewModel(
 
     companion object {
         private val REPLACEMENT_FINDER = Regex("\\{[\\w.]+\\}")
-
-        private fun EmbarkStoryQuery.Redirect.into(): ExpressionFragment =
-            ExpressionFragment(
-                fragments = ExpressionFragment.Fragments(
-                    BasicExpressionFragment(
-                        asEmbarkExpressionUnary = asEmbarkRedirectUnaryExpression?.let {
-                            BasicExpressionFragment.AsEmbarkExpressionUnary(
-                                unaryType = it.unaryType,
-                                text = null
-                            )
-                        },
-                        asEmbarkExpressionBinary = asEmbarkRedirectBinaryExpression?.let {
-                            BasicExpressionFragment.AsEmbarkExpressionBinary(
-                                binaryType = it.binaryType,
-                                key = it.key,
-                                value = it.value,
-                                text = null
-                            )
-                        },
-                    )
-                ),
-                asEmbarkExpressionMultiple = asEmbarkRedirectMultipleExpressions?.let {
-                    ExpressionFragment.AsEmbarkExpressionMultiple(
-                        multipleType = it.multipleExpressionType,
-                        text = null,
-                        subExpressions = it.subExpressions.map { se ->
-                            ExpressionFragment.SubExpression2(
-                                fragments = ExpressionFragment.SubExpression2.Fragments(
-                                    se.fragments.expressionFragment.fragments.basicExpressionFragment
-                                ),
-                                asEmbarkExpressionMultiple1 = se
-                                    .fragments.expressionFragment.asEmbarkExpressionMultiple?.let { asMulti ->
-                                        ExpressionFragment.AsEmbarkExpressionMultiple1(
-                                            multipleType = asMulti.multipleType,
-                                            text = asMulti.text,
-                                            subExpressions = asMulti.subExpressions.map { se2 ->
-                                                ExpressionFragment.SubExpression1(
-                                                    fragments = ExpressionFragment.SubExpression1.Fragments(
-                                                        se2.fragments.basicExpressionFragment
-                                                    ),
-                                                    asEmbarkExpressionMultiple2 = se2
-                                                        .asEmbarkExpressionMultiple1?.let { asMulti2 ->
-                                                            ExpressionFragment.AsEmbarkExpressionMultiple2(
-                                                                multipleType = asMulti2.multipleType,
-                                                                text = asMulti2.text,
-                                                                subExpressions = asMulti2.subExpressions.map { se3 ->
-                                                                    ExpressionFragment.SubExpression(
-                                                                        fragments = ExpressionFragment
-                                                                            .SubExpression
-                                                                            .Fragments(
-                                                                                se3.fragments.basicExpressionFragment
-                                                                            )
-                                                                    )
-                                                                }
-                                                            )
-                                                        }
-                                                )
-                                            }
-                                        )
-                                    }
-                            )
-                        }
-                    )
-                }
-            )
 
         private val EmbarkStoryQuery.Redirect.to: String?
             get() {

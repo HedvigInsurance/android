@@ -58,6 +58,9 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Logged in without welcome-screen") {
                         startActivity(LoggedInActivity.newInstance(this))
                     },
+                    DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Offer") {
+                        startActivity(Intent(this, OfferMockActivity::class.java))
+                    },
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Embark") {
                         startActivity(Intent(this, EmbarkMockActivity::class.java))
                     },
@@ -72,9 +75,6 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
                     },
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Chat") {
                         startActivity(Intent(this, ChatMockActivity::class.java))
-                    },
-                    DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Offer") {
-                        startActivity(Intent(this, OfferMockActivity::class.java))
                     },
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Checkout") {
                         startActivity(Intent(this, CheckoutMockActivity::class.java))

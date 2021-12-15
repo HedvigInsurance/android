@@ -12,4 +12,8 @@ class TrackingFacade(
     fun identify(id: String) {
         sinks.forEach { it.identify(id) }
     }
+
+    fun setProperty(name: String, value: String) {
+        sinks.forEach { it.setProperty(name, value) }
+    }
 }

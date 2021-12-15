@@ -1,13 +1,12 @@
-package com.hedvig.app.feature.chat.viewmodel
+package com.hedvig.app.authenticate
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.AuthStatusSubscription
 import com.hedvig.android.owldroid.graphql.SwedishBankIdAuthMutation
-import com.hedvig.app.authenticate.LoginStatusService
-import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.feature.chat.data.UserRepository
+import com.hedvig.app.feature.tracking.TrackingFacade
 import e
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.catch
@@ -19,7 +18,8 @@ import kotlinx.coroutines.launch
 class UserViewModel(
     private val userRepository: UserRepository,
     private val logoutUserCase: LogoutUseCase,
-    private val loginStatusService: LoginStatusService
+    private val loginStatusService: LoginStatusService,
+    private val trackingFacade: TrackingFacade
 ) : ViewModel() {
 
     val autoStartToken = MutableLiveData<SwedishBankIdAuthMutation.Data>()
@@ -66,6 +66,7 @@ class UserViewModel(
     }
 
     fun onAuthSuccess() {
+        trackingFacade.setProperty("user_state", "logged_in")
         loginStatusService.isLoggedIn = true
     }
 }

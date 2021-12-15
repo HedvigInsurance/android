@@ -66,8 +66,9 @@ class InsuranceAdapter(
     }
 
     override fun onViewRecycled(holder: ViewHolder) {
-        if (holder.itemView is ComposeView) {
-            holder.itemView.disposeComposition()
+        val itemView = holder.itemView
+        if (itemView is ComposeView) {
+            itemView.disposeComposition()
         }
     }
 

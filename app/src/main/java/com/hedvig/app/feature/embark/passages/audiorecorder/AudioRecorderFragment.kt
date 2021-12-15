@@ -12,6 +12,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.hedvig.app.feature.embark.EmbarkViewModel
+import com.hedvig.app.feature.tracking.TrackingFacade
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.extensions.hasPermissions
 import com.hedvig.app.util.extensions.showPermissionExplanationDialog
@@ -24,6 +25,7 @@ class AudioRecorderFragment : Fragment() {
     private val embarkViewModel: EmbarkViewModel by sharedViewModel()
     private val model: AudioRecorderViewModel by viewModel()
     private val clock: Clock by inject()
+    private val trackingFacade: TrackingFacade by inject()
 
     private val permission = Manifest.permission.RECORD_AUDIO
 
@@ -40,7 +42,7 @@ class AudioRecorderFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ) = ComposeView(requireContext()).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         val parameters = requireArguments().getParcelable<AudioRecorderParameters>(PARAMETERS)
@@ -55,18 +57,25 @@ class AudioRecorderFragment : Fragment() {
                     startRecording = ::askForPermission,
                     clock = clock,
                     stopRecording = model::stopRecording,
-                    submit = {
-                        val filePath = (state as? AudioRecorderViewModel.ViewState.Playback)?.filePath
-                        if (filePath != null) {
-                            embarkViewModel.putInStore(parameters.key, filePath)
-                            embarkViewModel.submitAction(parameters.link)
-                        }
-                    },
+                    submit = { submitAudioRecording(state, parameters) },
                     redo = model::redo,
                     play = model::play,
                     pause = model::pause,
                 )
             }
+        }
+    }
+
+    private fun submitAudioRecording(
+        state: AudioRecorderViewModel.ViewState,
+        parameters: AudioRecorderParameters,
+    ) {
+        val playbackState = state as? AudioRecorderViewModel.ViewState.Playback ?: return
+        val isAlreadyPerformingNetworkRequest = embarkViewModel.loadingState.value
+        if (!isAlreadyPerformingNetworkRequest) {
+            trackingFacade.track("submit_recording")
+            embarkViewModel.putInStore(parameters.key, playbackState.filePath)
+            embarkViewModel.submitAction(parameters.link)
         }
     }
 
@@ -80,7 +89,6 @@ class AudioRecorderFragment : Fragment() {
 
     companion object {
         private const val PARAMETERS = "PARAMETERS"
-        private const val REQUEST_AUDIO_PERMISSION = 12994
 
         fun newInstance(parameters: AudioRecorderParameters) = AudioRecorderFragment().apply {
             arguments = bundleOf(

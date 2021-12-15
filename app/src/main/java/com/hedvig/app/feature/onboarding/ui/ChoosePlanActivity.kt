@@ -8,8 +8,6 @@ import android.view.MenuItem
 import androidx.core.view.isVisible
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import com.hedvig.android.owldroid.graphql.ChoosePlanQuery
-import com.hedvig.android.owldroid.type.EmbarkStoryType
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityChoosePlanBinding
@@ -31,9 +29,12 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
+
+    override val screenName = "choose_insurance_type"
+
     private val binding by viewBinding(ActivityChoosePlanBinding::bind)
     private val marketProvider: MarketManager by inject()
-    private val model: ChoosePlanViewModel by viewModel()
+    private val viewModel: ChoosePlanViewModel by viewModel()
     private val marketManager: MarketManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,52 +50,39 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
             toolbar.setNavigationOnClickListener { onBackPressed() }
 
             recycler.itemAnimator = ViewHolderReusingDefaultItemAnimator()
-            val adapter = OnboardingAdapter(model, marketProvider)
+            val adapter = OnboardingAdapter(viewModel, marketProvider)
             recycler.adapter = adapter
 
             continueButton.setHapticClickListener {
-                val storyName = model.selectedQuoteType.value?.embarkStory?.name
-                    ?: throw IllegalArgumentException("No story name found")
-                val storyTitle = model.selectedQuoteType.value?.embarkStory?.title
-                    ?: throw IllegalArgumentException("No story title found")
-                startActivity(EmbarkActivity.newInstance(this@ChoosePlanActivity, storyName, storyTitle))
+                viewModel.onContinue()
             }
-            model.selectedQuoteType.observe(this@ChoosePlanActivity) { selected ->
-                val data = (model.data.value as? ChoosePlanViewModel.ViewState.Success ?: return@observe)
-                val bundles = data.data.map {
-                    OnboardingModel.Bundle(
-                        selected = it.name == selected.embarkStory.name,
-                        embarkStory = it
-                    )
+
+            viewModel.events
+                .flowWithLifecycle(lifecycle)
+                .onEach { event ->
+                    when (event) {
+                        is ChoosePlanViewModel.Event.Continue -> {
+                            startActivity(
+                                EmbarkActivity.newInstance(
+                                    this@ChoosePlanActivity,
+                                    event.storyName,
+                                    event.storyTitle
+                                )
+                            )
+                        }
+                    }
                 }
-                adapter.submitList(
-                    bundles
-                )
-            }
-            model
-                .data
+                .launchIn(lifecycleScope)
+
+            viewModel
+                .viewState
                 .flowWithLifecycle(lifecycle)
                 .onEach { viewState ->
                     continueButton.isVisible = viewState is ChoosePlanViewModel.ViewState.Success
                     when (viewState) {
-                        ChoosePlanViewModel.ViewState.Error -> {
-                            adapter.submitList(
-                                listOf(
-                                    OnboardingModel.Error
-                                )
-                            )
-                        }
-                        ChoosePlanViewModel.ViewState.Loading -> {
-                        }
-                        is ChoosePlanViewModel.ViewState.Success -> {
-                            val bundles = viewState.data
-                            getMobileTypesNew(bundles).find { it.selected }?.let {
-                                model.setSelectedQuoteType(it)
-                            }
-                            adapter.submitList(
-                                getMobileTypesNew(bundles)
-                            )
-                        }
+                        ChoosePlanViewModel.ViewState.Loading -> {}
+                        ChoosePlanViewModel.ViewState.Error -> adapter.submitList(listOf(OnboardingModel.Error))
+                        is ChoosePlanViewModel.ViewState.Success -> adapter.submitList(viewState.bundleItems)
                     }
                 }
                 .launchIn(lifecycleScope)
@@ -128,14 +116,5 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
         const val TRAVEL = "Travel"
 
         fun newInstance(context: Context) = Intent(context, ChoosePlanActivity::class.java)
-
-        private fun getMobileTypesNew(bundles: List<ChoosePlanQuery.EmbarkStory>) =
-            bundles.filter { it.type == EmbarkStoryType.APP_ONBOARDING }.map { embarkStory ->
-                if (embarkStory.name.contains(COMBO)) {
-                    OnboardingModel.Bundle(true, embarkStory)
-                } else {
-                    OnboardingModel.Bundle(false, embarkStory)
-                }
-            }
     }
 }

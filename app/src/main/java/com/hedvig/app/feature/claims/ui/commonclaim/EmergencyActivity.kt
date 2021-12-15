@@ -14,7 +14,7 @@ import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.makeACall
-import com.hedvig.app.util.extensions.startClosableChat
+import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.disable
@@ -75,7 +75,7 @@ class EmergencyActivity : BaseActivity(R.layout.activity_emergency) {
                 tracker.emergencyChat()
                 lifecycleScope.launch {
                     claimsViewModel.triggerFreeTextChat()
-                    startClosableChat()
+                    startChat()
                 }
             }
         }

@@ -13,6 +13,7 @@ import com.hedvig.app.databinding.ContractDetailCoverageFragmentBinding
 import com.hedvig.app.feature.insurablelimits.InsurableLimitsAdapter
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
 import com.hedvig.app.feature.perils.PerilsAdapter
+import com.hedvig.app.feature.tracking.TrackingFacade
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.android.ext.android.inject
@@ -22,11 +23,13 @@ class CoverageFragment : Fragment(R.layout.contract_detail_coverage_fragment) {
     private val binding by viewBinding(ContractDetailCoverageFragmentBinding::bind)
     private val model: ContractDetailViewModel by sharedViewModel()
     private val imageLoader: ImageLoader by inject()
+    private val trackingFacade: TrackingFacade by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val perilsAdapter = PerilsAdapter(
             fragmentManager = parentFragmentManager,
             imageLoader = imageLoader,
+            trackingFacade = trackingFacade,
         )
         val insurableLimitsAdapter = InsurableLimitsAdapter(parentFragmentManager)
         val concatAdapter = ConcatAdapter(perilsAdapter, insurableLimitsAdapter)

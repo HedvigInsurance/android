@@ -34,6 +34,9 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
+
+    override val screenName = "insurance_detail"
+
     private val binding by viewBinding(ContractDetailActivityBinding::bind)
     private val model: ContractDetailViewModel by viewModel()
     private val marketManager: MarketManager by inject()

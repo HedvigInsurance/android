@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.offer.ui
 
 import android.content.Context
+import androidx.compose.ui.unit.Dp
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationApproveButtonTerminology
 import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.R
@@ -54,13 +55,48 @@ sealed class OfferModel {
         object Coverage : Paragraph()
     }
 
+    data class InsurelyDivider(val topPadding: Dp) : OfferModel()
+
+    object PriceComparisonHeader : OfferModel()
+
+    sealed class InsurelyCard : OfferModel() {
+        abstract val id: String
+        abstract val insuranceProvider: String?
+
+        data class Loading(override val id: String, override val insuranceProvider: String?) : InsurelyCard()
+
+        data class FailedToRetrieve(
+            override val id: String,
+            override val insuranceProvider: String? = null,
+        ) : InsurelyCard()
+
+        data class Retrieved(
+            override val id: String,
+            override val insuranceProvider: String?,
+            val insurelyDataCollectionReferenceUuid: String,
+            val currentInsurances: List<CurrentInsurance>,
+            val savedWithHedvig: MonetaryAmount?,
+        ) : InsurelyCard() {
+            val totalNetPremium: MonetaryAmount = currentInsurances
+                .map(CurrentInsurance::amount)
+                .reduce(MonetaryAmount::add)
+
+            data class CurrentInsurance(
+                val name: String,
+                val amount: MonetaryAmount,
+            )
+
+            companion object
+        }
+    }
+
     data class QuoteDetails(
         val name: String,
         val id: String,
     ) : OfferModel()
 
     data class FAQ(
-        val items: List<FAQItem>
+        val items: List<FAQItem>,
     ) : OfferModel()
 
     object AutomaticSwitchCard : OfferModel()

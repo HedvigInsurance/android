@@ -17,8 +17,8 @@ import com.hedvig.app.databinding.PreviousOrExternalInsurerFragmentBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.AskForPriceInfoActivity
-import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.AskForPriceInfoActivity.Companion.RESULT_SKIP
-import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.AskForPriceInfoParameter
+import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.AskForPriceInfoActivity.Companion.RESULT_CONTINUE
+import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.InsuranceProviderParameter
 import com.hedvig.app.feature.embark.passages.previousinsurer.InsurerProviderBottomSheet
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerParameter
 import com.hedvig.app.util.extensions.showErrorDialog
@@ -38,7 +38,7 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
 
     private val askForPriceActivityResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            if (result.resultCode == RESULT_SKIP) {
+            if (result.resultCode == RESULT_CONTINUE) {
                 continueEmbark()
             }
         }
@@ -78,7 +78,7 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
                 binding.continueButton.isEnabled = viewState.canContinue()
                 binding.continueButton.setOnClickListener {
                     viewState.selectedProvider?.let {
-                        continueWithProvider(it.id)
+                        continueWithProvider(it)
                     }
                 }
             }
@@ -103,26 +103,31 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
                 startPostponedEnterTransition()
             }
 
-            setFragmentResultListener(InsurerProviderBottomSheet.REQUEST_KEY) { requestKey: String, bundle: Bundle ->
-                val id = bundle.getString(InsurerProviderBottomSheet.INSURER_ID_KEY)
-                val name = bundle.getString(InsurerProviderBottomSheet.INSURER_NAME_KEY)
-                if (requestKey == InsurerProviderBottomSheet.REQUEST_KEY && id != null && name != null) {
-                    // embarkViewModel.putInStore(insurerData.storeKey, item.id)
-                    viewModel.selectInsuranceProvider(
-                        InsuranceProvider(
-                            id = id,
-                            name = name
-                        )
-                    )
-                }
+            setFragmentResultListener(InsurerProviderBottomSheet.REQUEST_KEY) { _: String, bundle: Bundle ->
+                handleInsurerProviderBottomSheetResult(bundle)
             }
         }
     }
 
-    private fun startAskForPrice(providerId: String) {
+    private fun handleInsurerProviderBottomSheetResult(bundle: Bundle) {
+        val id = bundle.getString(InsurerProviderBottomSheet.INSURER_ID_KEY)
+            ?: throw IllegalArgumentException("Id not found in bundle from InsurerProviderBottomSheet")
+        val name = bundle.getString(InsurerProviderBottomSheet.INSURER_NAME_KEY)
+            ?: throw IllegalArgumentException("Name not found in bundle from InsurerProviderBottomSheet")
+        embarkViewModel.putInStore(insurerData.storeKey, id)
+        viewModel.selectInsuranceProvider(
+            InsuranceProvider(
+                id = id,
+                collectionId = id,
+                name = name
+            )
+        )
+    }
+
+    private fun startAskForPrice(collectionId: String, name: String) {
         val intent = AskForPriceInfoActivity.createIntent(
             requireContext(),
-            AskForPriceInfoParameter(providerId)
+            InsuranceProviderParameter(collectionId, name)
         )
         askForPriceActivityResultLauncher.launch(intent)
     }
@@ -130,21 +135,23 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
     private fun showInsurers(insuranceProviders: List<InsuranceProvider>) {
         val fragment = InsurerProviderBottomSheet.newInstance(
             insuranceProviders.map {
-                PreviousInsurerParameter.PreviousInsurer(it.name, "", it.id)
+                PreviousInsurerParameter.PreviousInsurer(it.name, "", it.collectionId ?: "")
             }
         )
         fragment.show(parentFragmentManager, InsurerProviderBottomSheet.TAG)
     }
 
-    private fun continueWithProvider(providerId: String) {
-        if (providerId == getString(R.string.EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION)) {
+    private fun continueWithProvider(provider: InsuranceProvider) {
+        if (provider.collectionId == getString(R.string.EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION) ||
+            provider.collectionId == null
+        ) {
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle(getString(R.string.EXTERNAL_INSURANCE_PROVIDER_ALERT_TITLE))
                 .setMessage(getString(R.string.EXTERNAL_INSURANCE_PROVIDER_ALERT_MESSAGE))
                 .setPositiveButton(getString(R.string.ALERT_OK)) { _, _ -> continueEmbark() }
                 .show()
         } else {
-            startAskForPrice(providerId)
+            startAskForPrice(provider.collectionId, provider.name)
         }
     }
 

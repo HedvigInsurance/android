@@ -2,7 +2,7 @@ package com.hedvig.app.feature.onboarding
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import e
+import com.hedvig.app.feature.tracking.TrackingFacade
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -24,7 +24,8 @@ abstract class MemberIdViewModel : ViewModel() {
 }
 
 class MemberIdViewModelImpl(
-    private val memberIdRepository: MemberIdRepository
+    private val memberIdRepository: GetMemberIdUseCase,
+    private val trackingFacade: TrackingFacade
 ) : MemberIdViewModel() {
 
     init {
@@ -33,22 +34,14 @@ class MemberIdViewModelImpl(
 
     override fun load() {
         viewModelScope.launch {
-            val response = runCatching {
-                memberIdRepository.memberId()
-            }
-            if (response.isFailure) {
-                response.exceptionOrNull()?.let { exception ->
-                    e(exception)
-                    _state.value = State.Error
+            val state = when (val result = memberIdRepository.memberId()) {
+                is GetMemberIdUseCase.MemberIdResult.Error -> State.Error
+                is GetMemberIdUseCase.MemberIdResult.Success -> {
+                    trackingFacade.setProperty("user_id", result.id)
+                    State.Success(result.id)
                 }
-                return@launch
             }
-            if (response.getOrNull()?.hasErrors() == true) {
-                _state.value = State.Error
-                return@launch
-            }
-
-            response.getOrNull()?.data?.member?.id?.let { _state.value = State.Success(it) }
+            _state.value = state
         }
     }
 }

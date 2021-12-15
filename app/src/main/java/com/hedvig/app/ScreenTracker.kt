@@ -24,6 +24,6 @@ class ScreenTracker(
 
     companion object {
         const val SCREEN_VIEW = "screen_view_android"
-        const val SCREEN_NAME = "name"
+        const val SCREEN_NAME = "screen_name"
     }
 }

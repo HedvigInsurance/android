@@ -1,25 +1,44 @@
 package com.hedvig.app.util.apollo
 
 import com.apollographql.apollo.ApolloCall
+import com.apollographql.apollo.ApolloSubscriptionCall
+import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.coroutines.await
+import com.apollographql.apollo.coroutines.toFlow
 import com.apollographql.apollo.exception.ApolloException
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import okhttp3.Call
 import org.json.JSONObject
 import ru.gildor.coroutines.okhttp.await
 
 suspend fun <T> ApolloCall<T>.safeQuery(): QueryResult<T> {
     return try {
-        val response = await()
-        val data = response.data
-        when {
-            response.hasErrors() -> QueryResult.Error.QueryError(response.errors?.first()?.message)
-            data != null -> QueryResult.Success(data)
-            else -> QueryResult.Error.NoDataError("No data")
-        }
+        await().toQueryResult()
     } catch (apolloException: ApolloException) {
         QueryResult.Error.NetworkError(apolloException.localizedMessage)
     } catch (throwable: Throwable) {
         QueryResult.Error.GeneralError(throwable.localizedMessage)
+    }
+}
+
+fun <T> ApolloSubscriptionCall<T>.safeSubscription(): Flow<QueryResult<T>> {
+    return try {
+        toFlow().map(Response<T>::toQueryResult)
+    } catch (apolloException: ApolloException) {
+        flowOf(QueryResult.Error.NetworkError(apolloException.localizedMessage))
+    } catch (throwable: Throwable) {
+        flowOf(QueryResult.Error.GeneralError(throwable.localizedMessage))
+    }
+}
+
+fun <T> Response<T>.toQueryResult(): QueryResult<T> {
+    val data = data
+    return when {
+        hasErrors() -> QueryResult.Error.QueryError(errors?.first()?.message)
+        data != null -> QueryResult.Success(data)
+        else -> QueryResult.Error.NoDataError("No data")
     }
 }
 

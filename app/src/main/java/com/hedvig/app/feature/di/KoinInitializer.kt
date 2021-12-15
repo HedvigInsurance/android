@@ -20,6 +20,7 @@ import com.hedvig.app.externalInsuranceModule
 import com.hedvig.app.featureManagerModule
 import com.hedvig.app.homeModule
 import com.hedvig.app.insuranceModule
+import com.hedvig.app.insurelyAuthModule
 import com.hedvig.app.keyGearModule
 import com.hedvig.app.localeBroadcastManagerModule
 import com.hedvig.app.localeManagerModule
@@ -103,6 +104,7 @@ class KoinInitializer : Initializer<KoinApplication> {
                 featureManagerModule,
                 retrievePriceModule,
                 externalInsuranceModule,
+                insurelyAuthModule,
             )
         )
     }

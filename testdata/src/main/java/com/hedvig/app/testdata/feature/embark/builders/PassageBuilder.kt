@@ -46,6 +46,7 @@ data class PassageBuilder(
                     keys = ork
                 )
             )
-        }
+        },
+        variantedOfferRedirects = listOf()
     )
 }

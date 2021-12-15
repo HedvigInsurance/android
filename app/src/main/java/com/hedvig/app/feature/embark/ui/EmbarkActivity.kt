@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.transition.Transition
-import androidx.transition.TransitionManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
@@ -19,7 +18,6 @@ import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityEmbarkBinding
-import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.NavigationDirection
 import com.hedvig.app.feature.embark.passages.UpgradeAppFragment
@@ -43,11 +41,10 @@ import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
+import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.hide
-import com.hedvig.app.util.extensions.view.hideWithDelay
 import com.hedvig.app.util.extensions.view.remove
-import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.whenApiVersion
 import kotlinx.coroutines.flow.launchIn
@@ -83,7 +80,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
             progressToolbar.toolbar.title = storyTitle
 
             model.viewState.observe(this@EmbarkActivity) { viewState ->
-                loadingSpinnerLayout.loadingSpinner.remove()
+                loadingSpinnerLayout.loadingSpinner.remove() // Removing inner spinner on first available viewState
                 setupToolbarMenu(
                     progressToolbar,
                     viewState.hasTooltips,
@@ -98,14 +95,19 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
             }
 
             model
+                .loadingState
+                .flowWithLifecycle(lifecycle)
+                .onEach { isLoading ->
+                    fullScreenLoadingSpinnerLayout.isVisible = isLoading
+                }
+                .launchIn(lifecycleScope)
+
+            model
                 .events
                 .flowWithLifecycle(lifecycle)
                 .onEach { event ->
                     when (event) {
-                        EmbarkViewModel.Event.Chat -> {
-                            startActivity(ChatActivity.newInstance(this@EmbarkActivity))
-                            fullScreenLoadingSpinnerLayout.hideWithDelay(500)
-                        }
+                        EmbarkViewModel.Event.Chat -> startChat()
                         is EmbarkViewModel.Event.Offer -> {
                             startActivity(
                                 OfferActivity.newInstance(
@@ -114,7 +116,6 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                                     shouldShowOnNextAppStart = true
                                 )
                             )
-                            fullScreenLoadingSpinnerLayout.hideWithDelay(500)
                         }
                         is EmbarkViewModel.Event.Error -> {
                             fullScreenLoadingSpinnerLayout.hide()
@@ -127,12 +128,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                                 .create()
                                 .show()
                         }
-                        is EmbarkViewModel.Event.Loading -> {
-                            TransitionManager.beginDelayedTransition(root)
-                            fullScreenLoadingSpinnerLayout.isVisible = event.show
-                        }
                         EmbarkViewModel.Event.Close -> {
-                            fullScreenLoadingSpinnerLayout.hide()
                             finish()
                         }
                     }

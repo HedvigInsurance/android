@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
@@ -18,10 +20,16 @@ import com.hedvig.app.ui.compose.theme.HedvigTheme
 class AskForPriceInfoActivity : BaseActivity() {
 
     private val parameter by lazy {
-        intent.getParcelableExtra(PARAMETER)
-            ?: AskForPriceInfoParameter("Test")
+        intent.getParcelableExtra<InsuranceProviderParameter>(PARAMETER)
             ?: throw Error("Programmer error: DATA is null in ${this.javaClass.name}")
     }
+
+    private val retrievePriceActivityResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            if (result.resultCode == RESULT_CONTINUE) {
+                finishWithResult()
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +44,7 @@ class AskForPriceInfoActivity : BaseActivity() {
                     }
                 ) {
                     AskForPriceScreen(
-                        parameter.selectedInsuranceProvider,
+                        parameter.selectedInsuranceProviderName,
                         onSkipRetrievePriceInfo = ::finishWithResult,
                         onNavigateToRetrievePrice = ::startRetrievePriceActivity
                     )
@@ -46,21 +54,21 @@ class AskForPriceInfoActivity : BaseActivity() {
     }
 
     private fun startRetrievePriceActivity() {
-        startActivity(RetrievePriceInfoActivity.createIntent(this))
+        retrievePriceActivityResultLauncher.launch(RetrievePriceInfoActivity.createIntent(this, parameter))
     }
 
     private fun finishWithResult() {
-        setResult(RESULT_SKIP)
+        setResult(RESULT_CONTINUE)
         finish()
     }
 
     companion object {
-        const val RESULT_SKIP = 1242
+        const val RESULT_CONTINUE = 1242
         private const val PARAMETER = "parameter"
 
         fun createIntent(
             context: Context,
-            parameter: AskForPriceInfoParameter
+            parameter: InsuranceProviderParameter
         ) = Intent(context, AskForPriceInfoActivity::class.java).apply {
             putExtra(PARAMETER, parameter)
         }

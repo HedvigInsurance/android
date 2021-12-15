@@ -93,13 +93,13 @@ class ContractDetailViewModelImpl(
     }
 
     private fun createDocumentItems(contract: InsuranceQuery.Contract): List<DocumentItems.Document> {
-        return if (contract.currentAgreement.asAgreementCore?.status == AgreementStatus.PENDING) {
+        return if (contract.currentAgreement?.asAgreementCore?.status == AgreementStatus.PENDING) {
             // Do not show anything if status is pending
             // TODO: Show error state
             emptyList()
         } else {
             listOfNotNull(
-                contract.currentAgreement.asAgreementCore?.certificateUrl?.let {
+                contract.currentAgreement?.asAgreementCore?.certificateUrl?.let {
                     DocumentItems.Document(
                         titleRes = R.string.MY_DOCUMENTS_INSURANCE_CERTIFICATE,
                         subTitleRes = R.string.insurance_details_view_documents_full_terms_subtitle,

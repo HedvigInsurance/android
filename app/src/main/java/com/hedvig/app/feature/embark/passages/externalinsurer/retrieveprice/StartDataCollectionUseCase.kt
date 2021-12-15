@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice
 
 import com.apollographql.apollo.ApolloClient
-import com.hedvig.android.owldroid.graphql.ExternalInsuranceProviderV2Query
 import com.hedvig.android.owldroid.graphql.InitiateDataCollectionNOMutation
 import com.hedvig.android.owldroid.graphql.InitiateDataCollectionSEMutation
 import com.hedvig.app.feature.settings.Market
@@ -11,19 +10,12 @@ import com.hedvig.app.util.apollo.safeQuery
 import java.lang.IllegalArgumentException
 import java.util.UUID
 
-interface StartDataCollectionUseCase {
-    suspend fun startDataCollectionAndGetCollectionStatus(
-        personalNumber: String,
-        insuranceProvider: String,
-    ): DataCollectionResult
-}
-
-class StartDataCollectionUseCaseImpl(
+class StartDataCollectionUseCase(
     val apolloClient: ApolloClient,
     val marketManager: MarketManager
-) : StartDataCollectionUseCase {
+) {
 
-    override suspend fun startDataCollectionAndGetCollectionStatus(
+    suspend fun startDataCollection(
         personalNumber: String,
         insuranceProvider: String,
     ): DataCollectionResult {
@@ -36,27 +28,8 @@ class StartDataCollectionUseCaseImpl(
         )
 
         return when (val result = apolloClient.mutate(mutation).safeQuery()) {
-            is QueryResult.Success -> getCollectionStatus(reference)
+            is QueryResult.Success -> DataCollectionResult.Success(reference)
             is QueryResult.Error -> DataCollectionResult.Error.NetworkError(result.message)
-        }
-    }
-
-    private suspend fun getCollectionStatus(
-        reference: String
-    ): DataCollectionResult {
-        val query = ExternalInsuranceProviderV2Query(reference)
-        return when (val result = apolloClient.query(query).safeQuery()) {
-            is QueryResult.Success -> {
-                val extraInfo = result.data?.externalInsuranceProvider?.dataCollectionStatusV2?.extraInformation
-                val swedishAutoStartToken = extraInfo?.asSwedishBankIdExtraInfo?.autoStartToken
-                val norwegianBankIdWords = extraInfo?.asNorwegianBankIdExtraInfo?.norwegianBankIdWords
-                return when {
-                    swedishAutoStartToken != null -> DataCollectionResult.Success.SwedishBankId(swedishAutoStartToken)
-                    norwegianBankIdWords != null -> DataCollectionResult.Success.NorwegianBankId(norwegianBankIdWords)
-                    else -> DataCollectionResult.Error.NoData
-                }
-            }
-            is QueryResult.Error -> DataCollectionResult.Error.QueryError
         }
     }
 
@@ -82,15 +55,7 @@ class StartDataCollectionUseCaseImpl(
 }
 
 sealed class DataCollectionResult {
-    sealed class Success : DataCollectionResult() {
-        data class SwedishBankId(
-            val autoStartToken: String
-        ) : Success()
-
-        data class NorwegianBankId(
-            val norwegianBankIdWords: String
-        ) : Success()
-    }
+    data class Success(val reference: String) : DataCollectionResult()
 
     sealed class Error : DataCollectionResult() {
         data class NetworkError(val message: String?) : Error()

@@ -6,14 +6,15 @@ import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.type.DirectDebitStatus
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticateDialog
+import com.hedvig.app.authenticate.LoginDialog
 import com.hedvig.app.feature.adyen.AdyenCurrency
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinActivity
 import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutActivity
-import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.onboarding.ui.ChoosePlanActivity
 import com.hedvig.app.feature.trustly.TrustlyConnectPayinActivity
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationActivity
+import com.hedvig.app.util.extensions.startChat
 
 enum class Market {
     SE,
@@ -63,7 +64,7 @@ enum class Market {
     fun openAuth(context: Context, fragmentManager: FragmentManager) {
         when (this) {
             SE -> {
-                AuthenticateDialog().show(fragmentManager, AuthenticateDialog.TAG)
+                LoginDialog().show(fragmentManager, AuthenticateDialog.TAG)
             }
             NO, DK -> {
                 context.startActivity(SimpleSignAuthenticationActivity.newInstance(context, this))
@@ -74,23 +75,22 @@ enum class Market {
         }
     }
 
-    fun onboarding(context: Context, seEmbarkOnboarding: Boolean) = when (this) {
+    fun openOnboarding(context: Context, seEmbarkOnboarding: Boolean) = when (this) {
         SE -> {
             if (seEmbarkOnboarding) {
-                ChoosePlanActivity.newInstance(context)
+                context.startActivity(ChoosePlanActivity.newInstance(context))
             } else {
-                ChatActivity.newInstance(context)
-                    .apply { putExtra(ChatActivity.EXTRA_SHOW_RESTART, true) }
+                context.startChat(closable = false, restartable = true)
             }
         }
         NO -> {
-            ChoosePlanActivity.newInstance(context)
+            context.startActivity(ChoosePlanActivity.newInstance(context))
         }
         DK -> {
-            WebOnboardingActivity.newInstance(context)
+            context.startActivity(WebOnboardingActivity.newInstance(context))
         }
         FR -> {
-            WebOnboardingActivity.newInstance(context)
+            context.startActivity(WebOnboardingActivity.newInstance(context))
         }
     }
 

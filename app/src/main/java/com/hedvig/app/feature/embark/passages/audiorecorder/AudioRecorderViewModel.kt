@@ -3,6 +3,7 @@ package com.hedvig.app.feature.embark.passages.audiorecorder
 import android.media.MediaPlayer
 import android.media.MediaRecorder
 import androidx.lifecycle.ViewModel
+import com.hedvig.app.feature.tracking.TrackingFacade
 import e
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,6 +17,7 @@ import java.util.UUID
 
 class AudioRecorderViewModel(
     private val clock: Clock,
+    private val trackingFacade: TrackingFacade,
 ) : ViewModel() {
     sealed class ViewState {
         object NotRecording : ViewState()
@@ -74,6 +76,7 @@ class AudioRecorderViewModel(
                 0,
                 1000L / 60,
             )
+            trackingFacade.track("begin_recording")
         }
     }
 
@@ -102,11 +105,13 @@ class AudioRecorderViewModel(
             }
             prepare()
         }
+        trackingFacade.track("stop_recording")
     }
 
     fun redo() {
         cleanup()
         _viewState.value = ViewState.NotRecording
+        trackingFacade.track("redo_recording")
     }
 
     fun play() {
@@ -135,6 +140,7 @@ class AudioRecorderViewModel(
         )
         _viewState.value = currentState.copy(isPlaying = true)
         player?.start()
+        trackingFacade.track("playback_recording")
     }
 
     fun pause() {

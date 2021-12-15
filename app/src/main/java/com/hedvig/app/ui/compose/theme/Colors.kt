@@ -28,6 +28,7 @@ fun hedvigContentColorFor(backgroundColor: Color): Color {
     return when (backgroundColor) {
         colorResource(R.color.lavender_400) -> Color.Black
         colorResource(R.color.forever_orange_500) -> Color.Black
+        colorResource(R.color.colorWarning) -> Color.Black
         Color.Transparent -> contentColorFor(MaterialTheme.colors.background)
         else -> contentColorFor(backgroundColor)
     }

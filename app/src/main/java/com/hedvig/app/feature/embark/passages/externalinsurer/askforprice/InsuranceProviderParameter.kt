@@ -4,6 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class AskForPriceInfoParameter(
-    val selectedInsuranceProvider: String
+data class InsuranceProviderParameter(
+    val selectedInsuranceProviderCollectionId: String,
+    val selectedInsuranceProviderName: String,
 ) : Parcelable

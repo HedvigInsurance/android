@@ -22,7 +22,7 @@ import com.hedvig.app.util.compose.ContentAlpha
 import com.hedvig.app.util.compose.fillWithColor
 
 @Composable
-fun ProgressItem(
+fun ClaimProgressItem(
     text: String,
     color: Color,
     contentAlpha: ContentAlpha,
@@ -52,12 +52,12 @@ fun ProgressItem(
 @Preview()
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun ProgressItemPreview() {
+fun ClaimProgressItemPreview() {
     HedvigTheme {
         Surface(
             color = MaterialTheme.colors.background,
         ) {
-            ProgressItem(
+            ClaimProgressItem(
                 "Text",
                 MaterialTheme.colors.primary,
                 ContentAlpha.HIGH,
