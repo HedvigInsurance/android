@@ -43,7 +43,7 @@ class OnboardingAdapter(
     }
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
-        is OnboardingModel.Bundle -> R.layout.plan_card
+        is OnboardingModel.BundleItem -> R.layout.plan_card
         OnboardingModel.Error -> R.layout.generic_error
     }
 
@@ -65,7 +65,7 @@ class OnboardingAdapter(
                 viewModel: ChoosePlanViewModel,
                 marketProvider: MarketManager,
             ) {
-                if (item !is OnboardingModel.Bundle) {
+                if (item !is OnboardingModel.BundleItem) {
                     invalidData(item)
                     return
                 }
@@ -77,7 +77,7 @@ class OnboardingAdapter(
                     blur.remove()
 
                     if (item.selected) {
-                        val name = item.embarkStory.name
+                        val name = item.bundle.storyName
                         container.setBackgroundResource(
                             when {
                                 name.contains(COMBO) -> R.drawable.gradient_summer_sky
@@ -99,18 +99,16 @@ class OnboardingAdapter(
                         )
                         radioButton.isChecked = true
                     }
-                    val discountMetadata =
-                        item.embarkStory.metadata.find { it.asEmbarkStoryMetadataEntryDiscount != null }
-                    if (discountMetadata != null) {
+
+                    if (item.bundle.discountText != null) {
                         discount.show()
-                        discount.text =
-                            discountMetadata.asEmbarkStoryMetadataEntryDiscount?.discount
+                        discount.text = item.bundle.discountText
                     }
-                    name.text = item.embarkStory.title
-                    description.text = item.embarkStory.description
+                    name.text = item.bundle.storyTitle
+                    description.text = item.bundle.description
                     root.setHapticClickListener {
                         animate(root.width.toFloat() + shimmer.width.toFloat())
-                        viewModel.setSelectedQuoteType(item.copy(selected = true))
+                        viewModel.onBundleSelected(item)
                     }
                 }
             }

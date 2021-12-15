@@ -64,7 +64,7 @@ abstract class OfferViewModel : ViewModel() {
             val bundleDisplayName: String,
         ) : Event()
 
-        data class StartSwedishBankIdSign(val quoteIds: List<String>, val autoStartToken: String) : Event()
+        data class StartSwedishBankIdSign(val autoStartToken: String) : Event()
 
         object DiscardOffer : Event()
     }
@@ -229,7 +229,10 @@ class OfferViewModelImpl(
             return
         }
         hasTrackedView = true
-        tracker.viewOffer(data.quoteBundle.quotes.map { it.typeOfContract.rawValue })
+        tracker.viewOffer(
+            data.quoteBundle.quotes.map { it.typeOfContract.rawValue },
+            data.quoteBundle.appConfiguration.postSignStep.name,
+        )
     }
 
     override fun onOpenCheckout() {
@@ -367,7 +370,7 @@ class OfferViewModelImpl(
             when (val result = signQuotesUseCase.signQuotesAndClearCache(quoteIds)) {
                 is SignQuotesUseCase.SignQuoteResult.Error -> offerAndLoginStatus.value = OfferAndLoginStatus.Error
                 is SignQuotesUseCase.SignQuoteResult.StartSwedishBankId -> _events.trySend(
-                    Event.StartSwedishBankIdSign(quoteIds, result.autoStartToken)
+                    Event.StartSwedishBankIdSign(result.autoStartToken)
                 )
                 SignQuotesUseCase.SignQuoteResult.Success -> offerAndLoginStatus.value = OfferAndLoginStatus.Error
             }

@@ -9,16 +9,16 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.ChangeAddressButtonBinding
 import com.hedvig.app.databinding.ChangeAddressPendingChangeCardBinding
 import com.hedvig.app.databinding.YourInfoChangeBinding
-import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.invalid
+import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 
 class YourInfoAdapter(
-    private val fragmentManager: FragmentManager
+    private val fragmentManager: FragmentManager,
 ) : ListAdapter<YourInfoModel, YourInfoAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun getItemViewType(position: Int) = when (currentList[position]) {
@@ -45,7 +45,7 @@ class YourInfoAdapter(
             private val binding by viewBinding(YourInfoChangeBinding::bind)
             override fun bind(data: YourInfoModel, fragmentManager: FragmentManager) = with(binding) {
                 openChatButton.setHapticClickListener {
-                    root.context.startActivity(ChatActivity.newInstance(root.context, true))
+                    root.context.startChat()
                 }
             }
         }

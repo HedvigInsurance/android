@@ -40,11 +40,12 @@ import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignDialog
 import com.hedvig.app.getLocale
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
+import com.hedvig.app.feature.tracking.TrackingFacade
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.showErrorDialog
-import com.hedvig.app.util.extensions.startClosableChat
+import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsetsMargin
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.hide
@@ -59,6 +60,9 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 class OfferActivity : BaseActivity(R.layout.activity_offer) {
+
+    override val screenName = "offer"
+
     private val quoteIds: List<String>
         get() = intent.getStringArrayExtra(QUOTE_IDS)?.toList() ?: emptyList()
     private val shouldShowOnNextAppStart: Boolean
@@ -70,6 +74,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     private val binding by viewBinding(ActivityOfferBinding::bind)
     private val imageLoader: ImageLoader by inject()
     private val tracker: OfferTracker by inject()
+    private val trackingFacade: TrackingFacade by inject()
     private val marketManager: MarketManager by inject()
     private var hasStartedRecyclerAnimation: Boolean = false
 
@@ -121,14 +126,13 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             )
             val perilsAdapter = PerilsAdapter(
                 fragmentManager = supportFragmentManager,
-                imageLoader = imageLoader
+                imageLoader = imageLoader,
+                trackingFacade = trackingFacade,
             )
             val insurableLimitsAdapter = InsurableLimitsAdapter(
                 fragmentManager = supportFragmentManager
             )
-            val documentAdapter = DocumentAdapter(
-                trackClick = tracker::openOfferLink
-            )
+            val documentAdapter = DocumentAdapter(trackingFacade)
             val bottomOfferAdapter = OfferAdapter(
                 fragmentManager = supportFragmentManager,
                 tracker = tracker,
@@ -275,7 +279,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                         }
                         is OfferViewModel.Event.StartSwedishBankIdSign -> {
                             SwedishBankIdSignDialog
-                                .newInstance(event.autoStartToken, event.quoteIds)
+                                .newInstance(event.autoStartToken)
                                 .show(supportFragmentManager, SwedishBankIdSignDialog.TAG)
                         }
                     }
@@ -302,7 +306,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     private fun openChat() {
         lifecycleScope.launch {
             model.triggerOpenChat()
-            startClosableChat(true)
+            startChat()
         }
     }
 

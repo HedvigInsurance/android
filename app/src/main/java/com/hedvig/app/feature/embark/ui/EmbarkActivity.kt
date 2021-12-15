@@ -18,7 +18,6 @@ import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityEmbarkBinding
-import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.NavigationDirection
 import com.hedvig.app.feature.embark.passages.UpgradeAppFragment
@@ -42,6 +41,7 @@ import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
+import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.remove
@@ -107,9 +107,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 .flowWithLifecycle(lifecycle)
                 .onEach { event ->
                     when (event) {
-                        EmbarkViewModel.Event.Chat -> {
-                            startActivity(ChatActivity.newInstance(this@EmbarkActivity))
-                        }
+                        EmbarkViewModel.Event.Chat -> startChat()
                         is EmbarkViewModel.Event.Offer -> {
                             startActivity(
                                 OfferActivity.newInstance(

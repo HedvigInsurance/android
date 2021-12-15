@@ -7,6 +7,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.google.android.material.transition.MaterialSharedAxis
 import com.hedvig.app.R
+import com.hedvig.app.ScreenTracker
 import com.hedvig.app.databinding.ConnectPaymentResultFragmentBinding
 import com.hedvig.app.feature.trustly.TrustlyTracker
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -16,12 +17,15 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class ConnectPaymentResultFragment : Fragment(R.layout.connect_payment_result_fragment) {
+
     private val binding by viewBinding(ConnectPaymentResultFragmentBinding::bind)
     private val connectPaymentViewModel: ConnectPaymentViewModel by sharedViewModel()
     private val tracker: TrustlyTracker by inject()
+    private val screenTracker: ScreenTracker by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        screenTracker.screenView("connect_payment_successful")
         enterTransition = MaterialSharedAxis(MaterialSharedAxis.X, true)
         exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, false)
     }

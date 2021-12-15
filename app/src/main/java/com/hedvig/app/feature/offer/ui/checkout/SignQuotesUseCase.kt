@@ -35,7 +35,7 @@ class SignQuotesUseCase(
         return if (results.all { it is SignQuoteResult.Success }) {
             val result = signQuotesAndClearCache(quoteIds)
             if (result == SignQuoteResult.Success) {
-                tracker.signQuotes(quoteIds)
+                tracker.signQuotes()
             }
             result
         } else {

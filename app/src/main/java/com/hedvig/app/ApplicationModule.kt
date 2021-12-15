@@ -28,6 +28,7 @@ import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.authenticate.SharedPreferencesAuthenticationTokenService
 import com.hedvig.app.authenticate.SharedPreferencesLoginStatusService
+import com.hedvig.app.authenticate.UserViewModel
 import com.hedvig.app.authenticate.insurely.GetDataCollectionUseCase
 import com.hedvig.app.authenticate.insurely.InsurelyAuthViewModel
 import com.hedvig.app.data.debit.PayinStatusRepository
@@ -43,7 +44,6 @@ import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.feature.chat.service.ChatTracker
 import com.hedvig.app.feature.chat.usecase.TriggerFreeTextChatUseCase
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
-import com.hedvig.app.feature.chat.viewmodel.UserViewModel
 import com.hedvig.app.feature.claims.data.ClaimsRepository
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
@@ -147,7 +147,8 @@ import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToData
 import com.hedvig.app.feature.onboarding.ChoosePlanRepository
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModelImpl
-import com.hedvig.app.feature.onboarding.MemberIdRepository
+import com.hedvig.app.feature.onboarding.GetBundlesUseCase
+import com.hedvig.app.feature.onboarding.GetMemberIdUseCase
 import com.hedvig.app.feature.onboarding.MemberIdViewModel
 import com.hedvig.app.feature.onboarding.MemberIdViewModelImpl
 import com.hedvig.app.feature.profile.data.ProfileRepository
@@ -365,7 +366,7 @@ fun getLocale(context: Context, market: Market?): Locale {
 val viewModelModule = module {
     viewModel { ClaimsViewModel(get(), get()) }
     viewModel { ChatViewModel(get(), get(), get(), get(), get()) }
-    viewModel { UserViewModel(get(), get(), get()) }
+    viewModel { UserViewModel(get(), get(), get(), get()) }
     viewModel { RedeemCodeViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
     viewModel { SettingsViewModel(get()) }
@@ -379,11 +380,11 @@ val viewModelModule = module {
         )
     }
     viewModel { TerminatedContractsViewModel(get()) }
-    viewModel { (autoStartToken: String, quoteIds: List<String>) ->
-        SwedishBankIdSignViewModel(autoStartToken, quoteIds, get(), get(), get(), get())
+    viewModel { (autoStartToken: String) ->
+        SwedishBankIdSignViewModel(autoStartToken, get(), get(), get(), get())
     }
     viewModel { (result: CrossSellingResult) -> CrossSellResultViewModel(result, get()) }
-    viewModel { AudioRecorderViewModel(get()) }
+    viewModel { AudioRecorderViewModel(get(), get()) }
     viewModel { CrossSellFaqViewModel(get()) }
     viewModel { (notificationMetadata: CrossSellNotificationMetadata?, crossSell: CrossSellData) ->
         CrossSellDetailViewModel(notificationMetadata, crossSell, get())
@@ -397,11 +398,11 @@ val choosePlanModule = module {
 }
 
 val onboardingModule = module {
-    viewModel<MemberIdViewModel> { MemberIdViewModelImpl(get()) }
+    viewModel<MemberIdViewModel> { MemberIdViewModelImpl(get(), get()) }
 }
 
 val marketPickerModule = module {
-    viewModel<MarketPickerViewModel> { MarketPickerViewModelImpl(get(), get(), get(), get(), get()) }
+    viewModel<MarketPickerViewModel> { MarketPickerViewModelImpl(get(), get(), get(), get(), get(), get()) }
 }
 
 val loggedInModule = module {
@@ -507,7 +508,7 @@ val homeModule = module {
 }
 
 val connectPaymentModule = module {
-    viewModel { ConnectPaymentViewModel(get(), get()) }
+    viewModel { ConnectPaymentViewModel(get(), get(), get()) }
 }
 
 val trustlyModule = module {
@@ -577,8 +578,9 @@ val repositoriesModule = module {
     single { LoggedInRepository(get(), get()) }
     single { GetHomeUseCase(get(), get()) }
     single { TrustlyRepository(get()) }
-    single { MemberIdRepository(get()) }
+    single { GetMemberIdUseCase(get()) }
     single { PaymentRepository(get(), get()) }
+    single { GetBundlesUseCase(get(), get()) }
     single { ChoosePlanRepository(get(), get()) }
 }
 
@@ -594,7 +596,7 @@ val trackerModule = module {
     single { TrustlyTracker(get()) }
     single { PaymentTracker(get()) }
     single { RatingsTracker(get()) }
-    single { LoggedInTracker(get()) }
+    single { LoggedInTracker(get(), get()) }
     single { KeyGearTracker(get()) }
     single { InsuranceTracker(get()) }
     single { MarketingTracker(get()) }
@@ -646,7 +648,9 @@ val useCaseModule = module {
     single { GetQuoteUseCase(get()) }
     single { EditStartDateUseCase(get(), get()) }
     single { SignQuotesUseCase(get(), get(), get()) }
-    single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { ApproveQuotesUseCase(get(), get(), get(), get()) }
+    single { RefreshQuotesUseCase(get()) }
+    single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GetContractsUseCase(get(), get()) }
     single { ManuallyRecheckSwedishBankIdSignStatusUseCase(get()) }
     single { SubscribeToSwedishBankIdSignStatusUseCase(get()) }

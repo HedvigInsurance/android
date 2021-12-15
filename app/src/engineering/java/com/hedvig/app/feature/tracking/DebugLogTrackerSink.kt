@@ -24,4 +24,8 @@ class DebugLogTrackerSink : TrackerSink {
     override fun identify(id: String) {
         // Not relevant to see in logcat
     }
+
+    override fun setProperty(name: String, value: String) {
+        // Not relevant to see in logcat
+    }
 }
