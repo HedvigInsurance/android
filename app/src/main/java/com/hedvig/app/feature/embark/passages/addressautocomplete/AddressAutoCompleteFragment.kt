@@ -25,6 +25,8 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class AddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_address_auto_complete_action) {
 
@@ -32,7 +34,8 @@ class AddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_address_au
         get() = requireArguments().getParcelable(DATA)
             ?: throw Error("Programmer error: DATA is null in ${this.javaClass.name}")
 
-    private val model: EmbarkViewModel by sharedViewModel()
+    private val embarkViewModel: EmbarkViewModel by sharedViewModel()
+    private val viewModel: AddressAutoCompleteViewModel by viewModel { parametersOf(data) }
     private val binding by viewBinding(FragmentEmbarkAddressAutoCompleteActionBinding::bind)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -58,7 +61,7 @@ class AddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_address_au
             textActionSubmit
                 .hapticClicks()
                 .mapLatest { saveAndAnimate(data) }
-                .onEach { model.submitAction(data.link) }
+                .onEach { embarkViewModel.submitAction(data.link) }
                 .launchIn(viewLifecycleScope)
 
             // We need to wait for all input views to be laid out before starting enter transition.
@@ -81,11 +84,11 @@ class AddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_address_au
         binding.input.onImeAction(imeActionId = EditorInfo.IME_ACTION_DONE) {
             viewLifecycleScope.launch {
                 saveAndAnimate(data)
-                model.submitAction(data.link)
+                embarkViewModel.submitAction(data.link)
             }
         }
 
-        data.key.let(model::getPrefillFromStore)
+        data.key.let(embarkViewModel::getPrefillFromStore)
             ?.let(binding.input::setText)
     }
 

@@ -67,6 +67,8 @@ import com.hedvig.app.feature.embark.EmbarkViewModelImpl
 import com.hedvig.app.feature.embark.GraphQLQueryUseCase
 import com.hedvig.app.feature.embark.ValueStore
 import com.hedvig.app.feature.embark.ValueStoreImpl
+import com.hedvig.app.feature.embark.passages.addressautocomplete.AddressAutoCompleteParams
+import com.hedvig.app.feature.embark.passages.addressautocomplete.AddressAutoCompleteViewModel
 import com.hedvig.app.feature.embark.passages.audiorecorder.AudioRecorderViewModel
 import com.hedvig.app.feature.embark.passages.datepicker.DatePickerViewModel
 import com.hedvig.app.feature.embark.passages.externalinsurer.ExternalInsurerViewModel
@@ -396,6 +398,11 @@ val viewModelModule = module {
     viewModel { GenericAuthViewModel(get()) }
     viewModel { (otpId: String, credential: String) -> OtpInputViewModel(otpId, credential, get(), get(), get()) }
     viewModel { (claimId: String) -> ClaimDetailViewModel(claimId, get(), get()) }
+    viewModel { (addressAutoCompleteParams: AddressAutoCompleteParams) ->
+        AddressAutoCompleteViewModel(
+            addressAutoCompleteParams
+        )
+    }
 }
 
 val choosePlanModule = module {
