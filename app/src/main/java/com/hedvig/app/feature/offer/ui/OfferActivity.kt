@@ -38,9 +38,9 @@ import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignDialog
+import com.hedvig.app.feature.tracking.TrackingFacade
 import com.hedvig.app.getLocale
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
-import com.hedvig.app.feature.tracking.TrackingFacade
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.showAlert
