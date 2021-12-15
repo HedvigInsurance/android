@@ -1,0 +1,45 @@
+query dataCollectionResult($reference: ID!) {
+  externalInsuranceProvider {
+    dataCollectionV2(reference: $reference) {
+      ... on HouseInsuranceCollection {
+        insuranceProvider
+        insuranceHolderAddress
+        insuranceHolderName
+        insuranceName
+        insuranceSubType
+        insuranceType
+        renewalDate
+        monthlyNetPremium {
+          ...MonetaryAmountFragment
+        }
+        monthlyGrossPremium {
+          ...MonetaryAmountFragment
+        }
+        monthlyDiscount {
+          ...MonetaryAmountFragment
+        }
+        insuranceObjectAddress
+        livingArea
+        postalCode
+      }
+      ... on PersonTravelInsuranceCollection {
+        insuranceProvider
+        insuranceHolderAddress
+        insuranceHolderName
+        insuranceName
+        insuranceSubType
+        insuranceType
+        renewalDate
+        monthlyNetPremium {
+          ...MonetaryAmountFragment
+        }
+        monthlyGrossPremium {
+          ...MonetaryAmountFragment
+        }
+        monthlyDiscount {
+          ...MonetaryAmountFragment
+        }
+      }
+    }
+  }
+}

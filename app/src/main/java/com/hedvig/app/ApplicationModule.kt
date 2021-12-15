@@ -142,6 +142,8 @@ import com.hedvig.app.feature.offer.usecase.GetPostSignDependenciesUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
+import com.hedvig.app.feature.offer.usecase.datacollectionresult.GetDataCollectionResultUseCase
+import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToDataCollectionStatusUseCase
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModelImpl
 import com.hedvig.app.feature.onboarding.GetBundlesUseCase
@@ -211,6 +213,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.parameter.ParametersHolder
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import timber.log.Timber
@@ -419,9 +422,28 @@ val marketingModule = module {
 }
 
 val offerModule = module {
-    viewModel<OfferViewModel> { (ids: List<String>, shouldShowOnNextAppStart: Boolean) ->
-        OfferViewModelImpl(ids, get(), get(), get(), get(), get(), get(), get(), shouldShowOnNextAppStart, get(), get())
+    viewModel<OfferViewModel> { parametersHolder: ParametersHolder ->
+        val (ids: List<String>, shouldShowOnNextAppStart: Boolean) = parametersHolder
+        OfferViewModelImpl(
+            _quoteIds = ids,
+            offerRepository = get(),
+            getQuotesUseCase = get(),
+            getQuoteUseCase = get(),
+            loginStatusService = get(),
+            approveQuotesUseCase = get(),
+            refreshQuotesUseCase = get(),
+            signQuotesUseCase = get(),
+            shouldShowOnNextAppStart = shouldShowOnNextAppStart,
+            getPostSignDependenciesUseCase = get(),
+            subscribeToDataCollectionStatusUseCase = get(),
+            getDataCollectionResultUseCase = get(),
+            tracker = get(),
+        )
     }
+    single { ApproveQuotesUseCase(get(), get(), get(), get()) }
+    single { RefreshQuotesUseCase(get()) }
+    single { SubscribeToDataCollectionStatusUseCase(get()) }
+    single { GetDataCollectionResultUseCase(get()) }
 }
 
 val profileModule = module {

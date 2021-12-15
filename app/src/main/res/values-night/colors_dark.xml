@@ -11,7 +11,7 @@
     <item name="colorOnSurface" type="color">@color/colorPrimary</item>
     <item name="colorSurfaceOnSurface" type="color">#505050</item>
     <item name="colorSecondary" type="color">@color/lavender_400</item>
-    <item name="colorOnSecondary" type="color">@color/hedvig_white</item>
+    <item name="colorOnSecondary" type="color">@color/hedvig_black</item>
     <item name="colorPlaceholder" type="color">#45FAFAFA</item>
     <item name="colorWarning" type="color">#e3b945</item>
 
