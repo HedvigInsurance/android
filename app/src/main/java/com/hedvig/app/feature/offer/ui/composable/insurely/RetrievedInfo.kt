@@ -67,7 +67,7 @@ fun RetrievedInfo(
         }
         Spacer(Modifier.height(24.dp))
         Text(
-            text = data.totalNetPremium.format(locale),
+            text = data.totalNetPremium?.format(locale) ?: "",
             style = MaterialTheme.typography.h4,
         )
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {

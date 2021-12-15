@@ -19,6 +19,7 @@ import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.AskForPriceInfoActivity
 import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.AskForPriceInfoActivity.Companion.RESULT_CONTINUE
 import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.InsuranceProviderParameter
+import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceInfoActivity.Companion.REFERENCE_RESULT
 import com.hedvig.app.feature.embark.passages.previousinsurer.InsurerProviderBottomSheet
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerParameter
 import com.hedvig.app.util.extensions.showErrorDialog
@@ -39,6 +40,9 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
     private val askForPriceActivityResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == RESULT_CONTINUE) {
+                result.data?.getStringExtra(REFERENCE_RESULT)?.let {
+                    embarkViewModel.putInStore("dataCollectionId", it)
+                }
                 continueEmbark()
             }
         }

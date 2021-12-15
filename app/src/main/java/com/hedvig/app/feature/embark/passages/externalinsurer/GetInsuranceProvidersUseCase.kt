@@ -2,6 +2,7 @@ package com.hedvig.app.feature.embark.passages.externalinsurer
 
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.InsuranceProvidersQuery
+import com.hedvig.app.isDebug
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
@@ -26,16 +27,28 @@ class GetInsuranceProvidersUseCase(
     suspend fun getInsuranceProviders(): InsuranceProvidersResult {
         val insuranceProviders = InsuranceProvidersQuery(localeManager.defaultLocale())
         return when (val result = apolloClient.query(insuranceProviders).safeQuery()) {
-            is QueryResult.Success -> InsuranceProvidersResult.Success(
-                result.data.insuranceProviders.map {
-                    InsuranceProvider(
-                        it.id,
-                        it.name,
-                        it.externalCollectionId
-                    )
-                }
-            )
+            is QueryResult.Success -> createSuccessResult(result)
             is QueryResult.Error -> InsuranceProvidersResult.Error.NetworkError
         }
+    }
+
+    private fun createSuccessResult(
+        result: QueryResult.Success<InsuranceProvidersQuery.Data>
+    ): InsuranceProvidersResult.Success {
+        var providers = result.data.insuranceProviders.map {
+            InsuranceProvider(
+                it.id,
+                it.name,
+                it.externalCollectionId
+            )
+        }
+        if (isDebug()) {
+            providers = providers + InsuranceProvider(
+                "se-demo",
+                "Demo",
+                "se-demo"
+            )
+        }
+        return InsuranceProvidersResult.Success(providers)
     }
 }

@@ -46,8 +46,9 @@ class RetrievePriceInfoActivity : BaseActivity() {
             this,
             { _, result ->
                 val success = result.getBoolean(InsurelyDialog.RESULT_KEY)
+                val reference = result.getString(InsurelyDialog.RESULT_REFERENCE) ?: ""
                 if (success) {
-                    viewModel.onCollectionStarted()
+                    viewModel.onCollectionStarted(reference)
                 } else {
                     viewModel.onCollectionFailed()
                 }
@@ -85,12 +86,13 @@ class RetrievePriceInfoActivity : BaseActivity() {
         }
     }
 
-    private fun onContinue() {
-        setResult(AskForPriceInfoActivity.RESULT_CONTINUE)
+    private fun onContinue(reference: String?) {
+        setResult(AskForPriceInfoActivity.RESULT_CONTINUE, Intent().putExtra(REFERENCE_RESULT, reference))
         finish()
     }
 
     companion object {
+        const val REFERENCE_RESULT = "reference_result"
         private const val PARAMETER = "parameter"
 
         fun createIntent(context: Context, parameter: InsuranceProviderParameter) =
@@ -104,15 +106,17 @@ class RetrievePriceInfoActivity : BaseActivity() {
 @Composable
 fun RetrievePriceScreen(
     viewModel: RetrievePriceViewModel = viewModel(),
-    onContinue: () -> Unit,
+    onContinue: (String?) -> Unit,
 ) {
     val viewState by viewModel.viewState.collectAsState()
 
     when {
-        viewState.collectionStarted -> RetrievePriceSuccess(onContinue = onContinue)
+        viewState.collectionStarted != null -> RetrievePriceSuccess(
+            onContinue = { onContinue(viewState.collectionStarted!!.reference) }
+        )
         viewState.collectionFailed != null -> RetrievePriceFailed(
             onRetry = viewModel::onRetry,
-            onSkip = onContinue,
+            onSkip = { onContinue(null) },
             viewState.collectionFailed!!.insurerName
         )
         else -> {

@@ -79,8 +79,8 @@ class RetrievePriceViewModel(
         _viewState.update { it.copy(error = null) }
     }
 
-    fun onCollectionStarted() {
-        _viewState.update { it.copy(collectionStarted = true) }
+    fun onCollectionStarted(reference: String) {
+        _viewState.update { it.copy(collectionStarted = ViewState.CollectionStartedState(reference)) }
     }
 
     fun onCollectionFailed() {
@@ -91,7 +91,7 @@ class RetrievePriceViewModel(
         _viewState.update {
             it.copy(
                 collectionFailed = null,
-                collectionStarted = false
+                collectionStarted = null
             )
         }
     }
@@ -102,12 +102,16 @@ class RetrievePriceViewModel(
         val market: Market?,
         val isLoading: Boolean = false,
         val error: DataCollectionResult.Error? = null,
-        val collectionStarted: Boolean = false,
-        val collectionFailed: CollectionFailedState? = null
+        val collectionStarted: CollectionStartedState? = null,
+        val collectionFailed: CollectionFailedState? = null,
     ) {
 
         data class CollectionFailedState(
             val insurerName: String
+        )
+
+        data class CollectionStartedState(
+            val reference: String
         )
 
         data class InputError(
