@@ -42,5 +42,6 @@ data class NumberActionBuilder(
         asEmbarkMultiAction = null,
         asEmbarkAudioRecorderAction = null,
         asEmbarkExternalInsuranceProviderAction = null,
+        asEmbarkAddressAutocompleteAction = null,
     )
 }

@@ -469,6 +469,7 @@ val STORY_WITH_INCOMPATIBLE_ACTION = EmbarkStoryDataBuilder(
                     asEmbarkMultiAction = null,
                     asEmbarkAudioRecorderAction = null,
                     asEmbarkExternalInsuranceProviderAction = null,
+                    asEmbarkAddressAutocompleteAction = null,
                 )
             )
             .build()

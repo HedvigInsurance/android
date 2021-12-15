@@ -34,7 +34,7 @@ data class PassageBuilder(
         tooltips = tooltip,
         redirects = redirects,
         action = action,
-        api = api?.let { EmbarkStoryQuery.Api3(fragments = EmbarkStoryQuery.Api3.Fragments(it)) },
+        api = api?.let { EmbarkStoryQuery.Api4(fragments = EmbarkStoryQuery.Api4.Fragments(it)) },
         allLinks = links.map { EmbarkStoryQuery.AllLink(fragments = EmbarkStoryQuery.AllLink.Fragments(it)) },
         tracks = tracks,
         externalRedirect = externalRedirect?.let {

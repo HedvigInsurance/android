@@ -35,7 +35,8 @@ data class TextActionBuilder(
         asEmbarkDatePickerAction = null,
         asEmbarkMultiAction = null,
         asEmbarkAudioRecorderAction = null,
-        asEmbarkExternalInsuranceProviderAction = null
+        asEmbarkExternalInsuranceProviderAction = null,
+        asEmbarkAddressAutocompleteAction = null,
     )
 
     fun buildTextActionSetAction() = EmbarkStoryQuery.TextAction(
