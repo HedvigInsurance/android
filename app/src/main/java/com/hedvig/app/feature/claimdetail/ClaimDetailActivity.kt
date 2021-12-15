@@ -7,8 +7,8 @@ import androidx.activity.compose.setContent
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.hedvig.app.BaseActivity
-import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.ui.compose.theme.HedvigTheme
+import com.hedvig.app.util.extensions.startChat
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -27,7 +27,7 @@ class ClaimDetailActivity : BaseActivity() {
             .flowWithLifecycle(lifecycle)
             .onEach { event ->
                 when (event) {
-                    ClaimDetailViewModel.Event.Chat -> startActivity(ChatActivity.newInstance(this))
+                    ClaimDetailViewModel.Event.Chat -> startChat()
                 }
             }
             .launchIn(lifecycleScope)
