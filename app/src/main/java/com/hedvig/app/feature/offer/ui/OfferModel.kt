@@ -77,9 +77,10 @@ sealed class OfferModel {
             val currentInsurances: List<CurrentInsurance>,
             val savedWithHedvig: MonetaryAmount?,
         ) : InsurelyCard() {
-            val totalNetPremium: MonetaryAmount = currentInsurances
-                .map(CurrentInsurance::amount)
-                .reduce(MonetaryAmount::add)
+            val totalNetPremium: MonetaryAmount? = currentInsurances
+                .takeIf { it.isNotEmpty() }
+                ?.map(CurrentInsurance::amount)
+                ?.reduce(MonetaryAmount::add)
 
             data class CurrentInsurance(
                 val name: String,

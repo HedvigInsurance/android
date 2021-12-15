@@ -13,11 +13,15 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
+import java.lang.IllegalArgumentException
 
 class InsurelyDialog : AuthenticateDialog() {
 
+    private val reference: String by lazy {
+        arguments?.getString(REFERENCE_KEY) ?: throw IllegalArgumentException("No reference found")
+    }
+
     private val viewModel: InsurelyAuthViewModel by viewModel {
-        val reference = arguments?.getString(REFERENCE_KEY)
         parametersOf(reference)
     }
 
@@ -61,7 +65,11 @@ class InsurelyDialog : AuthenticateDialog() {
 
     private fun setResult(success: Boolean) {
         setFragmentResult(
-            REQUEST_KEY, bundleOf(Pair(RESULT_KEY, success))
+            REQUEST_KEY,
+            bundleOf(
+                Pair(RESULT_KEY, success),
+                Pair(RESULT_REFERENCE, if (success) reference else null)
+            )
         )
         dismiss()
     }
@@ -70,6 +78,7 @@ class InsurelyDialog : AuthenticateDialog() {
         const val TAG = "LoginDialog"
         const val REQUEST_KEY = "2452"
         const val RESULT_KEY = "2454"
+        const val RESULT_REFERENCE = "2455"
         private const val REFERENCE_KEY = "reference_key"
 
         fun newInstance(reference: String) = InsurelyDialog().apply {
