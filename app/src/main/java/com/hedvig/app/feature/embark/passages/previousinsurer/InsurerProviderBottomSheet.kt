@@ -33,6 +33,7 @@ class InsurerProviderBottomSheet : ExpandableBottomSheet() {
             REQUEST_KEY,
             bundleOf(
                 Pair(INSURER_ID_KEY, item.id),
+                Pair(INSURER_COLLECTION_ID_KEY, item.collectionId),
                 Pair(INSURER_NAME_KEY, item.name)
             )
         )
@@ -44,6 +45,7 @@ class InsurerProviderBottomSheet : ExpandableBottomSheet() {
         val TAG: String = InsurerProviderBottomSheet::class.java.name
         const val REQUEST_KEY = "INSURER_BOTTOM_SHEET_KEY"
         const val INSURER_ID_KEY = "INSURER_ID_KEY"
+        const val INSURER_COLLECTION_ID_KEY = "INSURER_COLLECTION_ID_KEY"
         const val INSURER_NAME_KEY = "INSURER_NAME_KEY"
         private const val PREVIOUS_INSURERS = "PREVIOUS_INSURERS"
 

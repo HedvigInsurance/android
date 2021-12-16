@@ -120,13 +120,15 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
     private fun handleInsurerProviderBottomSheetResult(bundle: Bundle) {
         val id = bundle.getString(InsurerProviderBottomSheet.INSURER_ID_KEY)
             ?: throw IllegalArgumentException("Id not found in bundle from InsurerProviderBottomSheet")
+        val collectionId = bundle.getString(InsurerProviderBottomSheet.INSURER_COLLECTION_ID_KEY)
+            ?: throw IllegalArgumentException("Collection Id not found in bundle from InsurerProviderBottomSheet")
         val name = bundle.getString(InsurerProviderBottomSheet.INSURER_NAME_KEY)
             ?: throw IllegalArgumentException("Name not found in bundle from InsurerProviderBottomSheet")
         embarkViewModel.putInStore(insurerData.storeKey, id)
         viewModel.selectInsuranceProvider(
             InsuranceProvider(
                 id = id,
-                collectionId = id,
+                collectionId = collectionId,
                 name = name
             )
         )
@@ -143,7 +145,12 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
     private fun showInsurers(insuranceProviders: List<InsuranceProvider>) {
         val fragment = InsurerProviderBottomSheet.newInstance(
             insuranceProviders.map {
-                PreviousInsurerParameter.PreviousInsurer(it.name, "", it.collectionId ?: "")
+                PreviousInsurerParameter.PreviousInsurer(
+                    name = it.name,
+                    icon = "",
+                    id = it.id,
+                    collectionId = it.collectionId,
+                )
             }
         )
         fragment.show(parentFragmentManager, InsurerProviderBottomSheet.TAG)
