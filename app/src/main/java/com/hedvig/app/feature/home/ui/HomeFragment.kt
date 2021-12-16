@@ -7,6 +7,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
+import arrow.core.NonEmptyList
 import coil.ImageLoader
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.type.PayinMethodStatus
@@ -49,6 +50,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
         loggedInViewModel.onScroll(scroll)
     }
 
+    @OptIn(ExperimentalStdlibApi::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         scroll = 0
 
@@ -113,12 +115,10 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                 return@observe
             }
             if (isPending(successData.contracts)) {
-                val items = mutableListOf<HomeModel>().apply {
+                val items = buildList {
                     add(HomeModel.BigText.Pending(firstName))
                     add(HomeModel.BodyText.Pending)
-                    if (featureManager.isFeatureEnabled(Feature.CLAIMS_STATUS)) {
-                        add(claimStatusCards(successData))
-                    }
+                    addClaimStatusCardsIfApplicable(successData)
                 }
                 adapter.submitList(items)
             }
@@ -136,24 +136,20 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     return@observe
                 }
 
-                val items = mutableListOf<HomeModel>().apply {
+                val items = buildList {
                     add(HomeModel.BigText.ActiveInFuture(firstName, firstInceptionDate))
                     add(HomeModel.BodyText.ActiveInFuture)
-                    if (featureManager.isFeatureEnabled(Feature.CLAIMS_STATUS)) {
-                        add(claimStatusCards(successData))
-                    }
+                    addClaimStatusCardsIfApplicable(successData)
                 }
                 adapter.submitList(items)
             }
 
             if (isTerminated(successData.contracts)) {
-                val items = mutableListOf<HomeModel>().apply {
+                val items = buildList {
                     add(HomeModel.BigText.Terminated(firstName))
                     add(HomeModel.BodyText.Terminated)
                     if (successData.claimStatusCards.isNotEmpty()) {
-                        if (featureManager.isFeatureEnabled(Feature.CLAIMS_STATUS)) {
-                            add(claimStatusCards(successData))
-                        }
+                        addClaimStatusCardsIfApplicable(successData)
                         add(HomeModel.StartClaimOutlined.NewClaim)
                     } else {
                         add(HomeModel.StartClaimOutlined.FirstClaim)
@@ -171,13 +167,11 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             }
 
             if (isActive(successData.contracts)) {
-                val items = mutableListOf<HomeModel>().apply {
+                val items = buildList {
                     addAll(listOfNotNull(*psaItems(successData.importantMessages).toTypedArray()))
                     add(HomeModel.BigText.Active(firstName))
                     if (successData.claimStatusCards.isNotEmpty()) {
-                        if (featureManager.isFeatureEnabled(Feature.CLAIMS_STATUS)) {
-                            add(claimStatusCards(successData))
-                        }
+                        addClaimStatusCardsIfApplicable(successData)
                         add(HomeModel.StartClaimOutlined.NewClaim)
                     } else {
                         add(HomeModel.StartClaimContained.FirstClaim)
@@ -213,9 +207,14 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
         registerForActivityResult.launch(intent)
     }
 
-    private fun claimStatusCards(successData: HomeQuery.Data): HomeModel.ClaimStatus = HomeModel.ClaimStatus(
-        successData.claimStatusCards.map(ClaimStatusCardData::fromClaimStatusCardsQuery)
-    )
+    private fun MutableList<HomeModel>.addClaimStatusCardsIfApplicable(successData: HomeQuery.Data) {
+        if (featureManager.isFeatureEnabled(Feature.CLAIMS_STATUS).not()) return
+        NonEmptyList.fromList(successData.claimStatusCards)
+            .map { claimStatusCardsQuery -> claimStatusCardsQuery.map(ClaimStatusCardData::fromClaimStatusCardsQuery) }
+            .tap { claimStatusCardDataList ->
+                add(HomeModel.ClaimStatus(claimStatusCardDataList))
+            }
+    }
 
     private fun psaItems(
         importantMessages: List<HomeQuery.ImportantMessage?>,

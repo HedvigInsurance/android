@@ -193,6 +193,8 @@ dependencies {
     implementation(libs.accompanist.insets)
     implementation(libs.accompanist.insetsUi)
 
+    implementation(libs.arrowKt.core)
+
     implementation(libs.materialComponents)
     implementation(libs.flexbox)
 
