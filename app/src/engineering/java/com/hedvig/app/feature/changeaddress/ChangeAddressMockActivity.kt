@@ -47,7 +47,6 @@ class ChangeAddressMockActivity : MockActivity() {
                 ViewState.ChangeAddressInProgress(
                     UpcomingAgreement(
                         activeFrom = LocalDate.of(2021, 1, 13),
-                        address = "Test Address 12",
                         table = Table(
                             title = "Mock Upcoming Agreement",
                             sections = listOf(
