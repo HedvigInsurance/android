@@ -110,7 +110,7 @@ class RetrievePriceInfoActivity : BaseActivity() {
 @Composable
 fun RetrievePriceScreen(
     viewModel: RetrievePriceViewModel = viewModel(),
-    onContinue: (String?, String?) -> Unit,
+    onContinue: (referenceResult: String?, ssn: String?) -> Unit,
 ) {
     val viewState by viewModel.viewState.collectAsState()
 
