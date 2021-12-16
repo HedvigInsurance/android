@@ -140,12 +140,12 @@ object TopOfferItemsBuilder {
         val result = dataCollectionStatusContent.dataCollectionStatus
 
         return when (result.subscriptionStatus) {
-            IN_PROGRESS -> OfferModel.InsurelyCard.Loading(referenceUuid, result.insuranceCompanyName)
-            FAILED -> OfferModel.InsurelyCard.FailedToRetrieve(referenceUuid, result.insuranceCompanyName)
+            IN_PROGRESS -> OfferModel.InsurelyCard.Loading(referenceUuid, result.insuranceCompanyDisplayName)
+            FAILED -> OfferModel.InsurelyCard.FailedToRetrieve(referenceUuid, result.insuranceCompanyDisplayName)
             COMPLETE -> {
                 val collectionResult = dataCollectionResult?.collectedList
                 if (collectionResult == null) {
-                    OfferModel.InsurelyCard.FailedToRetrieve(referenceUuid, result.insuranceCompanyName)
+                    OfferModel.InsurelyCard.FailedToRetrieve(referenceUuid, result.insuranceCompanyDisplayName)
                 } else {
                     val currentInsurances = collectionResult
                         .mapNotNull { collectedInsuranceData ->
@@ -161,7 +161,7 @@ object TopOfferItemsBuilder {
                     val savedWithHedvig = otherPremium?.minus(ourPremium)?.takeIf { it.isPositive }
                     OfferModel.InsurelyCard.Retrieved(
                         id = referenceUuid,
-                        insuranceProvider = result.insuranceCompanyName,
+                        insuranceProviderDisplayName = result.insuranceCompanyDisplayName,
                         insurelyDataCollectionReferenceUuid = "",
                         currentInsurances = currentInsurances,
                         savedWithHedvig = savedWithHedvig

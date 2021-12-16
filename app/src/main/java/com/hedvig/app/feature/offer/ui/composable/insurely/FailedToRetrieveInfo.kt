@@ -23,7 +23,7 @@ import com.hedvig.app.R
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 
 @Composable
-fun FailedToRetrieveInfo(insuranceProvider: String?) {
+fun FailedToRetrieveInfo(insuranceProviderDisplayName: String?) {
     Row(
         verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -40,8 +40,8 @@ fun FailedToRetrieveInfo(insuranceProvider: String?) {
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = if (insuranceProvider != null) {
-                    stringResource(R.string.offer_screen_insurely_error_title, insuranceProvider)
+                text = if (insuranceProviderDisplayName != null) {
+                    stringResource(R.string.offer_screen_insurely_error_title, insuranceProviderDisplayName)
                 } else {
                     stringResource(R.string.offer_screen_insurely_multiple_error_title)
                 },
@@ -49,8 +49,8 @@ fun FailedToRetrieveInfo(insuranceProvider: String?) {
             )
             CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                 Text(
-                    text = if (insuranceProvider != null) {
-                        stringResource(R.string.offer_screen_insurely_error_description, insuranceProvider)
+                    text = if (insuranceProviderDisplayName != null) {
+                        stringResource(R.string.offer_screen_insurely_error_description, insuranceProviderDisplayName)
                     } else {
                         stringResource(R.string.offer_screen_insurely_multiple_error_description)
                     },
