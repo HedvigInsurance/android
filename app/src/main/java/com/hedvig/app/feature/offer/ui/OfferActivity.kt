@@ -14,6 +14,9 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
+import com.adyen.checkout.components.model.PaymentMethodsApiResponse
+import com.adyen.checkout.dropin.DropIn
+import com.adyen.checkout.dropin.DropInResult
 import com.carousell.concatadapterextension.ConcatItemDecoration
 import com.carousell.concatadapterextension.ConcatSpanSizeLookup
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationTitle
@@ -23,6 +26,7 @@ import com.hedvig.app.R
 import com.hedvig.app.SplashActivity
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.databinding.ActivityOfferBinding
+import com.hedvig.app.feature.adyen.payin.startAdyenPayment
 import com.hedvig.app.feature.crossselling.ui.CrossSellingResult
 import com.hedvig.app.feature.crossselling.ui.CrossSellingResultActivity
 import com.hedvig.app.feature.documents.DocumentAdapter
@@ -338,19 +342,29 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         binding.signButton.icon = signMethod.checkoutIconRes()?.let(::compatDrawable)
         binding.signButton.setHapticClickListener {
             tracker.checkoutFloating(checkoutLabel.localizationKey(this))
-            onSign(signMethod)
         }
     }
 
-    private fun onSign(signMethod: SignMethod) {
+    private fun onSign(signMethod: SignMethod, paymentMethods: PaymentMethodsApiResponse) {
         when (signMethod) {
             SignMethod.SWEDISH_BANK_ID -> model.onSwedishBankIdSign()
-            SignMethod.SIMPLE_SIGN -> model.onOpenCheckout()
+            SignMethod.SIMPLE_SIGN -> startAdyenPayment(marketManager.market, paymentMethods)
             SignMethod.APPROVE_ONLY -> model.approveOffer()
             SignMethod.NORWEGIAN_BANK_ID,
             SignMethod.DANISH_BANK_ID,
             SignMethod.UNKNOWN__,
             -> showErrorDialog("Could not parse sign method", ::finish)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        // Replace with new result API when adyens handleActivityResult is updated
+        super.onActivityResult(requestCode, resultCode, data)
+
+        when (DropIn.handleActivityResult(requestCode, resultCode, data)) {
+            is DropInResult.CancelledByUser -> {}
+            is DropInResult.Error -> showErrorDialog("Could not connect payment") {}
+            is DropInResult.Finished -> model.onOpenCheckout()
         }
     }
 

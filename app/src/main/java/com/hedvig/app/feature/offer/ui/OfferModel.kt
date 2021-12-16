@@ -2,6 +2,7 @@ package com.hedvig.app.feature.offer.ui
 
 import android.content.Context
 import androidx.compose.ui.unit.Dp
+import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationApproveButtonTerminology
 import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.R
@@ -31,6 +32,7 @@ sealed class OfferModel {
         val showCampaignManagement: Boolean,
         val ignoreCampaigns: Boolean,
         val gradientType: GradientType,
+        val paymentMethodsApiResponse: PaymentMethodsApiResponse
     ) : OfferModel()
 
     data class Facts(
