@@ -51,7 +51,7 @@ abstract class AuthenticateDialog : DialogFragment() {
     }
 
     fun redirect() {
-        val bankIdUri = Uri.parse("https://app.bankid.com/?autostarttoken=&redirect=null")
+        val bankIdUri = Uri.parse("bankid://?redirectUrl=hedvig://")
         if (requireContext().canOpenUri(bankIdUri)) {
             val intent = Intent(Intent.ACTION_VIEW, bankIdUri)
             intent.flags = FLAG_ACTIVITY_NEW_TASK
