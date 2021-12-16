@@ -165,10 +165,10 @@ object TopOfferItemsBuilder {
                         val savedWithHedvig = otherPremium?.minus(ourPremium)?.takeIf(MonetaryAmount::isPositive)
                         OfferModel.InsurelyCard.Retrieved(
                             id = referenceUuid,
-                        insuranceProviderDisplayName = result.insuranceCompanyDisplayName,
+                            insuranceProviderDisplayName = result.insuranceCompanyDisplayName,
                             insurelyDataCollectionReferenceUuid = "",
                             currentInsurances = currentInsurances,
-                            savedWithHedvig = savedWithHedvig
+                            savedWithHedvig = savedWithHedvig,
                         )
                     }
                 }
