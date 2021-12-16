@@ -20,6 +20,7 @@ import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.AskFor
 import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.AskForPriceInfoActivity.Companion.RESULT_CONTINUE
 import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.InsuranceProviderParameter
 import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceInfoActivity.Companion.REFERENCE_RESULT
+import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceInfoActivity.Companion.SSN_RESULT
 import com.hedvig.app.feature.embark.passages.previousinsurer.InsurerProviderBottomSheet
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerParameter
 import com.hedvig.app.util.extensions.showErrorDialog
@@ -42,6 +43,9 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
             if (result.resultCode == RESULT_CONTINUE) {
                 result.data?.getStringExtra(REFERENCE_RESULT)?.let {
                     embarkViewModel.putInStore("dataCollectionId", it)
+                }
+                result.data?.getStringExtra(SSN_RESULT)?.let {
+                    embarkViewModel.putInStore("personalNumber", it)
                 }
                 continueEmbark()
             }
@@ -116,13 +120,15 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
     private fun handleInsurerProviderBottomSheetResult(bundle: Bundle) {
         val id = bundle.getString(InsurerProviderBottomSheet.INSURER_ID_KEY)
             ?: throw IllegalArgumentException("Id not found in bundle from InsurerProviderBottomSheet")
+        val collectionId = bundle.getString(InsurerProviderBottomSheet.INSURER_COLLECTION_ID_KEY)
+            ?: throw IllegalArgumentException("Collection Id not found in bundle from InsurerProviderBottomSheet")
         val name = bundle.getString(InsurerProviderBottomSheet.INSURER_NAME_KEY)
             ?: throw IllegalArgumentException("Name not found in bundle from InsurerProviderBottomSheet")
         embarkViewModel.putInStore(insurerData.storeKey, id)
         viewModel.selectInsuranceProvider(
             InsuranceProvider(
                 id = id,
-                collectionId = id,
+                collectionId = collectionId,
                 name = name
             )
         )
@@ -139,7 +145,12 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
     private fun showInsurers(insuranceProviders: List<InsuranceProvider>) {
         val fragment = InsurerProviderBottomSheet.newInstance(
             insuranceProviders.map {
-                PreviousInsurerParameter.PreviousInsurer(it.name, "", it.collectionId ?: "")
+                PreviousInsurerParameter.PreviousInsurer(
+                    name = it.name,
+                    icon = "",
+                    id = it.id,
+                    collectionId = it.collectionId,
+                )
             }
         )
         fragment.show(parentFragmentManager, InsurerProviderBottomSheet.TAG)
