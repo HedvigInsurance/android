@@ -488,7 +488,28 @@ val OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_ALL
                 id = "ab2a1f4c-83af-4b9f-98d2-e7ea767b080d",
                 displayName = "Annat Försäkringsbolag",
                 switchable = true
-            )
+            ),
+            detailsTable = TableFragmentBuilder(
+                title = "Home Contents Insurance",
+                sections = listOf(
+                    Pair(
+                        "Test",
+                        listOf(Triple("Test1", "Test2", "tws")),
+                    ),
+                    Pair(
+                        "Test",
+                        listOf(Triple("Test1", "Test2", "tws")),
+                    ),
+                    Pair(
+                        "Test",
+                        listOf(Triple("Test1", "Test2", "tws")),
+                    ),
+                    Pair(
+                        "Test",
+                        listOf(Triple("Test1", "Test2", "tws")),
+                    ),
+                )
+            ).build()
         ).build(),
         QuoteBuilder(
             displayName = "Travel Insurance",
@@ -497,7 +518,28 @@ val OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_ALL
                 id = "ab2a1f4c-83af-4b9f-98d2-e7ea767b080f",
                 displayName = "Annat Försäkringsbolag 2",
                 switchable = true
-            )
+            ),
+            detailsTable = TableFragmentBuilder(
+                title = "Travel Insurance",
+                sections = listOf(
+                    Pair(
+                        "Test",
+                        listOf(Triple("Test1", "Test2", "tws")),
+                    ),
+                    Pair(
+                        "Test",
+                        listOf(Triple("Test1", "Test2", "tws")),
+                    ),
+                    Pair(
+                        "Test",
+                        listOf(Triple("Test1", "Test2", "tws")),
+                    ),
+                    Pair(
+                        "Test",
+                        listOf(Triple("Test1", "Test2", "tws")),
+                    ),
+                )
+            ).build()
         ).build()
     ),
     frequentlyAskedQuestions = listOf(
