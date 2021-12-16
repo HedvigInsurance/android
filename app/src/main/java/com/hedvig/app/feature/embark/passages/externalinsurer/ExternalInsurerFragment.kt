@@ -20,6 +20,7 @@ import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.AskFor
 import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.AskForPriceInfoActivity.Companion.RESULT_CONTINUE
 import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.InsuranceProviderParameter
 import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceInfoActivity.Companion.REFERENCE_RESULT
+import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceInfoActivity.Companion.SSN_RESULT
 import com.hedvig.app.feature.embark.passages.previousinsurer.InsurerProviderBottomSheet
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerParameter
 import com.hedvig.app.util.extensions.showErrorDialog
@@ -42,6 +43,9 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
             if (result.resultCode == RESULT_CONTINUE) {
                 result.data?.getStringExtra(REFERENCE_RESULT)?.let {
                     embarkViewModel.putInStore("dataCollectionId", it)
+                }
+                result.data?.getStringExtra(SSN_RESULT)?.let {
+                    embarkViewModel.putInStore("personalNumber", it)
                 }
                 continueEmbark()
             }
