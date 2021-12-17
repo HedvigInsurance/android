@@ -56,6 +56,8 @@ import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
+import com.hedvig.app.util.featureflags.Feature
+import com.hedvig.app.util.featureflags.FeatureManager
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -80,6 +82,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     private val tracker: OfferTracker by inject()
     private val trackingFacade: TrackingFacade by inject()
     private val marketManager: MarketManager by inject()
+    private val featureManager: FeatureManager by inject()
     private var hasStartedRecyclerAnimation: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -348,7 +351,13 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     private fun onSign(signMethod: SignMethod, paymentMethods: PaymentMethodsApiResponse) {
         when (signMethod) {
             SignMethod.SWEDISH_BANK_ID -> model.onSwedishBankIdSign()
-            SignMethod.SIMPLE_SIGN -> startAdyenPayment(marketManager.market, paymentMethods)
+            SignMethod.SIMPLE_SIGN -> {
+                if (featureManager.isFeatureEnabled(Feature.CONNECT_PAYMENT_AT_SIGN)) {
+                    startAdyenPayment(marketManager.market, paymentMethods)
+                } else {
+                    model.onOpenCheckout()
+                }
+            }
             SignMethod.APPROVE_ONLY -> model.approveOffer()
             SignMethod.NORWEGIAN_BANK_ID,
             SignMethod.DANISH_BANK_ID,

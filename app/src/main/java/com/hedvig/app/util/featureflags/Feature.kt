@@ -41,5 +41,11 @@ enum class Feature(
         "Embark onboarding for Swedish market",
         "Will replace bot service",
         false
+    ),
+    CONNECT_PAYMENT_AT_SIGN(
+        "CONNECT_PAYMENT_AT_SIGN",
+        "Connect payment at sign",
+        "Connect payment at sign (offer screen) for SimpleSign - instead of after signing. NO and DK affected.",
+        false
     )
 }
