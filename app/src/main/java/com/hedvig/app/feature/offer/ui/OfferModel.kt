@@ -73,7 +73,6 @@ sealed class OfferModel {
         data class Retrieved(
             override val id: String,
             override val insuranceProviderDisplayName: String?,
-            val insurelyDataCollectionReferenceUuid: String,
             val currentInsurances: List<CurrentInsurance>,
             val savedWithHedvig: MonetaryAmount?,
         ) : InsurelyCard() {

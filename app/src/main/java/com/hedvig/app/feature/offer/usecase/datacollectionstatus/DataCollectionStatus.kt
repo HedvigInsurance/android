@@ -3,7 +3,7 @@ package com.hedvig.app.feature.offer.usecase.datacollectionstatus
 import com.hedvig.android.owldroid.graphql.DataCollectionStatusSubscription
 
 data class DataCollectionStatus(
-    val insuranceCompanyDisplayName: String?,
+    val insuranceCompany: String?,
     val subscriptionStatus: DataCollectionSubscriptionStatus,
 ) {
     companion object {

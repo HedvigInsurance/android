@@ -31,7 +31,6 @@ fun OfferModel.InsurelyCard.Retrieved.Companion.previewData(): OfferModel.Insure
     return OfferModel.InsurelyCard.Retrieved(
         id = UUID.randomUUID().toString(),
         insuranceProviderDisplayName = "Some Insurance",
-        insurelyDataCollectionReferenceUuid = "asd",
         currentInsurances = List(2) {
             OfferModel.InsurelyCard.Retrieved.CurrentInsurance(
                 "SmthInsrnce",

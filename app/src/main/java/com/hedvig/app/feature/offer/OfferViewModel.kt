@@ -26,14 +26,18 @@ import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.datacollectionresult.DataCollectionResult
 import com.hedvig.app.feature.offer.usecase.datacollectionresult.GetDataCollectionResultUseCase
 import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToDataCollectionStatusUseCase
+import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToDataCollectionStatusUseCase.Status.Content
+import com.hedvig.app.feature.offer.usecase.providerstatus.GetProviderDisplayNameUseCase
 import com.hedvig.app.feature.perils.PerilItem
 import e
+import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -134,6 +138,7 @@ class OfferViewModelImpl(
     private val getPostSignDependenciesUseCase: GetPostSignDependenciesUseCase,
     subscribeToDataCollectionStatusUseCase: SubscribeToDataCollectionStatusUseCase,
     private val getDataCollectionResultUseCase: GetDataCollectionResultUseCase,
+    private val getProviderDisplayNameUseCase: GetProviderDisplayNameUseCase,
     private val tracker: OfferTracker,
 ) : OfferViewModel() {
 
@@ -161,28 +166,40 @@ class OfferViewModelImpl(
                 if (insurelyDataCollectionReferenceUuid == null) {
                     emit(
                         produceViewState(
-                            offerResponse.offerData,
-                            offerResponse.loginStatus,
-                            null,
-                            null,
+                            data = offerResponse.offerData,
+                            loginStatus = offerResponse.loginStatus,
                         )
                     )
                 } else {
                     subscribeToDataCollectionStatusUseCase.invoke(insurelyDataCollectionReferenceUuid)
-                        .collect { dataCollectionStatus ->
-                            val dataCollectionResult = getDataCollectionResultUseCase
-                                .invoke(insurelyDataCollectionReferenceUuid)
-                                .let { result ->
-                                    (result as? GetDataCollectionResultUseCase.Result.Success)?.data
+                        .collectLatest { dataCollectionStatus ->
+                            coroutineScope {
+                                val dataCollectionResult = async {
+                                    getDataCollectionResultUseCase
+                                        .invoke(insurelyDataCollectionReferenceUuid)
+                                        .let { result ->
+                                            (result as? GetDataCollectionResultUseCase.Result.Success)?.data
+                                        }
                                 }
-                            emit(
-                                produceViewState(
-                                    offerResponse.offerData,
-                                    offerResponse.loginStatus,
-                                    dataCollectionStatus,
-                                    dataCollectionResult,
+                                val insuranceProviderDisplayName = async {
+                                    if (dataCollectionStatus is Content) {
+                                        val insuranceCompany =
+                                            dataCollectionStatus.dataCollectionStatus.insuranceCompany
+                                        getProviderDisplayNameUseCase.invoke(insuranceCompany)
+                                    } else {
+                                        null
+                                    }
+                                }
+                                emit(
+                                    produceViewState(
+                                        offerResponse.offerData,
+                                        offerResponse.loginStatus,
+                                        dataCollectionStatus,
+                                        dataCollectionResult.await(),
+                                        insuranceProviderDisplayName.await()
+                                    )
                                 )
-                            )
+                            }
                         }
                 }
             }
@@ -268,13 +285,15 @@ class OfferViewModelImpl(
     private fun produceViewState(
         data: OfferQuery.Data,
         loginStatus: LoginStatus,
-        dataCollectionStatus: SubscribeToDataCollectionStatusUseCase.Status?,
-        dataCollectionResult: DataCollectionResult?,
+        dataCollectionStatus: SubscribeToDataCollectionStatusUseCase.Status? = null,
+        dataCollectionResult: DataCollectionResult? = null,
+        insuranceProviderDisplayName: String? = null,
     ): ViewState {
         val topOfferItems = OfferItemsBuilder.createTopOfferItems(
             data,
             dataCollectionStatus,
-            dataCollectionResult
+            dataCollectionResult,
+            insuranceProviderDisplayName,
         )
         val perilItems = OfferItemsBuilder.createPerilItems(data.quoteBundle.quotes)
         val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(data.quoteBundle.quotes)
