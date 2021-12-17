@@ -55,8 +55,11 @@ fun RetrievedInfo(
                     data.currentInsurances.size > 1 -> {
                         resources.getQuantityString(R.plurals.offer_switcher_title, data.currentInsurances.size)
                     }
-                    data.insuranceProvider != null -> {
-                        stringResource(R.string.offer_screen_insurely_card_your_insurance_with, data.insuranceProvider)
+                    data.insuranceProviderDisplayName != null -> {
+                        stringResource(
+                            R.string.offer_screen_insurely_card_your_insurance_with,
+                            data.insuranceProviderDisplayName
+                        )
                     }
                     else -> {
                         resources.getQuantityString(R.plurals.offer_switcher_title, 1)

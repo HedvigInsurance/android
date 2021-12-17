@@ -90,7 +90,7 @@ class MockOfferViewModel : OfferViewModel() {
                 val topOfferItems = OfferItemsBuilder.createTopOfferItems(
                     mockData.offer,
                     mockData.dataCollectionStatus,
-                    mockData.dataCollectionResult?.data
+                    mockData.dataCollectionResult?.data,
                 )
                 val perilItems = OfferItemsBuilder.createPerilItems(mockData.offer.quoteBundle.quotes)
                 val documentItems = OfferItemsBuilder.createDocumentItems(mockData.offer.quoteBundle.quotes)

@@ -48,7 +48,7 @@ fun InsurelyCard(
     ) {
         Box(Modifier.animateContentSize()) {
             when (data) {
-                is FailedToRetrieve -> FailedToRetrieveInfo(data.insuranceProvider)
+                is FailedToRetrieve -> FailedToRetrieveInfo(data.insuranceProviderDisplayName)
                 is Loading -> LoadingRetrieval(locale)
                 is Retrieved -> RetrievedInfo(data, locale)
             }

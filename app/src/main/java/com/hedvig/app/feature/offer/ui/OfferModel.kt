@@ -63,19 +63,18 @@ sealed class OfferModel {
 
     sealed class InsurelyCard : OfferModel() {
         abstract val id: String
-        abstract val insuranceProvider: String?
+        abstract val insuranceProviderDisplayName: String?
 
-        data class Loading(override val id: String, override val insuranceProvider: String?) : InsurelyCard()
+        data class Loading(override val id: String, override val insuranceProviderDisplayName: String?) : InsurelyCard()
 
         data class FailedToRetrieve(
             override val id: String,
-            override val insuranceProvider: String? = null,
+            override val insuranceProviderDisplayName: String? = null,
         ) : InsurelyCard()
 
         data class Retrieved(
             override val id: String,
-            override val insuranceProvider: String?,
-            val insurelyDataCollectionReferenceUuid: String,
+            override val insuranceProviderDisplayName: String?,
             val currentInsurances: List<CurrentInsurance>,
             val savedWithHedvig: MonetaryAmount?,
         ) : InsurelyCard() {

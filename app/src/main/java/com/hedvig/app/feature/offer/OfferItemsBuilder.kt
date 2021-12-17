@@ -31,10 +31,12 @@ object OfferItemsBuilder {
         offerData: OfferQuery.Data,
         dataCollectionStatus: SubscribeToDataCollectionStatusUseCase.Status? = null,
         dataCollectionResult: DataCollectionResult? = null,
+        insuranceProviderDisplayName: String? = null,
     ): List<OfferModel> = TopOfferItemsBuilder.createTopOfferItems(
         offerData,
         dataCollectionStatus,
         dataCollectionResult,
+        insuranceProviderDisplayName,
     )
 
     fun createDocumentItems(data: List<OfferQuery.Quote>): List<DocumentItems> {
@@ -83,6 +85,7 @@ object TopOfferItemsBuilder {
         offerData: OfferQuery.Data,
         dataCollectionStatus: SubscribeToDataCollectionStatusUseCase.Status? = null,
         dataCollectionResult: DataCollectionResult? = null,
+        insuranceProviderDisplayName: String?,
     ): List<OfferModel> = buildList {
         val bundle = offerData.quoteBundle
         add(
@@ -115,10 +118,22 @@ object TopOfferItemsBuilder {
             add(OfferModel.PriceComparisonHeader)
             when (dataCollectionStatus) {
                 is Error -> {
-                    add(OfferModel.InsurelyCard.FailedToRetrieve(dataCollectionStatus.referenceUuid))
+                    add(
+                        OfferModel.InsurelyCard.FailedToRetrieve(
+                            id = dataCollectionStatus.referenceUuid,
+                            insuranceProviderDisplayName = insuranceProviderDisplayName
+                        )
+                    )
                 }
                 is Content -> {
-                    add(mapContentToInsurelyCard(dataCollectionStatus, dataCollectionResult, offerData))
+                    add(
+                        mapContentToInsurelyCard(
+                            dataCollectionStatus,
+                            dataCollectionResult,
+                            offerData,
+                            insuranceProviderDisplayName,
+                        )
+                    )
                 }
             }
         }
@@ -138,19 +153,20 @@ object TopOfferItemsBuilder {
         dataCollectionStatusContent: Content,
         dataCollectionResult: DataCollectionResult?,
         offerData: OfferQuery.Data,
+        insuranceProviderDisplayName: String?,
     ): OfferModel.InsurelyCard {
         val referenceUuid = dataCollectionStatusContent.referenceUuid
         val result = dataCollectionStatusContent.dataCollectionStatus
 
         return when (result.subscriptionStatus) {
-            IN_PROGRESS -> OfferModel.InsurelyCard.Loading(referenceUuid, result.insuranceCompany)
-            FAILED -> OfferModel.InsurelyCard.FailedToRetrieve(referenceUuid, result.insuranceCompany)
+            IN_PROGRESS -> OfferModel.InsurelyCard.Loading(referenceUuid, insuranceProviderDisplayName)
+            FAILED -> OfferModel.InsurelyCard.FailedToRetrieve(referenceUuid, insuranceProviderDisplayName)
             COMPLETE -> {
                 when (dataCollectionResult) {
                     null,
                     is DataCollectionResult.Empty,
                     -> {
-                        OfferModel.InsurelyCard.FailedToRetrieve(referenceUuid, result.insuranceCompany)
+                        OfferModel.InsurelyCard.FailedToRetrieve(referenceUuid, insuranceProviderDisplayName)
                     }
                     is DataCollectionResult.Content -> {
                         val collectionResult = dataCollectionResult.collectedList
@@ -168,10 +184,9 @@ object TopOfferItemsBuilder {
                         val savedWithHedvig = otherPremium?.minus(ourPremium)?.takeIf(MonetaryAmount::isPositive)
                         OfferModel.InsurelyCard.Retrieved(
                             id = referenceUuid,
-                            insuranceProvider = result.insuranceCompany,
-                            insurelyDataCollectionReferenceUuid = "",
+                            insuranceProviderDisplayName = insuranceProviderDisplayName,
                             currentInsurances = currentInsurances,
-                            savedWithHedvig = savedWithHedvig
+                            savedWithHedvig = savedWithHedvig,
                         )
                     }
                 }
