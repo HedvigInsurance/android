@@ -23,6 +23,7 @@ import java.util.UUID
 fun ClaimStatusCard(
     claimStatusCardData: ClaimStatusCardData,
     modifier: Modifier = Modifier,
+    isClickable: Boolean = false,
 ) {
     Card(
         modifier = modifier,
@@ -33,6 +34,7 @@ fun ClaimStatusCard(
                 pillDataList = claimStatusCardData.pillData,
                 title = claimStatusCardData.title,
                 subtitle = claimStatusCardData.subtitle,
+                isClickable = isClickable,
                 modifier = Modifier.padding(16.dp)
             )
             Divider()

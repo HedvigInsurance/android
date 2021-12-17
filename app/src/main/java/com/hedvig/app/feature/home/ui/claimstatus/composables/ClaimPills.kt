@@ -3,8 +3,13 @@ package com.hedvig.app.feature.home.ui.claimstatus.composables
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,9 +28,10 @@ import com.hedvig.app.util.compose.preview.previewData
 fun ClaimPills(
     pillData: List<PillData>,
     modifier: Modifier = Modifier,
+    isClickable: Boolean = false,
 ) {
     Row(
-        modifier = modifier,
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Top,
     ) {
@@ -37,8 +43,13 @@ fun ClaimPills(
                 )
             }
         }
-        // TODO: Uncomment and check figma layout when the card is clickable to go to detail screen
-//        Icon(Icons.Default.ArrowForward, contentDescription = null)
+        if (isClickable) {
+            Icon(
+                imageVector = Icons.Default.ArrowForward,
+                contentDescription = null,
+                modifier = Modifier.size(16.dp)
+            )
+        }
     }
 }
 
@@ -66,7 +77,7 @@ fun PillsPreview(
         Surface(
             color = MaterialTheme.colors.background,
         ) {
-            ClaimPills(pillData)
+            ClaimPills(pillData, isClickable = true)
         }
     }
 }

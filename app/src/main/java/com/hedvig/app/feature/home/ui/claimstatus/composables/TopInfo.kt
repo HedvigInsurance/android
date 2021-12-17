@@ -24,9 +24,10 @@ fun TopInfo(
     title: String,
     subtitle: String,
     modifier: Modifier = Modifier,
+    isClickable: Boolean = false,
 ) {
     Column(modifier = modifier) {
-        ClaimPills(pillDataList)
+        ClaimPills(pillDataList, isClickable = isClickable)
         Spacer(modifier = Modifier.height(20.dp))
         Text(title)
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {

@@ -55,7 +55,8 @@ fun ClaimStatusCards(
                     .padding(itemSpacingPadding)
                     .clickable(enabled = onCardClick != null, onClick = {
                         onCardClick?.invoke(claimStatusData)
-                    })
+                    }),
+                isClickable = onCardClick != null
             )
         }
         if (claimStatusCardDataList.size == 1) {
