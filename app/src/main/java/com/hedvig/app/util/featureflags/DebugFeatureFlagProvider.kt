@@ -18,6 +18,7 @@ class DebugFeatureFlagProvider(
             Feature.FRANCE_MARKET -> true
             Feature.SE_EMBARK_ONBOARDING -> true
             Feature.CONNECT_PAYMENT_AT_SIGN -> true
+            Feature.ADDRESS_AUTO_COMPLETE -> true
         }
     }
 

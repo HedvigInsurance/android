@@ -43,7 +43,7 @@ object OfferScreen : KScreen<OfferScreen>() {
     }
 
     class Facts(parent: Matcher<View>) : KRecyclerItem<Facts>(parent) {
-        val expandableContent = KView(parent) { withId(R.id.expandableContentView) }
+        val expandableContent = KView(parent) { withId(R.id.expandableContent) }
     }
 
     class QuoteDetail(parent: Matcher<View>) : KRecyclerItem<QuoteDetail>(parent) {

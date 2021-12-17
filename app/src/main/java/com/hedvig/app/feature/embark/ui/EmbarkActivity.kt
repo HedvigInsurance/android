@@ -21,6 +21,8 @@ import com.hedvig.app.databinding.ActivityEmbarkBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.NavigationDirection
 import com.hedvig.app.feature.embark.passages.UpgradeAppFragment
+import com.hedvig.app.feature.embark.passages.addressautocomplete.AddressAutoCompleteFragment
+import com.hedvig.app.feature.embark.passages.addressautocomplete.AddressAutoCompleteParams
 import com.hedvig.app.feature.embark.passages.audiorecorder.AudioRecorderFragment
 import com.hedvig.app.feature.embark.passages.audiorecorder.AudioRecorderParameters
 import com.hedvig.app.feature.embark.passages.datepicker.DatePickerFragment
@@ -46,6 +48,8 @@ import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.viewBinding
+import com.hedvig.app.util.featureflags.Feature
+import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.app.util.whenApiVersion
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -68,6 +72,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
     private val model: EmbarkViewModel by viewModel { parametersOf(storyName) }
     private val binding by viewBinding(ActivityEmbarkBinding::bind)
     private val marketManager: MarketManager by inject()
+    private val featureManager: FeatureManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -360,6 +365,19 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 link = audioRecorderAction.audioRecorderActionData.next.fragments.embarkLinkFragment.name,
             )
             return AudioRecorderFragment.newInstance(params)
+        }
+
+        if (featureManager.isFeatureEnabled(Feature.ADDRESS_AUTO_COMPLETE)) {
+            passage?.action?.asEmbarkAddressAutocompleteAction?.let { addressAutocompleteAction ->
+                val params = AddressAutoCompleteParams(
+                    messages = passage.messages.map { it.fragments.messageFragment.text },
+                    key = addressAutocompleteAction.addressAutocompleteActionData.key,
+                    placeholder = addressAutocompleteAction.addressAutocompleteActionData.placeholder,
+                    link = addressAutocompleteAction.addressAutocompleteActionData.link
+                        .fragments.embarkLinkFragment.name,
+                )
+                return AddressAutoCompleteFragment.newInstance(params)
+            }
         }
 
         return UpgradeAppFragment.newInstance()

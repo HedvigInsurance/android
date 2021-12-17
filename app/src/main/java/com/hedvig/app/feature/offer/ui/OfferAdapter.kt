@@ -12,7 +12,6 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.view.doOnNextLayout
 import androidx.core.view.isVisible
 import androidx.core.view.updatePaddingRelative
 import androidx.fragment.app.FragmentManager
@@ -218,18 +217,11 @@ class OfferAdapter(
         class Facts(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_fact_area)) {
             private val binding by viewBinding(OfferFactAreaBinding::bind)
 
-            init {
-                binding.expandableContentView.initialize()
-            }
-
             override fun bind(data: OfferModel) {
                 if (data !is OfferModel.Facts) {
                     return invalid(data)
                 }
                 generateTable(binding.expandableContent, data.table)
-                binding.expandableContentView.doOnNextLayout {
-                    binding.expandableContentView.contentSizeChanged()
-                }
             }
         }
 

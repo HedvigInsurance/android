@@ -23,5 +23,6 @@ data class DatePickerActionBuilder(
         asEmbarkMultiAction = null,
         asEmbarkAudioRecorderAction = null,
         asEmbarkExternalInsuranceProviderAction = null,
+        asEmbarkAddressAutocompleteAction = null,
     )
 }

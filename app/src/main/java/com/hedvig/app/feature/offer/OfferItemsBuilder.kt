@@ -122,7 +122,9 @@ object TopOfferItemsBuilder {
                 }
             }
         }
-        add(OfferModel.Facts(bundle.quotes[0].detailsTable.fragments.tableFragment.intoTable()))
+        bundle.quotes.map {
+            add(OfferModel.Facts(it.detailsTable.fragments.tableFragment.intoTable()))
+        }
         add(OfferModel.Subheading.Coverage)
         if (bundle.quotes.size > 1) {
             add(OfferModel.Paragraph.Coverage)
