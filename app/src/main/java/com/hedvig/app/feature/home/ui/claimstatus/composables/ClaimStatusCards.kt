@@ -15,6 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import arrow.core.NonEmptyList
+import arrow.core.nonEmptyListOf
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
@@ -28,7 +30,7 @@ import java.util.UUID
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun ClaimStatusCards(claimStatusCardDataList: List<ClaimStatusCardData>) {
+fun ClaimStatusCards(claimStatusCardDataList: NonEmptyList<ClaimStatusCardData>) {
     val pagerState = rememberPagerState(claimStatusCardDataList.size)
     Column {
         val screenWidth = LocalConfiguration.current.screenWidthDp.dp
@@ -77,7 +79,7 @@ fun ClaimStatusCardsPreview() {
                 subtitle = "Contents insurance",
                 claimProgressData = ClaimProgressData.previewData()
             )
-            ClaimStatusCards(listOf(claimStatusData))
+            ClaimStatusCards(nonEmptyListOf(claimStatusData))
         }
     }
 }
