@@ -35,7 +35,7 @@ class ThreeMixedSwitchableSwitcherTest : TestCase() {
 
         OfferScreen {
             scroll {
-                val startIndex = 8
+                val startIndex = 10
                 childAt<OfferScreen.SwitcherItem>(startIndex) {
                     associatedQuote {
                         isVisible()
