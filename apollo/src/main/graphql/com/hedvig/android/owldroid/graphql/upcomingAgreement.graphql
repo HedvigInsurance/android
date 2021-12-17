@@ -30,28 +30,7 @@ fragment UpcomingAgreementFragment on Contract {
 
 fragment UpcomingAgreementChangeFragment on UpcomingAgreementChange {
   newAgreement {
-    ... on SwedishApartmentAgreement {
-      address {
-        ...AddressFragment
-      }
-      activeFrom
-    }
-    ... on SwedishHouseAgreement {
-      address {
-        ...AddressFragment
-      }
-      activeFrom
-    }
-    ... on NorwegianHomeContentAgreement {
-      address {
-        ...AddressFragment
-      }
-      activeFrom
-    }
-    ... on DanishHomeContentAgreement {
-      address {
-        ...AddressFragment
-      }
+    ... on AgreementCore {
       activeFrom
     }
   }
