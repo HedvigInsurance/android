@@ -41,5 +41,11 @@ enum class Feature(
         "Embark onboarding for Swedish market",
         "Will replace bot service",
         false
-    )
+    ),
+    CLAIMS_STATUS_V2(
+        "claims_status_v2",
+        "Clickable claim status card with a detail screen",
+        "Will be enabled when the detail screen is ready for production",
+        false
+    ),
 }

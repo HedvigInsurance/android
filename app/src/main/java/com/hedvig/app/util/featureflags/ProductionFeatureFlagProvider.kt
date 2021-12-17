@@ -18,6 +18,7 @@ class ProductionFeatureFlagProvider(
             Feature.CLAIMS_STATUS -> true
             Feature.FRANCE_MARKET -> false
             Feature.SE_EMBARK_ONBOARDING -> false
+            Feature.CLAIMS_STATUS_V2 -> false
         }
     }
 

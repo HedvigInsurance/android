@@ -58,7 +58,8 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             startIntentForResult = ::startEmbarkForResult,
             imageLoader = imageLoader,
             tracker = tracker,
-            marketManager = marketManager
+            marketManager = marketManager,
+            areClaimCardsClickable = featureManager.isFeatureEnabled(Feature.CLAIMS_STATUS_V2),
         )
 
         binding.swipeToRefresh.setOnRefreshListener {
