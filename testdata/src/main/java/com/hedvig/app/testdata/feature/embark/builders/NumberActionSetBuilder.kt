@@ -50,5 +50,6 @@ data class NumberActionSetBuilder(
         asEmbarkDatePickerAction = null,
         asEmbarkAudioRecorderAction = null,
         asEmbarkExternalInsuranceProviderAction = null,
+        asEmbarkAddressAutocompleteAction = null,
     )
 }

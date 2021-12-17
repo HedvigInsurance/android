@@ -41,5 +41,11 @@ enum class Feature(
         "Embark onboarding for Swedish market",
         "Will replace bot service",
         false
+    ),
+    ADDRESS_AUTO_COMPLETE(
+        "address_auto_complete",
+        "Embark component for autocompleting address",
+        "Used in danish onboarding",
+        false
     )
 }

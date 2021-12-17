@@ -21,7 +21,8 @@ data class SelectActionBuilder(
         asEmbarkDatePickerAction = null,
         asEmbarkMultiAction = null,
         asEmbarkAudioRecorderAction = null,
-        asEmbarkExternalInsuranceProviderAction = null
+        asEmbarkExternalInsuranceProviderAction = null,
+        asEmbarkAddressAutocompleteAction = null,
     )
 }
 
