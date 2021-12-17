@@ -107,6 +107,7 @@ object TopOfferItemsBuilder {
                 showCampaignManagement = bundle.appConfiguration.showCampaignManagement,
                 ignoreCampaigns = bundle.appConfiguration.ignoreCampaigns,
                 gradientType = offerData.gradientType(),
+                paymentMethodsApiResponse = offerData.availablePaymentMethods.paymentMethodsResponse
             ),
         )
         val showInsurelyInformation = dataCollectionStatus != null

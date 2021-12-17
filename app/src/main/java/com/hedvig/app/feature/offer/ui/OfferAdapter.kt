@@ -18,6 +18,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.BASE_MARGIN_DOUBLE
@@ -62,7 +63,7 @@ class OfferAdapter(
     private val locale: Locale,
     private val openQuoteDetails: (quoteID: String) -> Unit,
     private val onRemoveDiscount: () -> Unit,
-    private val onSign: (SignMethod) -> Unit,
+    private val onSign: (SignMethod, PaymentMethodsApiResponse) -> Unit,
     private val reload: () -> Unit,
     private val openChat: () -> Unit,
 ) : ListAdapter<OfferModel, OfferAdapter.ViewHolder>(OfferDiffUtilCallback()) {
@@ -128,7 +129,7 @@ class OfferAdapter(
             private val locale: Locale,
             private val fragmentManager: FragmentManager,
             private val tracker: OfferTracker,
-            private val onSign: (SignMethod) -> Unit,
+            private val onSign: (SignMethod, PaymentMethodsApiResponse) -> Unit,
             private val onRemoveDiscount: () -> Unit,
         ) : ViewHolder(parent.inflate(R.layout.offer_header)) {
             private val binding by viewBinding(OfferHeaderBinding::bind)
@@ -205,7 +206,7 @@ class OfferAdapter(
                         }
                         setHapticClickListener {
                             tracker.checkoutHeader(data.checkoutLabel.localizationKey(context))
-                            onSign(data.signMethod)
+                            onSign(data.signMethod, data.paymentMethodsApiResponse)
                         }
                     }
                     root.background = data.gradientType.toDrawable(itemView.context)
