@@ -5,11 +5,11 @@ import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimProgressData
 import com.hedvig.app.feature.home.ui.claimstatus.data.PillData
 import com.hedvig.app.feature.offer.ui.OfferModel
 import org.javamoney.moneta.Money
+import java.time.Duration
+import java.time.Instant
 import java.util.UUID
 import javax.money.CurrencyContext
 import javax.money.CurrencyUnit
-import java.time.Duration
-import java.time.Instant
 
 fun PillData.Companion.previewData(): List<PillData> {
     return PillData.PillType.values().dropLast(1).map { pillType ->
