@@ -7,5 +7,6 @@ sealed class PreviousInsurerItem {
         val name: String,
         val icon: String?,
         val id: String,
+        val collectionId: String? = null,
     ) : PreviousInsurerItem()
 }

@@ -18,6 +18,8 @@ class ProductionFeatureFlagProvider(
             Feature.CLAIMS_STATUS -> true
             Feature.FRANCE_MARKET -> false
             Feature.SE_EMBARK_ONBOARDING -> false
+            Feature.CONNECT_PAYMENT_AT_SIGN -> false
+            Feature.ADDRESS_AUTO_COMPLETE -> false
             Feature.CLAIMS_STATUS_V2 -> false
         }
     }

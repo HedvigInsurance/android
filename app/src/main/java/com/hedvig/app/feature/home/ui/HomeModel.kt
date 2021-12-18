@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.home.ui
 
 import androidx.annotation.StringRes
+import arrow.core.NonEmptyList
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
@@ -40,7 +41,7 @@ sealed class HomeModel {
     }
 
     data class ClaimStatus(
-        val claimStatusCardDataList: List<ClaimStatusCardData>,
+        val claimStatusCardDataList: NonEmptyList<ClaimStatusCardData>,
     ) : HomeModel()
 
     sealed class StartClaimOutlined : HomeModel() {

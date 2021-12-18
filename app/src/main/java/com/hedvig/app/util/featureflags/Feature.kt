@@ -42,6 +42,18 @@ enum class Feature(
         "Will replace bot service",
         false
     ),
+    CONNECT_PAYMENT_AT_SIGN(
+        "CONNECT_PAYMENT_AT_SIGN",
+        "Connect payment at sign",
+        "Connect payment at sign (offer screen) for SimpleSign - instead of after signing. NO and DK affected.",
+        false
+    ),
+    ADDRESS_AUTO_COMPLETE(
+        "address_auto_complete",
+        "Embark component for autocompleting address",
+        "Used in danish onboarding",
+        false
+    ),
     CLAIMS_STATUS_V2(
         "claims_status_v2",
         "Clickable claim status card with a detail screen",

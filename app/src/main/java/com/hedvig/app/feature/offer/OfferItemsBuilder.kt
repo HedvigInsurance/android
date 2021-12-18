@@ -31,10 +31,12 @@ object OfferItemsBuilder {
         offerData: OfferQuery.Data,
         dataCollectionStatus: SubscribeToDataCollectionStatusUseCase.Status? = null,
         dataCollectionResult: DataCollectionResult? = null,
+        insuranceProviderDisplayName: String? = null,
     ): List<OfferModel> = TopOfferItemsBuilder.createTopOfferItems(
         offerData,
         dataCollectionStatus,
         dataCollectionResult,
+        insuranceProviderDisplayName,
     )
 
     fun createDocumentItems(data: List<OfferQuery.Quote>): List<DocumentItems> {
@@ -83,6 +85,7 @@ object TopOfferItemsBuilder {
         offerData: OfferQuery.Data,
         dataCollectionStatus: SubscribeToDataCollectionStatusUseCase.Status? = null,
         dataCollectionResult: DataCollectionResult? = null,
+        insuranceProviderDisplayName: String?,
     ): List<OfferModel> = buildList {
         val bundle = offerData.quoteBundle
         add(
@@ -107,6 +110,7 @@ object TopOfferItemsBuilder {
                 showCampaignManagement = bundle.appConfiguration.showCampaignManagement,
                 ignoreCampaigns = bundle.appConfiguration.ignoreCampaigns,
                 gradientType = offerData.gradientType(),
+                paymentMethodsApiResponse = offerData.availablePaymentMethods.paymentMethodsResponse
             ),
         )
         val showInsurelyInformation = dataCollectionStatus != null
@@ -114,14 +118,28 @@ object TopOfferItemsBuilder {
             add(OfferModel.PriceComparisonHeader)
             when (dataCollectionStatus) {
                 is Error -> {
-                    add(OfferModel.InsurelyCard.FailedToRetrieve(dataCollectionStatus.referenceUuid))
+                    add(
+                        OfferModel.InsurelyCard.FailedToRetrieve(
+                            id = dataCollectionStatus.referenceUuid,
+                            insuranceProviderDisplayName = insuranceProviderDisplayName
+                        )
+                    )
                 }
                 is Content -> {
-                    add(mapContentToInsurelyCard(dataCollectionStatus, dataCollectionResult, offerData))
+                    add(
+                        mapContentToInsurelyCard(
+                            dataCollectionStatus,
+                            dataCollectionResult,
+                            offerData,
+                            insuranceProviderDisplayName,
+                        )
+                    )
                 }
             }
         }
-        add(OfferModel.Facts(bundle.quotes[0].detailsTable.fragments.tableFragment.intoTable()))
+        bundle.quotes.map {
+            add(OfferModel.Facts(it.detailsTable.fragments.tableFragment.intoTable()))
+        }
         add(OfferModel.Subheading.Coverage)
         if (bundle.quotes.size > 1) {
             add(OfferModel.Paragraph.Coverage)
@@ -135,37 +153,42 @@ object TopOfferItemsBuilder {
         dataCollectionStatusContent: Content,
         dataCollectionResult: DataCollectionResult?,
         offerData: OfferQuery.Data,
+        insuranceProviderDisplayName: String?,
     ): OfferModel.InsurelyCard {
         val referenceUuid = dataCollectionStatusContent.referenceUuid
         val result = dataCollectionStatusContent.dataCollectionStatus
 
         return when (result.subscriptionStatus) {
-            IN_PROGRESS -> OfferModel.InsurelyCard.Loading(referenceUuid, result.insuranceCompany)
-            FAILED -> OfferModel.InsurelyCard.FailedToRetrieve(referenceUuid, result.insuranceCompany)
+            IN_PROGRESS -> OfferModel.InsurelyCard.Loading(referenceUuid, insuranceProviderDisplayName)
+            FAILED -> OfferModel.InsurelyCard.FailedToRetrieve(referenceUuid, insuranceProviderDisplayName)
             COMPLETE -> {
-                val collectionResult = dataCollectionResult?.collectedList
-                if (collectionResult == null) {
-                    OfferModel.InsurelyCard.FailedToRetrieve(referenceUuid, result.insuranceCompany)
-                } else {
-                    val currentInsurances = collectionResult
-                        .mapNotNull { collectedInsuranceData ->
-                            val name = collectedInsuranceData.name
-                            val finalPremium = collectedInsuranceData.netPremium
-                            if (name == null || finalPremium == null) return@mapNotNull null
-                            OfferModel.InsurelyCard.Retrieved.CurrentInsurance(name, finalPremium)
-                        }
-                    val ourPremium = offerData.finalPremium
-                    val otherPremium = collectionResult
-                        .mapNotNull { it.netPremium }
-                        .reduceOrNull(MonetaryAmount::add)
-                    val savedWithHedvig = otherPremium?.minus(ourPremium)?.takeIf { it.isPositive }
-                    OfferModel.InsurelyCard.Retrieved(
-                        id = referenceUuid,
-                        insuranceProvider = result.insuranceCompany,
-                        insurelyDataCollectionReferenceUuid = "",
-                        currentInsurances = currentInsurances,
-                        savedWithHedvig = savedWithHedvig
-                    )
+                when (dataCollectionResult) {
+                    null,
+                    is DataCollectionResult.Empty,
+                    -> {
+                        OfferModel.InsurelyCard.FailedToRetrieve(referenceUuid, insuranceProviderDisplayName)
+                    }
+                    is DataCollectionResult.Content -> {
+                        val collectionResult = dataCollectionResult.collectedList
+                        val currentInsurances = collectionResult
+                            .mapNotNull { collectedInsuranceData ->
+                                val name = collectedInsuranceData.name
+                                val finalPremium = collectedInsuranceData.netPremium
+                                if (name == null || finalPremium == null) return@mapNotNull null
+                                OfferModel.InsurelyCard.Retrieved.CurrentInsurance(name, finalPremium)
+                            }
+                        val ourPremium = offerData.finalPremium
+                        val otherPremium = collectionResult
+                            .mapNotNull { it.netPremium }
+                            .reduceOrNull(MonetaryAmount::add)
+                        val savedWithHedvig = otherPremium?.minus(ourPremium)?.takeIf(MonetaryAmount::isPositive)
+                        OfferModel.InsurelyCard.Retrieved(
+                            id = referenceUuid,
+                            insuranceProviderDisplayName = insuranceProviderDisplayName,
+                            currentInsurances = currentInsurances,
+                            savedWithHedvig = savedWithHedvig,
+                        )
+                    }
                 }
             }
         }

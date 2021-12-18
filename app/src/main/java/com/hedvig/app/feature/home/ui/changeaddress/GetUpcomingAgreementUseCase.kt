@@ -52,7 +52,6 @@ class GetUpcomingAgreementUseCase(
         @Parcelize
         data class UpcomingAgreement(
             val activeFrom: LocalDate?,
-            val address: String?,
             val table: Table?,
         ) : UpcomingAgreementResult(), Parcelable
 

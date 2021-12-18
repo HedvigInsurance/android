@@ -16,6 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import arrow.core.NonEmptyList
+import arrow.core.nonEmptyListOf
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
@@ -32,7 +34,7 @@ import java.util.UUID
 @Composable
 fun ClaimStatusCards(
     onCardClick: ((ClaimStatusCardData) -> Unit)?,
-    claimStatusCardDataList: List<ClaimStatusCardData>,
+    claimStatusCardDataList: NonEmptyList<ClaimStatusCardData>,
 ) {
     val pagerState = rememberPagerState(claimStatusCardDataList.size)
     Column {
@@ -89,7 +91,7 @@ fun ClaimStatusCardsPreview() {
             )
             ClaimStatusCards(
                 onCardClick = {},
-                claimStatusCardDataList = listOf(claimStatusData),
+                claimStatusCardDataList = nonEmptyListOf(claimStatusData),
             )
         }
     }

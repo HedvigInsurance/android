@@ -12,13 +12,13 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.view.doOnNextLayout
 import androidx.core.view.isVisible
 import androidx.core.view.updatePaddingRelative
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.BASE_MARGIN_DOUBLE
@@ -63,7 +63,7 @@ class OfferAdapter(
     private val locale: Locale,
     private val openQuoteDetails: (quoteID: String) -> Unit,
     private val onRemoveDiscount: () -> Unit,
-    private val onSign: (SignMethod) -> Unit,
+    private val onSign: (SignMethod, PaymentMethodsApiResponse) -> Unit,
     private val reload: () -> Unit,
     private val openChat: () -> Unit,
 ) : ListAdapter<OfferModel, OfferAdapter.ViewHolder>(OfferDiffUtilCallback()) {
@@ -129,7 +129,7 @@ class OfferAdapter(
             private val locale: Locale,
             private val fragmentManager: FragmentManager,
             private val tracker: OfferTracker,
-            private val onSign: (SignMethod) -> Unit,
+            private val onSign: (SignMethod, PaymentMethodsApiResponse) -> Unit,
             private val onRemoveDiscount: () -> Unit,
         ) : ViewHolder(parent.inflate(R.layout.offer_header)) {
             private val binding by viewBinding(OfferHeaderBinding::bind)
@@ -206,7 +206,7 @@ class OfferAdapter(
                         }
                         setHapticClickListener {
                             tracker.checkoutHeader(data.checkoutLabel.localizationKey(context))
-                            onSign(data.signMethod)
+                            onSign(data.signMethod, data.paymentMethodsApiResponse)
                         }
                     }
                     root.background = data.gradientType.toDrawable(itemView.context)
@@ -217,18 +217,11 @@ class OfferAdapter(
         class Facts(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_fact_area)) {
             private val binding by viewBinding(OfferFactAreaBinding::bind)
 
-            init {
-                binding.expandableContentView.initialize()
-            }
-
             override fun bind(data: OfferModel) {
                 if (data !is OfferModel.Facts) {
                     return invalid(data)
                 }
                 generateTable(binding.expandableContent, data.table)
-                binding.expandableContentView.doOnNextLayout {
-                    binding.expandableContentView.contentSizeChanged()
-                }
             }
         }
 

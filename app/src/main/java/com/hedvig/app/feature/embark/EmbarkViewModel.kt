@@ -99,12 +99,12 @@ abstract class EmbarkViewModel(
     }
 
     fun submitAction(nextPassageName: String, submitIndex: Int = 0) {
-        viewState.value?.passage?.let { currentPassage ->
-            currentPassage.action?.api(submitIndex)?.let { api ->
-                callApi(api)
-            }
+        val apiFromAction = viewState.value?.passage?.action?.api(submitIndex)
+        if (apiFromAction != null) {
+            callApi(apiFromAction)
+        } else {
+            navigateToPassage(nextPassageName)
         }
-        navigateToPassage(nextPassageName)
     }
 
     private fun navigateToPassage(passageName: String) {

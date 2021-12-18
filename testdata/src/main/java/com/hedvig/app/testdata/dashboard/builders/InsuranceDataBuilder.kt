@@ -1,6 +1,5 @@
 package com.hedvig.app.testdata.dashboard.builders
 
-import com.hedvig.android.owldroid.fragment.AddressFragment
 import com.hedvig.android.owldroid.fragment.ContractStatusFragment
 import com.hedvig.android.owldroid.fragment.InsurableLimitsFragment
 import com.hedvig.android.owldroid.fragment.TableFragment
@@ -138,23 +137,10 @@ class InsuranceDataBuilder(
                                             fragments = UpcomingAgreementFragment.UpcomingAgreementChange.Fragments(
                                                 upcomingAgreementChangeFragment = UpcomingAgreementChangeFragment(
                                                     newAgreement = UpcomingAgreementChangeFragment.NewAgreement(
-                                                        asSwedishApartmentAgreement = UpcomingAgreementChangeFragment
-                                                            .AsSwedishApartmentAgreement(
-                                                                address = UpcomingAgreementChangeFragment.Address(
-                                                                    fragments = UpcomingAgreementChangeFragment.Address
-                                                                        .Fragments(
-                                                                            addressFragment = AddressFragment(
-                                                                                street = "Test street",
-                                                                                postalCode = "123",
-                                                                                city = "Test city"
-                                                                            )
-                                                                        )
-                                                                ),
-                                                                activeFrom = LocalDate.of(2021, 1, 13)
+                                                        asAgreementCore = UpcomingAgreementChangeFragment
+                                                            .AsAgreementCore(
+                                                                activeFrom = LocalDate.of(2021, 1, 13),
                                                             ),
-                                                        asDanishHomeContentAgreement = null,
-                                                        asNorwegianHomeContentAgreement = null,
-                                                        asSwedishHouseAgreement = null
                                                     )
                                                 )
                                             )

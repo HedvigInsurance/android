@@ -95,4 +95,9 @@ class PreviousInsurerAdapter(
     }
 }
 
-private fun PreviousInsurerParameter.PreviousInsurer.toListItem() = PreviousInsurerItem.Insurer(name, icon, id)
+private fun PreviousInsurerParameter.PreviousInsurer.toListItem() = PreviousInsurerItem.Insurer(
+    name = name,
+    icon = icon,
+    id = id,
+    collectionId = collectionId
+)

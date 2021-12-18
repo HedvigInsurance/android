@@ -14,6 +14,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceInfoActivity
+import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceInfoActivity.Companion.REFERENCE_RESULT
+import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceInfoActivity.Companion.SSN_RESULT
 import com.hedvig.app.ui.compose.composables.appbar.TopAppBarWithBack
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 
@@ -27,7 +29,10 @@ class AskForPriceInfoActivity : BaseActivity() {
     private val retrievePriceActivityResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == RESULT_CONTINUE) {
-                finishWithResult()
+                finishWithResult(
+                    result.data?.getStringExtra(REFERENCE_RESULT),
+                    result.data?.getStringExtra(SSN_RESULT)
+                )
             }
         }
 
@@ -45,7 +50,7 @@ class AskForPriceInfoActivity : BaseActivity() {
                 ) {
                     AskForPriceScreen(
                         parameter.selectedInsuranceProviderName,
-                        onSkipRetrievePriceInfo = ::finishWithResult,
+                        onSkipRetrievePriceInfo = { finishWithResult(null, null) },
                         onNavigateToRetrievePrice = ::startRetrievePriceActivity
                     )
                 }
@@ -57,8 +62,11 @@ class AskForPriceInfoActivity : BaseActivity() {
         retrievePriceActivityResultLauncher.launch(RetrievePriceInfoActivity.createIntent(this, parameter))
     }
 
-    private fun finishWithResult() {
-        setResult(RESULT_CONTINUE)
+    private fun finishWithResult(reference: String?, ssn: String?) {
+        val intent = Intent()
+        intent.putExtra(REFERENCE_RESULT, reference)
+        intent.putExtra(SSN_RESULT, ssn)
+        setResult(RESULT_CONTINUE, intent)
         finish()
     }
 

@@ -145,6 +145,7 @@ import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.datacollectionresult.GetDataCollectionResultUseCase
 import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToDataCollectionStatusUseCase
+import com.hedvig.app.feature.offer.usecase.providerstatus.GetProviderDisplayNameUseCase
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModelImpl
 import com.hedvig.app.feature.onboarding.GetBundlesUseCase
@@ -439,12 +440,14 @@ val offerModule = module {
             getPostSignDependenciesUseCase = get(),
             subscribeToDataCollectionStatusUseCase = get(),
             getDataCollectionResultUseCase = get(),
+            getProviderDisplayNameUseCase = get(),
             tracker = get(),
         )
     }
     single { ApproveQuotesUseCase(get(), get(), get(), get()) }
     single { RefreshQuotesUseCase(get()) }
     single { SubscribeToDataCollectionStatusUseCase(get()) }
+    single { GetProviderDisplayNameUseCase(get()) }
     single { GetDataCollectionResultUseCase(get()) }
 }
 

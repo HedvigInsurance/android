@@ -1,6 +1,7 @@
 package com.hedvig.app.authenticate
 
 import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
@@ -46,6 +47,15 @@ abstract class AuthenticateDialog : DialogFragment() {
                 .with(requireContext())
                 .load(autoStartUrl)
                 .into(binding.qrCode)
+        }
+    }
+
+    fun redirect() {
+        val bankIdUri = Uri.parse("bankid://?redirectUrl=hedvig://")
+        if (requireContext().canOpenUri(bankIdUri)) {
+            val intent = Intent(Intent.ACTION_VIEW, bankIdUri)
+            intent.flags = FLAG_ACTIVITY_NEW_TASK
+            startActivity(intent)
         }
     }
 

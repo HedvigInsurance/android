@@ -46,8 +46,9 @@ class RetrievePriceInfoActivity : BaseActivity() {
             this,
             { _, result ->
                 val success = result.getBoolean(InsurelyDialog.RESULT_KEY)
+                val reference = result.getString(InsurelyDialog.RESULT_REFERENCE) ?: ""
                 if (success) {
-                    viewModel.onCollectionStarted()
+                    viewModel.onCollectionStarted(reference)
                 } else {
                     viewModel.onCollectionFailed()
                 }
@@ -85,12 +86,17 @@ class RetrievePriceInfoActivity : BaseActivity() {
         }
     }
 
-    private fun onContinue() {
-        setResult(AskForPriceInfoActivity.RESULT_CONTINUE)
+    private fun onContinue(reference: String?, input: String?) {
+        val intent = Intent()
+        intent.putExtra(REFERENCE_RESULT, reference)
+        intent.putExtra(SSN_RESULT, input)
+        setResult(AskForPriceInfoActivity.RESULT_CONTINUE, intent)
         finish()
     }
 
     companion object {
+        const val REFERENCE_RESULT = "reference_result"
+        const val SSN_RESULT = "ssn_result"
         private const val PARAMETER = "parameter"
 
         fun createIntent(context: Context, parameter: InsuranceProviderParameter) =
@@ -104,15 +110,17 @@ class RetrievePriceInfoActivity : BaseActivity() {
 @Composable
 fun RetrievePriceScreen(
     viewModel: RetrievePriceViewModel = viewModel(),
-    onContinue: () -> Unit,
+    onContinue: (referenceResult: String?, ssn: String?) -> Unit,
 ) {
     val viewState by viewModel.viewState.collectAsState()
 
     when {
-        viewState.collectionStarted -> RetrievePriceSuccess(onContinue = onContinue)
+        viewState.collectionStarted != null -> RetrievePriceSuccess(
+            onContinue = { onContinue(viewState.collectionStarted!!.reference, viewState.input) }
+        )
         viewState.collectionFailed != null -> RetrievePriceFailed(
             onRetry = viewModel::onRetry,
-            onSkip = onContinue,
+            onSkip = { onContinue(null, null) },
             viewState.collectionFailed!!.insurerName
         )
         else -> {

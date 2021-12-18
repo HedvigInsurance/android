@@ -1,7 +1,6 @@
 package com.hedvig.app.authenticate.insurely
 
 import android.os.Bundle
-import android.view.View
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.flowWithLifecycle
@@ -9,20 +8,37 @@ import androidx.lifecycle.lifecycleScope
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticateDialog
 import com.hedvig.app.util.extensions.showErrorDialog
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
+import java.lang.IllegalArgumentException
 
 class InsurelyDialog : AuthenticateDialog() {
 
+    private val reference: String by lazy {
+        arguments?.getString(REFERENCE_KEY) ?: throw IllegalArgumentException("No reference found")
+    }
+
     private val viewModel: InsurelyAuthViewModel by viewModel {
-        val reference = arguments?.getString(REFERENCE_KEY)
         parametersOf(reference)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel.events
+            .flowWithLifecycle(lifecycle)
+            .distinctUntilChanged()
+            .onEach { event ->
+                when (event) {
+                    is InsurelyAuthViewModel.Event.Auth -> {
+                        event.token?.let(::handleAutoStartToken) ?: redirect()
+                    }
+                }
+            }
+            .launchIn(lifecycleScope)
+
         viewModel.viewState
             .flowWithLifecycle(lifecycle)
             .onEach { viewState ->
@@ -36,7 +52,6 @@ class InsurelyDialog : AuthenticateDialog() {
                     is InsurelyAuthViewModel.ViewState.Success -> {
                         binding.progress.hide()
                         bindNewStatus(viewState.authStatus)
-                        viewState.autoStartToken?.let(::handleAutoStartToken)
                     }
                     InsurelyAuthViewModel.ViewState.Loading -> binding.progress.show()
                 }
@@ -61,7 +76,11 @@ class InsurelyDialog : AuthenticateDialog() {
 
     private fun setResult(success: Boolean) {
         setFragmentResult(
-            REQUEST_KEY, bundleOf(Pair(RESULT_KEY, success))
+            REQUEST_KEY,
+            bundleOf(
+                Pair(RESULT_KEY, success),
+                Pair(RESULT_REFERENCE, if (success) reference else null)
+            )
         )
         dismiss()
     }
@@ -70,6 +89,7 @@ class InsurelyDialog : AuthenticateDialog() {
         const val TAG = "LoginDialog"
         const val REQUEST_KEY = "2452"
         const val RESULT_KEY = "2454"
+        const val RESULT_REFERENCE = "2455"
         private const val REFERENCE_KEY = "reference_key"
 
         fun newInstance(reference: String) = InsurelyDialog().apply {

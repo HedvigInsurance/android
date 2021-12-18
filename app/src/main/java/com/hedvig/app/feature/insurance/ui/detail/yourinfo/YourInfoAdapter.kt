@@ -76,9 +76,8 @@ class YourInfoAdapter(
                     }
                 }
                 paragraph.text = root.context.getString(
-                    R.string.insurance_details_address_update_body,
+                    R.string.insurance_details_adress_update_body_no_address,
                     data.upcomingAgreement.activeFrom,
-                    data.upcomingAgreement.address
                 )
             }
         }

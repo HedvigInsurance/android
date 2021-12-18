@@ -2,6 +2,7 @@ package com.hedvig.app.feature.offer.ui
 
 import android.content.Context
 import androidx.compose.ui.unit.Dp
+import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationApproveButtonTerminology
 import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.R
@@ -31,6 +32,7 @@ sealed class OfferModel {
         val showCampaignManagement: Boolean,
         val ignoreCampaigns: Boolean,
         val gradientType: GradientType,
+        val paymentMethodsApiResponse: PaymentMethodsApiResponse
     ) : OfferModel()
 
     data class Facts(
@@ -61,25 +63,25 @@ sealed class OfferModel {
 
     sealed class InsurelyCard : OfferModel() {
         abstract val id: String
-        abstract val insuranceProvider: String?
+        abstract val insuranceProviderDisplayName: String?
 
-        data class Loading(override val id: String, override val insuranceProvider: String?) : InsurelyCard()
+        data class Loading(override val id: String, override val insuranceProviderDisplayName: String?) : InsurelyCard()
 
         data class FailedToRetrieve(
             override val id: String,
-            override val insuranceProvider: String? = null,
+            override val insuranceProviderDisplayName: String? = null,
         ) : InsurelyCard()
 
         data class Retrieved(
             override val id: String,
-            override val insuranceProvider: String?,
-            val insurelyDataCollectionReferenceUuid: String,
+            override val insuranceProviderDisplayName: String?,
             val currentInsurances: List<CurrentInsurance>,
             val savedWithHedvig: MonetaryAmount?,
         ) : InsurelyCard() {
-            val totalNetPremium: MonetaryAmount = currentInsurances
-                .map(CurrentInsurance::amount)
-                .reduce(MonetaryAmount::add)
+            val totalNetPremium: MonetaryAmount? = currentInsurances
+                .takeIf { it.isNotEmpty() }
+                ?.map(CurrentInsurance::amount)
+                ?.reduce(MonetaryAmount::add)
 
             data class CurrentInsurance(
                 val name: String,
