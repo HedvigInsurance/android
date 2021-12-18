@@ -33,10 +33,11 @@ import java.util.UUID
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ClaimStatusCards(
-    onCardClick: ((ClaimStatusCardData) -> Unit)?,
+    onCardClick: ((ClaimDetailParameter) -> Unit)?,
     claimStatusCardDataList: NonEmptyList<ClaimStatusCardData>,
 ) {
     val pagerState = rememberPagerState(claimStatusCardDataList.size)
+    val areCardsClickable = onCardClick != null
     Column {
         val screenWidth = LocalConfiguration.current.screenWidthDp.dp
         HorizontalPager(
@@ -55,10 +56,10 @@ fun ClaimStatusCards(
                 modifier = Modifier
                     .width(itemWidth)
                     .padding(itemSpacingPadding)
-                    .clickable(enabled = onCardClick != null, onClick = {
-                        onCardClick?.invoke(claimStatusData)
+                    .clickable(enabled = areCardsClickable, onClick = {
+                        onCardClick?.invoke(claimStatusData.detailParameter)
                     }),
-                isClickable = onCardClick != null
+                isClickable = areCardsClickable
             )
         }
         if (claimStatusCardDataList.size == 1) {

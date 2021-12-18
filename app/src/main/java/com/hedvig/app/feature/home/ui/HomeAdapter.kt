@@ -30,6 +30,7 @@ import com.hedvig.app.databinding.HomeStartClaimOutlinedBinding
 import com.hedvig.app.databinding.HowClaimsWorkButtonBinding
 import com.hedvig.app.databinding.UpcomingRenewalCardBinding
 import com.hedvig.app.feature.claimdetail.ClaimDetailActivity
+import com.hedvig.app.feature.claimdetail.ClaimDetailParameter
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimActivity
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyActivity
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
@@ -37,7 +38,6 @@ import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
 import com.hedvig.app.feature.home.ui.claimstatus.composables.ClaimStatusCards
-import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusCardData
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.apollo.ThemedIconUrls
@@ -205,6 +205,12 @@ class HomeAdapter(
                 composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             }
 
+            private fun goToClaimDetailScreen(claimDetailParameter: ClaimDetailParameter) {
+                composeView.context.startActivity(
+                    ClaimDetailActivity.newInstance(composeView.context, claimDetailParameter)
+                )
+            }
+
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
@@ -217,18 +223,8 @@ class HomeAdapter(
 
                 composeView.setContent {
                     HedvigTheme {
-                        val onCardClick: ((ClaimStatusCardData) -> Unit)? = if (areClaimCardsClickable) {
-                            { claimStatusCardData: ClaimStatusCardData ->
-                                composeView.context.startActivity(
-                                    ClaimDetailActivity.newInstance(
-                                        composeView.context,
-                                        claimStatusCardData.detailParameter,
-                                    )
-                                )
-                            }
-                        } else null
                         ClaimStatusCards(
-                            onCardClick = onCardClick,
+                            onCardClick = if (areClaimCardsClickable) ::goToClaimDetailScreen else null,
                             claimStatusCardDataList = data.claimStatusCardDataList,
                         )
                     }
