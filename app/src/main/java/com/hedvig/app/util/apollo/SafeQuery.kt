@@ -61,15 +61,15 @@ suspend fun Call.safeCall(): QueryResult<JSONObject> {
     }
 }
 
-sealed class QueryResult<T> {
+sealed class QueryResult<out T> {
     data class Success<T>(val data: T) : QueryResult<T>()
-    sealed class Error<T> : QueryResult<T>() {
+    sealed class Error : QueryResult<Nothing>() {
 
         abstract val message: String?
 
-        data class NoDataError<T>(override val message: String?) : Error<T>()
-        data class GeneralError<T>(override val message: String?) : Error<T>()
-        data class QueryError<T>(override val message: String?) : Error<T>()
-        data class NetworkError<T>(override val message: String?) : Error<T>()
+        data class NoDataError(override val message: String?) : Error()
+        data class GeneralError(override val message: String?) : Error()
+        data class QueryError(override val message: String?) : Error()
+        data class NetworkError(override val message: String?) : Error()
     }
 }
