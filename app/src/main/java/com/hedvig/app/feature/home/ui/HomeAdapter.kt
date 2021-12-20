@@ -30,7 +30,6 @@ import com.hedvig.app.databinding.HomeStartClaimOutlinedBinding
 import com.hedvig.app.databinding.HowClaimsWorkButtonBinding
 import com.hedvig.app.databinding.UpcomingRenewalCardBinding
 import com.hedvig.app.feature.claimdetail.ClaimDetailActivity
-import com.hedvig.app.feature.claimdetail.ClaimDetailParameter
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimActivity
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyActivity
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
@@ -205,9 +204,9 @@ class HomeAdapter(
                 composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             }
 
-            private fun goToClaimDetailScreen(claimDetailParameter: ClaimDetailParameter) {
+            private fun goToClaimDetailScreen(claimId: String) {
                 composeView.context.startActivity(
-                    ClaimDetailActivity.newInstance(composeView.context, claimDetailParameter)
+                    ClaimDetailActivity.newInstance(composeView.context, claimId)
                 )
             }
 
@@ -224,7 +223,7 @@ class HomeAdapter(
                 composeView.setContent {
                     HedvigTheme {
                         ClaimStatusCards(
-                            onCardClick = if (areClaimCardsClickable) ::goToClaimDetailScreen else null,
+                            goToDetailScreen = if (areClaimCardsClickable) ::goToClaimDetailScreen else null,
                             claimStatusCardDataList = data.claimStatusCardDataList,
                         )
                     }

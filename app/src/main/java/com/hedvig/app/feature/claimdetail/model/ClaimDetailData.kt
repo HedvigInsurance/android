@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.claimdetail
+package com.hedvig.app.feature.claimdetail.model
 
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimProgressData
 

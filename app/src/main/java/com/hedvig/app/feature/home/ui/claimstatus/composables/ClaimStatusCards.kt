@@ -22,7 +22,6 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
-import com.hedvig.app.feature.claimdetail.ClaimDetailParameter
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimProgressData
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusCardData
 import com.hedvig.app.feature.home.ui.claimstatus.data.PillData
@@ -33,11 +32,11 @@ import java.util.UUID
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ClaimStatusCards(
-    onCardClick: ((ClaimDetailParameter) -> Unit)?,
+    goToDetailScreen: ((claimId: String) -> Unit)?,
     claimStatusCardDataList: NonEmptyList<ClaimStatusCardData>,
 ) {
     val pagerState = rememberPagerState(claimStatusCardDataList.size)
-    val areCardsClickable = onCardClick != null
+    val areCardsClickable = goToDetailScreen != null
     Column {
         val screenWidth = LocalConfiguration.current.screenWidthDp.dp
         HorizontalPager(
@@ -56,9 +55,12 @@ fun ClaimStatusCards(
                 modifier = Modifier
                     .width(itemWidth)
                     .padding(itemSpacingPadding)
-                    .clickable(enabled = areCardsClickable, onClick = {
-                        onCardClick?.invoke(claimStatusData.detailParameter)
-                    }),
+                    .clickable(
+                        enabled = areCardsClickable,
+                        onClick = {
+                            goToDetailScreen?.invoke(claimStatusData.id)
+                        }
+                    ),
                 isClickable = areCardsClickable
             )
         }
@@ -88,10 +90,9 @@ fun ClaimStatusCardsPreview() {
                 title = "All-risk",
                 subtitle = "Contents insurance",
                 claimProgressData = ClaimProgressData.previewData(),
-                detailParameter = ClaimDetailParameter.previewData(),
             )
             ClaimStatusCards(
-                onCardClick = {},
+                goToDetailScreen = {},
                 claimStatusCardDataList = nonEmptyListOf(claimStatusData),
             )
         }

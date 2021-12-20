@@ -1,12 +1,9 @@
 package com.hedvig.app.util.compose.preview
 
-import com.hedvig.app.feature.claimdetail.ClaimDetailParameter
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimProgressData
 import com.hedvig.app.feature.home.ui.claimstatus.data.PillData
 import com.hedvig.app.feature.offer.ui.OfferModel
 import org.javamoney.moneta.Money
-import java.time.Duration
-import java.time.Instant
 import java.util.UUID
 import javax.money.CurrencyContext
 import javax.money.CurrencyUnit
@@ -22,14 +19,6 @@ fun ClaimProgressData.Companion.previewData(): List<ClaimProgressData> {
         ClaimProgressData(progressType.name, progressType)
     }
 }
-
-fun ClaimDetailParameter.Companion.previewData() = ClaimDetailParameter(
-    claimType = "Insurance case",
-    submittedAt = Instant.now().minus(Duration.ofMinutes(1)),
-    closedAt = null,
-    progressSegments = ClaimProgressData.previewData(),
-    statusParagraph = "We have received your claim and will start reviewing it soon.",
-)
 
 fun OfferModel.InsurelyCard.Retrieved.Companion.previewData(): OfferModel.InsurelyCard.Retrieved {
     val fakeSekCurrency = object : CurrencyUnit {

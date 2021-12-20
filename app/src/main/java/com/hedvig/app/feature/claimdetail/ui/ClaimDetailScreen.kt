@@ -17,6 +17,7 @@ import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import com.google.accompanist.insets.ui.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -28,25 +29,49 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.app.R
+import com.hedvig.app.feature.claimdetail.model.ClaimDetailData
 import com.hedvig.app.feature.home.ui.claimstatus.composables.ClaimProgress
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimProgressData
 import com.hedvig.app.ui.compose.composables.appbar.TopAppBarWithBack
 import com.hedvig.app.ui.compose.theme.HedvigTheme
+import com.hedvig.app.util.compose.LoadingScreen
 import com.hedvig.app.util.compose.preview.previewData
 
 @Composable
 fun ClaimDetailScreen(
+    viewState: ClaimDetailViewModel.ViewState,
     onUpClick: () -> Unit,
     onChatClick: () -> Unit,
+) {
+    Scaffold(
+        topBar = {
+            TopAppBarWithBack(
+                onClick = onUpClick,
+                title = stringResource(R.string.claim_status_title),
+            )
+        }
+    ) { paddingValues ->
+        when (viewState) {
+            is ClaimDetailViewModel.ViewState.Content -> ClaimDetailScreen(
+                viewState.data,
+                onChatClick,
+                modifier = Modifier.padding(paddingValues)
+            )
+            ClaimDetailViewModel.ViewState.Error -> Text(text = "ERROR") // todo classic retry view
+            ClaimDetailViewModel.ViewState.Loading -> LoadingScreen()
+        }
+    }
+}
+
+@Composable
+private fun ClaimDetailScreen(
     data: ClaimDetailData,
+    onChatClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
     ) {
-        TopAppBarWithBack(
-            onClick = onUpClick,
-            title = stringResource(R.string.claim_status_title),
-        )
         Column(
             modifier = Modifier
                 .padding(horizontal = 16.dp)
@@ -166,8 +191,6 @@ fun ClaimDetailScreen(
 fun ClaimDetailScreenPreview() {
     HedvigTheme {
         ClaimDetailScreen(
-            onUpClick = {},
-            onChatClick = {},
             data = ClaimDetailData(
                 claimType = "Insurance case",
                 submittedText = "1 min ago",
@@ -175,6 +198,7 @@ fun ClaimDetailScreenPreview() {
                 progress = ClaimProgressData.previewData(),
                 progressText = "We have received your claim and will start reviewing it soon."
             ),
+            onChatClick = {},
         )
     }
 }

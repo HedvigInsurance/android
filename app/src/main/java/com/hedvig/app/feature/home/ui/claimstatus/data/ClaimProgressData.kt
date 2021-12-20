@@ -1,15 +1,12 @@
 package com.hedvig.app.feature.home.ui.claimstatus.data
 
-import android.os.Parcelable
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.type.ClaimStatusProgressType
-import kotlinx.parcelize.Parcelize
 
-@Parcelize
 data class ClaimProgressData(
     val text: String,
     val type: ClaimProgressType,
-) : Parcelable {
+) {
     enum class ClaimProgressType {
         PAST_INACTIVE,
         CURRENTLY_ACTIVE,
