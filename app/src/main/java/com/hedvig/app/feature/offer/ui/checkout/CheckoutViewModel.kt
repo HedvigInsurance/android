@@ -58,7 +58,8 @@ class CheckoutViewModel(
                     bundleName = response.data.quoteBundle.displayName,
                     netAmount = response.data.netMonthlyCost(),
                     grossAmount = response.data.grossMonthlyCost(),
-                    market = marketManager.market
+                    market = marketManager.market,
+                    email = response.data.quoteBundle.quotes.firstOrNull { it.email != null }?.email
                 )
             }
         }
@@ -155,7 +156,8 @@ class CheckoutViewModel(
             val bundleName: String,
             val netAmount: MonetaryAmount,
             val grossAmount: MonetaryAmount,
-            val market: Market?
+            val market: Market?,
+            val email: String?,
         ) : TitleViewState()
 
         object Loading : TitleViewState()
