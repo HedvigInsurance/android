@@ -28,10 +28,7 @@ class DismissiblePageTitleFragment : Fragment(R.layout.dismissible_page_title_fr
         }
 
         binding.apply {
-            val url = Uri.parse(
-                requireContext().getString(R.string.BASE_URL) +
-                    model.imageUrls.iconByTheme(requireContext())
-            )
+            val url = Uri.parse(model.imageUrls.iconByTheme(requireContext()))
             illustration.load(url, imageLoader)
             title.text = model.title
             paragraph.text = model.paragraph

@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.home.ui
 
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.view.View
@@ -367,7 +366,7 @@ class HomeAdapter(
                 when (data) {
                     is HomeModel.CommonClaim.Emergency -> {
                         label.text = data.inner.title
-                        icon.load(requestUri(icon.context, data.inner.iconUrls), imageLoader)
+                        icon.load(requestUri(data.inner.iconUrls), imageLoader)
                         root.setHapticClickListener {
                             root.context.startActivity(
                                 EmergencyActivity.newInstance(
@@ -379,7 +378,7 @@ class HomeAdapter(
                     }
                     is HomeModel.CommonClaim.TitleAndBulletPoints -> {
                         label.text = data.inner.title
-                        icon.load(requestUri(icon.context, data.inner.iconUrls), imageLoader)
+                        icon.load(requestUri(data.inner.iconUrls), imageLoader)
                         root.setHapticClickListener {
                             root.context.startActivity(
                                 CommonClaimActivity.newInstance(
@@ -392,9 +391,7 @@ class HomeAdapter(
                 }
             }
 
-            private fun requestUri(context: Context, icons: ThemedIconUrls) = Uri.parse(
-                "${context.getString(R.string.BASE_URL)}${icons.iconByTheme(binding.root.context)}"
-            )
+            private fun requestUri(icons: ThemedIconUrls) = Uri.parse(icons.iconByTheme(binding.root.context))
         }
 
         class HowClaimsWorkButton(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.how_claims_work_button)) {

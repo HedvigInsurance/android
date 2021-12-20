@@ -55,10 +55,7 @@ class EmergencyActivity : BaseActivity(R.layout.activity_emergency) {
             }
             scrollView.setupToolbarScrollListener(toolbar = toolbar)
 
-            val url = Uri.parse(
-                getString(R.string.BASE_URL) +
-                    data.iconUrls.iconByTheme(firstMessage.commonClaimFirstMessageIcon.context)
-            )
+            val url = Uri.parse(data.iconUrls.iconByTheme(firstMessage.commonClaimFirstMessageIcon.context))
             firstMessage.commonClaimFirstMessageIcon.load(url, imageLoader)
 
             firstMessage.commonClaimFirstMessage.text =
