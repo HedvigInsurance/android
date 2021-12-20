@@ -7,5 +7,7 @@ data class ClaimDetailData(
     val submittedText: String,
     val closedText: String,
     val progress: List<ClaimProgressData>,
-    val progressText: String,
-)
+    val statusParagraph: String,
+) {
+    companion object
+}

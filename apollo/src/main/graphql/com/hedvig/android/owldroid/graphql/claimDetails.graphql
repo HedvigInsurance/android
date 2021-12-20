@@ -1,0 +1,29 @@
+query claimDetails($locale: Locale!) {
+  claimDetails: claims_statusCards(locale: $locale) {
+    id
+    title
+    subtitle
+    progressSegments {
+      text
+      type
+    }
+    claim {
+      status
+      outcome
+      submittedAt
+      closedAt
+      statusParagraph
+      signedAudioURL
+#      contract {
+#        contractPerils(locale: $locale) {
+#          title # filter on title and get its icon?
+#          icon {
+#            variants {
+#              ... IconVariantsFragment
+#            }
+#          }
+#        }
+#      }
+    }
+  }
+}

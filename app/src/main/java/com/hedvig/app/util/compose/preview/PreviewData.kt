@@ -1,5 +1,6 @@
 package com.hedvig.app.util.compose.preview
 
+import com.hedvig.app.feature.claimdetail.model.ClaimDetailData
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimProgressData
 import com.hedvig.app.feature.home.ui.claimstatus.data.PillData
 import com.hedvig.app.feature.offer.ui.OfferModel
@@ -18,6 +19,21 @@ fun ClaimProgressData.Companion.previewData(): List<ClaimProgressData> {
     return ClaimProgressData.ClaimProgressType.values().dropLast(1).map { progressType ->
         ClaimProgressData(progressType.name, progressType)
     }
+}
+
+fun ClaimDetailData.Companion.previewData(): List<ClaimDetailData> {
+    return listOf(
+        ClaimDetailData(
+            claimType = "All-risk",
+            submittedText = "30 min ago",
+            closedText = "—",
+            progress = ClaimProgressData.previewData(),
+            statusParagraph = """
+                |Your claim in being reviewed by one of our insurance specialists.
+                | We'll get back to you soon with an update.
+                """.trimMargin(),
+        )
+    )
 }
 
 fun OfferModel.InsurelyCard.Retrieved.Companion.previewData(): OfferModel.InsurelyCard.Retrieved {
