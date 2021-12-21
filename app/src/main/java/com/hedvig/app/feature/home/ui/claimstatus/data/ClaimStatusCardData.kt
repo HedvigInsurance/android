@@ -13,7 +13,9 @@ data class ClaimStatusCardData(
         fun fromClaimStatusCardsQuery(
             claimStatusCard: HomeQuery.ClaimStatusCard,
         ): ClaimStatusCardData {
-            val claimProgressData = ClaimProgressData.fromClaimStatusCardsQuery(claimStatusCard)
+            val claimProgressData = ClaimProgressData.fromProgressSegments(
+                claimStatusCard.progressSegments.map { it.fragments.progressSegments }
+            )
             return ClaimStatusCardData(
                 id = claimStatusCard.id,
                 pillData = PillData.fromClaimStatusCardsQuery(claimStatusCard),

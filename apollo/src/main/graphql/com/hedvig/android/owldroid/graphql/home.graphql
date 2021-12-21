@@ -11,8 +11,7 @@ query HomeQuery($locale: Locale!, $languageCode: String!) {
     title
     subtitle
     progressSegments {
-      text
-      type
+      ...ProgressSegments
     }
     claim {
       submittedAt
