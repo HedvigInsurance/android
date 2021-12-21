@@ -2,6 +2,7 @@ package com.hedvig.app.feature.offer.ui.checkout
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.ui.grossMonthlyCost
 import com.hedvig.app.feature.offer.ui.netMonthlyCost
@@ -58,7 +59,8 @@ class CheckoutViewModel(
                     bundleName = response.data.quoteBundle.displayName,
                     netAmount = response.data.netMonthlyCost(),
                     grossAmount = response.data.grossMonthlyCost(),
-                    market = marketManager.market
+                    market = marketManager.market,
+                    email = response.data.quoteBundle.quotes.firstNotNullOfOrNull(OfferQuery.Quote::email)
                 )
             }
         }
@@ -155,7 +157,8 @@ class CheckoutViewModel(
             val bundleName: String,
             val netAmount: MonetaryAmount,
             val grossAmount: MonetaryAmount,
-            val market: Market?
+            val market: Market?,
+            val email: String?,
         ) : TitleViewState()
 
         object Loading : TitleViewState()
