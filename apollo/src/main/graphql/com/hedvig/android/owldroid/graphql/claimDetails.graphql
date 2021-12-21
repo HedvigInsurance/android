@@ -4,12 +4,14 @@ query claimDetails($locale: Locale!) {
     title
     subtitle
     progressSegments {
-      text
-      type
+      ...ProgressSegments
     }
     claim {
       status
       outcome
+      payout {
+        ...MonetaryAmountFragment
+      }
       submittedAt
       closedAt
       statusParagraph

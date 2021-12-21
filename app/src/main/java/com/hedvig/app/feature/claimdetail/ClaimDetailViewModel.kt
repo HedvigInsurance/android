@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.app.feature.chat.usecase.TriggerFreeTextChatUseCase
 import com.hedvig.app.feature.claimdetail.data.GetClaimDetailDataForClaimIdUseCase
-import com.hedvig.app.feature.claimdetail.model.ClaimDetailData
+import com.hedvig.app.feature.claimdetail.model.ClaimDetailsData
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -26,7 +26,7 @@ class ClaimDetailViewModel(
         object Loading : ViewState()
         object Error : ViewState()
         data class Content(
-            val data: ClaimDetailData,
+            val data: ClaimDetailsData,
         ) : ViewState()
     }
 
