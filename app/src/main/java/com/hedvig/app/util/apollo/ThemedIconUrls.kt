@@ -8,8 +8,8 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class ThemedIconUrls(
-    val darkUrl: String,
-    val lightUrl: String
+    private val darkUrl: String,
+    private val lightUrl: String
 ) : Parcelable {
 
     fun iconByTheme(context: Context) = if (context.isDarkThemeActive) {
