@@ -1,5 +1,8 @@
 package com.hedvig.app.util.apollo
 
+import arrow.core.None
+import arrow.core.Option
+import arrow.core.Some
 import com.apollographql.apollo.ApolloCall
 import com.apollographql.apollo.ApolloSubscriptionCall
 import com.apollographql.apollo.api.Response
@@ -71,5 +74,10 @@ sealed class QueryResult<out T> {
         data class GeneralError(override val message: String?) : Error()
         data class QueryError(override val message: String?) : Error()
         data class NetworkError(override val message: String?) : Error()
+    }
+
+    fun toOption(): Option<T> = when (this) {
+        is Error -> None
+        is Success -> Some(this.data)
     }
 }
