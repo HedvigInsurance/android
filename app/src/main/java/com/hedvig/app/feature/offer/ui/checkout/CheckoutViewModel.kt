@@ -2,6 +2,7 @@ package com.hedvig.app.feature.offer.ui.checkout
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.ui.grossMonthlyCost
 import com.hedvig.app.feature.offer.ui.netMonthlyCost
@@ -59,7 +60,7 @@ class CheckoutViewModel(
                     netAmount = response.data.netMonthlyCost(),
                     grossAmount = response.data.grossMonthlyCost(),
                     market = marketManager.market,
-                    email = response.data.quoteBundle.quotes.firstOrNull { it.email != null }?.email
+                    email = response.data.quoteBundle.quotes.firstNotNullOfOrNull(OfferQuery.Quote::email)
                 )
             }
         }
