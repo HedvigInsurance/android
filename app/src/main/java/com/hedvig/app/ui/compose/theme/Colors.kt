@@ -26,9 +26,10 @@ val surfaceDark = Color(0xffBE9BF3)
 @Composable
 fun hedvigContentColorFor(backgroundColor: Color): Color {
     return when (backgroundColor) {
-        colorResource(R.color.lavender_400) -> Color.Black
-        colorResource(R.color.forever_orange_500) -> Color.Black
-        colorResource(R.color.colorWarning) -> Color.Black
+        colorResource(R.color.lavender_200) -> colorResource(R.color.hedvig_black)
+        colorResource(R.color.lavender_400) -> colorResource(R.color.hedvig_black)
+        colorResource(R.color.forever_orange_500) -> colorResource(R.color.hedvig_black)
+        colorResource(R.color.colorWarning) -> colorResource(R.color.hedvig_black)
         Color.Transparent -> contentColorFor(MaterialTheme.colors.background)
         else -> contentColorFor(backgroundColor)
     }
