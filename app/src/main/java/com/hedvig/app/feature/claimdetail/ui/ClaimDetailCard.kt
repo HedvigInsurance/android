@@ -61,15 +61,15 @@ private fun TopSection(
     statusParagraph: String,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier = modifier) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(24.dp),
+        modifier = modifier,
+    ) {
         ClaimProgress(
             claimProgressData = progressData,
-            modifier = Modifier.padding(horizontal = 16.dp)
         )
-        Spacer(Modifier.height(24.dp))
         Text(
             text = statusParagraph,
-            modifier = Modifier.padding(horizontal = 16.dp),
             style = MaterialTheme.typography.subtitle1,
         )
     }
