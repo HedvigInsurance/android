@@ -1,5 +1,6 @@
 package com.hedvig.app.util.apollo
 
+import arrow.core.Either
 import arrow.core.None
 import arrow.core.Option
 import arrow.core.Some
@@ -79,5 +80,15 @@ sealed class QueryResult<out T> {
     fun toOption(): Option<T> = when (this) {
         is Error -> None
         is Success -> Some(this.data)
+    }
+
+    fun toEither(): Either<Error, T> = when (this) {
+        is Error -> Either.Left(this)
+        is Success -> Either.Right(this.data)
+    }
+
+    inline fun <ErrorType> toEither(ifEmpty: () -> ErrorType): Either<ErrorType, T> = when (this) {
+        is Error -> Either.Left(ifEmpty())
+        is Success -> Either.Right(this.data)
     }
 }
