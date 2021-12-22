@@ -67,7 +67,16 @@ private fun ClaimDetailScreen(
             title = data.claimType,
             subtitle = data.insuranceType,
         )
-        Spacer(Modifier.height(16.dp))
+        when (data.claimResult) {
+            ClaimDetailsData.ClaimResult.Open -> {
+                Spacer(Modifier.height(16.dp))
+            }
+            is ClaimDetailsData.ClaimResult.Closed -> {
+                Spacer(Modifier.height(20.dp))
+                ClaimResultSection(data.claimResult, locale)
+                Spacer(Modifier.height(20.dp))
+            }
+        }
         SubmittedAndClosedInformation(data.submittedAt, data.closedAt, locale)
         Spacer(Modifier.height(24.dp))
         ClaimDetailCard(data.cardData, onChatClick)

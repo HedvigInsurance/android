@@ -4,12 +4,14 @@ import com.hedvig.app.feature.claimdetail.model.ClaimDetailsData
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimProgressData
 import com.hedvig.app.feature.home.ui.claimstatus.data.PillData
 import com.hedvig.app.feature.offer.ui.OfferModel
+import org.javamoney.moneta.CurrencyUnitBuilder
 import org.javamoney.moneta.Money
 import java.time.Duration
 import java.time.Instant
 import java.util.UUID
 import javax.money.CurrencyContext
 import javax.money.CurrencyUnit
+import javax.money.MonetaryAmount
 
 fun PillData.Companion.previewData(): List<PillData> {
     return PillData.PillType.values().dropLast(1).map { pillType ->
@@ -27,7 +29,7 @@ fun ClaimDetailsData.Companion.previewData(): ClaimDetailsData {
     return ClaimDetailsData(
         claimType = "All-risk",
         insuranceType = "Contents Insurance",
-        claimResult = ClaimDetailsData.ClaimDetailResult.Closed.NotCovered,
+        claimResult = ClaimDetailsData.ClaimResult.Closed.Paid(PreviewData.monetaryAmount(2_500)),
         submittedAt = Instant.now().minus(Duration.ofMinutes(30)),
         closedAt = null,
         cardData = ClaimDetailsData.CardData(
@@ -62,4 +64,23 @@ fun OfferModel.InsurelyCard.Retrieved.Companion.previewData(): OfferModel.Insure
         },
         savedWithHedvig = Money.of(19, fakeSekCurrency),
     )
+}
+
+/**
+ * For classes we do not own, we can not add a Companion object on them to fake a static function of the class itself.
+ * This object should serve as a workaround until(if) this is resolved https://youtrack.jetbrains.com/issue/KT-11968.
+ */
+object PreviewData {
+    fun monetaryAmount(
+        money: Number = 0,
+        currencyText: String = "SEK",
+    ): MonetaryAmount {
+        return Money.of(
+            money,
+            CurrencyUnitBuilder.of(
+                currencyText,
+                "default"
+            ).build()
+        )
+    }
 }
