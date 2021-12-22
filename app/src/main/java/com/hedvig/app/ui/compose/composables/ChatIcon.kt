@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -41,11 +42,14 @@ fun ChatIcon(
                 Image(
                     painterResource(R.drawable.ic_chat_on_background),
                     contentDescription = contentDescription,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier
+                        .layoutId("chatImage")
+                        .size(24.dp)
                 )
                 if (showRedDot) {
                     Box(
                         modifier = Modifier
+                            .layoutId("redDot")
                             .size(12.dp)
                             .clip(CircleShape)
                             .background(MaterialTheme.colors.background)
@@ -58,8 +62,8 @@ fun ChatIcon(
             },
         ) { measurables, initialConstraints ->
             val constraints = initialConstraints.copy(minWidth = 0, minHeight = 0)
-            val image = measurables[0].measure(constraints)
-            val circle = measurables.getOrNull(1)?.measure(constraints)
+            val image = measurables.first { it.layoutId == "chatImage" }.measure(constraints)
+            val redDot = measurables.firstOrNull { it.layoutId == "redDot" }?.measure(constraints)
 
             val maxWidth = constraints.maxWidth
             val maxHeight = constraints.maxHeight
@@ -71,8 +75,8 @@ fun ChatIcon(
                     x = imageX,
                     y = imageY,
                 )
-                circle?.place(
-                    x = imageX + image.width - circle.width + paddingAroundRedDot.dp.roundToPx(),
+                redDot?.place(
+                    x = imageX + image.width - redDot.width + paddingAroundRedDot.dp.roundToPx(),
                     y = imageY - paddingAroundRedDot.dp.roundToPx(),
                 )
             }
