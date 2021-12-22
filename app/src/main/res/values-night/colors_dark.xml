@@ -7,6 +7,7 @@
     <item name="colorOnPrimary" type="color">@color/hedvig_black</item>
     <item name="colorPrimaryVariant" type="color">@color/hedvig_off_white</item>
     <item name="colorBackground" type="color">@color/hedvig_black</item>
+    <item name="colorOnBackground" type="color">@color/hedvig_white</item>
     <item name="colorSurface" type="color">#252525</item>
     <item name="colorOnSurface" type="color">@color/colorPrimary</item>
     <item name="colorSurfaceOnSurface" type="color">#505050</item>
