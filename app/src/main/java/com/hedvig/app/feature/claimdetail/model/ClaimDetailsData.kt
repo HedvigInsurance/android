@@ -38,7 +38,10 @@ data class ClaimDetailsData(
                                     ?.monetaryAmountFragment
                                     ?.toMonetaryAmount()
                                 if (monetaryAmount != null) {
-                                    Closed.Paid(monetaryAmount)
+                                    // todo Uncomment when the backend returns the proper payment amount
+                                    // https://hedviginsurance.slack.com/archives/CN55X38T1/p1640192642025300?thread_ts=1639987758.015100&cid=CN55X38T1
+                                    // Closed.Paid(monetaryAmount)
+                                    Open
                                 } else {
                                     Open
                                 }
