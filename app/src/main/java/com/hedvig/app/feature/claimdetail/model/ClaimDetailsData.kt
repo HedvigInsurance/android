@@ -11,22 +11,22 @@ import javax.money.MonetaryAmount
 data class ClaimDetailsData(
     val claimType: String,
     val insuranceType: String,
-    val claimResult: ClaimDetailResult = ClaimDetailResult.Open,
+    val claimResult: ClaimResult = ClaimResult.Open,
     val submittedAt: Instant,
     val closedAt: Instant?,
     val cardData: CardData,
     val audioStuff: Any? = null, // todo make a type for this
 ) {
-    sealed class ClaimDetailResult {
-        object Open : ClaimDetailResult()
-        sealed class Closed : ClaimDetailResult() {
+    sealed class ClaimResult {
+        object Open : ClaimResult()
+        sealed class Closed : ClaimResult() {
             data class Paid(val monetaryAmount: MonetaryAmount) : Closed()
             object NotCompensated : Closed()
             object NotCovered : Closed()
         }
 
         companion object {
-            fun fromDto(dto: ClaimDetailsQuery.ClaimDetail): ClaimDetailResult {
+            fun fromDto(dto: ClaimDetailsQuery.ClaimDetail): ClaimResult {
                 val claim = dto.claim
                 return when (claim.status) {
                     ClaimStatus.CLOSED -> {
@@ -75,7 +75,7 @@ data class ClaimDetailsData(
             return ClaimDetailsData(
                 claimType = dto.title,
                 insuranceType = dto.subtitle,
-                claimResult = ClaimDetailResult.fromDto(dto),
+                claimResult = ClaimResult.fromDto(dto),
                 submittedAt = dto.claim.submittedAt,
                 closedAt = dto.claim.submittedAt,
                 cardData = CardData.fromDto(dto),
