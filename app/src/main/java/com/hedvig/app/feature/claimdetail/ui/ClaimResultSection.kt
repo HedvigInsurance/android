@@ -1,8 +1,10 @@
 package com.hedvig.app.feature.claimdetail.ui
 
 import android.content.res.Configuration
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.LocalContentAlpha
@@ -31,37 +33,40 @@ import java.util.Locale
 fun ClaimResultSection(
     claimResult: ClaimDetailsData.ClaimResult.Closed,
     locale: Locale,
+    modifier: Modifier = Modifier,
 ) {
-    when (claimResult) {
-        ClaimDetailsData.ClaimResult.Closed.NotCompensated -> Pill(
-            stringResource(R.string.claim_decision_not_compensated).uppercase(locale),
-            backgroundColor = MaterialTheme.colors.primary
-        )
-        ClaimDetailsData.ClaimResult.Closed.NotCovered -> Pill(
-            stringResource(R.string.claim_decision_not_covered).uppercase(locale),
-            backgroundColor = MaterialTheme.colors.primary
-        )
-        is ClaimDetailsData.ClaimResult.Closed.Paid -> {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Pill(
-                    stringResource(R.string.claim_decision_paid).uppercase(locale),
-                    backgroundColor = ClaimStatusColors.Pill.paid
-                )
-                Spacer(Modifier.width(12.dp))
-                Text(
-                    claimResult.monetaryAmount.formatOnlyNumber(locale),
-                    style = MaterialTheme.typography.h4,
-                    modifier = Modifier.alignByBaseline()
-                )
-                Spacer(Modifier.width(2.dp))
-                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+    Box(modifier) {
+        when (claimResult) {
+            ClaimDetailsData.ClaimResult.Closed.NotCompensated -> Pill(
+                stringResource(R.string.claim_decision_not_compensated).uppercase(locale),
+                backgroundColor = MaterialTheme.colors.primary
+            )
+            ClaimDetailsData.ClaimResult.Closed.NotCovered -> Pill(
+                stringResource(R.string.claim_decision_not_covered).uppercase(locale),
+                backgroundColor = MaterialTheme.colors.primary
+            )
+            is ClaimDetailsData.ClaimResult.Closed.Paid -> {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Pill(
+                        stringResource(R.string.claim_decision_paid).uppercase(locale),
+                        backgroundColor = ClaimStatusColors.Pill.paid
+                    )
+                    Spacer(Modifier.width(12.dp))
                     Text(
-                        claimResult.monetaryAmount.currency.currencyCode,
-                        style = MaterialTheme.typography.subtitle2,
+                        claimResult.monetaryAmount.formatOnlyNumber(locale),
+                        style = MaterialTheme.typography.h4,
                         modifier = Modifier.alignByBaseline()
                     )
+                    Spacer(Modifier.width(2.dp))
+                    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                        Text(
+                            claimResult.monetaryAmount.currency.currencyCode,
+                            style = MaterialTheme.typography.subtitle2,
+                            modifier = Modifier.alignByBaseline()
+                        )
+                    }
                 }
             }
         }
