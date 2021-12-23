@@ -139,6 +139,7 @@ data class QuoteBuilder(
         insurableLimits = insurableLimits,
         insuranceTerms = insuranceTerms,
         typeOfContract = typeOfContract,
+        email = "test@email.com"
     )
 }
 

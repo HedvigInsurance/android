@@ -9,6 +9,7 @@ query Offer($locale: Locale!, $ids: [ID!]!) {
       dataCollectionId
       displayName(locale: $locale)
       startDate
+      email
       id
       typeOfContract
       currentInsurer {
