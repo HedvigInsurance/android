@@ -80,7 +80,7 @@ data class ClaimDetailsData(
                 insuranceType = dto.subtitle,
                 claimResult = ClaimResult.fromDto(dto),
                 submittedAt = dto.claim.submittedAt,
-                closedAt = dto.claim.submittedAt,
+                closedAt = dto.claim.closedAt,
                 cardData = CardData.fromDto(dto),
                 audioStuff = dto.claim.signedAudioURL,
             )
