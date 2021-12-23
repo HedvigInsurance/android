@@ -34,10 +34,10 @@ fun SubmittedAndClosedInformation(
     locale: Locale,
 ) {
     val now by currentTimeAsState(updateIntervalInSeconds = 1L)
-    val submittedText by remember {
+    val submittedText by remember(submittedAt) {
         derivedStateOf { HedvigDateUtils.getRelativeTimeSpanString(submittedAt, now) }
     }
-    val closedText by remember {
+    val closedText by remember(submittedAt) {
         derivedStateOf {
             if (closedAt == null) {
                 "—"
