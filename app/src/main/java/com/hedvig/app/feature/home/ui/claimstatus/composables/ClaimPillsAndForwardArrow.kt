@@ -32,10 +32,12 @@ fun ClaimPillsAndForwardArrow(
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Top,
     ) {
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.weight(1f)
+        ) {
             pillData.forEach { pillData: PillData ->
                 ClaimPill(
                     text = pillData.text,
@@ -89,6 +91,9 @@ class PillsPreviewDataProvider : CollectionPreviewParameterProvider<List<PillDat
             PillData(pillType.name, pillType)
         },
         listOf(PillData.PillType.REOPENED, PillData.PillType.OPEN).map { pillType ->
+            PillData(pillType.name, pillType)
+        },
+        List(10) { PillData.PillType.REOPENED }.map { pillType ->
             PillData(pillType.name, pillType)
         }
     )
