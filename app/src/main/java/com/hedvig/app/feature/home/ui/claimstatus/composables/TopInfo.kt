@@ -27,7 +27,7 @@ fun TopInfo(
     isClickable: Boolean = false,
 ) {
     Column(modifier = modifier) {
-        ClaimPills(pillDataList, isClickable = isClickable)
+        ClaimPillsAndForwardArrow(pillDataList, isClickable = isClickable)
         Spacer(modifier = Modifier.height(20.dp))
         Text(title)
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
