@@ -37,7 +37,7 @@ fun SubmittedAndClosedInformation(
     val submittedText by remember(submittedAt) {
         derivedStateOf { HedvigDateUtils.getRelativeTimeSpanString(submittedAt, now) }
     }
-    val closedText by remember(submittedAt) {
+    val closedText by remember(closedAt) {
         derivedStateOf {
             if (closedAt == null) {
                 "—"
