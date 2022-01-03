@@ -18,7 +18,7 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import com.hedvig.app.R
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusColors
-import com.hedvig.app.feature.home.ui.claimstatus.data.PillData
+import com.hedvig.app.feature.home.ui.claimstatus.data.PillUiState
 import com.hedvig.app.ui.compose.composables.pill.OutlinedPill
 import com.hedvig.app.ui.compose.composables.pill.Pill
 import com.hedvig.app.ui.compose.theme.HedvigTheme
@@ -26,7 +26,7 @@ import com.hedvig.app.util.compose.preview.previewData
 
 @Composable
 fun ClaimPillsAndForwardArrow(
-    pillData: List<PillData>,
+    pillsUiState: List<PillUiState>,
     modifier: Modifier = Modifier,
     isClickable: Boolean = false,
 ) {
@@ -38,10 +38,10 @@ fun ClaimPillsAndForwardArrow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.weight(1f)
         ) {
-            pillData.forEach { pillData: PillData ->
+            pillsUiState.forEach { pillUiState: PillUiState ->
                 ClaimPill(
-                    text = pillData.text,
-                    pillType = pillData.type,
+                    text = pillUiState.text,
+                    pillType = pillUiState.type,
                 )
             }
         }
@@ -58,14 +58,14 @@ fun ClaimPillsAndForwardArrow(
 @Composable
 private fun ClaimPill(
     text: String,
-    pillType: PillData.PillType,
+    pillType: PillUiState.PillType,
 ) {
     when (pillType) {
-        PillData.PillType.OPEN -> OutlinedPill(text)
-        PillData.PillType.CLOSED -> Pill(text, MaterialTheme.colors.primary)
-        PillData.PillType.REOPENED -> Pill(text, ClaimStatusColors.Pill.reopened)
-        PillData.PillType.PAYMENT -> Pill(text, ClaimStatusColors.Pill.paid)
-        PillData.PillType.UNKNOWN -> OutlinedPill(text)
+        PillUiState.PillType.OPEN -> OutlinedPill(text)
+        PillUiState.PillType.CLOSED -> Pill(text, MaterialTheme.colors.primary)
+        PillUiState.PillType.REOPENED -> Pill(text, ClaimStatusColors.Pill.reopened)
+        PillUiState.PillType.PAYMENT -> Pill(text, ClaimStatusColors.Pill.paid)
+        PillUiState.PillType.UNKNOWN -> OutlinedPill(text)
     }
 }
 
@@ -73,28 +73,28 @@ private fun ClaimPill(
 @Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun PillsPreview(
-    @PreviewParameter(PillsPreviewDataProvider::class) pillData: List<PillData>,
+    @PreviewParameter(PillsUiStateProvider::class) pillsUiState: List<PillUiState>,
 ) {
     HedvigTheme {
         Surface(
             color = MaterialTheme.colors.background,
         ) {
-            ClaimPillsAndForwardArrow(pillData, isClickable = true)
+            ClaimPillsAndForwardArrow(pillsUiState, isClickable = true)
         }
     }
 }
 
-class PillsPreviewDataProvider : CollectionPreviewParameterProvider<List<PillData>>(
+class PillsUiStateProvider : CollectionPreviewParameterProvider<List<PillUiState>>(
     listOf(
-        PillData.previewData(),
-        listOf(PillData.PillType.CLOSED, PillData.PillType.PAYMENT).map { pillType ->
-            PillData(pillType.name, pillType)
+        PillUiState.previewData(),
+        listOf(PillUiState.PillType.CLOSED, PillUiState.PillType.PAYMENT).map { pillType ->
+            PillUiState(pillType.name, pillType)
         },
-        listOf(PillData.PillType.REOPENED, PillData.PillType.OPEN).map { pillType ->
-            PillData(pillType.name, pillType)
+        listOf(PillUiState.PillType.REOPENED, PillUiState.PillType.OPEN).map { pillType ->
+            PillUiState(pillType.name, pillType)
         },
-        List(10) { PillData.PillType.REOPENED }.map { pillType ->
-            PillData(pillType.name, pillType)
+        List(10) { PillUiState.PillType.REOPENED }.map { pillType ->
+            PillUiState(pillType.name, pillType)
         }
     )
 )

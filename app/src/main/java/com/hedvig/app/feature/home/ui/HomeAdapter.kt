@@ -223,7 +223,7 @@ class HomeAdapter(
                     HedvigTheme {
                         ClaimStatusCards(
                             goToDetailScreen = if (areClaimCardsClickable) ::goToClaimDetailScreen else null,
-                            claimStatusCardDataList = data.claimStatusCardDataList,
+                            claimStatusCardsUiState = data.claimStatusCardsUiState,
                         )
                     }
                 }

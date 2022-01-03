@@ -1,8 +1,10 @@
 package com.hedvig.app.util.compose.preview
 
-import com.hedvig.app.feature.claimdetail.model.ClaimDetailsData
-import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimProgressData
-import com.hedvig.app.feature.home.ui.claimstatus.data.PillData
+import com.hedvig.app.feature.claimdetail.model.ClaimDetailCardUiState
+import com.hedvig.app.feature.claimdetail.model.ClaimDetailResult
+import com.hedvig.app.feature.claimdetail.model.ClaimDetailUiState
+import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimProgressUiState
+import com.hedvig.app.feature.home.ui.claimstatus.data.PillUiState
 import com.hedvig.app.feature.offer.ui.OfferModel
 import org.javamoney.moneta.CurrencyUnitBuilder
 import org.javamoney.moneta.Money
@@ -13,27 +15,27 @@ import javax.money.CurrencyContext
 import javax.money.CurrencyUnit
 import javax.money.MonetaryAmount
 
-fun PillData.Companion.previewData(): List<PillData> {
-    return PillData.PillType.values().dropLast(1).map { pillType ->
-        PillData(pillType.name, pillType)
+fun PillUiState.Companion.previewData(): List<PillUiState> {
+    return PillUiState.PillType.values().dropLast(1).map { pillType ->
+        PillUiState(pillType.name, pillType)
     }
 }
 
-fun ClaimProgressData.Companion.previewData(): List<ClaimProgressData> {
-    return ClaimProgressData.ClaimProgressType.values().dropLast(1).map { progressType ->
-        ClaimProgressData(progressType.name, progressType)
+fun ClaimProgressUiState.Companion.previewData(): List<ClaimProgressUiState> {
+    return ClaimProgressUiState.ClaimProgressType.values().dropLast(1).map { progressType ->
+        ClaimProgressUiState(progressType.name, progressType)
     }
 }
 
-fun ClaimDetailsData.Companion.previewData(): ClaimDetailsData {
-    return ClaimDetailsData(
+fun ClaimDetailUiState.Companion.previewData(): ClaimDetailUiState {
+    return ClaimDetailUiState(
         claimType = "All-risk",
         insuranceType = "Contents Insurance",
-        claimResult = ClaimDetailsData.ClaimResult.Closed.Paid(PreviewData.monetaryAmount(2_500)),
+        claimDetailResult = ClaimDetailResult.Closed.Paid(PreviewData.monetaryAmount(2_500)),
         submittedAt = Instant.now().minus(Duration.ofMinutes(30)),
         closedAt = null,
-        cardData = ClaimDetailsData.CardData(
-            ClaimProgressData.previewData(),
+        claimDetailCard = ClaimDetailCardUiState(
+            ClaimProgressUiState.previewData(),
             statusParagraph = """
                 |Your claim in being reviewed by one of our insurance specialists.
                 | We'll get back to you soon with an update.

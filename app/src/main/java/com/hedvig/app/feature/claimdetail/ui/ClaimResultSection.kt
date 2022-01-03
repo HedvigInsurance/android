@@ -20,7 +20,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.hedvig.app.R
-import com.hedvig.app.feature.claimdetail.model.ClaimDetailsData
+import com.hedvig.app.feature.claimdetail.model.ClaimDetailResult
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusColors
 import com.hedvig.app.ui.compose.composables.pill.Pill
 import com.hedvig.app.ui.compose.theme.HedvigTheme
@@ -30,21 +30,21 @@ import java.util.Locale
 
 @Composable
 fun ClaimResultSection(
-    claimResult: ClaimDetailsData.ClaimResult.Closed,
+    claimDetailResult: ClaimDetailResult.Closed,
     locale: Locale,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier) {
-        when (claimResult) {
-            ClaimDetailsData.ClaimResult.Closed.NotCompensated -> Pill(
+        when (claimDetailResult) {
+            ClaimDetailResult.Closed.NotCompensated -> Pill(
                 stringResource(R.string.claim_decision_not_compensated).uppercase(locale),
                 backgroundColor = MaterialTheme.colors.primary
             )
-            ClaimDetailsData.ClaimResult.Closed.NotCovered -> Pill(
+            ClaimDetailResult.Closed.NotCovered -> Pill(
                 stringResource(R.string.claim_decision_not_covered).uppercase(locale),
                 backgroundColor = MaterialTheme.colors.primary
             )
-            is ClaimDetailsData.ClaimResult.Closed.Paid -> {
+            is ClaimDetailResult.Closed.Paid -> {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -54,14 +54,14 @@ fun ClaimResultSection(
                     )
                     Spacer(Modifier.width(12.dp))
                     Text(
-                        claimResult.monetaryAmount.formatOnlyNumber(locale),
+                        claimDetailResult.monetaryAmount.formatOnlyNumber(locale),
                         style = MaterialTheme.typography.h4,
                         modifier = Modifier.alignByBaseline()
                     )
                     Spacer(Modifier.width(2.dp))
                     CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                         Text(
-                            claimResult.monetaryAmount.currency.currencyCode,
+                            claimDetailResult.monetaryAmount.currency.currencyCode,
                             style = MaterialTheme.typography.subtitle2,
                             modifier = Modifier.alignByBaseline()
                         )
@@ -76,7 +76,7 @@ fun ClaimResultSection(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun ClaimResultSectionPreview(
-    @PreviewParameter(ClaimResultProvider::class) result: ClaimDetailsData.ClaimResult.Closed,
+    @PreviewParameter(ClaimDetailResultProvider::class) result: ClaimDetailResult.Closed,
 ) {
     HedvigTheme {
         Surface(
@@ -87,10 +87,10 @@ fun ClaimResultSectionPreview(
     }
 }
 
-class ClaimResultProvider : CollectionPreviewParameterProvider<ClaimDetailsData.ClaimResult.Closed>(
+class ClaimDetailResultProvider : CollectionPreviewParameterProvider<ClaimDetailResult.Closed>(
     listOf(
-        ClaimDetailsData.ClaimResult.Closed.Paid(PreviewData.monetaryAmount(2_500.00)),
-        ClaimDetailsData.ClaimResult.Closed.NotCompensated,
-        ClaimDetailsData.ClaimResult.Closed.NotCovered,
+        ClaimDetailResult.Closed.Paid(PreviewData.monetaryAmount(2_500.00)),
+        ClaimDetailResult.Closed.NotCompensated,
+        ClaimDetailResult.Closed.NotCovered,
     )
 )

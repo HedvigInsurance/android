@@ -44,8 +44,8 @@ import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.feature.chat.service.ChatTracker
 import com.hedvig.app.feature.chat.usecase.TriggerFreeTextChatUseCase
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
-import com.hedvig.app.feature.claimdetail.ClaimDetailViewModel
-import com.hedvig.app.feature.claimdetail.data.GetClaimDetailDataForClaimIdUseCase
+import com.hedvig.app.feature.claimdetail.data.GetClaimDetailUiStateForClaimIdUseCase
+import com.hedvig.app.feature.claimdetail.ui.ClaimDetailViewModel
 import com.hedvig.app.feature.claims.data.ClaimsRepository
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
@@ -669,7 +669,7 @@ val useCaseModule = module {
     single<ReSendOtpCodeUseCase> { ReSendOtpCodeUseCaseImpl(get()) }
     single { TriggerFreeTextChatUseCase(get()) }
     single { GetDataCollectionUseCase(get(), get()) }
-    single { GetClaimDetailDataForClaimIdUseCase(get(), get()) }
+    single { GetClaimDetailUiStateForClaimIdUseCase(get(), get()) }
 }
 
 val cacheManagerModule = module {

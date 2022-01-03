@@ -14,8 +14,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.ui.Scaffold
 import com.hedvig.app.R
-import com.hedvig.app.feature.claimdetail.ClaimDetailViewModel
-import com.hedvig.app.feature.claimdetail.model.ClaimDetailsData
+import com.hedvig.app.feature.claimdetail.model.ClaimDetailResult
+import com.hedvig.app.feature.claimdetail.model.ClaimDetailUiState
 import com.hedvig.app.ui.compose.composables.CenteredProgressIndicator
 import com.hedvig.app.ui.compose.composables.appbar.TopAppBarWithBack
 import com.hedvig.app.ui.compose.theme.HedvigTheme
@@ -24,7 +24,7 @@ import java.util.Locale
 
 @Composable
 fun ClaimDetailScreen(
-    viewState: ClaimDetailViewModel.ViewState,
+    viewState: ClaimDetailViewState,
     locale: Locale,
     onUpClick: () -> Unit,
     onChatClick: () -> Unit,
@@ -38,21 +38,21 @@ fun ClaimDetailScreen(
         }
     ) { paddingValues ->
         when (viewState) {
-            is ClaimDetailViewModel.ViewState.Content -> ClaimDetailScreen(
-                viewState.data,
-                locale,
-                onChatClick,
+            is ClaimDetailViewState.Content -> ClaimDetailScreen(
+                uiState = viewState.uiState,
+                locale = locale,
+                onChatClick = onChatClick,
                 modifier = Modifier.padding(paddingValues)
             )
-            ClaimDetailViewModel.ViewState.Error -> Text(text = "ERROR") // todo classic retry view
-            ClaimDetailViewModel.ViewState.Loading -> CenteredProgressIndicator()
+            ClaimDetailViewState.Error -> Text(text = "ERROR") // todo classic retry view
+            ClaimDetailViewState.Loading -> CenteredProgressIndicator()
         }
     }
 }
 
 @Composable
 private fun ClaimDetailScreen(
-    data: ClaimDetailsData,
+    uiState: ClaimDetailUiState,
     locale: Locale,
     onChatClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -64,22 +64,22 @@ private fun ClaimDetailScreen(
     ) {
         Spacer(Modifier.height(24.dp))
         ClaimType(
-            title = data.claimType,
-            subtitle = data.insuranceType,
+            title = uiState.claimType,
+            subtitle = uiState.insuranceType,
         )
-        when (data.claimResult) {
-            ClaimDetailsData.ClaimResult.Open -> {
+        when (uiState.claimDetailResult) {
+            ClaimDetailResult.Open -> {
                 Spacer(Modifier.height(16.dp))
             }
-            is ClaimDetailsData.ClaimResult.Closed -> {
+            is ClaimDetailResult.Closed -> {
                 Spacer(Modifier.height(20.dp))
-                ClaimResultSection(data.claimResult, locale)
+                ClaimResultSection(uiState.claimDetailResult, locale)
                 Spacer(Modifier.height(20.dp))
             }
         }
-        SubmittedAndClosedInformation(data.submittedAt, data.closedAt, locale)
+        SubmittedAndClosedInformation(uiState.submittedAt, uiState.closedAt, locale)
         Spacer(Modifier.height(24.dp))
-        ClaimDetailCard(data.cardData, onChatClick)
+        ClaimDetailCard(uiState.claimDetailCard, onChatClick)
         Spacer(Modifier.height(56.dp))
         // TODO: Conditionally show this section if there is any files
 /*
@@ -98,7 +98,7 @@ private fun ClaimDetailScreen(
 fun ClaimDetailScreenPreview() {
     HedvigTheme {
         ClaimDetailScreen(
-            data = ClaimDetailsData.previewData(),
+            uiState = ClaimDetailUiState.previewData(),
             locale = Locale.getDefault(),
             onChatClick = {},
         )

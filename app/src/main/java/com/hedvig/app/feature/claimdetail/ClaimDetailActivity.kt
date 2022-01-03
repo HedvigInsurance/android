@@ -10,6 +10,7 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.feature.claimdetail.ui.ClaimDetailScreen
+import com.hedvig.app.feature.claimdetail.ui.ClaimDetailViewModel
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.getLocale
 import com.hedvig.app.ui.compose.theme.HedvigTheme
@@ -36,7 +37,7 @@ class ClaimDetailActivity : BaseActivity() {
             .flowWithLifecycle(lifecycle)
             .onEach { event ->
                 when (event) {
-                    ClaimDetailViewModel.Event.Chat -> startChat()
+                    ClaimDetailViewModel.Event.StartChat -> startChat()
                 }
             }
             .launchIn(lifecycleScope)

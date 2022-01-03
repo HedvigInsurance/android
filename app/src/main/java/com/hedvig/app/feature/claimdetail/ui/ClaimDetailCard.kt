@@ -21,24 +21,24 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.app.R
-import com.hedvig.app.feature.claimdetail.model.ClaimDetailsData
-import com.hedvig.app.feature.home.ui.claimstatus.composables.ClaimProgress
-import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimProgressData
+import com.hedvig.app.feature.claimdetail.model.ClaimDetailCardUiState
+import com.hedvig.app.feature.home.ui.claimstatus.composables.ClaimProgressItems
+import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimProgressUiState
 import com.hedvig.app.ui.compose.composables.ChatIcon
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.compose.preview.previewData
 
 @Composable
 fun ClaimDetailCard(
-    data: ClaimDetailsData.CardData,
+    uiState: ClaimDetailCardUiState,
     onChatClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(modifier = modifier) {
         Column {
             TopSection(
-                progressData = data.progress,
-                statusParagraph = data.statusParagraph,
+                claimProgressItemsUiState = uiState.claimProgressItemsUiState,
+                statusParagraph = uiState.statusParagraph,
                 modifier = Modifier.padding(
                     start = 16.dp,
                     top = 16.dp,
@@ -57,7 +57,7 @@ fun ClaimDetailCard(
 
 @Composable
 private fun TopSection(
-    progressData: List<ClaimProgressData>,
+    claimProgressItemsUiState: List<ClaimProgressUiState>,
     statusParagraph: String,
     modifier: Modifier = Modifier,
 ) {
@@ -65,8 +65,8 @@ private fun TopSection(
         verticalArrangement = Arrangement.spacedBy(24.dp),
         modifier = modifier,
     ) {
-        ClaimProgress(
-            claimProgressData = progressData,
+        ClaimProgressItems(
+            claimProgressItemsUiState = claimProgressItemsUiState,
         )
         Text(
             text = statusParagraph,
@@ -113,8 +113,8 @@ fun ClaimDetailCardPreview() {
             color = MaterialTheme.colors.background,
         ) {
             ClaimDetailCard(
-                ClaimDetailsData.CardData(
-                    progress = ClaimProgressData.previewData(),
+                ClaimDetailCardUiState(
+                    claimProgressItemsUiState = ClaimProgressUiState.previewData(),
                     statusParagraph = "StatusParagraph"
                 ),
                 {}

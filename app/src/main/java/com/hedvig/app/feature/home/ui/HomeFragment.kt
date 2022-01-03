@@ -16,7 +16,7 @@ import com.hedvig.app.databinding.HomeFragmentBinding
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
 import com.hedvig.app.feature.home.service.HomeTracker
-import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusCardData
+import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusCardUiState
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
 import com.hedvig.app.feature.settings.MarketManager
@@ -211,7 +211,9 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     private fun MutableList<HomeModel>.addClaimStatusCardsIfApplicable(successData: HomeQuery.Data) {
         if (featureManager.isFeatureEnabled(Feature.CLAIMS_STATUS).not()) return
         NonEmptyList.fromList(successData.claimStatusCards)
-            .map { claimStatusCardsQuery -> claimStatusCardsQuery.map(ClaimStatusCardData::fromClaimStatusCardsQuery) }
+            .map { claimStatusCardsQuery ->
+                claimStatusCardsQuery.map(ClaimStatusCardUiState::fromClaimStatusCardsQuery)
+            }
             .tap { claimStatusCardDataList ->
                 add(HomeModel.ClaimStatus(claimStatusCardDataList))
             }

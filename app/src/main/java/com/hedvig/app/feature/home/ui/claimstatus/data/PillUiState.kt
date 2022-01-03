@@ -3,7 +3,7 @@ package com.hedvig.app.feature.home.ui.claimstatus.data
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.type.ClaimStatusCardPillType
 
-data class PillData(
+data class PillUiState(
     val text: String,
     val type: PillType,
 ) {
@@ -30,8 +30,8 @@ data class PillData(
     companion object {
         fun fromClaimStatusCardsQuery(
             claimStatusCards: HomeQuery.ClaimStatusCard,
-        ): List<PillData> = claimStatusCards.pills.map { pill ->
-            PillData(
+        ): List<PillUiState> = claimStatusCards.pills.map { pill ->
+            PillUiState(
                 text = pill.text,
                 type = PillType.fromQueryType(pill.type),
             )

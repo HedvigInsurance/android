@@ -22,11 +22,11 @@ import com.hedvig.app.util.compose.ContentAlpha
 import com.hedvig.app.util.compose.fillWithColor
 
 @Composable
-fun ClaimProgressItem(
+fun ClaimProgress(
     text: String,
     color: Color,
-    contentAlpha: ContentAlpha,
     modifier: Modifier = Modifier,
+    contentAlpha: ContentAlpha = ContentAlpha.HIGH,
 ) {
     CompositionLocalProvider(LocalContentAlpha provides contentAlpha.value) {
         Column(modifier = modifier) {
@@ -49,18 +49,17 @@ fun ClaimProgressItem(
     }
 }
 
-@Preview()
+@Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun ClaimProgressItemPreview() {
+fun ClaimProgressPreview() {
     HedvigTheme {
         Surface(
             color = MaterialTheme.colors.background,
         ) {
-            ClaimProgressItem(
+            ClaimProgress(
                 "Text",
                 MaterialTheme.colors.primary,
-                ContentAlpha.HIGH,
             )
         }
     }

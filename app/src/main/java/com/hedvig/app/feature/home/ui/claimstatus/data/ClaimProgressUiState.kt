@@ -3,7 +3,7 @@ package com.hedvig.app.feature.home.ui.claimstatus.data
 import com.hedvig.android.owldroid.fragment.ProgressSegments
 import com.hedvig.android.owldroid.type.ClaimStatusProgressType
 
-data class ClaimProgressData(
+data class ClaimProgressUiState(
     val text: String,
     val type: ClaimProgressType,
 ) {
@@ -31,9 +31,9 @@ data class ClaimProgressData(
     companion object {
         fun fromProgressSegments(
             progressSegments: List<ProgressSegments>,
-        ): List<ClaimProgressData> = progressSegments
+        ): List<ClaimProgressUiState> = progressSegments
             .map { progressSegment ->
-                ClaimProgressData(
+                ClaimProgressUiState(
                     text = progressSegment.text,
                     type = ClaimProgressType.fromQueryType(progressSegment.type),
                 )
