@@ -50,6 +50,7 @@ class ClaimDetailActivity : BaseActivity() {
                 ClaimDetailScreen(
                     viewState = viewState,
                     locale = locale,
+                    retry = viewModel::retry,
                     onUpClick = ::finish,
                     onChatClick = viewModel::onChatClick,
                 )

@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -17,6 +16,7 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.claimdetail.model.ClaimDetailResult
 import com.hedvig.app.feature.claimdetail.model.ClaimDetailUiState
 import com.hedvig.app.ui.compose.composables.CenteredProgressIndicator
+import com.hedvig.app.ui.compose.composables.GenericErrorScreen
 import com.hedvig.app.ui.compose.composables.appbar.TopAppBarWithBack
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.compose.preview.previewData
@@ -26,6 +26,7 @@ import java.util.Locale
 fun ClaimDetailScreen(
     viewState: ClaimDetailViewState,
     locale: Locale,
+    retry: () -> Unit,
     onUpClick: () -> Unit,
     onChatClick: () -> Unit,
 ) {
@@ -44,7 +45,7 @@ fun ClaimDetailScreen(
                 onChatClick = onChatClick,
                 modifier = Modifier.padding(paddingValues)
             )
-            ClaimDetailViewState.Error -> Text(text = "ERROR") // todo classic retry view
+            ClaimDetailViewState.Error -> GenericErrorScreen(retry)
             ClaimDetailViewState.Loading -> CenteredProgressIndicator()
         }
     }

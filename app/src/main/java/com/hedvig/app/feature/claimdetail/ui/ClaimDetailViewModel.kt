@@ -5,10 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.app.feature.chat.usecase.TriggerFreeTextChatUseCase
 import com.hedvig.app.feature.claimdetail.data.GetClaimDetailUiStateForClaimIdUseCase
 import com.hedvig.app.feature.claimdetail.model.ClaimDetailUiState
+import com.hedvig.app.util.coroutines.RetryChannel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -33,7 +33,9 @@ class ClaimDetailViewModel(
     private val _events = Channel<Event>(Channel.UNLIMITED)
     val events = _events.receiveAsFlow()
 
-    val viewState: StateFlow<ClaimDetailViewState> = flow {
+    private val retryChannel = RetryChannel()
+    val viewState: StateFlow<ClaimDetailViewState> = retryChannel.transformLatest {
+        emit(ClaimDetailViewState.Loading)
         getClaimDetailUiStateForClaimIdUseCase.invoke(claimId)
             .fold(
                 ifLeft = {
@@ -48,6 +50,10 @@ class ClaimDetailViewModel(
         SharingStarted.WhileSubscribed(5000),
         ClaimDetailViewState.Loading
     )
+
+    fun retry() {
+        retryChannel.retry()
+    }
 
     fun onChatClick() {
         viewModelScope.launch {
