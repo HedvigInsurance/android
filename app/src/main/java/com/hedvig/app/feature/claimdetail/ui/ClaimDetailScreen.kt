@@ -45,7 +45,10 @@ fun ClaimDetailScreen(
                 onChatClick = onChatClick,
                 modifier = Modifier.padding(paddingValues)
             )
-            ClaimDetailViewState.Error -> GenericErrorScreen(retry)
+            ClaimDetailViewState.Error -> GenericErrorScreen(
+                onRetryButtonClicked = retry,
+                modifier = Modifier.padding(paddingValues)
+            )
             ClaimDetailViewState.Loading -> CenteredProgressIndicator()
         }
     }
@@ -78,7 +81,7 @@ private fun ClaimDetailScreen(
                 Spacer(Modifier.height(20.dp))
             }
         }
-        SubmittedAndClosedInformation(uiState.submittedAt, uiState.closedAt, locale)
+        SubmittedAndClosedColumns(uiState.submittedAt, uiState.closedAt, locale)
         Spacer(Modifier.height(24.dp))
         ClaimDetailCard(uiState.claimDetailCard, onChatClick)
         Spacer(Modifier.height(56.dp))

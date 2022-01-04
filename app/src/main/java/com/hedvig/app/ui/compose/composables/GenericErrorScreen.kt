@@ -14,7 +14,7 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 
 @Composable
 fun GenericErrorScreen(
-    onClick: () -> Unit,
+    onRetryButtonClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     AndroidViewBinding(
@@ -22,7 +22,7 @@ fun GenericErrorScreen(
         modifier = modifier.fillMaxSize()
     ) {
         retry.setHapticClickListener {
-            onClick()
+            onRetryButtonClicked()
         }
     }
 }

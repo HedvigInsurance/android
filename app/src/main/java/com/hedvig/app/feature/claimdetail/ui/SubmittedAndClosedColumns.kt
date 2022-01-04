@@ -25,10 +25,9 @@ import com.hedvig.app.util.compose.currentTimeAsState
 import java.time.Duration
 import java.time.Instant
 import java.util.Locale
-import java.util.TimeZone
 
 @Composable
-fun SubmittedAndClosedInformation(
+fun SubmittedAndClosedColumns(
     submittedAt: Instant,
     closedAt: Instant?,
     locale: Locale,
@@ -47,12 +46,12 @@ fun SubmittedAndClosedInformation(
         }
     }
     Row {
-        SubmittedAndClosedInformationColumn(
+        SubmittedAndClosedColumn(
             topText = stringResource(R.string.claim_status_detail_submitted).uppercase(locale),
             bottomText = submittedText,
             modifier = Modifier.weight(0.5f)
         )
-        SubmittedAndClosedInformationColumn(
+        SubmittedAndClosedColumn(
             topText = stringResource(R.string.claim_status_detail_closed).uppercase(locale),
             bottomText = closedText,
             modifier = Modifier.weight(0.5f)
@@ -61,7 +60,7 @@ fun SubmittedAndClosedInformation(
 }
 
 @Composable
-private fun SubmittedAndClosedInformationColumn(
+private fun SubmittedAndClosedColumn(
     topText: String,
     bottomText: String,
     modifier: Modifier = Modifier,
@@ -92,12 +91,11 @@ private fun SubmittedAndClosedInformationColumn(
 @Preview(locale = "el")
 @Composable
 fun SubmittedAndClosedInformationPreview() {
-    TimeZone.getDefault().id
     HedvigTheme {
         Surface(
             color = MaterialTheme.colors.background,
         ) {
-            SubmittedAndClosedInformation(
+            SubmittedAndClosedColumns(
                 submittedAt = Instant.now().minus(Duration.ofDays(10)),
                 closedAt = Instant.now().minus(Duration.ofSeconds(30)),
                 Locale.ENGLISH,
