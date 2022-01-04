@@ -36,7 +36,9 @@ class ClaimDetailViewModel(
     val viewState: StateFlow<ClaimDetailViewState> = flow {
         getClaimDetailUiStateForClaimIdUseCase.invoke(claimId)
             .fold(
-                ifLeft = { emit(ClaimDetailViewState.Error) },
+                ifLeft = {
+                    emit(ClaimDetailViewState.Error)
+                },
                 ifRight = { claimDetailData ->
                     emit(ClaimDetailViewState.Content(claimDetailData))
                 },

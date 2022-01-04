@@ -6,7 +6,7 @@ import java.time.Instant
 data class ClaimDetailUiState(
     val claimType: String,
     val insuranceType: String,
-    val claimDetailResult: ClaimDetailResult = ClaimDetailResult.Open,
+    val claimDetailResult: ClaimDetailResult,
     val submittedAt: Instant,
     val closedAt: Instant?,
     val claimDetailCard: ClaimDetailCardUiState,
