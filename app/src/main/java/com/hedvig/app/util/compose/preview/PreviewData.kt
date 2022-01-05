@@ -40,7 +40,8 @@ fun ClaimDetailUiState.Companion.previewData(): ClaimDetailUiState {
                 |Your claim in being reviewed by one of our insurance specialists.
                 | We'll get back to you soon with an update.
                 """.trimMargin(),
-        )
+        ),
+        signedAudioURL = null,
     )
 }
 

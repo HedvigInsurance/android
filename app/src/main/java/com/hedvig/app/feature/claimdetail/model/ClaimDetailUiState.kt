@@ -10,7 +10,7 @@ data class ClaimDetailUiState(
     val submittedAt: Instant,
     val closedAt: Instant?,
     val claimDetailCard: ClaimDetailCardUiState,
-    val audioStuff: Any? = null, // todo make a type for this
+    val signedAudioURL: String?,
 ) {
     companion object {
         fun fromDto(dto: ClaimDetailsQuery.ClaimDetail): ClaimDetailUiState {
@@ -21,7 +21,7 @@ data class ClaimDetailUiState(
                 submittedAt = dto.claim.submittedAt,
                 closedAt = dto.claim.closedAt,
                 claimDetailCard = ClaimDetailCardUiState.fromDto(dto),
-                audioStuff = dto.claim.signedAudioURL,
+                signedAudioURL = dto.claim.signedAudioURL,
             )
         }
     }
