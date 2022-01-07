@@ -2,17 +2,17 @@ package com.hedvig.app.feature.claimdetail.data
 
 import android.media.AudioAttributes
 import android.media.MediaPlayer
+import androidx.annotation.FloatRange
 import com.hedvig.app.feature.claimdetail.data.AudioPlayerState.Ready.ReadyState
-import d
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -22,17 +22,8 @@ sealed interface AudioPlayerState {
     object Failed : AudioPlayerState
     data class Ready(
         val readyState: ReadyState,
-        val progress: MutableStateFlow<Float> = MutableStateFlow(if (readyState is ReadyState.Done) 1f else 0f)
+        val progress: Float = 0f,
     ) : AudioPlayerState {
-
-        init {
-            GlobalScope.launch {
-                progress.collect {
-                    d { "Stelios: progress: $it" }
-                }
-            }
-        }
-
         sealed interface ReadyState {
             object NotStarted : ReadyState
             object Done : ReadyState
@@ -41,6 +32,13 @@ sealed interface AudioPlayerState {
 
             val isPlayable: Boolean
                 get() = this is NotStarted || this is Done || this is Paused
+        }
+
+        companion object {
+            fun notStarted(): Ready = Ready(ReadyState.NotStarted, 0f)
+            fun done(): Ready = Ready(ReadyState.Done, 1f)
+            fun paused(progress: Float = 0f): Ready = Ready(ReadyState.Paused, progress)
+            fun playing(progress: Float = 0f): Ready = Ready(ReadyState.Playing, progress)
         }
     }
 
@@ -72,28 +70,25 @@ class AudioPlayer(
             _audioPlayerState.update { AudioPlayerState.Failed }
             true
         }
-        setOnPreparedListener { _audioPlayerState.update { AudioPlayerState.Ready(ReadyState.NotStarted) } }
-        setOnCompletionListener { _audioPlayerState.update { AudioPlayerState.Ready(ReadyState.Done) } }
+        setOnPreparedListener { _audioPlayerState.update { AudioPlayerState.Ready.notStarted() } }
+        setOnCompletionListener { _audioPlayerState.update { AudioPlayerState.Ready.done() } }
         prepareAsync()
     }
 
     init {
         coroutineScope.launch {
             audioPlayerState
-                .collectLatest { audioPlayerState ->
-                    if (audioPlayerState !is AudioPlayerState.Ready) return@collectLatest
-                    when (audioPlayerState.readyState) {
-                        ReadyState.Playing -> {
-                            coroutineScope {
-                                while (isActive) {
-                                    val mediaPlayer = mediaPlayer ?: return@coroutineScope
-                                    audioPlayerState.progress.update { mediaPlayer.getProgressPercentage() }
-                                    delay(ONE_SIXTIETH_OF_A_SECOND)
-                                }
-                            }
-                        }
-                        else -> {
-                            audioPlayerState.progress.update { mediaPlayer?.getProgressPercentage() ?: 0f }
+                .map { audioPlayerState: AudioPlayerState -> (audioPlayerState as? AudioPlayerState.Ready)?.readyState }
+                .map { readyState: ReadyState? -> readyState as? ReadyState.Playing }
+                .distinctUntilChanged()
+                .collectLatest { playingReadyState: ReadyState.Playing? ->
+                    if (playingReadyState == null) return@collectLatest
+                    coroutineScope {
+                        while (isActive) {
+                            val mediaPlayer = mediaPlayer ?: return@coroutineScope
+                            val progress = mediaPlayer.getProgressPercentage()
+                            updateAudioPlayerProgressIfIsCurrentlyPlaying(progress)
+                            delay(ONE_SIXTIETH_OF_A_SECOND)
                         }
                     }
                 }
@@ -122,10 +117,6 @@ class AudioPlayer(
         mediaPlayer = null
     }
 
-    private fun MediaPlayer.getProgressPercentage(): Float {
-        return (currentPosition.toFloat() / duration.toFloat()).coerceIn(0f, 1f)
-    }
-
     private fun updateAudioPlayerReadyState(readyState: ReadyState) {
         _audioPlayerState.update { oldAudioPlayerState ->
             if (oldAudioPlayerState is AudioPlayerState.Ready) {
@@ -134,5 +125,20 @@ class AudioPlayer(
                 AudioPlayerState.Ready(readyState)
             }
         }
+    }
+
+    private fun updateAudioPlayerProgressIfIsCurrentlyPlaying(progress: Float) {
+        _audioPlayerState.update { oldAudioPlayerState ->
+            if (oldAudioPlayerState is AudioPlayerState.Ready && oldAudioPlayerState.readyState is ReadyState.Playing) {
+                oldAudioPlayerState.copy(progress = progress)
+            } else {
+                oldAudioPlayerState
+            }
+        }
+    }
+
+    @FloatRange(from = 0.0, to = 1.0)
+    private fun MediaPlayer.getProgressPercentage(): Float {
+        return (currentPosition.toFloat() / duration.toFloat()).coerceIn(0f, 1f)
     }
 }

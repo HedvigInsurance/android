@@ -24,7 +24,6 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -81,7 +80,6 @@ fun FakeWaveAudioPlayerCard(
                     )
                 }
                 is AudioPlayerState.Ready -> {
-                    val progress by audioPlayerState.progress.collectAsState()
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         IconButton(
                             onClick = when (audioPlayerState.readyState) {
@@ -100,7 +98,7 @@ fun FakeWaveAudioPlayerCard(
                             )
                         }
                         FakeWaves(
-                            progress = progress,
+                            progress = audioPlayerState.progress,
                             isPlaying = audioPlayerState.readyState is AudioPlayerState.Ready.ReadyState.Playing,
                             playedColor = LocalContentColor.current,
                             notPlayedColor = MaterialTheme.colors.primary.copy(alpha = 0.12f),
@@ -221,9 +219,9 @@ class AudioPlayerStateProvider : CollectionPreviewParameterProvider<AudioPlayerS
     listOf(
         AudioPlayerState.Preparing,
         AudioPlayerState.Failed,
-        AudioPlayerState.Ready(AudioPlayerState.Ready.ReadyState.NotStarted),
-        AudioPlayerState.Ready(AudioPlayerState.Ready.ReadyState.Paused),
-        AudioPlayerState.Ready(AudioPlayerState.Ready.ReadyState.Done),
-        AudioPlayerState.Ready(AudioPlayerState.Ready.ReadyState.Playing),
+        AudioPlayerState.Ready.notStarted(),
+        AudioPlayerState.Ready.paused(0.4f),
+        AudioPlayerState.Ready.done(),
+        AudioPlayerState.Ready.playing(0.6f),
     )
 )
