@@ -144,7 +144,7 @@ private fun FakeAudioWaves(
         modifier = modifier
     ) {
         val updatedSeekTo by rememberUpdatedState(seekTo)
-        val waveWidth = (maxWidth / numberOfWaves.toFloat()) * (10f / 14f)
+        val waveWidth = (maxWidth / numberOfWaves.toFloat()) * (0.5f)
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
