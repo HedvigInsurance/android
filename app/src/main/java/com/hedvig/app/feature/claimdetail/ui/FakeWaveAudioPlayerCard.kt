@@ -2,6 +2,8 @@ package com.hedvig.app.feature.claimdetail.ui
 
 import android.content.res.Configuration
 import androidx.compose.animation.core.Animatable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,21 +29,27 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerInputChange
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.google.android.material.math.MathUtils.lerp
 import com.hedvig.app.R
 import com.hedvig.app.feature.claimdetail.data.AudioPlayerState
 import com.hedvig.app.ui.compose.theme.HedvigTheme
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import kotlin.math.abs
 
 @Composable
@@ -49,6 +57,7 @@ fun FakeWaveAudioPlayerCard(
     audioPlayerState: AudioPlayerState,
     startPlaying: () -> Unit,
     pause: () -> Unit,
+    seekTo: (percentage: Float) -> Unit,
 ) {
     Surface(
         modifier = Modifier
@@ -102,6 +111,7 @@ fun FakeWaveAudioPlayerCard(
                             isPlaying = audioPlayerState.readyState is AudioPlayerState.Ready.ReadyState.Playing,
                             playedColor = LocalContentColor.current,
                             notPlayedColor = MaterialTheme.colors.primary.copy(alpha = 0.12f),
+                            seekTo = seekTo,
                             modifier = Modifier.weight(1f)
                         )
                     }
@@ -127,16 +137,41 @@ private fun FakeWaves(
     isPlaying: Boolean,
     playedColor: Color,
     notPlayedColor: Color,
+    seekTo: (percentageOfWidth: Float) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     BoxWithConstraints(
         modifier = modifier
     ) {
-        val waveWidth = (this.maxWidth / numberOfWaves.toFloat()) * (10f / 14f)
+        val updatedSeekTo by rememberUpdatedState(seekTo)
+        val waveWidth = (maxWidth / numberOfWaves.toFloat()) * (10f / 14f)
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxSize()
+                .pointerInput(Unit) {
+                    val sendXPositionPercentageComparedToMaxWidth = { xPosition: Dp ->
+                        val percentageComparedToMaxWidth = xPosition / maxWidth
+                        updatedSeekTo(percentageComparedToMaxWidth)
+                    }
+                    coroutineScope {
+                        launch {
+                            detectTapGestures { offset ->
+                                sendXPositionPercentageComparedToMaxWidth(offset.x.toDp())
+                            }
+                        }
+                        launch {
+                            detectHorizontalDragGestures(
+                                onDragStart = { offset ->
+                                    sendXPositionPercentageComparedToMaxWidth(offset.x.toDp())
+                                }
+                            ) { change: PointerInputChange, _ ->
+                                sendXPositionPercentageComparedToMaxWidth(change.position.x.toDp())
+                            }
+                        }
+                    }
+                }
         ) {
             repeat(numberOfWaves) { waveIndex ->
                 FakeWave(
@@ -210,7 +245,7 @@ fun FakeWaveAudioPlayerItemPreview(
         Surface(
             color = MaterialTheme.colors.background,
         ) {
-            FakeWaveAudioPlayerCard(audioPlayerState, {}, {})
+            FakeWaveAudioPlayerCard(audioPlayerState, {}, {}, {})
         }
     }
 }
@@ -223,5 +258,6 @@ class AudioPlayerStateProvider : CollectionPreviewParameterProvider<AudioPlayerS
         AudioPlayerState.Ready.paused(0.4f),
         AudioPlayerState.Ready.done(),
         AudioPlayerState.Ready.playing(0.6f),
+        AudioPlayerState.Ready.seeking(0.1f),
     )
 )

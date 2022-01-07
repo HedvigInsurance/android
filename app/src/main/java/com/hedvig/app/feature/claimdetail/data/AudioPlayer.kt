@@ -4,6 +4,7 @@ import android.media.AudioAttributes
 import android.media.MediaPlayer
 import androidx.annotation.FloatRange
 import com.hedvig.app.feature.claimdetail.data.AudioPlayerState.Ready.ReadyState
+import d
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
@@ -29,6 +30,7 @@ sealed interface AudioPlayerState {
             object Done : ReadyState
             object Paused : ReadyState
             object Playing : ReadyState
+            object Seeking : ReadyState
 
             val isPlayable: Boolean
                 get() = this is NotStarted || this is Done || this is Paused
@@ -39,6 +41,7 @@ sealed interface AudioPlayerState {
             fun done(): Ready = Ready(ReadyState.Done, 1f)
             fun paused(progress: Float = 0f): Ready = Ready(ReadyState.Paused, progress)
             fun playing(progress: Float = 0f): Ready = Ready(ReadyState.Playing, progress)
+            fun seeking(progress: Float = 0f): Ready = Ready(ReadyState.Seeking, progress)
         }
     }
 
@@ -72,6 +75,10 @@ class AudioPlayer(
         }
         setOnPreparedListener { _audioPlayerState.update { AudioPlayerState.Ready.notStarted() } }
         setOnCompletionListener { _audioPlayerState.update { AudioPlayerState.Ready.done() } }
+        setOnSeekCompleteListener {
+            d { "Stelios ended seek" }
+            updateAudioPlayerReadyState(ReadyState.Paused)
+        }
         prepareAsync()
     }
 
@@ -95,13 +102,13 @@ class AudioPlayer(
         }
     }
 
-    fun pause() {
+    fun pausePlayer() {
         if (mediaPlayer == null || audioPlayerState.value.isPaused) return
         mediaPlayer?.pause()
         updateAudioPlayerReadyState(ReadyState.Paused)
     }
 
-    fun play() {
+    fun startPlayer() {
         val audioPlayerState = audioPlayerState.value
         if (mediaPlayer == null || audioPlayerState.isPlayable.not()) return
         if (audioPlayerState is AudioPlayerState.Ready && audioPlayerState.readyState is ReadyState.Done) {
@@ -109,6 +116,14 @@ class AudioPlayer(
         }
         mediaPlayer?.start()
         updateAudioPlayerReadyState(ReadyState.Playing)
+    }
+
+    fun seekTo(@FloatRange(from = 0.0, to = 1.0) percentage: Float) {
+        if (audioPlayerState.value !is AudioPlayerState.Ready) return
+        val mediaPlayer = mediaPlayer ?: return
+        mediaPlayer.pause()
+        _audioPlayerState.update { AudioPlayerState.Ready.seeking(percentage) }
+        mediaPlayer.seekTo(percentage)
     }
 
     fun cleanupMediaPlayer() {
@@ -135,6 +150,11 @@ class AudioPlayer(
                 oldAudioPlayerState
             }
         }
+    }
+
+    private fun MediaPlayer.seekTo(@FloatRange(from = 0.0, to = 1.0) percentage: Float) {
+        val positionToSeekTo = (duration.toFloat() * percentage).toInt()
+        seekTo(positionToSeekTo)
     }
 
     @FloatRange(from = 0.0, to = 1.0)

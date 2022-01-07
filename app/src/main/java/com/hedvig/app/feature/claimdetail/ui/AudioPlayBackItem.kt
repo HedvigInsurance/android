@@ -40,8 +40,9 @@ fun AudioPlayBackItem(
     Column(modifier) {
         FakeWaveAudioPlayerCard(
             audioPlayerState,
-            audioPlayer::play,
-            audioPlayer::pause,
+            audioPlayer::startPlayer,
+            audioPlayer::pausePlayer,
+            audioPlayer::seekTo,
         )
         Spacer(Modifier.height(8.dp))
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
