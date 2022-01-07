@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.claimdetail.model
 
 import com.hedvig.android.owldroid.graphql.ClaimDetailsQuery
-import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimProgressUiState
+import com.hedvig.app.ui.compose.composables.claimprogress.ClaimProgressUiState
 
 data class ClaimDetailCardUiState(
     val claimProgressItemsUiState: List<ClaimProgressUiState>,

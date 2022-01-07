@@ -22,9 +22,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.app.R
 import com.hedvig.app.feature.claimdetail.model.ClaimDetailCardUiState
-import com.hedvig.app.feature.home.ui.claimstatus.composables.ClaimProgressItems
-import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimProgressUiState
 import com.hedvig.app.ui.compose.composables.ChatIcon
+import com.hedvig.app.ui.compose.composables.claimprogress.ClaimProgressRow
+import com.hedvig.app.ui.compose.composables.claimprogress.ClaimProgressUiState
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.compose.preview.previewData
 
@@ -65,7 +65,7 @@ private fun TopSection(
         verticalArrangement = Arrangement.spacedBy(24.dp),
         modifier = modifier,
     ) {
-        ClaimProgressItems(
+        ClaimProgressRow(
             claimProgressItemsUiState = claimProgressItemsUiState,
         )
         Text(

@@ -3,9 +3,9 @@ package com.hedvig.app.util.compose.preview
 import com.hedvig.app.feature.claimdetail.model.ClaimDetailCardUiState
 import com.hedvig.app.feature.claimdetail.model.ClaimDetailResult
 import com.hedvig.app.feature.claimdetail.model.ClaimDetailUiState
-import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimProgressUiState
 import com.hedvig.app.feature.home.ui.claimstatus.data.PillUiState
 import com.hedvig.app.feature.offer.ui.OfferModel
+import com.hedvig.app.ui.compose.composables.claimprogress.ClaimProgressUiState
 import org.javamoney.moneta.CurrencyUnitBuilder
 import org.javamoney.moneta.Money
 import java.time.Duration
