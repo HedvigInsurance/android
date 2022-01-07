@@ -75,7 +75,7 @@ private fun ClaimProgress(
 }
 
 @Composable
-fun ClaimProgress(
+private fun ClaimProgress(
     text: String,
     color: Color,
     modifier: Modifier = Modifier,
