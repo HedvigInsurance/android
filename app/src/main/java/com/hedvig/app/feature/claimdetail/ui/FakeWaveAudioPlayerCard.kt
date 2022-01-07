@@ -24,6 +24,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,7 +41,7 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import com.google.android.material.math.MathUtils.lerp
 import com.hedvig.app.R
-import com.hedvig.app.feature.claimdetail.AudioPlayerState
+import com.hedvig.app.feature.claimdetail.data.AudioPlayerState
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import kotlin.math.abs
 
@@ -80,17 +81,18 @@ fun FakeWaveAudioPlayerCard(
                     )
                 }
                 is AudioPlayerState.Ready -> {
+                    val progress by audioPlayerState.progress.collectAsState()
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         IconButton(
-                            onClick = when (audioPlayerState) {
-                                is AudioPlayerState.Ready.Playing -> pause
+                            onClick = when (audioPlayerState.readyState) {
+                                is AudioPlayerState.Ready.ReadyState.Playing -> pause
                                 else -> startPlaying
                             }
                         ) {
                             Icon(
                                 painter = painterResource(
-                                    when (audioPlayerState) {
-                                        AudioPlayerState.Ready.Playing -> R.drawable.ic_pause
+                                    when (audioPlayerState.readyState) {
+                                        AudioPlayerState.Ready.ReadyState.Playing -> R.drawable.ic_pause
                                         else -> R.drawable.ic_play
                                     }
                                 ),
@@ -98,8 +100,8 @@ fun FakeWaveAudioPlayerCard(
                             )
                         }
                         FakeWaves(
-                            progress = audioPlayerState.progress,
-                            isPlaying = audioPlayerState is AudioPlayerState.Ready.Playing,
+                            progress = progress,
+                            isPlaying = audioPlayerState.readyState is AudioPlayerState.Ready.ReadyState.Playing,
                             playedColor = LocalContentColor.current,
                             notPlayedColor = MaterialTheme.colors.primary.copy(alpha = 0.12f),
                             modifier = Modifier.weight(1f)
@@ -219,9 +221,9 @@ class AudioPlayerStateProvider : CollectionPreviewParameterProvider<AudioPlayerS
     listOf(
         AudioPlayerState.Preparing,
         AudioPlayerState.Failed,
-        AudioPlayerState.Ready.Initial,
-        AudioPlayerState.Ready.Paused,
-        AudioPlayerState.Ready.Done,
-        AudioPlayerState.Ready.Playing,
+        AudioPlayerState.Ready(AudioPlayerState.Ready.ReadyState.NotStarted),
+        AudioPlayerState.Ready(AudioPlayerState.Ready.ReadyState.Paused),
+        AudioPlayerState.Ready(AudioPlayerState.Ready.ReadyState.Done),
+        AudioPlayerState.Ready(AudioPlayerState.Ready.ReadyState.Playing),
     )
 )
