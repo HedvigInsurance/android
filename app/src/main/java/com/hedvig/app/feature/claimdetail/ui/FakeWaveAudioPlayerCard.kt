@@ -106,7 +106,7 @@ fun FakeWaveAudioPlayerCard(
                                 contentDescription = null,
                             )
                         }
-                        FakeWaves(
+                        FakeAudioWaves(
                             progress = audioPlayerState.progress,
                             isPlaying = audioPlayerState.readyState is AudioPlayerState.Ready.ReadyState.Playing,
                             playedColor = LocalContentColor.current,
@@ -132,7 +132,7 @@ fun FakeWaveAudioPlayerCard(
 private const val numberOfWaves = 50
 
 @Composable
-private fun FakeWaves(
+private fun FakeAudioWaves(
     progress: Float,
     isPlaying: Boolean,
     playedColor: Color,
@@ -174,7 +174,7 @@ private fun FakeWaves(
                 }
         ) {
             repeat(numberOfWaves) { waveIndex ->
-                FakeWave(
+                FakeAudioWave(
                     progress = progress,
                     numberOfWaves = numberOfWaves,
                     waveIndex = waveIndex,
@@ -193,7 +193,7 @@ private const val maxWaveHeightFractionForSideWaves = 0.5f
 private const val maxWaveHeightFraction = 1.0f
 
 @Composable
-private fun FakeWave(
+private fun FakeAudioWave(
     progress: Float,
     @Suppress("SameParameterValue")
     numberOfWaves: Int,
