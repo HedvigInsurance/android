@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.claimdetail.ui
 
 import android.content.res.Configuration
-import androidx.compose.animation.core.Animatable
+import androidx.annotation.FloatRange
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -25,12 +25,9 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -46,18 +43,29 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.google.android.material.math.MathUtils.lerp
 import com.hedvig.app.R
-import com.hedvig.app.feature.claimdetail.data.AudioPlayerState
+import com.hedvig.app.service.audioplayer.AudioPlayerState
+import com.hedvig.app.service.audioplayer.AudioPlayerState.Ready.ReadyState
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.abs
+import kotlin.math.absoluteValue
+import kotlin.random.Random
+
+fun interface WaveInteraction {
+    /**
+     * [horizontalPercentage] is a value that shows where in the horizontal spectrum the wave was interacted with.
+     * Ranges from 0.0f when interacted on the far left to 1.0f on the far right.
+     */
+    fun onInteraction(@FloatRange(from = 0.0, to = 1.0) horizontalPercentage: Float)
+}
 
 @Composable
 fun FakeWaveAudioPlayerCard(
     audioPlayerState: AudioPlayerState,
     startPlaying: () -> Unit,
     pause: () -> Unit,
-    seekTo: (percentage: Float) -> Unit,
+    waveInteraction: WaveInteraction,
 ) {
     Surface(
         modifier = Modifier
@@ -88,18 +96,27 @@ fun FakeWaveAudioPlayerCard(
                         modifier = Modifier.size(24.dp)
                     )
                 }
+                AudioPlayerState.Failed -> {
+                    Text(
+                        text = stringResource(R.string.CHAT_AUDIO__PLAYBACK_FAILED),
+                        modifier = Modifier.align(Alignment.Center),
+                        color = MaterialTheme.colors.onSecondary,
+                        style = MaterialTheme.typography.body1
+                    )
+                }
                 is AudioPlayerState.Ready -> {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         IconButton(
                             onClick = when (audioPlayerState.readyState) {
-                                is AudioPlayerState.Ready.ReadyState.Playing -> pause
+                                is ReadyState.Playing -> pause
                                 else -> startPlaying
                             }
                         ) {
                             Icon(
                                 painter = painterResource(
                                     when (audioPlayerState.readyState) {
-                                        AudioPlayerState.Ready.ReadyState.Playing -> R.drawable.ic_pause
+                                        ReadyState.Playing -> R.drawable.ic_pause
+                                        ReadyState.Seeking -> R.drawable.ic_pause
                                         else -> R.drawable.ic_play
                                     }
                                 ),
@@ -108,21 +125,12 @@ fun FakeWaveAudioPlayerCard(
                         }
                         FakeAudioWaves(
                             progress = audioPlayerState.progress,
-                            isPlaying = audioPlayerState.readyState is AudioPlayerState.Ready.ReadyState.Playing,
                             playedColor = LocalContentColor.current,
                             notPlayedColor = MaterialTheme.colors.primary.copy(alpha = 0.12f),
-                            seekTo = seekTo,
+                            waveInteraction = waveInteraction,
                             modifier = Modifier.weight(1f)
                         )
                     }
-                }
-                AudioPlayerState.Failed -> {
-                    Text(
-                        text = stringResource(R.string.CHAT_AUDIO__PLAYBACK_FAILED),
-                        modifier = Modifier.align(Alignment.Center),
-                        color = MaterialTheme.colors.onSecondary,
-                        style = MaterialTheme.typography.body1
-                    )
                 }
             }
         }
@@ -134,16 +142,15 @@ private const val numberOfWaves = 50
 @Composable
 private fun FakeAudioWaves(
     progress: Float,
-    isPlaying: Boolean,
     playedColor: Color,
     notPlayedColor: Color,
-    seekTo: (percentageOfWidth: Float) -> Unit,
+    waveInteraction: WaveInteraction,
     modifier: Modifier = Modifier,
 ) {
     BoxWithConstraints(
         modifier = modifier
     ) {
-        val updatedSeekTo by rememberUpdatedState(seekTo)
+        val updatedWaveInteraction by rememberUpdatedState(waveInteraction)
         val waveWidth = (maxWidth / numberOfWaves.toFloat()) * (0.5f)
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -152,8 +159,8 @@ private fun FakeAudioWaves(
                 .fillMaxSize()
                 .pointerInput(Unit) {
                     val sendXPositionPercentageComparedToMaxWidth = { xPosition: Dp ->
-                        val percentageComparedToMaxWidth = xPosition / maxWidth
-                        updatedSeekTo(percentageComparedToMaxWidth)
+                        val percentageComparedToMaxWidth = (xPosition / maxWidth).coerceIn(0f, 1f)
+                        updatedWaveInteraction.onInteraction(percentageComparedToMaxWidth)
                     }
                     coroutineScope {
                         launch {
@@ -162,11 +169,9 @@ private fun FakeAudioWaves(
                             }
                         }
                         launch {
-                            detectHorizontalDragGestures(
-                                onDragStart = { offset ->
-                                    sendXPositionPercentageComparedToMaxWidth(offset.x.toDp())
-                                }
-                            ) { change: PointerInputChange, _ ->
+                            detectHorizontalDragGestures { change: PointerInputChange, dragAmount: Float ->
+                                // Do not trigger on minuscule movements
+                                if (dragAmount.absoluteValue < 2f) return@detectHorizontalDragGestures
                                 sendXPositionPercentageComparedToMaxWidth(change.position.x.toDp())
                             }
                         }
@@ -178,9 +183,8 @@ private fun FakeAudioWaves(
                     progress = progress,
                     numberOfWaves = numberOfWaves,
                     waveIndex = waveIndex,
-                    notPlayedColor = notPlayedColor,
                     playedColor = playedColor,
-                    isPlaying = isPlaying,
+                    notPlayedColor = notPlayedColor,
                     modifier = Modifier.width(waveWidth)
                 )
             }
@@ -188,8 +192,8 @@ private fun FakeAudioWaves(
     }
 }
 
-private const val minWaveHeightFraction = 0.2f
-private const val maxWaveHeightFractionForSideWaves = 0.5f
+private const val minWaveHeightFraction = 0.1f
+private const val maxWaveHeightFractionForSideWaves = 0.1f
 private const val maxWaveHeightFraction = 1.0f
 
 @Composable
@@ -198,40 +202,31 @@ private fun FakeAudioWave(
     @Suppress("SameParameterValue")
     numberOfWaves: Int,
     waveIndex: Int,
-    notPlayedColor: Color,
     playedColor: Color,
-    isPlaying: Boolean,
+    notPlayedColor: Color,
     modifier: Modifier = Modifier,
 ) {
-    val heightFractionAnimation = remember { Animatable(minWaveHeightFraction) }
-    var expanding by remember { mutableStateOf(true) }
-    LaunchedEffect(isPlaying, expanding) {
-        if (!isPlaying) {
-            heightFractionAnimation.animateTo(minWaveHeightFraction)
-            expanding = true
-            return@LaunchedEffect
-        }
-        if (expanding) {
-            val wavePosition = waveIndex + 1
-            val centerPoint = numberOfWaves / 2
-            val distanceFromCenterPoint = abs(centerPoint - wavePosition)
-            val percentageToCenterOfTheWaves = ((centerPoint - distanceFromCenterPoint).toFloat() / centerPoint)
-            val maxHeightFraction = lerp(
-                maxWaveHeightFractionForSideWaves,
-                maxWaveHeightFraction,
-                percentageToCenterOfTheWaves
-            )
-            heightFractionAnimation.animateTo(maxHeightFraction)
+    val height = remember {
+        val wavePosition = waveIndex + 1
+        val centerPoint = numberOfWaves / 2
+        val distanceFromCenterPoint = abs(centerPoint - wavePosition)
+        val percentageToCenterOfTheWaves = ((centerPoint - distanceFromCenterPoint).toFloat() / centerPoint)
+        val maxHeightFraction = lerp(
+            maxWaveHeightFractionForSideWaves,
+            maxWaveHeightFraction,
+            percentageToCenterOfTheWaves
+        )
+        if (maxHeightFraction <= minWaveHeightFraction) {
+            maxHeightFraction
         } else {
-            heightFractionAnimation.animateTo(minWaveHeightFraction)
+            Random.nextDouble(minWaveHeightFraction.toDouble(), maxHeightFraction.toDouble()).toFloat()
         }
-        expanding = !expanding
     }
     val hasPlayedThisWave = progress * numberOfWaves > waveIndex
     Surface(
         shape = CircleShape,
         color = if (hasPlayedThisWave) playedColor else notPlayedColor,
-        modifier = modifier.fillMaxHeight(fraction = heightFractionAnimation.value),
+        modifier = modifier.fillMaxHeight(fraction = height),
     ) {}
 }
 
@@ -255,9 +250,9 @@ class AudioPlayerStateProvider : CollectionPreviewParameterProvider<AudioPlayerS
         AudioPlayerState.Preparing,
         AudioPlayerState.Failed,
         AudioPlayerState.Ready.notStarted(),
-        AudioPlayerState.Ready.paused(0.4f),
+        AudioPlayerState.Ready(ReadyState.Paused, 0.4f),
         AudioPlayerState.Ready.done(),
-        AudioPlayerState.Ready.playing(0.6f),
-        AudioPlayerState.Ready.seeking(0.1f),
+        AudioPlayerState.Ready(ReadyState.Playing, 0.6f),
+        AudioPlayerState.Ready(ReadyState.Seeking, 0.1f),
     )
 )
