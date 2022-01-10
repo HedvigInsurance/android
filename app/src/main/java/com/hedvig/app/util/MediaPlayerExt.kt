@@ -1,7 +1,6 @@
 package com.hedvig.app.util
 
 import android.media.MediaPlayer
-import androidx.annotation.FloatRange
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
