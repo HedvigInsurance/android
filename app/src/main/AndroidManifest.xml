@@ -318,9 +318,7 @@
             android:name=".feature.genericauth.otpinput.OtpInputActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".feature.claimdetail.ClaimDetailActivity"
-            android:configChanges="colorMode|density|fontScale|fontWeightAdjustment|keyboard|keyboardHidden|layoutDirection|locale|mcc|mnc|navigation|orientation|screenLayout|screenSize|smallestScreenSize|touchscreen|uiMode" />
+        <activity android:name=".feature.claimdetail.ClaimDetailActivity" />
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
