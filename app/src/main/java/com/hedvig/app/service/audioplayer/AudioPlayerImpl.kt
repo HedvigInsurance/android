@@ -2,11 +2,11 @@ package com.hedvig.app.service.audioplayer
 
 import android.media.AudioAttributes
 import android.media.MediaPlayer
-import androidx.annotation.FloatRange
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.hedvig.app.service.audioplayer.AudioPlayerState.Ready.ReadyState
+import com.hedvig.app.util.ProgressPercentage
 import com.hedvig.app.util.getProgressPercentage
 import com.hedvig.app.util.hasReachedTheEnd
 import com.hedvig.app.util.seekToPercent
@@ -44,7 +44,7 @@ class AudioPlayerImpl(
     private val coroutineScope = CoroutineScope(Dispatchers.Main.immediate)
 
     // Channel to conflate the requests to seek to drop the old ones and keep only the last request
-    private val seekRequestChannel = Channel<Float>(Channel.CONFLATED)
+    private val seekRequestChannel = Channel<ProgressPercentage>(Channel.CONFLATED)
 
     private val _audioPlayerState: MutableStateFlow<AudioPlayerState> = MutableStateFlow(AudioPlayerState.Preparing)
     override val audioPlayerState: StateFlow<AudioPlayerState> = _audioPlayerState.asStateFlow()
@@ -59,7 +59,7 @@ class AudioPlayerImpl(
         )
         setDataSource(signedAudioURL)
         setOnErrorListener { _, what, extra ->
-            d { "AudipPlayer failed with code: $what and extras code: $extra" }
+            d { "AudioPlayer failed with code: $what and extras code: $extra" }
             _audioPlayerState.update { AudioPlayerState.Failed }
             true
         }
@@ -84,7 +84,7 @@ class AudioPlayerImpl(
                 launch {
                     seekRequestChannel
                         .receiveAsFlow()
-                        .collectLatest { percentage ->
+                        .collectLatest { progressPercentage ->
                             mediaPlayerMutex.withLock {
                                 yield()
                                 val mediaPlayer = mediaPlayer ?: return@withLock
@@ -94,7 +94,7 @@ class AudioPlayerImpl(
                                 }
                                 yield()
                                 updateAudioPlayerReadyState(ReadyState.Seeking)
-                                mediaPlayer.seekToPercent(percentage)
+                                mediaPlayer.seekToPercent(progressPercentage)
                                 yield()
                                 updateAudioPlayerReadyState(ReadyState.Playing)
                                 mediaPlayer.start()
@@ -147,7 +147,7 @@ class AudioPlayerImpl(
                 if (audioPlayerState.value.isPlayable.not()) return@withLock
                 if (mediaPlayer.hasReachedTheEnd()) {
                     updateAudioPlayerReadyState(ReadyState.Seeking)
-                    mediaPlayer.seekToPercent(0f)
+                    mediaPlayer.seekToPercent(ProgressPercentage(0f))
                 }
                 updateAudioPlayerReadyState(ReadyState.Playing)
                 coroutineContext.job
@@ -157,9 +157,9 @@ class AudioPlayerImpl(
         }
     }
 
-    override fun seekTo(@FloatRange(from = 0.0, to = 1.0) percentage: Float) {
+    override fun seekTo(progressPercentage: ProgressPercentage) {
         if (audioPlayerState.value.isSeekable) {
-            seekRequestChannel.trySend(percentage)
+            seekRequestChannel.trySend(progressPercentage)
         } else {
             startPlayer()
         }
@@ -168,14 +168,14 @@ class AudioPlayerImpl(
     private fun updateStateWithCurrentAudioPlayerProgress() {
         val mediaPlayer = mediaPlayer ?: return
         if (audioPlayerState.value !is AudioPlayerState.Ready) return
-        val progress = mediaPlayer.getProgressPercentage()
-        updateAudioPlayerProgress(progress)
+        val progressPercentage = mediaPlayer.getProgressPercentage()
+        updateAudioPlayerProgress(progressPercentage)
     }
 
-    private fun updateAudioPlayerProgress(progress: Float) {
+    private fun updateAudioPlayerProgress(progressPercentage: ProgressPercentage) {
         _audioPlayerState.update { oldAudioPlayerState ->
             if (oldAudioPlayerState is AudioPlayerState.Ready) {
-                oldAudioPlayerState.copy(progress = progress)
+                oldAudioPlayerState.copy(progressPercentage = progressPercentage)
             } else {
                 oldAudioPlayerState
             }

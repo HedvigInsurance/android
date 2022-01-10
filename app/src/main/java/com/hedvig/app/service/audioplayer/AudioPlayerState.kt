@@ -1,11 +1,13 @@
 package com.hedvig.app.service.audioplayer
 
+import com.hedvig.app.util.ProgressPercentage
+
 sealed interface AudioPlayerState {
     object Preparing : AudioPlayerState
     object Failed : AudioPlayerState
     data class Ready(
         val readyState: ReadyState,
-        val progress: Float = 0f,
+        val progressPercentage: ProgressPercentage = ProgressPercentage(0f),
     ) : AudioPlayerState {
         sealed interface ReadyState {
             object NotStarted : ReadyState
@@ -25,8 +27,8 @@ sealed interface AudioPlayerState {
         }
 
         companion object {
-            fun notStarted(): Ready = Ready(ReadyState.NotStarted, 0f)
-            fun done(): Ready = Ready(ReadyState.Done, 1f)
+            fun notStarted(): Ready = Ready(ReadyState.NotStarted, ProgressPercentage(0f))
+            fun done(): Ready = Ready(ReadyState.Done, ProgressPercentage(1f))
         }
     }
 

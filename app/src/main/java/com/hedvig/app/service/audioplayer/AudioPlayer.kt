@@ -1,6 +1,6 @@
 package com.hedvig.app.service.audioplayer
 
-import androidx.annotation.FloatRange
+import com.hedvig.app.util.ProgressPercentage
 import kotlinx.coroutines.flow.StateFlow
 
 interface AudioPlayer {
@@ -8,5 +8,5 @@ interface AudioPlayer {
 
     fun pausePlayer()
     fun startPlayer()
-    fun seekTo(@FloatRange(from = 0.0, to = 1.0) percentage: Float)
+    fun seekTo(progressPercentage: ProgressPercentage)
 }

@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.claimdetail.ui
 
 import android.content.res.Configuration
-import androidx.annotation.FloatRange
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -46,6 +45,7 @@ import com.hedvig.app.R
 import com.hedvig.app.service.audioplayer.AudioPlayerState
 import com.hedvig.app.service.audioplayer.AudioPlayerState.Ready.ReadyState
 import com.hedvig.app.ui.compose.theme.HedvigTheme
+import com.hedvig.app.util.ProgressPercentage
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.abs
@@ -57,7 +57,7 @@ fun interface WaveInteraction {
      * [horizontalPercentage] is a value that shows where in the horizontal spectrum the wave was interacted with.
      * Ranges from 0.0f when interacted on the far left to 1.0f on the far right.
      */
-    fun onInteraction(@FloatRange(from = 0.0, to = 1.0) horizontalPercentage: Float)
+    fun onInteraction(horizontalPercentage: ProgressPercentage)
 }
 
 @Composable
@@ -124,7 +124,7 @@ fun FakeWaveAudioPlayerCard(
                             )
                         }
                         FakeAudioWaves(
-                            progress = audioPlayerState.progress,
+                            progressPercentage = audioPlayerState.progressPercentage,
                             playedColor = LocalContentColor.current,
                             notPlayedColor = MaterialTheme.colors.primary.copy(alpha = 0.12f),
                             waveInteraction = waveInteraction,
@@ -141,7 +141,7 @@ private const val numberOfWaves = 50
 
 @Composable
 private fun FakeAudioWaves(
-    progress: Float,
+    progressPercentage: ProgressPercentage,
     playedColor: Color,
     notPlayedColor: Color,
     waveInteraction: WaveInteraction,
@@ -160,7 +160,7 @@ private fun FakeAudioWaves(
                 .pointerInput(Unit) {
                     val sendXPositionPercentageComparedToMaxWidth = { xPosition: Dp ->
                         val percentageComparedToMaxWidth = (xPosition / maxWidth).coerceIn(0f, 1f)
-                        updatedWaveInteraction.onInteraction(percentageComparedToMaxWidth)
+                        updatedWaveInteraction.onInteraction(ProgressPercentage(percentageComparedToMaxWidth))
                     }
                     coroutineScope {
                         launch {
@@ -180,7 +180,7 @@ private fun FakeAudioWaves(
         ) {
             repeat(numberOfWaves) { waveIndex ->
                 FakeAudioWave(
-                    progress = progress,
+                    progressPercentage = progressPercentage,
                     numberOfWaves = numberOfWaves,
                     waveIndex = waveIndex,
                     playedColor = playedColor,
@@ -198,7 +198,7 @@ private const val maxWaveHeightFraction = 1.0f
 
 @Composable
 private fun FakeAudioWave(
-    progress: Float,
+    progressPercentage: ProgressPercentage,
     @Suppress("SameParameterValue")
     numberOfWaves: Int,
     waveIndex: Int,
@@ -222,7 +222,7 @@ private fun FakeAudioWave(
             Random.nextDouble(minWaveHeightFraction.toDouble(), maxHeightFraction.toDouble()).toFloat()
         }
     }
-    val hasPlayedThisWave = progress * numberOfWaves > waveIndex
+    val hasPlayedThisWave = progressPercentage.value * numberOfWaves > waveIndex
     Surface(
         shape = CircleShape,
         color = if (hasPlayedThisWave) playedColor else notPlayedColor,
@@ -250,9 +250,9 @@ class AudioPlayerStateProvider : CollectionPreviewParameterProvider<AudioPlayerS
         AudioPlayerState.Preparing,
         AudioPlayerState.Failed,
         AudioPlayerState.Ready.notStarted(),
-        AudioPlayerState.Ready(ReadyState.Paused, 0.4f),
+        AudioPlayerState.Ready(ReadyState.Paused, ProgressPercentage(0.4f)),
         AudioPlayerState.Ready.done(),
-        AudioPlayerState.Ready(ReadyState.Playing, 0.6f),
-        AudioPlayerState.Ready(ReadyState.Seeking, 0.1f),
+        AudioPlayerState.Ready(ReadyState.Playing, ProgressPercentage(0.6f)),
+        AudioPlayerState.Ready(ReadyState.Seeking, ProgressPercentage(0.1f)),
     )
 )
