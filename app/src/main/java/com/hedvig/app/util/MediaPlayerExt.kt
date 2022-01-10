@@ -16,8 +16,8 @@ suspend fun MediaPlayer.seekToPercent(
         this.setOnSeekCompleteListener(null)
         cont.resume(Unit)
     }
-    cont.invokeOnCancellation { setOnSeekCompleteListener(null) }
     setOnSeekCompleteListener(callback)
+    cont.invokeOnCancellation { setOnSeekCompleteListener(null) }
     val positionToSeekTo = (duration.toFloat() * percentage).toInt()
     if (cont.isActive) {
         seekTo(positionToSeekTo)
