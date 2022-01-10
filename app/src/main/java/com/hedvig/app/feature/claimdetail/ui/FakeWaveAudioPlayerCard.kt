@@ -206,7 +206,7 @@ private fun FakeAudioWave(
     notPlayedColor: Color,
     modifier: Modifier = Modifier,
 ) {
-    val height = remember {
+    val height = remember(numberOfWaves) {
         val wavePosition = waveIndex + 1
         val centerPoint = numberOfWaves / 2
         val distanceFromCenterPoint = abs(centerPoint - wavePosition)

@@ -158,7 +158,11 @@ class AudioPlayerImpl(
     }
 
     override fun seekTo(@FloatRange(from = 0.0, to = 1.0) percentage: Float) {
-        seekRequestChannel.trySend(percentage)
+        if (audioPlayerState.value.isSeekable) {
+            seekRequestChannel.trySend(percentage)
+        } else {
+            startPlayer()
+        }
     }
 
     private fun updateStateWithCurrentAudioPlayerProgress() {

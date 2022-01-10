@@ -33,16 +33,10 @@ fun AudioPlayBackItem(
     Column(modifier) {
         val audioPlayerState by audioPlayer.audioPlayerState.collectAsState()
         FakeWaveAudioPlayerCard(
-            audioPlayerState,
-            audioPlayer::startPlayer,
-            audioPlayer::pausePlayer,
-            waveInteraction = { horizontalPercentage: Float ->
-                if (audioPlayerState.isSeekable) {
-                    audioPlayer.seekTo(horizontalPercentage)
-                } else {
-                    audioPlayer.startPlayer()
-                }
-            },
+            audioPlayerState = audioPlayerState,
+            startPlaying = audioPlayer::startPlayer,
+            pause = audioPlayer::pausePlayer,
+            waveInteraction = audioPlayer::seekTo,
         )
         Spacer(Modifier.height(8.dp))
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
