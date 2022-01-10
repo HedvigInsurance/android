@@ -54,10 +54,11 @@ import kotlin.random.Random
 
 fun interface WaveInteraction {
     /**
-     * [horizontalPercentage] is a value that shows where in the horizontal spectrum the wave was interacted with.
+     * [horizontalProgressPercentage] is a value that shows where in the horizontal spectrum the wave was interacted
+     * with.
      * Ranges from 0.0f when interacted on the far left to 1.0f on the far right.
      */
-    fun onInteraction(horizontalPercentage: ProgressPercentage)
+    fun onInteraction(horizontalProgressPercentage: ProgressPercentage)
 }
 
 @Composable
