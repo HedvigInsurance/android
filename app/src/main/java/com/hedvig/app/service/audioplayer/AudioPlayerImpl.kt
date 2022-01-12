@@ -42,7 +42,6 @@ class AudioPlayerImpl(
 ) : AudioPlayer {
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
 
-    // Channel to conflate the requests to seek to drop the old ones and keep only the last request
     private val seekRequestChannel = Channel<ProgressPercentage>(Channel.CONFLATED)
 
     private val _audioPlayerState: MutableStateFlow<AudioPlayerState> = MutableStateFlow(AudioPlayerState.Preparing)

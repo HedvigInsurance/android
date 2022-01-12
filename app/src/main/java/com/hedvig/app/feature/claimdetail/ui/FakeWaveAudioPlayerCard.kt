@@ -38,7 +38,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.google.android.material.math.MathUtils.lerp
 import com.hedvig.app.R
@@ -46,8 +45,6 @@ import com.hedvig.app.service.audioplayer.AudioPlayerState
 import com.hedvig.app.service.audioplayer.AudioPlayerState.Ready.ReadyState
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.ProgressPercentage
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.absoluteValue
 import kotlin.random.Random
@@ -100,13 +97,15 @@ fun FakeWaveAudioPlayerCard(
                 AudioPlayerState.Failed -> {
                     Text(
                         text = stringResource(R.string.CHAT_AUDIO__PLAYBACK_FAILED),
-                        modifier = Modifier.align(Alignment.Center),
                         color = MaterialTheme.colors.onSecondary,
                         style = MaterialTheme.typography.body1
                     )
                 }
                 is AudioPlayerState.Ready -> {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
                         IconButton(
                             onClick = when (audioPlayerState.readyState) {
                                 is ReadyState.Playing -> pause
@@ -139,6 +138,7 @@ fun FakeWaveAudioPlayerCard(
 }
 
 private const val numberOfWaves = 50
+private const val waveWidthPercentOfSpaceAvailable = 0.5f
 
 @Composable
 private fun FakeAudioWaves(
@@ -152,30 +152,28 @@ private fun FakeAudioWaves(
         modifier = modifier
     ) {
         val updatedWaveInteraction by rememberUpdatedState(waveInteraction)
-        val waveWidth = (maxWidth / numberOfWaves.toFloat()) * (0.5f)
+        val waveWidth = remember(maxWidth) {
+            (maxWidth / numberOfWaves.toFloat()) * (waveWidthPercentOfSpaceAvailable)
+        }
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxSize()
                 .pointerInput(Unit) {
-                    val sendXPositionPercentageComparedToMaxWidth = { xPosition: Dp ->
-                        val percentageComparedToMaxWidth = (xPosition / maxWidth).coerceIn(0f, 1f)
-                        updatedWaveInteraction.onInteraction(ProgressPercentage(percentageComparedToMaxWidth))
+                    detectTapGestures { offset ->
+                        updatedWaveInteraction.onInteraction(
+                            ProgressPercentage.of(current = offset.x.toDp(), target = maxWidth)
+                        )
                     }
-                    coroutineScope {
-                        launch {
-                            detectTapGestures { offset ->
-                                sendXPositionPercentageComparedToMaxWidth(offset.x.toDp())
-                            }
-                        }
-                        launch {
-                            detectHorizontalDragGestures { change: PointerInputChange, dragAmount: Float ->
-                                // Do not trigger on minuscule movements
-                                if (dragAmount.absoluteValue < 1f) return@detectHorizontalDragGestures
-                                sendXPositionPercentageComparedToMaxWidth(change.position.x.toDp())
-                            }
-                        }
+                }
+                .pointerInput(Unit) {
+                    detectHorizontalDragGestures { change: PointerInputChange, dragAmount: Float ->
+                        // Do not trigger on minuscule movements
+                        if (dragAmount.absoluteValue < 1f) return@detectHorizontalDragGestures
+                        updatedWaveInteraction.onInteraction(
+                            ProgressPercentage.of(current = change.position.x.toDp(), target = maxWidth)
+                        )
                     }
                 }
         ) {
@@ -207,15 +205,15 @@ private fun FakeAudioWave(
     notPlayedColor: Color,
     modifier: Modifier = Modifier,
 ) {
-    val height = remember(numberOfWaves) {
+    val height = remember(waveIndex, numberOfWaves) {
         val wavePosition = waveIndex + 1
         val centerPoint = numberOfWaves / 2
         val distanceFromCenterPoint = abs(centerPoint - wavePosition)
-        val percentageToCenterOfTheWaves = ((centerPoint - distanceFromCenterPoint).toFloat() / centerPoint)
+        val percentageToCenterPoint = ((centerPoint - distanceFromCenterPoint).toFloat() / centerPoint)
         val maxHeightFraction = lerp(
             maxWaveHeightFractionForSideWaves,
             maxWaveHeightFraction,
-            percentageToCenterOfTheWaves
+            percentageToCenterPoint
         )
         if (maxHeightFraction <= minWaveHeightFraction) {
             maxHeightFraction
@@ -223,7 +221,9 @@ private fun FakeAudioWave(
             Random.nextDouble(minWaveHeightFraction.toDouble(), maxHeightFraction.toDouble()).toFloat()
         }
     }
-    val hasPlayedThisWave = progressPercentage.value * numberOfWaves > waveIndex
+    val hasPlayedThisWave = remember(progressPercentage, numberOfWaves, waveIndex) {
+        progressPercentage.value * numberOfWaves > waveIndex
+    }
     Surface(
         shape = CircleShape,
         color = if (hasPlayedThisWave) playedColor else notPlayedColor,
