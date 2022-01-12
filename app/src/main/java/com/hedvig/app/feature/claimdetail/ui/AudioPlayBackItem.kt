@@ -9,8 +9,10 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
@@ -18,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.app.R
 import com.hedvig.app.service.audioplayer.AudioPlayer
 import com.hedvig.app.service.audioplayer.AudioPlayerImpl
-import com.hedvig.app.ui.compose.rememberCloseable
 
 @Composable
 fun AudioPlayBackItem(
@@ -26,8 +27,14 @@ fun AudioPlayBackItem(
     modifier: Modifier = Modifier,
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
-    val audioPlayer: AudioPlayer = rememberCloseable(signedAudioUrl, lifecycleOwner) {
+    val audioPlayer: AudioPlayer = remember(signedAudioUrl, lifecycleOwner) {
         AudioPlayerImpl(signedAudioUrl, lifecycleOwner)
+    }
+    DisposableEffect(audioPlayer) {
+        audioPlayer.initialize()
+        onDispose {
+            audioPlayer.close()
+        }
     }
 
     Column(modifier) {

@@ -14,7 +14,7 @@ import d
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.awaitCancellation
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
@@ -33,15 +33,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.yield
-import java.io.Closeable
 
 private const val ONE_SIXTIETH_OF_A_SECOND: Long = 1_000 / 60
 
 class AudioPlayerImpl(
-    signedAudioURL: String,
-    lifecycleOwner: LifecycleOwner,
-) : AudioPlayer, Closeable {
-    private val coroutineScope = CoroutineScope(Dispatchers.Main.immediate)
+    private val signedAudioURL: String,
+    private val lifecycleOwner: LifecycleOwner,
+) : AudioPlayer {
+    private val coroutineScope = CoroutineScope(Dispatchers.Default)
 
     // Channel to conflate the requests to seek to drop the old ones and keep only the last request
     private val seekRequestChannel = Channel<ProgressPercentage>(Channel.CONFLATED)
@@ -50,25 +49,26 @@ class AudioPlayerImpl(
     override val audioPlayerState: StateFlow<AudioPlayerState> = _audioPlayerState.asStateFlow()
 
     private val mediaPlayerMutex = Mutex()
-    private var mediaPlayer: MediaPlayer? = MediaPlayer().apply {
-        setAudioAttributes(
-            AudioAttributes.Builder()
-                .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-                .setUsage(AudioAttributes.USAGE_MEDIA)
-                .build()
-        )
-        setDataSource(signedAudioURL)
-        setOnErrorListener { _, what, extra ->
-            d { "AudioPlayer failed with code: $what and extras code: $extra" }
-            _audioPlayerState.update { AudioPlayerState.Failed }
-            true
-        }
-        setOnPreparedListener { _audioPlayerState.update { AudioPlayerState.Ready.notStarted() } }
-        setOnCompletionListener { _audioPlayerState.update { AudioPlayerState.Ready.done() } }
-        prepareAsync()
-    }
+    private var mediaPlayer: MediaPlayer? = null
 
-    init {
+    override fun initialize() {
+        mediaPlayer = MediaPlayer().apply {
+            setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .build()
+            )
+            setDataSource(signedAudioURL)
+            setOnErrorListener { _, what, extra ->
+                d { "AudioPlayer failed with code: $what and extras code: $extra" }
+                _audioPlayerState.update { AudioPlayerState.Failed }
+                true
+            }
+            setOnPreparedListener { _audioPlayerState.update { AudioPlayerState.Ready.notStarted() } }
+            setOnCompletionListener { _audioPlayerState.update { AudioPlayerState.Ready.done() } }
+            prepareAsync()
+        }
         coroutineScope.launch {
             lifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
                 launch {
@@ -122,7 +122,7 @@ class AudioPlayerImpl(
     }
 
     override fun close() {
-        coroutineScope.cancel()
+        coroutineScope.coroutineContext.cancelChildren()
         mediaPlayer?.stop()
         mediaPlayer?.release()
         mediaPlayer = null
