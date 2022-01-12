@@ -100,9 +100,11 @@ fun AskForPriceScreen(
 @Preview
 @Composable
 fun AskForPriceScreenPreview() {
-    AskForPriceScreen(
-        "Test",
-        onSkipRetrievePriceInfo = { },
-        onNavigateToRetrievePrice = { }
-    )
+    HedvigTheme {
+        AskForPriceScreen(
+            "Test",
+            onSkipRetrievePriceInfo = { },
+            onNavigateToRetrievePrice = { }
+        )
+    }
 }
