@@ -172,7 +172,7 @@ private fun FakeAudioWaves(
                         launch {
                             detectHorizontalDragGestures { change: PointerInputChange, dragAmount: Float ->
                                 // Do not trigger on minuscule movements
-                                if (dragAmount.absoluteValue < 2f) return@detectHorizontalDragGestures
+                                if (dragAmount.absoluteValue < 1f) return@detectHorizontalDragGestures
                                 sendXPositionPercentageComparedToMaxWidth(change.position.x.toDp())
                             }
                         }
