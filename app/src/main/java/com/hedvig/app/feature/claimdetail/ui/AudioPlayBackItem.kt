@@ -1,5 +1,7 @@
 package com.hedvig.app.feature.claimdetail.ui
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -20,7 +22,9 @@ import androidx.compose.ui.unit.dp
 import com.hedvig.app.R
 import com.hedvig.app.service.audioplayer.AudioPlayer
 import com.hedvig.app.service.audioplayer.AudioPlayerImpl
+import com.hedvig.app.service.audioplayer.AudioPlayerState
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AudioPlayBackItem(
     signedAudioUrl: String,
@@ -46,11 +50,13 @@ fun AudioPlayBackItem(
             waveInteraction = audioPlayer::seekTo,
         )
         Spacer(Modifier.height(8.dp))
-        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-            Text(
-                text = stringResource(R.string.claim_status_files_claim_audio_footer),
-                style = MaterialTheme.typography.caption,
-            )
+        AnimatedVisibility(visible = audioPlayerState !is AudioPlayerState.Failed) {
+            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                Text(
+                    text = stringResource(R.string.claim_status_files_claim_audio_footer),
+                    style = MaterialTheme.typography.caption,
+                )
+            }
         }
     }
 }
