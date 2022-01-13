@@ -28,8 +28,7 @@ fun IntroContent(
     Column(
         modifier = Modifier
             .padding(baseMarginDouble)
-            .fillMaxWidth()
-            .fillMaxHeight(),
+            .fillMaxSize(),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(baseMarginDouble)) {
