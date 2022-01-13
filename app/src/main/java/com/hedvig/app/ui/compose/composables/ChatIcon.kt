@@ -27,7 +27,7 @@ import com.hedvig.app.ui.compose.theme.HedvigTheme
 fun ChatIcon(
     onClick: () -> Unit,
     contentDescription: String?,
-    showRedDot: Boolean = true,
+    showRedDot: Boolean = false,
 ) {
     Surface(
         color = MaterialTheme.colors.background,
