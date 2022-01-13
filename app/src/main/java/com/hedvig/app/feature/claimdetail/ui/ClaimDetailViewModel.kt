@@ -41,8 +41,8 @@ class ClaimDetailViewModel(
                 ifLeft = {
                     emit(ClaimDetailViewState.Error)
                 },
-                ifRight = { claimDetailData ->
-                    emit(ClaimDetailViewState.Content(claimDetailData))
+                ifRight = { claimDetailUiState ->
+                    emit(ClaimDetailViewState.Content(claimDetailUiState))
                 },
             )
     }.stateIn(

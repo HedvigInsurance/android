@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.home.ui.claimstatus.data
 
 import com.hedvig.android.owldroid.graphql.HomeQuery
+import com.hedvig.app.ui.compose.composables.claimprogress.ClaimProgressUiState
 
 data class ClaimStatusCardUiState(
     val id: String,

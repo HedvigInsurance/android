@@ -85,14 +85,10 @@ private fun ClaimDetailScreen(
         Spacer(Modifier.height(24.dp))
         ClaimDetailCard(uiState.claimDetailCard, onChatClick)
         Spacer(Modifier.height(56.dp))
-        // TODO: Conditionally show this section if there is any files
-/*
-            Text(
-                text = stringResource(R.string.claim_status_files),
-                style = MaterialTheme.typography.h6,
-            )
-*/
-        // TODO, different PR: actually show files here
+        if (uiState.signedAudioURL != null) {
+            AudioPlayBackItem(uiState.signedAudioURL)
+        }
+        // TODO claim detail screen v2.1, actually show files here
         Spacer(Modifier.height(48.dp))
     }
 }

@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.home.ui.claimstatus.data
+package com.hedvig.app.ui.compose.composables.claimprogress
 
 import com.hedvig.android.owldroid.fragment.ProgressSegments
 import com.hedvig.android.owldroid.type.ClaimStatusProgressType
