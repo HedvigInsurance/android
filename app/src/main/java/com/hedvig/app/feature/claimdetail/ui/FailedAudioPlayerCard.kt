@@ -69,7 +69,7 @@ fun FailedAudioPlayerCard(
         ) {
             Text(
                 text = stringResource(R.string.claim_status_detail_info_error_button),
-                style = MaterialTheme.typography.subtitle2
+                style = MaterialTheme.typography.body2
             )
         }
     }
