@@ -29,8 +29,6 @@ import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -148,8 +146,12 @@ private fun FakeWaveAudioPlayerCardContent(
                     if (audioPlayerState is AudioPlayerState.Ready) {
                         FakeAudioWaves(
                             progressPercentage = audioPlayerState.progressPercentage,
-                            playedColor = LocalContentColor.current,
-                            notPlayedColor = MaterialTheme.colors.primary.copy(alpha = 0.12f),
+                            playedColor = if (isSystemInDarkTheme()) {
+                                colorResource(R.color.hedvig_off_white)
+                            } else {
+                                colorResource(R.color.lavender_600)
+                            },
+                            notPlayedColor = LocalContentColor.current,
                             waveInteraction = waveInteraction,
                             modifier = Modifier.weight(1f)
                         )
