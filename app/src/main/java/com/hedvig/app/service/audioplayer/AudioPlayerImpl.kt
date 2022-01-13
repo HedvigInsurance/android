@@ -131,7 +131,10 @@ class AudioPlayerImpl(
     }
 
     private fun closeMediaPlayer() {
-        mediaPlayer?.stop()
+        try {
+            mediaPlayer?.stop()
+        } catch (e: IllegalStateException) {
+        }
         mediaPlayer?.release()
         mediaPlayer = null
     }
