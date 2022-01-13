@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
@@ -12,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import com.hedvig.app.R
 import com.hedvig.app.ui.compose.composables.ErrorDialog
 import com.hedvig.app.ui.compose.composables.buttons.LargeContainedTextButton
@@ -61,7 +63,8 @@ fun RetrievePriceContent(
                 backgroundColor = MaterialTheme.colors.background
             ),
             isError = inputErrorMessage != null,
-            visualTransformation = SwedishSSNVisualTransformation()
+            visualTransformation = SwedishSSNVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
         LargeContainedTextButton(
             modifier = Modifier.padding(top = baseMarginQuadruple),
