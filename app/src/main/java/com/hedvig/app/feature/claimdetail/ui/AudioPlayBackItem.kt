@@ -47,6 +47,7 @@ fun AudioPlayBackItem(
             audioPlayerState = audioPlayerState,
             startPlaying = audioPlayer::startPlayer,
             pause = audioPlayer::pausePlayer,
+            retryLoadingAudio = audioPlayer::retryLoadingAudio,
             waveInteraction = audioPlayer::seekTo,
         )
         Spacer(Modifier.height(8.dp))

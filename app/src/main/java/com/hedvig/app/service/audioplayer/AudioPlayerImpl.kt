@@ -51,23 +51,7 @@ class AudioPlayerImpl(
     private var mediaPlayer: MediaPlayer? = null
 
     override fun initialize() {
-        mediaPlayer = MediaPlayer().apply {
-            setAudioAttributes(
-                AudioAttributes.Builder()
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-                    .setUsage(AudioAttributes.USAGE_MEDIA)
-                    .build()
-            )
-            setDataSource(signedAudioURL)
-            setOnErrorListener { _, what, extra ->
-                d { "AudioPlayer failed with code: $what and extras code: $extra" }
-                _audioPlayerState.update { AudioPlayerState.Failed }
-                true
-            }
-            setOnPreparedListener { _audioPlayerState.update { AudioPlayerState.Ready.notStarted() } }
-            setOnCompletionListener { _audioPlayerState.update { AudioPlayerState.Ready.done() } }
-            prepareAsync()
-        }
+        initializeMediaPlayer()
         coroutineScope.launch {
             lifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
                 launch {
@@ -122,6 +106,31 @@ class AudioPlayerImpl(
 
     override fun close() {
         coroutineScope.coroutineContext.cancelChildren()
+        closeMediaPlayer()
+    }
+
+    private fun initializeMediaPlayer() {
+        _audioPlayerState.update { AudioPlayerState.Preparing }
+        mediaPlayer = MediaPlayer().apply {
+            setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .build()
+            )
+            setDataSource(signedAudioURL)
+            setOnErrorListener { _, what, extra ->
+                d { "AudioPlayer failed with code: $what and extras code: $extra" }
+                _audioPlayerState.update { AudioPlayerState.Failed }
+                true
+            }
+            setOnPreparedListener { _audioPlayerState.update { AudioPlayerState.Ready.notStarted() } }
+            setOnCompletionListener { _audioPlayerState.update { AudioPlayerState.Ready.done() } }
+            prepareAsync()
+        }
+    }
+
+    private fun closeMediaPlayer() {
         mediaPlayer?.stop()
         mediaPlayer?.release()
         mediaPlayer = null
@@ -134,6 +143,16 @@ class AudioPlayerImpl(
                 if (audioPlayerState.value.isPaused) return@withLock
                 updateAudioPlayerReadyState(ReadyState.Paused)
                 mediaPlayer.pause()
+            }
+        }
+    }
+
+    override fun retryLoadingAudio() {
+        coroutineScope.launch {
+            mediaPlayerMutex.withLock {
+                if (_audioPlayerState.value !is AudioPlayerState.Failed) return@withLock
+                closeMediaPlayer()
+                initializeMediaPlayer()
             }
         }
     }

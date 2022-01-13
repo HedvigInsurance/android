@@ -67,6 +67,7 @@ fun FakeWaveAudioPlayerCard(
     audioPlayerState: AudioPlayerState,
     startPlaying: () -> Unit,
     pause: () -> Unit,
+    retryLoadingAudio: () -> Unit,
     waveInteraction: WaveInteraction,
 ) {
     val color by animateColorAsState(
@@ -99,6 +100,7 @@ fun FakeWaveAudioPlayerCard(
             audioPlayerState = audioPlayerState,
             startPlaying = startPlaying,
             pause = pause,
+            retryLoadingAudio = retryLoadingAudio,
             waveInteraction = waveInteraction,
         )
     }
@@ -111,6 +113,7 @@ private fun FakeWaveAudioPlayerCardContent(
     audioPlayerState: AudioPlayerState,
     startPlaying: () -> Unit,
     pause: () -> Unit,
+    retryLoadingAudio: () -> Unit,
     waveInteraction: WaveInteraction,
 ) {
     Box(
@@ -130,7 +133,7 @@ private fun FakeWaveAudioPlayerCardContent(
                 }
             }
             AudioPlayerState.Failed -> {
-                FailedAudioPlayerCard({})
+                FailedAudioPlayerCard(tryAgain = retryLoadingAudio)
             }
             is AudioPlayerState.Ready -> {
                 Row(
@@ -273,7 +276,7 @@ fun FakeWaveAudioPlayerItemPreview(
         Surface(
             color = MaterialTheme.colors.background,
         ) {
-            FakeWaveAudioPlayerCard(audioPlayerState, {}, {}, {})
+            FakeWaveAudioPlayerCard(audioPlayerState, {}, {}, {}, {})
         }
     }
 }
