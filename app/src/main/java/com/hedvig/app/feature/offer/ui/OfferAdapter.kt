@@ -63,7 +63,7 @@ class OfferAdapter(
     private val locale: Locale,
     private val openQuoteDetails: (quoteID: String) -> Unit,
     private val onRemoveDiscount: () -> Unit,
-    private val onSign: (SignMethod, PaymentMethodsApiResponse) -> Unit,
+    private val onSign: (SignMethod, PaymentMethodsApiResponse?) -> Unit,
     private val reload: () -> Unit,
     private val openChat: () -> Unit,
 ) : ListAdapter<OfferModel, OfferAdapter.ViewHolder>(OfferDiffUtilCallback()) {
@@ -129,7 +129,7 @@ class OfferAdapter(
             private val locale: Locale,
             private val fragmentManager: FragmentManager,
             private val tracker: OfferTracker,
-            private val onSign: (SignMethod, PaymentMethodsApiResponse) -> Unit,
+            private val onSign: (SignMethod, PaymentMethodsApiResponse?) -> Unit,
             private val onRemoveDiscount: () -> Unit,
         ) : ViewHolder(parent.inflate(R.layout.offer_header)) {
             private val binding by viewBinding(OfferHeaderBinding::bind)

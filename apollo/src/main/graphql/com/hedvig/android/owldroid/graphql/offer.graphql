@@ -84,10 +84,6 @@ query Offer($locale: Locale!, $ids: [ID!]!) {
   }
 
   signMethodForQuotes(input: $ids)
-
-  availablePaymentMethods {
-    paymentMethodsResponse
-  }
 }
 
 fragment CurrentInsurerFragment on CurrentInsurer {

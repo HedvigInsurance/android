@@ -348,11 +348,11 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         }
     }
 
-    private fun onSign(signMethod: SignMethod, paymentMethods: PaymentMethodsApiResponse) {
+    private fun onSign(signMethod: SignMethod, paymentMethods: PaymentMethodsApiResponse?) {
         when (signMethod) {
             SignMethod.SWEDISH_BANK_ID -> model.onSwedishBankIdSign()
             SignMethod.SIMPLE_SIGN -> {
-                if (featureManager.isFeatureEnabled(Feature.CONNECT_PAYMENT_AT_SIGN)) {
+                if (featureManager.isFeatureEnabled(Feature.CONNECT_PAYMENT_AT_SIGN) && paymentMethods != null) {
                     startAdyenPayment(marketManager.market, paymentMethods)
                 } else {
                     model.onOpenCheckout()

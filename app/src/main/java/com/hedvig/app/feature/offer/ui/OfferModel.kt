@@ -32,7 +32,7 @@ sealed class OfferModel {
         val showCampaignManagement: Boolean,
         val ignoreCampaigns: Boolean,
         val gradientType: GradientType,
-        val paymentMethodsApiResponse: PaymentMethodsApiResponse
+        val paymentMethodsApiResponse: PaymentMethodsApiResponse?
     ) : OfferModel()
 
     data class Facts(
