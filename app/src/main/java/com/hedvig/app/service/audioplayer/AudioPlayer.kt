@@ -10,5 +10,6 @@ interface AudioPlayer : Closeable {
     fun initialize()
     fun startPlayer()
     fun pausePlayer()
+    fun retryLoadingAudio()
     fun seekTo(progressPercentage: ProgressPercentage)
 }

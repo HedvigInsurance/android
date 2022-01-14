@@ -1,8 +1,10 @@
 package com.hedvig.app.ui.compose.theme
 
+import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import com.hedvig.app.R
@@ -34,3 +36,15 @@ fun hedvigContentColorFor(backgroundColor: Color): Color {
         else -> contentColorFor(backgroundColor)
     }
 }
+
+@Suppress("unused")
+val Colors.warning: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = colorResource(R.color.colorWarning)
+
+@Suppress("unused")
+val Colors.onWarning: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = colorResource(R.color.hedvig_black)

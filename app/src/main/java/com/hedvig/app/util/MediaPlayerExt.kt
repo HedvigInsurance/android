@@ -28,5 +28,9 @@ fun MediaPlayer.hasReachedTheEnd(): Boolean {
 }
 
 fun MediaPlayer.getProgressPercentage(): ProgressPercentage {
-    return ProgressPercentage((currentPosition.toFloat() / duration.toFloat()).coerceIn(0f, 1f))
+    return try {
+        ProgressPercentage((currentPosition.toFloat() / duration.toFloat()).coerceIn(0f, 1f))
+    } catch (e: IllegalStateException) {
+        ProgressPercentage(0f)
+    }
 }
