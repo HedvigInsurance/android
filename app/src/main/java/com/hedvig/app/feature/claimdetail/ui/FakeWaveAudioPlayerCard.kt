@@ -76,23 +76,11 @@ fun FakeWaveAudioPlayerCard(
     modifier: Modifier = Modifier,
 ) {
     val color by animateColorAsState(
-        if (audioPlayerState is AudioPlayerState.Failed) {
-            MaterialTheme.colors.warning
-        } else if (isSystemInDarkTheme()) {
-            MaterialTheme.colors.secondary
-        } else {
-            colorResource(R.color.lavender_200)
-        },
+        cardColor(audioPlayerState),
         animationSpec = tween(500)
     )
     val contentColor by animateColorAsState(
-        if (audioPlayerState is AudioPlayerState.Failed) {
-            MaterialTheme.colors.onWarning
-        } else if (isSystemInDarkTheme()) {
-            colorResource(R.color.lavender_200)
-        } else {
-            MaterialTheme.colors.secondary
-        },
+        cardContentColor(audioPlayerState),
         animationSpec = tween(500)
     )
     Surface(
@@ -109,6 +97,20 @@ fun FakeWaveAudioPlayerCard(
             waveInteraction = waveInteraction,
         )
     }
+}
+
+@Composable
+private fun cardColor(audioPlayerState: AudioPlayerState): Color = when {
+    audioPlayerState.isFailed -> MaterialTheme.colors.warning
+    isSystemInDarkTheme() -> MaterialTheme.colors.secondary
+    else -> colorResource(R.color.lavender_200)
+}
+
+@Composable
+private fun cardContentColor(audioPlayerState: AudioPlayerState): Color = when {
+    audioPlayerState.isFailed -> MaterialTheme.colors.onWarning
+    isSystemInDarkTheme() -> colorResource(R.color.lavender_200)
+    else -> MaterialTheme.colors.secondary
 }
 
 @Composable

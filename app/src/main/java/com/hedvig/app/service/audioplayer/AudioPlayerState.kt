@@ -40,4 +40,7 @@ sealed interface AudioPlayerState {
 
     val isSeekable: Boolean
         get() = this is Ready && readyState.isSeekable
+
+    val isFailed: Boolean
+        get() = this is Failed
 }
