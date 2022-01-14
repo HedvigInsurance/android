@@ -28,6 +28,7 @@ import com.hedvig.app.databinding.HomeStartClaimContainedBinding
 import com.hedvig.app.databinding.HomeStartClaimOutlinedBinding
 import com.hedvig.app.databinding.HowClaimsWorkButtonBinding
 import com.hedvig.app.databinding.UpcomingRenewalCardBinding
+import com.hedvig.app.feature.claimdetail.ClaimDetailActivity
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimActivity
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyActivity
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
@@ -56,13 +57,14 @@ class HomeAdapter(
     private val imageLoader: ImageLoader,
     private val tracker: HomeTracker,
     private val marketManager: MarketManager,
+    private val areClaimCardsClickable: Boolean,
 ) : ListAdapter<HomeModel, HomeAdapter.ViewHolder>(HomeModelDiffUtilItemCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.home_psa -> ViewHolder.PSABox(parent)
         R.layout.home_big_text -> ViewHolder.BigText(parent)
         R.layout.home_body_text -> ViewHolder.BodyText(parent)
-        ACTIVE_CLAIM -> ViewHolder.ClaimStatus(ComposeView(parent.context))
+        ACTIVE_CLAIM -> ViewHolder.ClaimStatus(ComposeView(parent.context), areClaimCardsClickable)
         R.layout.home_start_claim_outlined -> ViewHolder.StartClaimOutlined(parent, startIntentForResult)
         R.layout.home_start_claim_contained -> ViewHolder.StartClaimContained(parent, startIntentForResult)
         R.layout.home_info_card -> ViewHolder.InfoCard(parent)
@@ -195,9 +197,16 @@ class HomeAdapter(
 
         class ClaimStatus(
             val composeView: ComposeView,
+            private val areClaimCardsClickable: Boolean,
         ) : ViewHolder(composeView) {
             init {
                 composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            }
+
+            private fun goToClaimDetailScreen(claimId: String) {
+                composeView.context.startActivity(
+                    ClaimDetailActivity.newInstance(composeView.context, claimId)
+                )
             }
 
             override fun bind(
@@ -212,7 +221,10 @@ class HomeAdapter(
 
                 composeView.setContent {
                     HedvigTheme {
-                        ClaimStatusCards(data.claimStatusCardDataList)
+                        ClaimStatusCards(
+                            goToDetailScreen = if (areClaimCardsClickable) ::goToClaimDetailScreen else null,
+                            claimStatusCardsUiState = data.claimStatusCardsUiState,
+                        )
                     }
                 }
             }

@@ -274,6 +274,7 @@ dependencies {
     implementation(libs.androidx.compose.animation)
     implementation(libs.androidx.compose.mdcAdapter)
     implementation(libs.androidx.compose.uiTooling)
+    implementation(libs.androidx.compose.uiViewBinding)
     implementation(libs.androidx.lifecycle.compose)
     androidTestImplementation(libs.androidx.compose.uiTestJunit)
     debugImplementation(libs.androidx.compose.uiTestManifest)
