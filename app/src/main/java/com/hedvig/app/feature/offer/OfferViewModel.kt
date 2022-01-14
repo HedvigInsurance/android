@@ -2,12 +2,14 @@ package com.hedvig.app.feature.offer
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationTitle
 import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.authenticate.LoginStatusService
+import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.offer.quotedetail.buildDocuments
@@ -29,6 +31,8 @@ import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToData
 import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToDataCollectionStatusUseCase.Status.Content
 import com.hedvig.app.feature.offer.usecase.providerstatus.GetProviderDisplayNameUseCase
 import com.hedvig.app.feature.perils.PerilItem
+import com.hedvig.app.feature.settings.Market
+import com.hedvig.app.feature.settings.MarketManager
 import e
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
@@ -115,6 +119,7 @@ abstract class OfferViewModel : ViewModel() {
         data class Content(
             val offerData: OfferQuery.Data,
             val loginStatus: LoginStatus,
+            val paymentMethods: PaymentMethodsApiResponse?,
         ) : OfferAndLoginStatus()
     }
 
@@ -140,6 +145,8 @@ class OfferViewModelImpl(
     private val getDataCollectionResultUseCase: GetDataCollectionResultUseCase,
     private val getProviderDisplayNameUseCase: GetProviderDisplayNameUseCase,
     private val tracker: OfferTracker,
+    private val adyenRepository: AdyenRepository,
+    private val marketManager: MarketManager
 ) : OfferViewModel() {
 
     private lateinit var quoteIds: List<String>
@@ -168,6 +175,7 @@ class OfferViewModelImpl(
                         produceViewState(
                             data = offerResponse.offerData,
                             loginStatus = offerResponse.loginStatus,
+                            paymentMethods = offerResponse.paymentMethods,
                         )
                     )
                 } else {
@@ -194,6 +202,7 @@ class OfferViewModelImpl(
                                     produceViewState(
                                         offerResponse.offerData,
                                         offerResponse.loginStatus,
+                                        offerResponse.paymentMethods,
                                         dataCollectionStatus,
                                         dataCollectionResult.await(),
                                         insuranceProviderDisplayName.await()
@@ -225,7 +234,21 @@ class OfferViewModelImpl(
                             is OfferRepository.OfferResult.Success -> {
                                 trackView(response.data)
                                 val loginStatus = loginStatusService.getLoginStatus()
-                                offerAndLoginStatus.value = OfferAndLoginStatus.Content(response.data, loginStatus)
+
+                                val paymentMethods = if (marketManager.market == Market.NO) {
+                                    adyenRepository.paymentMethods()
+                                        .data
+                                        ?.availablePaymentMethods
+                                        ?.paymentMethodsResponse
+                                } else {
+                                    null
+                                }
+
+                                offerAndLoginStatus.value = OfferAndLoginStatus.Content(
+                                    response.data,
+                                    loginStatus,
+                                    paymentMethods
+                                )
                             }
                         }
                     }
@@ -285,6 +308,7 @@ class OfferViewModelImpl(
     private fun produceViewState(
         data: OfferQuery.Data,
         loginStatus: LoginStatus,
+        paymentMethods: PaymentMethodsApiResponse?,
         dataCollectionStatus: SubscribeToDataCollectionStatusUseCase.Status? = null,
         dataCollectionResult: DataCollectionResult? = null,
         insuranceProviderDisplayName: String? = null,
@@ -294,6 +318,7 @@ class OfferViewModelImpl(
             dataCollectionStatus,
             dataCollectionResult,
             insuranceProviderDisplayName,
+            paymentMethods
         )
         val perilItems = OfferItemsBuilder.createPerilItems(data.quoteBundle.quotes)
         val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(data.quoteBundle.quotes)

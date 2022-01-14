@@ -440,6 +440,8 @@ val offerModule = module {
             getDataCollectionResultUseCase = get(),
             getProviderDisplayNameUseCase = get(),
             tracker = get(),
+            adyenRepository = get(),
+            marketManager = get(),
         )
     }
     single { ApproveQuotesUseCase(get(), get(), get(), get()) }

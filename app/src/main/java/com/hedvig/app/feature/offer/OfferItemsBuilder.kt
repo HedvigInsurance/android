@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.offer
 
+import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.documents.DocumentItems
@@ -32,11 +33,13 @@ object OfferItemsBuilder {
         dataCollectionStatus: SubscribeToDataCollectionStatusUseCase.Status? = null,
         dataCollectionResult: DataCollectionResult? = null,
         insuranceProviderDisplayName: String? = null,
+        paymentMethods: PaymentMethodsApiResponse? = null,
     ): List<OfferModel> = TopOfferItemsBuilder.createTopOfferItems(
         offerData,
         dataCollectionStatus,
         dataCollectionResult,
         insuranceProviderDisplayName,
+        paymentMethods,
     )
 
     fun createDocumentItems(data: List<OfferQuery.Quote>): List<DocumentItems> {
@@ -86,6 +89,7 @@ object TopOfferItemsBuilder {
         dataCollectionStatus: SubscribeToDataCollectionStatusUseCase.Status? = null,
         dataCollectionResult: DataCollectionResult? = null,
         insuranceProviderDisplayName: String?,
+        paymentMethods: PaymentMethodsApiResponse?,
     ): List<OfferModel> = buildList {
         val bundle = offerData.quoteBundle
         add(
@@ -110,7 +114,7 @@ object TopOfferItemsBuilder {
                 showCampaignManagement = bundle.appConfiguration.showCampaignManagement,
                 ignoreCampaigns = bundle.appConfiguration.ignoreCampaigns,
                 gradientType = offerData.gradientType(),
-                paymentMethodsApiResponse = offerData.availablePaymentMethods.paymentMethodsResponse
+                paymentMethodsApiResponse = paymentMethods
             ),
         )
         val showInsurelyInformation = dataCollectionStatus != null

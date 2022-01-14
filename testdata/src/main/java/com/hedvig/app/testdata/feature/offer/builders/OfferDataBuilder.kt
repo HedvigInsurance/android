@@ -1,6 +1,5 @@
 package com.hedvig.app.testdata.feature.offer.builders
 
-import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.fragment.TableFragment
@@ -19,7 +18,6 @@ import com.hedvig.android.owldroid.type.TypeOfContractGradientOption
 import com.hedvig.app.testdata.common.builders.CostBuilder
 import com.hedvig.app.testdata.common.builders.TableFragmentBuilder
 import com.hedvig.app.testdata.feature.insurance.builders.PerilBuilder
-import org.json.JSONObject
 import java.time.LocalDate
 
 data class OfferDataBuilder(
@@ -48,64 +46,6 @@ data class OfferDataBuilder(
         ),
         redeemedCampaigns = redeemedCampaigns,
         signMethodForQuotes = signMethod,
-        availablePaymentMethods = OfferQuery.AvailablePaymentMethods(
-            paymentMethodsResponse = PaymentMethodsApiResponse.SERIALIZER.deserialize(
-                JSONObject(
-                    """{
-  "groups": [
-    {
-      "name": "Credit Card",
-      "types": [
-        "mc",
-        "visa",
-        "amex",
-        "maestro",
-        "diners",
-        "discover"
-      ]
-    }
-  ],
-  "paymentMethods": [
-    {
-      "brands": [
-        "mc",
-        "visa",
-        "amex",
-        "maestro",
-        "diners",
-        "discover"
-      ],
-      "details": [
-        {
-          "key": "encryptedCardNumber",
-          "type": "cardToken"
-        },
-        {
-          "key": "encryptedSecurityCode",
-          "type": "cardToken"
-        },
-        {
-          "key": "encryptedExpiryMonth",
-          "type": "cardToken"
-        },
-        {
-          "key": "encryptedExpiryYear",
-          "type": "cardToken"
-        },
-        {
-          "key": "holderName",
-          "optional": true,
-          "type": "text"
-        }
-      ],
-      "name": "Credit Card",
-      "type": "scheme"
-    }
-  ]
-}"""
-                )
-            )
-        ),
     )
 }
 
