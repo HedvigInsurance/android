@@ -44,7 +44,7 @@ fun IntroContent(
         }
         Column(verticalArrangement = Arrangement.spacedBy(baseMarginDouble)) {
             LargeContainedTextButton(
-                text = stringResource(R.string.insurely_confirmation_continue_button_text),
+                text = stringResource(R.string.insurely_intro_continue_button_text),
                 onClick = onNavigateToRetrievePriceInfo
             )
             LargeOutlinedTextButton(
