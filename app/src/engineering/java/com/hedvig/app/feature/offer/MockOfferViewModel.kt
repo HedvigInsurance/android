@@ -106,7 +106,8 @@ class MockOfferViewModel : OfferViewModel() {
                         signMethod = mockData.offer.signMethodForQuotes,
                         checkoutLabel = mockData.offer.checkoutLabel(),
                         title = mockData.offer.quoteBundle.appConfiguration.title,
-                        loginStatus = LoginStatus.LOGGED_IN
+                        loginStatus = LoginStatus.LOGGED_IN,
+                        paymentMethods = null
                     )
                 delay(2000)
             } while (mockRefreshEvery2Seconds)

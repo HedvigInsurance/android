@@ -110,6 +110,7 @@ abstract class OfferViewModel : ViewModel() {
             val checkoutLabel: CheckoutLabel = CheckoutLabel.CONFIRM,
             val title: QuoteBundleAppConfigurationTitle = QuoteBundleAppConfigurationTitle.LOGO,
             val loginStatus: LoginStatus = LoginStatus.LOGGED_IN,
+            val paymentMethods: PaymentMethodsApiResponse?,
         ) : ViewState()
     }
 
@@ -334,6 +335,7 @@ class OfferViewModelImpl(
             checkoutLabel = data.checkoutLabel(),
             title = data.quoteBundle.appConfiguration.title,
             loginStatus = loginStatus,
+            paymentMethods = paymentMethods
         )
     }
 
