@@ -72,12 +72,12 @@ private fun SubmittedAndClosedColumn(
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
             Text(
                 text = topText,
-                style = MaterialTheme.typography.caption,
+                style = MaterialTheme.typography.overline,
             )
         }
         Text(
             text = bottomText,
-            style = MaterialTheme.typography.body1,
+            style = MaterialTheme.typography.body2,
         )
     }
 }
