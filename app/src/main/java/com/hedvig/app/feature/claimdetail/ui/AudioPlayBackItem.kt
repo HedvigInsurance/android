@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hedvig.app.R
+import com.hedvig.app.feature.claimdetail.model.SignedAudioUrl
 import com.hedvig.app.service.audioplayer.AudioPlayer
 import com.hedvig.app.service.audioplayer.AudioPlayerImpl
 import com.hedvig.app.service.audioplayer.AudioPlayerState
@@ -27,7 +28,7 @@ import com.hedvig.app.service.audioplayer.AudioPlayerState
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AudioPlayBackItem(
-    signedAudioUrl: String,
+    signedAudioUrl: SignedAudioUrl,
     modifier: Modifier = Modifier,
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current

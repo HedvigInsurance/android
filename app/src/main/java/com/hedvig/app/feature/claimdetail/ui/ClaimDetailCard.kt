@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.claimdetail.ui
 
 import android.content.res.Configuration
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -39,12 +40,14 @@ fun ClaimDetailCard(
             TopSection(
                 claimProgressItemsUiState = uiState.claimProgressItemsUiState,
                 statusParagraph = uiState.statusParagraph,
-                modifier = Modifier.padding(
-                    start = 16.dp,
-                    top = 16.dp,
-                    end = 16.dp,
-                    bottom = 20.dp,
-                )
+                modifier = Modifier
+                    .animateContentSize()
+                    .padding(
+                        start = 16.dp,
+                        top = 16.dp,
+                        end = 16.dp,
+                        bottom = 20.dp,
+                    )
             )
             Divider()
             BottomSection(
