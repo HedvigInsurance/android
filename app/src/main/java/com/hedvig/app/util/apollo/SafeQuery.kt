@@ -87,8 +87,8 @@ sealed class QueryResult<out T> {
         is Success -> Either.Right(this.data)
     }
 
-    inline fun <ErrorType> toEither(ifEmpty: () -> ErrorType): Either<ErrorType, T> = when (this) {
-        is Error -> Either.Left(ifEmpty())
+    inline fun <ErrorType> toEither(ifEmpty: (message: String?) -> ErrorType): Either<ErrorType, T> = when (this) {
+        is Error -> Either.Left(ifEmpty(message))
         is Success -> Either.Right(this.data)
     }
 }

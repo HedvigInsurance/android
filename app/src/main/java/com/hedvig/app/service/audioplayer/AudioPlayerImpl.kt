@@ -5,6 +5,7 @@ import android.media.MediaPlayer
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
+import com.hedvig.app.feature.claimdetail.model.SignedAudioUrl
 import com.hedvig.app.service.audioplayer.AudioPlayerState.Ready.ReadyState
 import com.hedvig.app.util.ProgressPercentage
 import com.hedvig.app.util.getProgressPercentage
@@ -37,7 +38,7 @@ import kotlinx.coroutines.yield
 private const val ONE_SIXTIETH_OF_A_SECOND: Long = 1_000 / 60
 
 class AudioPlayerImpl(
-    private val signedAudioURL: String,
+    private val signedAudioURL: SignedAudioUrl,
     private val lifecycleOwner: LifecycleOwner,
 ) : AudioPlayer {
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
@@ -118,7 +119,7 @@ class AudioPlayerImpl(
                     .setUsage(AudioAttributes.USAGE_MEDIA)
                     .build()
             )
-            setDataSource(signedAudioURL)
+            setDataSource(signedAudioURL.rawUrl)
             setOnErrorListener { _, what, extra ->
                 d { "AudioPlayer failed with code: $what and extras code: $extra" }
                 _audioPlayerState.update { AudioPlayerState.Failed }
