@@ -30,11 +30,15 @@ class GetClaimDetailUiStateFlowUseCase(
                     getClaimDetailUseCase
                         .invoke(claimId)
                         .tap { claimDetail -> emit(claimDetail.right()) }
-                    delay(5_000L)
+                    delay(POLL_INTERVAL_MS)
                 }
             }
         }.map { result: Either<GetClaimDetailUseCase.Error, ClaimDetailsQuery.ClaimDetail> ->
             result.map(ClaimDetailUiState::fromDto)
         }
+    }
+
+    companion object {
+        private const val POLL_INTERVAL_MS = 5_000L
     }
 }
