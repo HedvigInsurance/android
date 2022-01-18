@@ -26,9 +26,10 @@ class PreviousInsurerAdapter(
     init {
         submitList(
             listOf(PreviousInsurerItem.Header) + previousInsurers.map { it.toListItem() } + PreviousInsurerItem.Insurer(
-                context.getString(R.string.EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION),
-                null,
-                context.getString(R.string.EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION),
+                name = context.getString(R.string.EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION),
+                icon = null,
+                id = context.getString(R.string.EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION),
+                collectionId = context.getString(R.string.EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION)
             )
         )
     }
