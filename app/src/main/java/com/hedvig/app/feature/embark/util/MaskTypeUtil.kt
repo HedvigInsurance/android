@@ -17,7 +17,7 @@ object MaskTypeUtil {
     private fun createDateFormatterFromPattern(pattern: String): DateTimeFormatter {
         return DateTimeFormatterBuilder()
             .appendValueReduced(
-                ChronoField.YEAR_OF_ERA, 2, 4, LocalDate.of(1940, 1, 1)
+                ChronoField.YEAR_OF_ERA, 2, 4, LocalDate.of(1925, 1, 1)
             )
             .appendPattern(pattern)
             .toFormatter()
