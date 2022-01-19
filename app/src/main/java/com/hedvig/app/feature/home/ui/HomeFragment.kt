@@ -214,7 +214,6 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     private fun MutableList<HomeModel>.addClaimStatusCardsIfApplicable(successData: HomeQuery.Data): Boolean {
         if (featureManager.isFeatureEnabled(Feature.CLAIMS_STATUS).not()) return false
         return NonEmptyList.fromList(successData.claimStatusCards)
-//        return NonEmptyList.fromList(listOf<HomeQuery.ClaimStatusCard>())
             .map { claimStatusCardsQuery ->
                 claimStatusCardsQuery.map(ClaimStatusCardUiState::fromClaimStatusCardsQuery)
             }
