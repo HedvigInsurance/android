@@ -217,7 +217,7 @@ jobs:
       - run: ./gradlew lintDebug
       - uses: yutailang0119/action-android-lint@v2.0.0
         with:
-          report_path: app/build/reports/lint-results-debug.xml
+          report-path: app/build/reports/lint-results-debug.xml
   ktlint:
     runs-on: ubuntu-latest
     steps:
