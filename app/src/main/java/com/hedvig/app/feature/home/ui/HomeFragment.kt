@@ -149,11 +149,11 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                 val items = buildList {
                     add(HomeModel.BigText.Terminated(firstName))
                     add(HomeModel.BodyText.Terminated)
-                    if (successData.claimStatusCards.isNotEmpty()) {
-                        addClaimStatusCardsIfApplicable(successData)
+                    val didAddClaimStatusCards = addClaimStatusCardsIfApplicable(successData)
+                    if (didAddClaimStatusCards) {
                         add(HomeModel.StartClaimOutlined.NewClaim)
                     } else {
-                        add(HomeModel.StartClaimOutlined.FirstClaim)
+                        add(HomeModel.StartClaimContained.FirstClaim)
                     }
                     add(HomeModel.HowClaimsWork(successData.howClaimsWork))
                     if (pendingAddress != null && pendingAddress.isNotBlank()) {
@@ -171,8 +171,8 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                 val items = buildList {
                     addAll(listOfNotNull(*psaItems(successData.importantMessages).toTypedArray()))
                     add(HomeModel.BigText.Active(firstName))
-                    if (successData.claimStatusCards.isNotEmpty()) {
-                        addClaimStatusCardsIfApplicable(successData)
+                    val didAddClaimStatusCards = addClaimStatusCardsIfApplicable(successData)
+                    if (didAddClaimStatusCards) {
                         add(HomeModel.StartClaimOutlined.NewClaim)
                     } else {
                         add(HomeModel.StartClaimContained.FirstClaim)
@@ -208,15 +208,22 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
         registerForActivityResult.launch(intent)
     }
 
-    private fun MutableList<HomeModel>.addClaimStatusCardsIfApplicable(successData: HomeQuery.Data) {
-        if (featureManager.isFeatureEnabled(Feature.CLAIMS_STATUS).not()) return
-        NonEmptyList.fromList(successData.claimStatusCards)
+    /**
+     * returns whether adding the claimStatusCards was applied or not
+     */
+    private fun MutableList<HomeModel>.addClaimStatusCardsIfApplicable(successData: HomeQuery.Data): Boolean {
+        if (featureManager.isFeatureEnabled(Feature.CLAIMS_STATUS).not()) return false
+        return NonEmptyList.fromList(successData.claimStatusCards)
             .map { claimStatusCardsQuery ->
                 claimStatusCardsQuery.map(ClaimStatusCardUiState::fromClaimStatusCardsQuery)
             }
-            .tap { claimStatusCardDataList ->
-                add(HomeModel.ClaimStatus(claimStatusCardDataList))
-            }
+            .fold(
+                ifEmpty = { false },
+                ifSome = { claimStatusCardDataList ->
+                    add(HomeModel.ClaimStatus(claimStatusCardDataList))
+                    true
+                },
+            )
     }
 
     private fun psaItems(

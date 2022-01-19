@@ -61,12 +61,12 @@ sealed class HomeModel {
     sealed class StartClaimContained : HomeModel() {
         @get:StringRes abstract val textId: Int
 
-        object FirstClaim : StartClaimOutlined() {
+        object FirstClaim : StartClaimContained() {
             override val textId: Int
                 get() = R.string.home_tab_claim_button_text
         }
 
-        object NewClaim : StartClaimOutlined() {
+        object NewClaim : StartClaimContained() {
             override val textId: Int
                 get() = R.string.home_open_claim_start_new_claim_button
         }
