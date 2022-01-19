@@ -17,7 +17,7 @@ import com.hedvig.app.feature.embark.util.VariableExtractor
 import com.hedvig.app.feature.embark.util.evaluateExpression
 import com.hedvig.app.feature.embark.util.getOfferKeysOrNull
 import com.hedvig.app.feature.embark.util.toExpressionFragment
-import com.hedvig.app.util.Percent
+import com.hedvig.app.util.ProgressPercentage
 import com.hedvig.app.util.plus
 import com.hedvig.app.util.safeLet
 import kotlinx.coroutines.channels.Channel
@@ -49,7 +49,7 @@ abstract class EmbarkViewModel(
     data class ViewState(
         val passage: EmbarkStoryQuery.Passage?,
         val navigationDirection: NavigationDirection,
-        val progress: Percent,
+        val progressPercentage: ProgressPercentage,
         val isLoggedIn: Boolean,
         val hasTooltips: Boolean,
     )
@@ -135,7 +135,7 @@ abstract class EmbarkViewModel(
         val state = ViewState(
             passage = preProcessPassage(nextPassage),
             navigationDirection = NavigationDirection.FORWARDS,
-            progress = currentProgress(nextPassage),
+            progressPercentage = currentProgress(nextPassage),
             isLoggedIn = loginStatus == LoginStatus.LOGGED_IN,
             hasTooltips = nextPassage.tooltips.isNotEmpty(),
         )
@@ -209,13 +209,13 @@ abstract class EmbarkViewModel(
         track.customData?.let { data + it } ?: data
     }
 
-    private fun currentProgress(passage: EmbarkStoryQuery.Passage?): Percent {
+    private fun currentProgress(passage: EmbarkStoryQuery.Passage?): ProgressPercentage {
         if (passage == null) {
-            return Percent(0)
+            return ProgressPercentage(0f)
         }
         val passagesLeft = getPassagesLeft(passage)
-        val progress = ((totalSteps.toFloat() - passagesLeft.toFloat()) / totalSteps.toFloat()) * 100
-        return Percent(progress.toInt())
+        val progress = ((totalSteps.toFloat() - passagesLeft.toFloat()) / totalSteps.toFloat())
+        return ProgressPercentage(progress)
     }
 
     private fun handleGraphQLQuery(graphQLQuery: ApiFragment.AsEmbarkApiGraphQLQuery) {
@@ -290,7 +290,7 @@ abstract class EmbarkViewModel(
             val model = ViewState(
                 passage = preProcessPassage(nextPassage),
                 navigationDirection = NavigationDirection.BACKWARDS,
-                progress = currentProgress(nextPassage),
+                progressPercentage = currentProgress(nextPassage),
                 isLoggedIn = loginStatus == LoginStatus.LOGGED_IN,
                 hasTooltips = nextPassage?.tooltips?.isNotEmpty() == true,
             )

@@ -91,7 +91,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                     viewState.hasTooltips,
                     viewState.isLoggedIn
                 )
-                progressToolbar.setProgress(viewState.progress)
+                progressToolbar.setProgress(viewState.progressPercentage)
 
                 val passage = viewState.passage
                 actionBar?.title = passage?.name
