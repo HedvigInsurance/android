@@ -1,9 +1,10 @@
 package com.hedvig.app.authenticate
 
 import android.content.SharedPreferences
+import arrow.core.identity
 import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.coroutines.await
 import com.hedvig.android.owldroid.graphql.ContractStatusQuery
+import com.hedvig.app.util.apollo.safeQuery
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
@@ -39,14 +40,17 @@ class SharedPreferencesLoginStatusService(
             .apply()
         get() = sharedPreferences.getBoolean(SHARED_PREFERENCE_IS_LOGGED_IN, false)
 
-    override suspend fun getLoginStatus() = when {
-        isLoggedIn -> LoginStatus.LOGGED_IN
-        isViewingOffer -> LoginStatus.IN_OFFER
-        authenticationTokenManager.authenticationToken == null -> LoginStatus.ONBOARDING
-        hasNoContracts() -> LoginStatus.ONBOARDING
-        else -> {
-            isLoggedIn = true
-            LoginStatus.LOGGED_IN
+    override suspend fun getLoginStatus(): LoginStatus {
+        yield()
+        return when {
+            isLoggedIn -> LoginStatus.LOGGED_IN
+            isViewingOffer -> LoginStatus.IN_OFFER
+            authenticationTokenManager.authenticationToken == null -> LoginStatus.ONBOARDING
+            hasNoContracts() -> LoginStatus.ONBOARDING
+            else -> {
+                isLoggedIn = true
+                LoginStatus.LOGGED_IN
+            }
         }
     }
 
@@ -63,23 +67,20 @@ class SharedPreferencesLoginStatusService(
                 sharedPreferences.unregisterOnSharedPreferenceChangeListener(callback)
             }
         }
-            .mapLatest {
-                yield()
-                getLoginStatus()
-            }
+            .mapLatest { getLoginStatus() }
             .conflate()
             .flowOn(Dispatchers.IO)
     }
 
     private suspend fun hasNoContracts(): Boolean {
-        val response = runCatching {
-            apolloClient.query(ContractStatusQuery()).await()
-        }
-
-        if (response.isFailure || response.getOrNull()?.data?.contracts.orEmpty().isEmpty()) {
-            return true
-        }
-        return false
+        return apolloClient
+            .query(ContractStatusQuery())
+            .safeQuery()
+            .toOption()
+            .map { contractStatusQueryData ->
+                contractStatusQueryData.contracts.isEmpty()
+            }
+            .fold({ true }, ::identity)
     }
 
     companion object {
