@@ -2,7 +2,6 @@ package com.hedvig.app.feature.chat.usecase
 
 import arrow.core.Either
 import arrow.core.flatMap
-import arrow.core.rightIfNotNull
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.TriggerFreeTextChatMutation
 import com.hedvig.app.util.apollo.safeQuery
@@ -16,9 +15,13 @@ class TriggerFreeTextChatUseCase(
             .safeQuery()
             .toEither { FreeTextError.NetworkError }
             .flatMap { data ->
-                data.triggerFreeTextChat
-                    .rightIfNotNull { FreeTextError.CouldNotTrigger }
-                    .map { FreeTextSuccess }
+                val didTriggerFreeTextChat = data.triggerFreeTextChat ?: false
+
+                Either.conditionally(
+                    didTriggerFreeTextChat,
+                    ifFalse = { FreeTextError.CouldNotTrigger },
+                    ifTrue = { FreeTextSuccess }
+                )
             }
     }
 }
