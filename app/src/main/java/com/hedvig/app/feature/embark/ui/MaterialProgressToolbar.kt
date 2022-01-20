@@ -8,7 +8,7 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import com.google.android.material.appbar.MaterialToolbar
 import com.hedvig.app.databinding.ViewMaterialProgressToolbarBinding
-import com.hedvig.app.util.Percent
+import com.hedvig.app.util.ProgressPercentage
 
 class MaterialProgressToolbar @JvmOverloads constructor(
     context: Context,
@@ -26,11 +26,11 @@ class MaterialProgressToolbar @JvmOverloads constructor(
         orientation = VERTICAL
     }
 
-    fun setProgress(progress: Percent) {
+    fun setProgress(progressPercentage: ProgressPercentage) {
         binding.progress.post {
             TransitionManager.beginDelayedTransition(this)
             binding.progress.layoutParams = FrameLayout.LayoutParams(
-                (this.width * progress.toFraction()).toInt(),
+                (this.width * progressPercentage.value).toInt(),
                 binding.progress.layoutParams.height
             )
         }
