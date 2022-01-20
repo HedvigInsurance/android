@@ -445,6 +445,7 @@ val offerModule = module {
             tracker = get(),
             adyenRepository = get(),
             marketManager = get(),
+            freeTextChatUseCase = get()
         )
     }
     single { ApproveQuotesUseCase(get(), get(), get(), get()) }

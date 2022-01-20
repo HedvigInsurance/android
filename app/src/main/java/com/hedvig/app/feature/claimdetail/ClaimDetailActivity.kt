@@ -9,11 +9,13 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.hedvig.app.BaseActivity
+import com.hedvig.app.R
 import com.hedvig.app.feature.claimdetail.ui.ClaimDetailScreen
 import com.hedvig.app.feature.claimdetail.ui.ClaimDetailViewModel
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.getLocale
 import com.hedvig.app.ui.compose.theme.HedvigTheme
+import com.hedvig.app.util.extensions.showErrorDialog
 import com.hedvig.app.util.extensions.startChat
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -38,6 +40,9 @@ class ClaimDetailActivity : BaseActivity() {
             .onEach { event ->
                 when (event) {
                     ClaimDetailViewModel.Event.StartChat -> startChat()
+                    ClaimDetailViewModel.Event.Error -> showErrorDialog(
+                        getString(R.string.NETWORK_ERROR_ALERT_MESSAGE)
+                    ) {}
                 }
             }
             .launchIn(lifecycleScope)

@@ -9,7 +9,6 @@ import com.apollographql.apollo.coroutines.toFlow
 import com.apollographql.apollo.fetcher.ApolloResponseFetchers
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.graphql.LastQuoteIdQuery
-import com.hedvig.android.owldroid.graphql.OfferClosedMutation
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.RemoveDiscountCodeMutation
@@ -122,10 +121,6 @@ class OfferRepository(
             .writeAndPublish(offerQuery(ids), newData)
             .execute()
     }
-
-    suspend fun triggerOpenChatFromOffer() = apolloClient
-        .mutate(OfferClosedMutation())
-        .await()
 
     fun quoteIdOfLastQuoteOfMember(): ApolloCall<LastQuoteIdQuery.Data> = apolloClient
         .query(LastQuoteIdQuery())

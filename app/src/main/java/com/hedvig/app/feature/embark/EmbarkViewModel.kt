@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import arrow.core.Either
 import com.hedvig.android.owldroid.fragment.ApiFragment
 import com.hedvig.android.owldroid.fragment.MessageFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
@@ -163,26 +164,31 @@ abstract class EmbarkViewModel(
 
     private fun handleRedirectLocation(location: EmbarkExternalRedirectLocation) {
         when (location) {
-            EmbarkExternalRedirectLocation.OFFER -> {
-                val id = getFromStore("quoteId")
-                if (id == null) {
-                    _events.trySend(Event.Error())
-                } else {
-                    _events.trySend(Event.Offer(listOf(id)))
-                }
-            }
-            EmbarkExternalRedirectLocation.CLOSE -> {
-                _events.trySend(Event.Close)
-            }
-            EmbarkExternalRedirectLocation.CHAT -> {
-                viewModelScope.launch {
-                    triggerFreeTextChatUseCase.invoke()
-                    _events.trySend(Event.Chat)
-                }
-            }
+            EmbarkExternalRedirectLocation.OFFER -> sendOfferId()
+            EmbarkExternalRedirectLocation.CLOSE -> _events.trySend(Event.Close)
+            EmbarkExternalRedirectLocation.CHAT -> triggerChat()
             else -> {
                 // Do nothing
             }
+        }
+    }
+
+    private fun sendOfferId() {
+        val id = getFromStore("quoteId")
+        if (id == null) {
+            _events.trySend(Event.Error())
+        } else {
+            _events.trySend(Event.Offer(listOf(id)))
+        }
+    }
+
+    private fun triggerChat() {
+        viewModelScope.launch {
+            val event = when (triggerFreeTextChatUseCase.invoke()) {
+                is Either.Left -> Event.Error()
+                is Either.Right -> Event.Chat
+            }
+            _events.trySend(event)
         }
     }
 

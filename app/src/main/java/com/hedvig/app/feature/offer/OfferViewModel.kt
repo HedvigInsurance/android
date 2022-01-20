@@ -2,6 +2,7 @@ package com.hedvig.app.feature.offer
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import arrow.core.Either
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
@@ -10,6 +11,7 @@ import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.adyen.AdyenRepository
+import com.hedvig.app.feature.chat.usecase.TriggerFreeTextChatUseCase
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.offer.quotedetail.buildDocuments
@@ -61,6 +63,9 @@ abstract class OfferViewModel : ViewModel() {
         data class OpenCheckout(
             val checkoutParameter: CheckoutParameter,
         ) : Event()
+
+        object OpenChat : Event()
+        object Error : Event()
 
         data class ApproveError(
             val postSignScreen: PostSignScreen,
@@ -146,7 +151,8 @@ class OfferViewModelImpl(
     private val getProviderDisplayNameUseCase: GetProviderDisplayNameUseCase,
     private val tracker: OfferTracker,
     private val adyenRepository: AdyenRepository,
-    private val marketManager: MarketManager
+    private val marketManager: MarketManager,
+    private val freeTextChatUseCase: TriggerFreeTextChatUseCase
 ) : OfferViewModel() {
 
     private lateinit var quoteIds: List<String>
@@ -356,15 +362,14 @@ class OfferViewModelImpl(
         offerRepository.writeDiscountToCache(quoteIds, data)
 
     override suspend fun triggerOpenChat() {
-        val result = runCatching { offerRepository.triggerOpenChatFromOffer() }
-        if (result.isFailure) {
-            result.exceptionOrNull()?.let { e(it) }
+        val event = when (freeTextChatUseCase.invoke()) {
+            is Either.Left -> Event.Error
+            is Either.Right -> Event.OpenChat
         }
+        _events.trySend(event)
     }
 
-    override fun onOpenQuoteDetails(
-        id: String,
-    ) {
+    override fun onOpenQuoteDetails(id: String) {
         viewModelScope.launch {
             when (val result = getQuoteUseCase(quoteIds, id)) {
                 GetQuoteUseCase.Result.Error -> {
