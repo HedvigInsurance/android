@@ -2,6 +2,7 @@ package com.hedvig.app.feature.claimdetail.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import arrow.core.Either
 import com.hedvig.app.feature.chat.usecase.TriggerFreeTextChatUseCase
 import com.hedvig.app.feature.claimdetail.data.GetClaimDetailUiStateFlowUseCase
 import com.hedvig.app.feature.claimdetail.model.ClaimDetailUiState
@@ -29,6 +30,7 @@ class ClaimDetailViewModel(
 ) : ViewModel() {
     sealed class Event {
         object StartChat : Event()
+        object Error : Event()
     }
 
     private val _events = Channel<Event>(Channel.UNLIMITED)
@@ -58,8 +60,11 @@ class ClaimDetailViewModel(
 
     fun onChatClick() {
         viewModelScope.launch {
-            triggerFreeTextChatUseCase.invoke()
-            _events.trySend(Event.StartChat)
+            val event = when (triggerFreeTextChatUseCase.invoke()) {
+                is Either.Left -> Event.Error
+                is Either.Right -> Event.StartChat
+            }
+            _events.trySend(event)
         }
     }
 }

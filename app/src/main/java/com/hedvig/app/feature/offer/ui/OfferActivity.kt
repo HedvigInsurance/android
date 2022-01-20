@@ -209,90 +209,96 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 .flowWithLifecycle(lifecycle)
                 .onEach { event ->
                     when (event) {
-                        is OfferViewModel.Event.OpenQuoteDetails -> {
-                            startActivity(
-                                QuoteDetailActivity.newInstance(
-                                    context = this@OfferActivity,
-                                    title = event.quoteDetailItems.displayName,
-                                    perils = event.quoteDetailItems.perils,
-                                    insurableLimits = event.quoteDetailItems.insurableLimits,
-                                    documents = event.quoteDetailItems.documents,
-                                )
-                            )
-                        }
-                        is OfferViewModel.Event.OpenCheckout -> {
-                            startActivity(
-                                CheckoutActivity.newInstance(
-                                    this@OfferActivity,
-                                    event.checkoutParameter
-                                )
-                            )
-                        }
-                        is OfferViewModel.Event.ApproveSuccessful -> {
-                            when (event.postSignScreen) {
-                                PostSignScreen.CONNECT_PAYIN -> {
-                                    marketManager
-                                        .market
-                                        ?.connectPayin(this@OfferActivity, true)
-                                        ?.let { startActivity(it) }
-                                }
-                                PostSignScreen.MOVE -> {
-                                    startActivity(
-                                        ChangeAddressResultActivity.newInstance(
-                                            this@OfferActivity,
-                                            ChangeAddressResultActivity.Result.Success(event.startDate),
-                                        )
-                                    )
-                                }
-                                PostSignScreen.CROSS_SELL -> {
-                                    startActivity(
-                                        CrossSellingResultActivity.newInstance(
-                                            this@OfferActivity,
-                                            CrossSellingResult.Success.from(event)
-                                        )
-                                    )
-                                }
-                            }
-                        }
-                        is OfferViewModel.Event.ApproveError -> {
-                            when (event.postSignScreen) {
-                                PostSignScreen.CONNECT_PAYIN -> {
-                                }
-                                PostSignScreen.MOVE -> {
-                                    startActivity(
-                                        ChangeAddressResultActivity.newInstance(
-                                            this@OfferActivity,
-                                            ChangeAddressResultActivity.Result.Error
-                                        )
-                                    )
-                                }
-                                PostSignScreen.CROSS_SELL -> {
-                                    startActivity(
-                                        CrossSellingResultActivity.newInstance(
-                                            this@OfferActivity,
-                                            CrossSellingResult.Error
-                                        )
-                                    )
-                                }
-                            }
-                        }
-                        OfferViewModel.Event.DiscardOffer -> {
-                            startActivity(
-                                Intent(
-                                    this@OfferActivity,
-                                    SplashActivity::class.java
-                                )
-                            )
-                        }
-                        is OfferViewModel.Event.StartSwedishBankIdSign -> {
-                            SwedishBankIdSignDialog
-                                .newInstance(event.autoStartToken)
-                                .show(supportFragmentManager, SwedishBankIdSignDialog.TAG)
-                        }
+                        is OfferViewModel.Event.OpenQuoteDetails -> startQuoteDetailsActivity(event)
+                        is OfferViewModel.Event.OpenCheckout -> startCheckoutActivity(event)
+                        is OfferViewModel.Event.ApproveSuccessful -> handlePostSign(event)
+                        is OfferViewModel.Event.ApproveError -> handlePostSignError(event)
+                        OfferViewModel.Event.DiscardOffer -> startSplashActivity()
+                        is OfferViewModel.Event.StartSwedishBankIdSign -> showSignDialog(event)
+                        OfferViewModel.Event.Error -> showErrorDialog(
+                            getString(R.string.NETWORK_ERROR_ALERT_MESSAGE)
+                        ) {}
+                        OfferViewModel.Event.OpenChat -> startChat()
                     }
                 }
                 .launchIn(lifecycleScope)
         }
+    }
+
+    private fun showSignDialog(event: OfferViewModel.Event.StartSwedishBankIdSign) {
+        SwedishBankIdSignDialog
+            .newInstance(event.autoStartToken)
+            .show(supportFragmentManager, SwedishBankIdSignDialog.TAG)
+    }
+
+    private fun startSplashActivity() {
+        startActivity(Intent(this@OfferActivity, SplashActivity::class.java))
+    }
+
+    private fun handlePostSignError(event: OfferViewModel.Event.ApproveError) {
+        when (event.postSignScreen) {
+            PostSignScreen.CONNECT_PAYIN -> {
+            }
+            PostSignScreen.MOVE -> {
+                startActivity(
+                    ChangeAddressResultActivity.newInstance(
+                        this@OfferActivity,
+                        ChangeAddressResultActivity.Result.Error
+                    )
+                )
+            }
+            PostSignScreen.CROSS_SELL -> {
+                startActivity(
+                    CrossSellingResultActivity.newInstance(
+                        this@OfferActivity,
+                        CrossSellingResult.Error
+                    )
+                )
+            }
+        }
+    }
+
+    private fun handlePostSign(event: OfferViewModel.Event.ApproveSuccessful) {
+        when (event.postSignScreen) {
+            PostSignScreen.CONNECT_PAYIN -> {
+                marketManager
+                    .market
+                    ?.connectPayin(this@OfferActivity, true)
+                    ?.let { startActivity(it) }
+            }
+            PostSignScreen.MOVE -> {
+                startActivity(
+                    ChangeAddressResultActivity.newInstance(
+                        this@OfferActivity,
+                        ChangeAddressResultActivity.Result.Success(event.startDate),
+                    )
+                )
+            }
+            PostSignScreen.CROSS_SELL -> {
+                startActivity(
+                    CrossSellingResultActivity.newInstance(
+                        this@OfferActivity,
+                        CrossSellingResult.Success.from(event)
+                    )
+                )
+            }
+        }
+    }
+
+    private fun startCheckoutActivity(event: OfferViewModel.Event.OpenCheckout) {
+        startActivity(CheckoutActivity.newInstance(this@OfferActivity, event.checkoutParameter))
+    }
+
+    private fun startQuoteDetailsActivity(event: OfferViewModel.Event.OpenQuoteDetails) {
+        startActivity(
+            QuoteDetailActivity.newInstance(
+                context = this@OfferActivity,
+                title = event.quoteDetailItems.displayName,
+                perils = event.quoteDetailItems.perils,
+                insurableLimits = event.quoteDetailItems.insurableLimits,
+                documents = event.quoteDetailItems.documents,
+            )
+        )
     }
 
     private fun setTitleVisibility(viewState: OfferViewModel.ViewState.Content) {
@@ -313,7 +319,6 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     private fun openChat() {
         lifecycleScope.launch {
             model.triggerOpenChat()
-            startChat()
         }
     }
 
