@@ -3,6 +3,8 @@ package com.hedvig.app.feature.embark
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asFlow
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.fragment.ApiFragment
 import com.hedvig.android.owldroid.fragment.MessageFragment
@@ -22,9 +24,13 @@ import com.hedvig.app.util.plus
 import com.hedvig.app.util.safeLet
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -36,21 +42,44 @@ abstract class EmbarkViewModel(
     private val valueStore: ValueStore,
     private val graphQLQueryUseCase: GraphQLQueryUseCase,
     private val triggerFreeTextChatUseCase: TriggerFreeTextChatUseCase,
+    loginStatusService: LoginStatusService,
 ) : ViewModel() {
-    private val _viewState = MutableLiveData<ViewState>()
-    val viewState: LiveData<ViewState> = _viewState
+    private val _passageState = MutableLiveData<PassageState>()
+    val passageState: LiveData<PassageState> = _passageState
 
+    private val loginStatus = loginStatusService
+        .getLoginStatusAsFlow()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = null
+        )
+
+    val viewState: LiveData<ViewState> =
+        passageState.asFlow()
+            .combine(loginStatus.filterNotNull()) { passageState, loginStatus ->
+                ViewState(
+                    passageState,
+                    loginStatus == LoginStatus.LOGGED_IN
+                )
+            }
+            .asLiveData()
     protected val _events = Channel<Event>(Channel.UNLIMITED)
-    val events = _events.receiveAsFlow()
 
+    val events = _events.receiveAsFlow()
     private val _loadingState: MutableStateFlow<Boolean> = MutableStateFlow(false)
+
     val loadingState: StateFlow<Boolean> = _loadingState.asStateFlow()
 
     data class ViewState(
+        val passageState: PassageState,
+        val isLoggedIn: Boolean,
+    )
+
+    data class PassageState(
         val passage: EmbarkStoryQuery.Passage?,
         val navigationDirection: NavigationDirection,
         val progressPercentage: ProgressPercentage,
-        val isLoggedIn: Boolean,
         val hasTooltips: Boolean,
     )
 
@@ -64,15 +93,13 @@ abstract class EmbarkViewModel(
     abstract fun fetchStory(name: String)
 
     protected lateinit var storyData: EmbarkStoryQuery.Data
-    private lateinit var loginStatus: LoginStatus
 
     private val backStack = Stack<String>()
     private var totalSteps: Int = 0
 
-    protected fun setInitialState(loginStatus: LoginStatus) {
+    protected fun setInitialState() {
         storyData.embarkStory?.let { story ->
             valueStore.computedValues = story.getComputedValues()
-            this.loginStatus = loginStatus
             val firstPassage = story.passages.first { it.id == story.startPassage }
 
             totalSteps = getPassagesLeft(firstPassage)
@@ -99,7 +126,7 @@ abstract class EmbarkViewModel(
     }
 
     fun submitAction(nextPassageName: String, submitIndex: Int = 0) {
-        val apiFromAction = viewState.value?.passage?.action?.api(submitIndex)
+        val apiFromAction = viewState.value?.passageState?.passage?.action?.api(submitIndex)
         if (apiFromAction != null) {
             callApi(apiFromAction)
         } else {
@@ -128,18 +155,17 @@ abstract class EmbarkViewModel(
     }
 
     private fun setupPassageAndEmitState(nextPassage: EmbarkStoryQuery.Passage) {
-        _viewState.value?.passage?.name?.let {
+        _passageState.value?.passage?.name?.let {
             valueStore.commitVersion()
             backStack.push(it)
         }
-        val state = ViewState(
+        val passageState = PassageState(
             passage = preProcessPassage(nextPassage),
             navigationDirection = NavigationDirection.FORWARDS,
             progressPercentage = currentProgress(nextPassage),
-            isLoggedIn = loginStatus == LoginStatus.LOGGED_IN,
             hasTooltips = nextPassage.tooltips.isNotEmpty(),
         )
-        _viewState.postValue(state)
+        _passageState.postValue(passageState)
         _loadingState.update { false }
         nextPassage.tracks.forEach { track ->
             tracker.track(track.eventName, trackingData(track))
@@ -215,7 +241,7 @@ abstract class EmbarkViewModel(
         }
         val passagesLeft = getPassagesLeft(passage)
         val progress = ((totalSteps.toFloat() - passagesLeft.toFloat()) / totalSteps.toFloat())
-        return ProgressPercentage(progress)
+        return ProgressPercentage.safeValue(progress)
     }
 
     private fun handleGraphQLQuery(graphQLQuery: ApiFragment.AsEmbarkApiGraphQLQuery) {
@@ -283,19 +309,18 @@ abstract class EmbarkViewModel(
         val passageName = backStack.pop()
 
         storyData.embarkStory?.let { story ->
-            _viewState.value?.passage?.name?.let { currentPassageName ->
+            _passageState.value?.passage?.name?.let { currentPassageName ->
                 tracker.track("Passage Go Back - $currentPassageName")
             }
             val nextPassage = story.passages.find { it.name == passageName }
-            val model = ViewState(
+            val passageState = PassageState(
                 passage = preProcessPassage(nextPassage),
                 navigationDirection = NavigationDirection.BACKWARDS,
                 progressPercentage = currentProgress(nextPassage),
-                isLoggedIn = loginStatus == LoginStatus.LOGGED_IN,
                 hasTooltips = nextPassage?.tooltips?.isNotEmpty() == true,
             )
             _loadingState.update { false }
-            _viewState.postValue(model)
+            _passageState.postValue(passageState)
 
             valueStore.rollbackVersion()
             return true
@@ -468,13 +493,13 @@ abstract class EmbarkViewModel(
 
 class EmbarkViewModelImpl(
     private val embarkRepository: EmbarkRepository,
-    private val loginStatusService: LoginStatusService,
+    loginStatusService: LoginStatusService,
     graphQLQueryUseCase: GraphQLQueryUseCase,
     triggerFreeTextChatUseCase: TriggerFreeTextChatUseCase,
     tracker: EmbarkTracker,
     valueStore: ValueStore,
     storyName: String,
-) : EmbarkViewModel(tracker, valueStore, graphQLQueryUseCase, triggerFreeTextChatUseCase) {
+) : EmbarkViewModel(tracker, valueStore, graphQLQueryUseCase, triggerFreeTextChatUseCase, loginStatusService) {
 
     init {
         fetchStory(storyName)
@@ -494,10 +519,9 @@ class EmbarkViewModelImpl(
                 )
                 return@launch
             }
-            val loginStatus = loginStatusService.getLoginStatus()
             result.getOrNull()?.data?.let { d ->
                 storyData = d
-                setInitialState(loginStatus)
+                setInitialState()
             }
         }
     }

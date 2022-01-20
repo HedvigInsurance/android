@@ -18,6 +18,11 @@ value class ProgressPercentage(
         get() = value == 1f
 
     companion object {
+        fun safeValue(float: Float): ProgressPercentage {
+            if (float.isNaN()) return ProgressPercentage(0f)
+            return ProgressPercentage(float.coerceIn(0f, 1f))
+        }
+
         fun of(
             current: Dp,
             target: Dp,

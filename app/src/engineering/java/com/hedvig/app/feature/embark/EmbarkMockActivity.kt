@@ -58,7 +58,7 @@ class EmbarkMockActivity : MockActivity() {
     override val original = listOf(embarkModule, onboardingModule)
     override val mocks = listOf(
         module {
-            viewModel<EmbarkViewModel> { MockEmbarkViewModel(get(), get(), get()) }
+            viewModel<EmbarkViewModel> { MockEmbarkViewModel(get(), get(), get(), get()) }
             viewModel<MemberIdViewModel> { MockMemberIdViewModel() }
         }
     )

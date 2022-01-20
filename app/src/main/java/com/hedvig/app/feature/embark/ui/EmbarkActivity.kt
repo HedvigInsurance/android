@@ -69,7 +69,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
             ?: throw IllegalArgumentException("Programmer error: STORY_NAME not provided to ${this.javaClass.name}")
     }
 
-    private val model: EmbarkViewModel by viewModel { parametersOf(storyName) }
+    private val viewModel: EmbarkViewModel by viewModel { parametersOf(storyName) }
     private val binding by viewBinding(ActivityEmbarkBinding::bind)
     private val marketManager: MarketManager by inject()
     private val featureManager: FeatureManager by inject()
@@ -84,22 +84,22 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
             }
             progressToolbar.toolbar.title = storyTitle
 
-            model.viewState.observe(this@EmbarkActivity) { viewState ->
+            viewModel.viewState.observe(this@EmbarkActivity) { viewState ->
                 loadingSpinnerLayout.loadingSpinner.remove() // Removing inner spinner on first available viewState
                 setupToolbarMenu(
                     progressToolbar,
-                    viewState.hasTooltips,
+                    viewState.passageState.hasTooltips,
                     viewState.isLoggedIn
                 )
-                progressToolbar.setProgress(viewState.progressPercentage)
+                progressToolbar.setProgress(viewState.passageState.progressPercentage)
 
-                val passage = viewState.passage
+                val passage = viewState.passageState.passage
                 actionBar?.title = passage?.name
 
-                transitionToNextPassage(viewState.navigationDirection, passage)
+                transitionToNextPassage(viewState.passageState.navigationDirection, passage)
             }
 
-            model
+            viewModel
                 .loadingState
                 .flowWithLifecycle(lifecycle)
                 .onEach { isLoading ->
@@ -107,7 +107,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 }
                 .launchIn(lifecycleScope)
 
-            model
+            viewModel
                 .events
                 .flowWithLifecycle(lifecycle)
                 .onEach { event ->
@@ -157,7 +157,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
             true
         }
         R.id.tooltip -> {
-            model.viewState.value?.passage?.tooltips?.let {
+            viewModel.viewState.value?.passageState?.passage?.tooltips?.let {
                 TooltipBottomSheet.newInstance(it).show(
                     supportFragmentManager, TooltipBottomSheet.TAG
                 )
@@ -384,7 +384,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
     }
 
     override fun onBackPressed() {
-        val couldNavigateBack = model.navigateBack()
+        val couldNavigateBack = viewModel.navigateBack()
         if (!couldNavigateBack) {
             super.onBackPressed()
         }
