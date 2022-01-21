@@ -132,13 +132,10 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     }
                     .minOrNull()
 
-                if (firstInceptionDate == null) {
-                    adapter.submitList(listOf(HomeModel.Error))
-                    return@observe
-                }
-
                 val items = buildList {
-                    add(HomeModel.BigText.ActiveInFuture(firstName, firstInceptionDate))
+                    if (firstInceptionDate != null) {
+                        add(HomeModel.BigText.ActiveInFuture(firstName, firstInceptionDate))
+                    }
                     add(HomeModel.BodyText.ActiveInFuture)
                     addClaimStatusCardsIfApplicable(successData)
                 }

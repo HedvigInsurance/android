@@ -296,18 +296,20 @@ class OfferViewModelImpl(
             }
             when (val result = approveQuotesUseCase.approveQuotesAndClearCache(quoteIds)) {
                 is ApproveQuotesUseCase.ApproveQuotesResult.Error.GeneralError ->
-                    offerAndLoginStatus.value =
-                        OfferAndLoginStatus.Error
+                    offerAndLoginStatus.value = OfferAndLoginStatus.Error
                 ApproveQuotesUseCase.ApproveQuotesResult.Error.ApproveError -> _events.trySend(
                     Event.ApproveError(postSignDependencies.postSignScreen)
                 )
-                is ApproveQuotesUseCase.ApproveQuotesResult.Success -> _events.trySend(
-                    Event.ApproveSuccessful(
-                        result.date,
-                        postSignDependencies.postSignScreen,
-                        postSignDependencies.displayName
+                is ApproveQuotesUseCase.ApproveQuotesResult.Success -> {
+                    loginStatusService.isViewingOffer = false
+                    _events.trySend(
+                        Event.ApproveSuccessful(
+                            result.date,
+                            postSignDependencies.postSignScreen,
+                            postSignDependencies.displayName
+                        )
                     )
-                )
+                }
             }
         }
     }
