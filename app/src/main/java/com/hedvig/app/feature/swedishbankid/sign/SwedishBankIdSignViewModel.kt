@@ -108,9 +108,7 @@ class SwedishBankIdSignViewModel(
             BankIdStatus.COMPLETE -> {
                 when (status.signState) {
                     SignState.INITIATED, SignState.IN_PROGRESS -> null
-                    SignState.COMPLETED -> {
-                        ViewState.Success
-                    }
+                    SignState.COMPLETED -> ViewState.Success
                     else -> ViewState.Error
                 }
             }

@@ -18,17 +18,16 @@ fun Activity.startAdyenPayment(market: Market?, paymentMethods: PaymentMethodsAp
         .setEnvironment(getEnvironment())
         .build()
 
-    val googlePayConfig =
-        GooglePayConfiguration.Builder(this, getString(R.string.ADYEN_CLIENT_KEY))
-            .setEnvironment(getEnvironment())
-            .setGooglePayEnvironment(
-                if (isDebug()) {
-                    AdyenConnectPayinActivity.GOOGLE_WALLET_ENVIRONMENT_TEST
-                } else {
-                    AdyenConnectPayinActivity.GOOGLE_WALLET_ENVIRONMENT_PRODUCTION
-                }
-            )
-            .build()
+    val googlePayConfig = GooglePayConfiguration.Builder(this, getString(R.string.ADYEN_CLIENT_KEY))
+        .setEnvironment(getEnvironment())
+        .setGooglePayEnvironment(
+            if (isDebug()) {
+                AdyenConnectPayinActivity.GOOGLE_WALLET_ENVIRONMENT_TEST
+            } else {
+                AdyenConnectPayinActivity.GOOGLE_WALLET_ENVIRONMENT_PRODUCTION
+            }
+        )
+        .build()
 
     val dropInConfiguration = DropInConfiguration
         .Builder(
