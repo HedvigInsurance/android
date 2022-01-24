@@ -14,11 +14,7 @@ object VariableExtractor {
         var regularVariables = variables.mapNotNull {
             it.asEmbarkAPIGraphQLSingleVariable?.let { singleVariable ->
                 val storeValue = valueStore.get(singleVariable.from)
-                if (storeValue != null) {
-                    singleVariable.createSingleVariable(storeValue)
-                } else {
-                    null
-                }
+                singleVariable.createSingleVariableOrNull(storeValue)
             } ?: it.asEmbarkAPIGraphQLGeneratedVariable?.let { generatedVariable ->
                 val variable = generatedVariable.createGeneratedVariable()
                 if (variable?.second != null) {
