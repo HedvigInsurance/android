@@ -3,7 +3,6 @@ package com.hedvig.app.feature.home
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.app.R
-import com.hedvig.app.common.ErrorItem
 import com.hedvig.app.feature.home.screens.HomeTabScreen
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE_IN_FUTURE_NO_INCEPTION
@@ -52,15 +51,10 @@ class NoFutureInceptionErrorTest : TestCase() {
 
         onScreen<HomeTabScreen> {
             recycler {
-                childAt<ErrorItem>(0) {
-                    retry {
-                        click()
-                    }
-                }
-                childAt<HomeTabScreen.BigTextItem>(0) {
+                childAt<HomeTabScreen.BodyTextItem>(0) {
                     text {
                         hasText(
-                            R.string.home_tab_pending_unknown_title,
+                            R.string.home_tab_active_in_future_body,
                             "Test"
                         )
                     }
