@@ -287,7 +287,6 @@ abstract class EmbarkViewModel(
     }
 
     private fun handleQueryResult(result: GraphQLQueryResult) {
-        // todo there was an empty Loading event here that was just to trigger the beginDelayedTransition or what?
         _loadingState.update { false }
 
         when (result) {

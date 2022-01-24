@@ -10,12 +10,15 @@ import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.coroutines.toFlow
 import com.apollographql.apollo.exception.ApolloException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import okhttp3.Call
 import org.json.JSONObject
 import ru.gildor.coroutines.okhttp.await
+import java.io.IOException
 
 suspend fun <T> ApolloCall<T>.safeQuery(): QueryResult<T> {
     return try {
@@ -46,22 +49,29 @@ fun <T> Response<T>.toQueryResult(): QueryResult<T> {
     }
 }
 
-suspend fun Call.safeCall(): QueryResult<JSONObject> {
-    return try {
+/**
+ * Only to be used when making GraphQL calls.
+ * Returns [QueryResult.Success] only when the network request is successful and there are no graphQL error messages.
+ * Returns [QueryResult.Error] on all other cases.
+ */
+@Suppress("BlockingMethodInNonBlockingContext")
+suspend fun Call.safeGraphqlCall(): QueryResult<JSONObject> = withContext(Dispatchers.IO) {
+    try {
         val response = await()
-        when {
-            response.isSuccessful -> {
-                val json = response.body?.string()?.let { JSONObject(it) }
-                if (json == null) {
-                    QueryResult.Error.NoDataError("No data")
-                } else {
-                    QueryResult.Success(json)
-                }
-            }
-            else -> QueryResult.Error.NetworkError(response.message)
+        if (response.isSuccessful.not()) return@withContext QueryResult.Error.NetworkError(response.message)
+
+        val responseBody = response.body ?: return@withContext QueryResult.Error.NoDataError("No data")
+        val jsonObject = JSONObject(responseBody.string())
+
+        val errorJsonObject = jsonObject.optJSONArray("errors")?.getJSONObject(0)
+        if (errorJsonObject != null) {
+            val errorMessage = errorJsonObject.optString("message")
+            return@withContext QueryResult.Error.QueryError(errorMessage)
         }
-    } catch (throwable: Throwable) {
-        QueryResult.Error.GeneralError(throwable.localizedMessage)
+
+        QueryResult.Success(jsonObject)
+    } catch (ioException: IOException) {
+        QueryResult.Error.GeneralError(ioException.localizedMessage)
     }
 }
 
