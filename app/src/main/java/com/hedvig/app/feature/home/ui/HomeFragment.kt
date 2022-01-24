@@ -56,7 +56,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
 
         val adapter = HomeAdapter(
             fragmentManager = parentFragmentManager,
-            retry = model::load,
+            retry = model::reload,
             startIntentForResult = ::startEmbarkForResult,
             imageLoader = imageLoader,
             tracker = tracker,
