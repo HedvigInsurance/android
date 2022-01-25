@@ -44,11 +44,13 @@ fun ClaimType(
                 text = title,
                 style = MaterialTheme.typography.h6,
             )
-            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.subtitle2,
-                )
+            if (subtitle.isNotEmpty()) {
+                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                    Text(
+                        text = subtitle,
+                        style = MaterialTheme.typography.subtitle2,
+                    )
+                }
             }
         }
     }
@@ -62,7 +64,10 @@ fun ClaimTypePreview() {
         Surface(
             color = MaterialTheme.colors.background,
         ) {
-            ClaimType(title = "title", subtitle = "subtitle")
+            Column {
+                ClaimType(title = "title", subtitle = "subtitle")
+                ClaimType(title = "title", subtitle = "")
+            }
         }
     }
 }
