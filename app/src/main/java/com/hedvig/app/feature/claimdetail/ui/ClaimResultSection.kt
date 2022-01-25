@@ -52,19 +52,21 @@ fun ClaimResultSection(
                         stringResource(R.string.claim_decision_paid).uppercase(locale),
                         backgroundColor = ClaimStatusColors.Pill.paid
                     )
-                    Spacer(Modifier.width(12.dp))
-                    Text(
-                        claimDetailResult.monetaryAmount.formatOnlyNumber(locale),
-                        style = MaterialTheme.typography.h4,
-                        modifier = Modifier.alignByBaseline()
-                    )
-                    Spacer(Modifier.width(2.dp))
-                    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                    if (claimDetailResult.monetaryAmount != null) {
+                        Spacer(Modifier.width(12.dp))
                         Text(
-                            claimDetailResult.monetaryAmount.currency.currencyCode,
-                            style = MaterialTheme.typography.subtitle2,
+                            claimDetailResult.monetaryAmount.formatOnlyNumber(locale),
+                            style = MaterialTheme.typography.h4,
                             modifier = Modifier.alignByBaseline()
                         )
+                        Spacer(Modifier.width(2.dp))
+                        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                            Text(
+                                claimDetailResult.monetaryAmount.currency.currencyCode,
+                                style = MaterialTheme.typography.subtitle2,
+                                modifier = Modifier.alignByBaseline()
+                            )
+                        }
                     }
                 }
             }
@@ -90,6 +92,7 @@ fun ClaimResultSectionPreview(
 class ClaimDetailResultProvider : CollectionPreviewParameterProvider<ClaimDetailResult.Closed>(
     listOf(
         ClaimDetailResult.Closed.Paid(PreviewData.monetaryAmount(2_500.00)),
+        ClaimDetailResult.Closed.Paid(null),
         ClaimDetailResult.Closed.NotCompensated,
         ClaimDetailResult.Closed.NotCovered,
     )
