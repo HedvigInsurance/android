@@ -32,6 +32,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.lang.IllegalArgumentException
 
 class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
 
@@ -40,6 +41,10 @@ class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
     private val binding by viewBinding(ContractDetailActivityBinding::bind)
     private val model: ContractDetailViewModel by viewModel()
     private val marketManager: MarketManager by inject()
+    private val contractId: String by lazy {
+        intent.getStringExtra(ID)
+            ?: throw IllegalArgumentException("Programmer error: ID not provided to ${this.javaClass.name}")
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         postponeEnterTransition()
@@ -49,13 +54,6 @@ class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
             sharedElementExitTransition = sharedElementTransition()
         }
         super.onCreate(savedInstanceState)
-
-        val id = intent.getStringExtra(ID)
-
-        if (id == null) {
-            e { "Programmer error: ID not provided to ${this.javaClass.name}" }
-            return
-        }
 
         binding.apply {
             window.compatSetDecorFitsSystemWindows(false)
@@ -83,10 +81,11 @@ class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
             cardContainer.arrow.isInvisible = true
             cardContainer.card.transitionName = "contract_card"
             error.retry.setHapticClickListener {
-                model.loadContract(id)
+                model.loadContract(contractId)
             }
+
             model
-                .data
+                .viewState
                 .flowWithLifecycle(lifecycle)
                 .onEach { viewState ->
                     when (viewState) {
@@ -102,7 +101,7 @@ class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
                         is ContractDetailViewModel.ViewState.Success -> {
                             content.isVisible = true
                             error.root.isVisible = false
-                            val contract = viewState.data
+                            val contract = viewState.state.contractCardViewState
                             contract.bindTo(cardContainer, marketManager)
                         }
                     }
@@ -111,7 +110,7 @@ class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
                 .launchIn(lifecycleScope)
         }
 
-        model.loadContract(id)
+        model.loadContract(contractId)
     }
 
     private fun sharedElementTransition() = ChangeBounds().apply {

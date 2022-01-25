@@ -101,6 +101,7 @@ import com.hedvig.app.feature.insurance.data.GetContractsUseCase
 import com.hedvig.app.feature.insurance.service.InsuranceTracker
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModelImpl
+import com.hedvig.app.feature.insurance.ui.detail.GetContractDetailsUseCase
 import com.hedvig.app.feature.insurance.ui.tab.InsuranceViewModel
 import com.hedvig.app.feature.insurance.ui.tab.InsuranceViewModelImpl
 import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsViewModel
@@ -419,7 +420,7 @@ val whatsNewModule = module {
 
 val insuranceModule = module {
     viewModel<InsuranceViewModel> { InsuranceViewModelImpl(get(), get()) }
-    viewModel<ContractDetailViewModel> { ContractDetailViewModelImpl(get(), get(), get()) }
+    viewModel<ContractDetailViewModel> { ContractDetailViewModelImpl(get(), get()) }
 }
 
 val marketingModule = module {
@@ -675,6 +676,7 @@ val useCaseModule = module {
     single { GetDataCollectionUseCase(get(), get()) }
     single { GetClaimDetailUseCase(get(), get()) }
     single { GetClaimDetailUiStateFlowUseCase(get()) }
+    single { GetContractDetailsUseCase(get(), get(), get()) }
 }
 
 val cacheManagerModule = module {

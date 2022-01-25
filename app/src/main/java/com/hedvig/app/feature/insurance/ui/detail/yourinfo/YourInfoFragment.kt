@@ -10,7 +10,6 @@ import com.hedvig.app.databinding.ContractDetailYourInfoFragmentBinding
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
 import com.hedvig.app.feature.table.TableAdapter
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
-import com.hedvig.app.util.extensions.viewLifecycle
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import kotlinx.coroutines.flow.launchIn
@@ -33,19 +32,18 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
             tableAdapter,
             bottomYourInfoAdapter,
         )
-        model
-            .yourInfoList
-            .flowWithLifecycle(viewLifecycle)
+
+        model.viewState
+            .flowWithLifecycle(lifecycle)
             .onEach { viewState ->
                 when (viewState) {
-                    is ContractDetailViewModel.YourInfoViewState.Success -> {
-                        topYourInfoAdapter.submitList(viewState.topItems)
-                        tableAdapter.setTable(viewState.detailsTable)
-                        bottomYourInfoAdapter.submitList(viewState.bottomItems)
-                    }
-                    ContractDetailViewModel.YourInfoViewState.Error -> {
-                    }
-                    ContractDetailViewModel.YourInfoViewState.Loading -> {
+                    ContractDetailViewModel.ViewState.Error -> {}
+                    ContractDetailViewModel.ViewState.Loading -> {}
+                    is ContractDetailViewModel.ViewState.Success -> {
+                        val state = viewState.state.memberDetailsViewState
+                        tableAdapter.setTable(state.detailsTable)
+                        topYourInfoAdapter.submitList(listOfNotNull(state.pendingAddressChange))
+                        bottomYourInfoAdapter.submitList(listOfNotNull(state.changeAddressButton, state.change))
                     }
                 }
             }
