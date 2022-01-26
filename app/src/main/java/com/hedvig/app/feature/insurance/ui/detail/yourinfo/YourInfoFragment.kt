@@ -37,8 +37,14 @@ class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
             .flowWithLifecycle(lifecycle)
             .onEach { viewState ->
                 when (viewState) {
-                    ContractDetailViewModel.ViewState.Error -> {}
-                    ContractDetailViewModel.ViewState.Loading -> {}
+                    ContractDetailViewModel.ViewState.Error -> {
+                        topYourInfoAdapter.submitList(emptyList())
+                        bottomYourInfoAdapter.submitList(emptyList())
+                    }
+                    ContractDetailViewModel.ViewState.Loading -> {
+                        topYourInfoAdapter.submitList(emptyList())
+                        bottomYourInfoAdapter.submitList(emptyList())
+                    }
                     is ContractDetailViewModel.ViewState.Success -> {
                         val state = viewState.state.memberDetailsViewState
                         tableAdapter.setTable(state.detailsTable)

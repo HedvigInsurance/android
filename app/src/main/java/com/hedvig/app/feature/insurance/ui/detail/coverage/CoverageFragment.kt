@@ -48,8 +48,14 @@ class CoverageFragment : Fragment(R.layout.contract_detail_coverage_fragment) {
                 .flowWithLifecycle(lifecycle)
                 .onEach { viewState ->
                     when (viewState) {
-                        ContractDetailViewModel.ViewState.Error -> {}
-                        ContractDetailViewModel.ViewState.Loading -> {}
+                        ContractDetailViewModel.ViewState.Error -> {
+                            perilsAdapter.submitList(emptyList())
+                            insurableLimitsAdapter.submitList(emptyList())
+                        }
+                        ContractDetailViewModel.ViewState.Loading -> {
+                            perilsAdapter.submitList(emptyList())
+                            insurableLimitsAdapter.submitList(emptyList())
+                        }
                         is ContractDetailViewModel.ViewState.Success -> {
                             perilsAdapter.submitList(viewState.state.coverageViewState.perils)
                             insurableLimitsAdapter.submitList(viewState.state.coverageViewState.insurableLimits)

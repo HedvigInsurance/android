@@ -30,13 +30,12 @@ class DocumentsFragment : Fragment(R.layout.contract_detail_documents_fragment) 
             model.viewState
                 .flowWithLifecycle(lifecycle)
                 .onEach { viewState ->
-                    when (viewState) {
-                        ContractDetailViewModel.ViewState.Error -> {}
-                        ContractDetailViewModel.ViewState.Loading -> {}
-                        is ContractDetailViewModel.ViewState.Success -> {
-                            documentsAdapter.submitList(viewState.state.documentsViewState.documents)
-                        }
+                    val listItems = when (viewState) {
+                        ContractDetailViewModel.ViewState.Error -> emptyList()
+                        ContractDetailViewModel.ViewState.Loading -> emptyList()
+                        is ContractDetailViewModel.ViewState.Success -> viewState.state.documentsViewState.documents
                     }
+                    documentsAdapter.submitList(listItems)
                 }.launchIn(viewLifecycleScope)
         }
     }
