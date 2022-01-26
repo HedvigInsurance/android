@@ -56,7 +56,6 @@ import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
-import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -362,7 +361,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         when (signMethod) {
             SignMethod.SWEDISH_BANK_ID -> model.onSwedishBankIdSign()
             SignMethod.SIMPLE_SIGN -> {
-                if (featureManager.isFeatureEnabled(Feature.CONNECT_PAYMENT_AT_SIGN) && paymentMethods != null) {
+                if (paymentMethods != null) {
                     startAdyenPayment(marketManager.market, paymentMethods)
                 } else {
                     model.onOpenCheckout()

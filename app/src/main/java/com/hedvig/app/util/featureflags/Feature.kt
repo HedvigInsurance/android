@@ -11,53 +11,16 @@ enum class Feature(
         "Moving Flow",
         "Lets a user change their address and get a new offer"
     ),
-    INSURELY_EMBARK(
-        "insurely_embark",
-        "Insurely for Embark",
-        "Fetch price information about a members previous insurance provider in embark after selecting an insurer in " +
-            "PreviousInsurerBottomSheet",
-        false
-    ),
-    EMBARK_CLAIMS(
-        "embark_claims",
-        "Embark claims",
-        "Use embark for claims and use new audio recorder action, instead of opening the chat",
-        false
-    ),
-    CLAIMS_STATUS(
-        "claims_status",
-        "Claims Status",
-        "Show the status of claims on the home screen as a carousel",
-        false,
-    ),
     FRANCE_MARKET(
         "france_market",
         "France Market",
         "Used to select french market in app",
         false
     ),
-    SE_EMBARK_ONBOARDING(
-        "se_embark_onboarding",
-        "Embark onboarding for Swedish market",
-        "Will replace bot service",
-        false
-    ),
-    CONNECT_PAYMENT_AT_SIGN(
-        "CONNECT_PAYMENT_AT_SIGN",
-        "Connect payment at sign",
-        "Connect payment at sign (offer screen) for SimpleSign - instead of after signing. NO and DK affected.",
-        false
-    ),
     ADDRESS_AUTO_COMPLETE(
         "address_auto_complete",
         "Embark component for autocompleting address",
         "Used in danish onboarding",
-        false
-    ),
-    CLAIMS_STATUS_V2(
-        "claims_status_v2",
-        "Clickable claim status card with a detail screen",
-        "Will be enabled when the detail screen is ready for production",
         false
     ),
 }
