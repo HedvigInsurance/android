@@ -33,6 +33,12 @@ val HOME_DATA_ACTIVE_IN_FUTURE_NO_INCEPTION = HomeDataBuilder(
 val HOME_DATA_TERMINATED =
     HomeDataBuilder(listOf(ContractStatus.TERMINATED)).build()
 
+val HOME_DATA_TERMINATED_WITH_ONGOING_CLAIMS =
+    HomeDataBuilder(
+        contracts = listOf(ContractStatus.TERMINATED),
+        withClaimStatusCards = true
+    ).build()
+
 val HOME_DATA_PENDING_NO_FIRST_NAME =
     HomeDataBuilder(listOf(ContractStatus.PENDING), firstName = null).build()
 
