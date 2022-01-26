@@ -17,6 +17,7 @@ import com.hedvig.app.feature.insurance.data.GetContractsUseCase
 import com.hedvig.app.feature.insurance.service.InsuranceTracker
 import com.hedvig.app.feature.insurance.ui.InsuranceAdapter
 import com.hedvig.app.feature.insurance.ui.InsuranceModel
+import com.hedvig.app.feature.insurance.ui.detail.toContractCardViewState
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
@@ -110,4 +111,5 @@ class TerminatedContractsViewModel(
 private fun items(data: InsuranceQuery.Data): List<InsuranceModel> = data
     .contracts
     .filter { it.status.fragments.contractStatusFragment.asTerminatedStatus != null }
-    .map(InsuranceModel::Contract)
+    .map { it.toContractCardViewState() }
+    .map { InsuranceModel.Contract(it) }

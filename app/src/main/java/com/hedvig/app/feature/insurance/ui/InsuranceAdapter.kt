@@ -131,7 +131,7 @@ class InsuranceAdapter(
                 if (data !is InsuranceModel.Contract) {
                     return invalid(data)
                 }
-                data.inner.bindTo(binding, marketManager)
+                data.contractCardViewState.bindTo(binding, marketManager)
                 card.setHapticClickListener {
                     card.transitionName = TRANSITION_NAME
                     card.context.getActivity()?.let { activity ->
@@ -142,7 +142,7 @@ class InsuranceAdapter(
                         card.context.startActivity(
                             ContractDetailActivity.newInstance(
                                 card.context,
-                                data.inner.id
+                                data.contractCardViewState.id
                             ),
                             ActivityOptionsCompat.makeSceneTransitionAnimation(
                                 activity,
