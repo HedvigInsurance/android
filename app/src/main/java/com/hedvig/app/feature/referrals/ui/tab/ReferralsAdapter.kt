@@ -42,8 +42,9 @@ import org.javamoney.moneta.Money
 
 class ReferralsAdapter(
     private val reload: () -> Unit,
+    private val onBannerClicked: (String) -> Unit,
     private val tracker: ReferralsTracker,
-    private val marketManager: MarketManager
+    private val marketManager: MarketManager,
 ) : ListAdapter<ReferralsModel, ReferralsAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
@@ -68,7 +69,7 @@ class ReferralsAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position), reload, tracker, marketManager)
+        holder.bind(getItem(position), reload, tracker, marketManager, onBannerClicked)
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -76,7 +77,8 @@ class ReferralsAdapter(
             data: ReferralsModel,
             reload: () -> Unit,
             tracker: ReferralsTracker,
-            marketManager: MarketManager
+            marketManager: MarketManager,
+            onBannerClicked: (String) -> Unit
         )
 
         class TitleViewHolder(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.referrals_title)) {
@@ -84,7 +86,8 @@ class ReferralsAdapter(
                 data: ReferralsModel,
                 reload: () -> Unit,
                 tracker: ReferralsTracker,
-                marketManager: MarketManager
+                marketManager: MarketManager,
+                onBannerClicked: (String) -> Unit
             ) =
                 Unit
         }
@@ -95,7 +98,8 @@ class ReferralsAdapter(
                 data: ReferralsModel,
                 reload: () -> Unit,
                 tracker: ReferralsTracker,
-                marketManager: MarketManager
+                marketManager: MarketManager,
+                onBannerClicked: (String) -> Unit
             ) {
                 binding.apply {
                     when (data) {
@@ -312,6 +316,7 @@ class ReferralsAdapter(
                 reload: () -> Unit,
                 tracker: ReferralsTracker,
                 marketManager: MarketManager,
+                onBannerClicked: (String) -> Unit
             ) {
                 binding.apply {
                     when (data) {
@@ -377,9 +382,9 @@ class ReferralsAdapter(
                 data: ReferralsModel,
                 reload: () -> Unit,
                 tracker: ReferralsTracker,
-                marketManager: MarketManager
-            ) =
-                Unit
+                marketManager: MarketManager,
+                onBannerClicked: (String) -> Unit
+            ) = Unit
         }
 
         class ReferralViewHolder(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.referrals_row)) {
@@ -388,7 +393,8 @@ class ReferralsAdapter(
                 data: ReferralsModel,
                 reload: () -> Unit,
                 tracker: ReferralsTracker,
-                marketManager: MarketManager
+                marketManager: MarketManager,
+                onBannerClicked: (String) -> Unit
             ) {
                 binding.apply {
                     when (data) {
@@ -465,7 +471,8 @@ class ReferralsAdapter(
                 data: ReferralsModel,
                 reload: () -> Unit,
                 tracker: ReferralsTracker,
-                marketManager: MarketManager
+                marketManager: MarketManager,
+                onBannerClicked: (String) -> Unit
             ) {
                 binding.retry.setHapticClickListener {
                     tracker.reload()
@@ -481,14 +488,15 @@ class ReferralsAdapter(
                 data: ReferralsModel,
                 reload: () -> Unit,
                 tracker: ReferralsTracker,
-                marketManager: MarketManager
+                marketManager: MarketManager,
+                onBannerClicked: (String) -> Unit
             ) {
                 if (data !is ReferralsModel.ReferralTopBar) {
                     return
                 }
                 binding.content.text = data.description
                 binding.root.setHapticClickListener {
-                    // TODO Open info banner detail view
+                    onBannerClicked(data.content)
                 }
             }
         }
