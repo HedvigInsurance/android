@@ -18,7 +18,18 @@ class MockReferralsViewModel : ReferralsViewModel() {
                 {
                     if (!hasLoadedOnce) {
                         hasLoadedOnce = true
-                        _data.value = ViewState.Success(referralsData)
+                        _data.value = ViewState.Success(
+                            topBarState = ViewState.Success.TopBarState(
+                                "Test description - Get 500kr when you invite to Hedvig!",
+                                "This is a longer content string, " +
+                                    "This is a longer content string, " +
+                                    "This is a longer content string" +
+                                    "This is a longer content string, " +
+                                    "This is a longer content string, " +
+                                    "This is a longer content string"
+                            ),
+                            data = referralsData
+                        )
                     } else {
                         _data.value = ViewState.Error
                     }

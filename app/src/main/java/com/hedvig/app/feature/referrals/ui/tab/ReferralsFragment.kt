@@ -172,6 +172,10 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                             ) {
                                 (invites.adapter as? ReferralsAdapter)?.submitList(
                                     listOf(
+                                        if (viewState.topBarState != null) ReferralsModel.ReferralTopBar(
+                                            viewState.topBarState.description,
+                                            viewState.topBarState.content
+                                        ) else null,
                                         ReferralsModel.Title,
                                         ReferralsModel.Header.LoadedEmptyHeader(viewState.data),
                                         ReferralsModel.Code.LoadedCode(viewState.data)
@@ -181,6 +185,10 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                             }
 
                             val items = mutableListOf(
+                                if (viewState.topBarState != null) ReferralsModel.ReferralTopBar(
+                                    viewState.topBarState.description,
+                                    viewState.topBarState.content
+                                ) else null,
                                 ReferralsModel.Title,
                                 ReferralsModel.Header.LoadedHeader(viewState.data),
                                 ReferralsModel.Code.LoadedCode(viewState.data),

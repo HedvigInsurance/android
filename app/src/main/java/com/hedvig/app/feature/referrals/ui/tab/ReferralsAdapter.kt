@@ -16,6 +16,7 @@ import com.hedvig.app.databinding.ReferralsCodeBinding
 import com.hedvig.app.databinding.ReferralsErrorBinding
 import com.hedvig.app.databinding.ReferralsHeaderBinding
 import com.hedvig.app.databinding.ReferralsRowBinding
+import com.hedvig.app.databinding.ViewInfoBannerBinding
 import com.hedvig.app.feature.referrals.service.ReferralsTracker
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeActivity
 import com.hedvig.app.feature.settings.Market
@@ -52,6 +53,7 @@ class ReferralsAdapter(
         ReferralsModel.InvitesHeader -> R.layout.referrals_invites_header
         is ReferralsModel.Referral -> R.layout.referrals_row
         ReferralsModel.Error -> R.layout.referrals_error
+        is ReferralsModel.ReferralTopBar -> R.layout.view_info_banner
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
@@ -61,6 +63,7 @@ class ReferralsAdapter(
         R.layout.referrals_invites_header -> ViewHolder.InvitesHeaderViewHolder(parent)
         R.layout.referrals_row -> ViewHolder.ReferralViewHolder(parent)
         R.layout.referrals_error -> ViewHolder.ErrorViewHolder(parent)
+        R.layout.view_info_banner -> ViewHolder.InfoBanner(parent)
         else -> throw Error("Invalid viewType")
     }
 
@@ -467,6 +470,25 @@ class ReferralsAdapter(
                 binding.retry.setHapticClickListener {
                     tracker.reload()
                     reload()
+                }
+            }
+        }
+
+        class InfoBanner(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.view_info_banner)) {
+            private val binding by viewBinding(ViewInfoBannerBinding::bind)
+
+            override fun bind(
+                data: ReferralsModel,
+                reload: () -> Unit,
+                tracker: ReferralsTracker,
+                marketManager: MarketManager
+            ) {
+                if (data !is ReferralsModel.ReferralTopBar) {
+                    return
+                }
+                binding.content.text = data.description
+                binding.root.setHapticClickListener {
+                    // TODO Open info banner detail view
                 }
             }
         }

@@ -16,7 +16,16 @@ import kotlinx.coroutines.launch
 
 abstract class ReferralsViewModel : ViewModel() {
     sealed class ViewState {
-        data class Success(val data: ReferralsQuery.Data) : ViewState()
+        data class Success(
+            val topBarState: TopBarState?,
+            val data: ReferralsQuery.Data,
+        ) : ViewState() {
+            data class TopBarState(
+                val description: String,
+                val content: String,
+            )
+        }
+
         object Loading : ViewState()
         object Error : ViewState()
     }
@@ -51,7 +60,12 @@ class ReferralsViewModelImpl(
                         _data.value = ViewState.Error
                         return@onEach
                     }
-                    response.data?.let { _data.value = ViewState.Success(it) }
+                    response.data?.let {
+                        _data.value = ViewState.Success(
+                            data = it,
+                            topBarState = null // TODO fetch from remote config
+                        )
+                    }
                 }
                 .catch { e ->
                     e(e)

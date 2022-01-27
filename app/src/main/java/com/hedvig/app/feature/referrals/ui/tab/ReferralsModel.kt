@@ -4,6 +4,12 @@ import com.hedvig.android.owldroid.fragment.ReferralFragment
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 
 sealed class ReferralsModel {
+
+    class ReferralTopBar(
+        val description: String,
+        val content: String
+    ) : ReferralsModel()
+
     object Title : ReferralsModel()
 
     sealed class Header : ReferralsModel() {
