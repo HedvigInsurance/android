@@ -1,15 +1,15 @@
 package com.hedvig.app.feature.embark
 
 import com.hedvig.app.authenticate.LoginStatusService
-import com.hedvig.app.feature.chat.usecase.TriggerFreeTextChatUseCase
+import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.testdata.feature.embark.data.STANDARD_STORY
 
 class MockEmbarkViewModel(
     tracker: EmbarkTracker,
     graphQLQueryUseCase: GraphQLQueryUseCase,
-    triggerFreeTextChatUseCase: TriggerFreeTextChatUseCase,
+    chatRepository: ChatRepository,
     loginStatusService: LoginStatusService,
-) : EmbarkViewModel(tracker, ValueStoreImpl(), graphQLQueryUseCase, triggerFreeTextChatUseCase, loginStatusService) {
+) : EmbarkViewModel(tracker, ValueStoreImpl(), graphQLQueryUseCase, chatRepository, loginStatusService) {
     init {
         fetchStory("")
     }
