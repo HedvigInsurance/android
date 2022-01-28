@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.app.feature.referrals.data.ReferralsRepository
+import com.hedvig.app.service.RemoteConfig
 import e
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -53,6 +54,8 @@ class ReferralsViewModelImpl(
 ) : ReferralsViewModel() {
     init {
         viewModelScope.launch {
+            val topBar = createTopBar()
+
             referralsRepository
                 .referrals()
                 .onEach { response ->
@@ -63,7 +66,7 @@ class ReferralsViewModelImpl(
                     response.data?.let {
                         _data.value = ViewState.Success(
                             data = it,
-                            topBarState = null // TODO fetch from remote config
+                            topBarState = topBar
                         )
                     }
                 }
@@ -72,6 +75,25 @@ class ReferralsViewModelImpl(
                     _data.value = ViewState.Error
                 }
                 .launchIn(this)
+        }
+    }
+
+    private suspend fun createTopBar(): ViewState.Success.TopBarState? {
+        val remoteConfig = RemoteConfig()
+        val data = remoteConfig.fetch()
+        return if (data.campaignVisible) {
+            // TODO Get string resources from lokalise
+            ViewState.Success.TopBarState(
+                "Test description - Get 500kr when you invite to Hedvig!",
+                "This is a longer content string, " +
+                    "This is a longer content string, " +
+                    "This is a longer content string" +
+                    "This is a longer content string, " +
+                    "This is a longer content string, " +
+                    "This is a longer content string"
+            )
+        } else {
+            null
         }
     }
 
