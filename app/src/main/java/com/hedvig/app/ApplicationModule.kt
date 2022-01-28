@@ -8,6 +8,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.ImageLoader
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
@@ -32,6 +33,8 @@ import com.hedvig.app.authenticate.UserViewModel
 import com.hedvig.app.authenticate.insurely.GetDataCollectionUseCase
 import com.hedvig.app.authenticate.insurely.InsurelyAuthViewModel
 import com.hedvig.app.data.debit.PayinStatusRepository
+import com.hedvig.app.feature.addressautocompletion.data.GetDanishAddressAutoCompletionUseCase
+import com.hedvig.app.feature.addressautocompletion.ui.AddressAutoCompleteViewModel
 import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModel
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModelImpl
@@ -67,8 +70,8 @@ import com.hedvig.app.feature.embark.EmbarkViewModelImpl
 import com.hedvig.app.feature.embark.GraphQLQueryUseCase
 import com.hedvig.app.feature.embark.ValueStore
 import com.hedvig.app.feature.embark.ValueStoreImpl
-import com.hedvig.app.feature.embark.passages.addressautocomplete.AddressAutoCompleteParams
-import com.hedvig.app.feature.embark.passages.addressautocomplete.AddressAutoCompleteViewModel
+import com.hedvig.app.feature.embark.passages.addressautocomplete.EmbarkAddressAutoCompleteParams
+import com.hedvig.app.feature.embark.passages.addressautocomplete.EmbarkAddressAutoCompleteViewModel
 import com.hedvig.app.feature.embark.passages.audiorecorder.AudioRecorderViewModel
 import com.hedvig.app.feature.embark.passages.datepicker.DatePickerViewModel
 import com.hedvig.app.feature.embark.passages.externalinsurer.ExternalInsurerViewModel
@@ -398,11 +401,12 @@ val viewModelModule = module {
     viewModel { GenericAuthViewModel(get()) }
     viewModel { (otpId: String, credential: String) -> OtpInputViewModel(otpId, credential, get(), get(), get()) }
     viewModel { (claimId: String) -> ClaimDetailViewModel(claimId, get(), get()) }
-    viewModel { (addressAutoCompleteParams: AddressAutoCompleteParams) ->
-        AddressAutoCompleteViewModel(
-            addressAutoCompleteParams
+    viewModel { (embarkAddressAutoCompleteParams: EmbarkAddressAutoCompleteParams) ->
+        EmbarkAddressAutoCompleteViewModel(
+            embarkAddressAutoCompleteParams
         )
     }
+    viewModel { AddressAutoCompleteViewModel(get(), get()) }
 }
 
 val choosePlanModule = module {
@@ -684,6 +688,7 @@ val useCaseModule = module {
     single { GetClaimDetailUseCase(get(), get()) }
     single { GetClaimDetailUiStateFlowUseCase(get()) }
     single { GetContractDetailsUseCase(get(), get(), get()) }
+    single { GetDanishAddressAutoCompletionUseCase(get()) }
 }
 
 val cacheManagerModule = module {

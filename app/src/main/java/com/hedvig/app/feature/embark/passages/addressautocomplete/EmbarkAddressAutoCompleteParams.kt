@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class AddressAutoCompleteParams(
+data class EmbarkAddressAutoCompleteParams(
     val messages: List<String>,
     val key: String,
     val placeholder: String,

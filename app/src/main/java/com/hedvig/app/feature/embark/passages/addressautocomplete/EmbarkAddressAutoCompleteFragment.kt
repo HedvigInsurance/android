@@ -28,14 +28,14 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class AddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_address_auto_complete_action) {
+class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_address_auto_complete_action) {
 
-    private val data: AddressAutoCompleteParams
+    private val data: EmbarkAddressAutoCompleteParams
         get() = requireArguments().getParcelable(DATA)
             ?: throw Error("Programmer error: DATA is null in ${this.javaClass.name}")
 
     private val embarkViewModel: EmbarkViewModel by sharedViewModel()
-    private val viewModel: AddressAutoCompleteViewModel by viewModel { parametersOf(data) }
+    private val viewModel: EmbarkAddressAutoCompleteViewModel by viewModel { parametersOf(data) }
     private val binding by viewBinding(FragmentEmbarkAddressAutoCompleteActionBinding::bind)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -92,7 +92,7 @@ class AddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_address_au
             ?.let(binding.input::setText)
     }
 
-    private suspend fun saveAndAnimate(data: AddressAutoCompleteParams) {
+    private suspend fun saveAndAnimate(data: EmbarkAddressAutoCompleteParams) {
         context?.hideKeyboardWithDelay(
             inputView = binding.inputLayout,
             delayMillis = EmbarkActivity.KEY_BOARD_DELAY_MILLIS
@@ -102,7 +102,7 @@ class AddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_address_au
     companion object {
         private const val DATA = "DATA"
 
-        fun newInstance(params: AddressAutoCompleteParams) = AddressAutoCompleteFragment().apply {
+        fun newInstance(params: EmbarkAddressAutoCompleteParams) = EmbarkAddressAutoCompleteFragment().apply {
             arguments = Bundle().apply {
                 putParcelable(DATA, params)
             }
