@@ -53,7 +53,7 @@ class SuccessTest : TestCase() {
 
         onScreen<ReferralTabScreen> {
             recycler {
-                childAt<ReferralTabScreen.CodeItem>(2) {
+                childAt<ReferralTabScreen.CodeItem>(3) {
                     edit { click() }
                 }
             }
@@ -71,7 +71,7 @@ class SuccessTest : TestCase() {
 
         onScreen<ReferralTabScreen> {
             recycler {
-                childAt<ReferralTabScreen.CodeItem>(2) {
+                childAt<ReferralTabScreen.CodeItem>(3) {
                     code { hasText("EDITEDCODE123") }
                 }
             }
