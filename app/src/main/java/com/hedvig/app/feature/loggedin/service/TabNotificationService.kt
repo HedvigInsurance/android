@@ -12,7 +12,7 @@ class TabNotificationService(
 ) {
 
     @OptIn(ExperimentalStdlibApi::class)
-    suspend fun unseenTabNotifications(): Flow<Set<LoggedInTabs>> {
+    fun unseenTabNotifications(): Flow<Set<LoggedInTabs>> {
         return combine(
             crossSellNotificationBadgeService.shouldShowTabNotification(),
             referralsNotificationBadgeService.shouldShowNotification()

@@ -50,7 +50,8 @@ abstract class ReferralsViewModel : ViewModel() {
 }
 
 class ReferralsViewModelImpl(
-    private val referralsRepository: ReferralsRepository
+    private val referralsRepository: ReferralsRepository,
+    private val remoteConfig: RemoteConfig,
 ) : ReferralsViewModel() {
     init {
         viewModelScope.launch {
@@ -79,7 +80,6 @@ class ReferralsViewModelImpl(
     }
 
     private suspend fun createTopBar(): ViewState.Success.TopBarState? {
-        val remoteConfig = RemoteConfig()
         val data = remoteConfig.fetch()
         return if (data.campaignVisible) {
             // TODO Get string resources from lokalise

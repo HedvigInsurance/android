@@ -41,7 +41,7 @@ class CrossSellNotificationBadgeService(
         )
     }
 
-    suspend fun shouldShowTabNotification(): Flow<Boolean> {
+    fun shouldShowTabNotification(): Flow<Boolean> {
         return getUnseenCrossSells(CrossSellBadgeType.BottomNav).map { contracts ->
             contracts.isNotEmpty()
         }
