@@ -3,24 +3,30 @@ package com.hedvig.app.service.badge
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.feature.crossselling.usecase.GetCrossSellsContractTypesUseCase
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 class CrossSellNotificationBadgeService(
     private val getCrossSellsContractTypesUseCase: GetCrossSellsContractTypesUseCase,
     private val notificationBadgeService: NotificationBadgeService,
 ) {
-    suspend fun getUnseenCrossSells(badgeType: CrossSellBadgeType): Flow<Set<TypeOfContract>> {
-        val potentialCrossSells = getCrossSellsContractTypesUseCase.invoke()
-        val tabNotifications = badgeType.associatedBadge
+    fun getUnseenCrossSells(badgeType: CrossSellBadgeType): Flow<Set<TypeOfContract>> {
+        return flow {
+            val potentialCrossSells = getCrossSellsContractTypesUseCase.invoke()
+            val tabNotifications = badgeType.associatedBadge
 
-        return notificationBadgeService.getValue(tabNotifications)
-            .map { unseenCrossSellStrings ->
-                unseenCrossSellStrings.map(TypeOfContract::safeValueOf).toSet()
-            }
-            .map { seenCrossSells ->
-                potentialCrossSells subtract seenCrossSells
-            }
+            emitAll(
+                notificationBadgeService.getValue(tabNotifications)
+                    .map { unseenCrossSellStrings ->
+                        unseenCrossSellStrings.map(TypeOfContract::safeValueOf).toSet()
+                    }
+                    .map { seenCrossSells ->
+                        potentialCrossSells subtract seenCrossSells
+                    }
+            )
+        }
     }
 
     suspend fun markCurrentCrossSellsAsSeen(badgeType: CrossSellBadgeType) {
@@ -35,7 +41,7 @@ class CrossSellNotificationBadgeService(
         )
     }
 
-    suspend fun shouldShowTabNotification(): Flow<Boolean> {
+    fun shouldShowTabNotification(): Flow<Boolean> {
         return getUnseenCrossSells(CrossSellBadgeType.BottomNav).map { contracts ->
             contracts.isNotEmpty()
         }

@@ -202,6 +202,7 @@ import com.hedvig.app.feature.zignsec.usecase.StartDanishAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.StartNorwegianAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthStatusUseCase
 import com.hedvig.app.service.FileService
+import com.hedvig.app.service.RemoteConfig
 import com.hedvig.app.service.badge.CrossSellNotificationBadgeService
 import com.hedvig.app.service.badge.NotificationBadgeService
 import com.hedvig.app.service.badge.ReferralsNotificationBadgeService
@@ -505,11 +506,7 @@ val numberActionSetModule = module {
 }
 
 val referralsModule = module {
-    viewModel<ReferralsViewModel> {
-        ReferralsViewModelImpl(
-            get()
-        )
-    }
+    viewModel<ReferralsViewModel> { ReferralsViewModelImpl(get(), get()) }
     viewModel<ReferralsActivatedViewModel> { ReferralsActivatedViewModelImpl(get()) }
     viewModel<ReferralsEditCodeViewModel> { ReferralsEditCodeViewModelImpl(get()) }
 }
@@ -564,10 +561,11 @@ val serviceModule = module {
 
     single { TabNotificationService(get(), get()) }
     single { CrossSellNotificationBadgeService(get(), get()) }
-    single { ReferralsNotificationBadgeService(get()) }
+    single { ReferralsNotificationBadgeService(get(), get()) }
     single { NotificationBadgeService(get()) }
 
     single { DeviceInformationService(get()) }
+    single { RemoteConfig() }
 }
 
 val repositoriesModule = module {
