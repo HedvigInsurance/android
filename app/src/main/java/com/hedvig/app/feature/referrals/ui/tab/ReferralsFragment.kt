@@ -174,9 +174,8 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                             ) {
                                 (invites.adapter as? ReferralsAdapter)?.submitList(
                                     listOfNotNull(
-                                        if (viewState.topBarState != null) ReferralsModel.ReferralTopBar(
-                                            viewState.topBarState.description,
-                                            viewState.topBarState.content
+                                        if (viewState.showCampaignBar) ReferralsModel.ReferralTopBar(
+                                            getString(R.string.REFERRAL_CAMPAIGN_BANNER_TITLE)
                                         ) else null,
                                         ReferralsModel.Title,
                                         ReferralsModel.Header.LoadedEmptyHeader(viewState.data),
@@ -187,9 +186,8 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                             }
 
                             val items = listOfNotNull(
-                                if (viewState.topBarState != null) ReferralsModel.ReferralTopBar(
-                                    viewState.topBarState.description,
-                                    viewState.topBarState.content
+                                if (viewState.showCampaignBar) ReferralsModel.ReferralTopBar(
+                                    getString(R.string.REFERRAL_CAMPAIGN_BANNER_TITLE)
                                 ) else null,
                                 ReferralsModel.Title,
                                 ReferralsModel.Header.LoadedHeader(viewState.data),
@@ -221,10 +219,10 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
         }
     }
 
-    private fun showBottomSheet(content: String) {
+    private fun showBottomSheet() {
         ExplanationBottomSheet.newInstance(
-            title = "Campaign", // TODO get string resource
-            markDownText = content
+            title = getString(R.string.REFERRAL_CAMPAIGN_DETAIL_TITLE),
+            markDownText = getString(R.string.REFERRAL_CAMPAIGN_DETAIL_BODY)
         ).show(parentFragmentManager, ExplanationBottomSheet.TAG)
     }
 

@@ -18,14 +18,9 @@ import kotlinx.coroutines.launch
 abstract class ReferralsViewModel : ViewModel() {
     sealed class ViewState {
         data class Success(
-            val topBarState: TopBarState?,
+            val showCampaignBar: Boolean,
             val data: ReferralsQuery.Data,
-        ) : ViewState() {
-            data class TopBarState(
-                val description: String,
-                val content: String,
-            )
-        }
+        ) : ViewState()
 
         object Loading : ViewState()
         object Error : ViewState()
@@ -55,7 +50,7 @@ class ReferralsViewModelImpl(
 ) : ReferralsViewModel() {
     init {
         viewModelScope.launch {
-            val topBar = createTopBar()
+            val showCampaignBar = shouldShowCampaignBar()
 
             referralsRepository
                 .referrals()
@@ -67,7 +62,7 @@ class ReferralsViewModelImpl(
                     response.data?.let {
                         _data.value = ViewState.Success(
                             data = it,
-                            topBarState = topBar
+                            showCampaignBar = showCampaignBar
                         )
                     }
                 }
@@ -79,22 +74,10 @@ class ReferralsViewModelImpl(
         }
     }
 
-    private suspend fun createTopBar(): ViewState.Success.TopBarState? {
+    private suspend fun shouldShowCampaignBar(): Boolean {
+        val remoteConfig = RemoteConfig()
         val data = remoteConfig.fetch()
-        return if (data.campaignVisible) {
-            // TODO Get string resources from lokalise
-            ViewState.Success.TopBarState(
-                "Test description - Get 500kr when you invite to Hedvig!",
-                "This is a longer content string, " +
-                    "This is a longer content string, " +
-                    "This is a longer content string" +
-                    "This is a longer content string, " +
-                    "This is a longer content string, " +
-                    "This is a longer content string"
-            )
-        } else {
-            null
-        }
+        return data.campaignVisible
     }
 
     override fun load() {

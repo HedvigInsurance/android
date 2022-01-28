@@ -42,7 +42,7 @@ import org.javamoney.moneta.Money
 
 class ReferralsAdapter(
     private val reload: () -> Unit,
-    private val onBannerClicked: (String) -> Unit,
+    private val onBannerClicked: () -> Unit,
     private val tracker: ReferralsTracker,
     private val marketManager: MarketManager,
 ) : ListAdapter<ReferralsModel, ReferralsAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
@@ -78,7 +78,7 @@ class ReferralsAdapter(
             reload: () -> Unit,
             tracker: ReferralsTracker,
             marketManager: MarketManager,
-            onBannerClicked: (String) -> Unit
+            onBannerClicked: () -> Unit,
         )
 
         class TitleViewHolder(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.referrals_title)) {
@@ -87,7 +87,7 @@ class ReferralsAdapter(
                 reload: () -> Unit,
                 tracker: ReferralsTracker,
                 marketManager: MarketManager,
-                onBannerClicked: (String) -> Unit
+                onBannerClicked: () -> Unit
             ) =
                 Unit
         }
@@ -99,7 +99,7 @@ class ReferralsAdapter(
                 reload: () -> Unit,
                 tracker: ReferralsTracker,
                 marketManager: MarketManager,
-                onBannerClicked: (String) -> Unit
+                onBannerClicked: () -> Unit
             ) {
                 binding.apply {
                     when (data) {
@@ -316,7 +316,7 @@ class ReferralsAdapter(
                 reload: () -> Unit,
                 tracker: ReferralsTracker,
                 marketManager: MarketManager,
-                onBannerClicked: (String) -> Unit
+                onBannerClicked: () -> Unit
             ) {
                 binding.apply {
                     when (data) {
@@ -383,7 +383,7 @@ class ReferralsAdapter(
                 reload: () -> Unit,
                 tracker: ReferralsTracker,
                 marketManager: MarketManager,
-                onBannerClicked: (String) -> Unit
+                onBannerClicked: () -> Unit
             ) = Unit
         }
 
@@ -394,7 +394,7 @@ class ReferralsAdapter(
                 reload: () -> Unit,
                 tracker: ReferralsTracker,
                 marketManager: MarketManager,
-                onBannerClicked: (String) -> Unit
+                onBannerClicked: () -> Unit
             ) {
                 binding.apply {
                     when (data) {
@@ -472,7 +472,7 @@ class ReferralsAdapter(
                 reload: () -> Unit,
                 tracker: ReferralsTracker,
                 marketManager: MarketManager,
-                onBannerClicked: (String) -> Unit
+                onBannerClicked: () -> Unit
             ) {
                 binding.retry.setHapticClickListener {
                     tracker.reload()
@@ -489,14 +489,14 @@ class ReferralsAdapter(
                 reload: () -> Unit,
                 tracker: ReferralsTracker,
                 marketManager: MarketManager,
-                onBannerClicked: (String) -> Unit
+                onBannerClicked: () -> Unit
             ) {
                 if (data !is ReferralsModel.ReferralTopBar) {
                     return
                 }
                 binding.content.text = data.description
                 binding.root.setHapticClickListener {
-                    onBannerClicked(data.content)
+                    onBannerClicked()
                 }
             }
         }
