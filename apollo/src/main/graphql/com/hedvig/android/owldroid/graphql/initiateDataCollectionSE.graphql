@@ -1,0 +1,13 @@
+mutation initiateDataCollectionSE(
+  $reference: ID!,
+  $insuranceProvider: String!,
+  $personalNumber: String!
+) {
+  externalInsuranceProvider {
+    initiateDataCollectionWithSwedishPersonalNumber(input: {
+      reference: $reference,
+      insuranceProvider: $insuranceProvider,
+      personalNumber: $personalNumber,
+    })
+  }
+}

@@ -11,10 +11,8 @@ import com.hedvig.app.databinding.BottomSheetHonestyPledgeBinding
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
-import com.hedvig.app.util.extensions.startClosableChat
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewLifecycleScope
-import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.android.ext.android.inject
@@ -44,13 +42,8 @@ class HonestyPledgeBottomSheet(
         }
     }
 
-    private suspend fun startClaimsFlow() {
-        if (featureManager.isFeatureEnabled(Feature.EMBARK_CLAIMS)) {
-            startEmbarkClaims()
-        } else {
-            claimsViewModel.triggerClaimsChat()
-            requireActivity().startClosableChat()
-        }
+    private fun startClaimsFlow() {
+        startEmbarkClaims()
     }
 
     private fun startEmbarkClaims() {

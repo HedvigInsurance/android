@@ -1,8 +1,13 @@
 package com.hedvig.app.testdata.feature.offer.builders
 
 import com.hedvig.android.owldroid.fragment.CostFragment
+import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.fragment.TableFragment
+import com.hedvig.android.owldroid.graphql.DataCollectionResultQuery
+import com.hedvig.android.owldroid.graphql.DataCollectionResultQuery.AsHouseInsuranceCollection
+import com.hedvig.android.owldroid.graphql.DataCollectionStatusSubscription
 import com.hedvig.android.owldroid.graphql.OfferQuery
+import com.hedvig.android.owldroid.type.DataCollectionStatus
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationApproveButtonTerminology
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationPostSignStep
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationStartDateTerminology
@@ -40,13 +45,14 @@ data class OfferDataBuilder(
             appConfiguration = appConfiguration
         ),
         redeemedCampaigns = redeemedCampaigns,
-        signMethodForQuotes = signMethod
+        signMethodForQuotes = signMethod,
     )
 }
 
 data class QuoteBuilder(
     private val startDate: LocalDate? = null,
     private val id: String = "ea656f5f-40b2-4953-85d9-752b33e69e38",
+    private val dataCollectionId: String? = null,
     private val typeOfContract: TypeOfContract = TypeOfContract.SE_APARTMENT_RENT,
     private val currentInsurer: OfferQuery.CurrentInsurer? = null,
     private val perils: List<OfferQuery.ContractPeril> = PerilBuilder().offerQueryBuild(5),
@@ -60,6 +66,7 @@ data class QuoteBuilder(
         displayName = displayName,
         startDate = startDate,
         id = id,
+        dataCollectionId = dataCollectionId,
         currentInsurer = currentInsurer,
         detailsTable = OfferQuery.DetailsTable(
             fragments = OfferQuery.DetailsTable.Fragments(detailsTable),
@@ -72,6 +79,7 @@ data class QuoteBuilder(
         insurableLimits = insurableLimits,
         insuranceTerms = insuranceTerms,
         typeOfContract = typeOfContract,
+        email = "test@email.com"
     )
 }
 
@@ -86,7 +94,7 @@ data class AppConfigurationBuilder(
     private val startDateTerminology: QuoteBundleAppConfigurationStartDateTerminology =
         QuoteBundleAppConfigurationStartDateTerminology.START_DATE,
     private val postSignStep: QuoteBundleAppConfigurationPostSignStep =
-        QuoteBundleAppConfigurationPostSignStep.CONNECT_PAYIN
+        QuoteBundleAppConfigurationPostSignStep.CONNECT_PAYIN,
 ) {
     fun build() = OfferQuery.AppConfiguration(
         showCampaignManagement = showCampaignManagement,
@@ -110,4 +118,56 @@ data class FaqBuilder(
         headline = headline,
         body = body
     )
+}
+
+data class DataCollectionStatusSubscriptionBuilder(
+    private val id: String = "id",
+    private val status: DataCollectionStatus = DataCollectionStatus.UNKNOWN__,
+    private val insuranceCompany: String = "Some Insurance Company",
+) {
+    fun build(): DataCollectionStatusSubscription.Data {
+        return DataCollectionStatusSubscription.Data(
+            dataCollectionStatusV2 = DataCollectionStatusSubscription.DataCollectionStatusV2(
+                status = status,
+                insuranceCompany = insuranceCompany,
+            )
+        )
+    }
+}
+
+data class DataCollectionResultQueryBuilder(
+    private val insuranceProvider: String = "insuranceProvider",
+    private val insuranceName: String = "insuranceName",
+    private val payouts: List<MonetaryAmountFragment> = listOf(MonetaryAmountFragment(amount = "19", currency = "SEK")),
+) {
+    fun build(): DataCollectionResultQuery.Data {
+        return DataCollectionResultQuery.Data(
+            externalInsuranceProvider = DataCollectionResultQuery.ExternalInsuranceProvider(
+                dataCollectionV2 = payouts.map { payout ->
+                    DataCollectionResultQuery.DataCollectionV2(
+                        asHouseInsuranceCollection = AsHouseInsuranceCollection(
+                            insuranceProvider = insuranceProvider,
+                            insuranceHolderAddress = null,
+                            insuranceHolderName = null,
+                            insuranceName = insuranceName,
+                            insuranceSubType = null,
+                            insuranceType = null,
+                            renewalDate = null,
+                            monthlyNetPremium = DataCollectionResultQuery.MonthlyNetPremium(
+                                fragments = DataCollectionResultQuery.MonthlyNetPremium.Fragments(
+                                    monetaryAmountFragment = payout
+                                )
+                            ),
+                            monthlyGrossPremium = null,
+                            monthlyDiscount = null,
+                            insuranceObjectAddress = null,
+                            livingArea = null,
+                            postalCode = null,
+                        ),
+                        asPersonTravelInsuranceCollection = null,
+                    )
+                }
+            )
+        )
+    }
 }

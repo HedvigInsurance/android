@@ -14,19 +14,20 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hedvig.app.feature.home.ui.claimstatus.data.PillData
+import com.hedvig.app.feature.home.ui.claimstatus.data.PillUiState
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.compose.preview.previewData
 
 @Composable
 fun TopInfo(
-    pillDataList: List<PillData>,
+    pillsUiState: List<PillUiState>,
     title: String,
     subtitle: String,
     modifier: Modifier = Modifier,
+    isClickable: Boolean = false,
 ) {
     Column(modifier = modifier) {
-        ClaimPills(pillDataList)
+        ClaimPillsAndForwardArrow(pillsUiState, isClickable = isClickable)
         Spacer(modifier = Modifier.height(20.dp))
         Text(title)
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
@@ -48,7 +49,7 @@ fun TopInfoPreview() {
             color = MaterialTheme.colors.background,
         ) {
             TopInfo(
-                pillDataList = PillData.previewData(),
+                pillsUiState = PillUiState.previewData(),
                 title = "All-risk",
                 subtitle = "Home Insurance Renter",
             )

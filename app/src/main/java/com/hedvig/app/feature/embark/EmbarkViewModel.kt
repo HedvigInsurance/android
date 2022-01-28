@@ -3,10 +3,11 @@ package com.hedvig.app.feature.embark
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asFlow
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import arrow.core.Either
 import com.hedvig.android.owldroid.fragment.ApiFragment
-import com.hedvig.android.owldroid.fragment.BasicExpressionFragment
-import com.hedvig.android.owldroid.fragment.ExpressionFragment
 import com.hedvig.android.owldroid.fragment.MessageFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.type.EmbarkExternalRedirectLocation
@@ -17,14 +18,20 @@ import com.hedvig.app.feature.embark.extensions.api
 import com.hedvig.app.feature.embark.extensions.getComputedValues
 import com.hedvig.app.feature.embark.util.VariableExtractor
 import com.hedvig.app.feature.embark.util.evaluateExpression
-import com.hedvig.app.util.Percent
+import com.hedvig.app.feature.embark.util.getOfferKeysOrNull
+import com.hedvig.app.feature.embark.util.toExpressionFragment
+import com.hedvig.app.util.ProgressPercentage
 import com.hedvig.app.util.plus
 import com.hedvig.app.util.safeLet
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -36,21 +43,44 @@ abstract class EmbarkViewModel(
     private val valueStore: ValueStore,
     private val graphQLQueryUseCase: GraphQLQueryUseCase,
     private val triggerFreeTextChatUseCase: TriggerFreeTextChatUseCase,
+    loginStatusService: LoginStatusService,
 ) : ViewModel() {
-    private val _viewState = MutableLiveData<ViewState>()
-    val viewState: LiveData<ViewState> = _viewState
+    private val _passageState = MutableLiveData<PassageState>()
+    val passageState: LiveData<PassageState> = _passageState
 
+    private val loginStatus = loginStatusService
+        .getLoginStatusAsFlow()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = null
+        )
+
+    val viewState: LiveData<ViewState> =
+        passageState.asFlow()
+            .combine(loginStatus.filterNotNull()) { passageState, loginStatus ->
+                ViewState(
+                    passageState,
+                    loginStatus == LoginStatus.LOGGED_IN
+                )
+            }
+            .asLiveData()
     protected val _events = Channel<Event>(Channel.UNLIMITED)
-    val events = _events.receiveAsFlow()
 
+    val events = _events.receiveAsFlow()
     private val _loadingState: MutableStateFlow<Boolean> = MutableStateFlow(false)
+
     val loadingState: StateFlow<Boolean> = _loadingState.asStateFlow()
 
     data class ViewState(
+        val passageState: PassageState,
+        val isLoggedIn: Boolean,
+    )
+
+    data class PassageState(
         val passage: EmbarkStoryQuery.Passage?,
         val navigationDirection: NavigationDirection,
-        val progress: Percent,
-        val isLoggedIn: Boolean,
+        val progressPercentage: ProgressPercentage,
         val hasTooltips: Boolean,
     )
 
@@ -64,15 +94,13 @@ abstract class EmbarkViewModel(
     abstract fun fetchStory(name: String)
 
     protected lateinit var storyData: EmbarkStoryQuery.Data
-    private lateinit var loginStatus: LoginStatus
 
     private val backStack = Stack<String>()
     private var totalSteps: Int = 0
 
-    protected fun setInitialState(loginStatus: LoginStatus) {
+    protected fun setInitialState() {
         storyData.embarkStory?.let { story ->
             valueStore.computedValues = story.getComputedValues()
-            this.loginStatus = loginStatus
             val firstPassage = story.passages.first { it.id == story.startPassage }
 
             totalSteps = getPassagesLeft(firstPassage)
@@ -99,20 +127,20 @@ abstract class EmbarkViewModel(
     }
 
     fun submitAction(nextPassageName: String, submitIndex: Int = 0) {
-        viewState.value?.passage?.let { currentPassage ->
-            currentPassage.action?.api(submitIndex)?.let { api ->
-                callApi(api)
-            }
+        val apiFromAction = viewState.value?.passageState?.passage?.action?.api(submitIndex)
+        if (apiFromAction != null) {
+            callApi(apiFromAction)
+        } else {
+            navigateToPassage(nextPassageName)
         }
-        navigateToPassage(nextPassageName)
     }
 
     private fun navigateToPassage(passageName: String) {
         val nextPassage = storyData.embarkStory?.passages?.find { it.name == passageName }
         val redirectPassage = getRedirectPassageAndPutInStore(nextPassage?.redirects)
-        val keys = nextPassage?.offerRedirect?.data?.keys?.takeIf { it.isNotEmpty() }
         val location = nextPassage?.externalRedirect?.data?.location
         val api = nextPassage?.api?.fragments?.apiFragment
+        val keys = nextPassage?.getOfferKeysOrNull(valueStore)
 
         when {
             storyData.embarkStory == null || nextPassage == null -> _events.trySend(Event.Error())
@@ -128,18 +156,17 @@ abstract class EmbarkViewModel(
     }
 
     private fun setupPassageAndEmitState(nextPassage: EmbarkStoryQuery.Passage) {
-        _viewState.value?.passage?.name?.let {
+        _passageState.value?.passage?.name?.let {
             valueStore.commitVersion()
             backStack.push(it)
         }
-        val state = ViewState(
+        val passageState = PassageState(
             passage = preProcessPassage(nextPassage),
             navigationDirection = NavigationDirection.FORWARDS,
-            progress = currentProgress(nextPassage),
-            isLoggedIn = loginStatus == LoginStatus.LOGGED_IN,
+            progressPercentage = currentProgress(nextPassage),
             hasTooltips = nextPassage.tooltips.isNotEmpty(),
         )
-        _viewState.postValue(state)
+        _passageState.postValue(passageState)
         _loadingState.update { false }
         nextPassage.tracks.forEach { track ->
             tracker.track(track.eventName, trackingData(track))
@@ -163,32 +190,37 @@ abstract class EmbarkViewModel(
 
     private fun handleRedirectLocation(location: EmbarkExternalRedirectLocation) {
         when (location) {
-            EmbarkExternalRedirectLocation.OFFER -> {
-                val id = getFromStore("quoteId")
-                if (id == null) {
-                    _events.trySend(Event.Error())
-                } else {
-                    _events.trySend(Event.Offer(listOf(id)))
-                }
-            }
-            EmbarkExternalRedirectLocation.CLOSE -> {
-                _events.trySend(Event.Close)
-            }
-            EmbarkExternalRedirectLocation.CHAT -> {
-                viewModelScope.launch {
-                    triggerFreeTextChatUseCase.invoke()
-                    _events.trySend(Event.Chat)
-                }
-            }
+            EmbarkExternalRedirectLocation.OFFER -> sendOfferId()
+            EmbarkExternalRedirectLocation.CLOSE -> _events.trySend(Event.Close)
+            EmbarkExternalRedirectLocation.CHAT -> triggerChat()
             else -> {
                 // Do nothing
             }
         }
     }
 
+    private fun sendOfferId() {
+        val id = getFromStore("quoteId")
+        if (id == null) {
+            _events.trySend(Event.Error())
+        } else {
+            _events.trySend(Event.Offer(listOf(id)))
+        }
+    }
+
+    private fun triggerChat() {
+        viewModelScope.launch {
+            val event = when (triggerFreeTextChatUseCase.invoke()) {
+                is Either.Left -> Event.Error()
+                is Either.Right -> Event.Chat
+            }
+            _events.trySend(event)
+        }
+    }
+
     private fun getRedirectPassageAndPutInStore(redirects: List<EmbarkStoryQuery.Redirect>?): String? {
         redirects?.forEach { redirect ->
-            if (evaluateExpression(redirect.into(), valueStore) is ExpressionResult.True) {
+            if (evaluateExpression(redirect.toExpressionFragment(), valueStore) is ExpressionResult.True) {
                 redirect.passedKeyValue?.let { (key, value) -> putInStore(key, value) }
                 redirect.to?.let { to ->
                     return to
@@ -209,13 +241,13 @@ abstract class EmbarkViewModel(
         track.customData?.let { data + it } ?: data
     }
 
-    private fun currentProgress(passage: EmbarkStoryQuery.Passage?): Percent {
+    private fun currentProgress(passage: EmbarkStoryQuery.Passage?): ProgressPercentage {
         if (passage == null) {
-            return Percent(0)
+            return ProgressPercentage(0f)
         }
         val passagesLeft = getPassagesLeft(passage)
-        val progress = ((totalSteps.toFloat() - passagesLeft.toFloat()) / totalSteps.toFloat()) * 100
-        return Percent(progress.toInt())
+        val progress = ((totalSteps.toFloat() - passagesLeft.toFloat()) / totalSteps.toFloat())
+        return ProgressPercentage.safeValue(progress)
     }
 
     private fun handleGraphQLQuery(graphQLQuery: ApiFragment.AsEmbarkApiGraphQLQuery) {
@@ -255,11 +287,10 @@ abstract class EmbarkViewModel(
     }
 
     private fun handleQueryResult(result: GraphQLQueryResult) {
-        // todo there was an empty Loading event here that was just to trigger the beginDelayedTransition or what?
         _loadingState.update { false }
 
         when (result) {
-            // TODO Handle errors 
+            // TODO Handle errors
             is GraphQLQueryResult.Error -> navigateToPassage(result.passageName)
             is GraphQLQueryResult.ValuesFromResponse -> {
                 result.arrayValues.forEach {
@@ -283,19 +314,18 @@ abstract class EmbarkViewModel(
         val passageName = backStack.pop()
 
         storyData.embarkStory?.let { story ->
-            _viewState.value?.passage?.name?.let { currentPassageName ->
+            _passageState.value?.passage?.name?.let { currentPassageName ->
                 tracker.track("Passage Go Back - $currentPassageName")
             }
             val nextPassage = story.passages.find { it.name == passageName }
-            val model = ViewState(
+            val passageState = PassageState(
                 passage = preProcessPassage(nextPassage),
                 navigationDirection = NavigationDirection.BACKWARDS,
-                progress = currentProgress(nextPassage),
-                isLoggedIn = loginStatus == LoginStatus.LOGGED_IN,
+                progressPercentage = currentProgress(nextPassage),
                 hasTooltips = nextPassage?.tooltips?.isNotEmpty() == true,
             )
             _loadingState.update { false }
-            _viewState.postValue(model)
+            _passageState.postValue(passageState)
 
             valueStore.rollbackVersion()
             return true
@@ -432,71 +462,6 @@ abstract class EmbarkViewModel(
     companion object {
         private val REPLACEMENT_FINDER = Regex("\\{[\\w.]+\\}")
 
-        private fun EmbarkStoryQuery.Redirect.into(): ExpressionFragment =
-            ExpressionFragment(
-                fragments = ExpressionFragment.Fragments(
-                    BasicExpressionFragment(
-                        asEmbarkExpressionUnary = asEmbarkRedirectUnaryExpression?.let {
-                            BasicExpressionFragment.AsEmbarkExpressionUnary(
-                                unaryType = it.unaryType,
-                                text = null
-                            )
-                        },
-                        asEmbarkExpressionBinary = asEmbarkRedirectBinaryExpression?.let {
-                            BasicExpressionFragment.AsEmbarkExpressionBinary(
-                                binaryType = it.binaryType,
-                                key = it.key,
-                                value = it.value,
-                                text = null
-                            )
-                        },
-                    )
-                ),
-                asEmbarkExpressionMultiple = asEmbarkRedirectMultipleExpressions?.let {
-                    ExpressionFragment.AsEmbarkExpressionMultiple(
-                        multipleType = it.multipleExpressionType,
-                        text = null,
-                        subExpressions = it.subExpressions.map { se ->
-                            ExpressionFragment.SubExpression2(
-                                fragments = ExpressionFragment.SubExpression2.Fragments(
-                                    se.fragments.expressionFragment.fragments.basicExpressionFragment
-                                ),
-                                asEmbarkExpressionMultiple1 = se
-                                    .fragments.expressionFragment.asEmbarkExpressionMultiple?.let { asMulti ->
-                                        ExpressionFragment.AsEmbarkExpressionMultiple1(
-                                            multipleType = asMulti.multipleType,
-                                            text = asMulti.text,
-                                            subExpressions = asMulti.subExpressions.map { se2 ->
-                                                ExpressionFragment.SubExpression1(
-                                                    fragments = ExpressionFragment.SubExpression1.Fragments(
-                                                        se2.fragments.basicExpressionFragment
-                                                    ),
-                                                    asEmbarkExpressionMultiple2 = se2
-                                                        .asEmbarkExpressionMultiple1?.let { asMulti2 ->
-                                                            ExpressionFragment.AsEmbarkExpressionMultiple2(
-                                                                multipleType = asMulti2.multipleType,
-                                                                text = asMulti2.text,
-                                                                subExpressions = asMulti2.subExpressions.map { se3 ->
-                                                                    ExpressionFragment.SubExpression(
-                                                                        fragments = ExpressionFragment
-                                                                            .SubExpression
-                                                                            .Fragments(
-                                                                                se3.fragments.basicExpressionFragment
-                                                                            )
-                                                                    )
-                                                                }
-                                                            )
-                                                        }
-                                                )
-                                            }
-                                        )
-                                    }
-                            )
-                        }
-                    )
-                }
-            )
-
         private val EmbarkStoryQuery.Redirect.to: String?
             get() {
                 asEmbarkRedirectUnaryExpression?.let { return it.to }
@@ -533,13 +498,13 @@ abstract class EmbarkViewModel(
 
 class EmbarkViewModelImpl(
     private val embarkRepository: EmbarkRepository,
-    private val loginStatusService: LoginStatusService,
+    loginStatusService: LoginStatusService,
     graphQLQueryUseCase: GraphQLQueryUseCase,
     triggerFreeTextChatUseCase: TriggerFreeTextChatUseCase,
     tracker: EmbarkTracker,
     valueStore: ValueStore,
     storyName: String,
-) : EmbarkViewModel(tracker, valueStore, graphQLQueryUseCase, triggerFreeTextChatUseCase) {
+) : EmbarkViewModel(tracker, valueStore, graphQLQueryUseCase, triggerFreeTextChatUseCase, loginStatusService) {
 
     init {
         fetchStory(storyName)
@@ -559,10 +524,9 @@ class EmbarkViewModelImpl(
                 )
                 return@launch
             }
-            val loginStatus = loginStatusService.getLoginStatus()
             result.getOrNull()?.data?.let { d ->
                 storyData = d
-                setInitialState(loginStatus)
+                setInitialState()
             }
         }
     }

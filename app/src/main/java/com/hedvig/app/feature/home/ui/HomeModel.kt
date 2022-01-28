@@ -1,11 +1,12 @@
 package com.hedvig.app.feature.home.ui
 
 import androidx.annotation.StringRes
+import arrow.core.NonEmptyList
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
-import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusCardData
+import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusCardUiState
 import java.time.LocalDate
 
 sealed class HomeModel {
@@ -40,7 +41,7 @@ sealed class HomeModel {
     }
 
     data class ClaimStatus(
-        val claimStatusCardDataList: List<ClaimStatusCardData>,
+        val claimStatusCardsUiState: NonEmptyList<ClaimStatusCardUiState>,
     ) : HomeModel()
 
     sealed class StartClaimOutlined : HomeModel() {
@@ -60,12 +61,12 @@ sealed class HomeModel {
     sealed class StartClaimContained : HomeModel() {
         @get:StringRes abstract val textId: Int
 
-        object FirstClaim : StartClaimOutlined() {
+        object FirstClaim : StartClaimContained() {
             override val textId: Int
                 get() = R.string.home_tab_claim_button_text
         }
 
-        object NewClaim : StartClaimOutlined() {
+        object NewClaim : StartClaimContained() {
             override val textId: Int
                 get() = R.string.home_open_claim_start_new_claim_button
         }

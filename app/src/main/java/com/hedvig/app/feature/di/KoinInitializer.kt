@@ -16,9 +16,11 @@ import com.hedvig.app.connectPaymentModule
 import com.hedvig.app.dataStoreModule
 import com.hedvig.app.embarkModule
 import com.hedvig.app.embarkTrackerModule
+import com.hedvig.app.externalInsuranceModule
 import com.hedvig.app.featureManagerModule
 import com.hedvig.app.homeModule
 import com.hedvig.app.insuranceModule
+import com.hedvig.app.insurelyAuthModule
 import com.hedvig.app.keyGearModule
 import com.hedvig.app.localeBroadcastManagerModule
 import com.hedvig.app.localeManagerModule
@@ -32,11 +34,11 @@ import com.hedvig.app.numberActionSetModule
 import com.hedvig.app.offerModule
 import com.hedvig.app.onboardingModule
 import com.hedvig.app.paymentModule
-import com.hedvig.app.previousInsViewModel
 import com.hedvig.app.profileModule
 import com.hedvig.app.pushTokenManagerModule
 import com.hedvig.app.referralsModule
 import com.hedvig.app.repositoriesModule
+import com.hedvig.app.retrievePriceModule
 import com.hedvig.app.serviceModule
 import com.hedvig.app.sharedPreferencesModule
 import com.hedvig.app.textActionSetModule
@@ -74,7 +76,6 @@ class KoinInitializer : Initializer<KoinApplication> {
                 localeBroadcastManagerModule,
                 trackerModule,
                 embarkModule,
-                previousInsViewModel,
                 marketPickerTrackerModule,
                 whatsNewModule,
                 marketManagerModule,
@@ -100,7 +101,10 @@ class KoinInitializer : Initializer<KoinApplication> {
                 embarkTrackerModule,
                 chatEventModule,
                 dataStoreModule,
-                featureManagerModule
+                featureManagerModule,
+                retrievePriceModule,
+                externalInsuranceModule,
+                insurelyAuthModule,
             )
         )
     }

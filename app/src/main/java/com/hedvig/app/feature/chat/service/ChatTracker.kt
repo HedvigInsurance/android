@@ -6,7 +6,7 @@ import com.hedvig.app.util.jsonObjectOf
 class ChatTracker(
     private val trackingFacade: TrackingFacade
 ) {
-    fun closeChat() = trackingFacade.track("CHAT_CLOSE")
+    fun closeChat() = trackingFacade.track("chat_closed")
     fun restartChat() = trackingFacade.track("CHAT_RESTART")
     fun editMessage() = trackingFacade.track("CHAT_EDIT_MESSAGE_DESCRIPTION")
     fun openUploadedFile() = trackingFacade.track("CHAT_FILE_UPLOADED")

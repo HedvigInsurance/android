@@ -43,13 +43,13 @@ class CommonClaimActivity : BaseActivity(R.layout.activity_common_claim) {
             toolbar.title = data.title
 
             bulletPointsRecyclerView.adapter =
-                BulletPointsAdapter(getString(R.string.BASE_URL), imageLoader).also {
+                BulletPointsAdapter(imageLoader).also {
                     it.submitList(data.bulletPoints)
                 }
         }
 
         binding.apply {
-            val url = Uri.parse(getString(R.string.BASE_URL) + data.iconUrls.iconByTheme(this@CommonClaimActivity))
+            val url = Uri.parse(data.iconUrls.iconByTheme(this@CommonClaimActivity))
             firstMessage.commonClaimFirstMessageIcon.load(url, imageLoader)
 
             firstMessage.commonClaimFirstMessage.text = data.layoutTitle

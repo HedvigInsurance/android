@@ -2,6 +2,8 @@ package com.hedvig.app.feature.offer.ui.checkout
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hedvig.android.owldroid.graphql.OfferQuery
+import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.ui.grossMonthlyCost
 import com.hedvig.app.feature.offer.ui.netMonthlyCost
@@ -12,6 +14,7 @@ import com.hedvig.app.util.ValidationResult
 import com.hedvig.app.util.validateEmail
 import com.hedvig.app.util.validateNationalIdentityNumber
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -26,6 +29,7 @@ class CheckoutViewModel(
     private val getQuotesUseCase: GetQuotesUseCase,
     private val signQuotesUseCase: SignQuotesUseCase,
     private val marketManager: MarketManager,
+    private val loginStatusService: LoginStatusService,
 ) : ViewModel() {
 
     private lateinit var quoteIds: List<String>
@@ -58,7 +62,8 @@ class CheckoutViewModel(
                     bundleName = response.data.quoteBundle.displayName,
                     netAmount = response.data.netMonthlyCost(),
                     grossAmount = response.data.grossMonthlyCost(),
-                    market = marketManager.market
+                    market = marketManager.market,
+                    email = response.data.quoteBundle.quotes.firstNotNullOfOrNull(OfferQuery.Quote::email)
                 )
             }
         }
@@ -142,7 +147,15 @@ class CheckoutViewModel(
             )
             val event = when (result) {
                 is SignQuotesUseCase.SignQuoteResult.Error -> Event.Error(result.message)
-                SignQuotesUseCase.SignQuoteResult.Success -> Event.CheckoutSuccess
+                SignQuotesUseCase.SignQuoteResult.Success -> {
+                    loginStatusService.isLoggedIn = true
+                    loginStatusService.isViewingOffer = false
+                    // Delay sending success in order for the signed quotes to be added on the member
+                    // Sending success instantly will start HomeFragment, but the member will not have
+                    // updated contracts.
+                    delay(5000)
+                    Event.CheckoutSuccess
+                }
                 else -> Event.Error()
             }
             _events.trySend(event)
@@ -155,7 +168,8 @@ class CheckoutViewModel(
             val bundleName: String,
             val netAmount: MonetaryAmount,
             val grossAmount: MonetaryAmount,
-            val market: Market?
+            val market: Market?,
+            val email: String?,
         ) : TitleViewState()
 
         object Loading : TitleViewState()

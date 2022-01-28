@@ -17,6 +17,7 @@ data class SelectActionParameter(
         val label: String,
         val keys: List<String>,
         val values: List<String>,
+        val badge: String?,
     ) : Parcelable
 
     companion object {
@@ -32,7 +33,8 @@ data class SelectActionParameter(
                         it.link.fragments.embarkLinkFragment.name,
                         it.link.fragments.embarkLinkFragment.label,
                         it.keys,
-                        it.values
+                        it.values,
+                        it.badge,
                     )
                 },
                 passageName,

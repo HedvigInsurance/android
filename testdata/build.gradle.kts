@@ -27,5 +27,6 @@ dependencies {
     implementation(libs.kotlin.stdlib)
     coreLibraryDesugaring(libs.coreLibraryDesugaring)
 
+    implementation(libs.adyen)
     implementation(project(":apollo"))
 }

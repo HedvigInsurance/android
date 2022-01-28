@@ -1,4 +1,3 @@
-
 plugins {
     id("com.android.library")
     id("kotlin-android")
@@ -14,7 +13,8 @@ apollo {
             "Upload" to "com.apollographql.apollo.api.FileUpload",
             "PaymentMethodsResponse" to "com.adyen.checkout.components.model.PaymentMethodsApiResponse",
             "CheckoutPaymentsAction" to "kotlin.String",
-            "JSONString" to "org.json.JSONObject"
+            "JSONString" to "org.json.JSONObject",
+            "Instant" to "java.time.Instant"
         )
     )
     sealedClassesForEnumsMatching.set(

@@ -1,24 +1,21 @@
 package com.hedvig.app.feature.insurance.ui
 
 import androidx.core.view.isVisible
-import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.type.TypeOfContractGradientOption
 import com.hedvig.app.R
 import com.hedvig.app.databinding.InsuranceContractCardBinding
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.extensions.compatColor
 
-fun InsuranceQuery.Contract.bindTo(
+fun ContractCardViewState.bindTo(
     binding: InsuranceContractCardBinding,
     marketManager: MarketManager
 ) =
     binding.apply {
-        val firstStatus = statusPills.getOrNull(0)
-        firstStatusPill.isVisible = firstStatus != null
-        firstStatusPill.text = firstStatus
-        val secondStatus = statusPills.getOrNull(1)
-        secondStatusPill.isVisible = secondStatus != null
-        secondStatusPill.text = secondStatus
+        firstStatusPill.isVisible = firstStatusPillText != null
+        firstStatusPill.text = firstStatusPillText
+        secondStatusPill.isVisible = secondStatusPillText != null
+        secondStatusPill.text = secondStatusPillText
 
         bindBackgroundColor(gradientOption)
 

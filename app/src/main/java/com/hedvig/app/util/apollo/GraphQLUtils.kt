@@ -44,3 +44,14 @@ fun MonetaryAmount.format(locale: java.util.Locale, minimumDecimals: Int = 0): S
         it.currency = Currency.getInstance(currency.currencyCode)
         it.minimumFractionDigits = minimumDecimals
     }.format(this.number.numberValueExact(BigDecimal::class.java))
+
+fun MonetaryAmount.formatOnlyNumber(
+    locale: java.util.Locale,
+    minimumDecimals: Int = 0,
+    maximumDecimals: Int = minimumDecimals,
+): String =
+    NumberFormat.getNumberInstance(locale).also {
+        it.currency = Currency.getInstance(currency.currencyCode)
+        it.minimumFractionDigits = minimumDecimals
+        it.maximumFractionDigits = maximumDecimals
+    }.format(this.number.numberValueExact(BigDecimal::class.java))

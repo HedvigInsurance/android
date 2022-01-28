@@ -7,10 +7,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Set up JDK 11
-        uses: actions/setup-java@v1
+      - name: Setup JDK 11
+        uses: actions/setup-java@v2.5.0
         with:
-          java-version: 11
+          java-version: '11'
+          distribution: 'zulu'
+          cache: 'gradle'
       - name: Create Lokalise secret
         run: |
           cat <<EOT > lokalise.properties
@@ -84,6 +86,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Setup JDK 11
+        uses: actions/setup-java@v2.5.0
+        with:
+          java-version: '11'
+          distribution: 'zulu'
+          cache: 'gradle'
       - name: Create Lokalise secret
         run: |
           cat <<EOT > lokalise.properties
@@ -145,6 +153,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Setup JDK 11
+        uses: actions/setup-java@v2.5.0
+        with:
+          java-version: '11'
+          distribution: 'zulu'
+          cache: 'gradle'
       - name: Create Lokalise secret
         run: |
           cat <<EOT > lokalise.properties
@@ -215,9 +229,9 @@ jobs:
         continue-on-error: true
         run: |
           ktlint "\!**/generated/**" "**/src/**/*.kt*" --reporter=checkstyle,output=build/ktlint-report-in-checkstyle-format.xml
-      - uses: yutailang0119/action-ktlint@v1.0.0
+      - uses: yutailang0119/action-ktlint@v2.0.0
         with:
-          xml_path: build/ktlint-report-in-checkstyle-format.xml
+          report-path: build/ktlint-report-in-checkstyle-format.xml
       - run: |
           if [[ $(xmllint --xpath "count(//file)" build/ktlint-report-in-checkstyle-format.xml) -gt 0 ]]; then
               exit 1;

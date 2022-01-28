@@ -13,27 +13,13 @@ fun UpcomingAgreementFragment.toUpcomingAgreementResult(): UpcomingAgreement? {
 
     return UpcomingAgreement(
         activeFrom = activeFrom(),
-        address = address(),
         table = upcomingAgreementDetailsTable.fragments.tableFragment.intoTable()
     )
 }
 
 private fun UpcomingAgreementFragment.activeFrom(): LocalDate? {
     val newAgreement = status.newAgreement()
-
-    return newAgreement?.asNorwegianHomeContentAgreement?.activeFrom
-        ?: newAgreement?.asDanishHomeContentAgreement?.activeFrom
-        ?: newAgreement?.asSwedishApartmentAgreement?.activeFrom
-        ?: newAgreement?.asSwedishHouseAgreement?.activeFrom
-}
-
-private fun UpcomingAgreementFragment.address(): String? {
-    val newAgreement = status.newAgreement()
-
-    return newAgreement?.asNorwegianHomeContentAgreement?.address?.fragments?.addressFragment?.street
-        ?: newAgreement?.asDanishHomeContentAgreement?.address?.fragments?.addressFragment?.street
-        ?: newAgreement?.asSwedishApartmentAgreement?.address?.fragments?.addressFragment?.street
-        ?: newAgreement?.asSwedishHouseAgreement?.address?.fragments?.addressFragment?.street
+    return newAgreement?.asAgreementCore?.activeFrom
 }
 
 private fun UpcomingAgreementFragment.Status.newAgreement(): UpcomingAgreementChangeFragment.NewAgreement? {

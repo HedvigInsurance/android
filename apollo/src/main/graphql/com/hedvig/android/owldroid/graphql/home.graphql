@@ -11,8 +11,17 @@ query HomeQuery($locale: Locale!, $languageCode: String!) {
     title
     subtitle
     progressSegments {
-      text
+      ...ProgressSegments
+    }
+    claim {
+      submittedAt
+      closedAt
       type
+      statusParagraph
+      progressSegments {
+        text
+        type
+      }
     }
   }
   contracts {

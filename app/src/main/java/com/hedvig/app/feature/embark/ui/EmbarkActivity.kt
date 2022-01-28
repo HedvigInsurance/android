@@ -18,14 +18,17 @@ import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityEmbarkBinding
-import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.NavigationDirection
 import com.hedvig.app.feature.embark.passages.UpgradeAppFragment
+import com.hedvig.app.feature.embark.passages.addressautocomplete.AddressAutoCompleteFragment
+import com.hedvig.app.feature.embark.passages.addressautocomplete.AddressAutoCompleteParams
 import com.hedvig.app.feature.embark.passages.audiorecorder.AudioRecorderFragment
 import com.hedvig.app.feature.embark.passages.audiorecorder.AudioRecorderParameters
 import com.hedvig.app.feature.embark.passages.datepicker.DatePickerFragment
 import com.hedvig.app.feature.embark.passages.datepicker.DatePickerParams
+import com.hedvig.app.feature.embark.passages.externalinsurer.ExternalInsurerFragment
+import com.hedvig.app.feature.embark.passages.externalinsurer.ExternalInsurerParameter
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionComponent
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionFragment
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionParams
@@ -40,10 +43,13 @@ import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
+import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.viewBinding
+import com.hedvig.app.util.featureflags.Feature
+import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.app.util.whenApiVersion
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -63,9 +69,10 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
             ?: throw IllegalArgumentException("Programmer error: STORY_NAME not provided to ${this.javaClass.name}")
     }
 
-    private val model: EmbarkViewModel by viewModel { parametersOf(storyName) }
+    private val viewModel: EmbarkViewModel by viewModel { parametersOf(storyName) }
     private val binding by viewBinding(ActivityEmbarkBinding::bind)
     private val marketManager: MarketManager by inject()
+    private val featureManager: FeatureManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,22 +84,22 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
             }
             progressToolbar.toolbar.title = storyTitle
 
-            model.viewState.observe(this@EmbarkActivity) { viewState ->
+            viewModel.viewState.observe(this@EmbarkActivity) { viewState ->
                 loadingSpinnerLayout.loadingSpinner.remove() // Removing inner spinner on first available viewState
                 setupToolbarMenu(
                     progressToolbar,
-                    viewState.hasTooltips,
+                    viewState.passageState.hasTooltips,
                     viewState.isLoggedIn
                 )
-                progressToolbar.setProgress(viewState.progress)
+                progressToolbar.setProgress(viewState.passageState.progressPercentage)
 
-                val passage = viewState.passage
+                val passage = viewState.passageState.passage
                 actionBar?.title = passage?.name
 
-                transitionToNextPassage(viewState.navigationDirection, passage)
+                transitionToNextPassage(viewState.passageState.navigationDirection, passage)
             }
 
-            model
+            viewModel
                 .loadingState
                 .flowWithLifecycle(lifecycle)
                 .onEach { isLoading ->
@@ -100,14 +107,12 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 }
                 .launchIn(lifecycleScope)
 
-            model
+            viewModel
                 .events
                 .flowWithLifecycle(lifecycle)
                 .onEach { event ->
                     when (event) {
-                        EmbarkViewModel.Event.Chat -> {
-                            startActivity(ChatActivity.newInstance(this@EmbarkActivity))
-                        }
+                        EmbarkViewModel.Event.Chat -> startChat()
                         is EmbarkViewModel.Event.Offer -> {
                             startActivity(
                                 OfferActivity.newInstance(
@@ -152,7 +157,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
             true
         }
         R.id.tooltip -> {
-            model.viewState.value?.passage?.tooltips?.let {
+            viewModel.viewState.value?.passageState?.passage?.tooltips?.let {
                 TooltipBottomSheet.newInstance(it).show(
                     supportFragmentManager, TooltipBottomSheet.TAG
                 )
@@ -244,6 +249,14 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 previousInsuranceAction
             )
             return PreviousInsurerFragment.newInstance(parameter)
+        }
+
+        passage?.action?.asEmbarkExternalInsuranceProviderAction?.let { externalInsuranceAction ->
+            val parameter = ExternalInsurerParameter.from(
+                passage.messages.map { it.fragments.messageFragment.text },
+                externalInsuranceAction
+            )
+            return ExternalInsurerFragment.newInstance(parameter)
         }
 
         passage?.action?.asEmbarkNumberAction?.numberActionData?.let { numberAction ->
@@ -354,11 +367,24 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
             return AudioRecorderFragment.newInstance(params)
         }
 
+        if (featureManager.isFeatureEnabled(Feature.ADDRESS_AUTO_COMPLETE)) {
+            passage?.action?.asEmbarkAddressAutocompleteAction?.let { addressAutocompleteAction ->
+                val params = AddressAutoCompleteParams(
+                    messages = passage.messages.map { it.fragments.messageFragment.text },
+                    key = addressAutocompleteAction.addressAutocompleteActionData.key,
+                    placeholder = addressAutocompleteAction.addressAutocompleteActionData.placeholder,
+                    link = addressAutocompleteAction.addressAutocompleteActionData.link
+                        .fragments.embarkLinkFragment.name,
+                )
+                return AddressAutoCompleteFragment.newInstance(params)
+            }
+        }
+
         return UpgradeAppFragment.newInstance()
     }
 
     override fun onBackPressed() {
-        val couldNavigateBack = model.navigateBack()
+        val couldNavigateBack = viewModel.navigateBack()
         if (!couldNavigateBack) {
             super.onBackPressed()
         }

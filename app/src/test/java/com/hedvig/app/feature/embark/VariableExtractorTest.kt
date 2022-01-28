@@ -42,6 +42,69 @@ class VariableExtractorTest {
         assertThat(fileVariable?.path).isEqualTo("path-to-file")
     }
 
+    // Context: https://hedviginsurance.slack.com/archives/C016KUN61U3/p1643022424096600?thread_ts=1643021296.091300&cid=C016KUN61U3
+    @Test
+    fun `with the store missing the key, boolean value defaults to false`() {
+        val booleanKey = "boolean_key"
+        val emptyStore: ValueStore = ValueStoreImpl()
+        val variables = listOf(
+            GraphQLVariablesFragment(
+                __typename = "EmbarkAPIGraphQLSingleVariable",
+                asEmbarkAPIGraphQLSingleVariable = GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable(
+                    __typename = "EmbarkAPIGraphQLSingleVariable",
+                    key = booleanKey,
+                    from = booleanKey,
+                    as_ = EmbarkAPIGraphQLSingleVariableCasting.BOOLEAN
+                ),
+                asEmbarkAPIGraphQLGeneratedVariable = null,
+                asEmbarkAPIGraphQLMultiActionVariable = null
+            ),
+        )
+
+        val result = VariableExtractor.extractVariables(variables, emptyStore)
+
+        assertThat(result.getBoolean(booleanKey)).isEqualTo(false)
+    }
+
+    @Test
+    fun `boolean values are extracted correctly from the store`() {
+        val trueBooleanKey = "boolean_key_true"
+        val falseBooleanKey = "boolean_key_false"
+        val storeWithBooleanKey: ValueStore = ValueStoreImpl().apply {
+            put(trueBooleanKey, "true")
+            put(falseBooleanKey, "false")
+        }
+        val variables = listOf(
+            GraphQLVariablesFragment(
+                __typename = "EmbarkAPIGraphQLSingleVariable",
+                asEmbarkAPIGraphQLSingleVariable = GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable(
+                    __typename = "EmbarkAPIGraphQLSingleVariable",
+                    key = trueBooleanKey,
+                    from = trueBooleanKey,
+                    as_ = EmbarkAPIGraphQLSingleVariableCasting.BOOLEAN
+                ),
+                asEmbarkAPIGraphQLGeneratedVariable = null,
+                asEmbarkAPIGraphQLMultiActionVariable = null
+            ),
+            GraphQLVariablesFragment(
+                __typename = "EmbarkAPIGraphQLSingleVariable",
+                asEmbarkAPIGraphQLSingleVariable = GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable(
+                    __typename = "EmbarkAPIGraphQLSingleVariable",
+                    key = falseBooleanKey,
+                    from = falseBooleanKey,
+                    as_ = EmbarkAPIGraphQLSingleVariableCasting.BOOLEAN
+                ),
+                asEmbarkAPIGraphQLGeneratedVariable = null,
+                asEmbarkAPIGraphQLMultiActionVariable = null
+            ),
+        )
+
+        val result = VariableExtractor.extractVariables(variables, storeWithBooleanKey)
+
+        assertThat(result.getBoolean(trueBooleanKey)).isEqualTo(true)
+        assertThat(result.getBoolean(falseBooleanKey)).isEqualTo(false)
+    }
+
     private fun createTestValueStore(): ValueStore {
         val valueStore = ValueStoreImpl()
 

@@ -28,6 +28,9 @@ import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.authenticate.SharedPreferencesAuthenticationTokenService
 import com.hedvig.app.authenticate.SharedPreferencesLoginStatusService
+import com.hedvig.app.authenticate.UserViewModel
+import com.hedvig.app.authenticate.insurely.GetDataCollectionUseCase
+import com.hedvig.app.authenticate.insurely.InsurelyAuthViewModel
 import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModel
@@ -41,7 +44,9 @@ import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.feature.chat.service.ChatTracker
 import com.hedvig.app.feature.chat.usecase.TriggerFreeTextChatUseCase
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
-import com.hedvig.app.feature.chat.viewmodel.UserViewModel
+import com.hedvig.app.feature.claimdetail.data.GetClaimDetailUiStateFlowUseCase
+import com.hedvig.app.feature.claimdetail.data.GetClaimDetailUseCase
+import com.hedvig.app.feature.claimdetail.ui.ClaimDetailViewModel
 import com.hedvig.app.feature.claims.data.ClaimsRepository
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
@@ -64,15 +69,26 @@ import com.hedvig.app.feature.embark.ValueStore
 import com.hedvig.app.feature.embark.ValueStoreImpl
 import com.hedvig.app.feature.embark.passages.audiorecorder.AudioRecorderViewModel
 import com.hedvig.app.feature.embark.passages.datepicker.DatePickerViewModel
+import com.hedvig.app.feature.embark.passages.externalinsurer.ExternalInsurerViewModel
+import com.hedvig.app.feature.embark.passages.externalinsurer.GetInsuranceProvidersUseCase
+import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.InsuranceProviderParameter
+import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceViewModel
+import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.StartDataCollectionUseCase
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionItem
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionParams
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionViewModel
 import com.hedvig.app.feature.embark.passages.multiaction.add.AddComponentViewModel
 import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionParams
 import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionViewModel
-import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerViewModel
 import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
 import com.hedvig.app.feature.embark.passages.textaction.TextActionViewModel
+import com.hedvig.app.feature.genericauth.CreateOtpAttemptUseCase
+import com.hedvig.app.feature.genericauth.GenericAuthViewModel
+import com.hedvig.app.feature.genericauth.otpinput.OtpInputViewModel
+import com.hedvig.app.feature.genericauth.otpinput.ReSendOtpCodeUseCase
+import com.hedvig.app.feature.genericauth.otpinput.ReSendOtpCodeUseCaseImpl
+import com.hedvig.app.feature.genericauth.otpinput.SendOtpCodeUseCase
+import com.hedvig.app.feature.genericauth.otpinput.SendOtpCodeUseCaseImpl
 import com.hedvig.app.feature.home.data.GetHomeUseCase
 import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.home.ui.HomeViewModel
@@ -85,6 +101,7 @@ import com.hedvig.app.feature.insurance.data.GetContractsUseCase
 import com.hedvig.app.feature.insurance.service.InsuranceTracker
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModelImpl
+import com.hedvig.app.feature.insurance.ui.detail.GetContractDetailsUseCase
 import com.hedvig.app.feature.insurance.ui.tab.InsuranceViewModel
 import com.hedvig.app.feature.insurance.ui.tab.InsuranceViewModelImpl
 import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsViewModel
@@ -129,10 +146,13 @@ import com.hedvig.app.feature.offer.usecase.GetPostSignDependenciesUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
 import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
-import com.hedvig.app.feature.onboarding.ChoosePlanRepository
+import com.hedvig.app.feature.offer.usecase.datacollectionresult.GetDataCollectionResultUseCase
+import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToDataCollectionStatusUseCase
+import com.hedvig.app.feature.offer.usecase.providerstatus.GetProviderDisplayNameUseCase
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModelImpl
-import com.hedvig.app.feature.onboarding.MemberIdRepository
+import com.hedvig.app.feature.onboarding.GetBundlesUseCase
+import com.hedvig.app.feature.onboarding.GetMemberIdUseCase
 import com.hedvig.app.feature.onboarding.MemberIdViewModel
 import com.hedvig.app.feature.onboarding.MemberIdViewModelImpl
 import com.hedvig.app.feature.profile.data.ProfileRepository
@@ -198,6 +218,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.parameter.ParametersHolder
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import timber.log.Timber
@@ -349,7 +370,7 @@ fun getLocale(context: Context, market: Market?): Locale {
 val viewModelModule = module {
     viewModel { ClaimsViewModel(get(), get()) }
     viewModel { ChatViewModel(get(), get(), get(), get(), get()) }
-    viewModel { UserViewModel(get(), get(), get()) }
+    viewModel { UserViewModel(get(), get(), get(), get()) }
     viewModel { RedeemCodeViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
     viewModel { SettingsViewModel(get()) }
@@ -363,15 +384,18 @@ val viewModelModule = module {
         )
     }
     viewModel { TerminatedContractsViewModel(get()) }
-    viewModel { (autoStartToken: String, quoteIds: List<String>) ->
-        SwedishBankIdSignViewModel(autoStartToken, quoteIds, get(), get(), get(), get())
+    viewModel { (autoStartToken: String) ->
+        SwedishBankIdSignViewModel(autoStartToken, get(), get(), get(), get())
     }
     viewModel { (result: CrossSellingResult) -> CrossSellResultViewModel(result, get()) }
-    viewModel { AudioRecorderViewModel(get()) }
+    viewModel { AudioRecorderViewModel(get(), get()) }
     viewModel { CrossSellFaqViewModel(get()) }
     viewModel { (notificationMetadata: CrossSellNotificationMetadata?, crossSell: CrossSellData) ->
         CrossSellDetailViewModel(notificationMetadata, crossSell, get())
     }
+    viewModel { GenericAuthViewModel(get()) }
+    viewModel { (otpId: String, credential: String) -> OtpInputViewModel(otpId, credential, get(), get(), get()) }
+    viewModel { (claimId: String) -> ClaimDetailViewModel(claimId, get(), get()) }
 }
 
 val choosePlanModule = module {
@@ -379,11 +403,11 @@ val choosePlanModule = module {
 }
 
 val onboardingModule = module {
-    viewModel<MemberIdViewModel> { MemberIdViewModelImpl(get()) }
+    viewModel<MemberIdViewModel> { MemberIdViewModelImpl(get(), get()) }
 }
 
 val marketPickerModule = module {
-    viewModel<MarketPickerViewModel> { MarketPickerViewModelImpl(get(), get(), get(), get(), get()) }
+    viewModel<MarketPickerViewModel> { MarketPickerViewModelImpl(get(), get(), get(), get(), get(), get()) }
 }
 
 val loggedInModule = module {
@@ -396,7 +420,7 @@ val whatsNewModule = module {
 
 val insuranceModule = module {
     viewModel<InsuranceViewModel> { InsuranceViewModelImpl(get(), get()) }
-    viewModel<ContractDetailViewModel> { ContractDetailViewModelImpl(get(), get(), get()) }
+    viewModel<ContractDetailViewModel> { ContractDetailViewModelImpl(get(), get()) }
 }
 
 val marketingModule = module {
@@ -404,9 +428,33 @@ val marketingModule = module {
 }
 
 val offerModule = module {
-    viewModel<OfferViewModel> { (ids: List<String>, shouldShowOnNextAppStart: Boolean) ->
-        OfferViewModelImpl(ids, get(), get(), get(), get(), get(), get(), get(), shouldShowOnNextAppStart, get(), get())
+    viewModel<OfferViewModel> { parametersHolder: ParametersHolder ->
+        val (ids: List<String>, shouldShowOnNextAppStart: Boolean) = parametersHolder
+        OfferViewModelImpl(
+            _quoteIds = ids,
+            offerRepository = get(),
+            getQuotesUseCase = get(),
+            getQuoteUseCase = get(),
+            loginStatusService = get(),
+            approveQuotesUseCase = get(),
+            refreshQuotesUseCase = get(),
+            signQuotesUseCase = get(),
+            shouldShowOnNextAppStart = shouldShowOnNextAppStart,
+            getPostSignDependenciesUseCase = get(),
+            subscribeToDataCollectionStatusUseCase = get(),
+            getDataCollectionResultUseCase = get(),
+            getProviderDisplayNameUseCase = get(),
+            tracker = get(),
+            adyenRepository = get(),
+            marketManager = get(),
+            freeTextChatUseCase = get()
+        )
     }
+    single { ApproveQuotesUseCase(get(), get(), get(), get()) }
+    single { RefreshQuotesUseCase(get()) }
+    single { SubscribeToDataCollectionStatusUseCase(get()) }
+    single { GetProviderDisplayNameUseCase(get()) }
+    single { GetDataCollectionResultUseCase(get()) }
 }
 
 val profileModule = module {
@@ -447,10 +495,6 @@ val valueStoreModule = module {
     factory<ValueStore> { ValueStoreImpl() }
 }
 
-val previousInsViewModel = module {
-    viewModel { PreviousInsurerViewModel() }
-}
-
 val textActionSetModule = module {
     viewModel { (data: TextActionParameter) -> TextActionViewModel(data) }
 }
@@ -474,7 +518,7 @@ val homeModule = module {
 }
 
 val connectPaymentModule = module {
-    viewModel { ConnectPaymentViewModel(get(), get()) }
+    viewModel { ConnectPaymentViewModel(get(), get(), get()) }
 }
 
 val trustlyModule = module {
@@ -490,7 +534,26 @@ val changeDateBottomSheetModule = module {
 }
 
 val checkoutModule = module {
-    viewModel { (ids: List<String>) -> CheckoutViewModel(ids, get(), get(), get()) }
+    viewModel { (ids: List<String>) -> CheckoutViewModel(ids, get(), get(), get(), get()) }
+}
+
+val retrievePriceModule = module {
+    viewModel { (data: InsuranceProviderParameter) ->
+        RetrievePriceViewModel(
+            collectionId = data.selectedInsuranceProviderCollectionId,
+            insurerName = data.selectedInsuranceProviderName,
+            marketManager = get(),
+            startDataCollectionUseCase = get()
+        )
+    }
+}
+
+val externalInsuranceModule = module {
+    viewModel { ExternalInsurerViewModel(get()) }
+}
+
+val insurelyAuthModule = module {
+    viewModel { (reference: String) -> InsurelyAuthViewModel(reference, get()) }
 }
 
 val serviceModule = module {
@@ -525,9 +588,9 @@ val repositoriesModule = module {
     single { LoggedInRepository(get(), get()) }
     single { GetHomeUseCase(get(), get()) }
     single { TrustlyRepository(get()) }
-    single { MemberIdRepository(get()) }
+    single { GetMemberIdUseCase(get()) }
     single { PaymentRepository(get(), get()) }
-    single { ChoosePlanRepository(get(), get()) }
+    single { GetBundlesUseCase(get(), get()) }
 }
 
 val trackerModule = module {
@@ -542,7 +605,7 @@ val trackerModule = module {
     single { TrustlyTracker(get()) }
     single { PaymentTracker(get()) }
     single { RatingsTracker(get()) }
-    single { LoggedInTracker(get()) }
+    single { LoggedInTracker(get(), get()) }
     single { KeyGearTracker(get()) }
     single { InsuranceTracker(get()) }
     single { MarketingTracker(get()) }
@@ -596,7 +659,7 @@ val useCaseModule = module {
     single { SignQuotesUseCase(get(), get(), get()) }
     single { ApproveQuotesUseCase(get(), get(), get(), get()) }
     single { RefreshQuotesUseCase(get()) }
-    single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get()) }
+    single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     single { GetContractsUseCase(get(), get()) }
     single { ManuallyRecheckSwedishBankIdSignStatusUseCase(get()) }
     single { SubscribeToSwedishBankIdSignStatusUseCase(get()) }
@@ -604,7 +667,16 @@ val useCaseModule = module {
     single { GetCrossSellsContractTypesUseCase(get(), get()) }
     single { GraphQLQueryUseCase(get()) }
     single { GetCrossSellsUseCase(get(), get()) }
+    single { StartDataCollectionUseCase(get(), get()) }
+    single { GetInsuranceProvidersUseCase(get(), get()) }
+    single { CreateOtpAttemptUseCase(get()) }
+    single<SendOtpCodeUseCase> { SendOtpCodeUseCaseImpl(get()) }
+    single<ReSendOtpCodeUseCase> { ReSendOtpCodeUseCaseImpl(get()) }
     single { TriggerFreeTextChatUseCase(get()) }
+    single { GetDataCollectionUseCase(get(), get()) }
+    single { GetClaimDetailUseCase(get(), get()) }
+    single { GetClaimDetailUiStateFlowUseCase(get()) }
+    single { GetContractDetailsUseCase(get(), get(), get()) }
 }
 
 val cacheManagerModule = module {

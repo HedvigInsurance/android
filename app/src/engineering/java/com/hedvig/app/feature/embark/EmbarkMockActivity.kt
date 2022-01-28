@@ -3,8 +3,8 @@ package com.hedvig.app.feature.embark
 import android.content.Intent
 import com.hedvig.app.MockActivity
 import com.hedvig.app.embarkModule
-import com.hedvig.app.feature.embark.passages.previousinsurer.askforprice.AskForPriceInfoActivity
-import com.hedvig.app.feature.embark.passages.previousinsurer.askforprice.AskForPriceInfoParameter
+import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.AskForPriceInfoActivity
+import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.InsuranceProviderParameter
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
 import com.hedvig.app.feature.onboarding.MemberIdViewModel
@@ -36,6 +36,7 @@ import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_NUMBER_ACTION_AND_
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_OR_EXPRESSION
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_PASSED_KEY_VALUE
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_SELECT_ACTION_AND_CUSTOM_RESPONSE
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_SELECT_ACTION_BADGE
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_SINGLE_TOOLTIP
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEMPLATE_MESSAGE
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION
@@ -57,7 +58,7 @@ class EmbarkMockActivity : MockActivity() {
     override val original = listOf(embarkModule, onboardingModule)
     override val mocks = listOf(
         module {
-            viewModel<EmbarkViewModel> { MockEmbarkViewModel(get(), get(), get()) }
+            viewModel<EmbarkViewModel> { MockEmbarkViewModel(get(), get(), get(), get()) }
             viewModel<MemberIdViewModel> { MockMemberIdViewModel() }
         }
     )
@@ -98,7 +99,14 @@ class EmbarkMockActivity : MockActivity() {
             startActivity(EmbarkActivity.newInstance(context, this.javaClass.name, "Previous Insurer"))
         }
         clickableItem("Ask for price info") {
-            startActivity(AskForPriceInfoActivity.createIntent(context, AskForPriceInfoParameter(("Test Insurance"))))
+            startActivity(
+                AskForPriceInfoActivity.createIntent(
+                    context,
+                    InsuranceProviderParameter(
+                        "Test ID", "Test Name"
+                    )
+                )
+            )
         }
         header("Embark Screen")
         clickableItem("Loading") {
@@ -119,6 +127,13 @@ class EmbarkMockActivity : MockActivity() {
                 mockedData = STORY_WITH_SELECT_ACTION_AND_CUSTOM_RESPONSE
             }
             startActivity(EmbarkActivity.newInstance(context, this.javaClass.name, "Custom Response"))
+        }
+        clickableItem("Badge") {
+            MockEmbarkViewModel.apply {
+                shouldLoad = true
+                mockedData = STORY_WITH_SELECT_ACTION_BADGE
+            }
+            startActivity(EmbarkActivity.newInstance(context, this.javaClass.name, "Select Action + Badge"))
         }
         header("Number Action")
         clickableItem("Regular") {

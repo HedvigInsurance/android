@@ -8,17 +8,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.feature.chat.data.ChatRepository
-import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.feature.faq.FAQBottomSheet
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.coroutines.runSuspendCatching
+import com.hedvig.app.util.extensions.startChat
 import e
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CrossSellFaqActivity : BaseActivity() {
     private val model: CrossSellFaqViewModel by viewModel()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -39,7 +40,7 @@ class CrossSellFaqActivity : BaseActivity() {
                     onCtaClick = {
                         handleAction(
                             context = this,
-                            action = crossSell.action,
+                            action = crossSell.action
                         )
                     },
                     items = crossSell.faq,
@@ -51,7 +52,7 @@ class CrossSellFaqActivity : BaseActivity() {
     private fun openChat() {
         lifecycleScope.launch {
             model.triggerOpenChat()
-            startActivity(ChatActivity.newInstance(this@CrossSellFaqActivity, showClose = true))
+            startChat()
         }
     }
 

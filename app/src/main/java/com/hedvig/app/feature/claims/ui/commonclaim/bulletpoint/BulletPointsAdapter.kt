@@ -14,14 +14,13 @@ import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.viewBinding
 
 class BulletPointsAdapter(
-    private val baseUrl: String,
     private val imageLoader: ImageLoader
 ) : ListAdapter<BulletPoint, BulletPointsAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(parent)
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        viewHolder.bind(getItem(position), baseUrl, imageLoader)
+        viewHolder.bind(getItem(position), imageLoader)
     }
 
     class ViewHolder(parent: ViewGroup) :
@@ -29,12 +28,11 @@ class BulletPointsAdapter(
         private val binding by viewBinding(ClaimBulletpointRowBinding::bind)
         fun bind(
             item: BulletPoint,
-            baseUrl: String,
             imageLoader: ImageLoader
         ) {
             binding.apply {
                 bulletPointIcon.load(
-                    Uri.parse(baseUrl + item.iconUrls.iconByTheme(bulletPointIcon.context)),
+                    Uri.parse(item.iconUrls.iconByTheme(bulletPointIcon.context)),
                     imageLoader
                 )
                 bulletPointTitle.text = item.title

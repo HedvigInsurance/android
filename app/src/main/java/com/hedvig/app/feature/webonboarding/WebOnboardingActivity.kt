@@ -18,12 +18,12 @@ import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.databinding.ActivityWebOnboardingBinding
-import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.makeUserAgent
 import com.hedvig.app.util.LocaleManager
+import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.toArrayList
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
@@ -47,12 +47,7 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
             }
 
             openChat.setHapticClickListener {
-                startActivity(
-                    ChatActivity.newInstance(
-                        this@WebOnboardingActivity,
-                        showClose = true
-                    )
-                )
+                startChat()
             }
 
             webOnboarding.settings.apply {

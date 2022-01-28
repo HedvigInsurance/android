@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.home.ui
 
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.view.View
@@ -29,6 +28,7 @@ import com.hedvig.app.databinding.HomeStartClaimContainedBinding
 import com.hedvig.app.databinding.HomeStartClaimOutlinedBinding
 import com.hedvig.app.databinding.HowClaimsWorkButtonBinding
 import com.hedvig.app.databinding.UpcomingRenewalCardBinding
+import com.hedvig.app.feature.claimdetail.ClaimDetailActivity
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimActivity
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyActivity
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
@@ -141,7 +141,7 @@ class HomeAdapter(
                 when (data) {
                     is HomeModel.BigText.Pending -> {
                         root.text = root.resources.getString(
-                            R.string.home_tab_pending_unknown_title,
+                            R.string.home_tab_pending_switchable_welcome_title,
                             data.name
                         )
                     }
@@ -182,7 +182,7 @@ class HomeAdapter(
 
                 when (data) {
                     HomeModel.BodyText.Pending -> {
-                        root.setText(R.string.home_tab_pending_unknown_body)
+                        root.setText(R.string.home_tab_pending_switchable_body)
                     }
                     HomeModel.BodyText.ActiveInFuture -> {
                         root.setText(R.string.home_tab_active_in_future_body)
@@ -201,6 +201,12 @@ class HomeAdapter(
                 composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             }
 
+            private fun goToClaimDetailScreen(claimId: String) {
+                composeView.context.startActivity(
+                    ClaimDetailActivity.newInstance(composeView.context, claimId)
+                )
+            }
+
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
@@ -213,7 +219,10 @@ class HomeAdapter(
 
                 composeView.setContent {
                     HedvigTheme {
-                        ClaimStatusCards(data.claimStatusCardDataList)
+                        ClaimStatusCards(
+                            goToDetailScreen = ::goToClaimDetailScreen,
+                            claimStatusCardsUiState = data.claimStatusCardsUiState,
+                        )
                     }
                 }
             }
@@ -367,7 +376,7 @@ class HomeAdapter(
                 when (data) {
                     is HomeModel.CommonClaim.Emergency -> {
                         label.text = data.inner.title
-                        icon.load(requestUri(icon.context, data.inner.iconUrls), imageLoader)
+                        icon.load(requestUri(data.inner.iconUrls), imageLoader)
                         root.setHapticClickListener {
                             root.context.startActivity(
                                 EmergencyActivity.newInstance(
@@ -379,7 +388,7 @@ class HomeAdapter(
                     }
                     is HomeModel.CommonClaim.TitleAndBulletPoints -> {
                         label.text = data.inner.title
-                        icon.load(requestUri(icon.context, data.inner.iconUrls), imageLoader)
+                        icon.load(requestUri(data.inner.iconUrls), imageLoader)
                         root.setHapticClickListener {
                             root.context.startActivity(
                                 CommonClaimActivity.newInstance(
@@ -392,9 +401,7 @@ class HomeAdapter(
                 }
             }
 
-            private fun requestUri(context: Context, icons: ThemedIconUrls) = Uri.parse(
-                "${context.getString(R.string.BASE_URL)}${icons.iconByTheme(binding.root.context)}"
-            )
+            private fun requestUri(icons: ThemedIconUrls) = Uri.parse(icons.iconByTheme(binding.root.context))
         }
 
         class HowClaimsWorkButton(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.how_claims_work_button)) {

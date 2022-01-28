@@ -3,12 +3,22 @@ package com.hedvig.app.feature.offer.ui
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.doOnNextLayout
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Divider
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.core.view.isVisible
 import androidx.core.view.updatePaddingRelative
 import androidx.fragment.app.FragmentManager
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.BASE_MARGIN_DOUBLE
@@ -30,9 +40,9 @@ import com.hedvig.app.feature.faq.FAQBottomSheet
 import com.hedvig.app.feature.offer.OfferRedeemCodeBottomSheet
 import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheet
-import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.feature.offer.ui.composable.insurely.InsurelyCard
 import com.hedvig.app.feature.table.generateTable
-import com.hedvig.app.util.GenericDiffUtilItemCallback
+import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatDrawable
@@ -45,22 +55,23 @@ import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
+import java.util.Locale
 
 class OfferAdapter(
     private val fragmentManager: FragmentManager,
     private val tracker: OfferTracker,
-    private val marketManager: MarketManager,
+    private val locale: Locale,
     private val openQuoteDetails: (quoteID: String) -> Unit,
     private val onRemoveDiscount: () -> Unit,
-    private val onSign: (SignMethod) -> Unit,
+    private val onSign: (SignMethod, PaymentMethodsApiResponse?) -> Unit,
     private val reload: () -> Unit,
-    private val openChat: () -> Unit
-) : ListAdapter<OfferModel, OfferAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
+    private val openChat: () -> Unit,
+) : ListAdapter<OfferModel, OfferAdapter.ViewHolder>(OfferDiffUtilCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.offer_header -> ViewHolder.Header(
             parent,
-            marketManager,
+            locale,
             fragmentManager,
             tracker,
             onSign,
@@ -71,6 +82,9 @@ class OfferAdapter(
         R.layout.offer_footer -> ViewHolder.Footer(parent, openChat)
         R.layout.text_headline5 -> ViewHolder.Subheading(parent)
         R.layout.text_body2 -> ViewHolder.Paragraph(parent)
+        PRICE_COMPARISON_HEADER -> ViewHolder.PriceComparisonHeader(ComposeView(parent.context))
+        INSURELY_DIVIDER -> ViewHolder.InsurelyDivider(ComposeView(parent.context))
+        INSURELY_CARD -> ViewHolder.InsurelyCard(ComposeView(parent.context), locale)
         R.layout.text_subtitle1 -> ViewHolder.QuoteDetails(parent, openQuoteDetails)
         R.layout.offer_faq -> ViewHolder.FAQ(parent, fragmentManager)
         R.layout.info_card -> ViewHolder.InfoCard(parent)
@@ -79,13 +93,16 @@ class OfferAdapter(
         else -> throw Error("Invalid viewType: $viewType")
     }
 
-    override fun getItemViewType(position: Int) = when (getItem(position)) {
+    override fun getItemViewType(position: Int): Int = when (getItem(position)) {
         is OfferModel.Header -> R.layout.offer_header
         is OfferModel.Facts -> R.layout.offer_fact_area
         is OfferModel.CurrentInsurer -> R.layout.offer_switch
         is OfferModel.Footer -> R.layout.offer_footer
         is OfferModel.Subheading -> R.layout.text_headline5
         is OfferModel.Paragraph -> R.layout.text_body2
+        OfferModel.PriceComparisonHeader -> PRICE_COMPARISON_HEADER
+        is OfferModel.InsurelyDivider -> INSURELY_DIVIDER
+        is OfferModel.InsurelyCard -> INSURELY_CARD
         is OfferModel.QuoteDetails -> R.layout.text_subtitle1
         is OfferModel.FAQ -> R.layout.offer_faq
         OfferModel.AutomaticSwitchCard -> R.layout.info_card
@@ -97,16 +114,23 @@ class OfferAdapter(
         holder.bind(getItem(position))
     }
 
+    override fun onViewRecycled(holder: ViewHolder) {
+        val itemView = holder.itemView
+        if (itemView is ComposeView) {
+            itemView.disposeComposition()
+        }
+    }
+
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         abstract fun bind(data: OfferModel)
 
         class Header(
             parent: ViewGroup,
-            private val marketManager: MarketManager,
+            private val locale: Locale,
             private val fragmentManager: FragmentManager,
             private val tracker: OfferTracker,
-            private val onSign: (SignMethod) -> Unit,
-            private val onRemoveDiscount: () -> Unit
+            private val onSign: (SignMethod, PaymentMethodsApiResponse?) -> Unit,
+            private val onRemoveDiscount: () -> Unit,
         ) : ViewHolder(parent.inflate(R.layout.offer_header)) {
             private val binding by viewBinding(OfferHeaderBinding::bind)
 
@@ -117,14 +141,14 @@ class OfferAdapter(
                 binding.apply {
                     title.text = data.title ?: itemView.context.getString(R.string.OFFER_INSURANCE_BUNDLE_TITLE)
 
-                    premium.text = data.premium.format(premium.context, marketManager.market)
+                    premium.text = data.premium.format(locale)
                     premiumPeriod.text = premiumPeriod.context.getString(R.string.OFFER_PRICE_PER_MONTH)
 
                     originalPremium.isVisible = data.hasDiscountedPrice
                     if (data.hasDiscountedPrice) {
                         originalPremium.setStrikethrough(true)
                         originalPremium.text =
-                            data.originalPremium.format(originalPremium.context, marketManager.market)
+                            data.originalPremium.format(locale)
                     }
 
                     startDateContainer.setHapticClickListener {
@@ -182,7 +206,7 @@ class OfferAdapter(
                         }
                         setHapticClickListener {
                             tracker.checkoutHeader(data.checkoutLabel.localizationKey(context))
-                            onSign(data.signMethod)
+                            onSign(data.signMethod, data.paymentMethodsApiResponse)
                         }
                     }
                     root.background = data.gradientType.toDrawable(itemView.context)
@@ -193,18 +217,11 @@ class OfferAdapter(
         class Facts(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.offer_fact_area)) {
             private val binding by viewBinding(OfferFactAreaBinding::bind)
 
-            init {
-                binding.expandableContentView.initialize()
-            }
-
             override fun bind(data: OfferModel) {
                 if (data !is OfferModel.Facts) {
                     return invalid(data)
                 }
                 generateTable(binding.expandableContent, data.table)
-                binding.expandableContentView.doOnNextLayout {
-                    binding.expandableContentView.contentSizeChanged()
-                }
             }
         }
 
@@ -224,7 +241,7 @@ class OfferAdapter(
 
         class Footer(
             parent: ViewGroup,
-            openChat: () -> Unit
+            openChat: () -> Unit,
         ) : ViewHolder(parent.inflate(R.layout.offer_footer)) {
             private val binding by viewBinding(OfferFooterBinding::bind)
 
@@ -246,7 +263,7 @@ class OfferAdapter(
             }
         }
 
-        class Subheading(parent: ViewGroup) : OfferAdapter.ViewHolder(parent.inflate(R.layout.text_headline5)) {
+        class Subheading(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.text_headline5)) {
             private val binding by viewBinding(TextHeadline5Binding::bind)
 
             init {
@@ -281,7 +298,7 @@ class OfferAdapter(
         class QuoteDetails(
             parent: ViewGroup,
             private val openQuoteDetails: (quoteID: String) -> Unit,
-        ) : OfferAdapter.ViewHolder(parent.inflate(R.layout.text_subtitle1)) {
+        ) : ViewHolder(parent.inflate(R.layout.text_subtitle1)) {
             private val binding by viewBinding(TextSubtitle1Binding::bind)
 
             init {
@@ -305,7 +322,7 @@ class OfferAdapter(
             }
         }
 
-        class Paragraph(parent: ViewGroup) : OfferAdapter.ViewHolder(parent.inflate(R.layout.text_body2)) {
+        class Paragraph(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.text_body2)) {
             private val binding by viewBinding(TextBody2Binding::bind)
 
             init {
@@ -318,21 +335,83 @@ class OfferAdapter(
             }
 
             override fun bind(data: OfferModel) = with(binding.root) {
-                if (data !is OfferModel.Paragraph) {
+                if (data !is OfferModel.Paragraph.Coverage) {
                     return invalid(data)
                 }
 
-                setText(
-                    when (data) {
-                        OfferModel.Paragraph.Coverage -> R.string.offer_screen_MULTIPLE_INSURANCES_coverage_paragraph
+                setText(R.string.offer_screen_MULTIPLE_INSURANCES_coverage_paragraph)
+            }
+        }
+
+        class PriceComparisonHeader(
+            private val composeView: ComposeView,
+        ) : ViewHolder(composeView) {
+            init {
+                composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            }
+
+            override fun bind(data: OfferModel) {
+                if (data !is OfferModel.PriceComparisonHeader) return invalid(data)
+                composeView.setContent {
+                    HedvigTheme {
+                        Text(
+                            text = stringResource(R.string.OFFER_PRICE_COMPARISION_HEADER),
+                            style = MaterialTheme.typography.h5,
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .padding(top = 48.dp)
+                        )
                     }
-                )
+                }
+            }
+        }
+
+        class InsurelyDivider(
+            private val composeView: ComposeView,
+        ) : ViewHolder(composeView) {
+            init {
+                composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            }
+
+            override fun bind(data: OfferModel) {
+                if (data !is OfferModel.InsurelyDivider) return invalid(data)
+                composeView.setContent {
+                    HedvigTheme {
+                        Divider(
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .padding(top = data.topPadding)
+                        )
+                    }
+                }
+            }
+        }
+
+        class InsurelyCard(
+            private val composeView: ComposeView,
+            private val locale: Locale,
+        ) : ViewHolder(composeView) {
+            init {
+                composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            }
+
+            override fun bind(data: OfferModel) {
+                if (data !is OfferModel.InsurelyCard) return invalid(data)
+                composeView.setContent {
+                    HedvigTheme {
+                        InsurelyCard(
+                            data = data,
+                            locale = locale,
+                            modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 0.dp)
+                        )
+                    }
+                }
             }
         }
 
         class FAQ(
             parent: ViewGroup,
-            private val fragmentManager: FragmentManager
+            private val fragmentManager: FragmentManager,
         ) : ViewHolder(parent.inflate(R.layout.offer_faq)) {
             private val binding by viewBinding(OfferFaqBinding::bind)
 
@@ -373,7 +452,7 @@ class OfferAdapter(
             }
         }
 
-        class InfoCard(parent: ViewGroup) : OfferAdapter.ViewHolder(parent.inflate(R.layout.info_card)) {
+        class InfoCard(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.info_card)) {
             private val binding by viewBinding(InfoCardBinding::bind)
 
             override fun bind(data: OfferModel) = with(binding) {
@@ -416,6 +495,29 @@ class OfferAdapter(
                 }
                 setHapticClickListener { reload() }
             }
+        }
+    }
+
+    companion object {
+        const val INSURELY_CARD = 1
+        const val PRICE_COMPARISON_HEADER = 2
+        const val INSURELY_DIVIDER = 3
+
+        class OfferDiffUtilCallback : DiffUtil.ItemCallback<OfferModel>() {
+            override fun areItemsTheSame(oldItem: OfferModel, newItem: OfferModel): Boolean = when {
+                oldItem is OfferModel.InsurelyCard && newItem is OfferModel.InsurelyCard -> {
+                    oldItem.id == newItem.id
+                }
+                oldItem is OfferModel.PriceComparisonHeader && newItem is OfferModel.PriceComparisonHeader -> {
+                    // Should only display 1 PriceComparisonHeader ever
+                    true
+                }
+                else -> {
+                    oldItem == newItem
+                }
+            }
+
+            override fun areContentsTheSame(oldItem: OfferModel, newItem: OfferModel) = oldItem == newItem
         }
     }
 }

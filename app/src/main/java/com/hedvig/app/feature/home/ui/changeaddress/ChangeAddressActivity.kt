@@ -11,7 +11,6 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ChangeAddressActivityBinding
 import com.hedvig.app.databinding.ListTextItemBinding
-import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.Error.GeneralError
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.Error.NoContractsError
@@ -23,6 +22,7 @@ import com.hedvig.app.feature.home.ui.changeaddress.ViewState.SelfChangeError
 import com.hedvig.app.feature.home.ui.changeaddress.ViewState.UpcomingAgreementError
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
+import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsetsMargin
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.remove
@@ -86,7 +86,7 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
                 subtitleText = getString(R.string.moving_intro_manual_handling_description),
                 buttonText = getString(R.string.moving_intro_manual_handling_button_text),
                 buttonIcon = R.drawable.ic_chat_white,
-                onContinue = { openChat() }
+                onContinue = { startChat() }
             )
             is ChangeAddressInProgress -> setUpcomingChangeContent(
                 titleText = getString(R.string.moving_intro_existing_move_title),
@@ -96,7 +96,7 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
                 onContinue = {
                     lifecycleScope.launch {
                         model.triggerFreeTextChat()
-                        openChat()
+                        startChat()
                     }
                 },
                 viewState.upcomingAgreementResult
@@ -120,8 +120,6 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
             )
         }
     }
-
-    private fun openChat() = startActivity(ChatActivity.newInstance(this, true))
 
     private fun setContent(
         titleText: String,
