@@ -204,6 +204,7 @@ import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthStatusUseCase
 import com.hedvig.app.service.FileService
 import com.hedvig.app.service.badge.CrossSellNotificationBadgeService
 import com.hedvig.app.service.badge.NotificationBadgeService
+import com.hedvig.app.service.badge.ReferralsNotificationBadgeService
 import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.app.service.push.managers.CrossSellNotificationManager
 import com.hedvig.app.service.push.managers.PaymentNotificationManager
@@ -561,8 +562,9 @@ val serviceModule = module {
     single<LoginStatusService> { SharedPreferencesLoginStatusService(get(), get(), get()) }
     single<AuthenticationTokenService> { SharedPreferencesAuthenticationTokenService(get()) }
 
-    single { TabNotificationService(get()) }
+    single { TabNotificationService(get(), get()) }
     single { CrossSellNotificationBadgeService(get(), get()) }
+    single { ReferralsNotificationBadgeService(get()) }
     single { NotificationBadgeService(get()) }
 
     single { DeviceInformationService(get()) }

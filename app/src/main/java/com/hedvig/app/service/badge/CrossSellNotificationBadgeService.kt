@@ -35,6 +35,12 @@ class CrossSellNotificationBadgeService(
         )
     }
 
+    suspend fun shouldShowTabNotification(): Flow<Boolean> {
+        return getUnseenCrossSells(CrossSellBadgeType.BottomNav).map { contracts ->
+            contracts.isNotEmpty()
+        }
+    }
+
     sealed class CrossSellBadgeType {
         abstract val associatedBadge: NotificationBadge<Set<String>>
 
