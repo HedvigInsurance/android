@@ -14,6 +14,10 @@ data class DanishAddress(
     val city: String?,
 ) {
 
+    fun toFlatQueryString(): String {
+        return "$streetName $streetNumber, $floor. $apartment, $postalCode $city"
+    }
+
     companion object {
         fun fromDto(dto: AddressAutocompleteQuery.AutoCompleteAddress): DanishAddress {
             return DanishAddress(

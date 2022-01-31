@@ -31,7 +31,3 @@ data class DanishAddressInput(
         )
     }
 }
-
-private fun DanishAddress.toFlatQueryString(): String {
-    return "$streetName $streetNumber, $floor. $apartment, $postalCode $city"
-}
