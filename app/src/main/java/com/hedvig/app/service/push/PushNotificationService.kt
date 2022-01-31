@@ -77,6 +77,9 @@ class PushNotificationService : FirebaseMessagingService() {
             NOTIFICATION_CROSS_SELL ->
                 crossSellNotificationManager
                     .sendCrossSellNotification(this, remoteMessage)
+            NOTIFICATION_TYPE_REFERRALS_CAMPAIGN ->
+                ReferralsNotificationManager
+                    .sendReferralCampaignNotification(this, remoteMessage)
             else ->
                 ChatNotificationManager
                     .sendDefaultNotification(this, remoteMessage)
@@ -92,6 +95,7 @@ class PushNotificationService : FirebaseMessagingService() {
 
         const val NOTIFICATION_TYPE_REFERRAL_SUCCESS = "REFERRAL_SUCCESS"
         const val NOTIFICATION_TYPE_REFERRALS_ENABLED = "REFERRALS_ENABLED"
+        const val NOTIFICATION_TYPE_REFERRALS_CAMPAIGN = "REFERRALS_CAMPAIGN"
 
         const val NOTIFICATION_TYPE_CONNECT_DIRECT_DEBIT = "CONNECT_DIRECT_DEBIT"
         const val NOTIFICATION_TYPE_PAYMENT_FAILED = "PAYMENT_FAILED"
