@@ -30,8 +30,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/messages" />
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/input_layout"
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/input_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
@@ -39,30 +39,8 @@
         android:layout_marginBottom="@dimen/base_margin_double"
         app:layout_constraintBottom_toTopOf="@id/textActionSubmit"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="@dimen/base_margin_double">
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/filledTextField"
-                style="@style/Hedvig.Theme.TextInputLayout.FilledBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/input"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:imeOptions="actionDone"
-                    android:importantForAutofill="no"
-                    android:inputType="text" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-        </FrameLayout>
-    </com.google.android.material.card.MaterialCardView>
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_height="60dp" />
 
     <Button
         android:id="@+id/textActionSubmit"
