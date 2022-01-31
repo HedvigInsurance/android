@@ -10,6 +10,8 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedActivity
+import com.hedvig.app.service.push.DATA_MESSAGE_BODY
+import com.hedvig.app.service.push.DATA_MESSAGE_TITLE
 import com.hedvig.app.service.push.getImmutablePendingIntentFlags
 import com.hedvig.app.service.push.setupNotificationChannel
 
@@ -97,8 +99,8 @@ object ReferralsNotificationManager {
                 getPendingIntent(0, getImmutablePendingIntentFlags())
             }
 
-        val title = remoteMessage.data[DATA_MESSAGE_CAMPAIGN_TITLE]
-        val message = remoteMessage.data[DATA_MESSAGE_CAMPAIGN_MESSAGE]
+        val title = remoteMessage.data[DATA_MESSAGE_TITLE]
+        val message = remoteMessage.data[DATA_MESSAGE_BODY]
 
         val notificationBuilder = createNotificationBuilder(
             context = context,
@@ -109,7 +111,7 @@ object ReferralsNotificationManager {
 
         NotificationManagerCompat
             .from(context)
-            .notify(REFERRALS_ENABLED_NOTIFICATION_ID, notificationBuilder.build())
+            .notify(REFERRALS_CAMPAIGN_ID, notificationBuilder.build())
     }
 
     private fun createNotificationBuilder(
@@ -143,8 +145,7 @@ object ReferralsNotificationManager {
     private const val REFERRAL_NOTIFICATION_ID = 2
 
     private const val REFERRALS_ENABLED_NOTIFICATION_ID = 8
+    private const val REFERRALS_CAMPAIGN_ID = 12
 
     internal const val DATA_MESSAGE_REFERRED_SUCCESS_NAME = "DATA_MESSAGE_REFERRED_SUCCESS_NAME"
-    internal const val DATA_MESSAGE_CAMPAIGN_TITLE = "DATA_MESSAGE_CAMPAIGN_TITLE"
-    internal const val DATA_MESSAGE_CAMPAIGN_MESSAGE = "DATA_MESSAGE_CAMPAIGN_MESSAGE"
 }
