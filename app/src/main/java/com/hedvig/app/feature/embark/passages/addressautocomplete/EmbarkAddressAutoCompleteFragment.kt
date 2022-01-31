@@ -96,9 +96,6 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
 
     companion object {
         private const val DATA = "DATA"
-        const val AUTO_COMPLETE_RESULT_CODE = 1
-        const val AUTO_COMPLETE_RESULT_STRING_KEY =
-            "com.hedvig.app.feature.embark.passages.addressautocomplete.AUTO_COMPLETE_RESULT_STRING_KEY"
 
         fun newInstance(params: EmbarkAddressAutoCompleteParams) = EmbarkAddressAutoCompleteFragment().apply {
             arguments = Bundle().apply {

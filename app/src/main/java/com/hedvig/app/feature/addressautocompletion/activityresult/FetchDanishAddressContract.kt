@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import androidx.activity.result.contract.ActivityResultContract
 import com.hedvig.app.feature.addressautocompletion.ui.AddressAutoCompleteActivity
-import com.hedvig.app.feature.embark.passages.addressautocomplete.EmbarkAddressAutoCompleteFragment
 
 class FetchDanishAddressContract : ActivityResultContract<Unit, String?>() {
     override fun createIntent(context: Context, input: Unit): Intent {
@@ -12,7 +11,12 @@ class FetchDanishAddressContract : ActivityResultContract<Unit, String?>() {
     }
 
     override fun parseResult(resultCode: Int, intent: Intent?): String? {
-        if (resultCode != EmbarkAddressAutoCompleteFragment.AUTO_COMPLETE_RESULT_CODE) return null
-        return intent?.extras?.getString(EmbarkAddressAutoCompleteFragment.AUTO_COMPLETE_RESULT_STRING_KEY)
+        if (resultCode != RESULT_CODE) return null
+        return intent?.extras?.getString(ADDRESS_STRING_KEY)
+    }
+
+    companion object {
+        const val RESULT_CODE = 1
+        const val ADDRESS_STRING_KEY = "com.hedvig.app.feature.addressautocompletion.activityresult.ADDRESS_STRING_KEY"
     }
 }
