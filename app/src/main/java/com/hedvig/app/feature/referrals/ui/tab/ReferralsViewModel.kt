@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.app.feature.referrals.data.ReferralsRepository
-import com.hedvig.app.service.RemoteConfig
 import e
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -46,11 +45,11 @@ abstract class ReferralsViewModel : ViewModel() {
 
 class ReferralsViewModelImpl(
     private val referralsRepository: ReferralsRepository,
-    private val remoteConfig: RemoteConfig,
+    private val campaignUseCase: CampaignUseCase,
 ) : ReferralsViewModel() {
     init {
         viewModelScope.launch {
-            val showCampaignBar = shouldShowCampaignBar()
+            val showCampaign = campaignUseCase.shouldShowCampaign()
 
             referralsRepository
                 .referrals()
@@ -62,7 +61,7 @@ class ReferralsViewModelImpl(
                     response.data?.let {
                         _data.value = ViewState.Success(
                             data = it,
-                            showCampaignBar = showCampaignBar
+                            showCampaignBar = showCampaign
                         )
                     }
                 }
@@ -72,12 +71,6 @@ class ReferralsViewModelImpl(
                 }
                 .launchIn(this)
         }
-    }
-
-    private suspend fun shouldShowCampaignBar(): Boolean {
-        val remoteConfig = RemoteConfig()
-        val data = remoteConfig.fetch()
-        return data.campaignVisible
     }
 
     override fun load() {
