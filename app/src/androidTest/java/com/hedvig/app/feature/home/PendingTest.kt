@@ -45,7 +45,7 @@ class PendingTest : TestCase() {
                     text { hasText(R.string.home_tab_pending_switchable_welcome_title, "Test") }
                 }
                 childAt<HomeTabScreen.BodyTextItem>(1) {
-                    text { hasText(R.string.home_tab_pending_unknown_body) }
+                    text { hasText(R.string.home_tab_pending_switchable_body) }
                 }
             }
         }
