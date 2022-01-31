@@ -48,7 +48,7 @@ class AddressAutoCompleteViewModel(
         }
     }
 
-    fun selectOption(danishAddress: DanishAddress) {
+    fun selectAddress(danishAddress: DanishAddress) {
         currentInput.update { danishAddressInput ->
             danishAddressInput.withSelectedAddress(danishAddress)
         }
