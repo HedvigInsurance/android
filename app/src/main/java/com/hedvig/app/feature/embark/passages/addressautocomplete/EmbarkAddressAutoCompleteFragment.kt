@@ -10,8 +10,6 @@ import com.hedvig.app.feature.addressautocompletion.activityresult.FetchDanishAd
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.addressautocomplete.composables.AddressCard
-import com.hedvig.app.feature.embark.ui.EmbarkActivity
-import com.hedvig.app.util.extensions.hideKeyboardWithDelay
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.viewLifecycle
 import com.hedvig.app.util.extensions.viewLifecycleScope
@@ -32,9 +30,8 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
 
     private val embarkViewModel: EmbarkViewModel by sharedViewModel()
     private val viewModel: EmbarkAddressAutoCompleteViewModel by viewModel {
-        val messages = data.messages
         val prefilledAddress = embarkViewModel.getPrefillFromStore(data.key) ?: ""
-        parametersOf(messages, prefilledAddress)
+        parametersOf(prefilledAddress)
     }
     private val binding by viewBinding(FragmentEmbarkAddressAutoCompleteActionBinding::bind)
 
@@ -55,18 +52,17 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
         super.onViewCreated(view, savedInstanceState)
         postponeEnterTransition()
 
-        val messageAdapter = MessageAdapter(emptyList())
-        binding.messages.adapter = messageAdapter
+        binding.messages.adapter = MessageAdapter(data.messages)
         binding.textActionSubmit.text = "Submit"
         binding.textActionSubmit
             .hapticClicks()
             .mapLatest { saveAndAnimate(data) }
             .onEach { embarkViewModel.submitAction(data.link) }
             .launchIn(viewLifecycleScope)
+
         viewModel.viewState
             .flowWithLifecycle(viewLifecycle)
             .onEach { viewState ->
-                messageAdapter.submitList(viewState.messages)
                 binding.inputCard.setContent {
                     AddressCard(
                         addressText = viewState.address,
