@@ -86,6 +86,12 @@ fun AddressAutoCompleteScreen(
                     items = viewState.results,
                     key = { item -> item.id }
                 ) { address: DanishAddress ->
+                    val primaryText: String =
+                        if (address.streetName != null && address.streetNumber != null) {
+                            "${address.streetName} ${address.streetNumber}"
+                        } else {
+                            address.address
+                        }
                     val secondaryText: (@Composable () -> Unit)? =
                         if (address.postalCode != null && address.city != null) {
                             { Text("${address.postalCode} ${address.city}") }
@@ -93,7 +99,7 @@ fun AddressAutoCompleteScreen(
                             null
                         }
                     ListItem(
-                        text = { Text("${address.streetName} ${address.streetNumber}") },
+                        text = { Text(text = primaryText) },
                         secondaryText = secondaryText,
                         singleLineSecondaryText = true,
                         modifier = Modifier.clickable {
