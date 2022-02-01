@@ -60,7 +60,7 @@ class NoFirstNameErrorTest : TestCase() {
                 childAt<HomeTabScreen.BigTextItem>(0) {
                     text {
                         hasText(
-                            R.string.home_tab_pending_unknown_title,
+                            R.string.home_tab_pending_switchable_welcome_title,
                             "Test"
                         )
                     }

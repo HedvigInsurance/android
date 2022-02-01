@@ -173,10 +173,9 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                                 viewState.data.referralInformation.referredBy == null
                             ) {
                                 (invites.adapter as? ReferralsAdapter)?.submitList(
-                                    listOf(
-                                        if (viewState.topBarState != null) ReferralsModel.ReferralTopBar(
-                                            viewState.topBarState.description,
-                                            viewState.topBarState.content
+                                    listOfNotNull(
+                                        if (viewState.showCampaignBar) ReferralsModel.ReferralTopBar(
+                                            getString(R.string.REFERRAL_CAMPAIGN_BANNER_TITLE)
                                         ) else null,
                                         ReferralsModel.Title,
                                         ReferralsModel.Header.LoadedEmptyHeader(viewState.data),
@@ -186,16 +185,15 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                                 return@onEach
                             }
 
-                            val items = mutableListOf(
-                                if (viewState.topBarState != null) ReferralsModel.ReferralTopBar(
-                                    viewState.topBarState.description,
-                                    viewState.topBarState.content
+                            val items = listOfNotNull(
+                                if (viewState.showCampaignBar) ReferralsModel.ReferralTopBar(
+                                    getString(R.string.REFERRAL_CAMPAIGN_BANNER_TITLE)
                                 ) else null,
                                 ReferralsModel.Title,
                                 ReferralsModel.Header.LoadedHeader(viewState.data),
                                 ReferralsModel.Code.LoadedCode(viewState.data),
                                 ReferralsModel.InvitesHeader
-                            )
+                            ).toMutableList()
 
                             items += viewState.data.referralInformation.invitations
                                 .filter {
@@ -221,10 +219,10 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
         }
     }
 
-    private fun showBottomSheet(content: String) {
+    private fun showBottomSheet() {
         ExplanationBottomSheet.newInstance(
-            title = "Campaign", // TODO get string resource
-            markDownText = content
+            title = getString(R.string.REFERRAL_CAMPAIGN_DETAIL_TITLE),
+            markDownText = getString(R.string.REFERRAL_CAMPAIGN_DETAIL_BODY)
         ).show(parentFragmentManager, ExplanationBottomSheet.TAG)
     }
 

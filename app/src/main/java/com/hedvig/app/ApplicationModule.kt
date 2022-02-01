@@ -172,6 +172,7 @@ import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedViewModel
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeViewModel
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeViewModelImpl
 import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeViewModel
+import com.hedvig.app.feature.referrals.ui.tab.CampaignUseCase
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModel
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModelImpl
 import com.hedvig.app.feature.settings.Language
@@ -202,8 +203,10 @@ import com.hedvig.app.feature.zignsec.usecase.StartDanishAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.StartNorwegianAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthStatusUseCase
 import com.hedvig.app.service.FileService
+import com.hedvig.app.service.RemoteConfig
 import com.hedvig.app.service.badge.CrossSellNotificationBadgeService
 import com.hedvig.app.service.badge.NotificationBadgeService
+import com.hedvig.app.service.badge.ReferralsNotificationBadgeService
 import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.app.service.push.managers.CrossSellNotificationManager
 import com.hedvig.app.service.push.managers.PaymentNotificationManager
@@ -504,11 +507,7 @@ val numberActionSetModule = module {
 }
 
 val referralsModule = module {
-    viewModel<ReferralsViewModel> {
-        ReferralsViewModelImpl(
-            get()
-        )
-    }
+    viewModel<ReferralsViewModel> { ReferralsViewModelImpl(get(), get()) }
     viewModel<ReferralsActivatedViewModel> { ReferralsActivatedViewModelImpl(get()) }
     viewModel<ReferralsEditCodeViewModel> { ReferralsEditCodeViewModelImpl(get()) }
 }
@@ -561,11 +560,13 @@ val serviceModule = module {
     single<LoginStatusService> { SharedPreferencesLoginStatusService(get(), get(), get()) }
     single<AuthenticationTokenService> { SharedPreferencesAuthenticationTokenService(get()) }
 
-    single { TabNotificationService(get()) }
+    single { TabNotificationService(get(), get()) }
     single { CrossSellNotificationBadgeService(get(), get()) }
+    single { ReferralsNotificationBadgeService(get(), get()) }
     single { NotificationBadgeService(get()) }
 
     single { DeviceInformationService(get()) }
+    single { RemoteConfig() }
 }
 
 val repositoriesModule = module {
@@ -677,6 +678,10 @@ val useCaseModule = module {
     single { GetClaimDetailUseCase(get(), get()) }
     single { GetClaimDetailUiStateFlowUseCase(get()) }
     single { GetContractDetailsUseCase(get(), get(), get()) }
+}
+
+val campaignModule = module {
+    single { CampaignUseCase(get()) }
 }
 
 val cacheManagerModule = module {
