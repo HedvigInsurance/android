@@ -6,7 +6,19 @@ import org.json.JSONException
 import org.json.JSONObject
 
 fun jsonObjectOf(vararg properties: Pair<String, Any?>) = JSONObject().apply {
-    properties.forEach { put(it.first, it.second) }
+    properties.forEach { property ->
+        put(property.first, (property.second as? Map<*, *>)?.toJsonObject() ?: property.second)
+    }
+}
+
+fun Map<*, *>.toJsonObject(): JSONObject = entries.fold(JSONObject()) { acc, entry ->
+    val entryKey = entry.key
+    if (entryKey !is String) {
+        throw IllegalArgumentException("Only `Map<String, Any?>` may be converted to `JSONObject`")
+    }
+    val entryValue = entry.value
+    acc.put(entryKey, (entryValue as? Map<*, *>)?.toJsonObject() ?: entryValue)
+    acc
 }
 
 fun jsonArrayOf(vararg items: Any) = JSONArray().apply {

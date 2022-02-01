@@ -218,6 +218,8 @@ dependencies {
 
     implementation(libs.mixpanel)
 
+    implementation(libs.hAnalytics)
+
     implementation(libs.koin.android)
     androidTestImplementation(libs.koin.test)
 

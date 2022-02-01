@@ -10,5 +10,6 @@
     <string name="WS_GRAPHQL_URL" translatable="false">wss://giraffe.hedvig.com/subscriptions</string>
     <string name="BASE_URL" translatable="false">https://giraffe.hedvig.com</string>
     <string name="WEB_BASE_URL" translatable="false">https://www.hedvig.com</string>
+    <string name="HANALYTICS_URL" translatable="false">https://hanalytics-production.herokuapp.com</string>
     <string name="file_provider_authority" translatable="false">com.hedvig.android.file.provider</string>
 </resources>
