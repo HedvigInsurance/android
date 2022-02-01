@@ -14,6 +14,7 @@ import com.hedvig.app.feature.onboarding.ui.ChoosePlanActivity
 import com.hedvig.app.feature.trustly.TrustlyConnectPayinActivity
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationActivity
+import com.hedvig.app.isDebug
 import com.hedvig.app.util.extensions.startChat
 
 enum class Market {
@@ -87,7 +88,11 @@ enum class Market {
             context.startActivity(ChoosePlanActivity.newInstance(context))
         }
         DK -> {
-            context.startActivity(WebOnboardingActivity.newInstance(context))
+            if (isDebug()) { // TODO NOT COMMIT THIS
+                context.startActivity(ChoosePlanActivity.newInstance(context))
+            } else {
+                context.startActivity(WebOnboardingActivity.newInstance(context))
+            }
         }
         FR -> {
             context.startActivity(WebOnboardingActivity.newInstance(context))
@@ -104,7 +109,8 @@ enum class Market {
             -> R.string.Direct_Debit_Not_Connected
         }
         DK,
-        NO -> if (data.activePaymentMethods == null) {
+        NO,
+        -> if (data.activePaymentMethods == null) {
             R.string.Card_Not_Connected
         } else {
             R.string.Card_Connected
