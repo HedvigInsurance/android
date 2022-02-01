@@ -6,6 +6,6 @@ import org.koin.dsl.module
 
 val trackingLogModule = module {
     viewModel { TrackingLogViewModel(get()) }
-    single { EngineeringTracker() } bind TrackerSink::class
-    single { DebugLogTrackerSink() } bind TrackerSink::class
+    single { EngineeringTracker() } bind HAnalyticsSink::class
+    single { DebugLogTrackerSink() } bind HAnalyticsSink::class
 }
