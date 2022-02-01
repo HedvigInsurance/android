@@ -57,6 +57,7 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
         postponeEnterTransition()
 
         val messageAdapter = MessageAdapter(emptyList())
+        binding.messages.adapter = messageAdapter
         binding.textActionSubmit.text = "Submit"
         binding.textActionSubmit
             .hapticClicks()
