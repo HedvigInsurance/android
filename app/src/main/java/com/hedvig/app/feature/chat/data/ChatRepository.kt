@@ -175,10 +175,10 @@ class ChatRepository(
         return apolloClient.mutate(chatFileResponse).await()
     }
 
-    suspend fun editLastResponse() =
+    suspend fun editLastResponse(): Response<EditLastResponseMutation.Data> =
         apolloClient.mutate(EditLastResponseMutation()).await()
 
-    suspend fun triggerFreeTextChat() =
+    suspend fun triggerFreeTextChat(): Either<FreeTextError, FreeTextSuccess> =
         apolloClient.mutate(TriggerFreeTextChatMutation())
             .safeQuery()
             .toEither { FreeTextError.NetworkError }
@@ -192,7 +192,7 @@ class ChatRepository(
                 )
             }
 
-    suspend fun searchGifs(query: String) =
+    suspend fun searchGifs(query: String): Response<GifQuery.Data> =
         apolloClient.query(GifQuery(query)).await()
 }
 
