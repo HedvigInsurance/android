@@ -184,7 +184,10 @@ import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignViewModel
 import com.hedvig.app.feature.swedishbankid.sign.usecase.ManuallyRecheckSwedishBankIdSignStatusUseCase
 import com.hedvig.app.feature.swedishbankid.sign.usecase.SubscribeToSwedishBankIdSignStatusUseCase
 import com.hedvig.app.feature.tracking.FirebaseTracker
+import com.hedvig.app.feature.tracking.HAnalyticsFacade
+import com.hedvig.app.feature.tracking.HAnalyticsSink
 import com.hedvig.app.feature.tracking.MixpanelTracker
+import com.hedvig.app.feature.tracking.NetworkHAnalyticsSink
 import com.hedvig.app.feature.tracking.TrackerSink
 import com.hedvig.app.feature.tracking.TrackingFacade
 import com.hedvig.app.feature.trustly.TrustlyRepository
@@ -217,6 +220,7 @@ import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.apollo.DeviceIdInterceptor
 import com.hedvig.app.util.apollo.SunsettingInterceptor
 import com.hedvig.app.util.featureflags.FeatureManager
+import com.hedvig.hanalytics.HAnalytics
 import com.mixpanel.android.mpmetrics.MixpanelAPI
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -608,7 +612,7 @@ val trackerModule = module {
     single { TrustlyTracker(get()) }
     single { PaymentTracker(get()) }
     single { RatingsTracker(get()) }
-    single { LoggedInTracker(get(), get()) }
+    single { LoggedInTracker(get(), get(), get()) }
     single { KeyGearTracker(get()) }
     single { InsuranceTracker(get()) }
     single { MarketingTracker(get()) }
@@ -621,6 +625,10 @@ val trackerModule = module {
     }
     single { MixpanelTracker(get()) } bind TrackerSink::class
     single { FirebaseTracker(get()) } bind TrackerSink::class
+    single<HAnalytics> { HAnalyticsFacade(getAll<HAnalyticsSink>().distinct()) }
+    single {
+        NetworkHAnalyticsSink(get(), get(), get<Context>().getString(R.string.HANALYTICS_URL))
+    } bind HAnalyticsSink::class
 }
 
 val localeBroadcastManagerModule = module {

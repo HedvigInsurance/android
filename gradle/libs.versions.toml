@@ -49,6 +49,7 @@ coroutines = "1.5.2"
 firebase = "28.4.2"
 flexbox = "3.0.0"
 fragmentViewBindingDelegate = "1.0.0"
+hAnalytics = "c2d3db94bc647ef6a8306e78d274525ae628b72f"
 insetter = "0.6.0"
 jsonTest = "20210307"
 kaspresso = "1.2.1"
@@ -171,6 +172,8 @@ firebase-tracking = { module = "com.google.firebase:firebase-analytics-ktx" }
 flexbox = { module = "com.google.android.flexbox:flexbox", version.ref = "flexbox" }
 
 fragmentViewBindingDelegate = { module = "com.github.Zhuinden:fragmentviewbindingdelegate-kt", version.ref = "fragmentViewBindingDelegate" }
+
+hAnalytics = { module = "com.github.HedvigInsurance:hanalytics", version.ref = "hAnalytics" }
 
 insetter = { module = "dev.chrisbanes.insetter:insetter", version.ref = "insetter" }
 
