@@ -67,12 +67,12 @@ class ReferralsAdapter(
         R.layout.referrals_invites_header -> ViewHolder.InvitesHeaderViewHolder(parent)
         R.layout.referrals_row -> ViewHolder.ReferralViewHolder(parent)
         R.layout.referrals_error -> ViewHolder.ErrorViewHolder(parent)
-        INFO_BANNER -> ViewHolder.InfoBanner(ComposeView(parent.context))
+        INFO_BANNER -> ViewHolder.InfoBanner(ComposeView(parent.context), onBannerClicked)
         else -> throw Error("Invalid viewType")
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position), reload, tracker, marketManager, onBannerClicked)
+        holder.bind(getItem(position), reload, tracker, marketManager)
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -80,8 +80,7 @@ class ReferralsAdapter(
             data: ReferralsModel,
             reload: () -> Unit,
             tracker: ReferralsTracker,
-            marketManager: MarketManager,
-            onBannerClicked: () -> Unit,
+            marketManager: MarketManager
         )
 
         class TitleViewHolder(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.referrals_title)) {
@@ -89,8 +88,7 @@ class ReferralsAdapter(
                 data: ReferralsModel,
                 reload: () -> Unit,
                 tracker: ReferralsTracker,
-                marketManager: MarketManager,
-                onBannerClicked: () -> Unit
+                marketManager: MarketManager
             ) =
                 Unit
         }
@@ -101,8 +99,7 @@ class ReferralsAdapter(
                 data: ReferralsModel,
                 reload: () -> Unit,
                 tracker: ReferralsTracker,
-                marketManager: MarketManager,
-                onBannerClicked: () -> Unit
+                marketManager: MarketManager
             ) {
                 binding.apply {
                     when (data) {
@@ -318,8 +315,7 @@ class ReferralsAdapter(
                 data: ReferralsModel,
                 reload: () -> Unit,
                 tracker: ReferralsTracker,
-                marketManager: MarketManager,
-                onBannerClicked: () -> Unit
+                marketManager: MarketManager
             ) {
                 binding.apply {
                     when (data) {
@@ -385,8 +381,7 @@ class ReferralsAdapter(
                 data: ReferralsModel,
                 reload: () -> Unit,
                 tracker: ReferralsTracker,
-                marketManager: MarketManager,
-                onBannerClicked: () -> Unit
+                marketManager: MarketManager
             ) = Unit
         }
 
@@ -396,8 +391,7 @@ class ReferralsAdapter(
                 data: ReferralsModel,
                 reload: () -> Unit,
                 tracker: ReferralsTracker,
-                marketManager: MarketManager,
-                onBannerClicked: () -> Unit
+                marketManager: MarketManager
             ) {
                 binding.apply {
                     when (data) {
@@ -474,8 +468,7 @@ class ReferralsAdapter(
                 data: ReferralsModel,
                 reload: () -> Unit,
                 tracker: ReferralsTracker,
-                marketManager: MarketManager,
-                onBannerClicked: () -> Unit
+                marketManager: MarketManager
             ) {
                 binding.retry.setHapticClickListener {
                     tracker.reload()
@@ -484,7 +477,8 @@ class ReferralsAdapter(
             }
         }
 
-        class InfoBanner(private val composeView: ComposeView) : ViewHolder(composeView) {
+        class InfoBanner(private val composeView: ComposeView, private val onBannerClicked: () -> Unit) :
+            ViewHolder(composeView) {
             init {
                 composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             }
@@ -493,8 +487,7 @@ class ReferralsAdapter(
                 data: ReferralsModel,
                 reload: () -> Unit,
                 tracker: ReferralsTracker,
-                marketManager: MarketManager,
-                onBannerClicked: () -> Unit
+                marketManager: MarketManager
             ) {
                 if (data !is ReferralsModel.ReferralTopBar) {
                     return
