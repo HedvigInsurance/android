@@ -89,7 +89,7 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.choose_plan_menu, menu)
         return true
     }
