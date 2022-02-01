@@ -43,6 +43,6 @@ class AddressAutoCompleteActivity : AppCompatActivity() {
     }
 
     companion object {
-        fun createIntent(context: Context) = Intent(context, RetrievePriceInfoActivity::class.java)
+        fun newInstance(context: Context) = Intent(context, RetrievePriceInfoActivity::class.java)
     }
 }

@@ -7,7 +7,7 @@ import com.hedvig.app.feature.addressautocompletion.ui.AddressAutoCompleteActivi
 
 class FetchDanishAddressContract : ActivityResultContract<Unit, String?>() {
     override fun createIntent(context: Context, input: Unit): Intent {
-        return AddressAutoCompleteActivity.createIntent(context)
+        return AddressAutoCompleteActivity.newInstance(context)
     }
 
     override fun parseResult(resultCode: Int, intent: Intent?): String? {
