@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import coil.ImageLoader
 import coil.load
@@ -14,6 +15,7 @@ import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.makeACall
+import com.hedvig.app.util.extensions.showErrorDialog
 import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
@@ -24,6 +26,8 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
 import com.hedvig.app.util.extensions.viewBinding
 import e
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -43,6 +47,16 @@ class EmergencyActivity : BaseActivity(R.layout.activity_emergency) {
             e { "Programmer error: No EMERGENCY_DATA passed to ${this.javaClass}" }
             return
         }
+
+        claimsViewModel.events
+            .flowWithLifecycle(lifecycle)
+            .onEach { event ->
+                when (event) {
+                    ClaimsViewModel.Event.Error -> showErrorDialog(getString(R.string.component_error)) {}
+                    ClaimsViewModel.Event.StartChat -> startChat()
+                }
+            }
+            .launchIn(lifecycleScope)
 
         binding.apply {
             window.compatSetDecorFitsSystemWindows(false)
@@ -72,7 +86,6 @@ class EmergencyActivity : BaseActivity(R.layout.activity_emergency) {
                 tracker.emergencyChat()
                 lifecycleScope.launch {
                     claimsViewModel.triggerFreeTextChat()
-                    startChat()
                 }
             }
         }

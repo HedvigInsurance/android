@@ -3,7 +3,7 @@ package com.hedvig.app.feature.claimdetail.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
-import com.hedvig.app.feature.chat.usecase.TriggerFreeTextChatUseCase
+import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.claimdetail.data.GetClaimDetailUiStateFlowUseCase
 import com.hedvig.app.feature.claimdetail.model.ClaimDetailUiState
 import com.hedvig.app.util.coroutines.RetryChannel
@@ -25,7 +25,7 @@ sealed class ClaimDetailViewState {
 
 class ClaimDetailViewModel(
     private val claimId: String,
-    private val triggerFreeTextChatUseCase: TriggerFreeTextChatUseCase,
+    private val chatRepository: ChatRepository,
     private val getClaimDetailUiStateFlowUseCase: GetClaimDetailUiStateFlowUseCase,
 ) : ViewModel() {
     sealed class Event {
@@ -60,7 +60,7 @@ class ClaimDetailViewModel(
 
     fun onChatClick() {
         viewModelScope.launch {
-            val event = when (triggerFreeTextChatUseCase.invoke()) {
+            val event = when (chatRepository.triggerFreeTextChat()) {
                 is Either.Left -> Event.Error
                 is Either.Right -> Event.StartChat
             }

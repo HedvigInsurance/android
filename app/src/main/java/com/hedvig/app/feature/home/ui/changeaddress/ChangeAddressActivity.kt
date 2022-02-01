@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.transition.TransitionManager
 import androidx.annotation.DrawableRes
 import androidx.core.view.isVisible
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
@@ -22,6 +23,7 @@ import com.hedvig.app.feature.home.ui.changeaddress.ViewState.SelfChangeError
 import com.hedvig.app.feature.home.ui.changeaddress.ViewState.UpcomingAgreementError
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
+import com.hedvig.app.util.extensions.showErrorDialog
 import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsetsMargin
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
@@ -29,6 +31,8 @@ import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -39,6 +43,16 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        model.events
+            .flowWithLifecycle(lifecycle)
+            .onEach { event ->
+                when (event) {
+                    Event.Error -> showErrorDialog(getString(R.string.component_error)) {}
+                    Event.StartChat -> startChat()
+                }
+            }
+            .launchIn(lifecycleScope)
 
         with(binding) {
             window.compatSetDecorFitsSystemWindows(false)
@@ -96,7 +110,6 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
                 onContinue = {
                     lifecycleScope.launch {
                         model.triggerFreeTextChat()
-                        startChat()
                     }
                 },
                 viewState.upcomingAgreementResult

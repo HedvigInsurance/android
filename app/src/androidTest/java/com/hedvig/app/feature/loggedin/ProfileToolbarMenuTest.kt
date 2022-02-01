@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.loggedin
 
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
-import com.hedvig.android.owldroid.graphql.TriggerClaimChatMutation
+import com.hedvig.android.owldroid.graphql.TriggerFreeTextChatMutation
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_ENABLED
@@ -27,8 +27,8 @@ class ProfileToolbarMenuTest : TestCase() {
                 LOGGED_IN_DATA_WITH_REFERRALS_ENABLED
             )
         },
-        TriggerClaimChatMutation.QUERY_DOCUMENT to apolloResponse {
-            success(TriggerClaimChatMutation.Data(true))
+        TriggerFreeTextChatMutation.QUERY_DOCUMENT to apolloResponse {
+            success(TriggerFreeTextChatMutation.Data(true))
         }
     )
 

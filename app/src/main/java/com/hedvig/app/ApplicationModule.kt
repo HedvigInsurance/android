@@ -42,7 +42,6 @@ import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.feature.chat.service.ChatTracker
-import com.hedvig.app.feature.chat.usecase.TriggerFreeTextChatUseCase
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
 import com.hedvig.app.feature.claimdetail.data.GetClaimDetailUiStateFlowUseCase
 import com.hedvig.app.feature.claimdetail.data.GetClaimDetailUseCase
@@ -450,7 +449,7 @@ val offerModule = module {
             tracker = get(),
             adyenRepository = get(),
             marketManager = get(),
-            freeTextChatUseCase = get()
+            chatRepository = get(),
         )
     }
     single { ApproveQuotesUseCase(get(), get(), get(), get()) }
@@ -461,7 +460,7 @@ val offerModule = module {
 }
 
 val profileModule = module {
-    viewModel<ProfileViewModel> { ProfileViewModelImpl(get(), get(), get()) }
+    viewModel<ProfileViewModel> { ProfileViewModelImpl(get(), get()) }
 }
 
 val keyGearModule = module {
@@ -673,7 +672,6 @@ val useCaseModule = module {
     single { CreateOtpAttemptUseCase(get()) }
     single<SendOtpCodeUseCase> { SendOtpCodeUseCaseImpl(get()) }
     single<ReSendOtpCodeUseCase> { ReSendOtpCodeUseCaseImpl(get()) }
-    single { TriggerFreeTextChatUseCase(get()) }
     single { GetDataCollectionUseCase(get(), get()) }
     single { GetClaimDetailUseCase(get(), get()) }
     single { GetClaimDetailUiStateFlowUseCase(get()) }
