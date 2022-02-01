@@ -25,8 +25,8 @@ class AddressAutoCompleteActivity : AppCompatActivity() {
             HedvigTheme {
                 AddressAutoCompleteScreen(
                     viewState = viewState,
-                    selectAddress = viewModel::selectAddress,
                     setInput = viewModel::setNewInput,
+                    selectAddress = viewModel::selectAddress,
                     finishWithSelection = ::finishWithAddressResult,
                     finishWithoutSelection = { finish() },
                 )
