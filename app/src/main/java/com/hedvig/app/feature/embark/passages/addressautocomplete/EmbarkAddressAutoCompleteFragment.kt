@@ -33,9 +33,8 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
     private val embarkViewModel: EmbarkViewModel by sharedViewModel()
     private val viewModel: EmbarkAddressAutoCompleteViewModel by viewModel {
         val messages = data.messages
-        val placeholderText = data.placeholder
-        val prefilledAddress = embarkViewModel.getPrefillFromStore(data.key)
-        parametersOf(messages, prefilledAddress ?: placeholderText)
+        val prefilledAddress = embarkViewModel.getPrefillFromStore(data.key) ?: ""
+        parametersOf(messages, prefilledAddress)
     }
     private val binding by viewBinding(FragmentEmbarkAddressAutoCompleteActionBinding::bind)
 
@@ -71,6 +70,7 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
                 binding.inputCard.setContent {
                     AddressCard(
                         addressText = viewState.address,
+                        placeholderText = data.placeholder,
                         onClick = {
                             fetchDanishAddressAutoCompleteContractHandler.startAutoCompletionActivity(
                                 viewState.address

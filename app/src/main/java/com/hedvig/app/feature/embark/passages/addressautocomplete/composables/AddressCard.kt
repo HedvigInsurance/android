@@ -26,6 +26,7 @@ import com.hedvig.app.ui.compose.theme.HedvigTheme
 @Composable
 fun AddressCard(
     addressText: String,
+    placeholderText: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -38,7 +39,10 @@ fun AddressCard(
             ) {
                 Icon(Icons.Default.Search, null)
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                    Text(addressText, style = MaterialTheme.typography.subtitle1)
+                    Text(
+                        addressText.ifBlank { placeholderText },
+                        style = MaterialTheme.typography.subtitle1
+                    )
                 }
             }
         }
@@ -51,7 +55,7 @@ fun AddressCard(
 fun AddressCardPreview() {
     HedvigTheme {
         Surface(color = MaterialTheme.colors.background) {
-            AddressCard("Address", {})
+            AddressCard("Address", "", {})
         }
     }
 }
