@@ -44,7 +44,7 @@ class ClaimsViewModel(
 
     suspend fun triggerFreeTextChat() {
         viewModelScope.launch {
-            val event = when (val result = chatRepository.triggerFreeTextChat()) {
+            val event = when (chatRepository.triggerFreeTextChat()) {
                 is Either.Left -> Event.Error
                 is Either.Right -> Event.StartChat
             }

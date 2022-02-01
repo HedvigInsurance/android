@@ -18,13 +18,11 @@ import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.databinding.ActivityWebOnboardingBinding
-import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.makeUserAgent
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.extensions.startChat
-import com.hedvig.app.util.extensions.toArrayList
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import org.koin.android.ext.android.inject
@@ -110,50 +108,15 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
 
     fun load() = with(binding) {
         val localePath = when (localeManager.defaultLocale()) {
-            Locale.NB_NO -> "/no"
-            Locale.EN_NO -> "/no-en"
             Locale.DA_DK -> "/dk"
             Locale.EN_DK -> "/dk-en"
-            else -> "/no"
+            else -> "/dk"
         }
 
         val encodedToken = URLEncoder.encode(authenticationTokenService.authenticationToken, UTF_8)
-
         val webBaseUrl = getString(R.string.WEB_BASE_URL)
 
-        when (marketManager.market) {
-            Market.NO -> {
-                val isOffer = intent.getBooleanExtra(OFFER, false)
-                if (isOffer) {
-                    val keys = intent.getStringArrayListExtra(QUOTE_ID)
-                        ?: throw IllegalArgumentException("No keys for offer!")
-
-                    val encodedQuoteIDs = keys.joinToString(
-                        separator = ",",
-                        prefix = "[",
-                        postfix = "]"
-                    ).let {
-                        URLEncoder.encode(it, UTF_8)
-                    }
-
-                    webOnboarding.loadUrl(
-                        "${webBaseUrl}$localePath" +
-                            "/new-member/offer?variation=android&quoteIds=$encodedQuoteIDs#token=$encodedToken"
-                    )
-                } else {
-                    val webPath = intent.getStringExtra(WEB_PATH)
-                    webOnboarding.loadUrl(
-                        "${webBaseUrl}$webPath/start?variation=android#token=$encodedToken"
-                    )
-                }
-            }
-            Market.DK -> webOnboarding.loadUrl(
-                "${webBaseUrl}$localePath/new-member?variation=android#token=$encodedToken"
-            )
-            else -> webOnboarding.loadUrl(
-                "${webBaseUrl}$localePath/new-member?variation=android#token=$encodedToken"
-            )
-        }
+        webOnboarding.loadUrl("${webBaseUrl}$localePath/new-member?variation=android#token=$encodedToken")
     }
 
     override fun onDestroy() {
@@ -177,22 +140,6 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
 
     companion object {
         private const val UTF_8 = "UTF-8"
-        private const val WEB_PATH = "WEB_PATH"
-        internal const val OFFER = "OFFER"
-        private const val QUOTE_ID = "QUOTE_ID"
-
-        fun newNoInstance(
-            context: Context,
-            webPath: String?,
-            offer: Boolean = false,
-            quoteId: List<String>,
-        ): Intent {
-            val intent = Intent(context, WebOnboardingActivity::class.java)
-            intent.putExtra(WEB_PATH, webPath)
-            intent.putExtra(OFFER, offer)
-            intent.putExtra(QUOTE_ID, quoteId.toArrayList())
-            return intent
-        }
 
         fun newInstance(context: Context) = Intent(context, WebOnboardingActivity::class.java)
     }

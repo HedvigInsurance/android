@@ -11,7 +11,6 @@ import com.hedvig.app.databinding.BottomSheetHonestyPledgeBinding
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.android.ext.android.inject
 
@@ -30,18 +29,12 @@ class HonestyPledgeBottomSheet(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.bottomSheetHonestyPledgeButton.setHapticClickListener {
             tracker.pledgeHonesty()
-            viewLifecycleScope.launchWhenStarted {
-                startClaimsFlow()
-                dismiss()
-            }
+            startClaimsFlow()
+            dismiss()
         }
     }
 
     private fun startClaimsFlow() {
-        startEmbarkClaims()
-    }
-
-    private fun startEmbarkClaims() {
         if (customActivityLaunch != null) {
             customActivityLaunch.invoke(getEmbarkIntent())
         } else {

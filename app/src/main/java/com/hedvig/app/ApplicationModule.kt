@@ -460,7 +460,7 @@ val offerModule = module {
 }
 
 val profileModule = module {
-    viewModel<ProfileViewModel> { ProfileViewModelImpl(get(), get(), get()) }
+    viewModel<ProfileViewModel> { ProfileViewModelImpl(get(), get()) }
 }
 
 val keyGearModule = module {
