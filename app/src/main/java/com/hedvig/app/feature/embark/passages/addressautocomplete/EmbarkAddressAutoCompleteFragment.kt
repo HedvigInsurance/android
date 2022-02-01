@@ -56,7 +56,9 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
         binding.textActionSubmit.text = "Submit"
         binding.textActionSubmit
             .hapticClicks()
-            .mapLatest { saveAndAnimate(data) }
+            .mapLatest {
+                embarkViewModel.putInStore(data.key, viewModel.viewState.value.address)
+            }
             .onEach { embarkViewModel.submitAction(data.link) }
             .launchIn(viewLifecycleScope)
 
@@ -83,14 +85,6 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
             delay(50)
             startPostponedEnterTransition()
         }
-    }
-
-    private suspend fun saveAndAnimate(data: EmbarkAddressAutoCompleteParams) {
-        context?.hideKeyboardWithDelay(
-            inputView = binding.inputCard,
-            delayMillis = EmbarkActivity.KEY_BOARD_DELAY_MILLIS
-        )
-        embarkViewModel.putInStore(data.key, viewModel.viewState.value.address)
     }
 
     companion object {
