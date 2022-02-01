@@ -26,7 +26,7 @@ import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusCardUiState
 import com.hedvig.app.feature.home.ui.claimstatus.data.PillUiState
 import com.hedvig.app.ui.compose.composables.claimprogress.ClaimProgressUiState
 import com.hedvig.app.ui.compose.theme.HedvigTheme
-import com.hedvig.app.util.compose.preview.previewData
+import com.hedvig.app.util.compose.preview.previewList
 import java.util.UUID
 
 @OptIn(ExperimentalPagerApi::class)
@@ -86,10 +86,10 @@ fun ClaimStatusCardsPreview() {
         ) {
             val claimStatusCardsUiState = ClaimStatusCardUiState(
                 id = UUID.randomUUID().toString(),
-                pillsUiState = PillUiState.previewData(),
+                pillsUiState = PillUiState.previewList(),
                 title = "All-risk",
                 subtitle = "Contents insurance",
-                claimProgressItemsUiState = ClaimProgressUiState.previewData(),
+                claimProgressItemsUiState = ClaimProgressUiState.previewList(),
             )
             ClaimStatusCards(
                 goToDetailScreen = {},

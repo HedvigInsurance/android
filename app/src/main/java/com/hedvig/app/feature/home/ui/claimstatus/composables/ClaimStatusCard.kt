@@ -16,7 +16,7 @@ import com.hedvig.app.feature.home.ui.claimstatus.data.PillUiState
 import com.hedvig.app.ui.compose.composables.claimprogress.ClaimProgressRow
 import com.hedvig.app.ui.compose.composables.claimprogress.ClaimProgressUiState
 import com.hedvig.app.ui.compose.theme.HedvigTheme
-import com.hedvig.app.util.compose.preview.previewData
+import com.hedvig.app.util.compose.preview.previewList
 import java.util.UUID
 
 @Composable
@@ -56,10 +56,10 @@ fun ClaimStatusCardPreview() {
         ) {
             val claimStatusData = ClaimStatusCardUiState(
                 id = UUID.randomUUID().toString(),
-                pillsUiState = PillUiState.previewData(),
+                pillsUiState = PillUiState.previewList(),
                 title = "All-risk",
                 subtitle = "Home Insurance Renter",
-                claimProgressItemsUiState = ClaimProgressUiState.previewData(),
+                claimProgressItemsUiState = ClaimProgressUiState.previewList(),
             )
             ClaimStatusCard(claimStatusData)
         }
