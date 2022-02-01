@@ -7,6 +7,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -15,6 +16,39 @@ import androidx.compose.ui.unit.dp
 fun TopAppBarWithBack(
     onClick: () -> Unit,
     title: String,
+    modifier: Modifier = Modifier
+) {
+    TopAppBar(
+        onClick,
+        title,
+        TopAppBarActionType.BACK,
+        modifier
+    )
+}
+
+@Composable
+fun TopAppBarWithClose(
+    onClick: () -> Unit,
+    title: String,
+    modifier: Modifier = Modifier
+) {
+    TopAppBar(
+        onClick,
+        title,
+        TopAppBarActionType.CLOSE,
+        modifier
+    )
+}
+
+private enum class TopAppBarActionType {
+    BACK, CLOSE
+}
+
+@Composable
+private fun TopAppBar(
+    onClick: () -> Unit,
+    title: String,
+    actionType: TopAppBarActionType,
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
@@ -30,7 +64,10 @@ fun TopAppBarWithBack(
                 onClick = { onClick() },
                 content = {
                     Icon(
-                        imageVector = Icons.Filled.ArrowBack,
+                        imageVector = when (actionType) {
+                            TopAppBarActionType.BACK -> Icons.Filled.ArrowBack
+                            TopAppBarActionType.CLOSE -> Icons.Filled.Close
+                        },
                         contentDescription = null
                     )
                 }
