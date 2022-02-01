@@ -5,9 +5,13 @@ import android.content.Intent
 import androidx.activity.result.contract.ActivityResultContract
 import com.hedvig.app.feature.addressautocompletion.ui.AddressAutoCompleteActivity
 
-class FetchDanishAddressContract : ActivityResultContract<Unit, String?>() {
-    override fun createIntent(context: Context, input: Unit): Intent {
-        return AddressAutoCompleteActivity.newInstance(context)
+/**
+ * Input: String?   The initial text that will be used as the initial text for autocompletion.
+ * Output: String?  The autocomplete address result or null.
+ */
+class FetchDanishAddressContract : ActivityResultContract<String?, String?>() {
+    override fun createIntent(context: Context, input: String?): Intent {
+        return AddressAutoCompleteActivity.newInstance(context, input)
     }
 
     override fun parseResult(resultCode: Int, intent: Intent?): String? {

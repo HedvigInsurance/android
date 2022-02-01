@@ -2,7 +2,6 @@ package com.hedvig.app.feature.addressautocompletion.activityresult
 
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.ActivityResultRegistry
-import androidx.activity.result.launch
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 
@@ -15,7 +14,7 @@ class FetchDanishAddressAutoCompleteContractHandler(
     private val onAddressResult: (address: String) -> Unit,
 ) : DefaultLifecycleObserver {
 
-    private lateinit var resultLauncher: ActivityResultLauncher<Unit>
+    private lateinit var resultLauncher: ActivityResultLauncher<String?>
 
     override fun onCreate(owner: LifecycleOwner) {
         resultLauncher = registry.register(
@@ -28,7 +27,7 @@ class FetchDanishAddressAutoCompleteContractHandler(
         }
     }
 
-    fun startAutoCompletionActivity() {
-        resultLauncher.launch()
+    fun startAutoCompletionActivity(initialText: String?) {
+        resultLauncher.launch(initialText)
     }
 }

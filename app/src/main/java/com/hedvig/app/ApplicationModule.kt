@@ -405,7 +405,7 @@ val viewModelModule = module {
             parametersHolder.get(), parametersHolder.get()
         )
     }
-    viewModel { AddressAutoCompleteViewModel(get(), get()) }
+    viewModel { parametersHolder -> AddressAutoCompleteViewModel(parametersHolder.get(), get()) }
 }
 
 val choosePlanModule = module {

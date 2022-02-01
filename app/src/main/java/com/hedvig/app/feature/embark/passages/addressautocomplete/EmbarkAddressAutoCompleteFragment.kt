@@ -71,7 +71,9 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
                     AddressCard(
                         addressText = viewState.address,
                         onClick = {
-                            fetchDanishAddressAutoCompleteContractHandler.startAutoCompletionActivity()
+                            fetchDanishAddressAutoCompleteContractHandler.startAutoCompletionActivity(
+                                viewState.address
+                            )
                         }
                     )
                 }
