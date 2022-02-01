@@ -31,7 +31,7 @@ fun ClaimProgressRow(
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(6.dp)
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         claimProgressItemsUiState.forEach { claimProgressUiState: ClaimProgressUiState ->
             ClaimProgress(

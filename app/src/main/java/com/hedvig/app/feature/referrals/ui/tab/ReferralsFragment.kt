@@ -13,6 +13,7 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentReferralsBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
+import com.hedvig.app.feature.profile.ui.charity.ExplanationBottomSheet
 import com.hedvig.app.feature.referrals.service.ReferralsTracker
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsAdapter.Companion.ERROR_STATE
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsAdapter.Companion.LOADING_STATE
@@ -83,6 +84,7 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
             invites.itemAnimator = ViewHolderReusingDefaultItemAnimator()
             val adapter = ReferralsAdapter(
                 referralsViewModel::load,
+                ::showBottomSheet,
                 tracker,
                 marketManager
             )
@@ -171,7 +173,10 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                                 viewState.data.referralInformation.referredBy == null
                             ) {
                                 (invites.adapter as? ReferralsAdapter)?.submitList(
-                                    listOf(
+                                    listOfNotNull(
+                                        if (viewState.showCampaignBar) ReferralsModel.ReferralTopBar(
+                                            getString(R.string.REFERRAL_CAMPAIGN_BANNER_TITLE)
+                                        ) else null,
                                         ReferralsModel.Title,
                                         ReferralsModel.Header.LoadedEmptyHeader(viewState.data),
                                         ReferralsModel.Code.LoadedCode(viewState.data)
@@ -180,12 +185,15 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                                 return@onEach
                             }
 
-                            val items = mutableListOf(
+                            val items = listOfNotNull(
+                                if (viewState.showCampaignBar) ReferralsModel.ReferralTopBar(
+                                    getString(R.string.REFERRAL_CAMPAIGN_BANNER_TITLE)
+                                ) else null,
                                 ReferralsModel.Title,
                                 ReferralsModel.Header.LoadedHeader(viewState.data),
                                 ReferralsModel.Code.LoadedCode(viewState.data),
                                 ReferralsModel.InvitesHeader
-                            )
+                            ).toMutableList()
 
                             items += viewState.data.referralInformation.invitations
                                 .filter {
@@ -209,6 +217,13 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                 }
                 .launchIn(viewLifecycleScope)
         }
+    }
+
+    private fun showBottomSheet() {
+        ExplanationBottomSheet.newInstance(
+            title = getString(R.string.REFERRAL_CAMPAIGN_DETAIL_TITLE),
+            markDownText = getString(R.string.REFERRAL_CAMPAIGN_DETAIL_BODY)
+        ).show(parentFragmentManager, ExplanationBottomSheet.TAG)
     }
 
     private fun applyInsets() = with(binding) {

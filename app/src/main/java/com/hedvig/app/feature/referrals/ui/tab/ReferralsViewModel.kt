@@ -16,7 +16,11 @@ import kotlinx.coroutines.launch
 
 abstract class ReferralsViewModel : ViewModel() {
     sealed class ViewState {
-        data class Success(val data: ReferralsQuery.Data) : ViewState()
+        data class Success(
+            val showCampaignBar: Boolean,
+            val data: ReferralsQuery.Data,
+        ) : ViewState()
+
         object Loading : ViewState()
         object Error : ViewState()
     }
@@ -40,10 +44,13 @@ abstract class ReferralsViewModel : ViewModel() {
 }
 
 class ReferralsViewModelImpl(
-    private val referralsRepository: ReferralsRepository
+    private val referralsRepository: ReferralsRepository,
+    private val campaignUseCase: CampaignUseCase,
 ) : ReferralsViewModel() {
     init {
         viewModelScope.launch {
+            val showCampaign = campaignUseCase.shouldShowCampaign()
+
             referralsRepository
                 .referrals()
                 .onEach { response ->
@@ -51,7 +58,12 @@ class ReferralsViewModelImpl(
                         _data.value = ViewState.Error
                         return@onEach
                     }
-                    response.data?.let { _data.value = ViewState.Success(it) }
+                    response.data?.let {
+                        _data.value = ViewState.Success(
+                            data = it,
+                            showCampaignBar = showCampaign
+                        )
+                    }
                 }
                 .catch { e ->
                     e(e)
