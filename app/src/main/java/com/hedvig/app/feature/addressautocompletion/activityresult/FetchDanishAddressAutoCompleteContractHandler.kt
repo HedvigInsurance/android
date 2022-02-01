@@ -19,7 +19,7 @@ class FetchDanishAddressAutoCompleteContractHandler(
 
     override fun onCreate(owner: LifecycleOwner) {
         resultLauncher = registry.register(
-            "key",
+            "com.hedvig.app.feature.addressautocompletion.activityresult.FetchDanishAddressAutoCompleteContractHandler",
             owner,
             FetchDanishAddressContract()
         ) { result ->
