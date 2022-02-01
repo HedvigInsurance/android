@@ -73,8 +73,11 @@ class CharityActivity : BaseActivity(R.layout.activity_charity) {
             selectedCharityCardParagraph.text = cashback.description
             charitySelectedHowDoesItWorkButton.setHapticClickListener {
                 tracker.howDoesItWorkClick()
-                CharityExplanationBottomSheet.newInstance()
-                    .show(supportFragmentManager, CharityExplanationBottomSheet.TAG)
+                ExplanationBottomSheet.newInstance(
+                    title = getString(R.string.CHARITY_INFO_DIALOG_TITLE),
+                    markDownText = getString(R.string.PROFILE_MY_CHARITY_INFO_BODY),
+                )
+                    .show(supportFragmentManager, ExplanationBottomSheet.TAG)
             }
         }
     }
@@ -88,8 +91,11 @@ class CharityActivity : BaseActivity(R.layout.activity_charity) {
                 }
             selectCharityHowDoesItWorkButton.setHapticClickListener {
                 tracker.howDoesItWorkClick()
-                CharityExplanationBottomSheet.newInstance()
-                    .show(supportFragmentManager, CharityExplanationBottomSheet.TAG)
+                ExplanationBottomSheet.newInstance(
+                    title = getString(R.string.CHARITY_INFO_DIALOG_TITLE),
+                    markDownText = getString(R.string.PROFILE_MY_CHARITY_INFO_BODY),
+                )
+                    .show(supportFragmentManager, ExplanationBottomSheet.TAG)
             }
         }
     }
