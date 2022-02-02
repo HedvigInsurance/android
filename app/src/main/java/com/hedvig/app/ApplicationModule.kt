@@ -378,7 +378,7 @@ fun getLocale(context: Context, market: Market?): Locale {
 
 val viewModelModule = module {
     viewModel { ClaimsViewModel(get(), get()) }
-    viewModel { ChatViewModel(get(), get(), get(), get(), get()) }
+    viewModel { ChatViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel { UserViewModel(get(), get(), get(), get()) }
     viewModel { RedeemCodeViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }

@@ -376,17 +376,12 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
     }
 
     private fun openGifPicker() {
-        val gifPickerBottomSheet =
-            GifPickerBottomSheet.newInstance(isKeyboardShown)
-        gifPickerBottomSheet.initialize(
-            onSelectGif = { gifUrl ->
-                chatViewModel.respondToLastMessage(gifUrl)
-            }
-        )
-        gifPickerBottomSheet.show(
-            supportFragmentManager,
-            GifPickerBottomSheet.TAG
-        )
+        GifPickerBottomSheet
+            .newInstance(isKeyboardShown)
+            .show(
+                supportFragmentManager,
+                GifPickerBottomSheet.TAG
+            )
     }
 
     private fun startTakePicture() {

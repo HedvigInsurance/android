@@ -15,6 +15,7 @@ import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.util.LiveEvent
+import com.hedvig.hanalytics.HAnalytics
 import e
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -34,7 +35,8 @@ class ChatViewModel(
     private val userRepository: UserRepository,
     private val authenticationTokenService: AuthenticationTokenService,
     private val apolloClient: ApolloClient,
-    private val chatClosedTracker: ChatEventStore
+    private val chatClosedTracker: ChatEventStore,
+    private val hAnalytics: HAnalytics,
 ) : ViewModel() {
 
     val messages = MutableLiveData<ChatMessagesQuery.Data>()
@@ -149,12 +151,14 @@ class ChatViewModel(
     }
 
     fun uploadFile(uri: Uri) {
+        hAnalytics.chatRichMessageSent()
         uploadFile(uri) { data ->
             fileUploadOutcome.postValue(FileUploadOutcome(uri, !data.hasErrors()))
         }
     }
 
     fun uploadTakenPicture(uri: Uri) {
+        hAnalytics.chatRichMessageSent()
         uploadFile(uri) { data ->
             takePictureUploadOutcome.postValue(FileUploadOutcome(uri, !data.hasErrors()))
         }
@@ -175,6 +179,7 @@ class ChatViewModel(
     }
 
     fun uploadFileFromProvider(uri: Uri) {
+        hAnalytics.chatRichMessageSent()
         isSubscriptionAllowedToWrite = false
         isUploading.value = true
         viewModelScope.launch {
@@ -195,6 +200,11 @@ class ChatViewModel(
 
     private fun postResponseValue(response: Response<ChatMessagesQuery.Data>) {
         response.data?.let { messages.postValue(it) }
+    }
+
+    fun respondWithGif(url: String) {
+        hAnalytics.chatRichMessageSent()
+        respondToLastMessage(url)
     }
 
     fun respondToLastMessage(message: String) {
