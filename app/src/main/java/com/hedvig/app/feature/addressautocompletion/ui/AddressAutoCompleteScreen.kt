@@ -3,6 +3,7 @@ package com.hedvig.app.feature.addressautocompletion.ui
 import android.content.res.Configuration
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,10 +18,8 @@ import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
@@ -36,6 +35,10 @@ import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.rememberInsetsPaddingValues
+import com.google.accompanist.insets.ui.Scaffold
+import com.google.accompanist.insets.ui.TopAppBar
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddressInput
 import com.hedvig.app.ui.compose.theme.HedvigTheme
@@ -53,10 +56,22 @@ fun AddressAutoCompleteScreen(
     Scaffold(
         topBar = {
             Column {
-                TopAppBar(viewState, finishWithoutSelection, finishWithSelection)
+                TopAppBar(
+                    viewState = viewState,
+                    finishWithoutSelection = finishWithoutSelection,
+                    finishWithSelection = finishWithSelection,
+                    contentPadding = rememberInsetsPaddingValues(
+                        insets = LocalWindowInsets.current.statusBars,
+                        applyBottom = false
+                    )
+                )
                 AddressInput(viewState, setInput)
             }
-        }
+        },
+        contentPadding = rememberInsetsPaddingValues(
+            insets = LocalWindowInsets.current.systemBars,
+            applyTop = false
+        )
     ) { paddingValues ->
         SuggestionsList(
             viewState = viewState,
@@ -71,6 +86,7 @@ private fun TopAppBar(
     viewState: AddressAutoCompleteViewState,
     finishWithoutSelection: () -> Unit,
     finishWithSelection: (DanishAddress) -> Unit,
+    contentPadding: PaddingValues,
 ) {
     TopAppBar(
         title = { Text("Address") },
@@ -100,6 +116,7 @@ private fun TopAppBar(
             }
         },
         elevation = 0.dp,
+        contentPadding = contentPadding,
     )
 }
 

@@ -10,6 +10,7 @@ import androidx.compose.runtime.getValue
 import com.hedvig.app.feature.addressautocompletion.activityresult.FetchDanishAddressContract
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
 import com.hedvig.app.ui.compose.theme.HedvigTheme
+import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -17,6 +18,8 @@ class AddressAutoCompleteActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        window.compatSetDecorFitsSystemWindows(false)
 
         val initialText = intent.getStringExtra(INITIAL_TEXT_KEY)
             ?: throw IllegalArgumentException("Programmer error: Missing initial text in ${this.javaClass.name}")
