@@ -39,6 +39,10 @@ class ChatViewModel(
     private val hAnalytics: HAnalytics,
 ) : ViewModel() {
 
+    init {
+        hAnalytics.screenViewChat()
+    }
+
     val messages = MutableLiveData<ChatMessagesQuery.Data>()
     val sendMessageResponse = MutableLiveData<Boolean>()
     val isUploading = LiveEvent<Boolean>()
