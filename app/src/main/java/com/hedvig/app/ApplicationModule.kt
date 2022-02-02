@@ -404,7 +404,7 @@ val viewModelModule = module {
     }
     viewModel { GenericAuthViewModel(get()) }
     viewModel { (otpId: String, credential: String) -> OtpInputViewModel(otpId, credential, get(), get(), get()) }
-    viewModel { (claimId: String) -> ClaimDetailViewModel(claimId, get(), get()) }
+    viewModel { (claimId: String) -> ClaimDetailViewModel(claimId, get(), get(), get()) }
 }
 
 val choosePlanModule = module {

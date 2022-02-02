@@ -7,6 +7,7 @@ import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.claimdetail.data.GetClaimDetailUiStateFlowUseCase
 import com.hedvig.app.feature.claimdetail.model.ClaimDetailUiState
 import com.hedvig.app.util.coroutines.RetryChannel
+import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -27,6 +28,7 @@ class ClaimDetailViewModel(
     private val claimId: String,
     private val chatRepository: ChatRepository,
     private val getClaimDetailUiStateFlowUseCase: GetClaimDetailUiStateFlowUseCase,
+    private val hAnalytics: HAnalytics,
 ) : ViewModel() {
     sealed class Event {
         object StartChat : Event()
@@ -66,5 +68,9 @@ class ClaimDetailViewModel(
             }
             _events.trySend(event)
         }
+        val uiState = (viewState.value as? ClaimDetailViewState.Content)
+            ?.uiState ?: return
+
+        hAnalytics.claimDetailClickOpenChat(claimId, uiState.claimStatus.rawValue)
     }
 }
