@@ -4,7 +4,7 @@ import com.hedvig.android.owldroid.graphql.AddressAutocompleteQuery
 import java.util.UUID
 
 data class DanishAddress(
-    val id: String,
+    val id: String?,
     val address: String,
     val streetName: String?,
     val streetNumber: String?,

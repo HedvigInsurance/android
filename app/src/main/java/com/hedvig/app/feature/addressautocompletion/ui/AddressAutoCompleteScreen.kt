@@ -175,7 +175,7 @@ private fun SuggestionsList(
     LazyColumn(modifier) {
         items(
             items = viewState.results,
-            key = { item -> item.id }
+            key = { item -> item.id ?: item.address }
         ) { address: DanishAddress ->
             val primaryText: String =
                 if (address.streetName != null && address.streetNumber != null) {
