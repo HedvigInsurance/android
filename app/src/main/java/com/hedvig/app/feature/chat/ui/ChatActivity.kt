@@ -139,7 +139,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
         binding.input.initialize(
             sendTextMessage = { message ->
                 scrollToBottom(true)
-                chatViewModel.respondToLastMessage(message)
+                chatViewModel.respondWithTextMessage(message)
             },
             sendSingleSelect = { value ->
                 scrollToBottom(true)

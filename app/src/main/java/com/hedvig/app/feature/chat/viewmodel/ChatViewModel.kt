@@ -207,7 +207,12 @@ class ChatViewModel(
         respondToLastMessage(url)
     }
 
-    fun respondToLastMessage(message: String) {
+    fun respondWithTextMessage(message: String) {
+        hAnalytics.chatTextMessageSent()
+        respondToLastMessage(message)
+    }
+
+    private fun respondToLastMessage(message: String) {
         if (isSendingMessage) {
             return
         }
