@@ -41,7 +41,7 @@ fun AddressCard(
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                     Text(
                         addressText.ifBlank { placeholderText },
-                        style = MaterialTheme.typography.subtitle1
+                        style = MaterialTheme.typography.subtitle1,
                     )
                 }
             }

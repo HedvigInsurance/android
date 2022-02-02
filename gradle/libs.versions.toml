@@ -16,7 +16,8 @@ lokalise = "1.4.1"
 # Other versions sorted alphabetically
 accompanistPager = "0.18.0" # Use 18 until https://github.com/google/accompanist/issues/847 is fixed
 accompanist = "0.20.0"
-androidx-compose = "1.0.4"
+androidx-compose = "1.1.0-beta03"
+androidx-composeThemeAdapter = "1.0.4"
 androidx-datastore = "1.0.0"
 androidx-espresso = "3.4.0"
 androidx-lifecycle-common = "2.4.0-rc01"
@@ -100,7 +101,7 @@ androidx-compose-animation = { module = "androidx.compose.animation:animation", 
 androidx-compose-uiTooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "androidx-compose" }
 androidx-compose-uiViewBinding = { module = "androidx.compose.ui:ui-viewbinding", version.ref = "androidx-compose" }
 androidx-compose-uiTestJunit = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "androidx-compose" }
-androidx-compose-mdcAdapter = { module = "com.google.android.material:compose-theme-adapter", version.ref = "androidx-compose" }
+androidx-compose-mdcAdapter = { module = "com.google.android.material:compose-theme-adapter", version.ref = "androidx-composeThemeAdapter" }
 androidx-compose-uiTestManifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "androidx-compose" }
 
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "androidx-datastore" }
