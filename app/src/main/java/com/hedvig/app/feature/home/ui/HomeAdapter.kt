@@ -57,13 +57,14 @@ class HomeAdapter(
     private val imageLoader: ImageLoader,
     private val tracker: HomeTracker,
     private val marketManager: MarketManager,
+    private val onClaimDetailCardClicked: (String) -> Unit,
 ) : ListAdapter<HomeModel, HomeAdapter.ViewHolder>(HomeModelDiffUtilItemCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.home_psa -> ViewHolder.PSABox(parent)
         R.layout.home_big_text -> ViewHolder.BigText(parent)
         R.layout.home_body_text -> ViewHolder.BodyText(parent)
-        ACTIVE_CLAIM -> ViewHolder.ClaimStatus(ComposeView(parent.context))
+        ACTIVE_CLAIM -> ViewHolder.ClaimStatus(ComposeView(parent.context), onClaimDetailCardClicked)
         R.layout.home_start_claim_outlined -> ViewHolder.StartClaimOutlined(parent, startIntentForResult)
         R.layout.home_start_claim_contained -> ViewHolder.StartClaimContained(parent, startIntentForResult)
         R.layout.home_info_card -> ViewHolder.InfoCard(parent)
@@ -196,12 +197,14 @@ class HomeAdapter(
 
         class ClaimStatus(
             val composeView: ComposeView,
+            private val onClaimDetailCardClicked: (String) -> Unit,
         ) : ViewHolder(composeView) {
             init {
                 composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             }
 
             private fun goToClaimDetailScreen(claimId: String) {
+                onClaimDetailCardClicked(claimId)
                 composeView.context.startActivity(
                     ClaimDetailActivity.newInstance(composeView.context, claimId)
                 )

@@ -9,6 +9,7 @@ import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.home.data.GetHomeUseCase
+import com.hedvig.hanalytics.HAnalytics
 import com.zhuinden.livedatacombinetuplekt.combineTuple
 import e
 import kotlinx.coroutines.flow.catch
@@ -16,7 +17,9 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
-abstract class HomeViewModel : ViewModel() {
+abstract class HomeViewModel(
+    private val hAnalytics: HAnalytics,
+) : ViewModel() {
     sealed class ViewState {
         data class Success(
             val homeData: HomeQuery.Data,
@@ -40,12 +43,23 @@ abstract class HomeViewModel : ViewModel() {
 
     abstract fun load()
     abstract fun reload()
+
+    fun onClaimDetailCardClicked(claimId: String) {
+        val claim = (_homeData.value as? ViewState.Success)
+            ?.homeData
+            ?.claimStatusCards
+            ?.firstOrNull { it.id == claimId }
+            ?.claim ?: return
+
+        hAnalytics.claimCardClick(claimId, claim.statusParagraph)
+    }
 }
 
 class HomeViewModelImpl(
     private val getHomeUseCase: GetHomeUseCase,
     private val payinStatusRepository: PayinStatusRepository,
-) : HomeViewModel() {
+    hAnalytics: HAnalytics,
+) : HomeViewModel(hAnalytics) {
     init {
         load()
         payinStatusRepository
