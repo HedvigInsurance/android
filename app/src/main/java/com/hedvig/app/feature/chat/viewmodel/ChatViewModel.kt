@@ -152,30 +152,30 @@ class ChatViewModel(
 
     fun uploadFile(uri: Uri) {
         hAnalytics.chatRichMessageSent()
-        uploadFile(uri) { data ->
+        viewModelScope.launch {
+            val data = uploadFileInner(uri) ?: return@launch
             fileUploadOutcome.postValue(FileUploadOutcome(uri, !data.hasErrors()))
         }
     }
 
     fun uploadTakenPicture(uri: Uri) {
         hAnalytics.chatRichMessageSent()
-        uploadFile(uri) { data ->
+        viewModelScope.launch {
+            val data = uploadFileInner(uri) ?: return@launch
             takePictureUploadOutcome.postValue(FileUploadOutcome(uri, !data.hasErrors()))
         }
     }
 
-    private fun uploadFile(uri: Uri, onNext: (Response<UploadFileMutation.Data>) -> Unit) {
+    private suspend fun uploadFileInner(uri: Uri): Response<UploadFileMutation.Data>? {
         isSubscriptionAllowedToWrite = false
         isUploading.value = true
-        viewModelScope.launch {
-            val response = runCatching { chatRepository.uploadFile(uri) }
-            if (response.isFailure) {
-                response.exceptionOrNull()?.let { e(it) }
-                return@launch
-            }
-            response.getOrNull()?.data?.uploadFile?.key?.let { respondWithFile(it, uri) }
-            response.getOrNull()?.let { onNext(it) }
+        val response = runCatching { chatRepository.uploadFile(uri) }
+        if (response.isFailure) {
+            response.exceptionOrNull()?.let { e(it) }
+            return null
         }
+        response.getOrNull()?.data?.uploadFile?.key?.let { respondWithFile(it, uri) }
+        return response.getOrNull()
     }
 
     fun uploadFileFromProvider(uri: Uri) {
