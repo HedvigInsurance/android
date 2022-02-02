@@ -14,8 +14,36 @@ data class DanishAddress(
     val city: String?,
 ) {
 
+    private val onlyAddressIsNotNull: Boolean
+        get() = streetName == null &&
+            streetNumber == null &&
+            floor == null &&
+            apartment == null &&
+            postalCode == null &&
+            city == null
+
+    val isValidFinalSelection: Boolean
+        get() = streetName != null &&
+            streetNumber != null &&
+            postalCode != null &&
+            city != null
+
     fun toFlatQueryString(): String {
-        return "$streetName $streetNumber, $floor. $apartment, $postalCode $city"
+        if (onlyAddressIsNotNull) {
+            return address
+        }
+        return buildString {
+            appendIfNotNull(streetName)
+            appendIfNotNull(" ")
+            appendIfNotNull(streetNumber)
+            appendIfNotNull(", ")
+            appendIfNotNull(floor)
+            appendIfNotNull(apartment)
+            appendIfNotNull(", ")
+            appendIfNotNull(postalCode)
+            appendIfNotNull(" ")
+            appendIfNotNull(city)
+        }
     }
 
     companion object {
@@ -32,4 +60,9 @@ data class DanishAddress(
             )
         }
     }
+}
+
+fun StringBuilder.appendIfNotNull(input: String?): StringBuilder {
+    if (input != null) append(input)
+    return this
 }
