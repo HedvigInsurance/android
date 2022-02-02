@@ -171,7 +171,6 @@ import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedViewModel
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeViewModel
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeViewModelImpl
 import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeViewModel
-import com.hedvig.app.feature.referrals.ui.tab.CampaignUseCase
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModel
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModelImpl
 import com.hedvig.app.feature.settings.Language
@@ -678,10 +677,6 @@ val useCaseModule = module {
     single { GetContractDetailsUseCase(get(), get(), get()) }
 }
 
-val campaignModule = module {
-    single { CampaignUseCase(get()) }
-}
-
 val cacheManagerModule = module {
     single { CacheManager(get()) }
 }
@@ -695,7 +690,7 @@ val sharedPreferencesModule = module {
 }
 
 val featureManagerModule = module {
-    single { FeatureManager(get()) }
+    single { FeatureManager(get(), get()) }
 }
 
 val coilModule = module {
