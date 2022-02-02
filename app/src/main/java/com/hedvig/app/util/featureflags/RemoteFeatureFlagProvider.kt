@@ -20,9 +20,10 @@ class RemoteFeatureFlagProvider(
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
-            seCampaignVisible = remoteConfig.fetch().seCampaignVisible
-            noCampaignVisible = remoteConfig.fetch().noCampaignVisible
-            dkCampaignVisible = remoteConfig.fetch().dkCampaignVisible
+            val remoteConfigData = remoteConfig.fetch()
+            seCampaignVisible = remoteConfigData.seCampaignVisible
+            noCampaignVisible = remoteConfigData.noCampaignVisible
+            dkCampaignVisible = remoteConfigData.dkCampaignVisible
         }
     }
 
