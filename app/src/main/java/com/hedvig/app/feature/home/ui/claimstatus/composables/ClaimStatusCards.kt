@@ -33,6 +33,7 @@ import java.util.UUID
 @Composable
 fun ClaimStatusCards(
     goToDetailScreen: ((claimId: String) -> Unit)?,
+    onClaimCardShown: (String) -> Unit,
     claimStatusCardsUiState: NonEmptyList<ClaimStatusCardUiState>,
 ) {
     val pagerState = rememberPagerState(claimStatusCardsUiState.size)
@@ -61,7 +62,8 @@ fun ClaimStatusCards(
                             goToDetailScreen?.invoke(claimStatusUiState.id)
                         }
                     ),
-                isClickable = areCardsClickable
+                isClickable = areCardsClickable,
+                onClaimCardShown = onClaimCardShown,
             )
         }
         if (claimStatusCardsUiState.size == 1) {
@@ -94,6 +96,7 @@ fun ClaimStatusCardsPreview() {
             ClaimStatusCards(
                 goToDetailScreen = {},
                 claimStatusCardsUiState = nonEmptyListOf(claimStatusCardsUiState),
+                onClaimCardShown = {},
             )
         }
     }

@@ -20,7 +20,8 @@ apollo {
     sealedClassesForEnumsMatching.set(
         listOf(
             "TypeOfContract",
-            "CrossSellType"
+            "CrossSellType",
+            "ClaimStatus",
         )
     )
 }

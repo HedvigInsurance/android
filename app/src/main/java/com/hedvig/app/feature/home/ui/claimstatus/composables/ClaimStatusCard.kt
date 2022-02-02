@@ -8,6 +8,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -24,7 +25,11 @@ fun ClaimStatusCard(
     uiState: ClaimStatusCardUiState,
     modifier: Modifier = Modifier,
     isClickable: Boolean = false,
+    onClaimCardShown: (String) -> Unit,
 ) {
+    LaunchedEffect(uiState) {
+        onClaimCardShown(uiState.id)
+    }
     Card(
         modifier = modifier,
         elevation = 4.dp
@@ -61,7 +66,7 @@ fun ClaimStatusCardPreview() {
                 subtitle = "Home Insurance Renter",
                 claimProgressItemsUiState = ClaimProgressUiState.previewData(),
             )
-            ClaimStatusCard(claimStatusData)
+            ClaimStatusCard(claimStatusData, onClaimCardShown = {})
         }
     }
 }

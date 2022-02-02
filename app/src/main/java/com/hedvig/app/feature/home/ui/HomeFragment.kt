@@ -62,6 +62,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             tracker = tracker,
             marketManager = marketManager,
             onClaimDetailCardClicked = model::onClaimDetailCardClicked,
+            onClaimDetailCardShown = model::onClaimDetailCardShown,
         )
 
         binding.swipeToRefresh.setOnRefreshListener {

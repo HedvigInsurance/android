@@ -45,14 +45,23 @@ abstract class HomeViewModel(
     abstract fun reload()
 
     fun onClaimDetailCardClicked(claimId: String) {
-        val claim = (_homeData.value as? ViewState.Success)
+        val claim = getClaimById(claimId) ?: return
+
+        hAnalytics.claimCardClick(claimId, claim.status.rawValue)
+    }
+
+    fun onClaimDetailCardShown(claimId: String) {
+        val claim = getClaimById(claimId) ?: return
+
+        hAnalytics.claimCardVisible(claimId, claim.status.rawValue)
+    }
+
+    private fun getClaimById(claimId: String): HomeQuery.Claim? =
+        (_homeData.value as? ViewState.Success)
             ?.homeData
             ?.claimStatusCards
             ?.firstOrNull { it.id == claimId }
-            ?.claim ?: return
-
-        hAnalytics.claimCardClick(claimId, claim.statusParagraph)
-    }
+            ?.claim
 }
 
 class HomeViewModelImpl(
