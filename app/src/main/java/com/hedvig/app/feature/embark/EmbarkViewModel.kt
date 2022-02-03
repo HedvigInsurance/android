@@ -101,6 +101,10 @@ abstract class EmbarkViewModel(
     private val backStack = Stack<String>()
     private var totalSteps: Int = 0
 
+    init {
+        hAnalytics.screenViewEmbark()
+    }
+
     protected fun setInitialState() {
         storyData.embarkStory?.let { story ->
             valueStore.computedValues = story.getComputedValues()
