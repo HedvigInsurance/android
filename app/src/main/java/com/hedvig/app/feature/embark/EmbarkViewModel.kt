@@ -23,6 +23,7 @@ import com.hedvig.app.feature.embark.util.toExpressionFragment
 import com.hedvig.app.util.ProgressPercentage
 import com.hedvig.app.util.plus
 import com.hedvig.app.util.safeLet
+import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -43,6 +44,7 @@ abstract class EmbarkViewModel(
     private val valueStore: ValueStore,
     private val graphQLQueryUseCase: GraphQLQueryUseCase,
     private val chatRepository: ChatRepository,
+    private val hAnalytics: HAnalytics,
     loginStatusService: LoginStatusService,
 ) : ViewModel() {
     private val _passageState = MutableLiveData<PassageState>()
@@ -189,6 +191,7 @@ abstract class EmbarkViewModel(
     }
 
     private fun handleRedirectLocation(location: EmbarkExternalRedirectLocation) {
+        hAnalytics.embarkExternalRedirect(location.rawValue)
         when (location) {
             EmbarkExternalRedirectLocation.OFFER -> sendOfferId()
             EmbarkExternalRedirectLocation.CLOSE -> _events.trySend(Event.Close)
@@ -503,8 +506,9 @@ class EmbarkViewModelImpl(
     chatRepository: ChatRepository,
     tracker: EmbarkTracker,
     valueStore: ValueStore,
+    hAnalytics: HAnalytics,
     storyName: String,
-) : EmbarkViewModel(tracker, valueStore, graphQLQueryUseCase, chatRepository, loginStatusService) {
+) : EmbarkViewModel(tracker, valueStore, graphQLQueryUseCase, chatRepository, hAnalytics, loginStatusService) {
 
     init {
         fetchStory(storyName)

@@ -22,6 +22,7 @@ apollo {
             "TypeOfContract",
             "CrossSellType",
             "ClaimStatus",
+            "EmbarkExternalRedirectLocation",
         )
     )
 }

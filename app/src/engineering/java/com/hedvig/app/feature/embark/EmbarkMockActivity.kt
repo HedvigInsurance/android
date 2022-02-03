@@ -9,6 +9,7 @@ import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
 import com.hedvig.app.feature.onboarding.MemberIdViewModel
 import com.hedvig.app.feature.onboarding.MockMemberIdViewModel
+import com.hedvig.app.feature.tracking.MockHAnalytics
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.onboardingModule
 import com.hedvig.app.testdata.feature.embark.data.PREVIOUS_INSURER_STORY
@@ -58,7 +59,7 @@ class EmbarkMockActivity : MockActivity() {
     override val original = listOf(embarkModule, onboardingModule)
     override val mocks = listOf(
         module {
-            viewModel<EmbarkViewModel> { MockEmbarkViewModel(get(), get(), get(), get()) }
+            viewModel<EmbarkViewModel> { MockEmbarkViewModel(get(), get(), get(), MockHAnalytics(), get()) }
             viewModel<MemberIdViewModel> { MockMemberIdViewModel() }
         }
     )
