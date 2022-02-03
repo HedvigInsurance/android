@@ -20,11 +20,13 @@ import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.viewBinding
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SplashActivity : BaseActivity(R.layout.activity_splash) {
     private val loggedInService: LoginStatusService by inject()
     private val marketManager: MarketManager by inject()
     private val binding by viewBinding(ActivitySplashBinding::bind)
+    private val model: SplashViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +49,7 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
                 LoginStatus.ONBOARDING,
                 LoginStatus.LOGGED_IN -> {
                     val dynamicLink = getDynamicLinkFromFirebase(intent)
+                    model.onDynamicLinkOpened(dynamicLink)
                     dynamicLink.startActivity(
                         context = this@SplashActivity,
                         marketManager = marketManager,
