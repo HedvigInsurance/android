@@ -11,7 +11,15 @@ class MockEmbarkViewModel(
     chatRepository: ChatRepository,
     hAnalytics: HAnalytics,
     loginStatusService: LoginStatusService,
-) : EmbarkViewModel(tracker, ValueStoreImpl(), graphQLQueryUseCase, chatRepository, hAnalytics, loginStatusService) {
+) : EmbarkViewModel(
+    tracker,
+    ValueStoreImpl(),
+    graphQLQueryUseCase,
+    chatRepository,
+    hAnalytics,
+    "",
+    loginStatusService,
+) {
     init {
         fetchStory("")
     }

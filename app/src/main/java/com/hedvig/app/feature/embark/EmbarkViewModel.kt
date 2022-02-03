@@ -45,6 +45,7 @@ abstract class EmbarkViewModel(
     private val graphQLQueryUseCase: GraphQLQueryUseCase,
     private val chatRepository: ChatRepository,
     private val hAnalytics: HAnalytics,
+    private val storyName: String,
     loginStatusService: LoginStatusService,
 ) : ViewModel() {
     private val _passageState = MutableLiveData<PassageState>()
@@ -318,6 +319,7 @@ abstract class EmbarkViewModel(
 
         storyData.embarkStory?.let { story ->
             _passageState.value?.passage?.name?.let { currentPassageName ->
+                hAnalytics.embarkPassageGoBack(storyName, currentPassageName)
                 tracker.track("Passage Go Back - $currentPassageName")
             }
             val nextPassage = story.passages.find { it.name == passageName }
@@ -508,7 +510,15 @@ class EmbarkViewModelImpl(
     valueStore: ValueStore,
     hAnalytics: HAnalytics,
     storyName: String,
-) : EmbarkViewModel(tracker, valueStore, graphQLQueryUseCase, chatRepository, hAnalytics, loginStatusService) {
+) : EmbarkViewModel(
+    tracker,
+    valueStore,
+    graphQLQueryUseCase,
+    chatRepository,
+    hAnalytics,
+    storyName,
+    loginStatusService,
+) {
 
     init {
         fetchStory(storyName)
