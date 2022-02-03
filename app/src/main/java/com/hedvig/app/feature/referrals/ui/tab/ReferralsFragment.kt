@@ -174,10 +174,10 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                             ) {
                                 (invites.adapter as? ReferralsAdapter)?.submitList(
                                     listOfNotNull(
+                                        ReferralsModel.Title,
                                         if (viewState.showCampaignBar) ReferralsModel.ReferralTopBar(
                                             getString(R.string.REFERRAL_CAMPAIGN_BANNER_TITLE)
                                         ) else null,
-                                        ReferralsModel.Title,
                                         ReferralsModel.Header.LoadedEmptyHeader(viewState.data),
                                         ReferralsModel.Code.LoadedCode(viewState.data)
                                     )
@@ -186,10 +186,10 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                             }
 
                             val items = listOfNotNull(
+                                ReferralsModel.Title,
                                 if (viewState.showCampaignBar) ReferralsModel.ReferralTopBar(
                                     getString(R.string.REFERRAL_CAMPAIGN_BANNER_TITLE)
                                 ) else null,
-                                ReferralsModel.Title,
                                 ReferralsModel.Header.LoadedHeader(viewState.data),
                                 ReferralsModel.Code.LoadedCode(viewState.data),
                                 ReferralsModel.InvitesHeader

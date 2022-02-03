@@ -4,8 +4,11 @@ import android.animation.ValueAnimator
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.unit.dp
 import androidx.core.view.doOnDetach
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.ListAdapter
@@ -494,7 +497,11 @@ class ReferralsAdapter(
                 }
                 composeView.setContent {
                     HedvigTheme {
-                        InfoBanner(onClick = onBannerClicked, text = data.description)
+                        InfoBanner(
+                            onClick = onBannerClicked,
+                            text = data.description,
+                            modifier = Modifier.padding(top = 16.dp)
+                        )
                     }
                 }
             }

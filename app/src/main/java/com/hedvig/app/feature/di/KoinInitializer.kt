@@ -5,7 +5,6 @@ import androidx.startup.Initializer
 import com.hedvig.app.adyenModule
 import com.hedvig.app.applicationModule
 import com.hedvig.app.cacheManagerModule
-import com.hedvig.app.campaignModule
 import com.hedvig.app.changeAddressModule
 import com.hedvig.app.changeDateBottomSheetModule
 import com.hedvig.app.chatEventModule
