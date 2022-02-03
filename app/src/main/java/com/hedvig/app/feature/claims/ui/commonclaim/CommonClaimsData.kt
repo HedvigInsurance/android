@@ -8,6 +8,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class CommonClaimsData(
+    val id: String,
     val iconUrls: ThemedIconUrls,
     val title: String,
     val color: HedvigColor,
@@ -23,6 +24,7 @@ data class CommonClaimsData(
         ): CommonClaimsData? {
             val layout = data.layout.asTitleAndBulletPoints ?: return null
             return CommonClaimsData(
+                data.id,
                 ThemedIconUrls.from(data.icon.variants.fragments.iconVariantsFragment),
                 data.title,
                 layout.color,

@@ -58,6 +58,7 @@ query HomeQuery($locale: Locale!, $languageCode: String!) {
   }
   isEligibleToCreateClaim
   commonClaims(locale: $locale) {
+    id
     title
     icon {
       variants {

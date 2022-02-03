@@ -20,6 +20,8 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
 import com.hedvig.app.util.extensions.viewBinding
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.getViewModel
+import org.koin.core.parameter.parametersOf
 
 class CommonClaimActivity : BaseActivity(R.layout.activity_common_claim) {
 
@@ -30,6 +32,7 @@ class CommonClaimActivity : BaseActivity(R.layout.activity_common_claim) {
         super.onCreate(savedInstanceState)
 
         val data = intent.getParcelableExtra<CommonClaimsData>(CLAIMS_DATA) ?: return
+        getViewModel<CommonClaimViewModel> { parametersOf(data.id) }
 
         binding.apply {
             window.compatSetDecorFitsSystemWindows(false)
