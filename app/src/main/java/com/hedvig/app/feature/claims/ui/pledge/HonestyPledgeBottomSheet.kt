@@ -13,6 +13,7 @@ import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 class HonestyPledgeBottomSheet(
     private val customActivityLaunch: ((Intent) -> Unit)? = null,
@@ -27,6 +28,8 @@ class HonestyPledgeBottomSheet(
     ): View? = inflater.inflate(R.layout.bottom_sheet_honesty_pledge, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        getViewModel<HonestyPledgeViewModel>()
+
         binding.bottomSheetHonestyPledgeButton.setHapticClickListener {
             tracker.pledgeHonesty()
             startClaimsFlow()

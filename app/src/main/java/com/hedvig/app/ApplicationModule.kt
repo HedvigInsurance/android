@@ -51,6 +51,7 @@ import com.hedvig.app.feature.claimdetail.ui.ClaimDetailViewModel
 import com.hedvig.app.feature.claims.data.ClaimsRepository
 import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
+import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeViewModel
 import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.feature.crossselling.ui.CrossSellResultViewModel
@@ -405,6 +406,7 @@ val viewModelModule = module {
     viewModel { GenericAuthViewModel(get()) }
     viewModel { (otpId: String, credential: String) -> OtpInputViewModel(otpId, credential, get(), get(), get()) }
     viewModel { (claimId: String) -> ClaimDetailViewModel(claimId, get(), get(), get()) }
+    viewModel { HonestyPledgeViewModel(get()) }
 }
 
 val choosePlanModule = module {
