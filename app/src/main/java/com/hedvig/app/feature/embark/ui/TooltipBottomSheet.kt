@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.embark.ui
 
 import android.os.Bundle
-import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,7 +26,7 @@ import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.windowHeight
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import e
-import kotlinx.parcelize.Parcelize
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 class TooltipBottomSheet : BottomSheetDialogFragment() {
     private val binding by viewBinding(TooltipBottomSheetBinding::bind)
@@ -39,6 +38,7 @@ class TooltipBottomSheet : BottomSheetDialogFragment() {
     ): View = inflater.inflate(R.layout.tooltip_bottom_sheet, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        getViewModel<TooltipViewModel>()
         val tooltips = requireArguments().getParcelableArrayList<Tooltip>(TOOLTIPS)
         if (tooltips == null) {
             e { "Programmer error: no tooltips passed to ${this::class.java.name}" }
@@ -176,6 +176,3 @@ class TooltipBottomSheet : BottomSheetDialogFragment() {
             list.map { TooltipModel.Tooltip.TooltipWithOutTitle(it.description) }.toTypedArray()
     }
 }
-
-@Parcelize
-data class Tooltip(val title: String, val description: String) : Parcelable

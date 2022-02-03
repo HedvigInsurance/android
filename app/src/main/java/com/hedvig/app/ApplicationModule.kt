@@ -85,6 +85,7 @@ import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionParams
 import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionViewModel
 import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
 import com.hedvig.app.feature.embark.passages.textaction.TextActionViewModel
+import com.hedvig.app.feature.embark.ui.TooltipViewModel
 import com.hedvig.app.feature.genericauth.CreateOtpAttemptUseCase
 import com.hedvig.app.feature.genericauth.GenericAuthViewModel
 import com.hedvig.app.feature.genericauth.otpinput.OtpInputViewModel
@@ -410,6 +411,7 @@ val viewModelModule = module {
     viewModel { HonestyPledgeViewModel(get()) }
     viewModel { (commonClaimId: String) -> CommonClaimViewModel(commonClaimId, get()) }
     viewModel { SplashViewModel(get()) }
+    viewModel { TooltipViewModel(get()) }
 }
 
 val choosePlanModule = module {
