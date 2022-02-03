@@ -61,7 +61,7 @@ data class DanishAddress(
     companion object {
         fun fromDto(dto: AddressAutocompleteQuery.AutoCompleteAddress): DanishAddress {
             return DanishAddress(
-                id = dto.id ?: UUID.randomUUID().toString(),
+                id = dto.id,
                 address = dto.address,
                 streetName = dto.streetName,
                 streetNumber = dto.streetNumber,
