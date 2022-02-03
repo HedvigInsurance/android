@@ -73,4 +73,8 @@ class ClaimDetailViewModel(
 
         hAnalytics.claimDetailClickOpenChat(claimId, uiState.claimStatus.rawValue)
     }
+
+    fun onPlayClick() {
+        hAnalytics.claimsDetailRecordingPlayed(claimId)
+    }
 }
