@@ -12,6 +12,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -30,6 +31,17 @@ class ClaimDetailViewModel(
     private val getClaimDetailUiStateFlowUseCase: GetClaimDetailUiStateFlowUseCase,
     private val hAnalytics: HAnalytics,
 ) : ViewModel() {
+    init {
+        viewModelScope.launch {
+            when (val result = getClaimDetailUiStateFlowUseCase.invoke(claimId).first()) {
+                is Either.Left -> {}
+                is Either.Right -> {
+                    hAnalytics.screenViewClaimsStatusDetail(claimId, result.value.claimStatus.rawValue)
+                }
+            }
+        }
+    }
+
     sealed class Event {
         object StartChat : Event()
         object Error : Event()
