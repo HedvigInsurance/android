@@ -61,6 +61,7 @@ class UserViewModel(
                     _events.trySend(Event.Error(result.message))
                 }
                 LogoutUseCase.LogoutResult.Success -> {
+                    hAnalytics.loggedOut()
                     _events.trySend(Event.Logout)
                 }
             }
