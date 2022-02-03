@@ -28,6 +28,18 @@ data class DanishAddress(
             postalCode != null &&
             city != null
 
+    fun toPresentableResult(): Pair<String, String> {
+        val topString = buildString {
+            append("$streetName $streetNumber")
+            if (floor == null) return@buildString
+            append(", $floor.")
+            if (apartment == null) return@buildString
+            append(" $apartment")
+        }.trim()
+        val bottomString = "$postalCode $city"
+        return topString to bottomString
+    }
+
     fun toFlatQueryString(): String {
         if (onlyAddressIsNotNull) {
             return address
