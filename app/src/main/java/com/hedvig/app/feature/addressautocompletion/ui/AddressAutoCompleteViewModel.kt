@@ -41,12 +41,11 @@ class AddressAutoCompleteViewModel(
 
     val viewState: StateFlow<AddressAutoCompleteViewState> =
         combine(currentInput, queryResults) { input, results ->
-            val finalResult: DanishAddress? = getFinalResultOrNull(input, results)
             AddressAutoCompleteViewState(
                 input = input,
                 results = results,
                 error = null, // TODO errors shown when and how?
-                finalResult = finalResult
+                finalResult = getFinalResultOrNull(input, results)
             )
         }.stateIn(
             viewModelScope,

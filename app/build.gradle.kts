@@ -298,8 +298,3 @@ lokalise {
 
     downloadConfig = com.likandr.gradle.config.DownloadConfig()
 }
-
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
-    kotlinOptions.freeCompilerArgs += "-X-opt-in=kotlin.RequiresOptIn"
-}

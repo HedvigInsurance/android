@@ -23,7 +23,7 @@ class EmbarkAddressAutoCompleteViewModel(
         ViewState(address)
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
+        started = SharingStarted.WhileSubscribed(5_000),
         initialValue = ViewState(initialAddress),
     )
 
