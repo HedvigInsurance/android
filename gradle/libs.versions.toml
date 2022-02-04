@@ -35,6 +35,7 @@ androidx-other-fragment = "1.3.6"
 androidx-other-browser = "1.3.0"
 androidx-other-workManager = "2.7.0"
 androidx-other-startup = "1.1.0"
+androidx-other-transition = "1.4.1"
 androidx-other-activityCompose = "1.4.0"
 androidx-test-core = "1.4.0"
 androidx-test-junit = "1.1.3"
@@ -130,6 +131,7 @@ androidx-other-fragment = { module = "androidx.fragment:fragment-ktx", version.r
 androidx-other-browser = { module = "androidx.browser:browser", version.ref = "androidx-other-browser" }
 androidx-other-workManager = { module = "androidx.work:work-runtime-ktx", version.ref = "androidx-other-workManager" }
 androidx-other-startup = { module = "androidx.startup:startup-runtime", version.ref = "androidx-other-startup" }
+androidx-other-transition = { module = "androidx.transition:transition-ktx", version.ref = "androidx-other-transition" }
 androidx-other-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-other-activityCompose" }
 
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test-core" }
