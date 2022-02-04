@@ -3,13 +3,16 @@ package com.hedvig.app.feature.onboarding
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.app.util.extensions.replace
+import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
-abstract class ChoosePlanViewModel : ViewModel() {
+abstract class ChoosePlanViewModel(
+    private val hAnalytics: HAnalytics,
+) : ViewModel() {
 
     sealed class ViewState {
         data class Success(val bundleItems: List<OnboardingModel.BundleItem>) : ViewState()
@@ -43,6 +46,7 @@ abstract class ChoosePlanViewModel : ViewModel() {
     fun onContinue() {
         val selectedBundle = (_viewState.value as? ViewState.Success)?.bundleItems?.firstOrNull { it.selected }?.bundle
         if (selectedBundle != null) {
+            hAnalytics.onboardingChooseEmbarkFlow((selectedBundle.storyName))
             _events.trySend(
                 Event.Continue(
                     storyName = selectedBundle.storyName,
@@ -54,8 +58,9 @@ abstract class ChoosePlanViewModel : ViewModel() {
 }
 
 class ChoosePlanViewModelImpl(
-    private val getBundlesUseCase: GetBundlesUseCase
-) : ChoosePlanViewModel() {
+    private val getBundlesUseCase: GetBundlesUseCase,
+    hAnalytics: HAnalytics,
+) : ChoosePlanViewModel(hAnalytics) {
 
     init {
         load()

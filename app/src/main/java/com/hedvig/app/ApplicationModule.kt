@@ -415,7 +415,7 @@ val viewModelModule = module {
 }
 
 val choosePlanModule = module {
-    viewModel<ChoosePlanViewModel> { ChoosePlanViewModelImpl(get()) }
+    viewModel<ChoosePlanViewModel> { ChoosePlanViewModelImpl(get(), get()) }
 }
 
 val onboardingModule = module {
