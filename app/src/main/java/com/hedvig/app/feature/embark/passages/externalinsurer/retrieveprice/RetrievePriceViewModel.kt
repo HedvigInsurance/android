@@ -86,6 +86,7 @@ class RetrievePriceViewModel(
     }
 
     fun onCollectionStarted(reference: String) {
+        hAnalytics.screenViewDataCollectionSuccess(collectionId)
         _viewState.update { it.copy(collectionStarted = ViewState.CollectionStartedState(reference)) }
     }
 
