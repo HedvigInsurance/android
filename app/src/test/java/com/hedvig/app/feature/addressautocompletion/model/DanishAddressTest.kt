@@ -47,6 +47,26 @@ internal class DanishAddressTest {
     }
 
     @Test
+    fun `output when floor is null`() {
+        val input = DanishAddress(
+            id = "0a3f50c0-900f-32b8-e044-0003ba298018",
+            address = "Aabygade 1C, 1, 8300 Odder",
+            streetName = "Aabygade",
+            streetNumber = "1C",
+            floor = null,
+            apartment = "1",
+            postalCode = "8300",
+            city = "Odder",
+        )
+
+        val output = input.toPresentableText()
+
+        val (top, bot) = output
+        assertThat(top).isEqualTo("Aabygade 1C, 1")
+        assertThat(bot).isEqualTo("8300 Odder")
+    }
+
+    @Test
     fun `output when floor and apartment are null`() {
         val input = DanishAddress(
             id = null,

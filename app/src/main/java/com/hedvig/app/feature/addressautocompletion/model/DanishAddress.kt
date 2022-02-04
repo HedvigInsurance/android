@@ -36,10 +36,14 @@ data class DanishAddress(
 
         val topString = buildString {
             append("$streetName $streetNumber")
-            if (floor == null) return@buildString
-            append(", $floor.")
-            if (apartment == null) return@buildString
-            append(" $apartment")
+            append(
+                when {
+                    floor != null && apartment != null -> ", $floor. $apartment"
+                    floor != null -> ", $floor."
+                    apartment != null -> ", $apartment"
+                    else -> ""
+                }
+            )
         }.trim()
         val bottomString = "$postalCode $city"
         return topString to bottomString
