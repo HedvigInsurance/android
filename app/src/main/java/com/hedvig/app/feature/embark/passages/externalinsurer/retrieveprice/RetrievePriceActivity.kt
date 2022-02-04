@@ -59,7 +59,8 @@ class RetrievePriceInfoActivity : BaseActivity() {
             .onEach { event ->
                 when (event) {
                     is RetrievePriceViewModel.Event.AuthInformation -> {
-                        InsurelyDialog.newInstance(event.reference)
+                        InsurelyDialog
+                            .newInstance(event.reference, parameter.selectedInsuranceProviderCollectionId)
                             .show(supportFragmentManager, AuthenticateDialog.TAG)
                     }
                 }

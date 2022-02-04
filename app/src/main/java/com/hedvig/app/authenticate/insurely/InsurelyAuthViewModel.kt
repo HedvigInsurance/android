@@ -2,6 +2,7 @@ package com.hedvig.app.authenticate.insurely
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -11,8 +12,14 @@ import kotlinx.coroutines.flow.stateIn
 
 class InsurelyAuthViewModel(
     reference: String,
-    getDataCollectionUseCase: GetDataCollectionUseCase
+    getDataCollectionUseCase: GetDataCollectionUseCase,
+    providerId: String,
+    hAnalytics: HAnalytics,
 ) : ViewModel() {
+
+    init {
+        hAnalytics.screenViewDataCollectionAuthenticating(providerId)
+    }
 
     private val _events = Channel<Event>(Channel.UNLIMITED)
     val events = _events.receiveAsFlow()

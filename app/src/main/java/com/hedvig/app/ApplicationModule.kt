@@ -569,7 +569,7 @@ val externalInsuranceModule = module {
 }
 
 val insurelyAuthModule = module {
-    viewModel { (reference: String) -> InsurelyAuthViewModel(reference, get()) }
+    viewModel { (reference: String, providerId: String) -> InsurelyAuthViewModel(reference, get(), providerId, get()) }
 }
 
 val serviceModule = module {
