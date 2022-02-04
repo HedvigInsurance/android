@@ -177,25 +177,13 @@ private fun SuggestionsList(
             items = viewState.results,
             key = { item -> item.id ?: item.address }
         ) { address: DanishAddress ->
-            val primaryText: String =
-                if (address.streetName != null && address.streetNumber != null) {
-                    "${address.streetName} ${address.streetNumber}"
-                } else {
-                    address.address
-                }
-            val secondaryText: (@Composable () -> Unit)? =
-                if (address.postalCode != null && address.city != null) {
-                    { Text("${address.postalCode} ${address.city}") }
-                } else {
-                    null
-                }
+            val (primaryText, secondaryText) = address.toPresentableText()
             ListItem(
                 text = { Text(text = primaryText) },
-                secondaryText = secondaryText,
+                secondaryText = secondaryText?.let { { Text(secondaryText) } },
                 singleLineSecondaryText = true,
                 modifier = Modifier.clickable {
                     selectAddress(address)
-                    // todo figure out when this should also automatically submit the selection
                 }
             )
         }
@@ -212,7 +200,7 @@ fun AddressAutoCompleteScreenPreview() {
             val previewDanishAddress = DanishAddress.previewData()
             AddressAutoCompleteScreen(
                 AddressAutoCompleteViewState(
-                    input = DanishAddressInput(previewDanishAddress.toFlatQueryString(), previewDanishAddress),
+                    input = DanishAddressInput(previewDanishAddress.toQueryString(), previewDanishAddress),
                     results = DanishAddress.previewList(),
                 ),
                 {}, {}, {}, {}
