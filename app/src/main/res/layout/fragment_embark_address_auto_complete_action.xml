@@ -42,6 +42,7 @@
         app:layout_constraintBottom_toTopOf="@id/textActionSubmit"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        tools:background="#ffffff"
         tools:layout_height="60dp" />
 
     <Button
