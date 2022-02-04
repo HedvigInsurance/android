@@ -16,14 +16,23 @@ data class DanishAddress(
     val city: String?,
 ) : Parcelable {
 
-    fun isValidFinalSelection(): Boolean =
-        streetName != null &&
+    val isValidFinalSelection: Boolean
+        get() = streetName != null &&
             streetNumber != null &&
             postalCode != null &&
             city != null
 
+    val onlyContainsAddress: Boolean
+        get() = id == null &&
+            streetName == null &&
+            streetNumber == null &&
+            floor == null &&
+            apartment == null &&
+            postalCode == null &&
+            city == null
+
     fun toPresentableText(): Pair<String, String?> {
-        if (onlyAddressIsNotNull) return address to null
+        if (onlyContainsAddress) return address to null
 
         val topString = buildString {
             append("$streetName $streetNumber")
@@ -37,7 +46,7 @@ data class DanishAddress(
     }
 
     fun toQueryString(): String {
-        if (onlyAddressIsNotNull) return address
+        if (onlyContainsAddress) return address
         return buildString {
             appendIfNotNull(streetName)
             appendIfNotNull(" ")
@@ -52,15 +61,6 @@ data class DanishAddress(
             appendIfNotNull(city)
         }
     }
-
-    private val onlyAddressIsNotNull: Boolean
-        get() = id == null &&
-            streetName == null &&
-            streetNumber == null &&
-            floor == null &&
-            apartment == null &&
-            postalCode == null &&
-            city == null
 
     companion object {
         fun fromDto(dto: AddressAutocompleteQuery.AutoCompleteAddress): DanishAddress {

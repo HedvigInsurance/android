@@ -1,5 +1,5 @@
-query AddressAutocomplete($input: String!) {
-  autoCompleteAddress(input: $input, options: { type: STREET }) {
+query AddressAutocomplete($input: String!, $type: AddressAutocompleteType!) {
+  autoCompleteAddress(input: $input, options: { type: $type }) {
     id
     address
     streetName

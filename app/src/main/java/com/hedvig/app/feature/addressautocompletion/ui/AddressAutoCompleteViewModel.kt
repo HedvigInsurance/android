@@ -31,7 +31,7 @@ class AddressAutoCompleteViewModel(
     private val queryResults: Flow<List<DanishAddress>> = currentInput
         .debounce(50)
         .mapLatest { input ->
-            getDanishAddressAutoCompletionUseCase.invoke(input.queryString)
+            getDanishAddressAutoCompletionUseCase.invoke(input)
                 .fold(
                     { emptyList() },
                     AddressAutoCompleteResults::resultList
@@ -73,7 +73,7 @@ class AddressAutoCompleteViewModel(
         if (results.size != 1) return null
         val selectedDanishAddress = input.selectedDanishAddress
         if (selectedDanishAddress != results.first()) return null
-        if (selectedDanishAddress.isValidFinalSelection().not()) return null
+        if (selectedDanishAddress.isValidFinalSelection.not()) return null
         return selectedDanishAddress
     }
 }
