@@ -35,6 +35,7 @@ import com.hedvig.app.feature.offer.usecase.providerstatus.GetProviderDisplayNam
 import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.hanalytics.HAnalytics
 import e
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
@@ -154,6 +155,7 @@ class OfferViewModelImpl(
     private val adyenRepository: AdyenRepository,
     private val marketManager: MarketManager,
     private val chatRepository: ChatRepository,
+    private val hAnalytics: HAnalytics,
 ) : OfferViewModel() {
 
     private lateinit var quoteIds: List<String>
@@ -301,6 +303,7 @@ class OfferViewModelImpl(
                     Event.ApproveError(postSignDependencies.postSignScreen)
                 )
                 is ApproveQuotesUseCase.ApproveQuotesResult.Success -> {
+                    hAnalytics.quotesSigned(quoteIds.toTypedArray())
                     loginStatusService.isViewingOffer = false
                     _events.trySend(
                         Event.ApproveSuccessful(

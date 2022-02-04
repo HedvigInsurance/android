@@ -13,6 +13,7 @@ import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.ValidationResult
 import com.hedvig.app.util.validateEmail
 import com.hedvig.app.util.validateNationalIdentityNumber
+import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,6 +31,7 @@ class CheckoutViewModel(
     private val signQuotesUseCase: SignQuotesUseCase,
     private val marketManager: MarketManager,
     private val loginStatusService: LoginStatusService,
+    private val hAnalytics: HAnalytics,
 ) : ViewModel() {
 
     private lateinit var quoteIds: List<String>
@@ -148,6 +150,7 @@ class CheckoutViewModel(
             val event = when (result) {
                 is SignQuotesUseCase.SignQuoteResult.Error -> Event.Error(result.message)
                 SignQuotesUseCase.SignQuoteResult.Success -> {
+                    hAnalytics.quotesSigned(quoteIds.toTypedArray())
                     loginStatusService.isLoggedIn = true
                     loginStatusService.isViewingOffer = false
                     // Delay sending success in order for the signed quotes to be added on the member

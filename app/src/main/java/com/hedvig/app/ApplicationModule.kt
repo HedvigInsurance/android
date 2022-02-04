@@ -396,8 +396,8 @@ val viewModelModule = module {
         )
     }
     viewModel { TerminatedContractsViewModel(get()) }
-    viewModel { (autoStartToken: String) ->
-        SwedishBankIdSignViewModel(autoStartToken, get(), get(), get(), get())
+    viewModel { (autoStartToken: String, quoteIds: List<String>) ->
+        SwedishBankIdSignViewModel(autoStartToken, get(), get(), get(), get(), get(), quoteIds)
     }
     viewModel { (result: CrossSellingResult) -> CrossSellResultViewModel(result, get()) }
     viewModel { AudioRecorderViewModel(get(), get()) }
@@ -464,6 +464,7 @@ val offerModule = module {
             adyenRepository = get(),
             marketManager = get(),
             chatRepository = get(),
+            hAnalytics = get(),
         )
     }
     single { ApproveQuotesUseCase(get(), get(), get(), get()) }
@@ -547,7 +548,7 @@ val changeDateBottomSheetModule = module {
 }
 
 val checkoutModule = module {
-    viewModel { (ids: List<String>) -> CheckoutViewModel(ids, get(), get(), get(), get()) }
+    viewModel { (ids: List<String>) -> CheckoutViewModel(ids, get(), get(), get(), get(), get()) }
 }
 
 val retrievePriceModule = module {
