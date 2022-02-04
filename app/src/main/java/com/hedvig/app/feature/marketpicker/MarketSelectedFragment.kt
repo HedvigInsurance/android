@@ -53,6 +53,7 @@ class MarketSelectedFragment : Fragment(R.layout.fragment_market_selected) {
             }
 
             signUp.setHapticClickListener {
+                viewModel.onClickSignUp()
                 tracker.signUp()
                 marketManager.market?.openOnboarding(requireContext())
             }

@@ -28,6 +28,10 @@ abstract class MarketingViewModel(
         _navigationState.postValue(navigationState)
     }
 
+    fun onClickSignUp() {
+        hAnalytics.buttonClickMarketingOnboard()
+    }
+
     fun onClickLogin() {
         hAnalytics.buttonClickMarketingLogin()
     }
