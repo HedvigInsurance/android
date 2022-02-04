@@ -18,7 +18,7 @@ class RetrievePriceViewModel(
     private val insurerName: String,
     marketManager: MarketManager,
     private val startDataCollectionUseCase: StartDataCollectionUseCase,
-    hAnalytics: HAnalytics,
+    private val hAnalytics: HAnalytics,
 ) : ViewModel() {
 
     private val _events = Channel<Event>(Channel.UNLIMITED)
@@ -90,6 +90,7 @@ class RetrievePriceViewModel(
     }
 
     fun onCollectionFailed() {
+        hAnalytics.screenViewDataCollectionFail(collectionId)
         _viewState.update { it.copy(collectionFailed = ViewState.CollectionFailedState(insurerName)) }
     }
 
