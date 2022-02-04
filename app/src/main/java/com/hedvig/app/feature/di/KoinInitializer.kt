@@ -106,7 +106,6 @@ class KoinInitializer : Initializer<KoinApplication> {
                 retrievePriceModule,
                 externalInsuranceModule,
                 insurelyAuthModule,
-                campaignModule,
                 deviceIdStoreModule,
             )
         )
