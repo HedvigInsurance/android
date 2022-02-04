@@ -413,7 +413,7 @@ val viewModelModule = module {
     viewModel { (commonClaimId: String) -> CommonClaimViewModel(commonClaimId, get()) }
     viewModel { SplashViewModel(get()) }
     viewModel { TooltipViewModel(get()) }
-    viewModel { AskForPriceInfoViewModel(get()) }
+    viewModel { (collectionId: String) -> AskForPriceInfoViewModel(collectionId, get()) }
 }
 
 val choosePlanModule = module {

@@ -11,7 +11,6 @@ import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.ViewModel
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceInfoActivity
@@ -19,15 +18,17 @@ import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.Retr
 import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceInfoActivity.Companion.SSN_RESULT
 import com.hedvig.app.ui.compose.composables.appbar.TopAppBarWithBack
 import com.hedvig.app.ui.compose.theme.HedvigTheme
-import com.hedvig.hanalytics.HAnalytics
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class AskForPriceInfoActivity : BaseActivity() {
-    private val model: AskForPriceInfoViewModel by viewModel()
-
     private val parameter by lazy {
         intent.getParcelableExtra<InsuranceProviderParameter>(PARAMETER)
             ?: throw Error("Programmer error: DATA is null in ${this.javaClass.name}")
+    }
+
+    private val model: AskForPriceInfoViewModel by viewModel {
+        parametersOf(parameter.selectedInsuranceProviderCollectionId)
     }
 
     private val retrievePriceActivityResultLauncher =
@@ -55,7 +56,7 @@ class AskForPriceInfoActivity : BaseActivity() {
                     AskForPriceScreen(
                         parameter.selectedInsuranceProviderName,
                         onSkipRetrievePriceInfo = {
-                            model.onSkipRetrievePriceInfo(parameter.selectedInsuranceProviderCollectionId)
+                            model.onSkipRetrievePriceInfo()
                             finishWithResult(null, null)
                         },
                         onNavigateToRetrievePrice = ::startRetrievePriceActivity
@@ -90,15 +91,6 @@ class AskForPriceInfoActivity : BaseActivity() {
     }
 }
 
-class AskForPriceInfoViewModel(
-    private val hAnalytics: HAnalytics,
-) : ViewModel() {
-
-    fun onSkipRetrievePriceInfo(providerId: String) {
-        hAnalytics.dataCollectionSkipped(providerId)
-    }
-}
-
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AskForPriceScreen(
@@ -113,7 +105,7 @@ fun AskForPriceScreen(
     )
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun AskForPriceScreenPreview() {
     HedvigTheme {
