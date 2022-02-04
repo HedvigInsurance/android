@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.validateNationalIdentityNumber
+import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +17,8 @@ class RetrievePriceViewModel(
     private val collectionId: String,
     private val insurerName: String,
     marketManager: MarketManager,
-    private val startDataCollectionUseCase: StartDataCollectionUseCase
+    private val startDataCollectionUseCase: StartDataCollectionUseCase,
+    hAnalytics: HAnalytics,
 ) : ViewModel() {
 
     private val _events = Channel<Event>(Channel.UNLIMITED)
@@ -30,6 +32,10 @@ class RetrievePriceViewModel(
 
     private val _viewState = MutableStateFlow(ViewState(market = marketManager.market))
     val viewState: StateFlow<ViewState> = _viewState
+
+    init {
+        hAnalytics.screenViewDataCollectionCredentials(collectionId)
+    }
 
     fun onRetrievePriceInfo() {
         if (viewState.value.inputError != null) {

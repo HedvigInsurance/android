@@ -559,7 +559,8 @@ val retrievePriceModule = module {
             collectionId = data.selectedInsuranceProviderCollectionId,
             insurerName = data.selectedInsuranceProviderName,
             marketManager = get(),
-            startDataCollectionUseCase = get()
+            startDataCollectionUseCase = get(),
+            hAnalytics = get(),
         )
     }
 }
