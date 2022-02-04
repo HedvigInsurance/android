@@ -38,6 +38,7 @@
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginEnd="@dimen/base_margin_double"
         android:layout_marginBottom="@dimen/base_margin_double"
+        android:transitionGroup="true"
         app:layout_constraintBottom_toTopOf="@id/textActionSubmit"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
