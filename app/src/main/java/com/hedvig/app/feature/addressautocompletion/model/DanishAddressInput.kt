@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.addressautocompletion.model
 
-data class DanishAddressInput(
+class DanishAddressInput private constructor(
     val rawText: String,
     val selectedDanishAddress: DanishAddress? = null,
 ) {
@@ -29,5 +29,14 @@ data class DanishAddressInput(
             rawText = address.toPresentableText().first,
             selectedDanishAddress = address,
         )
+    }
+
+    companion object {
+        fun fromDanishAddress(danishAddress: DanishAddress?): DanishAddressInput {
+            return DanishAddressInput(
+                rawText = danishAddress?.toPresentableText()?.first ?: "",
+                selectedDanishAddress = danishAddress,
+            )
+        }
     }
 }

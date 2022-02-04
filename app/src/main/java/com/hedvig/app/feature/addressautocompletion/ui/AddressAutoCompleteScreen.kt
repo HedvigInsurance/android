@@ -174,7 +174,7 @@ fun AddressAutoCompleteScreenPreview() {
             val previewDanishAddress = DanishAddress.previewData()
             AddressAutoCompleteScreen(
                 AddressAutoCompleteViewState(
-                    input = DanishAddressInput(previewDanishAddress.toQueryString(), previewDanishAddress),
+                    input = DanishAddressInput.fromDanishAddress(previewDanishAddress),
                     results = DanishAddress.previewList(),
                 ),
                 {},

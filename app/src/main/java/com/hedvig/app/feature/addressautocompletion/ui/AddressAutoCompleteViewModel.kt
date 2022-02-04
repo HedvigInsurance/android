@@ -26,10 +26,7 @@ class AddressAutoCompleteViewModel(
 ) : ViewModel() {
 
     private val currentInput: MutableStateFlow<DanishAddressInput> = MutableStateFlow(
-        DanishAddressInput(
-            rawText = initialAddress?.toPresentableText()?.first ?: "",
-            selectedDanishAddress = initialAddress,
-        )
+        DanishAddressInput.fromDanishAddress(initialAddress)
     )
     private val queryResults: Flow<List<DanishAddress>> = currentInput
         .debounce(50)
