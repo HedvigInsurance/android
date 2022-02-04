@@ -97,32 +97,45 @@ private fun AddressInput(
 
     Surface(
         color = MaterialTheme.colors.surface,
-        modifier = modifier
+        modifier = modifier,
     ) {
-        BasicTextField(
-            value = viewState.input.rawText,
-            onValueChange = { newText ->
-                setInput(newText)
-            },
-            textStyle = LocalTextStyle.current.copy(
-                textAlign = TextAlign.Center,
-                color = LocalContentColor.current.copy(LocalContentAlpha.current)
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    keyboardController?.hide()
-                    focusRequester.freeFocus()
-                }
-            ),
-            singleLine = true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    vertical = 24.dp,
-                    horizontal = 16.dp
+        Box(modifier = Modifier.height(80.dp)) {
+            Column(
+                modifier = Modifier.align(Alignment.Center),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                BasicTextField(
+                    value = viewState.input.rawText,
+                    onValueChange = { newText ->
+                        setInput(newText)
+                    },
+                    textStyle = LocalTextStyle.current.copy(
+                        textAlign = TextAlign.Center,
+                        color = LocalContentColor.current.copy(LocalContentAlpha.current)
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            keyboardController?.hide()
+                            focusRequester.freeFocus()
+                        }
+                    ),
+                    singleLine = true,
+                    cursorBrush = SolidColor(LocalContentColor.current),
+                    modifier = Modifier
+                        .focusRequester(focusRequester)
+                        .fillMaxWidth()
                 )
-                .focusRequester(focusRequester)
-        )
+                val numberAndCity =
+                    viewState.input.selectedDanishAddress?.toPresentableText()?.second
+                AnimatedVisibility(numberAndCity != null) {
+                    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                        numberAndCity?.let {
+                            Text(it)
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
