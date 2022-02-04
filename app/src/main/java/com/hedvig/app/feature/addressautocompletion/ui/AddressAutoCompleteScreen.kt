@@ -1,18 +1,19 @@
 package com.hedvig.app.feature.addressautocompletion.ui
 
 import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.ListItem
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.LocalContentColor
@@ -20,16 +21,16 @@ import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.text.style.TextAlign
@@ -38,9 +39,9 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.ui.Scaffold
-import com.google.accompanist.insets.ui.TopAppBar
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddressInput
+import com.hedvig.app.ui.compose.composables.appbar.TopAppBarWithClose
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.compose.preview.previewData
 import com.hedvig.app.util.compose.preview.previewList
@@ -50,16 +51,15 @@ fun AddressAutoCompleteScreen(
     viewState: AddressAutoCompleteViewState,
     setInput: (String) -> Unit,
     selectAddress: (DanishAddress) -> Unit,
-    finishWithSelection: (DanishAddress) -> Unit,
     finishWithoutSelection: () -> Unit,
 ) {
     Scaffold(
         topBar = {
             Column {
-                TopAppBar(
-                    viewState = viewState,
-                    finishWithoutSelection = finishWithoutSelection,
-                    finishWithSelection = finishWithSelection,
+                TopAppBarWithClose(
+                    onClick = { finishWithoutSelection() },
+                    title = "Address",
+                    backgroundColor = MaterialTheme.colors.surface,
                     contentPadding = rememberInsetsPaddingValues(
                         insets = LocalWindowInsets.current.statusBars,
                         applyBottom = false
@@ -69,7 +69,7 @@ fun AddressAutoCompleteScreen(
             }
         },
         contentPadding = rememberInsetsPaddingValues(
-            insets = LocalWindowInsets.current.systemBars,
+            insets = LocalWindowInsets.current.navigationBars,
             applyTop = false
         )
     ) { paddingValues ->
@@ -79,45 +79,6 @@ fun AddressAutoCompleteScreen(
             modifier = Modifier.padding(paddingValues)
         )
     }
-}
-
-@Composable
-private fun TopAppBar(
-    viewState: AddressAutoCompleteViewState,
-    finishWithoutSelection: () -> Unit,
-    finishWithSelection: (DanishAddress) -> Unit,
-    contentPadding: PaddingValues,
-) {
-    TopAppBar(
-        title = { Text("Address") },
-        backgroundColor = MaterialTheme.colors.surface,
-        navigationIcon = {
-            IconButton(onClick = finishWithoutSelection) {
-                Icon(
-                    imageVector = Icons.Filled.Close,
-                    contentDescription = null
-                )
-            }
-        },
-        actions = { // TODO temp "Check" action before auto selection is done
-            IconButton(
-                onClick = {
-                    if (viewState.input.selectedDanishAddress != null) {
-                        finishWithSelection(viewState.input.selectedDanishAddress)
-                    } else {
-                        finishWithoutSelection()
-                    }
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Check,
-                    contentDescription = null
-                )
-            }
-        },
-        elevation = 0.dp,
-        contentPadding = contentPadding,
-    )
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -203,7 +164,9 @@ fun AddressAutoCompleteScreenPreview() {
                     input = DanishAddressInput(previewDanishAddress.toQueryString(), previewDanishAddress),
                     results = DanishAddress.previewList(),
                 ),
-                {}, {}, {}, {}
+                {},
+                {},
+                {},
             )
         }
     }

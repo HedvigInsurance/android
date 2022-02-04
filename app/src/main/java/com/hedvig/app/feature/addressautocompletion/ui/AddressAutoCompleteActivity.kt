@@ -36,7 +36,6 @@ class AddressAutoCompleteActivity : AppCompatActivity() {
                     viewState = viewState,
                     setInput = viewModel::setNewInput,
                     selectAddress = viewModel::selectAddress,
-                    finishWithSelection = ::finishWithAddressResult,
                     finishWithoutSelection = { finish() },
                 )
             }
