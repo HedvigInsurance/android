@@ -82,7 +82,6 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
         viewModel.viewState
             .flowWithLifecycle(viewLifecycle)
             .onEach { viewState ->
-                d { "Stelios: onEach: $viewState" }
                 binding.inputCard.setContent {
                     HedvigTheme {
                         AddressCard(
