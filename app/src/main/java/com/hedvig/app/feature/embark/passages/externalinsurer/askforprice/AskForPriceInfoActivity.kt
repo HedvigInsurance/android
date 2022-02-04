@@ -11,6 +11,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.ViewModel
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceInfoActivity
@@ -18,8 +19,11 @@ import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.Retr
 import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceInfoActivity.Companion.SSN_RESULT
 import com.hedvig.app.ui.compose.composables.appbar.TopAppBarWithBack
 import com.hedvig.app.ui.compose.theme.HedvigTheme
+import com.hedvig.hanalytics.HAnalytics
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AskForPriceInfoActivity : BaseActivity() {
+    private val model: AskForPriceInfoViewModel by viewModel()
 
     private val parameter by lazy {
         intent.getParcelableExtra<InsuranceProviderParameter>(PARAMETER)
@@ -50,7 +54,10 @@ class AskForPriceInfoActivity : BaseActivity() {
                 ) {
                     AskForPriceScreen(
                         parameter.selectedInsuranceProviderName,
-                        onSkipRetrievePriceInfo = { finishWithResult(null, null) },
+                        onSkipRetrievePriceInfo = {
+                            model.onSkipRetrievePriceInfo(parameter.selectedInsuranceProviderCollectionId)
+                            finishWithResult(null, null)
+                        },
                         onNavigateToRetrievePrice = ::startRetrievePriceActivity
                     )
                 }
@@ -80,6 +87,15 @@ class AskForPriceInfoActivity : BaseActivity() {
         ) = Intent(context, AskForPriceInfoActivity::class.java).apply {
             putExtra(PARAMETER, parameter)
         }
+    }
+}
+
+class AskForPriceInfoViewModel(
+    private val hAnalytics: HAnalytics,
+) : ViewModel() {
+
+    fun onSkipRetrievePriceInfo(providerId: String) {
+        hAnalytics.dataCollectionSkipped(providerId)
     }
 }
 

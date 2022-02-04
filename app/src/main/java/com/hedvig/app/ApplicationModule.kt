@@ -74,6 +74,7 @@ import com.hedvig.app.feature.embark.passages.audiorecorder.AudioRecorderViewMod
 import com.hedvig.app.feature.embark.passages.datepicker.DatePickerViewModel
 import com.hedvig.app.feature.embark.passages.externalinsurer.ExternalInsurerViewModel
 import com.hedvig.app.feature.embark.passages.externalinsurer.GetInsuranceProvidersUseCase
+import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.AskForPriceInfoViewModel
 import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.InsuranceProviderParameter
 import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceViewModel
 import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.StartDataCollectionUseCase
@@ -412,6 +413,7 @@ val viewModelModule = module {
     viewModel { (commonClaimId: String) -> CommonClaimViewModel(commonClaimId, get()) }
     viewModel { SplashViewModel(get()) }
     viewModel { TooltipViewModel(get()) }
+    viewModel { AskForPriceInfoViewModel(get()) }
 }
 
 val choosePlanModule = module {
