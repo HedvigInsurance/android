@@ -22,9 +22,13 @@ abstract class MarketingViewModel(
 
     init {
         _navigationState.value = NavigationState(CurrentFragment.MARKET_PICKER)
+        hAnalytics.screenViewMarketPicker()
     }
 
     fun navigateTo(navigationState: NavigationState) {
+        if (navigationState.destination == CurrentFragment.MARKETING) {
+            hAnalytics.screenViewMarketPicker()
+        }
         _navigationState.postValue(navigationState)
     }
 
