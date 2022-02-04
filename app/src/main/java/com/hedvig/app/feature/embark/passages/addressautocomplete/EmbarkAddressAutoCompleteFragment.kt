@@ -7,6 +7,7 @@ import androidx.lifecycle.flowWithLifecycle
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentEmbarkAddressAutoCompleteActionBinding
 import com.hedvig.app.feature.addressautocompletion.activityresult.FetchDanishAddressAutoCompleteContractHandler
+import com.hedvig.app.feature.addressautocompletion.activityresult.FetchDanishAddressContractResult
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddressStoreKey
 import com.hedvig.app.feature.addressautocompletion.model.fromValueStoreKeys
@@ -47,8 +48,18 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
         super.onCreate(savedInstanceState)
         fetchDanishAddressAutoCompleteContractHandler = FetchDanishAddressAutoCompleteContractHandler(
             registry = requireActivity().activityResultRegistry,
-            onAddressResult = { newAddress ->
-                viewModel.updateAddressSelected(newAddress)
+            onAddressResult = { result ->
+                when (result) {
+                    FetchDanishAddressContractResult.CantFind -> {
+                        submitAddressAndProceedToNextPassage(null)
+                    }
+                    is FetchDanishAddressContractResult.Selected -> {
+                        viewModel.updateAddressSelected(result.address)
+                    }
+                    else -> {
+                        // no-op
+                    }
+                }
             }
         )
         lifecycle.addObserver(fetchDanishAddressAutoCompleteContractHandler)
@@ -64,14 +75,14 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
         binding.textActionSubmit
             .hapticClicks()
             .mapLatest {
-                putAddressInStore(data.key, viewModel.viewState.value.address)
+                submitAddressAndProceedToNextPassage(viewModel.viewState.value.address)
             }
-            .onEach { embarkViewModel.submitAction(data.link) }
             .launchIn(viewLifecycleScope)
 
         viewModel.viewState
             .flowWithLifecycle(viewLifecycle)
             .onEach { viewState ->
+                d { "Stelios: onEach: $viewState" }
                 binding.inputCard.setContent {
                     HedvigTheme {
                         AddressCard(
@@ -96,17 +107,22 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
         }
     }
 
-    private fun putAddressInStore(key: String, address: DanishAddress?) {
-        embarkViewModel.putInStore(key, null)
+    private fun putAddressInStore(address: DanishAddress?) {
+        embarkViewModel.putInStore(data.key, null)
         DanishAddressStoreKey.clearAllStoreValues(embarkViewModel::putInStore)
         if (address == null) {
-            embarkViewModel.putInStore(key, "ADDRESS_NOT_FOUND")
+            embarkViewModel.putInStore(data.key, "ADDRESS_NOT_FOUND")
             return
         }
-        embarkViewModel.putInStore(key, address.address)
+        embarkViewModel.putInStore(data.key, address.address)
         address.toValueStoreKeys().forEach { (key, value) ->
             embarkViewModel.putInStore(key, value)
         }
+    }
+
+    private fun submitAddressAndProceedToNextPassage(address: DanishAddress?) {
+        putAddressInStore(address)
+        embarkViewModel.submitAction(data.link)
     }
 
     companion object {

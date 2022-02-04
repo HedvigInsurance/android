@@ -9,6 +9,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.hedvig.app.feature.addressautocompletion.activityresult.FetchDanishAddressContract
+import com.hedvig.app.feature.addressautocompletion.activityresult.FetchDanishAddressContractResult
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
@@ -36,16 +37,17 @@ class AddressAutoCompleteActivity : AppCompatActivity() {
                     viewState = viewState,
                     setInput = viewModel::setNewInput,
                     selectAddress = viewModel::selectAddress,
-                    finishWithoutSelection = { finish() },
+                    cancelAutoCompletion = { finishWithResult(FetchDanishAddressContractResult.Canceled) },
+                    cantFindAddress = { finishWithResult(FetchDanishAddressContractResult.CantFind) },
                 )
             }
         }
     }
 
-    private fun finishWithAddressResult(address: DanishAddress) {
+    private fun finishWithResult(result: FetchDanishAddressContractResult) {
         setResult(
             FetchDanishAddressContract.RESULT_CODE,
-            Intent().putExtra(FetchDanishAddressContract.ADDRESS_KEY, address)
+            Intent().putExtra(FetchDanishAddressContract.FETCH_DANISH_ADDRESS_CONTRACT_RESULT_KEY, result)
         )
         finish()
     }

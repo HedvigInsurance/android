@@ -12,7 +12,7 @@ import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
  */
 class FetchDanishAddressAutoCompleteContractHandler(
     private val registry: ActivityResultRegistry,
-    private val onAddressResult: (address: DanishAddress?) -> Unit,
+    private val onAddressResult: (result: FetchDanishAddressContractResult) -> Unit,
 ) : DefaultLifecycleObserver {
 
     private lateinit var resultLauncher: ActivityResultLauncher<DanishAddress?>

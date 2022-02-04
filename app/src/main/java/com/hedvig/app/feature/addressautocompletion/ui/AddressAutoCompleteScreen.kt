@@ -51,13 +51,14 @@ fun AddressAutoCompleteScreen(
     viewState: AddressAutoCompleteViewState,
     setInput: (String) -> Unit,
     selectAddress: (DanishAddress) -> Unit,
-    finishWithoutSelection: () -> Unit,
+    cancelAutoCompletion: () -> Unit,
+    cantFindAddress: () -> Unit, // todo add cant find address list item
 ) {
     Scaffold(
         topBar = {
             Column {
                 TopAppBarWithClose(
-                    onClick = { finishWithoutSelection() },
+                    onClick = { cancelAutoCompletion() },
                     title = "Address",
                     backgroundColor = MaterialTheme.colors.surface,
                     contentPadding = rememberInsetsPaddingValues(
@@ -177,6 +178,7 @@ fun AddressAutoCompleteScreenPreview() {
                     input = DanishAddressInput.fromDanishAddress(previewDanishAddress),
                     results = DanishAddress.previewList(),
                 ),
+                {},
                 {},
                 {},
                 {},
