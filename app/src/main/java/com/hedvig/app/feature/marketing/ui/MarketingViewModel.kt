@@ -9,9 +9,12 @@ import com.hedvig.android.owldroid.graphql.MarketingBackgroundQuery
 import com.hedvig.app.feature.marketing.data.MarketingRepository
 import com.hedvig.app.feature.marketpicker.CurrentFragment
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.launch
 
-abstract class MarketingViewModel : ViewModel() {
+abstract class MarketingViewModel(
+    private val hAnalytics: HAnalytics,
+) : ViewModel() {
     abstract val marketingBackground: LiveData<MarketingBackgroundQuery.AppMarketingImage>
 
     protected val _navigationState = MutableLiveData<NavigationState>()
@@ -24,12 +27,17 @@ abstract class MarketingViewModel : ViewModel() {
     fun navigateTo(navigationState: NavigationState) {
         _navigationState.postValue(navigationState)
     }
+
+    fun onClickLogin() {
+        hAnalytics.buttonClickMarketingLogin()
+    }
 }
 
 class MarketingViewModelImpl(
     marketingRepository: MarketingRepository,
-    marketManager: MarketManager
-) : MarketingViewModel() {
+    marketManager: MarketManager,
+    hAnalytics: HAnalytics,
+) : MarketingViewModel(hAnalytics) {
 
     override val marketingBackground = MutableLiveData<MarketingBackgroundQuery.AppMarketingImage>()
 

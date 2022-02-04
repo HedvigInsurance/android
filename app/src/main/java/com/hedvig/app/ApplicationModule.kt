@@ -440,7 +440,7 @@ val insuranceModule = module {
 }
 
 val marketingModule = module {
-    viewModel<MarketingViewModel> { MarketingViewModelImpl(get(), get()) }
+    viewModel<MarketingViewModel> { MarketingViewModelImpl(get(), get(), get()) }
 }
 
 val offerModule = module {
