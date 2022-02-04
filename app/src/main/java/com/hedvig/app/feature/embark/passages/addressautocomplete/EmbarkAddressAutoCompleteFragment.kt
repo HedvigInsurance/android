@@ -7,9 +7,15 @@ import androidx.lifecycle.flowWithLifecycle
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentEmbarkAddressAutoCompleteActionBinding
 import com.hedvig.app.feature.addressautocompletion.activityresult.FetchDanishAddressAutoCompleteContractHandler
+import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
+import com.hedvig.app.feature.addressautocompletion.model.DanishAddressStoreKey
+import com.hedvig.app.feature.addressautocompletion.model.fromValueStoreKeys
+import com.hedvig.app.feature.addressautocompletion.model.toValueStoreKeys
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.addressautocomplete.composables.AddressCard
+import com.hedvig.app.ui.compose.theme.HedvigTheme
+import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.viewLifecycle
 import com.hedvig.app.util.extensions.viewLifecycleScope
@@ -30,7 +36,7 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
 
     private val embarkViewModel: EmbarkViewModel by sharedViewModel()
     private val viewModel: EmbarkAddressAutoCompleteViewModel by viewModel {
-        val prefilledAddress = embarkViewModel.getPrefillFromStore(data.key) ?: ""
+        val prefilledAddress: DanishAddress? = DanishAddress.fromValueStoreKeys(embarkViewModel::getPrefillFromStore)
         parametersOf(prefilledAddress)
     }
     private val binding by viewBinding(FragmentEmbarkAddressAutoCompleteActionBinding::bind)
@@ -52,12 +58,13 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
         super.onViewCreated(view, savedInstanceState)
         postponeEnterTransition()
 
+        binding.root.applyNavigationBarInsets()
         binding.messages.adapter = MessageAdapter(data.messages)
         binding.textActionSubmit.text = "Submit"
         binding.textActionSubmit
             .hapticClicks()
             .mapLatest {
-                embarkViewModel.putInStore(data.key, viewModel.viewState.value.address)
+                putAddressInStore(data.key, viewModel.viewState.value.address)
             }
             .onEach { embarkViewModel.submitAction(data.link) }
             .launchIn(viewLifecycleScope)
@@ -66,15 +73,17 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
             .flowWithLifecycle(viewLifecycle)
             .onEach { viewState ->
                 binding.inputCard.setContent {
-                    AddressCard(
-                        addressText = viewState.address,
-                        placeholderText = data.placeholder,
-                        onClick = {
-                            fetchDanishAddressAutoCompleteContractHandler.startAutoCompletionActivity(
-                                viewState.address
-                            )
-                        }
-                    )
+                    HedvigTheme {
+                        AddressCard(
+                            addressText = viewState.address?.toPresentableText(),
+                            placeholderText = data.placeholder,
+                            onClick = {
+                                fetchDanishAddressAutoCompleteContractHandler.startAutoCompletionActivity(
+                                    initialAddress = viewState.address
+                                )
+                            }
+                        )
+                    }
                 }
             }
             .launchIn(viewLifecycleScope)
@@ -84,6 +93,19 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
         viewLifecycleScope.launchWhenCreated {
             delay(50)
             startPostponedEnterTransition()
+        }
+    }
+
+    private fun putAddressInStore(key: String, address: DanishAddress?) {
+        embarkViewModel.putInStore(key, null)
+        DanishAddressStoreKey.clearAllStoreValues(embarkViewModel::putInStore)
+        if (address == null) {
+            embarkViewModel.putInStore(key, "ADDRESS_NOT_FOUND")
+            return
+        }
+        embarkViewModel.putInStore(key, address.address)
+        address.toValueStoreKeys().forEach { (key, value) ->
+            embarkViewModel.putInStore(key, value)
         }
     }
 

@@ -7,7 +7,7 @@ data class DanishAddressInput(
     val queryString: String
         get() = when (selectedDanishAddress) {
             null -> rawText
-            else -> selectedDanishAddress.toFlatQueryString()
+            else -> selectedDanishAddress.toQueryString()
         }
 
     fun withNewInput(newText: String): DanishAddressInput {
@@ -15,7 +15,7 @@ data class DanishAddressInput(
         val oldText = rawText
         return DanishAddressInput(
             rawText = newText,
-            // todo figure out when to properly clear the existing selected Address
+            // todo figure out when to properly clear the existing selected Address. Maybe clear when deleted a whitespace?
             selectedDanishAddress = if (newText.length < oldText.length) {
                 null
             } else {

@@ -21,11 +21,16 @@ import kotlinx.coroutines.flow.update
 
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 class AddressAutoCompleteViewModel(
-    initialText: String,
+    initialAddress: DanishAddress?,
     getDanishAddressAutoCompletionUseCase: GetDanishAddressAutoCompletionUseCase,
 ) : ViewModel() {
 
-    private val currentInput: MutableStateFlow<DanishAddressInput> = MutableStateFlow(DanishAddressInput(initialText))
+    private val currentInput: MutableStateFlow<DanishAddressInput> = MutableStateFlow(
+        DanishAddressInput(
+            rawText = initialAddress?.toPresentableText()?.first ?: "",
+            selectedDanishAddress = initialAddress,
+        )
+    )
     private val queryResults: Flow<List<DanishAddress>> = currentInput
         .debounce(50)
         .mapLatest { input ->
@@ -39,10 +44,12 @@ class AddressAutoCompleteViewModel(
 
     val viewState: StateFlow<AddressAutoCompleteViewState> =
         combine(currentInput, queryResults) { input, results ->
+            val finalResult: DanishAddress? = getFinalResultOrNull(input, results)
             AddressAutoCompleteViewState(
                 input = input,
                 results = results,
                 error = null, // TODO errors shown when and how?
+                finalResult = finalResult
             )
         }.stateIn(
             viewModelScope,
@@ -61,10 +68,22 @@ class AddressAutoCompleteViewModel(
             danishAddressInput.withSelectedAddress(danishAddress)
         }
     }
+
+    private fun getFinalResultOrNull(
+        input: DanishAddressInput,
+        results: List<DanishAddress>,
+    ): DanishAddress? {
+        if (results.size != 1) return null
+        val selectedDanishAddress = input.selectedDanishAddress
+        if (selectedDanishAddress != results.first()) return null
+        if (selectedDanishAddress.isValidFinalSelection().not()) return null
+        return selectedDanishAddress
+    }
 }
 
 data class AddressAutoCompleteViewState(
     val input: DanishAddressInput,
     val results: List<DanishAddress> = emptyList(),
     val error: String? = null, // temp
+    val finalResult: DanishAddress? = null,
 )

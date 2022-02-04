@@ -108,7 +108,7 @@ abstract class EmbarkViewModel(
         }
     }
 
-    fun putInStore(key: String, value: String) {
+    fun putInStore(key: String, value: String?) {
         valueStore.put(key, value)
     }
 

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.hedvig.app.feature.addressautocompletion.activityresult.FetchDanishAddressContract
@@ -21,12 +22,15 @@ class AddressAutoCompleteActivity : AppCompatActivity() {
 
         window.compatSetDecorFitsSystemWindows(false)
 
-        val initialText = intent.getStringExtra(INITIAL_TEXT_KEY)
-            ?: throw IllegalArgumentException("Programmer error: Missing initial text in ${this.javaClass.name}")
-        val viewModel: AddressAutoCompleteViewModel by viewModel { parametersOf(initialText) }
+        val initialAddress: DanishAddress? = intent.getParcelableExtra(INITIAL_ADDRESS_KEY)
+        val viewModel: AddressAutoCompleteViewModel by viewModel { parametersOf(initialAddress) }
 
         setContent {
             val viewState by viewModel.viewState.collectAsState()
+            LaunchedEffect(viewState.finalResult) {
+                val finalResult = viewState.finalResult ?: return@LaunchedEffect
+                finishWithAddressResult(finalResult)
+            }
             HedvigTheme {
                 AddressAutoCompleteScreen(
                     viewState = viewState,
@@ -42,18 +46,18 @@ class AddressAutoCompleteActivity : AppCompatActivity() {
     private fun finishWithAddressResult(address: DanishAddress) {
         setResult(
             FetchDanishAddressContract.RESULT_CODE,
-            Intent().putExtra(FetchDanishAddressContract.ADDRESS_STRING_KEY, address.toFlatQueryString())
+            Intent().putExtra(FetchDanishAddressContract.ADDRESS_KEY, address)
         )
         finish()
     }
 
     companion object {
-        const val INITIAL_TEXT_KEY = "com.hedvig.app.feature.addressautocompletion.ui.INITIAL_TEXT_KEY"
+        const val INITIAL_ADDRESS_KEY = "com.hedvig.app.feature.addressautocompletion.ui.INITIAL_ADDRESS_KEY"
 
         fun newInstance(
             context: Context,
-            initialText: String?,
+            initialAddress: DanishAddress?,
         ) = Intent(context, AddressAutoCompleteActivity::class.java)
-            .putExtra(INITIAL_TEXT_KEY, initialText)
+            .putExtra(INITIAL_ADDRESS_KEY, initialAddress)
     }
 }

@@ -1,8 +1,10 @@
 package com.hedvig.app.feature.addressautocompletion.model
 
+import android.os.Parcelable
 import com.hedvig.android.owldroid.graphql.AddressAutocompleteQuery
-import java.util.UUID
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class DanishAddress(
     val id: String?,
     val address: String,
@@ -12,23 +14,17 @@ data class DanishAddress(
     val apartment: String?,
     val postalCode: String?,
     val city: String?,
-) {
+) : Parcelable {
 
-    private val onlyAddressIsNotNull: Boolean
-        get() = streetName == null &&
-            streetNumber == null &&
-            floor == null &&
-            apartment == null &&
-            postalCode == null &&
-            city == null
-
-    val isValidFinalSelection: Boolean
-        get() = streetName != null &&
+    fun isValidFinalSelection(): Boolean =
+        streetName != null &&
             streetNumber != null &&
             postalCode != null &&
             city != null
 
-    fun toPresentableResult(): Pair<String, String> {
+    fun toPresentableText(): Pair<String, String?> {
+        if (onlyAddressIsNotNull) return address to null
+
         val topString = buildString {
             append("$streetName $streetNumber")
             if (floor == null) return@buildString
@@ -40,16 +36,15 @@ data class DanishAddress(
         return topString to bottomString
     }
 
-    fun toFlatQueryString(): String {
-        if (onlyAddressIsNotNull) {
-            return address
-        }
+    fun toQueryString(): String {
+        if (onlyAddressIsNotNull) return address
         return buildString {
             appendIfNotNull(streetName)
             appendIfNotNull(" ")
             appendIfNotNull(streetNumber)
             appendIfNotNull(", ")
             appendIfNotNull(floor)
+            appendIfNotNull(". ")
             appendIfNotNull(apartment)
             appendIfNotNull(", ")
             appendIfNotNull(postalCode)
@@ -57,6 +52,15 @@ data class DanishAddress(
             appendIfNotNull(city)
         }
     }
+
+    private val onlyAddressIsNotNull: Boolean
+        get() = id == null &&
+            streetName == null &&
+            streetNumber == null &&
+            floor == null &&
+            apartment == null &&
+            postalCode == null &&
+            city == null
 
     companion object {
         fun fromDto(dto: AddressAutocompleteQuery.AutoCompleteAddress): DanishAddress {
@@ -74,7 +78,7 @@ data class DanishAddress(
     }
 }
 
-fun StringBuilder.appendIfNotNull(input: String?): StringBuilder {
+private fun StringBuilder.appendIfNotNull(input: String?): StringBuilder {
     if (input != null) append(input)
     return this
 }
