@@ -25,13 +25,8 @@ data class DanishAddressInput(
     }
 
     fun withSelectedAddress(address: DanishAddress): DanishAddressInput {
-        val newText = if (address.streetName != null && address.streetNumber != null) {
-            "${address.streetName} ${address.streetNumber}"
-        } else {
-            address.address
-        }
         return DanishAddressInput(
-            rawText = newText,
+            rawText = address.toPresentableText().first,
             selectedDanishAddress = address,
         )
     }
