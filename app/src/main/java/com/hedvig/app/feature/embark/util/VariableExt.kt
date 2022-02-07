@@ -23,17 +23,38 @@ fun GraphQLVariablesFragment.Variable.toFragment() = GraphQLVariablesFragment(
             type = generated.type,
         )
     },
-    asEmbarkAPIGraphQLMultiActionVariable = null
+    asEmbarkAPIGraphQLMultiActionVariable = null,
+    asEmbarkAPIGraphQLConstantVariable = null,
 )
 
 fun GraphQLVariablesFragment.createKeyValuePairs(getStoredValue: (String) -> String?): Pair<String, Any>? {
     return asEmbarkAPIGraphQLSingleVariable?.let { embarkAPIGraphQLSingleVariable ->
         val storeValue = getStoredValue(embarkAPIGraphQLSingleVariable.from)
         embarkAPIGraphQLSingleVariable.createSingleVariableOrNull(storeValue)
+    } ?: asEmbarkAPIGraphQLConstantVariable?.let { asEmbarkAPIGraphQLConstantVariable ->
+        val storeValue = getStoredValue(asEmbarkAPIGraphQLConstantVariable.value)
+        asEmbarkAPIGraphQLConstantVariable.createConstantVariableOrNull(storeValue)
     } ?: asEmbarkAPIGraphQLGeneratedVariable?.createGeneratedVariable()
 }
 
 fun GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable.createSingleVariableOrNull(
+    storeValue: String?,
+): Pair<String, Any>? {
+    val value = when (as_) {
+        EmbarkAPIGraphQLSingleVariableCasting.STRING -> storeValue
+        EmbarkAPIGraphQLSingleVariableCasting.INT -> getIntOrNull(storeValue)
+        EmbarkAPIGraphQLSingleVariableCasting.BOOLEAN -> storeValue.toBoolean()
+        // FILE is not handled here since we need to create a separate multipart request body for
+        // uploading. See extractFileVariable in VariableExtractor.
+        EmbarkAPIGraphQLSingleVariableCasting.FILE -> null
+        // Unsupported generated types are ignored for now.
+        EmbarkAPIGraphQLSingleVariableCasting.UNKNOWN__ -> null
+        else -> null
+    } ?: return null
+    return Pair(key, value)
+}
+
+fun GraphQLVariablesFragment.AsEmbarkAPIGraphQLConstantVariable.createConstantVariableOrNull(
     storeValue: String?,
 ): Pair<String, Any>? {
     val value = when (as_) {
