@@ -132,7 +132,7 @@ private fun AddressInput(
                         .fillMaxWidth()
                 )
                 val numberAndCity =
-                    viewState.input.selectedDanishAddress?.toPresentableText()?.second
+                    viewState.input.selectedDanishAddress?.toPresentableTextPair()?.second
                 AnimatedVisibility(numberAndCity != null) {
                     CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                         numberAndCity?.let {
@@ -158,7 +158,7 @@ private fun SuggestionsList(
             items = viewState.results,
             key = { item -> item.id ?: item.address }
         ) { address: DanishAddress ->
-            val (primaryText, secondaryText) = address.toPresentableText()
+            val (primaryText, secondaryText) = address.toPresentableTextPair()
             ListItem(
                 text = { Text(text = primaryText) },
                 secondaryText = secondaryText?.let { { Text(secondaryText) } },

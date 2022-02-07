@@ -19,7 +19,7 @@ internal class DanishAddressTest {
             city = "København Ø",
         )
 
-        val output = input.toPresentableText()
+        val output = input.toPresentableTextPair()
 
         val (top, bot) = output
         assertThat(top).isEqualTo("Willemoesgade 4, st. tv")
@@ -39,7 +39,7 @@ internal class DanishAddressTest {
             city = "København Ø",
         )
 
-        val output = input.toPresentableText()
+        val output = input.toPresentableTextPair()
 
         val (top, bot) = output
         assertThat(top).isEqualTo("Willemoesgade 2, st.")
@@ -59,7 +59,7 @@ internal class DanishAddressTest {
             city = "Odder",
         )
 
-        val output = input.toPresentableText()
+        val output = input.toPresentableTextPair()
 
         val (top, bot) = output
         assertThat(top).isEqualTo("Aabygade 1C, 1")
@@ -79,7 +79,7 @@ internal class DanishAddressTest {
             city = "Aalborg",
         )
 
-        val output = input.toPresentableText()
+        val output = input.toPresentableTextPair()
 
         val (top, bot) = output
         assertThat(top).isEqualTo("Willemoesgade 1B")

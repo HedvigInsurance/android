@@ -31,7 +31,7 @@ data class DanishAddress(
             postalCode == null &&
             city == null
 
-    fun toPresentableText(): Pair<String, String?> {
+    fun toPresentableTextPair(): Pair<String, String?> {
         if (onlyContainsAddress) return address to null
 
         val topString = buildString {

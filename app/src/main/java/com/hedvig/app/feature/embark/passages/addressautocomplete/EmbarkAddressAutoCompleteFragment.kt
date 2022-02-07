@@ -95,7 +95,7 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
                 binding.inputCard.setContent {
                     HedvigTheme {
                         AddressCard(
-                            addressText = viewState.address?.toPresentableText(),
+                            addressText = viewState.address?.toPresentableTextPair(),
                             placeholderText = data.placeholder,
                             onClick = {
                                 fetchDanishAddressAutoCompleteContractHandler.startAutoCompletionActivity(
@@ -133,7 +133,7 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
                 text = if (address == null) {
                     getString(R.string.EMBARK_ADDRESS_AUTOCOMPLETE_NO_ADDRESS)
                 } else {
-                    address.toPresentableText().toList().filterNotNull()
+                    address.toPresentableTextPair().toList().filterNotNull()
                         .joinToString(separator = System.lineSeparator())
                 }
             )

@@ -26,7 +26,7 @@ class DanishAddressInput private constructor(
 
     fun withSelectedAddress(address: DanishAddress): DanishAddressInput {
         return DanishAddressInput(
-            rawText = address.toPresentableText().first,
+            rawText = address.toPresentableTextPair().first,
             selectedDanishAddress = address,
         )
     }
@@ -34,7 +34,7 @@ class DanishAddressInput private constructor(
     companion object {
         fun fromDanishAddress(danishAddress: DanishAddress?): DanishAddressInput {
             return DanishAddressInput(
-                rawText = danishAddress?.toPresentableText()?.first ?: "",
+                rawText = danishAddress?.toPresentableTextPair()?.first ?: "",
                 selectedDanishAddress = danishAddress,
             )
         }

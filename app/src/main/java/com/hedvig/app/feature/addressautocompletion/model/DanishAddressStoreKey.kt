@@ -15,7 +15,7 @@ enum class DanishAddressStoreKey {
     ;
 
     companion object {
-        fun clearAllStoreValues(
+        fun clearDanishAddressRelatedStoreValues(
             putStoreValue: (key: String, value: String?) -> Unit,
         ) {
             values()
