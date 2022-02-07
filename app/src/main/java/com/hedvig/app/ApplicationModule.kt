@@ -492,7 +492,7 @@ val paymentModule = module {
 }
 
 val adyenModule = module {
-    viewModel<AdyenConnectPayinViewModel> { AdyenConnectPayinViewModelImpl(get()) }
+    viewModel<AdyenConnectPayinViewModel> { AdyenConnectPayinViewModelImpl(get(), get()) }
     viewModel<AdyenConnectPayoutViewModel> { AdyenConnectPayoutViewModelImpl(get()) }
 }
 

@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.hedvig.app.feature.adyen.AdyenRepository
+import com.hedvig.hanalytics.HAnalytics
 import e
 import kotlinx.coroutines.launch
 
@@ -15,10 +16,12 @@ abstract class AdyenConnectPayinViewModel : ViewModel() {
 }
 
 class AdyenConnectPayinViewModelImpl(
-    private val adyenRepository: AdyenRepository
+    private val adyenRepository: AdyenRepository,
+    hAnalytics: HAnalytics,
 ) : AdyenConnectPayinViewModel() {
 
     init {
+        hAnalytics.screenViewConnectPaymentAdyen()
         viewModelScope.launch {
             val response = runCatching {
                 adyenRepository
