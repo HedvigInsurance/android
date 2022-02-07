@@ -406,7 +406,7 @@ val viewModelModule = module {
     viewModel { AudioRecorderViewModel(get(), get()) }
     viewModel { CrossSellFaqViewModel(get()) }
     viewModel { (notificationMetadata: CrossSellNotificationMetadata?, crossSell: CrossSellData) ->
-        CrossSellDetailViewModel(notificationMetadata, crossSell, get())
+        CrossSellDetailViewModel(notificationMetadata, crossSell, get(), get())
     }
     viewModel { GenericAuthViewModel(get()) }
     viewModel { (otpId: String, credential: String) -> OtpInputViewModel(otpId, credential, get(), get(), get()) }
