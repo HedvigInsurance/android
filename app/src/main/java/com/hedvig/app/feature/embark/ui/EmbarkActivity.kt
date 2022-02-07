@@ -32,6 +32,8 @@ import com.hedvig.app.feature.embark.passages.externalinsurer.ExternalInsurerPar
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionComponent
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionFragment
 import com.hedvig.app.feature.embark.passages.multiaction.MultiActionParams
+import com.hedvig.app.feature.embark.passages.noaction.NoActionFragment
+import com.hedvig.app.feature.embark.passages.noaction.NoActionParameter
 import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionFragment
 import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionParams
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerFragment
@@ -378,6 +380,11 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 )
                 return AddressAutoCompleteFragment.newInstance(params)
             }
+        }
+
+        if (passage?.messages?.isNotEmpty() == true) {
+            val params = NoActionParameter(passage.messages.map { it.fragments.messageFragment.text })
+            return NoActionFragment.newInstance(params)
         }
 
         return UpgradeAppFragment.newInstance()
