@@ -8,12 +8,14 @@ import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.profile.ui.payment.PaymentRepository
 import com.hedvig.app.feature.tracking.TrackingFacade
 import com.hedvig.app.util.LiveEvent
+import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.launch
 
 class ConnectPaymentViewModel(
     private val payinStatusRepository: PayinStatusRepository,
     private val paymentRepository: PaymentRepository,
     private val trackingFacade: TrackingFacade,
+    private val hAnalytics: HAnalytics,
 ) : ViewModel() {
     private val _navigationState = MutableLiveData<ConnectPaymentScreenState>()
     val navigationState: LiveData<ConnectPaymentScreenState> = _navigationState
@@ -25,6 +27,13 @@ class ConnectPaymentViewModel(
 
     fun navigateTo(screen: ConnectPaymentScreenState) {
         _navigationState.postValue(screen)
+        if (screen is ConnectPaymentScreenState.Result) {
+            if (screen.success) {
+                hAnalytics.screenViewConnectPaymentSuccess()
+            } else {
+                hAnalytics.screenViewConnectPaymentFailed()
+            }
+        }
         if (screen is ConnectPaymentScreenState.Result && screen.success) {
             trackingFacade.track("payment_connected")
             viewModelScope.launch {
