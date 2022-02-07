@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentEmbarkAddressAutoCompleteActionBinding
 import com.hedvig.app.feature.addressautocompletion.activityresult.FetchDanishAddressAutoCompleteContractHandler
@@ -13,8 +14,11 @@ import com.hedvig.app.feature.addressautocompletion.model.DanishAddressStoreKey
 import com.hedvig.app.feature.addressautocompletion.model.fromValueStoreKeys
 import com.hedvig.app.feature.addressautocompletion.model.toValueStoreKeys
 import com.hedvig.app.feature.embark.EmbarkViewModel
+import com.hedvig.app.feature.embark.Response
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.addressautocomplete.composables.AddressCard
+import com.hedvig.app.feature.embark.passages.animateResponse
+import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.hapticClicks
@@ -25,6 +29,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -51,7 +56,10 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
             onAddressResult = { result ->
                 when (result) {
                     FetchDanishAddressContractResult.CantFind -> {
-                        submitAddressAndProceedToNextPassage(null)
+                        lifecycleScope.launch {
+                            saveAndAnimate(null)
+                            embarkViewModel.submitAction(data.link)
+                        }
                     }
                     is FetchDanishAddressContractResult.Selected -> {
                         viewModel.updateAddressSelected(result.address)
@@ -75,8 +83,9 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
         binding.textActionSubmit
             .hapticClicks()
             .mapLatest {
-                submitAddressAndProceedToNextPassage(viewModel.viewState.value.address)
+                saveAndAnimate(viewModel.viewState.value.address)
             }
+            .onEach { embarkViewModel.submitAction(data.link) }
             .launchIn(viewLifecycleScope)
 
         viewModel.viewState
@@ -107,22 +116,29 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
         }
     }
 
-    private fun putAddressInStore(address: DanishAddress?) {
-        embarkViewModel.putInStore(data.key, null)
-        DanishAddressStoreKey.clearAllStoreValues(embarkViewModel::putInStore)
+    @Suppress("IfThenToElvis")
+    private suspend fun saveAndAnimate(address: DanishAddress?) {
+        DanishAddressStoreKey.clearDanishAddressRelatedStoreValues(embarkViewModel::putInStore)
         if (address == null) {
             embarkViewModel.putInStore(data.key, "ADDRESS_NOT_FOUND")
-            return
+        } else {
+            embarkViewModel.putInStore(data.key, address.address)
+            address.toValueStoreKeys().forEach { (key, value) ->
+                embarkViewModel.putInStore(key, value)
+            }
         }
-        embarkViewModel.putInStore(data.key, address.address)
-        address.toValueStoreKeys().forEach { (key, value) ->
-            embarkViewModel.putInStore(key, value)
-        }
-    }
-
-    private fun submitAddressAndProceedToNextPassage(address: DanishAddress?) {
-        putAddressInStore(address)
-        embarkViewModel.submitAction(data.link)
+        animateResponse(
+            binding = binding.responseContainer,
+            response = Response.SingleResponse(
+                text = if (address == null) {
+                    getString(R.string.EMBARK_ADDRESS_AUTOCOMPLETE_NO_ADDRESS)
+                } else {
+                    address.toPresentableText().toList().filterNotNull()
+                        .joinToString(separator = System.lineSeparator())
+                }
+            )
+        )
+        delay(EmbarkActivity.PASSAGE_ANIMATION_DELAY_MILLIS)
     }
 
     companion object {
