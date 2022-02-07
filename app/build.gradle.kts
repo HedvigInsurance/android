@@ -176,6 +176,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.liveData)
     implementation(libs.androidx.lifecycle.runtime)
     implementation(libs.androidx.lifecycle.viewModel)
+    implementation(libs.androidx.lifecycle.viewModelSavedState)
     implementation(libs.androidx.other.workManager)
     implementation(libs.androidx.datastore.core)
     implementation(libs.androidx.datastore.preferences)
