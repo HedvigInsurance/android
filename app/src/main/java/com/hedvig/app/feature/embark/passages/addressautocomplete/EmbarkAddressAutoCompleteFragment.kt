@@ -82,6 +82,7 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
         viewModel.viewState
             .flowWithLifecycle(viewLifecycle)
             .onEach { viewState ->
+                binding.textActionSubmit.isEnabled = viewState.canProceed
                 binding.inputCard.setContent {
                     HedvigTheme {
                         AddressCard(

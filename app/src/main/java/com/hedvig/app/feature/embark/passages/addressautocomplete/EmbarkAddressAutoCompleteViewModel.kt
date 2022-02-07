@@ -16,7 +16,10 @@ class EmbarkAddressAutoCompleteViewModel(
 
     data class ViewState(
         val address: DanishAddress?,
-    )
+    ) {
+        val canProceed: Boolean
+            get() = address != null
+    }
 
     private val address: MutableStateFlow<DanishAddress?> = MutableStateFlow(initialAddress)
     val viewState: StateFlow<ViewState> = address.map { address ->
