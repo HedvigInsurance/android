@@ -165,6 +165,7 @@ import com.hedvig.app.feature.profile.service.ProfileTracker
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.profile.ui.ProfileViewModelImpl
 import com.hedvig.app.feature.profile.ui.charity.CharityViewModel
+import com.hedvig.app.feature.profile.ui.myinfo.MyInfoViewModel
 import com.hedvig.app.feature.profile.ui.payment.PaymentRepository
 import com.hedvig.app.feature.profile.ui.payment.PaymentTracker
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel
@@ -416,6 +417,7 @@ val viewModelModule = module {
     viewModel { TooltipViewModel(get()) }
     viewModel { (collectionId: String) -> AskForPriceInfoViewModel(collectionId, get()) }
     viewModel { CharityViewModel(get()) }
+    viewModel { MyInfoViewModel(get()) }
 }
 
 val choosePlanModule = module {
