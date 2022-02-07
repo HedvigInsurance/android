@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.graphql.PaymentQuery
 import com.hedvig.app.data.debit.PayinStatusRepository
+import com.hedvig.hanalytics.HAnalytics
 import com.zhuinden.livedatacombinetuplekt.combineTuple
 import e
 import kotlinx.coroutines.flow.catch
@@ -13,18 +14,25 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
-abstract class PaymentViewModel : ViewModel() {
+abstract class PaymentViewModel(
+    hAnalytics: HAnalytics,
+) : ViewModel() {
     protected val _paymentData = MutableLiveData<PaymentQuery.Data>()
     protected val _payinStatusData = MutableLiveData<PayinStatusQuery.Data>()
     val data = combineTuple(_paymentData, _payinStatusData)
 
     abstract fun load()
+
+    init {
+        hAnalytics.screenViewPayments()
+    }
 }
 
 class PaymentViewModelImpl(
     private val paymentRepository: PaymentRepository,
     private val payinStatusRepository: PayinStatusRepository,
-) : PaymentViewModel() {
+    hAnalytics: HAnalytics,
+) : PaymentViewModel(hAnalytics) {
 
     init {
         viewModelScope.launch {

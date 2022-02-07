@@ -488,7 +488,7 @@ val keyGearModule = module {
 }
 
 val paymentModule = module {
-    viewModel<PaymentViewModel> { PaymentViewModelImpl(get(), get()) }
+    viewModel<PaymentViewModel> { PaymentViewModelImpl(get(), get(), get()) }
 }
 
 val adyenModule = module {
