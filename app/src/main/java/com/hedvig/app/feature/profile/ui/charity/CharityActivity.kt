@@ -21,6 +21,7 @@ import com.hedvig.app.util.extensions.viewBinding
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CharityActivity : BaseActivity(R.layout.activity_charity) {
@@ -31,6 +32,7 @@ class CharityActivity : BaseActivity(R.layout.activity_charity) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        getViewModel<CharityViewModel>()
         window.compatSetDecorFitsSystemWindows(false)
 
         setupToolbar(R.id.toolbar, R.drawable.ic_back, true) {
