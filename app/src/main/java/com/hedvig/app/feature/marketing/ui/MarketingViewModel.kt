@@ -26,8 +26,13 @@ abstract class MarketingViewModel(
     }
 
     fun navigateTo(navigationState: NavigationState) {
-        if (navigationState.destination == CurrentFragment.MARKETING) {
-            hAnalytics.screenViewMarketPicker()
+        when (navigationState.destination) {
+            CurrentFragment.MARKET_PICKER -> {
+                hAnalytics.screenViewMarketPicker()
+            }
+            CurrentFragment.MARKETING -> {
+                hAnalytics.screenViewMarketing()
+            }
         }
         _navigationState.postValue(navigationState)
     }
