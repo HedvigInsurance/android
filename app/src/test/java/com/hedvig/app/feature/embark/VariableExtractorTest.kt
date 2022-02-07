@@ -57,7 +57,8 @@ class VariableExtractorTest {
                     as_ = EmbarkAPIGraphQLSingleVariableCasting.BOOLEAN
                 ),
                 asEmbarkAPIGraphQLGeneratedVariable = null,
-                asEmbarkAPIGraphQLMultiActionVariable = null
+                asEmbarkAPIGraphQLMultiActionVariable = null,
+                asEmbarkAPIGraphQLConstantVariable = null,
             ),
         )
 
@@ -84,7 +85,8 @@ class VariableExtractorTest {
                     as_ = EmbarkAPIGraphQLSingleVariableCasting.BOOLEAN
                 ),
                 asEmbarkAPIGraphQLGeneratedVariable = null,
-                asEmbarkAPIGraphQLMultiActionVariable = null
+                asEmbarkAPIGraphQLMultiActionVariable = null,
+                asEmbarkAPIGraphQLConstantVariable = null,
             ),
             GraphQLVariablesFragment(
                 __typename = "EmbarkAPIGraphQLSingleVariable",
@@ -95,7 +97,8 @@ class VariableExtractorTest {
                     as_ = EmbarkAPIGraphQLSingleVariableCasting.BOOLEAN
                 ),
                 asEmbarkAPIGraphQLGeneratedVariable = null,
-                asEmbarkAPIGraphQLMultiActionVariable = null
+                asEmbarkAPIGraphQLMultiActionVariable = null,
+                asEmbarkAPIGraphQLConstantVariable = null,
             ),
         )
 
@@ -152,7 +155,8 @@ class VariableExtractorTest {
                     as_ = EmbarkAPIGraphQLSingleVariableCasting.STRING
                 ),
                 asEmbarkAPIGraphQLGeneratedVariable = null,
-                asEmbarkAPIGraphQLMultiActionVariable = null
+                asEmbarkAPIGraphQLMultiActionVariable = null,
+                asEmbarkAPIGraphQLConstantVariable = null,
             ),
             GraphQLVariablesFragment(
                 __typename = "EmbarkAPIGraphQLSingleVariable",
@@ -163,7 +167,8 @@ class VariableExtractorTest {
                     as_ = EmbarkAPIGraphQLSingleVariableCasting.STRING
                 ),
                 asEmbarkAPIGraphQLGeneratedVariable = null,
-                asEmbarkAPIGraphQLMultiActionVariable = null
+                asEmbarkAPIGraphQLMultiActionVariable = null,
+                asEmbarkAPIGraphQLConstantVariable = null,
             ),
             GraphQLVariablesFragment(
                 __typename = "EmbarkAPIGraphQLSingleVariable",
@@ -174,7 +179,8 @@ class VariableExtractorTest {
                     as_ = EmbarkAPIGraphQLSingleVariableCasting.STRING
                 ),
                 asEmbarkAPIGraphQLGeneratedVariable = null,
-                asEmbarkAPIGraphQLMultiActionVariable = null
+                asEmbarkAPIGraphQLMultiActionVariable = null,
+                asEmbarkAPIGraphQLConstantVariable = null,
             ),
             GraphQLVariablesFragment(
                 __typename = "EmbarkAPIGraphQLSingleVariable",
@@ -185,7 +191,8 @@ class VariableExtractorTest {
                     as_ = EmbarkAPIGraphQLSingleVariableCasting.STRING
                 ),
                 asEmbarkAPIGraphQLGeneratedVariable = null,
-                asEmbarkAPIGraphQLMultiActionVariable = null
+                asEmbarkAPIGraphQLMultiActionVariable = null,
+                asEmbarkAPIGraphQLConstantVariable = null,
             ),
             GraphQLVariablesFragment(
                 __typename = "EmbarkAPIGraphQLSingleVariable",
@@ -196,7 +203,8 @@ class VariableExtractorTest {
                     as_ = EmbarkAPIGraphQLSingleVariableCasting.INT
                 ),
                 asEmbarkAPIGraphQLGeneratedVariable = null,
-                asEmbarkAPIGraphQLMultiActionVariable = null
+                asEmbarkAPIGraphQLMultiActionVariable = null,
+                asEmbarkAPIGraphQLConstantVariable = null,
             ),
             GraphQLVariablesFragment(
                 __typename = "EmbarkAPIGraphQLSingleVariable",
@@ -207,7 +215,8 @@ class VariableExtractorTest {
                     as_ = EmbarkAPIGraphQLSingleVariableCasting.INT
                 ),
                 asEmbarkAPIGraphQLGeneratedVariable = null,
-                asEmbarkAPIGraphQLMultiActionVariable = null
+                asEmbarkAPIGraphQLMultiActionVariable = null,
+                asEmbarkAPIGraphQLConstantVariable = null,
             ),
             GraphQLVariablesFragment(
                 __typename = "EmbarkAPIGraphQLSingleVariable",
@@ -218,7 +227,8 @@ class VariableExtractorTest {
                     as_ = EmbarkAPIGraphQLSingleVariableCasting.STRING
                 ),
                 asEmbarkAPIGraphQLGeneratedVariable = null,
-                asEmbarkAPIGraphQLMultiActionVariable = null
+                asEmbarkAPIGraphQLMultiActionVariable = null,
+                asEmbarkAPIGraphQLConstantVariable = null,
             ),
             GraphQLVariablesFragment(
                 __typename = "EmbarkAPIGraphQLSingleVariable",
@@ -229,7 +239,8 @@ class VariableExtractorTest {
                     as_ = EmbarkAPIGraphQLSingleVariableCasting.STRING
                 ),
                 asEmbarkAPIGraphQLGeneratedVariable = null,
-                asEmbarkAPIGraphQLMultiActionVariable = null
+                asEmbarkAPIGraphQLMultiActionVariable = null,
+                asEmbarkAPIGraphQLConstantVariable = null,
             ),
             GraphQLVariablesFragment(
                 __typename = "EmbarkAPIGraphQLSingleVariable",
@@ -240,7 +251,8 @@ class VariableExtractorTest {
                     as_ = EmbarkAPIGraphQLSingleVariableCasting.BOOLEAN
                 ),
                 asEmbarkAPIGraphQLGeneratedVariable = null,
-                asEmbarkAPIGraphQLMultiActionVariable = null
+                asEmbarkAPIGraphQLMultiActionVariable = null,
+                asEmbarkAPIGraphQLConstantVariable = null,
             ),
             GraphQLVariablesFragment(
                 __typename = "EmbarkAPIGraphQLSingleVariable",
@@ -251,7 +263,8 @@ class VariableExtractorTest {
                     as_ = EmbarkAPIGraphQLSingleVariableCasting.INT
                 ),
                 asEmbarkAPIGraphQLGeneratedVariable = null,
-                asEmbarkAPIGraphQLMultiActionVariable = null
+                asEmbarkAPIGraphQLMultiActionVariable = null,
+                asEmbarkAPIGraphQLConstantVariable = null,
             ),
             GraphQLVariablesFragment(
                 __typename = "EmbarkAPIGraphQLSingleVariable",
@@ -262,7 +275,8 @@ class VariableExtractorTest {
                     as_ = EmbarkAPIGraphQLSingleVariableCasting.INT
                 ),
                 asEmbarkAPIGraphQLGeneratedVariable = null,
-                asEmbarkAPIGraphQLMultiActionVariable = null
+                asEmbarkAPIGraphQLMultiActionVariable = null,
+                asEmbarkAPIGraphQLConstantVariable = null,
             ),
             GraphQLVariablesFragment(
                 __typename = "EmbarkAPIGraphQLSingleVariable",
@@ -273,7 +287,8 @@ class VariableExtractorTest {
                     as_ = EmbarkAPIGraphQLSingleVariableCasting.INT
                 ),
                 asEmbarkAPIGraphQLGeneratedVariable = null,
-                asEmbarkAPIGraphQLMultiActionVariable = null
+                asEmbarkAPIGraphQLMultiActionVariable = null,
+                asEmbarkAPIGraphQLConstantVariable = null,
             ),
             GraphQLVariablesFragment(
                 __typename = "EmbarkAPIGraphQLSingleVariable",
@@ -284,7 +299,8 @@ class VariableExtractorTest {
                     as_ = EmbarkAPIGraphQLSingleVariableCasting.BOOLEAN
                 ),
                 asEmbarkAPIGraphQLGeneratedVariable = null,
-                asEmbarkAPIGraphQLMultiActionVariable = null
+                asEmbarkAPIGraphQLMultiActionVariable = null,
+                asEmbarkAPIGraphQLConstantVariable = null,
             ),
             GraphQLVariablesFragment(
                 __typename = "EmbarkAPIGraphQLMultiActionVariable",
@@ -328,7 +344,8 @@ class VariableExtractorTest {
                             asEmbarkAPIGraphQLGeneratedVariable1 = null
                         )
                     )
-                )
+                ),
+                asEmbarkAPIGraphQLConstantVariable = null,
             ),
             GraphQLVariablesFragment(
                 __typename = "EmbarkAPIGraphQLSingleVariable",
@@ -339,7 +356,8 @@ class VariableExtractorTest {
                     as_ = EmbarkAPIGraphQLSingleVariableCasting.FILE
                 ),
                 asEmbarkAPIGraphQLGeneratedVariable = null,
-                asEmbarkAPIGraphQLMultiActionVariable = null
+                asEmbarkAPIGraphQLMultiActionVariable = null,
+                asEmbarkAPIGraphQLConstantVariable = null,
             )
         )
     }
