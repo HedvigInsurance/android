@@ -15,19 +15,26 @@ class FetchDanishAddressAutoCompleteContractHandler(
     private val onAddressResult: (result: FetchDanishAddressContractResult) -> Unit,
 ) : DefaultLifecycleObserver {
 
-    private lateinit var resultLauncher: ActivityResultLauncher<DanishAddress?>
+    private var resultLauncher: ActivityResultLauncher<DanishAddress?>? = null
 
-    override fun onCreate(owner: LifecycleOwner) {
-        resultLauncher = registry.register(
-            "com.hedvig.app.feature.addressautocompletion.activityresult.FetchDanishAddressAutoCompleteContractHandler",
-            owner,
-            FetchDanishAddressContract()
-        ) { result ->
+    override fun onResume(owner: LifecycleOwner) {
+        resultLauncher = registry.register(KEY, FetchDanishAddressContract()) { result ->
             onAddressResult(result)
         }
     }
 
+    override fun onPause(owner: LifecycleOwner) {
+        resultLauncher?.unregister()
+        resultLauncher = null
+        super.onPause(owner)
+    }
+
     fun startAutoCompletionActivity(initialAddress: DanishAddress?) {
-        resultLauncher.launch(initialAddress)
+        resultLauncher?.launch(initialAddress)
+    }
+
+    companion object {
+        private const val KEY =
+            "com.hedvig.app.feature.addressautocompletion.activityresult.KEY"
     }
 }
