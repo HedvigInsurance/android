@@ -22,7 +22,6 @@ import com.hedvig.app.databinding.HomeBigTextBinding
 import com.hedvig.app.databinding.HomeBodyTextBinding
 import com.hedvig.app.databinding.HomeChangeAddressButtonBinding
 import com.hedvig.app.databinding.HomeCommonClaimBinding
-import com.hedvig.app.databinding.HomeInfoCardBinding
 import com.hedvig.app.databinding.HomePsaBinding
 import com.hedvig.app.databinding.HomeStartClaimContainedBinding
 import com.hedvig.app.databinding.HomeStartClaimOutlinedBinding
@@ -36,6 +35,7 @@ import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
 import com.hedvig.app.feature.home.ui.claimstatus.composables.ClaimStatusCards
+import com.hedvig.app.feature.home.ui.connectpayincard.ConnectPayinCard
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.apollo.ThemedIconUrls
@@ -59,6 +59,7 @@ class HomeAdapter(
     private val marketManager: MarketManager,
     private val onClaimDetailCardClicked: (String) -> Unit,
     private val onClaimDetailCardShown: (String) -> Unit,
+    private val onPaymentCardShown: () -> Unit,
 ) : ListAdapter<HomeModel, HomeAdapter.ViewHolder>(HomeModelDiffUtilItemCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
@@ -72,7 +73,7 @@ class HomeAdapter(
         )
         R.layout.home_start_claim_outlined -> ViewHolder.StartClaimOutlined(parent, startIntentForResult)
         R.layout.home_start_claim_contained -> ViewHolder.StartClaimContained(parent, startIntentForResult)
-        R.layout.home_info_card -> ViewHolder.InfoCard(parent)
+        R.layout.home_info_card -> ViewHolder.InfoCard(ComposeView(parent.context), onPaymentCardShown)
         R.layout.home_common_claim -> ViewHolder.CommonClaim(parent, imageLoader)
         R.layout.generic_error -> ViewHolder.Error(parent, retry)
         R.layout.how_claims_work_button -> ViewHolder.HowClaimsWorkButton(parent)
@@ -111,6 +112,9 @@ class HomeAdapter(
 
     override fun onViewRecycled(holder: ViewHolder) {
         if (holder is ViewHolder.ClaimStatus) {
+            holder.composeView.disposeComposition()
+        }
+        if (holder is ViewHolder.InfoCard) {
             holder.composeView.disposeComposition()
         }
     }
@@ -324,25 +328,34 @@ class HomeAdapter(
             }
         }
 
-        class InfoCard(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.home_info_card)) {
-            private val binding by viewBinding(HomeInfoCardBinding::bind)
+        class InfoCard(
+            val composeView: ComposeView,
+            private val onPaymentCardShown: () -> Unit,
+        ) : ViewHolder(composeView) {
+
+            init {
+                composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            }
+
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
                 tracker: HomeTracker,
                 marketManager: MarketManager,
-            ) = with(binding) {
+            ) {
                 if (data !is HomeModel.ConnectPayin) {
                     return invalid(data)
                 }
 
-                title.setText(R.string.info_card_missing_payment_title)
-                body.setText(R.string.info_card_missing_payment_body)
-                action.setText(R.string.info_card_missing_payment_button_text)
-                action.setHapticClickListener {
-                    tracker.addPaymentMethod()
-                    marketManager.market?.connectPayin(action.context)
-                        ?.let { action.context.startActivity(it) }
+                composeView.setContent {
+                    ConnectPayinCard(
+                        onActionClick = {
+                            tracker.addPaymentMethod()
+                            marketManager.market?.connectPayin(composeView.context)
+                                ?.let { composeView.context.startActivity(it) }
+                        },
+                        onShown = onPaymentCardShown,
+                    )
                 }
             }
         }

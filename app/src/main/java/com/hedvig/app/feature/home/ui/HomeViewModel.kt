@@ -62,6 +62,10 @@ abstract class HomeViewModel(
             ?.claimStatusCards
             ?.firstOrNull { it.id == claimId }
             ?.claim
+
+    fun onPaymentCardShown() {
+        hAnalytics.homePaymentCardVisible()
+    }
 }
 
 class HomeViewModelImpl(
