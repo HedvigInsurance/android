@@ -16,9 +16,10 @@ import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.embark.extensions.api
 import com.hedvig.app.feature.embark.extensions.getComputedValues
-import com.hedvig.app.feature.embark.util.VariableExtractor
 import com.hedvig.app.feature.embark.util.evaluateExpression
+import com.hedvig.app.feature.embark.util.getFileVariables
 import com.hedvig.app.feature.embark.util.getOfferKeysOrNull
+import com.hedvig.app.feature.embark.util.getVariables
 import com.hedvig.app.feature.embark.util.toExpressionFragment
 import com.hedvig.app.util.ProgressPercentage
 import com.hedvig.app.util.asMap
@@ -193,6 +194,45 @@ abstract class EmbarkViewModel(
         }
     }
 
+    private fun handleGraphQLQuery(graphQLQuery: ApiFragment.AsEmbarkApiGraphQLQuery) {
+        viewModelScope.launch {
+            val variables = graphQLQuery.getVariables(valueStore)
+            val fileVariables = graphQLQuery.getFileVariables(valueStore)
+            val result = graphQLQueryUseCase.executeQuery(graphQLQuery, variables, fileVariables)
+            handleQueryResult(result)
+        }
+    }
+
+    private fun handleGraphQLMutation(graphQLMutation: ApiFragment.AsEmbarkApiGraphQLMutation) {
+        viewModelScope.launch {
+            val variables = graphQLMutation.getVariables(valueStore)
+            val fileVariables = graphQLMutation.getFileVariables(valueStore)
+            val result = graphQLQueryUseCase.executeMutation(graphQLMutation, variables, fileVariables)
+            handleQueryResult(result)
+        }
+    }
+
+    private fun handleQueryResult(result: GraphQLQueryResult) {
+        _loadingState.update { false }
+
+        when (result) {
+            // TODO Handle errors
+            is GraphQLQueryResult.Error -> navigateToPassage(result.passageName)
+            is GraphQLQueryResult.ValuesFromResponse -> {
+                result.arrayValues.forEach {
+                    valueStore.put(it.first, it.second)
+                }
+                result.objectValues.forEach {
+                    valueStore.put(it.first, it.second)
+                }
+
+                if (result.passageName != null) {
+                    navigateToPassage(result.passageName)
+                }
+            }
+        }
+    }
+
     private fun handleRedirectLocation(location: EmbarkExternalRedirectLocation) {
         hAnalytics.embarkExternalRedirect(location.rawValue)
         when (location) {
@@ -255,63 +295,6 @@ abstract class EmbarkViewModel(
         val passagesLeft = getPassagesLeft(passage)
         val progress = ((totalSteps.toFloat() - passagesLeft.toFloat()) / totalSteps.toFloat())
         return ProgressPercentage.safeValue(progress)
-    }
-
-    private fun handleGraphQLQuery(graphQLQuery: ApiFragment.AsEmbarkApiGraphQLQuery) {
-        viewModelScope.launch {
-            val variables = graphQLQuery.queryData.variables
-                .takeIf { it.isNotEmpty() }
-                ?.map { it.fragments.graphQLVariablesFragment }
-                ?.let { VariableExtractor.extractVariables(it, valueStore) }
-
-            val fileVariables = graphQLQuery.queryData.variables
-                .takeIf { it.isNotEmpty() }
-                ?.map { it.fragments.graphQLVariablesFragment }
-                ?.let { VariableExtractor.extractFileVariable(it, valueStore) }
-                ?: emptyList()
-
-            val result = graphQLQueryUseCase.executeQuery(graphQLQuery, variables, fileVariables)
-            handleQueryResult(result)
-        }
-    }
-
-    private fun handleGraphQLMutation(graphQLMutation: ApiFragment.AsEmbarkApiGraphQLMutation) {
-        viewModelScope.launch {
-            val variables = graphQLMutation.mutationData.variables
-                .takeIf { it.isNotEmpty() }
-                ?.map { it.fragments.graphQLVariablesFragment }
-                ?.let { VariableExtractor.extractVariables(it, valueStore) }
-
-            val fileVariables = graphQLMutation.mutationData.variables
-                .takeIf { it.isNotEmpty() }
-                ?.map { it.fragments.graphQLVariablesFragment }
-                ?.let { VariableExtractor.extractFileVariable(it, valueStore) }
-                ?: emptyList()
-
-            val result = graphQLQueryUseCase.executeMutation(graphQLMutation, variables, fileVariables)
-            handleQueryResult(result)
-        }
-    }
-
-    private fun handleQueryResult(result: GraphQLQueryResult) {
-        _loadingState.update { false }
-
-        when (result) {
-            // TODO Handle errors
-            is GraphQLQueryResult.Error -> navigateToPassage(result.passageName)
-            is GraphQLQueryResult.ValuesFromResponse -> {
-                result.arrayValues.forEach {
-                    valueStore.put(it.first, it.second)
-                }
-                result.objectValues.forEach {
-                    valueStore.put(it.first, it.second)
-                }
-
-                if (result.passageName != null) {
-                    navigateToPassage(result.passageName)
-                }
-            }
-        }
     }
 
     fun navigateBack(): Boolean {
