@@ -33,12 +33,14 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.ui.Scaffold
+import com.hedvig.app.R
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddressInput
 import com.hedvig.app.ui.compose.composables.appbar.TopAppBarWithClose
@@ -53,7 +55,7 @@ fun AddressAutoCompleteScreen(
     setInput: (String) -> Unit,
     selectAddress: (DanishAddress) -> Unit,
     cancelAutoCompletion: () -> Unit,
-    cantFindAddress: () -> Unit, // todo add cant find address list item
+    cantFindAddress: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -78,7 +80,8 @@ fun AddressAutoCompleteScreen(
         SuggestionsList(
             viewState = viewState,
             selectAddress = selectAddress,
-            modifier = Modifier.padding(paddingValues)
+            cantFindAddress = cantFindAddress,
+            modifier = Modifier.padding(paddingValues),
         )
     }
 }
@@ -147,6 +150,7 @@ private fun AddressInput(
 private fun SuggestionsList(
     viewState: AddressAutoCompleteViewState,
     selectAddress: (DanishAddress) -> Unit,
+    cantFindAddress: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(modifier) {
@@ -164,7 +168,19 @@ private fun SuggestionsList(
                 }
             )
         }
-        // TODO add "Can't find my address red item"
+        item(key = "cantFindAddress") {
+            ListItem(
+                text = {
+                    Text(
+                        stringResource(R.string.EMBARK_ADDRESS_AUTOCOMPLETE_NO_ADDRESS),
+                        color = MaterialTheme.colors.error,
+                    )
+                },
+                modifier = Modifier.clickable {
+                    cantFindAddress()
+                }
+            )
+        }
     }
 }
 
