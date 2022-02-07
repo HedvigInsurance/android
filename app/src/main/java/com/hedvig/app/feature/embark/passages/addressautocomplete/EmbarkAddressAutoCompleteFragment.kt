@@ -116,7 +116,6 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
         }
     }
 
-    @Suppress("IfThenToElvis")
     private suspend fun saveAndAnimate(address: DanishAddress?) {
         DanishAddressStoreKey.clearDanishAddressRelatedStoreValues(embarkViewModel::putInStore)
         if (address == null) {
@@ -128,14 +127,11 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
             }
         }
         animateResponse(
-            binding = binding.responseContainer,
-            response = Response.SingleResponse(
-                text = if (address == null) {
-                    getString(R.string.EMBARK_ADDRESS_AUTOCOMPLETE_NO_ADDRESS)
-                } else {
-                    address.toPresentableTextPair().toList().filterNotNull()
-                        .joinToString(separator = System.lineSeparator())
-                }
+            binding.responseContainer,
+            Response.SingleResponse(
+                address?.toPresentableTextPair()?.toList()?.filterNotNull()
+                    ?.joinToString(separator = System.lineSeparator())
+                    ?: getString(R.string.EMBARK_ADDRESS_AUTOCOMPLETE_NO_ADDRESS)
             )
         )
         delay(EmbarkActivity.PASSAGE_ANIMATION_DELAY_MILLIS)
