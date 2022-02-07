@@ -538,7 +538,7 @@ val connectPaymentModule = module {
 }
 
 val trustlyModule = module {
-    viewModel<TrustlyViewModel> { TrustlyViewModelImpl(get()) }
+    viewModel<TrustlyViewModel> { TrustlyViewModelImpl(get(), get()) }
 }
 
 val changeAddressModule = module {
