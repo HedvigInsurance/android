@@ -16,7 +16,7 @@ interface DeviceIdStore {
     fun observeDeviceId(): Flow<String>
 }
 
-class DeviceIdStoreImpl(
+class DeviceIdDataStore(
     private val dataStore: DataStore<Preferences>
 ) : DeviceIdStore {
 

@@ -24,8 +24,8 @@ import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.hedvig.app.authenticate.AuthenticationTokenService
+import com.hedvig.app.authenticate.DeviceIdDataStore
 import com.hedvig.app.authenticate.DeviceIdStore
-import com.hedvig.app.authenticate.DeviceIdStoreImpl
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.authenticate.SharedPreferencesAuthenticationTokenService
@@ -728,5 +728,5 @@ val dataStoreModule = module {
 }
 
 val deviceIdStoreModule = module {
-    single<DeviceIdStore> { DeviceIdStoreImpl(get()) }
+    single<DeviceIdStore> { DeviceIdDataStore(get()) }
 }
