@@ -45,6 +45,7 @@ import com.hedvig.app.ui.compose.composables.appbar.TopAppBarWithClose
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.compose.preview.previewData
 import com.hedvig.app.util.compose.preview.previewList
+import kotlinx.coroutines.delay
 
 @Composable
 fun AddressAutoCompleteScreen(
@@ -92,6 +93,7 @@ private fun AddressInput(
     val focusRequester = remember { FocusRequester() }
     val keyboardController: SoftwareKeyboardController? = LocalSoftwareKeyboardController.current
     LaunchedEffect(Unit) {
+        delay(100) // Without a delay the keyboard has a low success rate of showing. 100 seems to always work.
         focusRequester.requestFocus()
         keyboardController?.show()
     }
