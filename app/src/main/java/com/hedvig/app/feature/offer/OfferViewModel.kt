@@ -233,6 +233,7 @@ class OfferViewModelImpl(
         when (val idsResult = getQuotesUseCase.invoke(_quoteIds)) {
             is GetQuotesUseCase.Result.Success -> {
                 quoteIds = idsResult.ids
+                hAnalytics.screenViewOffer(quoteIds.toTypedArray())
                 idsResult
                     .data
                     .onEach { response ->
