@@ -548,7 +548,7 @@ val trustlyModule = module {
 }
 
 val changeAddressModule = module {
-    viewModel<ChangeAddressViewModel> { ChangeAddressViewModelImpl(get(), get(), get()) }
+    viewModel<ChangeAddressViewModel> { ChangeAddressViewModelImpl(get(), get(), get(), get()) }
 }
 
 val changeDateBottomSheetModule = module {
