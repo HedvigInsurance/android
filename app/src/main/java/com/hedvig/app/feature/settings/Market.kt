@@ -15,7 +15,6 @@ import com.hedvig.app.feature.trustly.TrustlyConnectPayinActivity
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationActivity
 import com.hedvig.app.isDebug
-import com.hedvig.app.util.extensions.startChat
 
 enum class Market {
     SE,

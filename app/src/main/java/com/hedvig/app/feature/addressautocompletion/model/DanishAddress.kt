@@ -44,7 +44,7 @@ data class DanishAddress(
                     else -> ""
                 }
             )
-        }.trim()
+        }
         val bottomString = "$postalCode $city"
         return topString to bottomString
     }
