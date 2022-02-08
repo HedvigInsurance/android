@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.ContentAlpha
@@ -153,7 +154,11 @@ private fun SuggestionsList(
     cantFindAddress: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    LazyColumn(modifier) {
+    val lazyListState = rememberLazyListState()
+    LaunchedEffect(viewState.results) {
+        lazyListState.animateScrollToItem(0)
+    }
+    LazyColumn(modifier, lazyListState) {
         items(
             items = viewState.results,
             key = { item -> item.id ?: item.address }
