@@ -69,7 +69,7 @@ fun ConnectPayinCard(
             Spacer(Modifier.height(16.dp))
             Divider()
             TextButton(
-                onClick = { /*TODO*/ },
+                onClick = onActionClick,
                 modifier = Modifier
                     .padding(
                         top = 4.dp,

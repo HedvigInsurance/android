@@ -348,14 +348,16 @@ class HomeAdapter(
                 }
 
                 composeView.setContent {
-                    ConnectPayinCard(
-                        onActionClick = {
-                            tracker.addPaymentMethod()
-                            marketManager.market?.connectPayin(composeView.context)
-                                ?.let { composeView.context.startActivity(it) }
-                        },
-                        onShown = onPaymentCardShown,
-                    )
+                    HedvigTheme {
+                        ConnectPayinCard(
+                            onActionClick = {
+                                tracker.addPaymentMethod()
+                                marketManager.market?.connectPayin(composeView.context)
+                                    ?.let { composeView.context.startActivity(it) }
+                            },
+                            onShown = onPaymentCardShown,
+                        )
+                    }
                 }
             }
         }
