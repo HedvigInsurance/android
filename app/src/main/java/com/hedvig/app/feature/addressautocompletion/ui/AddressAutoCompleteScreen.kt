@@ -44,7 +44,7 @@ import com.google.accompanist.insets.ui.Scaffold
 import com.hedvig.app.R
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddressInput
-import com.hedvig.app.ui.compose.composables.appbar.TopAppBarWithClose
+import com.hedvig.app.ui.compose.composables.appbar.CenterAlignedTopAppBar
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.compose.preview.previewData
 import com.hedvig.app.util.compose.preview.previewList
@@ -61,14 +61,14 @@ fun AddressAutoCompleteScreen(
     Scaffold(
         topBar = {
             Column {
-                TopAppBarWithClose(
-                    onClick = { cancelAutoCompletion() },
+                CenterAlignedTopAppBar(
                     title = "Address",
+                    onClick = { cancelAutoCompletion() },
                     backgroundColor = MaterialTheme.colors.surface,
                     contentPadding = rememberInsetsPaddingValues(
                         insets = LocalWindowInsets.current.statusBars,
                         applyBottom = false
-                    )
+                    ),
                 )
                 AddressInput(viewState, setInput)
             }
