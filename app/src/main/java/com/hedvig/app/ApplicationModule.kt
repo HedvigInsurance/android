@@ -24,6 +24,8 @@ import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.hedvig.app.authenticate.AuthenticationTokenService
+import com.hedvig.app.authenticate.DeviceIdDataStore
+import com.hedvig.app.authenticate.DeviceIdStore
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.authenticate.LogoutUseCase
 import com.hedvig.app.authenticate.SharedPreferencesAuthenticationTokenService
@@ -212,6 +214,7 @@ import com.hedvig.app.terminated.TerminatedTracker
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.ApolloTimberLogger
 import com.hedvig.app.util.apollo.CacheManager
+import com.hedvig.app.util.apollo.DeviceIdInterceptor
 import com.hedvig.app.util.apollo.SunsettingInterceptor
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.mixpanel.android.mpmetrics.MixpanelAPI
@@ -288,6 +291,7 @@ val applicationModule = module {
                         .build()
                 )
             }
+            .addInterceptor(DeviceIdInterceptor(get()))
         if (isDebug()) {
             val logger = HttpLoggingInterceptor { message ->
                 if (message.contains("Content-Disposition")) {
@@ -721,4 +725,8 @@ val dataStoreModule = module {
             }
         )
     }
+}
+
+val deviceIdStoreModule = module {
+    single<DeviceIdStore> { DeviceIdDataStore(get()) }
 }
