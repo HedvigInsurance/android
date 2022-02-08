@@ -390,7 +390,7 @@ val viewModelModule = module {
     viewModel { UserViewModel(get(), get(), get(), get(), get()) }
     viewModel { RedeemCodeViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
-    viewModel { SettingsViewModel(get()) }
+    viewModel { SettingsViewModel(get(), get()) }
     viewModel { DatePickerViewModel() }
     viewModel { params -> SimpleSignAuthenticationViewModel(params.get(), get(), get(), get()) }
     viewModel { (data: MultiActionParams) -> MultiActionViewModel(data) }
