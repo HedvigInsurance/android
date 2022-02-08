@@ -4,7 +4,6 @@ import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.coroutines.toFlow
 import com.hedvig.android.owldroid.graphql.ProfileQuery
-import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.SelectCashbackMutation
 import com.hedvig.android.owldroid.graphql.UpdateEmailMutation
 import com.hedvig.android.owldroid.graphql.UpdatePhoneNumberMutation
@@ -60,29 +59,6 @@ class ProfileRepository(
                 cashback = ProfileQuery.Cashback(
                     fragments = ProfileQuery.Cashback.Fragments(cashback.fragments.cashbackFragment)
                 )
-            )
-
-        apolloClient
-            .apolloStore
-            .writeAndPublish(profileQuery, newData)
-            .execute()
-    }
-
-    fun writeRedeemedCostToCache(data: RedeemReferralCodeMutation.Data) {
-        val cachedData = apolloClient
-            .apolloStore
-            .read(profileQuery)
-            .execute()
-
-        val costFragment = data.redeemCode.cost.fragments.costFragment
-
-        val newCost = cachedData.insuranceCost?.copy(
-            fragments = ProfileQuery.InsuranceCost.Fragments(costFragment = costFragment)
-        )
-
-        val newData = cachedData
-            .copy(
-                insuranceCost = newCost
             )
 
         apolloClient

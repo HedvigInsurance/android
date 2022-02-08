@@ -61,7 +61,6 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             imageLoader = imageLoader,
             tracker = tracker,
             marketManager = marketManager,
-            areClaimCardsClickable = featureManager.isFeatureEnabled(Feature.CLAIMS_STATUS_V2),
         )
 
         binding.swipeToRefresh.setOnRefreshListener {
@@ -209,7 +208,6 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
      * returns whether adding the claimStatusCards was applied or not
      */
     private fun MutableList<HomeModel>.addClaimStatusCardsIfApplicable(successData: HomeQuery.Data): Boolean {
-        if (featureManager.isFeatureEnabled(Feature.CLAIMS_STATUS).not()) return false
         return NonEmptyList.fromList(successData.claimStatusCards)
             .map { claimStatusCardsQuery ->
                 claimStatusCardsQuery.map(ClaimStatusCardUiState::fromClaimStatusCardsQuery)

@@ -76,19 +76,15 @@ enum class Market {
         }
     }
 
-    fun openOnboarding(context: Context, seEmbarkOnboarding: Boolean) = when (this) {
+    fun openOnboarding(context: Context) = when (this) {
         SE -> {
-            if (seEmbarkOnboarding) {
-                context.startActivity(ChoosePlanActivity.newInstance(context))
-            } else {
-                context.startChat(closable = false, restartable = true)
-            }
+            context.startActivity(ChoosePlanActivity.newInstance(context))
         }
         NO -> {
             context.startActivity(ChoosePlanActivity.newInstance(context))
         }
         DK -> {
-            if (isDebug()) { // TODO NOT COMMIT THIS
+            if (isDebug()) { // TODO NOT COMMIT THIS use for testing the branch
                 context.startActivity(ChoosePlanActivity.newInstance(context))
             } else {
                 context.startActivity(WebOnboardingActivity.newInstance(context))

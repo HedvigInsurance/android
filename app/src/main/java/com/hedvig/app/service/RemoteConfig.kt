@@ -10,7 +10,10 @@ class RemoteConfig {
     init {
         firebaseRemoteConfig.setDefaultsAsync(
             mapOf(
-                "Key_Gear_Enabled" to false
+                "Key_Gear_Enabled" to false,
+                "Campaign_Banner_SE" to false,
+                "Campaign_Banner_NO" to false,
+                "Campaign_Banner_DK" to false,
             )
         )
     }
@@ -28,11 +31,17 @@ class RemoteConfig {
 }
 
 data class RemoteConfigData(
-    val keyGearEnabled: Boolean
+    val keyGearEnabled: Boolean,
+    val seCampaignVisible: Boolean,
+    val noCampaignVisible: Boolean,
+    val dkCampaignVisible: Boolean,
 ) {
     companion object {
         fun from(firebaseRemoteConfig: FirebaseRemoteConfig) = RemoteConfigData(
-            firebaseRemoteConfig.getBoolean("Key_Gear_Enabled")
+            firebaseRemoteConfig.getBoolean("Key_Gear_Enabled"),
+            firebaseRemoteConfig.getBoolean("Campaign_Banner_SE"),
+            firebaseRemoteConfig.getBoolean("Campaign_Banner_NO"),
+            firebaseRemoteConfig.getBoolean("Campaign_Banner_DK"),
         )
     }
 }

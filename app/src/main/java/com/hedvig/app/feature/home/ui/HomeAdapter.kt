@@ -57,14 +57,13 @@ class HomeAdapter(
     private val imageLoader: ImageLoader,
     private val tracker: HomeTracker,
     private val marketManager: MarketManager,
-    private val areClaimCardsClickable: Boolean,
 ) : ListAdapter<HomeModel, HomeAdapter.ViewHolder>(HomeModelDiffUtilItemCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.home_psa -> ViewHolder.PSABox(parent)
         R.layout.home_big_text -> ViewHolder.BigText(parent)
         R.layout.home_body_text -> ViewHolder.BodyText(parent)
-        ACTIVE_CLAIM -> ViewHolder.ClaimStatus(ComposeView(parent.context), areClaimCardsClickable)
+        ACTIVE_CLAIM -> ViewHolder.ClaimStatus(ComposeView(parent.context))
         R.layout.home_start_claim_outlined -> ViewHolder.StartClaimOutlined(parent, startIntentForResult)
         R.layout.home_start_claim_contained -> ViewHolder.StartClaimContained(parent, startIntentForResult)
         R.layout.home_info_card -> ViewHolder.InfoCard(parent)
@@ -197,7 +196,6 @@ class HomeAdapter(
 
         class ClaimStatus(
             val composeView: ComposeView,
-            private val areClaimCardsClickable: Boolean,
         ) : ViewHolder(composeView) {
             init {
                 composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
@@ -222,7 +220,7 @@ class HomeAdapter(
                 composeView.setContent {
                     HedvigTheme {
                         ClaimStatusCards(
-                            goToDetailScreen = if (areClaimCardsClickable) ::goToClaimDetailScreen else null,
+                            goToDetailScreen = ::goToClaimDetailScreen,
                             claimStatusCardsUiState = data.claimStatusCardsUiState,
                         )
                     }

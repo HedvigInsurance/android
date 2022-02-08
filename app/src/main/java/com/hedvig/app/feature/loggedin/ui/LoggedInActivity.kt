@@ -40,6 +40,7 @@ import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.getLastOpen
 import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.setLastOpen
+import com.hedvig.app.util.extensions.showErrorDialog
 import com.hedvig.app.util.extensions.showReviewDialog
 import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
@@ -110,6 +111,16 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 .onEach { shouldOpenReviewDialog ->
                     if (shouldOpenReviewDialog) {
                         showReviewWithDelay()
+                    }
+                }
+                .launchIn(lifecycleScope)
+
+            claimsViewModel.events
+                .flowWithLifecycle(lifecycle)
+                .onEach { event ->
+                    when (event) {
+                        ClaimsViewModel.Event.Error -> showErrorDialog(getString(R.string.component_error)) {}
+                        ClaimsViewModel.Event.StartChat -> startChat()
                     }
                 }
                 .launchIn(lifecycleScope)
@@ -275,7 +286,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             -> {
                 lifecycleScope.launch {
                     claimsViewModel.triggerFreeTextChat()
-                    startChat()
                 }
             }
             LoggedInTabs.REFERRALS -> {

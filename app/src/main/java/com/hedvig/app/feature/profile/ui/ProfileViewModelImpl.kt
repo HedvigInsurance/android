@@ -2,9 +2,7 @@ package com.hedvig.app.feature.profile.ui
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.app.authenticate.LogoutUseCase
-import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.util.LiveEvent
 import com.hedvig.app.util.extensions.default
@@ -16,7 +14,6 @@ import kotlinx.coroutines.launch
 
 class ProfileViewModelImpl(
     private val profileRepository: ProfileRepository,
-    private val chatRepository: ChatRepository,
     private val logoutUseCase: LogoutUseCase
 ) : ProfileViewModel() {
     override val dirty: MutableLiveData<Boolean> = MutableLiveData<Boolean>().default(false)
@@ -101,24 +98,6 @@ class ProfileViewModelImpl(
                 profileRepository.writeCashbackToCache(cashback)
             }
         }
-    }
-
-    override fun triggerFreeTextChat(done: () -> Unit) {
-        viewModelScope.launch {
-            val response = runCatching {
-                chatRepository
-                    .triggerFreeTextChat()
-            }
-
-            if (response.isFailure) {
-                response.exceptionOrNull()?.let { e(it) }
-            }
-            done()
-        }
-    }
-
-    override fun updateReferralsInformation(data: RedeemReferralCodeMutation.Data) {
-        profileRepository.writeRedeemedCostToCache(data)
     }
 
     override fun onLogout() {
