@@ -14,6 +14,7 @@ import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import kotlinx.coroutines.flow.collect
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -25,7 +26,7 @@ class AddressAutoCompleteActivity : AppCompatActivity() {
         window.compatSetDecorFitsSystemWindows(false)
 
         val initialAddress: DanishAddress? = intent.getParcelableExtra(INITIAL_ADDRESS_KEY)
-        val viewModel: AddressAutoCompleteViewModel by viewModel { parametersOf(initialAddress) }
+        val viewModel: AddressAutoCompleteViewModel = getViewModel { parametersOf(initialAddress) }
 
         setContent {
             val viewState by viewModel.viewState.collectAsState()
