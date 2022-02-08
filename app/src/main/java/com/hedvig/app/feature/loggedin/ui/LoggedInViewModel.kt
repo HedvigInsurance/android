@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
+import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,6 +47,7 @@ class LoggedInViewModelImpl(
     private val loggedInRepository: LoggedInRepository,
     private val chatEventStore: ChatEventStore,
     private val tabNotificationService: TabNotificationService,
+    private val hAnalytics: HAnalytics,
 ) : LoggedInViewModel() {
 
     init {
@@ -78,6 +80,13 @@ class LoggedInViewModelImpl(
     }
 
     override fun onTabVisited(tab: LoggedInTabs) {
+        when (tab) {
+            LoggedInTabs.HOME -> hAnalytics.screenViewHome()
+            LoggedInTabs.INSURANCE -> hAnalytics.screenViewInsurances()
+            LoggedInTabs.KEY_GEAR -> {}
+            LoggedInTabs.REFERRALS -> hAnalytics.screenViewForever()
+            LoggedInTabs.PROFILE -> hAnalytics.screenViewProfile()
+        }
         viewModelScope.launch { tabNotificationService.visitTab(tab) }
     }
 }
