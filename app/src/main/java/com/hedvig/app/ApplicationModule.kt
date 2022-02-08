@@ -189,6 +189,7 @@ import com.hedvig.app.feature.settings.SettingsViewModel
 import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignViewModel
 import com.hedvig.app.feature.swedishbankid.sign.usecase.ManuallyRecheckSwedishBankIdSignStatusUseCase
 import com.hedvig.app.feature.swedishbankid.sign.usecase.SubscribeToSwedishBankIdSignStatusUseCase
+import com.hedvig.app.feature.tracking.ApplicationLifecycleTracker
 import com.hedvig.app.feature.tracking.FirebaseTracker
 import com.hedvig.app.feature.tracking.HAnalyticsFacade
 import com.hedvig.app.feature.tracking.HAnalyticsSink
@@ -647,6 +648,7 @@ val trackerModule = module {
     single {
         NetworkHAnalyticsSink(get(), get(), get<Context>().getString(R.string.HANALYTICS_URL))
     } bind HAnalyticsSink::class
+    single { ApplicationLifecycleTracker(get()) }
 }
 
 val localeBroadcastManagerModule = module {
