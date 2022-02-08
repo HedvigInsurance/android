@@ -15,7 +15,6 @@ class DanishAddressInput private constructor(
         val oldText = rawText
         return DanishAddressInput(
             rawText = newText,
-            // todo figure out when to properly clear the existing selected Address. Maybe clear when deleted a whitespace?
             selectedDanishAddress = if (newText.length < oldText.length) {
                 null
             } else {

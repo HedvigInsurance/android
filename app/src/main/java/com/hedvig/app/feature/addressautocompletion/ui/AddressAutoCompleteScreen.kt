@@ -50,6 +50,7 @@ import com.hedvig.app.util.compose.preview.previewData
 import com.hedvig.app.util.compose.preview.previewList
 import kotlinx.coroutines.delay
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AddressAutoCompleteScreen(
     viewState: AddressAutoCompleteViewState,
@@ -58,6 +59,17 @@ fun AddressAutoCompleteScreen(
     cancelAutoCompletion: () -> Unit,
     cantFindAddress: () -> Unit,
 ) {
+    val focusRequester = remember { FocusRequester() }
+    val keyboardController: SoftwareKeyboardController? = LocalSoftwareKeyboardController.current
+    LaunchedEffect(Unit) {
+        delay(100) // Without a delay the keyboard has a low success rate of showing. 100 seems to always work.
+        focusRequester.requestFocus()
+        keyboardController?.show()
+    }
+    val closeKeyboard: () -> Unit = {
+        keyboardController?.hide()
+        focusRequester.freeFocus()
+    }
     Scaffold(
         topBar = {
             Column {
@@ -70,7 +82,12 @@ fun AddressAutoCompleteScreen(
                         applyBottom = false
                     ),
                 )
-                AddressInput(viewState, setInput)
+                AddressInput(
+                    viewState = viewState,
+                    setInput = setInput,
+                    focusRequester = focusRequester,
+                    closeKeyboard = closeKeyboard
+                )
             }
         },
         contentPadding = rememberInsetsPaddingValues(
@@ -80,28 +97,24 @@ fun AddressAutoCompleteScreen(
     ) { paddingValues ->
         SuggestionsList(
             viewState = viewState,
-            selectAddress = selectAddress,
+            selectAddress = { address ->
+                closeKeyboard()
+                selectAddress(address)
+            },
             cantFindAddress = cantFindAddress,
             modifier = Modifier.padding(paddingValues),
         )
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun AddressInput(
     viewState: AddressAutoCompleteViewState,
     setInput: (String) -> Unit,
+    focusRequester: FocusRequester,
+    closeKeyboard: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val focusRequester = remember { FocusRequester() }
-    val keyboardController: SoftwareKeyboardController? = LocalSoftwareKeyboardController.current
-    LaunchedEffect(Unit) {
-        delay(100) // Without a delay the keyboard has a low success rate of showing. 100 seems to always work.
-        focusRequester.requestFocus()
-        keyboardController?.show()
-    }
-
     Surface(
         color = MaterialTheme.colors.surface,
         modifier = modifier,
@@ -121,10 +134,7 @@ private fun AddressInput(
                         color = LocalContentColor.current.copy(LocalContentAlpha.current)
                     ),
                     keyboardActions = KeyboardActions(
-                        onDone = {
-                            keyboardController?.hide()
-                            focusRequester.freeFocus()
-                        }
+                        onDone = { closeKeyboard() }
                     ),
                     singleLine = true,
                     cursorBrush = SolidColor(LocalContentColor.current),
@@ -132,8 +142,7 @@ private fun AddressInput(
                         .focusRequester(focusRequester)
                         .fillMaxWidth()
                 )
-                val numberAndCity =
-                    viewState.input.selectedDanishAddress?.toPresentableTextPair()?.second
+                val numberAndCity = viewState.input.selectedDanishAddress?.toPresentableTextPair()?.second
                 AnimatedVisibility(numberAndCity != null) {
                     CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                         numberAndCity?.let {
