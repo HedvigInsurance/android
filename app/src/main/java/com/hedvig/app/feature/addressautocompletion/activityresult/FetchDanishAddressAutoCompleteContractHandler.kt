@@ -34,7 +34,6 @@ class FetchDanishAddressAutoCompleteContractHandler(
     }
 
     companion object {
-        private const val KEY =
-            "com.hedvig.app.feature.addressautocompletion.activityresult.KEY"
+        private const val KEY = "com.hedvig.app.feature.addressautocompletion.activityresult.KEY"
     }
 }
