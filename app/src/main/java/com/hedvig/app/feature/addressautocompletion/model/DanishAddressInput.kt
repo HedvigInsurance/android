@@ -1,16 +1,22 @@
 package com.hedvig.app.feature.addressautocompletion.model
 
-class DanishAddressInput private constructor(
+class DanishAddressInput constructor(
     val rawText: String,
     val selectedDanishAddress: DanishAddress? = null,
 ) {
-    val queryString: String
-        get() = when (selectedDanishAddress) {
-            null -> rawText
-            else -> selectedDanishAddress.toQueryString()
-        }
+    val queryDanishAddress: DanishAddress
+        get() = selectedDanishAddress ?: DanishAddress(
+            id = null,
+            address = rawText,
+            streetName = null,
+            streetNumber = null,
+            floor = null,
+            apartment = null,
+            postalCode = null,
+            city = null,
+        )
 
-    fun withNewInput(newText: String): DanishAddressInput {
+    fun withNewText(newText: String): DanishAddressInput {
         if (selectedDanishAddress == null) return DanishAddressInput(newText)
         val oldText = rawText
         return DanishAddressInput(
