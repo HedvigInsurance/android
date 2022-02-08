@@ -55,7 +55,6 @@ class AddressAutoCompleteViewModel(
             AddressAutoCompleteViewState(
                 input = input,
                 results = results,
-                error = null, // TODO errors shown when and how?
             )
         }.stateIn(
             viewModelScope,
@@ -91,8 +90,6 @@ class AddressAutoCompleteViewModel(
 data class AddressAutoCompleteViewState(
     val input: DanishAddressInput,
     val results: List<DanishAddress> = emptyList(),
-    val error: String? = null, // temp
-    val finalResult: DanishAddress? = null,
 )
 
 sealed interface AddressAutoCompleteEvent {
