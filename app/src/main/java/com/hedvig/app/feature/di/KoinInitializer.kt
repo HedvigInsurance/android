@@ -14,6 +14,7 @@ import com.hedvig.app.clockModule
 import com.hedvig.app.coilModule
 import com.hedvig.app.connectPaymentModule
 import com.hedvig.app.dataStoreModule
+import com.hedvig.app.deviceIdStoreModule
 import com.hedvig.app.embarkModule
 import com.hedvig.app.embarkTrackerModule
 import com.hedvig.app.externalInsuranceModule
@@ -105,6 +106,7 @@ class KoinInitializer : Initializer<KoinApplication> {
                 retrievePriceModule,
                 externalInsuranceModule,
                 insurelyAuthModule,
+                deviceIdStoreModule,
             )
         )
     }
