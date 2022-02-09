@@ -5,16 +5,7 @@ class DanishAddressInput constructor(
     val selectedDanishAddress: DanishAddress? = null,
 ) {
     val queryDanishAddress: DanishAddress
-        get() = selectedDanishAddress ?: DanishAddress(
-            id = null,
-            address = rawText,
-            postalCode = null,
-            city = null,
-            streetName = null,
-            streetNumber = null,
-            floor = null,
-            apartment = null,
-        )
+        get() = selectedDanishAddress ?: DanishAddress(address = rawText)
 
     fun withNewText(newText: String): DanishAddressInput {
         if (selectedDanishAddress == null) return DanishAddressInput(newText)

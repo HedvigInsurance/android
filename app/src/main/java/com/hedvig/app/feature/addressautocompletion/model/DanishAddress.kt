@@ -6,14 +6,14 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class DanishAddress(
-    val id: String?,
     val address: String,
-    val postalCode: String?,
-    val city: String?,
-    val streetName: String?,
-    val streetNumber: String?,
-    val floor: String?,
-    val apartment: String?,
+    val id: String? = null,
+    val postalCode: String? = null,
+    val city: String? = null,
+    val streetName: String? = null,
+    val streetNumber: String? = null,
+    val floor: String? = null,
+    val apartment: String? = null,
 ) : Parcelable {
 
     val isValidFinalSelection: Boolean
@@ -75,8 +75,8 @@ data class DanishAddress(
     companion object {
         fun fromDto(dto: AddressAutocompleteQuery.AutoCompleteAddress): DanishAddress {
             return DanishAddress(
-                id = dto.id,
                 address = dto.address,
+                id = dto.id,
                 postalCode = dto.postalCode,
                 city = dto.city,
                 streetName = dto.streetName,

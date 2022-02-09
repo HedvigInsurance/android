@@ -71,8 +71,8 @@ fun OfferModel.InsurelyCard.Retrieved.Companion.previewData(): OfferModel.Insure
 }
 fun DanishAddress.Companion.previewData(): DanishAddress {
     return DanishAddress(
-        id = "0a3f50bd-ea90-32b8-ef44-0003ba298018",
         address = "Asagården 20",
+        id = "0a3f50bd-ea90-32b8-ef44-0003ba298018",
         postalCode = null,
         city = null,
         streetName = "Asagården",
@@ -85,8 +85,8 @@ fun DanishAddress.Companion.previewData(): DanishAddress {
 fun DanishAddress.Companion.previewList(): List<DanishAddress> {
     return listOf(
         DanishAddress(
-            id = "0a3f50bd-ea90-32b8-e044-0003ba298018",
             address = "Asagården 20, 2. tv, 7500 Holstebro",
+            id = "0a3f50bd-ea90-32b8-e044-0003ba298018",
             postalCode = "7500",
             city = "Holstebro",
             streetName = "Asagården",
@@ -95,8 +95,8 @@ fun DanishAddress.Companion.previewList(): List<DanishAddress> {
             apartment = "tv",
         ),
         DanishAddress(
-            id = "0a3f50bd-ea8f-32b8-e044-0003ba298018",
             address = "Asagården 20, 2. th, 7500 Holstebro",
+            id = "0a3f50bd-ea8f-32b8-e044-0003ba298018",
             postalCode = "7500",
             city = "Holstebro",
             streetName = "Asagården",
@@ -105,8 +105,8 @@ fun DanishAddress.Companion.previewList(): List<DanishAddress> {
             apartment = "th",
         ),
         DanishAddress(
-            id = "0a3f50bd-ea96-32b8-e044-0003ba298018",
             address = "Asagården 21, 2. tv, 7500 Holstebro",
+            id = "0a3f50bd-ea96-32b8-e044-0003ba298018",
             postalCode = "7500",
             city = "Holstebro",
             streetName = "Asagården",
@@ -115,8 +115,8 @@ fun DanishAddress.Companion.previewList(): List<DanishAddress> {
             apartment = "tv",
         ),
         DanishAddress(
-            id = "0a3f50bd-ea95-32b8-e044-0003ba298018",
             address = "Asagården 21, 2. th, 7500 Holstebro",
+            id = "0a3f50bd-ea95-32b8-e044-0003ba298018",
             postalCode = "7500",
             city = "Holstebro",
             streetName = "Asagården",
@@ -125,8 +125,8 @@ fun DanishAddress.Companion.previewList(): List<DanishAddress> {
             apartment = "th",
         ),
         DanishAddress(
-            id = "0a3f50bd-ea9c-32b8-e044-0003ba298018",
             address = "Asagården 22, 2. tv, 7500 Holstebro",
+            id = "0a3f50bd-ea9c-32b8-e044-0003ba298018",
             postalCode = "7500",
             city = "Holstebro",
             streetName = "Asagården",
@@ -135,8 +135,8 @@ fun DanishAddress.Companion.previewList(): List<DanishAddress> {
             apartment = "tv",
         ),
         DanishAddress(
-            id = "0a3f50bd-ea9b-32b8-e044-0003ba298018",
             address = "Asagården 22, 2. th, 7500 Holstebro",
+            id = "0a3f50bd-ea9b-32b8-e044-0003ba298018",
             postalCode = "7500",
             city = "Holstebro",
             streetName = "Asagården",
