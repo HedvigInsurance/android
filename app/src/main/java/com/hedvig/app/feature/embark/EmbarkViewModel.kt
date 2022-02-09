@@ -13,7 +13,7 @@ import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.type.EmbarkExternalRedirectLocation
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.authenticate.LoginStatusService
-import com.hedvig.app.feature.chat.usecase.TriggerFreeTextChatUseCase
+import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.embark.extensions.api
 import com.hedvig.app.feature.embark.extensions.getComputedValues
 import com.hedvig.app.feature.embark.util.VariableExtractor
@@ -42,7 +42,7 @@ abstract class EmbarkViewModel(
     private val tracker: EmbarkTracker,
     private val valueStore: ValueStore,
     private val graphQLQueryUseCase: GraphQLQueryUseCase,
-    private val triggerFreeTextChatUseCase: TriggerFreeTextChatUseCase,
+    private val chatRepository: ChatRepository,
     loginStatusService: LoginStatusService,
 ) : ViewModel() {
     private val _passageState = MutableLiveData<PassageState>()
@@ -210,7 +210,7 @@ abstract class EmbarkViewModel(
 
     private fun triggerChat() {
         viewModelScope.launch {
-            val event = when (triggerFreeTextChatUseCase.invoke()) {
+            val event = when (chatRepository.triggerFreeTextChat()) {
                 is Either.Left -> Event.Error()
                 is Either.Right -> Event.Chat
             }
@@ -500,11 +500,11 @@ class EmbarkViewModelImpl(
     private val embarkRepository: EmbarkRepository,
     loginStatusService: LoginStatusService,
     graphQLQueryUseCase: GraphQLQueryUseCase,
-    triggerFreeTextChatUseCase: TriggerFreeTextChatUseCase,
+    chatRepository: ChatRepository,
     tracker: EmbarkTracker,
     valueStore: ValueStore,
     storyName: String,
-) : EmbarkViewModel(tracker, valueStore, graphQLQueryUseCase, triggerFreeTextChatUseCase, loginStatusService) {
+) : EmbarkViewModel(tracker, valueStore, graphQLQueryUseCase, chatRepository, loginStatusService) {
 
     init {
         fetchStory(storyName)

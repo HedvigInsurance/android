@@ -23,4 +23,10 @@ enum class Feature(
         "Used in danish onboarding",
         false
     ),
+    REFERRAL_CAMPAIGN(
+        "referral_campaign",
+        "Referral Campaign",
+        "Used to show banner in referral view",
+        false
+    )
 }

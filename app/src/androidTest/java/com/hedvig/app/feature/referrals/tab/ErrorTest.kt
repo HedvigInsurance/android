@@ -8,8 +8,10 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_KEY_GEAR_FEATURE_ENABLED
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_NO_DISCOUNTS
 import com.hedvig.app.util.ApolloCacheClearRule
+import com.hedvig.app.util.FeatureFlagRule
 import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.context
+import com.hedvig.app.util.featureflags.Feature
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.kakao.screen.Screen.Companion.onScreen
 import okhttp3.mockwebserver.Dispatcher
@@ -27,6 +29,9 @@ class ErrorTest : TestCase() {
 
     @get:Rule
     val apolloCacheClearRule = ApolloCacheClearRule()
+
+    @get:Rule
+    val featureFlagRule = FeatureFlagRule(Feature.REFERRAL_CAMPAIGN to false)
 
     @Test
     fun shouldShowErrorWhenAnErrorOccurs() = run {

@@ -9,13 +9,17 @@ class DebugFeatureFlagProvider(
 
     override val priority = DEBUG_PRIORITY
 
-    override fun isFeatureEnabled(feature: Feature): Boolean {
-        return when (feature) {
-            Feature.MOVING_FLOW -> marketManager.market == Market.SE || marketManager.market == Market.NO
-            Feature.FRANCE_MARKET -> true
-            Feature.ADDRESS_AUTO_COMPLETE -> true
-        }
+    override fun isFeatureEnabled(feature: Feature) = when (feature) {
+        Feature.MOVING_FLOW -> marketManager.market == Market.SE || marketManager.market == Market.NO
+        Feature.FRANCE_MARKET -> true
+        Feature.ADDRESS_AUTO_COMPLETE -> true
+        Feature.REFERRAL_CAMPAIGN -> true
     }
 
-    override fun hasFeature(feature: Feature): Boolean = true
+    override fun hasFeature(feature: Feature) = when (feature) {
+        Feature.MOVING_FLOW -> true
+        Feature.FRANCE_MARKET -> true
+        Feature.ADDRESS_AUTO_COMPLETE -> true
+        Feature.REFERRAL_CAMPAIGN -> true
+    }
 }

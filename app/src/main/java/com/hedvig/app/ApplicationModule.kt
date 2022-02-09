@@ -42,7 +42,6 @@ import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.feature.chat.service.ChatTracker
-import com.hedvig.app.feature.chat.usecase.TriggerFreeTextChatUseCase
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
 import com.hedvig.app.feature.claimdetail.data.GetClaimDetailUiStateFlowUseCase
 import com.hedvig.app.feature.claimdetail.data.GetClaimDetailUseCase
@@ -202,8 +201,10 @@ import com.hedvig.app.feature.zignsec.usecase.StartDanishAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.StartNorwegianAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthStatusUseCase
 import com.hedvig.app.service.FileService
+import com.hedvig.app.service.RemoteConfig
 import com.hedvig.app.service.badge.CrossSellNotificationBadgeService
 import com.hedvig.app.service.badge.NotificationBadgeService
+import com.hedvig.app.service.badge.ReferralsNotificationBadgeService
 import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.app.service.push.managers.CrossSellNotificationManager
 import com.hedvig.app.service.push.managers.PaymentNotificationManager
@@ -447,7 +448,7 @@ val offerModule = module {
             tracker = get(),
             adyenRepository = get(),
             marketManager = get(),
-            freeTextChatUseCase = get()
+            chatRepository = get(),
         )
     }
     single { ApproveQuotesUseCase(get(), get(), get(), get()) }
@@ -458,7 +459,7 @@ val offerModule = module {
 }
 
 val profileModule = module {
-    viewModel<ProfileViewModel> { ProfileViewModelImpl(get(), get(), get()) }
+    viewModel<ProfileViewModel> { ProfileViewModelImpl(get(), get()) }
 }
 
 val keyGearModule = module {
@@ -504,11 +505,7 @@ val numberActionSetModule = module {
 }
 
 val referralsModule = module {
-    viewModel<ReferralsViewModel> {
-        ReferralsViewModelImpl(
-            get()
-        )
-    }
+    viewModel<ReferralsViewModel> { ReferralsViewModelImpl(get(), get()) }
     viewModel<ReferralsActivatedViewModel> { ReferralsActivatedViewModelImpl(get()) }
     viewModel<ReferralsEditCodeViewModel> { ReferralsEditCodeViewModelImpl(get()) }
 }
@@ -561,11 +558,13 @@ val serviceModule = module {
     single<LoginStatusService> { SharedPreferencesLoginStatusService(get(), get(), get()) }
     single<AuthenticationTokenService> { SharedPreferencesAuthenticationTokenService(get()) }
 
-    single { TabNotificationService(get()) }
+    single { TabNotificationService(get(), get()) }
     single { CrossSellNotificationBadgeService(get(), get()) }
+    single { ReferralsNotificationBadgeService(get(), get()) }
     single { NotificationBadgeService(get()) }
 
     single { DeviceInformationService(get()) }
+    single { RemoteConfig() }
 }
 
 val repositoriesModule = module {
@@ -672,7 +671,6 @@ val useCaseModule = module {
     single { CreateOtpAttemptUseCase(get()) }
     single<SendOtpCodeUseCase> { SendOtpCodeUseCaseImpl(get()) }
     single<ReSendOtpCodeUseCase> { ReSendOtpCodeUseCaseImpl(get()) }
-    single { TriggerFreeTextChatUseCase(get()) }
     single { GetDataCollectionUseCase(get(), get()) }
     single { GetClaimDetailUseCase(get(), get()) }
     single { GetClaimDetailUiStateFlowUseCase(get()) }
@@ -692,7 +690,7 @@ val sharedPreferencesModule = module {
 }
 
 val featureManagerModule = module {
-    single { FeatureManager(get()) }
+    single { FeatureManager(get(), get()) }
 }
 
 val coilModule = module {
