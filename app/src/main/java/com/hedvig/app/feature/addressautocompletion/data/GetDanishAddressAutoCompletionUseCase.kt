@@ -13,10 +13,11 @@ class GetDanishAddressAutoCompletionUseCase(
 ) {
     suspend operator fun invoke(
         address: DanishAddress,
+        addressAutocompleteType: AddressAutocompleteType? = null,
     ): Either<QueryResult.Error, AddressAutoCompleteResults> {
         val addressAutocompleteQuery = AddressAutocompleteQuery(
             address.toQueryString(),
-            address.toAddressAutocompleteType()
+            addressAutocompleteType ?: address.toAddressAutocompleteType()
         )
         return apolloClient
             .query(addressAutocompleteQuery)
