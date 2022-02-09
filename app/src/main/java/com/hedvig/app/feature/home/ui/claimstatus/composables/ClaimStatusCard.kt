@@ -27,7 +27,7 @@ fun ClaimStatusCard(
     isClickable: Boolean = false,
     onClaimCardShown: (String) -> Unit,
 ) {
-    LaunchedEffect(uiState) {
+    LaunchedEffect(uiState.id) {
         onClaimCardShown(uiState.id)
     }
     Card(

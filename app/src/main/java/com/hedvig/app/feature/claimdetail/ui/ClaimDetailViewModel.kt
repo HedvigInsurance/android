@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.claimdetail.data.GetClaimDetailUiStateFlowUseCase
+import com.hedvig.app.feature.claimdetail.data.GetClaimDetailUseCase
 import com.hedvig.app.feature.claimdetail.model.ClaimDetailUiState
 import com.hedvig.app.util.coroutines.RetryChannel
 import com.hedvig.hanalytics.HAnalytics
@@ -12,7 +13,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -30,14 +30,12 @@ class ClaimDetailViewModel(
     private val chatRepository: ChatRepository,
     private val getClaimDetailUiStateFlowUseCase: GetClaimDetailUiStateFlowUseCase,
     private val hAnalytics: HAnalytics,
+    getClaimDetailUseCase: GetClaimDetailUseCase,
 ) : ViewModel() {
     init {
         viewModelScope.launch {
-            when (val result = getClaimDetailUiStateFlowUseCase.invoke(claimId).first()) {
-                is Either.Left -> {}
-                is Either.Right -> {
-                    hAnalytics.screenViewClaimsStatusDetail(claimId, result.value.claimStatus.rawValue)
-                }
+            getClaimDetailUseCase.invoke(claimId).tap { result ->
+                hAnalytics.screenViewClaimsStatusDetail(claimId, result.claim.status.rawValue)
             }
         }
     }

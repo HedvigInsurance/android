@@ -111,12 +111,7 @@ class HomeAdapter(
     }
 
     override fun onViewRecycled(holder: ViewHolder) {
-        if (holder is ViewHolder.ClaimStatus) {
-            holder.composeView.disposeComposition()
-        }
-        if (holder is ViewHolder.InfoCard) {
-            holder.composeView.disposeComposition()
-        }
+        (holder.itemView as? ComposeView)?.disposeComposition()
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {

@@ -71,11 +71,8 @@ fun ConnectPayinCard(
             TextButton(
                 onClick = onActionClick,
                 modifier = Modifier
-                    .padding(
-                        top = 4.dp,
-                        end = 8.dp,
-                        bottom = 4.dp,
-                    )
+                    .padding(vertical = 4.dp)
+                    .padding(end = 8.dp)
                     .align(Alignment.End),
             ) {
                 Text(
