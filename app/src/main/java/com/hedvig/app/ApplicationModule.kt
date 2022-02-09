@@ -20,8 +20,6 @@ import com.apollographql.apollo.cache.normalized.lru.LruNormalizedCacheFactory
 import com.apollographql.apollo.interceptor.ApolloInterceptorFactory
 import com.apollographql.apollo.subscription.SubscriptionConnectionParams
 import com.apollographql.apollo.subscription.WebSocketSubscriptionTransport
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.authenticate.DeviceIdDataStore
@@ -204,7 +202,6 @@ import com.hedvig.app.util.apollo.DeviceIdInterceptor
 import com.hedvig.app.util.apollo.SunsettingInterceptor
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.hanalytics.HAnalytics
-import com.mixpanel.android.mpmetrics.MixpanelAPI
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidApplication
@@ -234,12 +231,6 @@ fun shouldOverrideFeatureFlags(app: HedvigApplication): Boolean {
 
 val applicationModule = module {
     single { androidApplication() as HedvigApplication }
-    single {
-        MixpanelAPI.getInstance(
-            get(),
-            get<Context>().getString(R.string.MIXPANEL_PROJECT_TOKEN)
-        )
-    }
     single<NormalizedCacheFactory<LruNormalizedCache>> {
         LruNormalizedCacheFactory(
             EvictionPolicy.builder().maxSizeBytes(
@@ -322,7 +313,6 @@ val applicationModule = module {
         }
         builder.build()
     }
-    single { Firebase.analytics }
 }
 
 fun makeUserAgent(context: Context, market: Market?) =

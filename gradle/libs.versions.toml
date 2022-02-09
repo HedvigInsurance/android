@@ -168,7 +168,6 @@ firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 firebase-dynamicLinks = { module = "com.google.firebase:firebase-dynamic-links" }
 firebase-config = { module = "com.google.firebase:firebase-config" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
-firebase-tracking = { module = "com.google.firebase:firebase-analytics-ktx" }
 
 flexbox = { module = "com.google.android.flexbox:flexbox", version.ref = "flexbox" }
 
@@ -193,8 +192,6 @@ markwon-core = { module = "io.noties.markwon:core", version.ref = "markwon" }
 markwon-linkify = { module = "io.noties.markwon:linkify", version.ref = "markwon" }
 
 materialComponents = { module = "com.google.android.material:material", version.ref = "materialComponents" }
-
-mixpanel = { module = "com.mixpanel.android:mixpanel-android", version.ref = "mixpanel" }
 
 mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
 mockk-jvm = { module = "io.mockk:mockk", version.ref = "mockk" }

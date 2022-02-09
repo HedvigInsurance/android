@@ -215,9 +215,6 @@ dependencies {
     implementation(libs.firebase.dynamicLinks)
     implementation(libs.firebase.config)
     implementation(libs.firebase.messaging)
-    implementation(libs.firebase.tracking)
-
-    implementation(libs.mixpanel)
 
     implementation(libs.hAnalytics)
 
