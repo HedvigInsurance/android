@@ -22,7 +22,6 @@ import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 
 abstract class DismissiblePager : DialogFragment() {
     abstract val items: List<DismissiblePagerModel>
-    abstract val tracker: DismissablePageTracker
     abstract val shouldShowLogo: Boolean
     private val binding by viewBinding(FragmentDismissablePagerBinding::bind)
 
@@ -101,7 +100,6 @@ abstract class DismissiblePager : DialogFragment() {
             }
             pager.registerOnPageChangeCallback(PageChangeListener())
             proceed.setHapticClickListener {
-                tracker.clickProceed()
                 pager.currentItem += 1
             }
         }
@@ -165,7 +163,6 @@ abstract class DismissiblePager : DialogFragment() {
                                 }
                             } else {
                                 proceed.setHapticClickListener {
-                                    tracker.clickProceed()
                                     pager.currentItem += 1
                                 }
                             }
@@ -182,7 +179,6 @@ abstract class DismissiblePager : DialogFragment() {
                                 }
                             } else {
                                 proceed.setHapticClickListener {
-                                    tracker.clickProceed()
                                     pager.currentItem += 1
                                 }
                             }

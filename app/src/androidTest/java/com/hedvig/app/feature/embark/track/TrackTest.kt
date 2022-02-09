@@ -2,7 +2,6 @@ package com.hedvig.app.feature.embark.track
 
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.embarkTrackerModule
-import com.hedvig.app.feature.embark.EmbarkTracker
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TRACK

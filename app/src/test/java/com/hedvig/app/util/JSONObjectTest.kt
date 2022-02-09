@@ -58,4 +58,38 @@ class JSONObjectTest {
 
         assertThat(actual.toString()).isEqualTo(expected.toString())
     }
+
+    @Test
+    fun `JSONObject asMap() should convert regular flat object`() {
+        val expected = mapOf(
+            "foo" to "bar",
+            "bat" to "baz",
+        )
+
+        val actual = jsonObjectOf(
+            "foo" to "bar",
+            "bat" to "baz",
+        ).asMap()
+
+        assertThat(actual).isEqualTo(expected)
+    }
+
+    @Test
+    fun `JSONObject asMap() should convert nested object`() {
+        val expected = mapOf(
+            "foo" to "bar",
+            "baz" to mapOf(
+                "asd" to "efg",
+            ),
+        )
+
+        val actual = jsonObjectOf(
+            "foo" to "bar",
+            "baz" to mapOf(
+                "asd" to "efg"
+            ),
+        ).asMap()
+
+        assertThat(actual).isEqualTo(expected)
+    }
 }

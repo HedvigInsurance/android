@@ -15,7 +15,6 @@ import com.hedvig.app.BASE_MARGIN_QUINTUPLE
 import com.hedvig.app.BASE_MARGIN_TRIPLE
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentKeyGearBinding
-import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearItemActivity
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
@@ -31,12 +30,10 @@ import com.hedvig.app.util.transitionPair
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class KeyGearFragment : Fragment(R.layout.fragment_key_gear) {
     private val model: KeyGearViewModel by sharedViewModel()
-    private val tracker: KeyGearTracker by inject()
     private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
     private val binding by viewBinding(FragmentKeyGearBinding::bind)
     private var scroll = 0
@@ -67,7 +64,6 @@ class KeyGearFragment : Fragment(R.layout.fragment_key_gear) {
 
             items.adapter =
                 KeyGearItemsAdapter(
-                    tracker,
                     { v ->
                         startActivity(
                             CreateKeyGearItemActivity.newInstance(requireContext()),

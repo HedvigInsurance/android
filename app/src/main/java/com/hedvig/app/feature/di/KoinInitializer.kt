@@ -16,7 +16,6 @@ import com.hedvig.app.connectPaymentModule
 import com.hedvig.app.dataStoreModule
 import com.hedvig.app.deviceIdStoreModule
 import com.hedvig.app.embarkModule
-import com.hedvig.app.embarkTrackerModule
 import com.hedvig.app.externalInsuranceModule
 import com.hedvig.app.featureManagerModule
 import com.hedvig.app.homeModule
@@ -28,7 +27,6 @@ import com.hedvig.app.localeManagerModule
 import com.hedvig.app.loggedInModule
 import com.hedvig.app.marketManagerModule
 import com.hedvig.app.marketPickerModule
-import com.hedvig.app.marketPickerTrackerModule
 import com.hedvig.app.marketingModule
 import com.hedvig.app.notificationModule
 import com.hedvig.app.numberActionSetModule
@@ -77,7 +75,6 @@ class KoinInitializer : Initializer<KoinApplication> {
                 localeBroadcastManagerModule,
                 trackerModule,
                 embarkModule,
-                marketPickerTrackerModule,
                 whatsNewModule,
                 marketManagerModule,
                 connectPaymentModule,
@@ -99,7 +96,6 @@ class KoinInitializer : Initializer<KoinApplication> {
                 cacheManagerModule,
                 sharedPreferencesModule,
                 coilModule,
-                embarkTrackerModule,
                 chatEventModule,
                 dataStoreModule,
                 featureManagerModule,

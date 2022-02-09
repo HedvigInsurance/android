@@ -21,6 +21,27 @@ fun Map<*, *>.toJsonObject(): JSONObject = entries.fold(JSONObject()) { acc, ent
     acc
 }
 
+/**
+ * Converts this `JSONObject` into a `Map`.
+ *
+ * Note that this extension is not named `toMap` due to a potential
+ * conflict with a later version of `JSONObject`.
+ */
+fun JSONObject.asMap(): Map<String, Any?> = entriesIterable()
+    .fold(mutableMapOf()) { acc, (k, v) ->
+        acc[k] = convertJsonValue(v)
+        acc
+    }
+
+fun JSONArray.toList() = values().map { convertJsonValue(it) }.toList()
+
+private fun convertJsonValue(value: Any?): Any? = when (value) {
+    JSONObject.NULL, null -> null
+    is JSONObject -> value.asMap()
+    is JSONArray -> value.toList()
+    else -> value
+}
+
 fun jsonArrayOf(vararg items: Any) = JSONArray().apply {
     items.forEach { put(it) }
 }
@@ -63,6 +84,10 @@ fun JSONObject.toBundle() = bundleOf(
             .toList().toTypedArray()
         )
 )
+
+fun JSONObject.entriesIterable() = object : Iterable<Pair<String, Any?>> {
+    override fun iterator(): Iterator<Pair<String, Any?>> = entries()
+}
 
 fun JSONObject.entries() = JSONObjectEntryIterator(this)
 

@@ -6,7 +6,6 @@ import androidx.core.text.scale
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
 import com.hedvig.app.R
 import com.hedvig.app.databinding.KeyGearItemDetailValuationSectionBinding
-import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.feature.keygear.KeyGearValuationActivity
 import com.hedvig.app.feature.keygear.KeyGearValuationInfoActivity
 import com.hedvig.app.feature.keygear.ValuationType
@@ -18,7 +17,6 @@ import com.hedvig.app.util.safeLet
 
 class ValuationBinder(
     private val binding: KeyGearItemDetailValuationSectionBinding,
-    private val tracker: KeyGearTracker,
 ) {
     fun bind(data: KeyGearItemQuery.KeyGearItem) {
         val valuation =
@@ -28,7 +26,6 @@ class ValuationBinder(
 
             binding.addPurchaseInfo.show()
             binding.addPurchaseInfo.setHapticClickListener {
-                tracker.addPurchaseInfo()
                 binding.root.context.startActivity(
                     KeyGearValuationActivity.newInstance(
                         binding.root.context,
@@ -77,7 +74,6 @@ class ValuationBinder(
         binding.valuationMoreInfo.show()
         val category = data.fragments.keyGearItemFragment.category
         binding.valuationMoreInfo.setHapticClickListener {
-            tracker.valuationMoreInfo()
             safeLet(
                 data.fragments.keyGearItemFragment.purchasePrice?.amount,
                 data

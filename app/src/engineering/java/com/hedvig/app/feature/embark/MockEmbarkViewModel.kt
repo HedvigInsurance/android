@@ -6,13 +6,11 @@ import com.hedvig.app.testdata.feature.embark.data.STANDARD_STORY
 import com.hedvig.hanalytics.HAnalytics
 
 class MockEmbarkViewModel(
-    tracker: EmbarkTracker,
     graphQLQueryUseCase: GraphQLQueryUseCase,
     chatRepository: ChatRepository,
     hAnalytics: HAnalytics,
     loginStatusService: LoginStatusService,
 ) : EmbarkViewModel(
-    tracker,
     ValueStoreImpl(),
     graphQLQueryUseCase,
     chatRepository,

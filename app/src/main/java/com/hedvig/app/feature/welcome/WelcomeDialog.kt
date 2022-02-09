@@ -4,7 +4,6 @@ import android.os.Bundle
 import com.hedvig.app.R
 import com.hedvig.app.feature.dismissiblepager.DismissiblePager
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
-import org.koin.android.ext.android.inject
 
 class WelcomeDialog : DismissiblePager() {
 
@@ -14,7 +13,6 @@ class WelcomeDialog : DismissiblePager() {
     override val titleLabel: Nothing? = null
     override val shouldShowLogo = true
 
-    override val tracker: WelcomeTracker by inject()
     override val items: List<DismissiblePagerModel>
         get() = requireArguments().getParcelableArrayList<DismissiblePagerModel>(ITEMS).orEmpty()
 

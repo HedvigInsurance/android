@@ -38,7 +38,6 @@ import com.hedvig.app.databinding.TextSubtitle1Binding
 import com.hedvig.app.databinding.WarningCardBinding
 import com.hedvig.app.feature.faq.FAQBottomSheet
 import com.hedvig.app.feature.offer.OfferRedeemCodeBottomSheet
-import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheet
 import com.hedvig.app.feature.offer.ui.composable.insurely.InsurelyCard
 import com.hedvig.app.feature.table.generateTable
@@ -59,7 +58,6 @@ import java.util.Locale
 
 class OfferAdapter(
     private val fragmentManager: FragmentManager,
-    private val tracker: OfferTracker,
     private val locale: Locale,
     private val openQuoteDetails: (quoteID: String) -> Unit,
     private val onRemoveDiscount: () -> Unit,
@@ -73,7 +71,6 @@ class OfferAdapter(
             parent,
             locale,
             fragmentManager,
-            tracker,
             onSign,
             onRemoveDiscount
         )
@@ -128,7 +125,6 @@ class OfferAdapter(
             parent: ViewGroup,
             private val locale: Locale,
             private val fragmentManager: FragmentManager,
-            private val tracker: OfferTracker,
             private val onSign: (SignMethod, PaymentMethodsApiResponse?) -> Unit,
             private val onRemoveDiscount: () -> Unit,
         ) : ViewHolder(parent.inflate(R.layout.offer_header)) {
@@ -152,7 +148,6 @@ class OfferAdapter(
                     }
 
                     startDateContainer.setHapticClickListener {
-                        tracker.chooseStartDate()
                         ChangeDateBottomSheet.newInstance(data.changeDateBottomSheetData)
                             .show(fragmentManager, ChangeDateBottomSheet.TAG)
                     }
@@ -171,7 +166,6 @@ class OfferAdapter(
                             setTextColor(context.colorAttr(R.attr.colorError))
                             icon = null
                             setHapticClickListener {
-                                tracker.removeDiscount()
                                 discountButton.context.showAlert(
                                     R.string.OFFER_REMOVE_DISCOUNT_ALERT_TITLE,
                                     R.string.OFFER_REMOVE_DISCOUNT_ALERT_DESCRIPTION,
@@ -189,7 +183,6 @@ class OfferAdapter(
                             setTextColor(context.getColor(R.color.textColorSecondary))
                             icon = context.compatDrawable(R.drawable.ic_add_circle)
                             setHapticClickListener {
-                                tracker.addDiscount()
                                 OfferRedeemCodeBottomSheet.newInstance()
                                     .show(
                                         fragmentManager,
@@ -205,7 +198,6 @@ class OfferAdapter(
                             context.compatDrawable(it)
                         }
                         setHapticClickListener {
-                            tracker.checkoutHeader(data.checkoutLabel.localizationKey(context))
                             onSign(data.signMethod, data.paymentMethodsApiResponse)
                         }
                     }

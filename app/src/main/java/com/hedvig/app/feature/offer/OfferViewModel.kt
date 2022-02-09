@@ -151,7 +151,6 @@ class OfferViewModelImpl(
     subscribeToDataCollectionStatusUseCase: SubscribeToDataCollectionStatusUseCase,
     private val getDataCollectionResultUseCase: GetDataCollectionResultUseCase,
     private val getProviderDisplayNameUseCase: GetProviderDisplayNameUseCase,
-    private val tracker: OfferTracker,
     private val adyenRepository: AdyenRepository,
     private val marketManager: MarketManager,
     private val chatRepository: ChatRepository,
@@ -242,7 +241,6 @@ class OfferViewModelImpl(
                                 offerAndLoginStatus.value = OfferAndLoginStatus.Error
                             }
                             is OfferRepository.OfferResult.Success -> {
-                                trackView(response.data)
                                 val loginStatus = loginStatusService.getLoginStatus()
 
                                 val paymentMethods = if (marketManager.market == Market.NO) {
@@ -271,18 +269,6 @@ class OfferViewModelImpl(
                 offerAndLoginStatus.value = OfferAndLoginStatus.Error
             }
         }
-    }
-
-    private var hasTrackedView = false
-    private fun trackView(data: OfferQuery.Data) {
-        if (hasTrackedView) {
-            return
-        }
-        hasTrackedView = true
-        tracker.viewOffer(
-            data.quoteBundle.quotes.map { it.typeOfContract.rawValue },
-            data.quoteBundle.appConfiguration.postSignStep.name,
-        )
     }
 
     override fun onOpenCheckout() {

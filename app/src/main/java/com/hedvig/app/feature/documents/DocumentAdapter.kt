@@ -8,17 +8,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
 import com.hedvig.app.databinding.DocumentBinding
 import com.hedvig.app.databinding.ListSubtitleItemBinding
-import com.hedvig.app.feature.tracking.TrackingFacade
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.tryOpenUri
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
-import com.hedvig.app.util.jsonObjectOf
 
-class DocumentAdapter(
-    private val trackingFacade: TrackingFacade,
-) : ListAdapter<DocumentItems, DocumentAdapter.DocumentsViewHolder>(GenericDiffUtilItemCallback()) {
+class DocumentAdapter : ListAdapter<DocumentItems, DocumentAdapter.DocumentsViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun getItemViewType(position: Int) = when (currentList[position]) {
         is DocumentItems.Document -> R.layout.document
@@ -27,7 +23,7 @@ class DocumentAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
-        R.layout.document -> DocumentViewHolder(parent.inflate(viewType), trackingFacade)
+        R.layout.document -> DocumentViewHolder(parent.inflate(viewType))
         R.layout.list_subtitle_item -> TitleViewHolder(parent.inflate(viewType))
         else -> throw IllegalArgumentException("Could not find viewType $viewType")
     }
@@ -51,7 +47,6 @@ class DocumentAdapter(
 
     private class DocumentViewHolder(
         view: View,
-        val trackingFacade: TrackingFacade,
     ) : DocumentsViewHolder(view) {
         private val binding by viewBinding(DocumentBinding::bind)
 
@@ -63,10 +58,6 @@ class DocumentAdapter(
             binding.subtitle.text = subTitle
             binding.subtitle.isVisible = subTitle != null
             binding.button.setHapticClickListener {
-                if (title != null) {
-                    trackingFacade.track("link_click", jsonObjectOf("title" to title))
-                }
-
                 it.context.tryOpenUri(document.uri)
             }
         }
