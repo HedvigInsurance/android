@@ -232,7 +232,7 @@ class OfferViewModelImpl(
         when (val idsResult = getQuotesUseCase.invoke(_quoteIds)) {
             is GetQuotesUseCase.Result.Success -> {
                 quoteIds = idsResult.ids
-                hAnalytics.screenViewOffer(quoteIds.toTypedArray())
+                hAnalytics.screenViewOffer(quoteIds)
                 idsResult
                     .data
                     .onEach { response ->
@@ -290,7 +290,7 @@ class OfferViewModelImpl(
                     Event.ApproveError(postSignDependencies.postSignScreen)
                 )
                 is ApproveQuotesUseCase.ApproveQuotesResult.Success -> {
-                    hAnalytics.quotesSigned(quoteIds.toTypedArray())
+                    hAnalytics.quotesSigned(quoteIds)
                     loginStatusService.isViewingOffer = false
                     _events.trySend(
                         Event.ApproveSuccessful(

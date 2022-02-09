@@ -78,7 +78,7 @@ class SwedishBankIdSignViewModel(
         _viewState.value = newViewState
         if (newViewState is ViewState.Success && !hasCompletedSign) {
             hasCompletedSign = true
-            hAnalytics.quotesSigned(quoteIds.toTypedArray())
+            hAnalytics.quotesSigned(quoteIds)
             loginStatusService.isViewingOffer = false
             loginStatusService.isLoggedIn = true
             viewModelScope.launch {

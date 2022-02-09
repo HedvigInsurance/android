@@ -100,7 +100,7 @@ abstract class EmbarkViewModel(
     private var totalSteps: Int = 0
 
     init {
-        hAnalytics.screenViewEmbark()
+        hAnalytics.screenViewEmbark(storyName)
     }
 
     protected fun setInitialState() {
@@ -174,8 +174,7 @@ abstract class EmbarkViewModel(
         _passageState.postValue(passageState)
         _loadingState.update { false }
         nextPassage.tracks.forEach { track ->
-            // TODO: Generate Map<String, Any>
-            hAnalytics.embarkTrack(storyName, track.eventName, trackingData(track) as Map<String, Any>)
+            hAnalytics.embarkTrack(storyName, track.eventName, trackingData(track))
         }
     }
 
