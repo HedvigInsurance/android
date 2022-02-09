@@ -33,12 +33,12 @@ data class AddressAutoCompleteResults(
     val resultList: List<DanishAddress>,
 )
 
-private fun DanishAddress?.toAddressAutocompleteType(): AddressAutocompleteType {
+private fun DanishAddress.toAddressAutocompleteType(): AddressAutocompleteType {
     val address = this
     return when {
-        address == null -> AddressAutocompleteType.STREET
-        address.onlyContainsAddress -> AddressAutocompleteType.BUILDING
-        address.postalCode != null && address.city != null -> AddressAutocompleteType.APARTMENT
+        address.isValidFinalSelection -> AddressAutocompleteType.APARTMENT
+        address.postalCode != null && address.city != null -> AddressAutocompleteType.BUILDING
+        address.onlyContainsAddress -> AddressAutocompleteType.STREET
         else -> AddressAutocompleteType.STREET
     }
 }
