@@ -11,12 +11,12 @@ internal class DanishAddressTest {
         val input = DanishAddress(
             id = null,
             address = "Willemoesgade 4, st. tv, 2100 København Ø",
+            postalCode = "2100",
+            city = "København Ø",
             streetName = "Willemoesgade",
             streetNumber = "4",
             floor = "st",
             apartment = "tv",
-            postalCode = "2100",
-            city = "København Ø",
         )
 
         val output = input.toPresentableTextPair()
@@ -31,12 +31,12 @@ internal class DanishAddressTest {
         val input = DanishAddress(
             id = null,
             address = "Willemoesgade 2, st., 2100 København Ø",
+            postalCode = "2100",
+            city = "København Ø",
             streetName = "Willemoesgade",
             streetNumber = "2",
             floor = "st",
             apartment = null,
-            postalCode = "2100",
-            city = "København Ø",
         )
 
         val output = input.toPresentableTextPair()
@@ -51,12 +51,12 @@ internal class DanishAddressTest {
         val input = DanishAddress(
             id = "0a3f50c0-900f-32b8-e044-0003ba298018",
             address = "Aabygade 1C, 1, 8300 Odder",
+            postalCode = "8300",
+            city = "Odder",
             streetName = "Aabygade",
             streetNumber = "1C",
             floor = null,
             apartment = "1",
-            postalCode = "8300",
-            city = "Odder",
         )
 
         val output = input.toPresentableTextPair()
@@ -71,12 +71,12 @@ internal class DanishAddressTest {
         val input = DanishAddress(
             id = null,
             address = "Willemoesgade 1B, 9000 Aalborg",
+            postalCode = "9000",
+            city = "Aalborg",
             streetName = "Willemoesgade",
             streetNumber = "1B",
             floor = null,
             apartment = null,
-            postalCode = "9000",
-            city = "Aalborg",
         )
 
         val output = input.toPresentableTextPair()
@@ -91,12 +91,12 @@ internal class DanishAddressTest {
         val input = DanishAddress(
             id = null,
             address = "Willemoesgade 1B, 9000 Aalborg",
+            postalCode = "9000",
+            city = "Aalborg",
             streetName = "Willemoesgade",
             streetNumber = "1B",
             floor = null,
             apartment = null,
-            postalCode = "9000",
-            city = "Aalborg",
         )
 
         val map = input.toValueStoreKeys()

@@ -52,11 +52,11 @@ fun DanishAddress.Companion.fromValueStoreKeys(
     return DanishAddress(
         id = getValueFromStore(DanishAddressStoreKey.bbrId.name),
         address = fullAddress,
+        postalCode = getValueFromStore(DanishAddressStoreKey.zipCode.name),
+        city = getValueFromStore(DanishAddressStoreKey.city.name),
         streetName = getValueFromStore(DanishAddressStoreKey.streetName.name),
         streetNumber = getValueFromStore(DanishAddressStoreKey.streetNumber.name),
         floor = getValueFromStore(DanishAddressStoreKey.floor.name),
         apartment = getValueFromStore(DanishAddressStoreKey.apartment.name),
-        postalCode = getValueFromStore(DanishAddressStoreKey.zipCode.name),
-        city = getValueFromStore(DanishAddressStoreKey.city.name),
     )
 }

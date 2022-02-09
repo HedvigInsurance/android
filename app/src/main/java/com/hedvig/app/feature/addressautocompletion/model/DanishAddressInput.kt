@@ -8,12 +8,12 @@ class DanishAddressInput constructor(
         get() = selectedDanishAddress ?: DanishAddress(
             id = null,
             address = rawText,
+            postalCode = null,
+            city = null,
             streetName = null,
             streetNumber = null,
             floor = null,
             apartment = null,
-            postalCode = null,
-            city = null,
         )
 
     fun withNewText(newText: String): DanishAddressInput {
