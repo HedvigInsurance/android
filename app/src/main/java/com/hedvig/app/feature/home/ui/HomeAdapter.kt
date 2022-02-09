@@ -71,7 +71,7 @@ class HomeAdapter(
         )
         R.layout.home_start_claim_outlined -> ViewHolder.StartClaimOutlined(parent, startIntentForResult)
         R.layout.home_start_claim_contained -> ViewHolder.StartClaimContained(parent, startIntentForResult)
-        R.layout.home_info_card -> ViewHolder.InfoCard(ComposeView(parent.context), onPaymentCardShown)
+        CONNECT_PAYIN -> ViewHolder.InfoCard(ComposeView(parent.context), onPaymentCardShown)
         R.layout.home_common_claim -> ViewHolder.CommonClaim(parent, imageLoader)
         R.layout.generic_error -> ViewHolder.Error(parent, retry)
         R.layout.how_claims_work_button -> ViewHolder.HowClaimsWorkButton(parent)
@@ -88,7 +88,7 @@ class HomeAdapter(
         is HomeModel.ClaimStatus -> ACTIVE_CLAIM
         is HomeModel.StartClaimOutlined -> R.layout.home_start_claim_outlined
         is HomeModel.StartClaimContained -> R.layout.home_start_claim_contained
-        is HomeModel.ConnectPayin -> R.layout.home_info_card
+        is HomeModel.ConnectPayin -> CONNECT_PAYIN
         is HomeModel.CommonClaim -> R.layout.home_common_claim
         HomeModel.Error -> R.layout.generic_error
         is HomeModel.PSA -> R.layout.home_psa
@@ -531,6 +531,7 @@ class HomeAdapter(
 
     companion object {
         const val ACTIVE_CLAIM = 1
+        const val CONNECT_PAYIN = 2
 
         fun daysLeft(date: LocalDate): Int = ChronoUnit.DAYS.between(LocalDate.now(), date).toInt()
 
