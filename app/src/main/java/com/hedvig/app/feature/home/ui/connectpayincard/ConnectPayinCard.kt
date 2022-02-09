@@ -32,7 +32,7 @@ fun ConnectPayinCard(
     onShown: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    LaunchedEffect(key1 = Unit) {
+    LaunchedEffect(Unit) {
         onShown()
     }
 
