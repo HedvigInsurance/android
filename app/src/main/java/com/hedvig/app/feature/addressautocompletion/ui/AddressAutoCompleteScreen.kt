@@ -2,17 +2,17 @@ package com.hedvig.app.feature.addressautocompletion.ui
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.material.Card
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ListItem
@@ -72,28 +72,34 @@ fun AddressAutoCompleteScreen(
     }
     Scaffold(
         topBar = {
-            Column {
-                CenterAlignedTopAppBar(
-                    title = "Address",
-                    onClick = { cancelAutoCompletion() },
-                    backgroundColor = MaterialTheme.colors.surface,
-                    contentPadding = rememberInsetsPaddingValues(
-                        insets = LocalWindowInsets.current.statusBars,
-                        applyBottom = false
-                    ),
-                )
-                AddressInput(
-                    viewState = viewState,
-                    setInput = setInput,
-                    focusRequester = focusRequester,
-                    closeKeyboard = closeKeyboard
-                )
+            Surface(
+                color = MaterialTheme.colors.background,
+            ) {
+                Column {
+                    CenterAlignedTopAppBar(
+                        title = "Address",
+                        onClick = { cancelAutoCompletion() },
+                        backgroundColor = MaterialTheme.colors.background,
+                        contentPadding = rememberInsetsPaddingValues(
+                            insets = LocalWindowInsets.current.statusBars,
+                            applyBottom = false
+                        ),
+                    )
+                    AddressInput(
+                        viewState = viewState,
+                        setInput = setInput,
+                        focusRequester = focusRequester,
+                        closeKeyboard = closeKeyboard,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+                }
             }
         },
         contentPadding = rememberInsetsPaddingValues(
             insets = LocalWindowInsets.current.navigationBars,
             applyTop = false
-        )
+        ),
+        backgroundColor = MaterialTheme.colors.surface
     ) { paddingValues ->
         SuggestionsList(
             viewState = viewState,
@@ -115,39 +121,37 @@ private fun AddressInput(
     closeKeyboard: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Surface(
-        color = MaterialTheme.colors.surface,
-        modifier = modifier,
+    Card(
+        border = BorderStroke(1.dp, MaterialTheme.colors.primary.copy(alpha = 0.12f)),
+        modifier = modifier
     ) {
-        Box(modifier = Modifier.height(80.dp)) {
-            Column(
-                modifier = Modifier.align(Alignment.Center),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                BasicTextField(
-                    value = viewState.input.rawText,
-                    onValueChange = { newText ->
-                        setInput(newText)
-                    },
-                    textStyle = LocalTextStyle.current.copy(
-                        textAlign = TextAlign.Center,
-                        color = LocalContentColor.current.copy(LocalContentAlpha.current)
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onDone = { closeKeyboard() }
-                    ),
-                    singleLine = true,
-                    cursorBrush = SolidColor(LocalContentColor.current),
-                    modifier = Modifier
-                        .focusRequester(focusRequester)
-                        .fillMaxWidth()
-                )
-                val numberAndCity = viewState.input.selectedDanishAddress?.toPresentableTextPair()?.second
-                AnimatedVisibility(numberAndCity != null) {
-                    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                        numberAndCity?.let {
-                            Text(it)
-                        }
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        ) {
+            BasicTextField(
+                value = viewState.input.rawText,
+                onValueChange = { newText ->
+                    setInput(newText)
+                },
+                textStyle = LocalTextStyle.current.copy(
+                    textAlign = TextAlign.Center,
+                    color = LocalContentColor.current.copy(LocalContentAlpha.current)
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = { closeKeyboard() }
+                ),
+                singleLine = true,
+                cursorBrush = SolidColor(LocalContentColor.current),
+                modifier = Modifier
+                    .focusRequester(focusRequester)
+                    .fillMaxWidth()
+            )
+            val numberAndCity = viewState.input.selectedDanishAddress?.toPresentableTextPair()?.second
+            AnimatedVisibility(numberAndCity != null) {
+                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                    numberAndCity?.let {
+                        Text(it)
                     }
                 }
             }
