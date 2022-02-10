@@ -9,8 +9,8 @@ internal class DanishAddressTest {
     @Test
     fun `output with all fields populated`() {
         val input = DanishAddress(
-            id = null,
             address = "Willemoesgade 4, st. tv, 2100 København Ø",
+            id = null,
             postalCode = "2100",
             city = "København Ø",
             streetName = "Willemoesgade",
@@ -29,8 +29,8 @@ internal class DanishAddressTest {
     @Test
     fun `output when apartment is null`() {
         val input = DanishAddress(
-            id = null,
             address = "Willemoesgade 2, st., 2100 København Ø",
+            id = null,
             postalCode = "2100",
             city = "København Ø",
             streetName = "Willemoesgade",
@@ -49,8 +49,8 @@ internal class DanishAddressTest {
     @Test
     fun `output when floor is null`() {
         val input = DanishAddress(
-            id = "0a3f50c0-900f-32b8-e044-0003ba298018",
             address = "Aabygade 1C, 1, 8300 Odder",
+            id = "0a3f50c0-900f-32b8-e044-0003ba298018",
             postalCode = "8300",
             city = "Odder",
             streetName = "Aabygade",
@@ -69,8 +69,8 @@ internal class DanishAddressTest {
     @Test
     fun `output when floor and apartment are null`() {
         val input = DanishAddress(
-            id = null,
             address = "Willemoesgade 1B, 9000 Aalborg",
+            id = null,
             postalCode = "9000",
             city = "Aalborg",
             streetName = "Willemoesgade",
@@ -89,8 +89,8 @@ internal class DanishAddressTest {
     @Test
     fun `mapping from and to a key value map happens correctly`() {
         val input = DanishAddress(
-            id = null,
             address = "Willemoesgade 1B, 9000 Aalborg",
+            id = null,
             postalCode = "9000",
             city = "Aalborg",
             streetName = "Willemoesgade",
