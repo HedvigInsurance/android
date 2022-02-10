@@ -1,3 +1,5 @@
+@file:Suppress("RemoveExplicitTypeArguments")
+
 package com.hedvig.app
 
 import android.content.Context
@@ -8,7 +10,6 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.ImageLoader
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
@@ -36,6 +37,7 @@ import com.hedvig.app.authenticate.insurely.GetDataCollectionUseCase
 import com.hedvig.app.authenticate.insurely.InsurelyAuthViewModel
 import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.addressautocompletion.data.GetDanishAddressAutoCompletionUseCase
+import com.hedvig.app.feature.addressautocompletion.data.GetFinalDanishAddressSelectionUseCase
 import com.hedvig.app.feature.addressautocompletion.ui.AddressAutoCompleteViewModel
 import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModel
@@ -406,7 +408,7 @@ val viewModelModule = module {
     viewModel { (otpId: String, credential: String) -> OtpInputViewModel(otpId, credential, get(), get(), get()) }
     viewModel { (claimId: String) -> ClaimDetailViewModel(claimId, get(), get()) }
     viewModel { parametersHolder: ParametersHolder -> EmbarkAddressAutoCompleteViewModel(parametersHolder.getOrNull()) }
-    viewModel { parametersHolder -> AddressAutoCompleteViewModel(parametersHolder.getOrNull(), get()) }
+    viewModel { parametersHolder -> AddressAutoCompleteViewModel(parametersHolder.getOrNull(), get(), get()) }
 }
 
 val choosePlanModule = module {
@@ -685,7 +687,8 @@ val useCaseModule = module {
     single { GetClaimDetailUseCase(get(), get()) }
     single { GetClaimDetailUiStateFlowUseCase(get()) }
     single { GetContractDetailsUseCase(get(), get(), get()) }
-    single { GetDanishAddressAutoCompletionUseCase(get()) }
+    single<GetDanishAddressAutoCompletionUseCase> { GetDanishAddressAutoCompletionUseCase(get()) }
+    single<GetFinalDanishAddressSelectionUseCase> { GetFinalDanishAddressSelectionUseCase(get()) }
 }
 
 val cacheManagerModule = module {
