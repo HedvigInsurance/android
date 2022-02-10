@@ -27,6 +27,7 @@ import com.hedvig.app.util.extensions.viewBinding
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class SettingsActivity : BaseActivity(R.layout.activity_settings) {
@@ -54,6 +55,8 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
         @SuppressLint("ApplySharedPref")
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.preferences, rootKey)
+
+            getViewModel<SettingsViewModel>()
 
             userViewModel.events
                 .flowWithLifecycle(lifecycle)
