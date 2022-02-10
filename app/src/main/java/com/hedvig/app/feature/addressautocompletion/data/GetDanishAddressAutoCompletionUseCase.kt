@@ -12,15 +12,31 @@ class GetDanishAddressAutoCompletionUseCase(
     private val apolloClient: ApolloClient,
 ) {
     suspend operator fun invoke(
+        addressText: String,
+    ): Either<QueryResult.Error, AddressAutoCompleteResults> {
+        val query = AddressAutocompleteQuery(
+            addressText,
+            AddressAutocompleteType.STREET,
+        )
+        return runQuery(query)
+    }
+
+    suspend operator fun invoke(
         address: DanishAddress,
         addressAutocompleteType: AddressAutocompleteType? = null,
     ): Either<QueryResult.Error, AddressAutoCompleteResults> {
-        val addressAutocompleteQuery = AddressAutocompleteQuery(
+        val query = AddressAutocompleteQuery(
             address.toQueryString(),
-            addressAutocompleteType ?: address.toAddressAutocompleteType()
+            addressAutocompleteType ?: address.toAddressAutocompleteType(),
         )
+        return runQuery(query)
+    }
+
+    private suspend fun runQuery(
+        query: AddressAutocompleteQuery,
+    ): Either<QueryResult.Error, AddressAutoCompleteResults> {
         return apolloClient
-            .query(addressAutocompleteQuery)
+            .query(query)
             .safeQuery()
             .toEither()
             .map { queryData ->
@@ -34,11 +50,8 @@ data class AddressAutoCompleteResults(
 )
 
 private fun DanishAddress.toAddressAutocompleteType(): AddressAutocompleteType {
-    val address = this
     return when {
-        address.isValidFinalSelection -> AddressAutocompleteType.APARTMENT
-        address.postalCode != null && address.city != null -> AddressAutocompleteType.BUILDING
-        address.onlyContainsAddress -> AddressAutocompleteType.STREET
-        else -> AddressAutocompleteType.STREET
+        isValidFinalSelection -> AddressAutocompleteType.APARTMENT
+        else -> AddressAutocompleteType.BUILDING
     }
 }

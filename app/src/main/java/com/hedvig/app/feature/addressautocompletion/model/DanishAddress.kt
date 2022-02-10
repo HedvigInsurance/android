@@ -16,6 +16,15 @@ data class DanishAddress(
     val apartment: String? = null,
 ) : Parcelable {
 
+    private val onlyContainsAddress: Boolean
+        get() = id == null &&
+            streetName == null &&
+            streetNumber == null &&
+            floor == null &&
+            apartment == null &&
+            postalCode == null &&
+            city == null
+
     val isValidFinalSelection: Boolean
         get() = streetName != null &&
             streetNumber != null &&
@@ -28,17 +37,8 @@ data class DanishAddress(
             floor != null &&
             apartment != null
 
-    val onlyContainsAddress: Boolean
-        get() = id == null &&
-            streetName == null &&
-            streetNumber == null &&
-            floor == null &&
-            apartment == null &&
-            postalCode == null &&
-            city == null
-
     /**
-     * Checks for equality of the address itself, despite minor differences like the [address] formatting or its [id]
+     * Checks for equality of the address itself, despite type differences like the [address] formatting or its [id]
      */
     fun isSameAddressAs(other: DanishAddress): Boolean {
         return postalCode == other.postalCode &&

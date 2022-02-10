@@ -40,8 +40,11 @@ class AddressAutoCompleteViewModel(
     private val queryResults: Flow<List<DanishAddress>> = currentInput
         .debounce(50)
         .mapLatest { input ->
-            getDanishAddressAutoCompletionUseCase
-                .invoke(input.addressForQuery)
+            if (input.selectedDanishAddress != null) {
+                getDanishAddressAutoCompletionUseCase.invoke(input.selectedDanishAddress)
+            } else {
+                getDanishAddressAutoCompletionUseCase.invoke(input.rawText)
+            }
                 .fold(
                     { emptyList() },
                     AddressAutoCompleteResults::resultList
