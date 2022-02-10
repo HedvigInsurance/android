@@ -8,4 +8,5 @@ val trackingLogModule = module {
     viewModel { TrackingLogViewModel(get()) }
     single { EngineeringTracker() } bind HAnalyticsSink::class
     single { DebugLogTrackerSink() } bind HAnalyticsSink::class
+    single { ShakeTrackerSink() } bind HAnalyticsSink::class
 }
