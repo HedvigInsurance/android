@@ -6,16 +6,7 @@ class DanishAddressInput private constructor(
 ) {
 
     fun withNewText(newText: String): DanishAddressInput {
-        if (selectedDanishAddress == null) return DanishAddressInput(newText)
-        val oldText = rawText
-        return DanishAddressInput(
-            rawText = newText,
-            selectedDanishAddress = if (newText.length < oldText.length) {
-                null
-            } else {
-                selectedDanishAddress
-            }
-        )
+        return DanishAddressInput(newText)
     }
 
     fun withSelectedAddress(address: DanishAddress): DanishAddressInput {
