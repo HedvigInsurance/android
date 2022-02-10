@@ -7,7 +7,7 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentEmbarkAddressAutoCompleteActionBinding
-import com.hedvig.app.feature.addressautocompletion.activityresult.FetchDanishAddressAutoCompleteContractHandler
+import com.hedvig.app.feature.addressautocompletion.activityresult.FetchDanishAddressContract
 import com.hedvig.app.feature.addressautocompletion.activityresult.FetchDanishAddressContractResult
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddressStoreKey
@@ -31,7 +31,6 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
-import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_address_auto_complete_action) {
@@ -41,36 +40,27 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
             ?: throw Error("Programmer error: DATA is null in ${this.javaClass.name}")
 
     private val embarkViewModel: EmbarkViewModel by sharedViewModel()
-    private val viewModel: EmbarkAddressAutoCompleteViewModel by viewModel {
+    private val viewModel: EmbarkAddressAutoCompleteViewModel by sharedViewModel {
         val prefilledAddress: DanishAddress? = DanishAddress.fromValueStoreKeys(embarkViewModel::getPrefillFromStore)
         parametersOf(prefilledAddress)
     }
     private val binding by viewBinding(FragmentEmbarkAddressAutoCompleteActionBinding::bind)
 
-    private lateinit var fetchDanishAddressAutoCompleteContractHandler: FetchDanishAddressAutoCompleteContractHandler
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        fetchDanishAddressAutoCompleteContractHandler = FetchDanishAddressAutoCompleteContractHandler(
-            registry = requireActivity().activityResultRegistry,
-            onAddressResult = { result ->
-                when (result) {
-                    FetchDanishAddressContractResult.CantFind -> {
-                        lifecycleScope.launch {
-                            saveAndAnimate(null)
-                            embarkViewModel.submitAction(data.link)
-                        }
-                    }
-                    is FetchDanishAddressContractResult.Selected -> {
-                        viewModel.updateAddressSelected(result.address)
-                    }
-                    else -> {
-                        // no-op
-                    }
+    private val addressActivityResultLauncher = registerForActivityResult(FetchDanishAddressContract()) { result ->
+        when (result) {
+            FetchDanishAddressContractResult.CantFind -> {
+                lifecycleScope.launch {
+                    saveAndAnimate(null)
+                    embarkViewModel.submitAction(data.link)
                 }
             }
-        )
-        lifecycle.addObserver(fetchDanishAddressAutoCompleteContractHandler)
+            is FetchDanishAddressContractResult.Selected -> {
+                viewModel.updateAddressSelected(result.address)
+            }
+            else -> {
+                // no-op
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -98,9 +88,7 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
                             addressText = viewState.address?.toPresentableTextPair(),
                             placeholderText = data.placeholder,
                             onClick = {
-                                fetchDanishAddressAutoCompleteContractHandler.startAutoCompletionActivity(
-                                    initialAddress = viewState.address
-                                )
+                                addressActivityResultLauncher.launch(viewState.address)
                             }
                         )
                     }
