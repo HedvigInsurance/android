@@ -74,7 +74,6 @@ slimber = "1.0.7"
 svg = "1.4"
 timber = "5.0.1"
 tooltip = "1.2.2"
-turbine = "0.7.0"
 zXing = "3.4.1"
 
 [libraries]
@@ -225,8 +224,6 @@ svg = { module = "com.caverock:androidsvg-aar", version.ref = "svg" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 
 tooltip = { module = "com.github.hansemannn:viewtooltip", version.ref = "tooltip" }
-
-turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine"}
 
 zXing = { module = "com.google.zxing:core", version.ref = "zXing" }
 

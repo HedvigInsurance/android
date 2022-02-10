@@ -240,8 +240,6 @@ dependencies {
 
     implementation(libs.tooltip)
 
-    testImplementation(libs.turbine)
-
     implementation(libs.zXing)
 
     implementation(libs.insetter)
