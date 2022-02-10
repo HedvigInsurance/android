@@ -37,6 +37,18 @@ data class DanishAddress(
             postalCode == null &&
             city == null
 
+    /**
+     * Checks for equality of the address itself, despite minor differences like the [address] formatting or its [id]
+     */
+    fun isSameAddressAs(other: DanishAddress): Boolean {
+        return postalCode == other.postalCode &&
+            city == other.city &&
+            streetName == other.streetName &&
+            streetNumber == other.streetNumber &&
+            floor == other.floor &&
+            apartment == other.apartment
+    }
+
     fun toPresentableTextPair(): Pair<String, String?> {
         if (onlyContainsAddress) return address to null
 
