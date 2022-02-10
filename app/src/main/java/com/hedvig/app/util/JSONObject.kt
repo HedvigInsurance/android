@@ -7,7 +7,7 @@ import org.json.JSONObject
 
 fun jsonObjectOf(vararg properties: Pair<String, Any?>) = JSONObject().apply {
     properties.forEach { property ->
-        put(property.first, (property.second as? Map<*, *>)?.toJsonObject() ?: property.second)
+        put(property.first, convertValueToJson(property.second))
     }
 }
 
@@ -17,8 +17,14 @@ fun Map<*, *>.toJsonObject(): JSONObject = entries.fold(JSONObject()) { acc, ent
         throw IllegalArgumentException("Only `Map<String, Any?>` may be converted to `JSONObject`")
     }
     val entryValue = entry.value
-    acc.put(entryKey, (entryValue as? Map<*, *>)?.toJsonObject() ?: entryValue)
+    acc.put(entryKey, convertValueToJson(entryValue))
     acc
+}
+
+private fun convertValueToJson(value: Any?) = when (value) {
+    is Map<*, *> -> value.toJsonObject()
+    is Collection<*> -> value.toJsonArray()
+    else -> value
 }
 
 /**
@@ -68,7 +74,7 @@ fun JSONObject.getWithDotNotation(accessor: String): Any? {
     }
 }
 
-fun Collection<Any>.toJsonArray() = JSONArray(this)
+fun Collection<*>.toJsonArray() = JSONArray(this)
 
 fun JSONObject.toBundle() = bundleOf(
     *(

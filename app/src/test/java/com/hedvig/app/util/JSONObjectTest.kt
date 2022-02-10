@@ -42,6 +42,19 @@ class JSONObjectTest {
     }
 
     @Test
+    fun `toJsonObject() should handle 'List's`() {
+        val expected = jsonObjectOf(
+            "foo" to jsonArrayOf(1, 2, 3),
+        )
+
+        val actual = mapOf(
+            "foo" to listOf(1, 2, 3),
+        ).toJsonObject()
+
+        assertThat(actual.toString(2)).isEqualTo(expected.toString(2))
+    }
+
+    @Test
     fun `jsonObjectOf() should handle nested 'Map's`() {
         val expected = JSONObject()
 
@@ -57,6 +70,20 @@ class JSONObjectTest {
         )
 
         assertThat(actual.toString()).isEqualTo(expected.toString())
+    }
+
+    @Test
+    fun `jsonObjectOf() should handle 'List's`() {
+        val expectedObject = JSONObject()
+        expectedObject.put("foo", jsonArrayOf("1", "2", "3"))
+
+        val expected = expectedObject["foo"]
+
+        val actual = jsonObjectOf(
+            "foo" to listOf("1", "2", "3")
+        )["foo"]
+
+        assertThat(actual.javaClass).isEqualTo(expected.javaClass)
     }
 
     @Test
