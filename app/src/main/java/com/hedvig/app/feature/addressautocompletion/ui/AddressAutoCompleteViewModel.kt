@@ -58,6 +58,7 @@ class AddressAutoCompleteViewModel(
     ) { input, results ->
         AddressAutoCompleteViewState(
             input = input,
+            showCantFindAddressItem = input.isEmptyInput.not(),
             results = results,
         )
     }.stateIn(
@@ -104,6 +105,7 @@ class AddressAutoCompleteViewModel(
 
 data class AddressAutoCompleteViewState(
     val input: DanishAddressInput,
+    val showCantFindAddressItem: Boolean = false,
     val results: List<DanishAddress> = emptyList(),
 )
 

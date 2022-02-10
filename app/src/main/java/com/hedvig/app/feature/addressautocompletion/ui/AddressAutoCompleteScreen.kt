@@ -190,18 +190,18 @@ private fun SuggestionsList(
                 }
             )
         }
-        item(key = "cantFindAddress") {
-            ListItem(
-                text = {
-                    Text(
-                        stringResource(R.string.EMBARK_ADDRESS_AUTOCOMPLETE_NO_ADDRESS),
-                        color = MaterialTheme.colors.error,
-                    )
-                },
-                modifier = Modifier.clickable {
-                    cantFindAddress()
-                }
-            )
+        if (viewState.showCantFindAddressItem) {
+            item(key = "cantFindAddress") {
+                ListItem(
+                    text = {
+                        Text(
+                            stringResource(R.string.EMBARK_ADDRESS_AUTOCOMPLETE_NO_ADDRESS),
+                            color = MaterialTheme.colors.error,
+                        )
+                    },
+                    modifier = Modifier.clickable { cantFindAddress() }
+                )
+            }
         }
     }
 }
@@ -216,6 +216,7 @@ fun AddressAutoCompleteScreenPreview() {
             AddressAutoCompleteScreen(
                 AddressAutoCompleteViewState(
                     input = DanishAddressInput.fromDanishAddress(previewDanishAddress),
+                    true,
                     results = DanishAddress.previewList(),
                 ),
                 {},
