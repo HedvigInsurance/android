@@ -1,6 +1,7 @@
 package com.hedvig.app.util
 
 import androidx.core.os.bundleOf
+import com.hedvig.app.feature.embark.variables.VariableExtractor
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -141,5 +142,40 @@ class JSONArrayEntryIterator(
         val json = jsonArray[current]
         current += 1
         return json
+    }
+}
+
+fun JSONObject.createAndAddWithLodashNotation(value: String, key: String, currentKey: String): JSONObject {
+
+    fun String.isArray() = contains("[") && contains("]")
+    fun String.getArrayField() = substringBefore("[")
+    fun String.getField() = if (isArray()) getArrayField() else substringBefore(".")
+    fun String.getIndex() = substringAfter("[").substringBefore("]").toInt()
+    fun String.tail(current: String) = substringAfter(current).substringAfter(".").substringBefore(".")
+    fun String.hasNext() = substringAfter(currentKey).contains(".")
+
+    val field = currentKey.getField()
+
+    return if (key.hasNext()) {
+        val innerJson = if (currentKey.isArray()) {
+            if (!has(field)) {
+                put(field, JSONArray())
+            }
+            try {
+                getJSONArray(field).getJSONObject(currentKey.getIndex())
+            } catch (throwable: JSONException) {
+                getJSONArray(field).put(currentKey.getIndex(), JSONObject())
+                getJSONArray(field).getJSONObject(currentKey.getIndex())
+            }
+        } else {
+            if (!has(field)) {
+                put(field, JSONObject())
+            }
+            getJSONObject(field)
+        }
+        VariableExtractor.lodashSet(innerJson, value, key, key.tail(currentKey))
+    } else {
+        put(field, value)
+        this
     }
 }

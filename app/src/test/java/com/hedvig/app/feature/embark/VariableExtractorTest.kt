@@ -4,7 +4,9 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import com.hedvig.android.owldroid.fragment.GraphQLVariablesFragment
 import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLSingleVariableCasting
-import com.hedvig.app.feature.embark.util.VariableExtractor
+import com.hedvig.app.feature.embark.variables.CastType
+import com.hedvig.app.feature.embark.variables.Variable
+import com.hedvig.app.feature.embark.variables.VariableExtractor
 import org.json.JSONArray
 import org.json.JSONObject
 import org.junit.Test
@@ -15,7 +17,12 @@ class VariableExtractorTest {
     fun `should extract multi action variables`() {
         val variables = createTestVariables()
         val valueStore = createTestValueStore()
-        val json = VariableExtractor.extractVariables(variables, valueStore)
+        val json = VariableExtractor.reduceVariables(
+            variables,
+            valueStore::get,
+            valueStore::put,
+            valueStore::getMultiActionItems
+        )
 
         assertThat(json.getString("street")).isEqualTo("Est")
         assertThat(json.getInt("yearOfConstruction")).isEqualTo(1991)
@@ -34,8 +41,74 @@ class VariableExtractorTest {
     }
 
     @Test
+    fun `should compose variables into a nested object`() {
+        val variables = listOf(
+            Variable.Single(
+                key = "input.payload[0].firstName",
+                from = "firstName",
+                castAs = CastType.STRING
+            ),
+            Variable.Single(
+                key = "input.payload[1].firstName",
+                from = "firstName",
+                castAs = CastType.STRING
+            ),
+            Variable.Single(
+                key = "lastName",
+                from = "lastName",
+                castAs = CastType.STRING
+            ),
+            Variable.Single(
+                key = "input.payload[1].data.address",
+                from = "streetAddress",
+                castAs = CastType.STRING
+            ),
+            Variable.Constant(
+                key = "input.payload[0].data.type",
+                value = "SWEDISH_APARTMENT",
+                castAs = CastType.STRING
+            ),
+        )
+
+        val valueStore = ValueStoreImpl()
+        valueStore.put("firstName", "John")
+        valueStore.put("lastName", "Doe")
+        valueStore.put("streetAddress", "Hello World")
+
+        val expected = JSONObject(
+            "{" +
+                "      input: {" +
+                "        payload: [" +
+                "          {" +
+                "            firstName: 'John'," +
+                "            data: {" +
+                "              type: 'SWEDISH_APARTMENT'," +
+                "            }," +
+                "          }," +
+                "          {" +
+                "            firstName: 'John'," +
+                "            data: {" +
+                "              address: 'Hello World'," +
+                "            }," +
+                "          }," +
+                "        ]," +
+                "      }," +
+                "      lastName: 'Doe'" +
+                "    }"
+        )
+
+        val extractedVariables = VariableExtractor.reduceVariables(
+            variables,
+            valueStore::get,
+            valueStore::put,
+            valueStore::getMultiActionItems
+        )
+        assertThat(extractedVariables.toString()).isEqualTo(expected.toString())
+    }
+
+    @Test
     fun `should extract file variables`() {
-        val variables = createTestVariables()
+        val variables = createTestFileVariables()
         val valueStore = createTestValueStore()
         val fileVariables = VariableExtractor.extractFileVariable(variables, valueStore)
         val fileVariable = fileVariables.find { it.key == "audioRecording" }
@@ -48,21 +121,19 @@ class VariableExtractorTest {
         val booleanKey = "boolean_key"
         val emptyStore: ValueStore = ValueStoreImpl()
         val variables = listOf(
-            GraphQLVariablesFragment(
-                __typename = "EmbarkAPIGraphQLSingleVariable",
-                asEmbarkAPIGraphQLSingleVariable = GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable(
-                    __typename = "EmbarkAPIGraphQLSingleVariable",
-                    key = booleanKey,
-                    from = booleanKey,
-                    as_ = EmbarkAPIGraphQLSingleVariableCasting.BOOLEAN
-                ),
-                asEmbarkAPIGraphQLGeneratedVariable = null,
-                asEmbarkAPIGraphQLMultiActionVariable = null,
-                asEmbarkAPIGraphQLConstantVariable = null,
+            Variable.Single(
+                key = booleanKey,
+                from = booleanKey,
+                castAs = CastType.BOOLEAN
             ),
         )
 
-        val result = VariableExtractor.extractVariables(variables, emptyStore)
+        val result = VariableExtractor.reduceVariables(
+            variables,
+            emptyStore::get,
+            emptyStore::put,
+            emptyStore::getMultiActionItems
+        )
 
         assertThat(result.getBoolean(booleanKey)).isEqualTo(false)
     }
@@ -76,33 +147,24 @@ class VariableExtractorTest {
             put(falseBooleanKey, "false")
         }
         val variables = listOf(
-            GraphQLVariablesFragment(
-                __typename = "EmbarkAPIGraphQLSingleVariable",
-                asEmbarkAPIGraphQLSingleVariable = GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable(
-                    __typename = "EmbarkAPIGraphQLSingleVariable",
-                    key = trueBooleanKey,
-                    from = trueBooleanKey,
-                    as_ = EmbarkAPIGraphQLSingleVariableCasting.BOOLEAN
-                ),
-                asEmbarkAPIGraphQLGeneratedVariable = null,
-                asEmbarkAPIGraphQLMultiActionVariable = null,
-                asEmbarkAPIGraphQLConstantVariable = null,
+            Variable.Single(
+                key = trueBooleanKey,
+                from = trueBooleanKey,
+                castAs = CastType.BOOLEAN
             ),
-            GraphQLVariablesFragment(
-                __typename = "EmbarkAPIGraphQLSingleVariable",
-                asEmbarkAPIGraphQLSingleVariable = GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable(
-                    __typename = "EmbarkAPIGraphQLSingleVariable",
-                    key = falseBooleanKey,
-                    from = falseBooleanKey,
-                    as_ = EmbarkAPIGraphQLSingleVariableCasting.BOOLEAN
-                ),
-                asEmbarkAPIGraphQLGeneratedVariable = null,
-                asEmbarkAPIGraphQLMultiActionVariable = null,
-                asEmbarkAPIGraphQLConstantVariable = null,
-            ),
+            Variable.Single(
+                key = falseBooleanKey,
+                from = falseBooleanKey,
+                castAs = CastType.BOOLEAN
+            )
         )
 
-        val result = VariableExtractor.extractVariables(variables, storeWithBooleanKey)
+        val result = VariableExtractor.reduceVariables(
+            variables,
+            storeWithBooleanKey::get,
+            storeWithBooleanKey::put,
+            storeWithBooleanKey::getMultiActionItems
+        )
 
         assertThat(result.getBoolean(trueBooleanKey)).isEqualTo(true)
         assertThat(result.getBoolean(falseBooleanKey)).isEqualTo(false)
@@ -144,209 +206,103 @@ class VariableExtractorTest {
         return valueStore
     }
 
-    private fun createTestVariables(): List<GraphQLVariablesFragment> {
+    private fun createTestVariables(): List<Variable> {
         return listOf(
-            GraphQLVariablesFragment(
-                __typename = "EmbarkAPIGraphQLSingleVariable",
-                asEmbarkAPIGraphQLSingleVariable = GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable(
-                    __typename = "EmbarkAPIGraphQLSingleVariable",
-                    key = "contractBundleId",
-                    from = "contractBundleId",
-                    as_ = EmbarkAPIGraphQLSingleVariableCasting.STRING
-                ),
-                asEmbarkAPIGraphQLGeneratedVariable = null,
-                asEmbarkAPIGraphQLMultiActionVariable = null,
-                asEmbarkAPIGraphQLConstantVariable = null,
+            Variable.Single(
+                key = "contractBundleId",
+                from = "contractBundleId",
+                castAs = CastType.STRING
             ),
-            GraphQLVariablesFragment(
-                __typename = "EmbarkAPIGraphQLSingleVariable",
-                asEmbarkAPIGraphQLSingleVariable = GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable(
-                    __typename = "EmbarkAPIGraphQLSingleVariable",
-                    key = "type",
-                    from = "homeType",
-                    as_ = EmbarkAPIGraphQLSingleVariableCasting.STRING
-                ),
-                asEmbarkAPIGraphQLGeneratedVariable = null,
-                asEmbarkAPIGraphQLMultiActionVariable = null,
-                asEmbarkAPIGraphQLConstantVariable = null,
+            Variable.Single(
+                key = "type",
+                from = "homeType",
+                castAs = CastType.STRING
             ),
-            GraphQLVariablesFragment(
-                __typename = "EmbarkAPIGraphQLSingleVariable",
-                asEmbarkAPIGraphQLSingleVariable = GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable(
-                    __typename = "EmbarkAPIGraphQLSingleVariable",
-                    key = "street",
-                    from = "streetAddress",
-                    as_ = EmbarkAPIGraphQLSingleVariableCasting.STRING
-                ),
-                asEmbarkAPIGraphQLGeneratedVariable = null,
-                asEmbarkAPIGraphQLMultiActionVariable = null,
-                asEmbarkAPIGraphQLConstantVariable = null,
+            Variable.Single(
+                key = "street",
+                from = "streetAddress",
+                castAs = CastType.STRING
             ),
-            GraphQLVariablesFragment(
-                __typename = "EmbarkAPIGraphQLSingleVariable",
-                asEmbarkAPIGraphQLSingleVariable = GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable(
-                    __typename = "EmbarkAPIGraphQLSingleVariable",
-                    key = "zip",
-                    from = "postalNumber",
-                    as_ = EmbarkAPIGraphQLSingleVariableCasting.STRING
-                ),
-                asEmbarkAPIGraphQLGeneratedVariable = null,
-                asEmbarkAPIGraphQLMultiActionVariable = null,
-                asEmbarkAPIGraphQLConstantVariable = null,
+            Variable.Single(
+                key = "zip",
+                from = "postalNumber",
+                castAs = CastType.STRING
             ),
-            GraphQLVariablesFragment(
-                __typename = "EmbarkAPIGraphQLSingleVariable",
-                asEmbarkAPIGraphQLSingleVariable = GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable(
-                    __typename = "EmbarkAPIGraphQLSingleVariable",
-                    key = "livingSpace",
-                    from = "livingSpace",
-                    as_ = EmbarkAPIGraphQLSingleVariableCasting.INT
-                ),
-                asEmbarkAPIGraphQLGeneratedVariable = null,
-                asEmbarkAPIGraphQLMultiActionVariable = null,
-                asEmbarkAPIGraphQLConstantVariable = null,
+            Variable.Single(
+                key = "livingSpace",
+                from = "livingSpace",
+                castAs = CastType.INT
             ),
-            GraphQLVariablesFragment(
-                __typename = "EmbarkAPIGraphQLSingleVariable",
-                asEmbarkAPIGraphQLSingleVariable = GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable(
-                    __typename = "EmbarkAPIGraphQLSingleVariable",
-                    key = "numberCoInsured",
-                    from = "householdSize",
-                    as_ = EmbarkAPIGraphQLSingleVariableCasting.INT
-                ),
-                asEmbarkAPIGraphQLGeneratedVariable = null,
-                asEmbarkAPIGraphQLMultiActionVariable = null,
-                asEmbarkAPIGraphQLConstantVariable = null,
+            Variable.Single(
+                key = "numberCoInsured",
+                from = "householdSize",
+                castAs = CastType.INT
             ),
-            GraphQLVariablesFragment(
-                __typename = "EmbarkAPIGraphQLSingleVariable",
-                asEmbarkAPIGraphQLSingleVariable = GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable(
-                    __typename = "EmbarkAPIGraphQLSingleVariable",
-                    key = "ownerShip",
-                    from = "apartmentType",
-                    as_ = EmbarkAPIGraphQLSingleVariableCasting.STRING
-                ),
-                asEmbarkAPIGraphQLGeneratedVariable = null,
-                asEmbarkAPIGraphQLMultiActionVariable = null,
-                asEmbarkAPIGraphQLConstantVariable = null,
+            Variable.Single(
+                key = "ownerShip",
+                from = "apartmentType",
+                castAs = CastType.STRING
             ),
-            GraphQLVariablesFragment(
-                __typename = "EmbarkAPIGraphQLSingleVariable",
-                asEmbarkAPIGraphQLSingleVariable = GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable(
-                    __typename = "EmbarkAPIGraphQLSingleVariable",
-                    key = "startDate",
-                    from = "movingDate",
-                    as_ = EmbarkAPIGraphQLSingleVariableCasting.STRING
-                ),
-                asEmbarkAPIGraphQLGeneratedVariable = null,
-                asEmbarkAPIGraphQLMultiActionVariable = null,
-                asEmbarkAPIGraphQLConstantVariable = null,
+            Variable.Single(
+                key = "startDate",
+                from = "movingDate",
+                castAs = CastType.STRING
             ),
-            GraphQLVariablesFragment(
-                __typename = "EmbarkAPIGraphQLSingleVariable",
-                asEmbarkAPIGraphQLSingleVariable = GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable(
-                    __typename = "EmbarkAPIGraphQLSingleVariable",
-                    key = "isStudent",
-                    from = "isStudent",
-                    as_ = EmbarkAPIGraphQLSingleVariableCasting.BOOLEAN
-                ),
-                asEmbarkAPIGraphQLGeneratedVariable = null,
-                asEmbarkAPIGraphQLMultiActionVariable = null,
-                asEmbarkAPIGraphQLConstantVariable = null,
+            Variable.Single(
+                key = "isStudent",
+                from = "isStudent",
+                castAs = CastType.BOOLEAN
             ),
-            GraphQLVariablesFragment(
-                __typename = "EmbarkAPIGraphQLSingleVariable",
-                asEmbarkAPIGraphQLSingleVariable = GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable(
-                    __typename = "EmbarkAPIGraphQLSingleVariable",
-                    key = "ancillaryArea",
-                    from = "ancillaryArea",
-                    as_ = EmbarkAPIGraphQLSingleVariableCasting.INT
-                ),
-                asEmbarkAPIGraphQLGeneratedVariable = null,
-                asEmbarkAPIGraphQLMultiActionVariable = null,
-                asEmbarkAPIGraphQLConstantVariable = null,
+            Variable.Single(
+                key = "ancillaryArea",
+                from = "ancillaryArea",
+                castAs = CastType.INT
             ),
-            GraphQLVariablesFragment(
-                __typename = "EmbarkAPIGraphQLSingleVariable",
-                asEmbarkAPIGraphQLSingleVariable = GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable(
-                    __typename = "EmbarkAPIGraphQLSingleVariable",
-                    key = "yearOfConstruction",
-                    from = "yearOfConstruction",
-                    as_ = EmbarkAPIGraphQLSingleVariableCasting.INT
-                ),
-                asEmbarkAPIGraphQLGeneratedVariable = null,
-                asEmbarkAPIGraphQLMultiActionVariable = null,
-                asEmbarkAPIGraphQLConstantVariable = null,
+            Variable.Single(
+                key = "yearOfConstruction",
+                from = "yearOfConstruction",
+                castAs = CastType.INT
             ),
-            GraphQLVariablesFragment(
-                __typename = "EmbarkAPIGraphQLSingleVariable",
-                asEmbarkAPIGraphQLSingleVariable = GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable(
-                    __typename = "EmbarkAPIGraphQLSingleVariable",
-                    key = "numberOfBathrooms",
-                    from = "numberOfBathrooms",
-                    as_ = EmbarkAPIGraphQLSingleVariableCasting.INT
-                ),
-                asEmbarkAPIGraphQLGeneratedVariable = null,
-                asEmbarkAPIGraphQLMultiActionVariable = null,
-                asEmbarkAPIGraphQLConstantVariable = null,
+            Variable.Single(
+                key = "numberOfBathrooms",
+                from = "numberOfBathrooms",
+                castAs = CastType.INT
             ),
-            GraphQLVariablesFragment(
-                __typename = "EmbarkAPIGraphQLSingleVariable",
-                asEmbarkAPIGraphQLSingleVariable = GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable(
-                    __typename = "EmbarkAPIGraphQLSingleVariable",
-                    key = "isSubleted",
-                    from = "isSubleted",
-                    as_ = EmbarkAPIGraphQLSingleVariableCasting.BOOLEAN
-                ),
-                asEmbarkAPIGraphQLGeneratedVariable = null,
-                asEmbarkAPIGraphQLMultiActionVariable = null,
-                asEmbarkAPIGraphQLConstantVariable = null,
+            Variable.Single(
+                key = "isSubleted",
+                from = "isSubleted",
+                castAs = CastType.BOOLEAN
             ),
-            GraphQLVariablesFragment(
-                __typename = "EmbarkAPIGraphQLMultiActionVariable",
-                asEmbarkAPIGraphQLSingleVariable = null,
-                asEmbarkAPIGraphQLGeneratedVariable = null,
-                asEmbarkAPIGraphQLMultiActionVariable = GraphQLVariablesFragment.AsEmbarkAPIGraphQLMultiActionVariable(
-                    __typename = "EmbarkAPIGraphQLMultiActionVariable",
-                    key = "extraBuildings",
-                    variables = listOf(
-                        GraphQLVariablesFragment.Variable(
-                            __typename = "EmbarkAPIGraphQLSingleVariable",
-                            asEmbarkAPIGraphQLSingleVariable1 = GraphQLVariablesFragment
-                                .AsEmbarkAPIGraphQLSingleVariable1(
-                                    __typename = "EmbarkAPIGraphQLSingleVariable",
-                                    key = "type",
-                                    from = "type",
-                                    as_ = EmbarkAPIGraphQLSingleVariableCasting.STRING
-                                ),
-                            asEmbarkAPIGraphQLGeneratedVariable1 = null
-                        ),
-                        GraphQLVariablesFragment.Variable(
-                            __typename = "EmbarkAPIGraphQLSingleVariable",
-                            asEmbarkAPIGraphQLSingleVariable1 = GraphQLVariablesFragment
-                                .AsEmbarkAPIGraphQLSingleVariable1(
-                                    __typename = "EmbarkAPIGraphQLSingleVariable",
-                                    key = "area",
-                                    from = "area",
-                                    as_ = EmbarkAPIGraphQLSingleVariableCasting.INT
-                                ),
-                            asEmbarkAPIGraphQLGeneratedVariable1 = null
-                        ),
-                        GraphQLVariablesFragment.Variable(
-                            __typename = "EmbarkAPIGraphQLSingleVariable",
-                            asEmbarkAPIGraphQLSingleVariable1 = GraphQLVariablesFragment
-                                .AsEmbarkAPIGraphQLSingleVariable1(
-                                    __typename = "EmbarkAPIGraphQLSingleVariable",
-                                    key = "hasWaterConnected",
-                                    from = "hasWaterConnected",
-                                    as_ = EmbarkAPIGraphQLSingleVariableCasting.BOOLEAN
-                                ),
-                            asEmbarkAPIGraphQLGeneratedVariable1 = null
-                        )
+            Variable.Multi(
+                key = "extraBuildings",
+                variables = listOf(
+                    Variable.Single(
+                        key = "type",
+                        from = "type",
+                        castAs = CastType.STRING
+                    ),
+                    Variable.Single(
+                        key = "area",
+                        from = "area",
+                        castAs = CastType.INT
+                    ),
+                    Variable.Single(
+                        key = "hasWaterConnected",
+                        from = "hasWaterConnected",
+                        castAs = CastType.BOOLEAN
                     )
-                ),
-                asEmbarkAPIGraphQLConstantVariable = null,
+                )
             ),
+            Variable.Constant(
+                key = "input.payload[0].data.type",
+                value = "SWEDISH_APARTMENT",
+                castAs = CastType.STRING
+            )
+        )
+    }
+
+    private fun createTestFileVariables(): List<GraphQLVariablesFragment> {
+        return listOf(
             GraphQLVariablesFragment(
                 __typename = "EmbarkAPIGraphQLSingleVariable",
                 asEmbarkAPIGraphQLSingleVariable = GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable(
