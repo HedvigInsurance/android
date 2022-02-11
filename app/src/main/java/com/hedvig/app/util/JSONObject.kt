@@ -1,7 +1,6 @@
 package com.hedvig.app.util
 
 import androidx.core.os.bundleOf
-import com.hedvig.app.feature.embark.variables.VariableExtractor
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -173,7 +172,7 @@ fun JSONObject.createAndAddWithLodashNotation(value: String, key: String, curren
             }
             getJSONObject(field)
         }
-        VariableExtractor.lodashSet(innerJson, value, key, key.tail(currentKey))
+        innerJson.createAndAddWithLodashNotation(value, key, key.tail(currentKey))
     } else {
         put(field, value)
         this
