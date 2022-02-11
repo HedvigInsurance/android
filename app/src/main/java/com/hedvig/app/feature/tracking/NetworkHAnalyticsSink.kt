@@ -3,17 +3,18 @@ package com.hedvig.app.feature.tracking
 import android.content.Context
 import android.os.Build
 import com.hedvig.app.BuildConfig
+import com.hedvig.app.authenticate.DeviceIdStore
 import com.hedvig.app.util.jsonObjectOf
 import com.hedvig.app.util.plus
 import com.hedvig.hanalytics.HAnalyticsEvent
-import e
-import okhttp3.Call
-import okhttp3.Callback
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
-import java.io.IOException
+import ru.gildor.coroutines.okhttp.await
 import java.util.Locale
 import java.util.TimeZone
 import java.util.UUID
@@ -21,36 +22,34 @@ import java.util.UUID
 class NetworkHAnalyticsSink(
     private val okHttpClient: OkHttpClient,
     private val context: Context,
+    private val deviceIdStore: DeviceIdStore,
     private val baseUrl: String,
 ) : HAnalyticsSink {
     private val sessionId = UUID.randomUUID()
     override fun send(event: HAnalyticsEvent) {
-        runCatching {
-            okHttpClient
-                .newCall(
-                    Request.Builder()
-                        .url("$baseUrl/event")
-                        .header("Content-Type", "application/json")
-                        .post(
-                            (
-                                contextProperties() + jsonObjectOf(
-                                    "event" to event.name,
-                                    "properties" to event.properties,
-                                    "trackingId" to "TODO", // TODO: APP-1216
-                                    "sessionId" to sessionId,
-                                    "graphql" to event.graphql,
-                                )
-                                ).toString().toRequestBody()
-                        )
-                        .build()
-                ).enqueue(object : Callback {
-                    override fun onFailure(call: Call, e: IOException) {
-                        e(e)
-                    }
-
-                    override fun onResponse(call: Call, response: Response) {
-                    }
-                })
+        CoroutineScope(Dispatchers.IO).launch {
+            runCatching {
+                val deviceId = deviceIdStore.observeDeviceId().firstOrNull() ?: ""
+                okHttpClient
+                    .newCall(
+                        Request.Builder()
+                            .url("$baseUrl/event")
+                            .header("Content-Type", "application/json")
+                            .post(
+                                (
+                                    contextProperties() + jsonObjectOf(
+                                        "event" to event.name,
+                                        "properties" to event.properties,
+                                        "trackingId" to deviceId,
+                                        "sessionId" to sessionId,
+                                        "graphql" to event.graphql,
+                                    )
+                                    ).toString().toRequestBody()
+                            )
+                            .build()
+                    )
+                    .await()
+            }
         }
     }
 

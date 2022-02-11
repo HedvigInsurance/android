@@ -589,7 +589,7 @@ val trackerModule = module {
         HAnalyticsFacade(getAll<HAnalyticsSink>().distinct())
     }
     single {
-        NetworkHAnalyticsSink(get(), get(), get<Context>().getString(R.string.HANALYTICS_URL))
+        NetworkHAnalyticsSink(get(), get(), get(), get<Context>().getString(R.string.HANALYTICS_URL))
     } bind HAnalyticsSink::class
     single { ApplicationLifecycleTracker(get()) }
 }
