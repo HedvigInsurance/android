@@ -41,7 +41,7 @@ class AddressAutoCompleteActivity : AppCompatActivity() {
             HedvigTheme {
                 AddressAutoCompleteScreen(
                     viewState = viewState,
-                    setInput = viewModel::setNewInput,
+                    setNewTextInput = viewModel::setNewTextInput,
                     selectAddress = viewModel::selectAddress,
                     cancelAutoCompletion = { finishWithResult(FetchDanishAddressContractResult.Canceled) },
                     cantFindAddress = { finishWithResult(FetchDanishAddressContractResult.CantFind) },
