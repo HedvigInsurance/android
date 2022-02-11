@@ -12,6 +12,10 @@ class EngineeringTracker : HAnalyticsSink {
     val tracks = _tracks.asStateFlow()
 
     override fun send(event: HAnalyticsEvent) {
-        _tracks.update { it + TrackEvent(event.name, event.properties.toJsonObject().toString(2), LocalDateTime.now()) }
+        _tracks.update {
+            listOf(
+                TrackEvent(event.name, event.properties.toJsonObject().toString(2), LocalDateTime.now())
+            ) + it
+        }
     }
 }

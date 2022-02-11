@@ -34,7 +34,7 @@ class TrackingLogAdapter(
             lineTwo.text = lineTwo.context.getString(
                 R.string.event_list_item_line_two,
                 event.timestamp.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                if (event.propertiesJsonString != null) {
+                if (event.propertiesJsonString != "{}") {
                     "Yes"
                 } else {
                     "No"
