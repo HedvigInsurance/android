@@ -5,7 +5,6 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.AddressAutocompleteQuery
 import com.hedvig.android.owldroid.type.AddressAutocompleteType
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
-import com.hedvig.app.feature.addressautocompletion.model.DanishAddressInput
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
 
@@ -13,14 +12,31 @@ class GetDanishAddressAutoCompletionUseCase(
     private val apolloClient: ApolloClient,
 ) {
     suspend operator fun invoke(
-        input: DanishAddressInput,
+        addressText: String,
     ): Either<QueryResult.Error, AddressAutoCompleteResults> {
-        val addressAutocompleteQuery = AddressAutocompleteQuery(
-            input.queryString,
-            input.toAddressAutocompleteType()
+        val query = AddressAutocompleteQuery(
+            addressText,
+            AddressAutocompleteType.STREET,
         )
+        return runQuery(query)
+    }
+
+    suspend operator fun invoke(
+        address: DanishAddress,
+        addressAutocompleteType: AddressAutocompleteType? = null,
+    ): Either<QueryResult.Error, AddressAutoCompleteResults> {
+        val query = AddressAutocompleteQuery(
+            address.toQueryString(),
+            addressAutocompleteType ?: address.toAddressAutocompleteType(),
+        )
+        return runQuery(query)
+    }
+
+    private suspend fun runQuery(
+        query: AddressAutocompleteQuery,
+    ): Either<QueryResult.Error, AddressAutoCompleteResults> {
         return apolloClient
-            .query(addressAutocompleteQuery)
+            .query(query)
             .safeQuery()
             .toEither()
             .map { queryData ->
@@ -33,12 +49,9 @@ data class AddressAutoCompleteResults(
     val resultList: List<DanishAddress>,
 )
 
-private fun DanishAddressInput.toAddressAutocompleteType(): AddressAutocompleteType {
-    val address = selectedDanishAddress
+private fun DanishAddress.toAddressAutocompleteType(): AddressAutocompleteType {
     return when {
-        address == null -> AddressAutocompleteType.STREET
-        address.onlyContainsAddress -> AddressAutocompleteType.BUILDING
-        address.postalCode != null && address.city != null -> AddressAutocompleteType.APARTMENT
-        else -> AddressAutocompleteType.STREET
+        isValidFinalSelection -> AddressAutocompleteType.APARTMENT
+        else -> AddressAutocompleteType.BUILDING
     }
 }

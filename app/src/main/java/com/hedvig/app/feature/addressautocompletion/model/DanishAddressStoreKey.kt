@@ -50,13 +50,13 @@ fun DanishAddress.Companion.fromValueStoreKeys(
 ): DanishAddress? {
     val fullAddress = getValueFromStore(DanishAddressStoreKey.fullAddress.name) ?: return null
     return DanishAddress(
-        id = getValueFromStore(DanishAddressStoreKey.bbrId.name),
         address = fullAddress,
+        id = getValueFromStore(DanishAddressStoreKey.bbrId.name),
+        postalCode = getValueFromStore(DanishAddressStoreKey.zipCode.name),
+        city = getValueFromStore(DanishAddressStoreKey.city.name),
         streetName = getValueFromStore(DanishAddressStoreKey.streetName.name),
         streetNumber = getValueFromStore(DanishAddressStoreKey.streetNumber.name),
         floor = getValueFromStore(DanishAddressStoreKey.floor.name),
         apartment = getValueFromStore(DanishAddressStoreKey.apartment.name),
-        postalCode = getValueFromStore(DanishAddressStoreKey.zipCode.name),
-        city = getValueFromStore(DanishAddressStoreKey.city.name),
     )
 }

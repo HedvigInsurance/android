@@ -6,23 +6,17 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class DanishAddress(
-    val id: String?,
     val address: String,
-    val streetName: String?,
-    val streetNumber: String?,
-    val floor: String?,
-    val apartment: String?,
-    val postalCode: String?,
-    val city: String?,
+    val id: String? = null,
+    val postalCode: String? = null,
+    val city: String? = null,
+    val streetName: String? = null,
+    val streetNumber: String? = null,
+    val floor: String? = null,
+    val apartment: String? = null,
 ) : Parcelable {
 
-    val isValidFinalSelection: Boolean
-        get() = streetName != null &&
-            streetNumber != null &&
-            postalCode != null &&
-            city != null
-
-    val onlyContainsAddress: Boolean
+    private val onlyContainsAddress: Boolean
         get() = id == null &&
             streetName == null &&
             streetNumber == null &&
@@ -30,6 +24,30 @@ data class DanishAddress(
             apartment == null &&
             postalCode == null &&
             city == null
+
+    val isValidFinalSelection: Boolean
+        get() = streetName != null &&
+            streetNumber != null &&
+            postalCode != null &&
+            city != null
+
+    val hasAllProperties: Boolean
+        get() = isValidFinalSelection &&
+            id != null &&
+            floor != null &&
+            apartment != null
+
+    /**
+     * Checks for equality of the address itself, despite type differences like the [address] formatting or its [id]
+     */
+    fun isSameAddressAs(other: DanishAddress): Boolean {
+        return postalCode == other.postalCode &&
+            city == other.city &&
+            streetName == other.streetName &&
+            streetNumber == other.streetNumber &&
+            floor == other.floor &&
+            apartment == other.apartment
+    }
 
     fun toPresentableTextPair(): Pair<String, String?> {
         if (onlyContainsAddress) return address to null
@@ -69,14 +87,14 @@ data class DanishAddress(
     companion object {
         fun fromDto(dto: AddressAutocompleteQuery.AutoCompleteAddress): DanishAddress {
             return DanishAddress(
-                id = dto.id,
                 address = dto.address,
+                id = dto.id,
+                postalCode = dto.postalCode,
+                city = dto.city,
                 streetName = dto.streetName,
                 streetNumber = dto.streetNumber,
                 floor = dto.floor,
                 apartment = dto.apartment,
-                postalCode = dto.postalCode,
-                city = dto.city,
             )
         }
     }

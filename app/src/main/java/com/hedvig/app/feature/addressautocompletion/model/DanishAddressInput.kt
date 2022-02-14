@@ -4,23 +4,11 @@ class DanishAddressInput private constructor(
     val rawText: String,
     val selectedDanishAddress: DanishAddress? = null,
 ) {
-    val queryString: String
-        get() = when (selectedDanishAddress) {
-            null -> rawText
-            else -> selectedDanishAddress.toQueryString()
-        }
+    val isEmptyInput: Boolean
+        get() = selectedDanishAddress == null && rawText.isEmpty()
 
-    fun withNewInput(newText: String): DanishAddressInput {
-        if (selectedDanishAddress == null) return DanishAddressInput(newText)
-        val oldText = rawText
-        return DanishAddressInput(
-            rawText = newText,
-            selectedDanishAddress = if (newText.length < oldText.length) {
-                null
-            } else {
-                selectedDanishAddress
-            }
-        )
+    fun withNewText(newText: String): DanishAddressInput {
+        return DanishAddressInput(newText)
     }
 
     fun withSelectedAddress(address: DanishAddress): DanishAddressInput {
