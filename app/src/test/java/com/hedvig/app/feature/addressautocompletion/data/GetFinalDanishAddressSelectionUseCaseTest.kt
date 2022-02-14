@@ -3,8 +3,7 @@ package com.hedvig.app.feature.addressautocompletion.data
 import arrow.core.right
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import assertk.assertions.isNotNull
-import assertk.assertions.isNull
+import assertk.assertions.isInstanceOf
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -35,7 +34,7 @@ class GetFinalDanishAddressSelectionUseCaseTest {
             lastSelection = null,
         )
 
-        assertThat(result).isNull()
+        assertThat(result).isInstanceOf(FinalAddressResult.NotFinalAddress::class)
     }
 
     @Test
@@ -48,7 +47,7 @@ class GetFinalDanishAddressSelectionUseCaseTest {
             lastSelection = null,
         )
 
-        assertThat(result).isNull()
+        assertThat(result).isInstanceOf(FinalAddressResult.NotFinalAddress::class)
     }
 
     @Test
@@ -62,8 +61,9 @@ class GetFinalDanishAddressSelectionUseCaseTest {
                 lastSelection = asavej_1_9330_dronninglund,
             )
 
-            assertThat(result).isNotNull()
-            assertThat(result).isEqualTo(selectedAddress)
+            assertThat(result).isInstanceOf(FinalAddressResult.Found::class)
+            result as FinalAddressResult.Found
+            assertThat(result.address).isEqualTo(selectedAddress)
         }
 
     @Test
@@ -77,8 +77,9 @@ class GetFinalDanishAddressSelectionUseCaseTest {
                 lastSelection = null,
             )
 
-            assertThat(result).isNotNull()
-            assertThat(result).isEqualTo(selectedAddress)
+            assertThat(result).isInstanceOf(FinalAddressResult.Found::class)
+            result as FinalAddressResult.Found
+            assertThat(result.address).isEqualTo(selectedAddress)
         }
 
     @Test
@@ -92,7 +93,7 @@ class GetFinalDanishAddressSelectionUseCaseTest {
                 lastSelection = null,
             )
 
-            assertThat(result).isNull()
+            assertThat(result).isInstanceOf(FinalAddressResult.NotFinalAddress::class)
         }
 
     companion object {

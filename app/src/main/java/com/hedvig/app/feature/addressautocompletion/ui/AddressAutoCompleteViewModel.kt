@@ -3,6 +3,7 @@ package com.hedvig.app.feature.addressautocompletion.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.app.feature.addressautocompletion.data.AddressAutoCompleteResults
+import com.hedvig.app.feature.addressautocompletion.data.FinalAddressResult
 import com.hedvig.app.feature.addressautocompletion.data.GetDanishAddressAutoCompletionUseCase
 import com.hedvig.app.feature.addressautocompletion.data.GetFinalDanishAddressSelectionUseCase
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
@@ -19,8 +20,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.shareIn
@@ -78,8 +79,12 @@ class AddressAutoCompleteViewModel(
             )
         }
         .filterNotNull()
-        .map { address ->
-            AddressAutoCompleteEvent.Selection(address)
+        .mapNotNull { finalAddressResult ->
+            when (finalAddressResult) {
+                is FinalAddressResult.Found -> AddressAutoCompleteEvent.Selection(finalAddressResult.address)
+                FinalAddressResult.NetworkError -> null
+                FinalAddressResult.NotFinalAddress -> null
+            }
         }
         .shareIn(
             scope = viewModelScope,

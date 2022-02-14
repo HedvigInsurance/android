@@ -16,20 +16,22 @@ class GetFinalDanishAddressSelectionUseCase(
     suspend operator fun invoke(
         selectedAddress: DanishAddress,
         lastSelection: DanishAddress?,
-    ): DanishAddress? {
+    ): FinalAddressResult {
         // Exit fast if it's not a valid selection anyway
-        if (selectedAddress.isValidFinalSelection.not()) return null
+        if (selectedAddress.isValidFinalSelection.not()) return FinalAddressResult.NotFinalAddress
         // Exit fast with the result if the address selected can't possible have a more detailed version of it exist
-        if (selectedAddress.hasAllProperties) return selectedAddress
+        if (selectedAddress.hasAllProperties) return FinalAddressResult.Found(selectedAddress)
         // Return if the same address was selected as in the previous selection
-        if (lastSelection?.isSameAddressAs(selectedAddress) == true) return selectedAddress
+        if (lastSelection?.isSameAddressAs(selectedAddress) == true) return FinalAddressResult.Found(selectedAddress)
 
         // Find if the selected address is unique
-        val newResults: List<DanishAddress> = fetchNewResults(selectedAddress).getOrElse { return null }
-        if (newResults.size != 1) return null
+        val newResults: List<DanishAddress> = fetchNewResults(selectedAddress).getOrElse {
+            return FinalAddressResult.NetworkError
+        }
+        if (newResults.size != 1) return FinalAddressResult.NotFinalAddress
         val newResult = newResults.first()
-        if (newResult.isSameAddressAs(selectedAddress)) return selectedAddress
-        return null
+        if (newResult.isSameAddressAs(selectedAddress)) return FinalAddressResult.Found(selectedAddress)
+        return FinalAddressResult.NotFinalAddress
     }
 
     private suspend fun fetchNewResults(address: DanishAddress): Either<QueryResult.Error, List<DanishAddress>> {
@@ -37,4 +39,10 @@ class GetFinalDanishAddressSelectionUseCase(
             .invoke(address, AddressAutocompleteType.APARTMENT)
             .map(AddressAutoCompleteResults::resultList)
     }
+}
+
+sealed interface FinalAddressResult {
+    object NetworkError : FinalAddressResult
+    object NotFinalAddress : FinalAddressResult
+    data class Found(val address: DanishAddress) : FinalAddressResult
 }
