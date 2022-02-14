@@ -143,13 +143,14 @@ fun TrackingLogScreen(
                 backgroundColor = MaterialTheme.colors.surface,
             )
         }
-    ) {
+    ) { pvs ->
         LazyColumn(modifier = Modifier.fillMaxWidth()) {
             items(tracks) { event ->
                 Column(
                     modifier = Modifier
                         .clickable { onClickEvent(event) }
                         .padding(16.dp)
+                        .fillMaxWidth()
                 ) {
                     Text(
                         text = event.name,
