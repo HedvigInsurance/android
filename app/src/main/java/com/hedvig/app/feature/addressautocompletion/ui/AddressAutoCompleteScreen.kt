@@ -2,17 +2,17 @@ package com.hedvig.app.feature.addressautocompletion.ui
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.material.Card
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ListItem
@@ -25,7 +25,10 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -35,6 +38,8 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -54,7 +59,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun AddressAutoCompleteScreen(
     viewState: AddressAutoCompleteViewState,
-    setInput: (String) -> Unit,
+    setNewTextInput: (String) -> Unit,
     selectAddress: (DanishAddress) -> Unit,
     cancelAutoCompletion: () -> Unit,
     cantFindAddress: () -> Unit,
@@ -72,28 +77,34 @@ fun AddressAutoCompleteScreen(
     }
     Scaffold(
         topBar = {
-            Column {
-                CenterAlignedTopAppBar(
-                    title = "Address",
-                    onClick = { cancelAutoCompletion() },
-                    backgroundColor = MaterialTheme.colors.surface,
-                    contentPadding = rememberInsetsPaddingValues(
-                        insets = LocalWindowInsets.current.statusBars,
-                        applyBottom = false
-                    ),
-                )
-                AddressInput(
-                    viewState = viewState,
-                    setInput = setInput,
-                    focusRequester = focusRequester,
-                    closeKeyboard = closeKeyboard
-                )
+            Surface(
+                color = MaterialTheme.colors.background,
+            ) {
+                Column {
+                    CenterAlignedTopAppBar(
+                        title = "Address",
+                        onClick = { cancelAutoCompletion() },
+                        backgroundColor = MaterialTheme.colors.background,
+                        contentPadding = rememberInsetsPaddingValues(
+                            insets = LocalWindowInsets.current.statusBars,
+                            applyBottom = false
+                        ),
+                    )
+                    AddressInput(
+                        viewState = viewState,
+                        setNewTextInput = setNewTextInput,
+                        focusRequester = focusRequester,
+                        closeKeyboard = closeKeyboard,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+                }
             }
         },
         contentPadding = rememberInsetsPaddingValues(
             insets = LocalWindowInsets.current.navigationBars,
             applyTop = false
-        )
+        ),
+        backgroundColor = MaterialTheme.colors.surface
     ) { paddingValues ->
         SuggestionsList(
             viewState = viewState,
@@ -110,44 +121,63 @@ fun AddressAutoCompleteScreen(
 @Composable
 private fun AddressInput(
     viewState: AddressAutoCompleteViewState,
-    setInput: (String) -> Unit,
+    setNewTextInput: (String) -> Unit,
     focusRequester: FocusRequester,
     closeKeyboard: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Surface(
-        color = MaterialTheme.colors.surface,
-        modifier = modifier,
+    Card(
+        border = BorderStroke(1.dp, MaterialTheme.colors.primary.copy(alpha = 0.12f)),
+        modifier = modifier
     ) {
-        Box(modifier = Modifier.height(80.dp)) {
-            Column(
-                modifier = Modifier.align(Alignment.Center),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                BasicTextField(
-                    value = viewState.input.rawText,
-                    onValueChange = { newText ->
-                        setInput(newText)
-                    },
-                    textStyle = LocalTextStyle.current.copy(
-                        textAlign = TextAlign.Center,
-                        color = LocalContentColor.current.copy(LocalContentAlpha.current)
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onDone = { closeKeyboard() }
-                    ),
-                    singleLine = true,
-                    cursorBrush = SolidColor(LocalContentColor.current),
-                    modifier = Modifier
-                        .focusRequester(focusRequester)
-                        .fillMaxWidth()
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        ) {
+            var textFieldValue by remember {
+                val text = viewState.input.rawText
+                mutableStateOf(
+                    TextFieldValue(
+                        text = text,
+                        selection = TextRange(text.length)
+                    )
                 )
-                val numberAndCity = viewState.input.selectedDanishAddress?.toPresentableTextPair()?.second
-                AnimatedVisibility(numberAndCity != null) {
-                    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                        numberAndCity?.let {
-                            Text(it)
-                        }
+            }
+            LaunchedEffect(viewState.input.selectedDanishAddress) {
+                if (viewState.input.selectedDanishAddress == null) return@LaunchedEffect
+                textFieldValue = textFieldValue.copy(
+                    text = viewState.input.rawText,
+                    selection = TextRange(viewState.input.rawText.length),
+                )
+            }
+            BasicTextField(
+                value = textFieldValue,
+                onValueChange = { newTextFieldValue ->
+                    // TextFieldValue changes on more occasions than just text change. Do this to emulate the
+                    //  functionality of the onValueChange of the BasicTextField that takes a normal String
+                    if (textFieldValue.text != newTextFieldValue.text) {
+                        setNewTextInput(newTextFieldValue.text)
+                    }
+                    textFieldValue = newTextFieldValue
+                },
+                textStyle = LocalTextStyle.current.copy(
+                    textAlign = TextAlign.Center,
+                    color = LocalContentColor.current.copy(LocalContentAlpha.current)
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = { closeKeyboard() }
+                ),
+                singleLine = true,
+                cursorBrush = SolidColor(LocalContentColor.current),
+                modifier = Modifier
+                    .focusRequester(focusRequester)
+                    .fillMaxWidth()
+            )
+            val numberAndCity = viewState.input.selectedDanishAddress?.toPresentableTextPair()?.second
+            AnimatedVisibility(numberAndCity != null) {
+                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                    numberAndCity?.let {
+                        Text(it)
                     }
                 }
             }
@@ -186,18 +216,18 @@ private fun SuggestionsList(
                 }
             )
         }
-        item(key = "cantFindAddress") {
-            ListItem(
-                text = {
-                    Text(
-                        stringResource(R.string.EMBARK_ADDRESS_AUTOCOMPLETE_NO_ADDRESS),
-                        color = MaterialTheme.colors.error,
-                    )
-                },
-                modifier = Modifier.clickable {
-                    cantFindAddress()
-                }
-            )
+        if (viewState.showCantFindAddressItem) {
+            item(key = "cantFindAddress") {
+                ListItem(
+                    text = {
+                        Text(
+                            stringResource(R.string.EMBARK_ADDRESS_AUTOCOMPLETE_NO_ADDRESS),
+                            color = MaterialTheme.colors.error,
+                        )
+                    },
+                    modifier = Modifier.clickable { cantFindAddress() }
+                )
+            }
         }
     }
 }
@@ -212,6 +242,7 @@ fun AddressAutoCompleteScreenPreview() {
             AddressAutoCompleteScreen(
                 AddressAutoCompleteViewState(
                     input = DanishAddressInput.fromDanishAddress(previewDanishAddress),
+                    true,
                     results = DanishAddress.previewList(),
                 ),
                 {},

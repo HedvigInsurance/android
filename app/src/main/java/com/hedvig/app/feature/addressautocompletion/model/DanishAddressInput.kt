@@ -4,6 +4,8 @@ class DanishAddressInput private constructor(
     val rawText: String,
     val selectedDanishAddress: DanishAddress? = null,
 ) {
+    val isEmptyInput: Boolean
+        get() = selectedDanishAddress == null && rawText.isEmpty()
 
     fun withNewText(newText: String): DanishAddressInput {
         return DanishAddressInput(newText)
