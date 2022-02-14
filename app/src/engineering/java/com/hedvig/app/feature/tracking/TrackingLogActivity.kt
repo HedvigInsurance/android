@@ -65,6 +65,7 @@ class TrackingLogActivity : AppCompatActivity() {
                 TrackingLogScreen(
                     onNavigateUp = ::finish,
                     onClickEvent = ::openEventDetail,
+                    onClickClearEvents = viewModel::clear,
                     tracks = tracks,
                 )
             }
@@ -86,6 +87,7 @@ class TrackingLogActivity : AppCompatActivity() {
 fun TrackingLogScreen(
     onNavigateUp: () -> Unit,
     onClickEvent: (TrackEvent) -> Unit,
+    onClickClearEvents: () -> Unit,
     tracks: List<TrackEvent>,
 ) {
     var dropdownOpen by rememberSaveable { mutableStateOf(false) }
@@ -137,6 +139,11 @@ fun TrackingLogScreen(
                                 Text(stringResource(R.string.tracking_show_notification))
                             }
                             Divider()
+                            DropdownMenuItem(
+                                onClick = onClickClearEvents,
+                            ) {
+                                Text("Clear events")
+                            }
                         }
                     }
                 },
@@ -181,6 +188,7 @@ fun TrackingLogScreenPreview() {
         TrackingLogScreen(
             onNavigateUp = {},
             onClickEvent = {},
+            onClickClearEvents = {},
             tracks = listOf(
                 TrackEvent("example_event", "{}", LocalDateTime.now()),
                 TrackEvent("example_event", "{}", LocalDateTime.now()),
