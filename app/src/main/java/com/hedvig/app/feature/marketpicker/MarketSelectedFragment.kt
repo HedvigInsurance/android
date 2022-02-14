@@ -15,6 +15,7 @@ import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsetsMargin
 import com.hedvig.app.util.extensions.view.applyStatusBarInsetsMargin
 import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.android.ext.android.inject
@@ -56,7 +57,8 @@ class MarketSelectedFragment : Fragment(R.layout.fragment_market_selected) {
 
             signUp.setHapticClickListener {
                 tracker.signUp()
-                marketManager.market?.openOnboarding(requireContext())
+                val dkAddressAutocomplete = featureManager.isFeatureEnabled(Feature.ADDRESS_AUTO_COMPLETE)
+                marketManager.market?.openOnboarding(requireContext(), dkAddressAutocomplete)
             }
 
             logIn.setHapticClickListener {
