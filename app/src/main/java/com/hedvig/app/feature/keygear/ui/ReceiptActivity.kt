@@ -21,7 +21,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityReceiptBinding
-import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.service.FileService
 import com.hedvig.app.util.extensions.askForPermissions
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
@@ -42,7 +41,6 @@ import java.io.FileOutputStream
 class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
     private val binding by viewBinding(ActivityReceiptBinding::bind)
     private val fileService: FileService by inject()
-    private val tracker: KeyGearTracker by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,12 +60,10 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
             }
 
             share.setHapticClickListener {
-                tracker.shareReceipt()
                 shareImage(fileUrl)
             }
 
             download.setHapticClickListener {
-                tracker.downloadReceipt()
                 if (hasPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                     downloadFile(fileUrl)
                 } else {

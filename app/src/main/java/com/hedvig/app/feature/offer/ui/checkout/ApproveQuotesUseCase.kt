@@ -3,7 +3,6 @@ package com.hedvig.app.feature.offer.ui.checkout
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.SignQuotesMutation
 import com.hedvig.app.feature.offer.OfferRepository
-import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
@@ -12,7 +11,6 @@ import java.time.LocalDate
 class ApproveQuotesUseCase(
     private val apolloClient: ApolloClient,
     private val offerRepository: OfferRepository,
-    private val tracker: OfferTracker,
     private val cacheManager: CacheManager
 ) {
 
@@ -33,7 +31,6 @@ class ApproveQuotesUseCase(
                 approveResponseResponse?.approved?.let { approved ->
                     if (approved) {
                         val startDate = readCachedStartDate(quoteIds)
-                        tracker.signQuotes()
                         cacheManager.clearCache()
                         ApproveQuotesResult.Success(startDate)
                     } else {

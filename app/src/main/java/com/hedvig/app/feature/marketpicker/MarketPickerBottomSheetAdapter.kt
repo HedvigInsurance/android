@@ -17,7 +17,6 @@ import com.hedvig.app.util.extensions.viewBinding
 
 class MarketPickerBottomSheetAdapter(
     private val viewModel: MarketPickerViewModel,
-    private val tracker: MarketPickerTracker,
     private val dialog: Dialog?,
 ) : ListAdapter<MarketAdapterModel, MarketPickerBottomSheetAdapter.ViewHolder>(
     GenericDiffUtilItemCallback()
@@ -35,14 +34,13 @@ class MarketPickerBottomSheetAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position), viewModel, tracker, dialog)
+        holder.bind(getItem(position), viewModel, dialog)
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         abstract fun bind(
             item: MarketAdapterModel,
             viewModel: MarketPickerViewModel,
-            tracker: MarketPickerTracker,
             dialog: Dialog?,
         )
 
@@ -52,7 +50,6 @@ class MarketPickerBottomSheetAdapter(
             override fun bind(
                 item: MarketAdapterModel,
                 viewModel: MarketPickerViewModel,
-                tracker: MarketPickerTracker,
                 dialog: Dialog?,
             ) {
                 if (item !is MarketAdapterModel.MarketItem) {
@@ -63,7 +60,6 @@ class MarketPickerBottomSheetAdapter(
                     radioButton.isChecked = viewModel.pickerState.value?.market == item.inner
                     text.setText(item.inner.label)
                     root.setHapticClickListener {
-                        tracker.selectMarket(item.inner)
                         viewModel.applyMarketAndReload(item.inner)
                         dialog?.cancel()
                     }
@@ -76,7 +72,6 @@ class MarketPickerBottomSheetAdapter(
             override fun bind(
                 item: MarketAdapterModel,
                 viewModel: MarketPickerViewModel,
-                tracker: MarketPickerTracker,
                 dialog: Dialog?,
             ) {
                 binding.header.setText(R.string.market_picker_modal_title)

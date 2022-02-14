@@ -41,7 +41,6 @@ import e
 class PaymentAdapter(
     private val marketManager: MarketManager,
     private val fragmentManager: FragmentManager,
-    private val tracker: PaymentTracker,
 ) :
     ListAdapter<PaymentModel, PaymentAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
@@ -81,7 +80,7 @@ class PaymentAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position), marketManager, fragmentManager, tracker)
+        holder.bind(getItem(position), marketManager, fragmentManager)
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -89,7 +88,6 @@ class PaymentAdapter(
             data: PaymentModel,
             marketManager: MarketManager,
             fragmentManager: FragmentManager,
-            tracker: PaymentTracker,
         ): Any?
 
         class Header(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.payment_header)) {
@@ -97,7 +95,6 @@ class PaymentAdapter(
                 data: PaymentModel,
                 marketManager: MarketManager,
                 fragmentManager: FragmentManager,
-                tracker: PaymentTracker,
             ) = Unit
         }
 
@@ -108,7 +105,6 @@ class PaymentAdapter(
                 data: PaymentModel,
                 marketManager: MarketManager,
                 fragmentManager: FragmentManager,
-                tracker: PaymentTracker,
             ) = with(binding) {
                 if (data !is PaymentModel.FailedPayments) {
                     return invalid(data)
@@ -138,7 +134,6 @@ class PaymentAdapter(
                 data: PaymentModel,
                 marketManager: MarketManager,
                 fragmentManager: FragmentManager,
-                tracker: PaymentTracker,
             ) = with(binding) {
                 if (data !is PaymentModel.NextPayment) {
                     return invalid(data)
@@ -204,7 +199,6 @@ class PaymentAdapter(
                 data: PaymentModel,
                 marketManager: MarketManager,
                 fragmentManager: FragmentManager,
-                tracker: PaymentTracker,
             ) = with(binding) {
                 connect.setHapticClickListener {
                     marketManager.market?.connectPayin(connect.context)
@@ -220,7 +214,6 @@ class PaymentAdapter(
                 data: PaymentModel,
                 marketManager: MarketManager,
                 fragmentManager: FragmentManager,
-                tracker: PaymentTracker,
             ) = with(binding) {
                 if (data !is PaymentModel.CampaignInformation) {
                     return invalid(data)
@@ -273,7 +266,6 @@ class PaymentAdapter(
                 data: PaymentModel,
                 marketManager: MarketManager,
                 fragmentManager: FragmentManager,
-                tracker: PaymentTracker,
             ) = Unit
         }
 
@@ -284,7 +276,6 @@ class PaymentAdapter(
                 data: PaymentModel,
                 marketManager: MarketManager,
                 fragmentManager: FragmentManager,
-                tracker: PaymentTracker,
             ) = with(binding) {
                 if (data !is PaymentModel.Charge) {
                     return invalid(data)
@@ -304,7 +295,6 @@ class PaymentAdapter(
                 data: PaymentModel,
                 marketManager: MarketManager,
                 fragmentManager: FragmentManager,
-                tracker: PaymentTracker,
             ) = with(binding) {
                 root.setHapticClickListener {
                     root.context.startActivity(
@@ -323,7 +313,6 @@ class PaymentAdapter(
                 data: PaymentModel,
                 marketManager: MarketManager,
                 fragmentManager: FragmentManager,
-                tracker: PaymentTracker,
             ) = with(binding) {
                 if (data !is PaymentModel.TrustlyPayinDetails) {
                     return invalid(data)
@@ -352,7 +341,6 @@ class PaymentAdapter(
                 data: PaymentModel,
                 marketManager: MarketManager,
                 fragmentManager: FragmentManager,
-                tracker: PaymentTracker,
             ) = with(binding) {
                 if (data !is PaymentModel.AdyenPayinDetails) {
                     return invalid(data)
@@ -375,7 +363,6 @@ class PaymentAdapter(
                 data: PaymentModel,
                 marketManager: MarketManager,
                 fragmentManager: FragmentManager,
-                tracker: PaymentTracker,
             ) = Unit
         }
 
@@ -386,7 +373,6 @@ class PaymentAdapter(
                 data: PaymentModel,
                 marketManager: MarketManager,
                 fragmentManager: FragmentManager,
-                tracker: PaymentTracker,
             ) = with(binding) {
                 if (data !is PaymentModel.PayoutConnectionStatus) {
                     return invalid(data)
@@ -417,7 +403,6 @@ class PaymentAdapter(
                 data: PaymentModel,
                 marketManager: MarketManager,
                 fragmentManager: FragmentManager,
-                tracker: PaymentTracker,
             ) = with(binding) {
                 if (data !is PaymentModel.PayoutDetailsParagraph) {
                     return invalid(data)
@@ -442,7 +427,6 @@ class PaymentAdapter(
                 data: PaymentModel,
                 marketManager: MarketManager,
                 fragmentManager: FragmentManager,
-                tracker: PaymentTracker,
             ) = with(binding) {
                 if (data !is PaymentModel.Link) {
                     return invalid(data)
@@ -481,7 +465,6 @@ class PaymentAdapter(
                             )?.let { root.context.startActivity(it) }
                         }
                         PaymentModel.Link.RedeemDiscountCode -> { _ ->
-                            tracker.clickRedeemCode()
                             RefetchingRedeemCodeBottomSheet.newInstance()
                                 .show(
                                     fragmentManager,

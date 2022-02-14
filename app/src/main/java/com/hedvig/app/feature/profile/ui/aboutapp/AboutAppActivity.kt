@@ -19,6 +19,7 @@ import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AboutAppActivity : BaseActivity(R.layout.activity_about_app) {
@@ -28,6 +29,8 @@ class AboutAppActivity : BaseActivity(R.layout.activity_about_app) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        getViewModel<AboutAppViewModel>()
 
         binding.apply {
             window.compatSetDecorFitsSystemWindows(false)

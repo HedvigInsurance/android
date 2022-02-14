@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.validateNationalIdentityNumber
+import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +17,8 @@ class RetrievePriceViewModel(
     private val collectionId: String,
     private val insurerName: String,
     marketManager: MarketManager,
-    private val startDataCollectionUseCase: StartDataCollectionUseCase
+    private val startDataCollectionUseCase: StartDataCollectionUseCase,
+    private val hAnalytics: HAnalytics,
 ) : ViewModel() {
 
     private val _events = Channel<Event>(Channel.UNLIMITED)
@@ -30,6 +32,10 @@ class RetrievePriceViewModel(
 
     private val _viewState = MutableStateFlow(ViewState(market = marketManager.market))
     val viewState: StateFlow<ViewState> = _viewState
+
+    init {
+        hAnalytics.screenViewDataCollectionCredentials(collectionId)
+    }
 
     fun onRetrievePriceInfo() {
         if (viewState.value.inputError != null) {
@@ -80,10 +86,12 @@ class RetrievePriceViewModel(
     }
 
     fun onCollectionStarted(reference: String) {
+        hAnalytics.screenViewDataCollectionSuccess(collectionId)
         _viewState.update { it.copy(collectionStarted = ViewState.CollectionStartedState(reference)) }
     }
 
     fun onCollectionFailed() {
+        hAnalytics.screenViewDataCollectionFail(collectionId)
         _viewState.update { it.copy(collectionFailed = ViewState.CollectionFailedState(insurerName)) }
     }
 

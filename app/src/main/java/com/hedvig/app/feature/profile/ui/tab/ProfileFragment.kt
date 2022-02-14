@@ -12,7 +12,6 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.ProfileFragmentBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
-import com.hedvig.app.feature.profile.service.ProfileTracker
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppActivity
 import com.hedvig.app.feature.profile.ui.charity.CharityActivity
@@ -38,7 +37,6 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
     private val model: ProfileViewModel by sharedViewModel()
     private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
     private var scroll = 0
-    private val tracker: ProfileTracker by inject()
     private val marketManager: MarketManager by inject()
 
     override fun onResume() {
@@ -86,7 +84,6 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                                     "${viewState.data.member.firstName} ${viewState.data.member.lastName}",
                                     R.drawable.ic_contact_information
                                 ) {
-                                    tracker.myInfoRow()
                                     startActivity(Intent(requireContext(), MyInfoActivity::class.java))
                                 },
                                 ProfileModel.Row(
@@ -94,7 +91,6 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                                     viewState.data.cashback?.fragments?.cashbackFragment?.name ?: "",
                                     R.drawable.ic_profile_charity
                                 ) {
-                                    tracker.charityRow()
                                     startActivity(Intent(requireContext(), CharityActivity::class.java))
                                 },
                                 ProfileModel.Row(
@@ -115,7 +111,6 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                                     ),
                                     R.drawable.ic_payment
                                 ) {
-                                    tracker.paymentRow()
                                     startActivity(Intent(requireContext(), PaymentActivity::class.java))
                                 },
                                 ProfileModel.Subtitle,
@@ -124,7 +119,6 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                                     getString(R.string.profile_appSettingsSection_row_subheadline),
                                     R.drawable.ic_profile_settings
                                 ) {
-                                    tracker.settings()
                                     startActivity(SettingsActivity.newInstance(requireContext()))
                                 },
                                 ProfileModel.Row(
@@ -132,7 +126,6 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                                     getString(R.string.profile_tab_about_row_subtitle),
                                     R.drawable.ic_info_toolbar
                                 ) {
-                                    tracker.aboutAppRow()
                                     startActivity(Intent(requireContext(), AboutAppActivity::class.java))
                                 },
                                 ProfileModel.Logout

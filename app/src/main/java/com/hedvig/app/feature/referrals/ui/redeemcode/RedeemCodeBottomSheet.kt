@@ -11,18 +11,15 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.app.R
 import com.hedvig.app.databinding.PromotionCodeDialogBinding
-import com.hedvig.app.feature.referrals.service.ReferralsTracker
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.hideKeyboard
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 abstract class RedeemCodeBottomSheet : BottomSheetDialogFragment() {
     private val model: RedeemCodeViewModel by viewModel()
     private val binding by viewBinding(PromotionCodeDialogBinding::bind)
-    private val tracker: ReferralsTracker by inject()
 
     abstract fun onRedeemSuccess(data: RedeemReferralCodeMutation.Data)
 
@@ -60,7 +57,6 @@ abstract class RedeemCodeBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun redeemPromotionCode(code: String) {
-        tracker.redeemReferralCodeOverlay()
         model.redeemReferralCode(code)
     }
 

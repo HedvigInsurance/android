@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import com.hedvig.app.feature.chat.data.ChatRepository
+import com.hedvig.hanalytics.HAnalytics
 import e
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,9 +25,16 @@ abstract class ContractDetailViewModel : ViewModel() {
 }
 
 class ContractDetailViewModelImpl(
+    contractId: String,
     private val getContractDetailsUseCase: GetContractDetailsUseCase,
     private val chatRepository: ChatRepository,
+    hAnalytics: HAnalytics,
 ) : ContractDetailViewModel() {
+
+    init {
+        hAnalytics.screenViewInsuranceDetail(contractId)
+        loadContract(contractId)
+    }
 
     override fun loadContract(id: String) {
         viewModelScope.launch {
