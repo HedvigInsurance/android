@@ -41,6 +41,7 @@ import com.hedvig.app.feature.chat.data.ChatEventDataStore
 import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.chat.data.UserRepository
+import com.hedvig.app.feature.chat.service.ChatNotificationSender
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
 import com.hedvig.app.feature.claimdetail.data.GetClaimDetailUiStateFlowUseCase
 import com.hedvig.app.feature.claimdetail.data.GetClaimDetailUseCase
@@ -192,9 +193,12 @@ import com.hedvig.app.service.RemoteConfig
 import com.hedvig.app.service.badge.CrossSellNotificationBadgeService
 import com.hedvig.app.service.badge.NotificationBadgeService
 import com.hedvig.app.service.badge.ReferralsNotificationBadgeService
+import com.hedvig.app.service.push.NotificationSender
 import com.hedvig.app.service.push.PushTokenManager
-import com.hedvig.app.service.push.managers.CrossSellNotificationManager
-import com.hedvig.app.service.push.managers.PaymentNotificationManager
+import com.hedvig.app.service.push.managers.CrossSellNotificationSender
+import com.hedvig.app.service.push.managers.GenericNotificationSender
+import com.hedvig.app.service.push.managers.PaymentNotificationSender
+import com.hedvig.app.service.push.managers.ReferralsNotificationSender
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.ApolloTimberLogger
 import com.hedvig.app.util.apollo.CacheManager
@@ -603,8 +607,11 @@ val marketManagerModule = module {
 }
 
 val notificationModule = module {
-    single { PaymentNotificationManager(get()) }
-    single { CrossSellNotificationManager(get()) }
+    single { PaymentNotificationSender(get(), get()) } bind NotificationSender::class
+    single { CrossSellNotificationSender(get(), get()) } bind NotificationSender::class
+    single { ChatNotificationSender(get()) } bind NotificationSender::class
+    single { ReferralsNotificationSender(get()) } bind NotificationSender::class
+    single { GenericNotificationSender(get()) } bind NotificationSender::class
 }
 
 val clockModule = module { single { Clock.systemDefaultZone() } }
