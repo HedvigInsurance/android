@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -74,6 +75,9 @@ fun ConnectPayinCard(
                     .padding(vertical = 4.dp)
                     .padding(end = 8.dp)
                     .align(Alignment.End),
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = hedvigContentColorFor(colorWarning),
+                )
             ) {
                 Text(
                     text = stringResource(R.string.info_card_missing_payment_button_text)
