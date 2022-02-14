@@ -18,12 +18,17 @@ import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.Retr
 import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceInfoActivity.Companion.SSN_RESULT
 import com.hedvig.app.ui.compose.composables.appbar.TopAppBarWithBack
 import com.hedvig.app.ui.compose.theme.HedvigTheme
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class AskForPriceInfoActivity : BaseActivity() {
-
     private val parameter by lazy {
         intent.getParcelableExtra<InsuranceProviderParameter>(PARAMETER)
             ?: throw Error("Programmer error: DATA is null in ${this.javaClass.name}")
+    }
+
+    private val model: AskForPriceInfoViewModel by viewModel {
+        parametersOf(parameter.selectedInsuranceProviderCollectionId)
     }
 
     private val retrievePriceActivityResultLauncher =
@@ -50,7 +55,10 @@ class AskForPriceInfoActivity : BaseActivity() {
                 ) {
                     AskForPriceScreen(
                         parameter.selectedInsuranceProviderName,
-                        onSkipRetrievePriceInfo = { finishWithResult(null, null) },
+                        onSkipRetrievePriceInfo = {
+                            model.onSkipRetrievePriceInfo()
+                            finishWithResult(null, null)
+                        },
                         onNavigateToRetrievePrice = ::startRetrievePriceActivity
                     )
                 }
@@ -97,7 +105,7 @@ fun AskForPriceScreen(
     )
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun AskForPriceScreenPreview() {
     HedvigTheme {

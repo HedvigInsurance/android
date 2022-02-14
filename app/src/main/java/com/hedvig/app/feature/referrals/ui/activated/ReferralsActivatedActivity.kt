@@ -7,7 +7,6 @@ import android.view.View
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityReferralsActivatedBinding
-import com.hedvig.app.feature.referrals.service.ReferralsTracker
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
@@ -25,7 +24,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class ReferralsActivatedActivity : BaseActivity(R.layout.activity_referrals_activated) {
     private val binding by viewBinding(ActivityReferralsActivatedBinding::bind)
     private val model: ReferralsActivatedViewModel by viewModel()
-    private val tracker: ReferralsTracker by inject()
     private val marketManager: MarketManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,7 +42,6 @@ class ReferralsActivatedActivity : BaseActivity(R.layout.activity_referrals_acti
 
             close.applyNavigationBarInsetsMargin()
             close.setHapticClickListener {
-                tracker.closeActivated()
                 finish()
             }
 

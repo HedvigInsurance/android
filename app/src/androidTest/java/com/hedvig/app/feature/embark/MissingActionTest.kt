@@ -28,7 +28,7 @@ class MissingActionTest : TestCase() {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @Test
-    fun shouldDisplayInformationAboutAppNeedingUpdateWhenActionCannotBeRendered() = run {
+    fun shouldShowMessagesIfNoActionIsPresent() = run {
         activityRule.launch(
             EmbarkActivity.newInstance(
                 context(),
@@ -40,7 +40,7 @@ class MissingActionTest : TestCase() {
         stubExternalIntents()
 
         onScreen<EmbarkScreen> {
-            upgradeApp {
+            messages {
                 isVisible()
             }
         }

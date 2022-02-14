@@ -14,7 +14,6 @@ import com.hedvig.app.feature.onboarding.ui.ChoosePlanActivity
 import com.hedvig.app.feature.trustly.TrustlyConnectPayinActivity
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationActivity
-import com.hedvig.app.isDebug
 
 enum class Market {
     SE,
@@ -75,7 +74,7 @@ enum class Market {
         }
     }
 
-    fun openOnboarding(context: Context) = when (this) {
+    fun openOnboarding(context: Context, isNativeDkOnboardingEnabled: Boolean) = when (this) {
         SE -> {
             context.startActivity(ChoosePlanActivity.newInstance(context))
         }
@@ -83,7 +82,7 @@ enum class Market {
             context.startActivity(ChoosePlanActivity.newInstance(context))
         }
         DK -> {
-            if (isDebug()) { // TODO NOT COMMIT THIS use for testing the branch
+            if (isNativeDkOnboardingEnabled) {
                 context.startActivity(ChoosePlanActivity.newInstance(context))
             } else {
                 context.startActivity(WebOnboardingActivity.newInstance(context))

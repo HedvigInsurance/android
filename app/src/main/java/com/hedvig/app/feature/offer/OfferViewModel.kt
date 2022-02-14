@@ -35,6 +35,7 @@ import com.hedvig.app.feature.offer.usecase.providerstatus.GetProviderDisplayNam
 import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.hanalytics.HAnalytics
 import e
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
@@ -150,10 +151,10 @@ class OfferViewModelImpl(
     subscribeToDataCollectionStatusUseCase: SubscribeToDataCollectionStatusUseCase,
     private val getDataCollectionResultUseCase: GetDataCollectionResultUseCase,
     private val getProviderDisplayNameUseCase: GetProviderDisplayNameUseCase,
-    private val tracker: OfferTracker,
     private val adyenRepository: AdyenRepository,
     private val marketManager: MarketManager,
     private val chatRepository: ChatRepository,
+    private val hAnalytics: HAnalytics,
 ) : OfferViewModel() {
 
     private lateinit var quoteIds: List<String>
@@ -231,6 +232,7 @@ class OfferViewModelImpl(
         when (val idsResult = getQuotesUseCase.invoke(_quoteIds)) {
             is GetQuotesUseCase.Result.Success -> {
                 quoteIds = idsResult.ids
+                hAnalytics.screenViewOffer(quoteIds)
                 idsResult
                     .data
                     .onEach { response ->
@@ -239,7 +241,6 @@ class OfferViewModelImpl(
                                 offerAndLoginStatus.value = OfferAndLoginStatus.Error
                             }
                             is OfferRepository.OfferResult.Success -> {
-                                trackView(response.data)
                                 val loginStatus = loginStatusService.getLoginStatus()
 
                                 val paymentMethods = if (marketManager.market == Market.NO) {
@@ -270,18 +271,6 @@ class OfferViewModelImpl(
         }
     }
 
-    private var hasTrackedView = false
-    private fun trackView(data: OfferQuery.Data) {
-        if (hasTrackedView) {
-            return
-        }
-        hasTrackedView = true
-        tracker.viewOffer(
-            data.quoteBundle.quotes.map { it.typeOfContract.rawValue },
-            data.quoteBundle.appConfiguration.postSignStep.name,
-        )
-    }
-
     override fun onOpenCheckout() {
         _events.trySend(Event.OpenCheckout(CheckoutParameter(quoteIds = _quoteIds)))
     }
@@ -301,6 +290,7 @@ class OfferViewModelImpl(
                     Event.ApproveError(postSignDependencies.postSignScreen)
                 )
                 is ApproveQuotesUseCase.ApproveQuotesResult.Success -> {
+                    hAnalytics.quotesSigned(quoteIds)
                     loginStatusService.isViewingOffer = false
                     _events.trySend(
                         Event.ApproveSuccessful(

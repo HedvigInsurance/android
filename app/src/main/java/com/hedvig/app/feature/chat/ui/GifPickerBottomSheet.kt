@@ -28,8 +28,6 @@ class GifPickerBottomSheet : BottomSheetDialogFragment() {
     private val binding by viewBinding(SendGifDialogBinding::bind)
     private val imageLoader: ImageLoader by inject()
 
-    private lateinit var onSelectGif: (String) -> Unit
-
     private val disposables = CompositeDisposable()
 
     override fun onCreateView(
@@ -59,7 +57,7 @@ class GifPickerBottomSheet : BottomSheetDialogFragment() {
                     { e(it) }
                 )
             val adapter = GifAdapter(imageLoader) { url ->
-                onSelectGif(url)
+                model.respondWithGif(url)
                 dismiss()
             }
             gifRecyclerView.adapter = adapter
@@ -91,10 +89,6 @@ class GifPickerBottomSheet : BottomSheetDialogFragment() {
     override fun onDestroy() {
         disposables.clear()
         super.onDestroy()
-    }
-
-    fun initialize(onSelectGif: (String) -> Unit) {
-        this.onSelectGif = onSelectGif
     }
 
     companion object {

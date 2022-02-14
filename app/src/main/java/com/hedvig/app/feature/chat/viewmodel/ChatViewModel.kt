@@ -15,6 +15,7 @@ import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.util.LiveEvent
+import com.hedvig.hanalytics.HAnalytics
 import e
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -34,8 +35,13 @@ class ChatViewModel(
     private val userRepository: UserRepository,
     private val authenticationTokenService: AuthenticationTokenService,
     private val apolloClient: ApolloClient,
-    private val chatClosedTracker: ChatEventStore
+    private val chatClosedTracker: ChatEventStore,
+    private val hAnalytics: HAnalytics,
 ) : ViewModel() {
+
+    init {
+        hAnalytics.screenViewChat()
+    }
 
     val messages = MutableLiveData<ChatMessagesQuery.Data>()
     val sendMessageResponse = MutableLiveData<Boolean>()
@@ -149,32 +155,35 @@ class ChatViewModel(
     }
 
     fun uploadFile(uri: Uri) {
-        uploadFile(uri) { data ->
+        hAnalytics.chatRichMessageSent()
+        viewModelScope.launch {
+            val data = uploadFileInner(uri) ?: return@launch
             fileUploadOutcome.postValue(FileUploadOutcome(uri, !data.hasErrors()))
         }
     }
 
     fun uploadTakenPicture(uri: Uri) {
-        uploadFile(uri) { data ->
+        hAnalytics.chatRichMessageSent()
+        viewModelScope.launch {
+            val data = uploadFileInner(uri) ?: return@launch
             takePictureUploadOutcome.postValue(FileUploadOutcome(uri, !data.hasErrors()))
         }
     }
 
-    private fun uploadFile(uri: Uri, onNext: (Response<UploadFileMutation.Data>) -> Unit) {
+    private suspend fun uploadFileInner(uri: Uri): Response<UploadFileMutation.Data>? {
         isSubscriptionAllowedToWrite = false
         isUploading.value = true
-        viewModelScope.launch {
-            val response = runCatching { chatRepository.uploadFile(uri) }
-            if (response.isFailure) {
-                response.exceptionOrNull()?.let { e(it) }
-                return@launch
-            }
-            response.getOrNull()?.data?.uploadFile?.key?.let { respondWithFile(it, uri) }
-            response.getOrNull()?.let { onNext(it) }
+        val response = runCatching { chatRepository.uploadFile(uri) }
+        if (response.isFailure) {
+            response.exceptionOrNull()?.let { e(it) }
+            return null
         }
+        response.getOrNull()?.data?.uploadFile?.key?.let { respondWithFile(it, uri) }
+        return response.getOrNull()
     }
 
     fun uploadFileFromProvider(uri: Uri) {
+        hAnalytics.chatRichMessageSent()
         isSubscriptionAllowedToWrite = false
         isUploading.value = true
         viewModelScope.launch {
@@ -197,7 +206,17 @@ class ChatViewModel(
         response.data?.let { messages.postValue(it) }
     }
 
-    fun respondToLastMessage(message: String) {
+    fun respondWithGif(url: String) {
+        hAnalytics.chatRichMessageSent()
+        respondToLastMessage(url)
+    }
+
+    fun respondWithTextMessage(message: String) {
+        hAnalytics.chatTextMessageSent()
+        respondToLastMessage(message)
+    }
+
+    private fun respondToLastMessage(message: String) {
         if (isSendingMessage) {
             return
         }

@@ -14,7 +14,6 @@ import com.hedvig.android.owldroid.type.KeyGearItemCategory
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityKeyGearItemDetailBinding
-import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.feature.keygear.ui.itemdetail.viewbinders.NameBinder
 import com.hedvig.app.feature.keygear.ui.itemdetail.viewbinders.PhotosBinder
 import com.hedvig.app.feature.keygear.ui.itemdetail.viewbinders.ReceiptBinder
@@ -29,13 +28,11 @@ import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.spring
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_detail) {
     private val model: KeyGearItemDetailViewModel by viewModel()
     private val binding by viewBinding(ActivityKeyGearItemDetailBinding::bind)
-    private val tracker: KeyGearTracker by inject()
 
     private lateinit var photosBinder: PhotosBinder
     private lateinit var valuationBinder: ValuationBinder
@@ -60,10 +57,10 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
                 intent.getStringExtra(FIRST_PHOTO_URL),
                 intent.getSerializableExtra(CATEGORY) as KeyGearItemCategory
             ) { supportStartPostponedEnterTransition() }
-            valuationBinder = ValuationBinder(valuationSection, tracker)
-            nameBinder = NameBinder(nameSection, model, tracker)
+            valuationBinder = ValuationBinder(valuationSection)
+            nameBinder = NameBinder(nameSection, model)
             receiptBinder =
-                ReceiptBinder(receiptSection, supportFragmentManager, tracker)
+                ReceiptBinder(receiptSection, supportFragmentManager)
         }
 
         model.data.observe(this) { data ->

@@ -5,7 +5,6 @@ import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.feature.dismissiblepager.DismissiblePager
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class WhatsNewDialog : DismissiblePager() {
@@ -17,7 +16,6 @@ class WhatsNewDialog : DismissiblePager() {
     override val titleLabel = R.string.NEWS_TITLE
     override val shouldShowLogo = true
 
-    override val tracker: WhatsNewTracker by inject()
     override val items: List<DismissiblePagerModel>
         get() = requireArguments().getParcelableArrayList<DismissiblePagerModel>(PAGES).orEmpty()
 

@@ -4,13 +4,10 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.feature.tracking.TrackingFacade
 import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.app.util.apollo.QueryResult
-import com.mixpanel.android.mpmetrics.MixpanelAPI
 
 class LogoutUseCase(
-    private val mixpanel: MixpanelAPI,
     private val pushTokenManager: PushTokenManager,
     private val marketManager: MarketManager,
     private val loginStatusService: LoginStatusService,
@@ -18,7 +15,6 @@ class LogoutUseCase(
     private val userRepository: UserRepository,
     private val authenticationTokenManager: AuthenticationTokenService,
     private val chatEventStore: ChatEventStore,
-    private val trackingFacade: TrackingFacade,
 ) {
 
     sealed class LogoutResult {
@@ -34,8 +30,6 @@ class LogoutUseCase(
             clearAuthenticationToken()
             apolloClient.subscriptionManager.reconnect()
             runCatching { pushTokenManager.refreshToken() }
-            mixpanel.reset()
-            trackingFacade.setProperty("user_state", "logged_out")
             chatEventStore.resetChatClosedCounter()
             LogoutResult.Success
         }

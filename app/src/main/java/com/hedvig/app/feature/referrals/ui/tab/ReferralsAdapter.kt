@@ -21,7 +21,6 @@ import com.hedvig.app.databinding.ReferralsCodeBinding
 import com.hedvig.app.databinding.ReferralsErrorBinding
 import com.hedvig.app.databinding.ReferralsHeaderBinding
 import com.hedvig.app.databinding.ReferralsRowBinding
-import com.hedvig.app.feature.referrals.service.ReferralsTracker
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeActivity
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
@@ -49,7 +48,6 @@ import org.javamoney.moneta.Money
 class ReferralsAdapter(
     private val reload: () -> Unit,
     private val onBannerClicked: () -> Unit,
-    private val tracker: ReferralsTracker,
     private val marketManager: MarketManager,
 ) : ListAdapter<ReferralsModel, ReferralsAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
@@ -75,14 +73,13 @@ class ReferralsAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position), reload, tracker, marketManager)
+        holder.bind(getItem(position), reload, marketManager)
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         abstract fun bind(
             data: ReferralsModel,
             reload: () -> Unit,
-            tracker: ReferralsTracker,
             marketManager: MarketManager
         )
 
@@ -90,7 +87,6 @@ class ReferralsAdapter(
             override fun bind(
                 data: ReferralsModel,
                 reload: () -> Unit,
-                tracker: ReferralsTracker,
                 marketManager: MarketManager
             ) =
                 Unit
@@ -101,7 +97,6 @@ class ReferralsAdapter(
             override fun bind(
                 data: ReferralsModel,
                 reload: () -> Unit,
-                tracker: ReferralsTracker,
                 marketManager: MarketManager
             ) {
                 binding.apply {
@@ -317,7 +312,6 @@ class ReferralsAdapter(
             override fun bind(
                 data: ReferralsModel,
                 reload: () -> Unit,
-                tracker: ReferralsTracker,
                 marketManager: MarketManager
             ) {
                 binding.apply {
@@ -360,7 +354,6 @@ class ReferralsAdapter(
                                     )
                                 }
                             edit.setHapticClickListener {
-                                tracker.editCode()
                                 edit.context.startActivity(
                                     ReferralsEditCodeActivity.newInstance(
                                         edit.context,
@@ -383,7 +376,6 @@ class ReferralsAdapter(
             override fun bind(
                 data: ReferralsModel,
                 reload: () -> Unit,
-                tracker: ReferralsTracker,
                 marketManager: MarketManager
             ) = Unit
         }
@@ -393,7 +385,6 @@ class ReferralsAdapter(
             override fun bind(
                 data: ReferralsModel,
                 reload: () -> Unit,
-                tracker: ReferralsTracker,
                 marketManager: MarketManager
             ) {
                 binding.apply {
@@ -470,11 +461,9 @@ class ReferralsAdapter(
             override fun bind(
                 data: ReferralsModel,
                 reload: () -> Unit,
-                tracker: ReferralsTracker,
                 marketManager: MarketManager
             ) {
                 binding.retry.setHapticClickListener {
-                    tracker.reload()
                     reload()
                 }
             }
@@ -489,7 +478,6 @@ class ReferralsAdapter(
             override fun bind(
                 data: ReferralsModel,
                 reload: () -> Unit,
-                tracker: ReferralsTracker,
                 marketManager: MarketManager
             ) {
                 if (data !is ReferralsModel.ReferralTopBar) {

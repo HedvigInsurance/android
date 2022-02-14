@@ -6,9 +6,9 @@ import com.hedvig.android.owldroid.fragment.SignStatusFragment
 import com.hedvig.android.owldroid.type.BankIdStatus
 import com.hedvig.android.owldroid.type.SignState
 import com.hedvig.app.authenticate.LoginStatusService
-import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.swedishbankid.sign.usecase.ManuallyRecheckSwedishBankIdSignStatusUseCase
 import com.hedvig.app.feature.swedishbankid.sign.usecase.SubscribeToSwedishBankIdSignStatusUseCase
+import com.hedvig.hanalytics.HAnalytics
 import e
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -27,8 +27,9 @@ class SwedishBankIdSignViewModel(
     autoStartToken: String,
     subscribeToSwedishBankIdSignStatusUseCase: SubscribeToSwedishBankIdSignStatusUseCase,
     private val manuallyRecheckSwedishBankIdSignStatusUseCase: ManuallyRecheckSwedishBankIdSignStatusUseCase,
-    private val tracker: OfferTracker,
     private val loginStatusService: LoginStatusService,
+    private val hAnalytics: HAnalytics,
+    private val quoteIds: List<String>,
 ) : ViewModel() {
     sealed class ViewState {
         object StartClient : ViewState()
@@ -77,7 +78,7 @@ class SwedishBankIdSignViewModel(
         _viewState.value = newViewState
         if (newViewState is ViewState.Success && !hasCompletedSign) {
             hasCompletedSign = true
-            tracker.signQuotes()
+            hAnalytics.quotesSigned(quoteIds)
             loginStatusService.isViewingOffer = false
             loginStatusService.isLoggedIn = true
             viewModelScope.launch {

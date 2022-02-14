@@ -33,7 +33,6 @@ import com.hedvig.app.feature.documents.DocumentAdapter
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
 import com.hedvig.app.feature.home.ui.changeaddress.result.ChangeAddressResultActivity
 import com.hedvig.app.feature.insurablelimits.InsurableLimitsAdapter
-import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.offer.PostSignScreen
 import com.hedvig.app.feature.offer.quotedetail.QuoteDetailActivity
@@ -42,7 +41,6 @@ import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignDialog
-import com.hedvig.app.feature.tracking.TrackingFacade
 import com.hedvig.app.getLocale
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
 import com.hedvig.app.util.extensions.compatDrawable
@@ -56,7 +54,6 @@ import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
-import com.hedvig.app.util.featureflags.FeatureManager
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -78,10 +75,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     }
     private val binding by viewBinding(ActivityOfferBinding::bind)
     private val imageLoader: ImageLoader by inject()
-    private val tracker: OfferTracker by inject()
-    private val trackingFacade: TrackingFacade by inject()
     private val marketManager: MarketManager by inject()
-    private val featureManager: FeatureManager by inject()
     private var hasStartedRecyclerAnimation: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -122,7 +116,6 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             val locale = getLocale(this@OfferActivity, marketManager.market)
             val topOfferAdapter = OfferAdapter(
                 fragmentManager = supportFragmentManager,
-                tracker = tracker,
                 locale = locale,
                 openQuoteDetails = model::onOpenQuoteDetails,
                 onRemoveDiscount = model::removeDiscount,
@@ -133,15 +126,13 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             val perilsAdapter = PerilsAdapter(
                 fragmentManager = supportFragmentManager,
                 imageLoader = imageLoader,
-                trackingFacade = trackingFacade,
             )
             val insurableLimitsAdapter = InsurableLimitsAdapter(
                 fragmentManager = supportFragmentManager
             )
-            val documentAdapter = DocumentAdapter(trackingFacade)
+            val documentAdapter = DocumentAdapter()
             val bottomOfferAdapter = OfferAdapter(
                 fragmentManager = supportFragmentManager,
-                tracker = tracker,
                 locale = locale,
                 openQuoteDetails = model::onOpenQuoteDetails,
                 onRemoveDiscount = model::removeDiscount,
@@ -226,7 +217,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
     private fun showSignDialog(event: OfferViewModel.Event.StartSwedishBankIdSign) {
         SwedishBankIdSignDialog
-            .newInstance(event.autoStartToken)
+            .newInstance(event.autoStartToken, quoteIds)
             .show(supportFragmentManager, SwedishBankIdSignDialog.TAG)
     }
 
@@ -352,7 +343,6 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         binding.signButton.text = checkoutLabel.toString(this)
         binding.signButton.icon = signMethod.checkoutIconRes()?.let(::compatDrawable)
         binding.signButton.setHapticClickListener {
-            tracker.checkoutFloating(checkoutLabel.localizationKey(this))
             onSign(signMethod, paymentMethods)
         }
     }
@@ -388,12 +378,10 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
     private fun handleMenuItem(menuItem: MenuItem) = when (menuItem.itemId) {
         R.id.chat -> {
-            tracker.openChat()
             openChat()
             true
         }
         R.id.app_settings -> {
-            tracker.settings()
             startActivity(SettingsActivity.newInstance(this))
             true
         }

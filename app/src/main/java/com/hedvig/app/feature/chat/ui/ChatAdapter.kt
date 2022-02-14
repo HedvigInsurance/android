@@ -18,7 +18,6 @@ import com.hedvig.app.databinding.ChatMessageHedvigBinding
 import com.hedvig.app.databinding.ChatMessageUserBinding
 import com.hedvig.app.databinding.ChatMessageUserGiphyBinding
 import com.hedvig.app.databinding.ChatMessageUserImageBinding
-import com.hedvig.app.feature.chat.service.ChatTracker
 import com.hedvig.app.util.extensions.openUri
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
@@ -30,7 +29,6 @@ import e
 class ChatAdapter(
     context: Context,
     private val onPressEdit: () -> Unit,
-    private val tracker: ChatTracker,
     private val imageLoader: ImageLoader
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -265,7 +263,6 @@ class ChatAdapter(
                 if (editAllowed) {
                     editMessage.show()
                     editMessage.setHapticClickListener {
-                        tracker.editMessage()
                         onPressEdit()
                     }
                     userMessage.updateMargin(end = baseMargin)
@@ -310,7 +307,6 @@ class ChatAdapter(
                 fileUploadLabel.text =
                     fileUploadLabel.resources.getString(R.string.CHAT_FILE_UPLOADED, extension)
                 fileUploadLabel.setHapticClickListener {
-                    tracker.openUploadedFile()
                     fileUploadLabel.context.openUri(Uri.parse(url))
                 }
             }
