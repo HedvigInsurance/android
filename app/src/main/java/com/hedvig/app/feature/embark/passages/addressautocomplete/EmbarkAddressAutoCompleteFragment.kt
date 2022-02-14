@@ -69,8 +69,7 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
 
         binding.root.applyNavigationBarInsets()
         binding.messages.adapter = MessageAdapter(data.messages)
-        binding.textActionSubmit.text = "Submit"
-        binding.textActionSubmit
+        binding.continueButton
             .hapticClicks()
             .mapLatest {
                 saveAndAnimate(viewModel.viewState.value.address)
@@ -81,7 +80,7 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
         viewModel.viewState
             .flowWithLifecycle(viewLifecycle)
             .onEach { viewState ->
-                binding.textActionSubmit.isEnabled = viewState.canProceed
+                binding.continueButton.isEnabled = viewState.canProceed
                 binding.inputCard.setContent {
                     HedvigTheme {
                         AddressCard(
