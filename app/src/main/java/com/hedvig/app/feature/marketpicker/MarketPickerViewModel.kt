@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.feature.tracking.TrackingFacade
+import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.launch
 
 abstract class MarketPickerViewModel : ViewModel() {
@@ -25,7 +25,7 @@ class MarketPickerViewModelImpl(
     private val localeBroadcastManager: LocaleBroadcastManager,
     private val marketManager: MarketManager,
     private val context: Context,
-    private val trackingFacade: TrackingFacade,
+    private val hAnalytics: HAnalytics,
 ) : MarketPickerViewModel() {
 
     override fun applyMarketAndReload(market: Market) {
@@ -44,7 +44,10 @@ class MarketPickerViewModelImpl(
 
     override fun submit() {
         marketManager.hasSelectedMarket = true
-        pickerState.value?.language?.let { languageRepository.uploadLanguage(it) }
+        pickerState.value?.language?.let {
+            hAnalytics.marketSelected(it.toString())
+            languageRepository.uploadLanguage(it)
+        }
     }
 
     private fun updateState(market: Market, language: Language) {
@@ -55,7 +58,6 @@ class MarketPickerViewModelImpl(
 
     private fun persistMarketAndLanguage(market: Market, language: Language) {
         Language.persist(context, language)
-        trackingFacade.setProperty("market", market.name)
         marketManager.market = market
     }
 

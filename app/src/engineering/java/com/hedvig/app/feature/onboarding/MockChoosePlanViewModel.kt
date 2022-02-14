@@ -1,8 +1,9 @@
 package com.hedvig.app.feature.onboarding
 
+import com.hedvig.app.feature.tracking.MockHAnalytics
 import com.hedvig.app.testdata.feature.onboarding.CHOOSE_PLAN_DATA
 
-class MockChoosePlanViewModel : ChoosePlanViewModel() {
+class MockChoosePlanViewModel : ChoosePlanViewModel(MockHAnalytics()) {
     init {
         load()
     }

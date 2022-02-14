@@ -8,6 +8,7 @@ import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.Retr
 import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.StartDataCollectionUseCase
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.feature.tracking.MockHAnalytics
 import com.hedvig.app.util.coroutines.MainCoroutineRule
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -47,6 +48,7 @@ class RetrievePriceViewModelTest {
             startDataCollectionUseCase = startDataCollectionUseCase,
             collectionId = "testCollectionId",
             insurerName = "testInsurerName",
+            hAnalytics = MockHAnalytics(),
         )
     }
 

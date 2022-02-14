@@ -10,6 +10,7 @@ data class CommonClaimBuilder(
     val emergencyNumber: String = "+46000000000",
 ) {
     fun build() = HomeQuery.CommonClaim(
+        id = "123",
         title = title,
         icon = HomeQuery.Icon(
             variants = HomeQuery.Variants(

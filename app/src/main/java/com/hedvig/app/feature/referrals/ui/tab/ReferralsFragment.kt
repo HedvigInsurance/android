@@ -14,7 +14,6 @@ import com.hedvig.app.databinding.FragmentReferralsBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
 import com.hedvig.app.feature.profile.ui.charity.ExplanationBottomSheet
-import com.hedvig.app.feature.referrals.service.ReferralsTracker
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsAdapter.Companion.ERROR_STATE
 import com.hedvig.app.feature.referrals.ui.tab.ReferralsAdapter.Companion.LOADING_STATE
 import com.hedvig.app.feature.settings.MarketManager
@@ -41,7 +40,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
     private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
     private val referralsViewModel: ReferralsViewModel by viewModel()
-    private val tracker: ReferralsTracker by inject()
     private val marketManager: MarketManager by inject()
     private val localeManager: LocaleManager by inject()
 
@@ -85,7 +83,6 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
             val adapter = ReferralsAdapter(
                 referralsViewModel::load,
                 ::showBottomSheet,
-                tracker,
                 marketManager
             )
             invites.adapter = adapter
@@ -137,7 +134,6 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                             } else {
                                 val code = viewState.data.referralInformation.campaign.code
                                 share.setHapticClickListener {
-                                    tracker.share()
                                     requireContext().showShareSheet(R.string.REFERRALS_SHARE_SHEET_TITLE) { intent ->
                                         intent.putExtra(
                                             Intent.EXTRA_TEXT,

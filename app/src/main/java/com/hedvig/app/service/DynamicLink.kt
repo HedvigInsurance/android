@@ -6,18 +6,21 @@ import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
-sealed class DynamicLink {
+sealed class DynamicLink(
+    val type: String
+) {
 
     data class Referrals(
         val code: String,
-        val incentive: String
-    ) : DynamicLink()
+        val incentive: String,
+    ) : DynamicLink("referrals")
 
-    object DirectDebit : DynamicLink()
-    object Forever : DynamicLink()
-    object Insurance : DynamicLink()
-    object None : DynamicLink()
-    object Unknown : DynamicLink()
+    object DirectDebit : DynamicLink("direct-debit")
+
+    object Forever : DynamicLink("forever")
+    object Insurance : DynamicLink("insurances")
+    object None : DynamicLink("none")
+    object Unknown : DynamicLink("unknown")
 }
 
 suspend fun getDynamicLinkFromFirebase(intent: Intent): DynamicLink = suspendCancellableCoroutine { cont ->

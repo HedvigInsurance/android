@@ -43,24 +43,24 @@ class RetrievePriceInfoActivity : BaseActivity() {
 
         supportFragmentManager.setFragmentResultListener(
             InsurelyDialog.REQUEST_KEY,
-            this,
-            { _, result ->
-                val success = result.getBoolean(InsurelyDialog.RESULT_KEY)
-                val reference = result.getString(InsurelyDialog.RESULT_REFERENCE) ?: ""
-                if (success) {
-                    viewModel.onCollectionStarted(reference)
-                } else {
-                    viewModel.onCollectionFailed()
-                }
+            this
+        ) { _, result ->
+            val success = result.getBoolean(InsurelyDialog.RESULT_KEY)
+            val reference = result.getString(InsurelyDialog.RESULT_REFERENCE) ?: ""
+            if (success) {
+                viewModel.onCollectionStarted(reference)
+            } else {
+                viewModel.onCollectionFailed()
             }
-        )
+        }
 
         viewModel.events
             .flowWithLifecycle(lifecycle)
             .onEach { event ->
                 when (event) {
                     is RetrievePriceViewModel.Event.AuthInformation -> {
-                        InsurelyDialog.newInstance(event.reference)
+                        InsurelyDialog
+                            .newInstance(event.reference, parameter.selectedInsuranceProviderCollectionId)
                             .show(supportFragmentManager, AuthenticateDialog.TAG)
                     }
                 }
@@ -164,10 +164,4 @@ private fun Market.labelRes() = when (this) {
     Market.NO -> R.string.insurely_no_ssn_input_label
     Market.FR,
     Market.DK -> throw IllegalArgumentException("No string resource for $this")
-}
-
-private fun DataCollectionResult.Error.getStringResource() = when (this) {
-    is DataCollectionResult.Error.NetworkError -> R.string.NETWORK_ERROR_ALERT_MESSAGE
-    DataCollectionResult.Error.NoData -> R.string.general_unknown_error
-    DataCollectionResult.Error.QueryError -> R.string.insurely_failure_title
 }

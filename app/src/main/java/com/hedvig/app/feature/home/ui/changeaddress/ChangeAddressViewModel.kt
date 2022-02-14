@@ -8,16 +8,23 @@ import arrow.core.Either
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.home.ui.changeaddress.GetAddressChangeStoryIdUseCase.SelfChangeEligibilityResult
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult
+import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
-abstract class ChangeAddressViewModel : ViewModel() {
+abstract class ChangeAddressViewModel(
+    hAnalytics: HAnalytics,
+) : ViewModel() {
     protected val _viewState = MutableLiveData<ViewState>()
     abstract val viewState: LiveData<ViewState>
 
     protected val _events = Channel<Event>(Channel.UNLIMITED)
     val events = _events.receiveAsFlow()
+
+    init {
+        hAnalytics.screenViewMovingFlowIntro()
+    }
 
     abstract fun reload()
 
@@ -28,7 +35,8 @@ class ChangeAddressViewModelImpl(
     private val getUpcomingAgreement: GetUpcomingAgreementUseCase,
     private val addressChangeStoryId: GetAddressChangeStoryIdUseCase,
     private val chatRepository: ChatRepository,
-) : ChangeAddressViewModel() {
+    hAnalytics: HAnalytics,
+) : ChangeAddressViewModel(hAnalytics) {
 
     override val viewState: LiveData<ViewState>
         get() = _viewState

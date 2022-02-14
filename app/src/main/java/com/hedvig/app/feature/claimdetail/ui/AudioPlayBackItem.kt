@@ -28,6 +28,7 @@ import com.hedvig.app.service.audioplayer.AudioPlayerState
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AudioPlayBackItem(
+    onPlayClick: () -> Unit,
     signedAudioUrl: SignedAudioUrl,
     modifier: Modifier = Modifier,
 ) {
@@ -46,7 +47,10 @@ fun AudioPlayBackItem(
         val audioPlayerState by audioPlayer.audioPlayerState.collectAsState()
         FakeWaveAudioPlayerCard(
             audioPlayerState = audioPlayerState,
-            startPlaying = audioPlayer::startPlayer,
+            startPlaying = {
+                onPlayClick()
+                audioPlayer.startPlayer()
+            },
             pause = audioPlayer::pausePlayer,
             retryLoadingAudio = audioPlayer::retryLoadingAudio,
             waveInteraction = audioPlayer::seekTo,

@@ -7,25 +7,19 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.google.android.material.transition.MaterialSharedAxis
 import com.hedvig.app.R
-import com.hedvig.app.ScreenTracker
 import com.hedvig.app.databinding.ConnectPaymentResultFragmentBinding
-import com.hedvig.app.feature.trustly.TrustlyTracker
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import e
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class ConnectPaymentResultFragment : Fragment(R.layout.connect_payment_result_fragment) {
 
     private val binding by viewBinding(ConnectPaymentResultFragmentBinding::bind)
     private val connectPaymentViewModel: ConnectPaymentViewModel by sharedViewModel()
-    private val tracker: TrustlyTracker by inject()
-    private val screenTracker: ScreenTracker by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        screenTracker.screenView("connect_payment_successful")
         enterTransition = MaterialSharedAxis(MaterialSharedAxis.X, true)
         exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, false)
     }
@@ -52,7 +46,6 @@ class ConnectPaymentResultFragment : Fragment(R.layout.connect_payment_result_fr
                 doItLater.isVisible = false
                 close.setText(R.string.pay_in_confirmation_continue_button)
                 close.setHapticClickListener {
-                    tracker.close()
                     connectPaymentViewModel.close()
                 }
             } else {
@@ -67,12 +60,10 @@ class ConnectPaymentResultFragment : Fragment(R.layout.connect_payment_result_fr
                 body.isVisible = true
                 doItLater.isVisible = true
                 doItLater.setHapticClickListener {
-                    tracker.doItLater()
                     connectPaymentViewModel.close()
                 }
                 close.setText(R.string.pay_in_error_retry_button)
                 close.setHapticClickListener {
-                    tracker.retry()
                     connectPaymentViewModel.navigateTo(
                         ConnectPaymentScreenState.Connect(
                             TransitionType.ENTER_RIGHT_EXIT_RIGHT
