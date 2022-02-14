@@ -36,18 +36,18 @@ object VariableExtractor {
         return variables.fold(JSONObject("{}")) { acc, variable ->
             when (variable) {
                 is Variable.Constant -> acc.createAndAddWithLodashNotation(
-                    value = variable.castAs.cast(variable.value).toString(),
+                    value = variable.castAs.cast(variable.value),
                     key = variable.key,
                     currentKey = variable.key.substringBefore(".")
                 )
                 is Variable.Single -> acc.createAndAddWithLodashNotation(
-                    value = variable.castAs.cast(getValue(variable.from)).toString(),
+                    value = variable.castAs.cast(getValue(variable.from)),
                     key = variable.key,
                     currentKey = variable.key.substringBefore(".")
                 )
                 is Variable.Generated -> {
                     val generatedValue = UUID.randomUUID().toString()
-                    setValue(variable.key, generatedValue)
+                    setValue(variable.storeAs, generatedValue)
                     acc.createAndAddWithLodashNotation(
                         value = generatedValue,
                         key = variable.key,

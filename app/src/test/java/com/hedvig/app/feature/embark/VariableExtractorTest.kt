@@ -170,6 +170,30 @@ class VariableExtractorTest {
         assertThat(result.getBoolean(falseBooleanKey)).isEqualTo(false)
     }
 
+    @Test
+    fun `integer values are extracted correctly from the store`() {
+        val testKey = "testKey"
+        val store: ValueStore = ValueStoreImpl().apply {
+            put(testKey, "5")
+        }
+        val variables = listOf(
+            Variable.Single(
+                key = testKey,
+                from = testKey,
+                castAs = CastType.INT
+            )
+        )
+
+        val result = VariableExtractor.reduceVariables(
+            variables,
+            store::get,
+            store::put,
+            store::getMultiActionItems
+        )
+
+        assertThat(result.getInt(testKey)).isEqualTo(5)
+    }
+
     private fun createTestValueStore(): ValueStore {
         val valueStore = ValueStoreImpl()
 

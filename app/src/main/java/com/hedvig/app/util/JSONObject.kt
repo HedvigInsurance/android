@@ -144,7 +144,7 @@ class JSONArrayEntryIterator(
     }
 }
 
-fun JSONObject.createAndAddWithLodashNotation(value: String, key: String, currentKey: String): JSONObject {
+fun JSONObject.createAndAddWithLodashNotation(value: Any?, key: String, currentKey: String): JSONObject {
 
     fun String.isArray() = contains("[") && contains("]")
     fun String.getArrayField() = substringBefore("[")
