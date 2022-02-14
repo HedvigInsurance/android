@@ -21,7 +21,6 @@ import com.hedvig.app.feature.chat.ParagraphInput
 import com.hedvig.app.feature.chat.SingleSelect
 import com.hedvig.app.feature.chat.SingleSelectChoiceType
 import com.hedvig.app.feature.chat.TextInput
-import com.hedvig.app.feature.chat.service.ChatTracker
 import com.hedvig.app.util.extensions.avdSetLooping
 import com.hedvig.app.util.extensions.avdStart
 import com.hedvig.app.util.extensions.avdStop
@@ -46,7 +45,6 @@ class ChatInputView : FrameLayout {
         defStyle
     )
 
-    private lateinit var tracker: ChatTracker
     private lateinit var sendTextMessage: ((String) -> Unit)
     private lateinit var sendSingleSelect: ((String) -> Unit)
     private lateinit var singleSelectLink: ((String) -> Unit)
@@ -76,7 +74,6 @@ class ChatInputView : FrameLayout {
         inflate(context, R.layout.chat_input_view, this)
         binding.apply {
             inputText.sendClickListener = {
-                tracker.sendChatMessage()
                 performTextMessageSend()
             }
             inputText.setOnEditorActionListener { _, actionId, event ->
@@ -95,12 +92,10 @@ class ChatInputView : FrameLayout {
                 true
             }
             attachFileBackground.setHapticClickListener {
-                tracker.openAttachFile()
                 inputText.clearFocus()
                 openAttachFile()
             }
             sendGif.setHapticClickListener {
-                tracker.openSendGif()
                 inputText.clearFocus()
                 openSendGif()
             }
@@ -126,7 +121,6 @@ class ChatInputView : FrameLayout {
         openAttachFile: () -> Unit,
         requestAudioPermission: () -> Unit,
         uploadRecording: (String) -> Unit,
-        tracker: ChatTracker,
         openSendGif: () -> Unit,
         chatRecyclerView: RecyclerView
     ) {
@@ -134,8 +128,7 @@ class ChatInputView : FrameLayout {
         this.sendSingleSelect = sendSingleSelect
         this.singleSelectLink = sendSingleSelectLink
         this.openAttachFile = openAttachFile
-        binding.audioRecorder.initialize(requestAudioPermission, uploadRecording, tracker)
-        this.tracker = tracker
+        binding.audioRecorder.initialize(requestAudioPermission, uploadRecording)
         this.openSendGif = openSendGif
         this.chatRecyclerView = chatRecyclerView
     }
@@ -241,7 +234,6 @@ class ChatInputView : FrameLayout {
             ) as TextView
         singleSelectButton.text = label
         singleSelectButton.setHapticClickListener {
-            tracker.singleSelect(label)
             singleSelectButton.isSelected = true
             singleSelectButton.setTextColor(context.compatColor(R.color.white))
             disableSingleButtons()

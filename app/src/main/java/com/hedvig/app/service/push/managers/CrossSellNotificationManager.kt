@@ -9,7 +9,6 @@ import androidx.core.app.TaskStackBuilder
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.app.R
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
-import com.hedvig.app.feature.crossselling.ui.CrossSellTracker
 import com.hedvig.app.feature.crossselling.ui.detail.CrossSellDetailActivity
 import com.hedvig.app.feature.crossselling.ui.detail.CrossSellNotificationMetadata
 import com.hedvig.app.feature.crossselling.usecase.GetCrossSellsUseCase
@@ -25,7 +24,6 @@ import kotlinx.coroutines.launch
 
 class CrossSellNotificationManager(
     private val crossSellsUseCase: GetCrossSellsUseCase,
-    private val tracker: CrossSellTracker,
 ) {
     fun sendCrossSellNotification(context: Context, remoteMessage: RemoteMessage) {
         val title = remoteMessage.data[DATA_MESSAGE_TITLE]
@@ -37,10 +35,6 @@ class CrossSellNotificationManager(
             val metadata = CrossSellNotificationMetadata(
                 title = title,
                 body = body,
-            )
-            tracker.notificationReceived(
-                metadata,
-                crossSell,
             )
 
             val intent = if (crossSell != null) {

@@ -15,7 +15,6 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.HomeFragmentBinding
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
-import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusCardUiState
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
@@ -35,7 +34,6 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
     private val binding by viewBinding(HomeFragmentBinding::bind)
     private var scroll = 0
-    private val tracker: HomeTracker by inject()
     private val imageLoader: ImageLoader by inject()
     private val marketManager: MarketManager by inject()
     private val featureManager: FeatureManager by inject()
@@ -59,7 +57,6 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             retry = model::reload,
             startIntentForResult = ::startEmbarkForResult,
             imageLoader = imageLoader,
-            tracker = tracker,
             marketManager = marketManager,
             onClaimDetailCardClicked = model::onClaimDetailCardClicked,
             onClaimDetailCardShown = model::onClaimDetailCardShown,

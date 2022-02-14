@@ -4,9 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import com.hedvig.app.R
-import com.hedvig.app.ScreenTracker
 import com.hedvig.app.databinding.FragmentMarketSelectedBinding
-import com.hedvig.app.feature.marketing.service.MarketingTracker
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.marketing.ui.MarketingViewModel
 import com.hedvig.app.feature.marketing.ui.NavigationState
@@ -22,12 +20,9 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 class MarketSelectedFragment : Fragment(R.layout.fragment_market_selected) {
     private val viewModel: MarketingViewModel by sharedViewModel()
     private val binding by viewBinding(FragmentMarketSelectedBinding::bind)
-    private val tracker: MarketingTracker by inject()
     private val marketManager: MarketManager by inject()
-    private val screenTracker: ScreenTracker by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        screenTracker.screenView("login_screen")
         binding.apply {
             logIn.applyNavigationBarInsetsMargin()
             flag.applyStatusBarInsetsMargin()
@@ -54,13 +49,11 @@ class MarketSelectedFragment : Fragment(R.layout.fragment_market_selected) {
 
             signUp.setHapticClickListener {
                 viewModel.onClickSignUp()
-                tracker.signUp()
                 marketManager.market?.openOnboarding(requireContext())
             }
 
             logIn.setHapticClickListener {
                 viewModel.onClickLogin()
-                tracker.logIn()
                 marketManager.market?.openAuth(requireContext(), parentFragmentManager)
             }
         }

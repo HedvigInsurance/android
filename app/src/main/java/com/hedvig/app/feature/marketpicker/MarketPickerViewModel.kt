@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.feature.tracking.TrackingFacade
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.launch
 
@@ -26,7 +25,6 @@ class MarketPickerViewModelImpl(
     private val localeBroadcastManager: LocaleBroadcastManager,
     private val marketManager: MarketManager,
     private val context: Context,
-    private val trackingFacade: TrackingFacade,
     private val hAnalytics: HAnalytics,
 ) : MarketPickerViewModel() {
 
@@ -60,7 +58,6 @@ class MarketPickerViewModelImpl(
 
     private fun persistMarketAndLanguage(market: Market, language: Language) {
         Language.persist(context, language)
-        trackingFacade.setProperty("market", market.name)
         marketManager.market = market
     }
 

@@ -150,7 +150,7 @@ class CheckoutViewModel(
             val event = when (result) {
                 is SignQuotesUseCase.SignQuoteResult.Error -> Event.Error(result.message)
                 SignQuotesUseCase.SignQuoteResult.Success -> {
-                    hAnalytics.quotesSigned(quoteIds.toTypedArray())
+                    hAnalytics.quotesSigned(quoteIds)
                     loginStatusService.isLoggedIn = true
                     loginStatusService.isViewingOffer = false
                     // Delay sending success in order for the signed quotes to be added on the member

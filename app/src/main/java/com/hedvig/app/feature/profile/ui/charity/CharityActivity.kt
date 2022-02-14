@@ -10,7 +10,6 @@ import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityCharityBinding
-import com.hedvig.app.feature.profile.service.ProfileTracker
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.setupToolbar
@@ -20,13 +19,11 @@ import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CharityActivity : BaseActivity(R.layout.activity_charity) {
     private val binding by viewBinding(ActivityCharityBinding::bind)
-    private val tracker: ProfileTracker by inject()
 
     private val profileViewModel: ProfileViewModel by viewModel()
 
@@ -74,7 +71,6 @@ class CharityActivity : BaseActivity(R.layout.activity_charity) {
             selectedCharityCardTitle.text = cashback.name
             selectedCharityCardParagraph.text = cashback.description
             charitySelectedHowDoesItWorkButton.setHapticClickListener {
-                tracker.howDoesItWorkClick()
                 ExplanationBottomSheet.newInstance(
                     title = getString(R.string.CHARITY_INFO_DIALOG_TITLE),
                     markDownText = getString(R.string.PROFILE_MY_CHARITY_INFO_BODY),
@@ -92,7 +88,6 @@ class CharityActivity : BaseActivity(R.layout.activity_charity) {
                     it.submitList(options)
                 }
             selectCharityHowDoesItWorkButton.setHapticClickListener {
-                tracker.howDoesItWorkClick()
                 ExplanationBottomSheet.newInstance(
                     title = getString(R.string.CHARITY_INFO_DIALOG_TITLE),
                     markDownText = getString(R.string.PROFILE_MY_CHARITY_INFO_BODY),

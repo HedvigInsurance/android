@@ -7,18 +7,15 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ReferralsReceiverActivityBinding
 import com.hedvig.app.feature.chat.ui.ChatActivity
-import com.hedvig.app.feature.referrals.service.ReferralsTracker
 import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeViewModel
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import e
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ReferralsReceiverActivity : BaseActivity(R.layout.referrals_receiver_activity) {
     private val binding by viewBinding(ReferralsReceiverActivityBinding::bind)
     private val referralViewModel: RedeemCodeViewModel by viewModel()
-    private val tracker: ReferralsTracker by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,7 +23,6 @@ class ReferralsReceiverActivity : BaseActivity(R.layout.referrals_receiver_activ
         binding.apply {
             referralViewModel.redeemCodeStatus.observe(this@ReferralsReceiverActivity) { startChat() }
             referralReceiverContinueButton.setHapticClickListener {
-                tracker.redeemReferralCode()
                 val referralCode = intent.getStringExtra(EXTRA_REFERRAL_CODE)
                 if (referralCode == null) {
                     e { "Programmer error: EXTRA_REFERRAL_CODE not passed to ${this.javaClass}" }
@@ -35,7 +31,6 @@ class ReferralsReceiverActivity : BaseActivity(R.layout.referrals_receiver_activ
                 referralViewModel.redeemReferralCode(referralCode)
             }
             referralReceiverContinueWithoutButton.setHapticClickListener {
-                tracker.skipReferralCode()
                 startChat()
             }
             val incentive = intent.getStringExtra(EXTRA_REFERRAL_INCENTIVE)?.toBigDecimal()?.toInt()

@@ -32,7 +32,6 @@ import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimActivity
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyActivity
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
-import com.hedvig.app.feature.home.service.HomeTracker
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
 import com.hedvig.app.feature.home.ui.claimstatus.composables.ClaimStatusCards
 import com.hedvig.app.feature.home.ui.connectpayincard.ConnectPayinCard
@@ -41,10 +40,10 @@ import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.extensions.canOpenUri
 import com.hedvig.app.util.extensions.inflate
+import com.hedvig.app.util.extensions.invalid
 import com.hedvig.app.util.extensions.openUri
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
-import e
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -55,7 +54,6 @@ class HomeAdapter(
     private val retry: () -> Unit,
     private val startIntentForResult: (Intent) -> Unit,
     private val imageLoader: ImageLoader,
-    private val tracker: HomeTracker,
     private val marketManager: MarketManager,
     private val onClaimDetailCardClicked: (String) -> Unit,
     private val onClaimDetailCardShown: (String) -> Unit,
@@ -73,7 +71,7 @@ class HomeAdapter(
         )
         R.layout.home_start_claim_outlined -> ViewHolder.StartClaimOutlined(parent, startIntentForResult)
         R.layout.home_start_claim_contained -> ViewHolder.StartClaimContained(parent, startIntentForResult)
-        R.layout.home_info_card -> ViewHolder.InfoCard(ComposeView(parent.context), onPaymentCardShown)
+        CONNECT_PAYIN -> ViewHolder.InfoCard(ComposeView(parent.context), onPaymentCardShown)
         R.layout.home_common_claim -> ViewHolder.CommonClaim(parent, imageLoader)
         R.layout.generic_error -> ViewHolder.Error(parent, retry)
         R.layout.how_claims_work_button -> ViewHolder.HowClaimsWorkButton(parent)
@@ -90,7 +88,7 @@ class HomeAdapter(
         is HomeModel.ClaimStatus -> ACTIVE_CLAIM
         is HomeModel.StartClaimOutlined -> R.layout.home_start_claim_outlined
         is HomeModel.StartClaimContained -> R.layout.home_start_claim_contained
-        is HomeModel.ConnectPayin -> R.layout.home_info_card
+        is HomeModel.ConnectPayin -> CONNECT_PAYIN
         is HomeModel.CommonClaim -> R.layout.home_common_claim
         HomeModel.Error -> R.layout.generic_error
         is HomeModel.PSA -> R.layout.home_psa
@@ -105,7 +103,6 @@ class HomeAdapter(
         holder.bind(
             getItem(position),
             fragmentManager,
-            tracker,
             marketManager
         )
     }
@@ -118,13 +115,8 @@ class HomeAdapter(
         abstract fun bind(
             data: HomeModel,
             fragmentManager: FragmentManager,
-            tracker: HomeTracker,
             marketManager: MarketManager,
         )
-
-        fun invalid(data: HomeModel) {
-            e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }
-        }
 
         class BigText(parent: ViewGroup) : ViewHolder(
             parent.inflate(
@@ -136,7 +128,6 @@ class HomeAdapter(
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
                 if (data !is HomeModel.BigText) {
@@ -178,7 +169,6 @@ class HomeAdapter(
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
                 if (data !is HomeModel.BodyText) {
@@ -218,7 +208,6 @@ class HomeAdapter(
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                tracker: HomeTracker,
                 marketManager: MarketManager,
             ) {
                 if (data !is HomeModel.ClaimStatus) {
@@ -246,7 +235,6 @@ class HomeAdapter(
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
                 if (data !is HomeModel.StartClaimOutlined) {
@@ -255,7 +243,6 @@ class HomeAdapter(
 
                 binding.button.setText(data.textId)
                 root.setHapticClickListener {
-                    tracker.startClaimOutlined()
                     HonestyPledgeBottomSheet
                         .newInstance(startIntentForResult)
                         .show(fragmentManager, HonestyPledgeBottomSheet.TAG)
@@ -271,7 +258,6 @@ class HomeAdapter(
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
                 if (data !is HomeModel.StartClaimContained) {
@@ -280,7 +266,6 @@ class HomeAdapter(
 
                 binding.button.setText(data.textId)
                 root.setHapticClickListener {
-                    tracker.startClaimContained()
                     HonestyPledgeBottomSheet
                         .newInstance(startIntentForResult)
                         .show(fragmentManager, HonestyPledgeBottomSheet.TAG)
@@ -293,7 +278,6 @@ class HomeAdapter(
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
                 if (data !is HomeModel.UpcomingRenewal) {
@@ -313,7 +297,6 @@ class HomeAdapter(
                     Uri.parse(upcomingRenewal.draftCertificateUrl)
                 }
                 action.setHapticClickListener {
-                    tracker.showRenewal()
                     maybeLinkUri.getOrNull()?.let { uri ->
                         if (action.context.canOpenUri(uri)) {
                             action.context.openUri(uri)
@@ -335,7 +318,6 @@ class HomeAdapter(
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                tracker: HomeTracker,
                 marketManager: MarketManager,
             ) {
                 if (data !is HomeModel.ConnectPayin) {
@@ -346,7 +328,6 @@ class HomeAdapter(
                     HedvigTheme {
                         ConnectPayinCard(
                             onActionClick = {
-                                tracker.addPaymentMethod()
                                 marketManager.market?.connectPayin(composeView.context)
                                     ?.let { composeView.context.startActivity(it) }
                             },
@@ -362,7 +343,6 @@ class HomeAdapter(
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
                 if (data !is HomeModel.PSA) {
@@ -386,7 +366,6 @@ class HomeAdapter(
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
                 if (data !is HomeModel.CommonClaim) {
@@ -429,7 +408,6 @@ class HomeAdapter(
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
                 if (data !is HomeModel.HowClaimsWork) {
@@ -463,11 +441,9 @@ class HomeAdapter(
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
                 this.retry.setHapticClickListener {
-                    tracker.retry()
                     retry()
                 }
             }
@@ -478,7 +454,6 @@ class HomeAdapter(
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
                 if (data !is HomeModel.ChangeAddress) {
@@ -524,7 +499,6 @@ class HomeAdapter(
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
                 if (data !is HomeModel.PendingAddressChange) {
@@ -545,7 +519,6 @@ class HomeAdapter(
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                tracker: HomeTracker,
                 marketManager: MarketManager,
             ) = with(binding) {
                 if (data !is HomeModel.Header) {
@@ -558,6 +531,7 @@ class HomeAdapter(
 
     companion object {
         const val ACTIVE_CLAIM = 1
+        const val CONNECT_PAYIN = 2
 
         fun daysLeft(date: LocalDate): Int = ChronoUnit.DAYS.between(LocalDate.now(), date).toInt()
 

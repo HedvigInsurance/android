@@ -9,14 +9,12 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.ListBottomSheetBinding
 import com.hedvig.app.feature.settings.Language
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class LanguagePickerBottomSheet : BottomSheetDialogFragment() {
     private val binding by viewBinding(ListBottomSheetBinding::bind)
 
     private val model: MarketPickerViewModel by sharedViewModel()
-    private val tracker: MarketPickerTracker by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -26,7 +24,7 @@ class LanguagePickerBottomSheet : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.apply {
-            recycler.adapter = LanguagePickerBottomSheetAdapter(model, tracker, dialog)
+            recycler.adapter = LanguagePickerBottomSheetAdapter(model, dialog)
             model.pickerState.observe(viewLifecycleOwner) { state ->
                 state.market.let { market ->
                     (recycler.adapter as? LanguagePickerBottomSheetAdapter)?.submitList(

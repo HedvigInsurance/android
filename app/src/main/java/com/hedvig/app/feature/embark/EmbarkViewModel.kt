@@ -21,7 +21,7 @@ import com.hedvig.app.feature.embark.util.evaluateExpression
 import com.hedvig.app.feature.embark.util.getOfferKeysOrNull
 import com.hedvig.app.feature.embark.util.toExpressionFragment
 import com.hedvig.app.util.ProgressPercentage
-import com.hedvig.app.util.plus
+import com.hedvig.app.util.asMap
 import com.hedvig.app.util.safeLet
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.channels.Channel
@@ -35,12 +35,10 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 import java.util.Stack
 import kotlin.math.max
 
 abstract class EmbarkViewModel(
-    private val tracker: EmbarkTracker,
     private val valueStore: ValueStore,
     private val graphQLQueryUseCase: GraphQLQueryUseCase,
     private val chatRepository: ChatRepository,
@@ -102,7 +100,7 @@ abstract class EmbarkViewModel(
     private var totalSteps: Int = 0
 
     init {
-        hAnalytics.screenViewEmbark()
+        hAnalytics.screenViewEmbark(storyName)
     }
 
     protected fun setInitialState() {
@@ -176,7 +174,7 @@ abstract class EmbarkViewModel(
         _passageState.postValue(passageState)
         _loadingState.update { false }
         nextPassage.tracks.forEach { track ->
-            tracker.track(track.eventName, trackingData(track))
+            hAnalytics.embarkTrack(storyName, track.eventName, trackingData(track))
         }
     }
 
@@ -239,14 +237,15 @@ abstract class EmbarkViewModel(
     }
 
     private fun trackingData(track: EmbarkStoryQuery.Track) = when {
-        track.includeAllKeys -> JSONObject(valueStore.toMap())
-        track.eventKeys.filterNotNull().isNotEmpty() -> JSONObject(
-            track.eventKeys.filterNotNull()
-                .map { it to valueStore.get(it) }.toMap()
-        )
-        else -> null
-    }?.let { data ->
-        track.customData?.let { data + it } ?: data
+        track.includeAllKeys -> valueStore.toMap()
+        track.eventKeys.filterNotNull().isNotEmpty() ->
+            track
+                .eventKeys
+                .filterNotNull()
+                .associateWith { valueStore.get(it) }
+        else -> emptyMap()
+    }.let { data ->
+        track.customData?.let { data + it.asMap() } ?: data
     }
 
     private fun currentProgress(passage: EmbarkStoryQuery.Passage?): ProgressPercentage {
@@ -324,7 +323,6 @@ abstract class EmbarkViewModel(
         storyData.embarkStory?.let { story ->
             _passageState.value?.passage?.name?.let { currentPassageName ->
                 hAnalytics.embarkPassageGoBack(storyName, currentPassageName)
-                tracker.track("Passage Go Back - $currentPassageName")
             }
             val nextPassage = story.passages.find { it.name == passageName }
             val passageState = PassageState(
@@ -510,12 +508,10 @@ class EmbarkViewModelImpl(
     loginStatusService: LoginStatusService,
     graphQLQueryUseCase: GraphQLQueryUseCase,
     chatRepository: ChatRepository,
-    tracker: EmbarkTracker,
     valueStore: ValueStore,
     hAnalytics: HAnalytics,
     storyName: String,
 ) : EmbarkViewModel(
-    tracker,
     valueStore,
     graphQLQueryUseCase,
     chatRepository,

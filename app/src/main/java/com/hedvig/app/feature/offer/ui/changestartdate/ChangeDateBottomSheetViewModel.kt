@@ -2,7 +2,6 @@ package com.hedvig.app.feature.offer.ui.changestartdate
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.extensions.epochMillisToLocalDate
 import kotlinx.coroutines.async
@@ -14,7 +13,6 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 class ChangeDateBottomSheetViewModel(
-    private val tracker: OfferTracker,
     private val editStartDateUseCase: EditStartDateUseCase,
     private val data: ChangeDateBottomSheetData
 ) : ViewModel() {
@@ -39,7 +37,6 @@ class ChangeDateBottomSheetViewModel(
 
     fun onSwitchChecked(quoteId: String, checked: Boolean) {
         if (checked) {
-            tracker.activateOnInsuranceEnd()
             viewModelScope.launch {
                 _viewState.value = ViewState.Loading(true)
                 val result = editStartDateUseCase.removeStartDate(
@@ -60,7 +57,6 @@ class ChangeDateBottomSheetViewModel(
 
     fun setNewDateAndDismiss() {
         viewModelScope.launch {
-            tracker.changeDateContinue()
             _viewState.value = ViewState.Loading(true)
             val results = coroutineScope {
                 selectedDates.map { dateMapEntry ->
