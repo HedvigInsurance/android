@@ -1,7 +1,7 @@
 package com.hedvig.app.util.compose.preview
 
-import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
 import com.hedvig.android.owldroid.type.ClaimStatus
+import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
 import com.hedvig.app.feature.claimdetail.model.ClaimDetailCardUiState
 import com.hedvig.app.feature.claimdetail.model.ClaimDetailResult
 import com.hedvig.app.feature.claimdetail.model.ClaimDetailUiState
