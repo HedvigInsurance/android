@@ -88,7 +88,7 @@ class AddressAutoCompleteViewModel(
             replay = 1
         )
 
-    fun setNewInput(inputText: String) {
+    fun setNewTextInput(inputText: String) {
         addressSelectionChannel.trySend(null)
         currentInput.update { danishAddressInput ->
             danishAddressInput.withNewText(inputText)
