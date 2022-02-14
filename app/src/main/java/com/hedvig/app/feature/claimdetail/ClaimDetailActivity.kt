@@ -24,7 +24,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 class ClaimDetailActivity : BaseActivity() {
-
     private val marketManager: MarketManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,6 +57,7 @@ class ClaimDetailActivity : BaseActivity() {
                     retry = viewModel::retry,
                     onUpClick = ::finish,
                     onChatClick = viewModel::onChatClick,
+                    onPlayClick = viewModel::onPlayClick,
                 )
             }
         }

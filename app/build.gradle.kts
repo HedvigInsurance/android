@@ -40,7 +40,7 @@ android {
         applicationId = "com.hedvig"
 
         versionCode = 43
-        versionName = "6.4.0"
+        versionName = "6.4.2"
 
         vectorDrawables.useSupportLibrary = true
 
@@ -176,6 +176,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.liveData)
     implementation(libs.androidx.lifecycle.runtime)
     implementation(libs.androidx.lifecycle.viewModel)
+    implementation(libs.androidx.lifecycle.process)
     implementation(libs.androidx.other.workManager)
     implementation(libs.androidx.datastore.core)
     implementation(libs.androidx.datastore.preferences)
@@ -215,9 +216,8 @@ dependencies {
     implementation(libs.firebase.dynamicLinks)
     implementation(libs.firebase.config)
     implementation(libs.firebase.messaging)
-    implementation(libs.firebase.tracking)
 
-    implementation(libs.mixpanel)
+    implementation(libs.hAnalytics)
 
     implementation(libs.koin.android)
     androidTestImplementation(libs.koin.test)

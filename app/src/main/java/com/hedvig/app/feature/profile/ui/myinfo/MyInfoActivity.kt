@@ -23,6 +23,7 @@ import com.hedvig.app.util.validateEmail
 import com.hedvig.app.util.validatePhoneNumber
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MyInfoActivity : BaseActivity(R.layout.activity_my_info) {
@@ -35,6 +36,8 @@ class MyInfoActivity : BaseActivity(R.layout.activity_my_info) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        getViewModel<MyInfoViewModel>()
 
         binding.apply {
             window.compatSetDecorFitsSystemWindows(false)

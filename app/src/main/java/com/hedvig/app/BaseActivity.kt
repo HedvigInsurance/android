@@ -19,14 +19,7 @@ abstract class BaseActivity : AppCompatActivity {
     open val preventRecreation = false
     open val screenName: String = javaClass.simpleName
 
-    private val screenTracker: ScreenTracker by inject()
-
     private val marketManager: MarketManager by inject()
-
-    override fun onResume() {
-        screenTracker.screenView(screenName)
-        super.onResume()
-    }
 
     override fun onDestroy() {
         LocalBroadcastManager

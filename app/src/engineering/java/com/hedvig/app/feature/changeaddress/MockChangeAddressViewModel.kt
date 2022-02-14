@@ -5,10 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressViewModel
 import com.hedvig.app.feature.home.ui.changeaddress.ViewState
+import com.hedvig.app.feature.tracking.MockHAnalytics
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class MockChangeAddressViewModel : ChangeAddressViewModel() {
+class MockChangeAddressViewModel : ChangeAddressViewModel(MockHAnalytics()) {
 
     override val viewState: LiveData<ViewState>
         get() = mockedState

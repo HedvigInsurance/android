@@ -15,7 +15,6 @@ import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.R
 import com.hedvig.app.databinding.CreateKeyGearItemNewPhotoBinding
 import com.hedvig.app.databinding.CreateKeyGearItemPhotoBinding
-import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.hasPermissions
 import com.hedvig.app.util.extensions.view.performOnLongPressHapticFeedback
@@ -23,7 +22,6 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 
 class PhotosAdapter(
-    private val tracker: KeyGearTracker,
     private val takePhoto: () -> Unit,
     private val requestPhotoPermissionsAndTakePhoto: () -> Unit,
     private val deletePhoto: (photo: Photo) -> Unit
@@ -54,7 +52,6 @@ class PhotosAdapter(
                             ITEM_HEIGHT.dp
                         )
                 },
-                tracker
             )
             PHOTO -> ViewHolder.Photo(
                 LayoutInflater.from(parent.context).inflate(
@@ -68,7 +65,6 @@ class PhotosAdapter(
                             ITEM_HEIGHT.dp
                         )
                 },
-                tracker
             )
             else -> {
                 throw Error("Unknown viewType $viewType")
@@ -99,7 +95,7 @@ class PhotosAdapter(
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        class Photo(view: View, private val tracker: KeyGearTracker) : ViewHolder(view) {
+        class Photo(view: View) : ViewHolder(view) {
             private val binding by viewBinding(CreateKeyGearItemPhotoBinding::bind)
             fun bind(
                 data: com.hedvig.app.feature.keygear.ui.createitem.Photo,
@@ -117,7 +113,6 @@ class PhotosAdapter(
                         popup.menuInflater.inflate(R.menu.create_key_gear_item_photo, popup.menu)
                         popup.setOnMenuItemClickListener { item ->
                             if (item.itemId == R.id.delete) {
-                                tracker.deletePhoto()
                                 deletePhoto(data)
                             }
                             true
@@ -128,7 +123,7 @@ class PhotosAdapter(
             }
         }
 
-        class AddPhoto(view: View, private val tracker: KeyGearTracker) : ViewHolder(view) {
+        class AddPhoto(view: View) : ViewHolder(view) {
             private val binding by viewBinding(CreateKeyGearItemNewPhotoBinding::bind)
 
             fun bind(
@@ -137,7 +132,6 @@ class PhotosAdapter(
             ) {
                 binding.addPhoto.apply {
                     setHapticClickListener {
-                        tracker.addPhoto()
                         if (context.hasPermissions(Manifest.permission.CAMERA)) {
                             takePhoto()
                         } else {

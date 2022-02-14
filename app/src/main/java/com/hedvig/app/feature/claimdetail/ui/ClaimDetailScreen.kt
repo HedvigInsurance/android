@@ -25,10 +25,11 @@ import java.util.Locale
 @Composable
 fun ClaimDetailScreen(
     viewState: ClaimDetailViewState,
-    locale: Locale,
     retry: () -> Unit,
     onUpClick: () -> Unit,
     onChatClick: () -> Unit,
+    onPlayClick: () -> Unit,
+    locale: Locale,
 ) {
     Scaffold(
         topBar = {
@@ -43,6 +44,7 @@ fun ClaimDetailScreen(
                 uiState = viewState.uiState,
                 locale = locale,
                 onChatClick = onChatClick,
+                onPlayClick = onPlayClick,
                 modifier = Modifier.padding(paddingValues)
             )
             ClaimDetailViewState.Error -> GenericErrorScreen(
@@ -57,8 +59,9 @@ fun ClaimDetailScreen(
 @Composable
 private fun ClaimDetailScreen(
     uiState: ClaimDetailUiState,
-    locale: Locale,
     onChatClick: () -> Unit,
+    onPlayClick: () -> Unit,
+    locale: Locale,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -86,7 +89,10 @@ private fun ClaimDetailScreen(
         ClaimDetailCard(uiState.claimDetailCard, onChatClick)
         Spacer(Modifier.height(56.dp))
         if (uiState.signedAudioURL != null) {
-            AudioPlayBackItem(uiState.signedAudioURL)
+            AudioPlayBackItem(
+                onPlayClick = onPlayClick,
+                uiState.signedAudioURL
+            )
         }
         // TODO claim detail screen v2.1, actually show files here
         Spacer(Modifier.height(48.dp))
@@ -99,6 +105,7 @@ fun ClaimDetailScreenPreview() {
     HedvigTheme {
         ClaimDetailScreen(
             uiState = ClaimDetailUiState.previewData(),
+            onPlayClick = {},
             locale = Locale.getDefault(),
             onChatClick = {},
         )

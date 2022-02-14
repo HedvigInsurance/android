@@ -51,6 +51,7 @@ coroutines = "1.5.2"
 firebase = "28.4.2"
 flexbox = "3.0.0"
 fragmentViewBindingDelegate = "1.0.0"
+hAnalytics = "v0.110.0"
 insetter = "0.6.0"
 jsonTest = "20210307"
 kaspresso = "1.2.1"
@@ -116,6 +117,7 @@ androidx-lifecycle-common = { module = "androidx.lifecycle:lifecycle-common-java
 androidx-lifecycle-liveData = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "androidx-lifecycle-common" }
 androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "androidx-lifecycle-common" }
 androidx-lifecycle-viewModel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle-common" }
+androidx-lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "androidx-lifecycle-common" }
 androidx-lifecycle-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle-compose" }
 
 androidx-other-constraintLayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "androidx-other-constraintLayout" }
@@ -169,11 +171,12 @@ firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 firebase-dynamicLinks = { module = "com.google.firebase:firebase-dynamic-links" }
 firebase-config = { module = "com.google.firebase:firebase-config" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
-firebase-tracking = { module = "com.google.firebase:firebase-analytics-ktx" }
 
 flexbox = { module = "com.google.android.flexbox:flexbox", version.ref = "flexbox" }
 
 fragmentViewBindingDelegate = { module = "com.github.Zhuinden:fragmentviewbindingdelegate-kt", version.ref = "fragmentViewBindingDelegate" }
+
+hAnalytics = { module = "com.github.HedvigInsurance:hanalytics", version.ref = "hAnalytics" }
 
 insetter = { module = "dev.chrisbanes.insetter:insetter", version.ref = "insetter" }
 
@@ -192,8 +195,6 @@ markwon-core = { module = "io.noties.markwon:core", version.ref = "markwon" }
 markwon-linkify = { module = "io.noties.markwon:linkify", version.ref = "markwon" }
 
 materialComponents = { module = "com.google.android.material:material", version.ref = "materialComponents" }
-
-mixpanel = { module = "com.mixpanel.android:mixpanel-android", version.ref = "mixpanel" }
 
 mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
 mockk-jvm = { module = "io.mockk:mockk", version.ref = "mockk" }

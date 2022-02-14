@@ -9,7 +9,6 @@ import android.widget.FrameLayout
 import androidx.annotation.StringRes
 import com.hedvig.app.R
 import com.hedvig.app.databinding.AudioRecorderViewBinding
-import com.hedvig.app.feature.chat.service.ChatTracker
 import com.hedvig.app.util.extensions.hasPermissions
 import com.hedvig.app.util.extensions.makeToast
 import com.hedvig.app.util.extensions.view.remove
@@ -42,7 +41,6 @@ class AudioRecorderView : FrameLayout {
 
     private lateinit var requestPermission: () -> Unit
     private lateinit var uploadRecording: (String) -> Unit
-    private lateinit var tracker: ChatTracker
 
     init {
         inflate(context, R.layout.audio_recorder_view, this)
@@ -52,7 +50,6 @@ class AudioRecorderView : FrameLayout {
             playback.root.setText(R.string.AUDIO_INPUT_PLAY)
             upload.root.setText(R.string.AUDIO_INPUT_SAVE)
             startRecording.setHapticClickListener {
-                tracker.recordClaim()
                 if (context.hasPermissions(Manifest.permission.RECORD_AUDIO)) {
                     triggerStartRecording()
                 } else {
@@ -61,22 +58,18 @@ class AudioRecorderView : FrameLayout {
             }
 
             stopRecording.setHapticClickListener {
-                tracker.stopRecording()
                 triggerStopRecording()
             }
 
             redo.root.setHapticClickListener {
-                tracker.redoClaim()
                 triggerRedo()
             }
 
             playback.root.setHapticClickListener {
-                tracker.playClaim()
                 triggerPlayback()
             }
 
             upload.root.setHapticClickListener {
-                tracker.uploadClaim()
                 triggerUpload()
             }
         }
@@ -93,11 +86,9 @@ class AudioRecorderView : FrameLayout {
     fun initialize(
         requestPermission: () -> Unit,
         uploadRecording: (String) -> Unit,
-        tracker: ChatTracker
     ) {
         this.requestPermission = requestPermission
         this.uploadRecording = uploadRecording
-        this.tracker = tracker
     }
 
     fun permissionGranted() {
