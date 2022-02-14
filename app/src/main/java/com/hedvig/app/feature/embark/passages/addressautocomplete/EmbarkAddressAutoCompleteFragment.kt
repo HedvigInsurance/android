@@ -57,7 +57,7 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
             is FetchDanishAddressContractResult.Selected -> {
                 viewModel.updateAddressSelected(result.address)
             }
-            else -> {
+            FetchDanishAddressContractResult.Canceled -> {
                 // no-op
             }
         }
