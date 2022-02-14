@@ -57,7 +57,7 @@ class NetworkHAnalyticsSink(
         "app" to jsonObjectOf(
             "name" to context.applicationInfo.loadLabel(context.packageManager).toString(),
             "version" to BuildConfig.VERSION_NAME,
-            "build" to BuildConfig.VERSION_CODE,
+            "build" to BuildConfig.VERSION_CODE.toString(),
             "namespace" to BuildConfig.APPLICATION_ID,
         ),
         "device" to jsonObjectOf(
