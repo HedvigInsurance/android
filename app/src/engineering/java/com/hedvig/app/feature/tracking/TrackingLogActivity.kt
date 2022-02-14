@@ -150,8 +150,8 @@ fun TrackingLogScreen(
                 backgroundColor = MaterialTheme.colors.surface,
             )
         }
-    ) { pvs ->
-        LazyColumn(modifier = Modifier.fillMaxWidth()) {
+    ) { paddingValues ->
+        LazyColumn(modifier = Modifier.padding(paddingValues).fillMaxWidth()) {
             items(tracks) { event ->
                 Column(
                     modifier = Modifier
