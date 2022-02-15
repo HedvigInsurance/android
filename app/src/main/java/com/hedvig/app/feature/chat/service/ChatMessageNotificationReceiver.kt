@@ -8,8 +8,8 @@ import androidx.work.BackoffPolicy
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
-import com.hedvig.app.feature.chat.service.ChatNotificationManager.CHAT_REPLY_DATA_NOTIFICATION_ID
-import com.hedvig.app.feature.chat.service.ChatNotificationManager.CHAT_REPLY_KEY
+import com.hedvig.app.feature.chat.service.ChatNotificationSender.Companion.CHAT_REPLY_DATA_NOTIFICATION_ID
+import com.hedvig.app.feature.chat.service.ChatNotificationSender.Companion.CHAT_REPLY_KEY
 import java.util.concurrent.TimeUnit
 
 class ChatMessageNotificationReceiver : BroadcastReceiver() {

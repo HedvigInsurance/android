@@ -1,21 +1,40 @@
-package com.hedvig.app.service.push.managers
+package com.hedvig.app.service.push.senders
 
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
+import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
 import com.hedvig.app.service.push.getImmutablePendingIntentFlags
 import com.hedvig.app.service.push.setupNotificationChannel
 
-class PaymentNotificationManager(
+class PaymentNotificationSender(
+    private val context: Context,
     private val marketManager: MarketManager
-) {
-    fun sendDirectDebitNotification(context: Context) {
+) : NotificationSender {
+    override fun createChannel() {
+        setupNotificationChannel(
+            context,
+            PAYMENTS_CHANNEL_ID,
+            context.resources.getString(R.string.NOTIFICATION_CHANNEL_PAYMENT_TITLE),
+            context.resources.getString(R.string.NOTIFICATION_CHANNEL_PAYMENT_DESCRIPTION)
+        )
+    }
+
+    override fun sendNotification(type: String, remoteMessage: RemoteMessage) {
+        when (type) {
+            NOTIFICATION_TYPE_CONNECT_DIRECT_DEBIT -> sendConnectDirectDebitNotification()
+            NOTIFICATION_TYPE_PAYMENT_FAILED -> sendPaymentFailedNotification()
+        }
+    }
+
+    private fun sendConnectDirectDebitNotification() {
         val market = marketManager.market ?: return
         val pendingIntent = TaskStackBuilder
             .create(context)
@@ -28,6 +47,9 @@ class PaymentNotificationManager(
                 )
                 addNextIntentWithParentStack(
                     market.connectPayin(context)
+                )
+                addNextIntentWithParentStack(
+                    NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_TYPE_CONNECT_DIRECT_DEBIT)
                 )
                 getPendingIntent(0, getImmutablePendingIntentFlags())
             }
@@ -51,7 +73,7 @@ class PaymentNotificationManager(
             .notify(CONNECT_DIRECT_DEBIT_NOTIFICATION_ID, notification)
     }
 
-    fun sendPaymentFailedNotification(context: Context) {
+    private fun sendPaymentFailedNotification() {
         val pendingIntent = TaskStackBuilder
             .create(context)
             .run {
@@ -66,6 +88,9 @@ class PaymentNotificationManager(
                         context,
                         PaymentActivity::class.java
                     )
+                )
+                addNextIntentWithParentStack(
+                    NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_TYPE_PAYMENT_FAILED)
                 )
                 getPendingIntent(0, getImmutablePendingIntentFlags())
             }
@@ -89,18 +114,17 @@ class PaymentNotificationManager(
             .notify(PAYMENT_FAILED_NOTIFICATION_ID, notification)
     }
 
-    fun createChannel(context: Context) {
-        setupNotificationChannel(
-            context,
-            PAYMENTS_CHANNEL_ID,
-            context.resources.getString(R.string.NOTIFICATION_CHANNEL_PAYMENT_TITLE),
-            context.resources.getString(R.string.NOTIFICATION_CHANNEL_PAYMENT_DESCRIPTION)
-        )
+    override fun handlesNotificationType(notificationType: String) = when (notificationType) {
+        NOTIFICATION_TYPE_CONNECT_DIRECT_DEBIT,
+        NOTIFICATION_TYPE_PAYMENT_FAILED -> true
+        else -> false
     }
 
     companion object {
         private const val PAYMENTS_CHANNEL_ID = "hedvig-payments"
         private const val CONNECT_DIRECT_DEBIT_NOTIFICATION_ID = 3
         private const val PAYMENT_FAILED_NOTIFICATION_ID = 5
+        private const val NOTIFICATION_TYPE_CONNECT_DIRECT_DEBIT = "CONNECT_DIRECT_DEBIT"
+        private const val NOTIFICATION_TYPE_PAYMENT_FAILED = "PAYMENT_FAILED"
     }
 }
