@@ -16,6 +16,7 @@ class ReplyWorker(
 ) : CoroutineWorker(context, params),
     KoinComponent {
     private val chatRepository: ChatRepository by inject()
+    private val chatNotificationSender: ChatNotificationSender by inject()
     override suspend fun doWork(): Result {
         val replyText = inputData.getString(ChatMessageNotificationReceiver.REPLY_TEXT)
             ?: return Result.failure()
@@ -49,7 +50,7 @@ class ReplyWorker(
             inputData.getInt(ChatMessageNotificationReceiver.NOTIFICATION_ID, 0)
 
         whenApiVersion(Build.VERSION_CODES.N) {
-            ChatNotificationManager.addReplyToExistingChatNotification(
+            chatNotificationSender.addReplyToExistingChatNotification(
                 context,
                 notificationId,
                 replyText

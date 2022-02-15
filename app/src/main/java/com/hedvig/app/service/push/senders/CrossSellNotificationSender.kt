@@ -1,4 +1,4 @@
-package com.hedvig.app.service.push.managers
+package com.hedvig.app.service.push.senders
 
 import android.app.Notification
 import android.app.PendingIntent
@@ -22,10 +22,19 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class CrossSellNotificationManager(
+class CrossSellNotificationSender(
+    private val context: Context,
     private val crossSellsUseCase: GetCrossSellsUseCase,
-) {
-    fun sendCrossSellNotification(context: Context, remoteMessage: RemoteMessage) {
+) : NotificationSender {
+    override fun createChannel() {
+        setupNotificationChannel(
+            context,
+            CROSS_SELL_CHANNEL_ID,
+            context.resources.getString(R.string.NOTIFICATION_CHANNEL_CROSS_SELL_TITLE)
+        )
+    }
+
+    override fun sendNotification(type: String, remoteMessage: RemoteMessage) {
         val title = remoteMessage.data[DATA_MESSAGE_TITLE]
         val body = remoteMessage.data[DATA_MESSAGE_BODY]
         val type = remoteMessage.data[CROSS_SELL_TYPE]
@@ -52,6 +61,8 @@ class CrossSellNotificationManager(
             notify(context, notification)
         }
     }
+
+    override fun handlesNotificationType(notificationType: String) = notificationType == NOTIFICATION_CROSS_SELL
 
     private fun createCrossSellIntent(
         context: Context,
@@ -109,14 +120,6 @@ class CrossSellNotificationManager(
             )
     }
 
-    fun createChannel(context: Context) {
-        setupNotificationChannel(
-            context,
-            CROSS_SELL_CHANNEL_ID,
-            context.resources.getString(R.string.NOTIFICATION_CHANNEL_CROSS_SELL_TITLE)
-        )
-    }
-
     private suspend fun getCrossSell(crossSellType: String?): CrossSellData? {
         return crossSellsUseCase.invoke().firstOrNull {
             it.crossSellType == crossSellType
@@ -127,5 +130,7 @@ class CrossSellNotificationManager(
         private const val CROSS_SELL_CHANNEL_ID = "hedvig-cross-sell"
         private const val CROSS_SELL_TYPE = "CROSS_SELL_TYPE"
         private const val CROSS_SELL_NOTIFICATION_ID = 11
+
+        private const val NOTIFICATION_CROSS_SELL = "CROSS_SELL"
     }
 }

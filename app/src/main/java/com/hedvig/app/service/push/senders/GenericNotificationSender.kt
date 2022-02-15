@@ -1,4 +1,4 @@
-package com.hedvig.app.service.push.managers
+package com.hedvig.app.service.push.senders
 
 import android.content.Context
 import android.content.Intent
@@ -14,8 +14,20 @@ import com.hedvig.app.service.push.getImmutablePendingIntentFlags
 import com.hedvig.app.service.push.setupNotificationChannel
 import java.util.concurrent.atomic.AtomicInteger
 
-object GenericNotificationManager {
-    fun sendGenericNotification(context: Context, remoteMessage: RemoteMessage) {
+class GenericNotificationSender(
+    private val context: Context,
+) : NotificationSender {
+    private val id = AtomicInteger(100)
+
+    override fun createChannel() {
+        setupNotificationChannel(
+            context,
+            GENERIC_CHANNEL_ID,
+            context.resources.getString(R.string.NOTIFICATION_CHANNEL_GENERIC_TITLE)
+        )
+    }
+
+    override fun sendNotification(type: String, remoteMessage: RemoteMessage) {
         val title = remoteMessage.data[DATA_MESSAGE_TITLE]
         val body = remoteMessage.data[DATA_MESSAGE_BODY]
         val pendingIntent = TaskStackBuilder
@@ -51,15 +63,12 @@ object GenericNotificationManager {
             )
     }
 
-    fun createChannel(context: Context) {
-        setupNotificationChannel(
-            context,
-            GENERIC_CHANNEL_ID,
-            context.resources.getString(R.string.NOTIFICATION_CHANNEL_GENERIC_TITLE)
-        )
+    override fun handlesNotificationType(notificationType: String) =
+        notificationType == NOTIFICATION_TYPE_GENERIC_COMMUNICATION
+
+    companion object {
+        const val NOTIFICATION_TYPE_GENERIC_COMMUNICATION = "GENERIC_COMMUNICATION"
+
+        private const val GENERIC_CHANNEL_ID = "hedvig-generic"
     }
-
-    private val id = AtomicInteger(100)
-
-    private const val GENERIC_CHANNEL_ID = "hedvig-generic"
 }
