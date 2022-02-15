@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -100,10 +101,6 @@ fun AddressAutoCompleteScreen(
                 }
             }
         },
-        contentPadding = rememberInsetsPaddingValues(
-            insets = LocalWindowInsets.current.navigationBars,
-            applyTop = false
-        ),
         backgroundColor = MaterialTheme.colors.surface
     ) { paddingValues ->
         SuggestionsList(
@@ -113,6 +110,7 @@ fun AddressAutoCompleteScreen(
                 selectAddress(address)
             },
             cantFindAddress = cantFindAddress,
+            contentPadding = rememberInsetsPaddingValues(LocalWindowInsets.current.navigationBars),
             modifier = Modifier.padding(paddingValues),
         )
     }
@@ -191,6 +189,7 @@ private fun SuggestionsList(
     viewState: AddressAutoCompleteViewState,
     selectAddress: (DanishAddress) -> Unit,
     cantFindAddress: () -> Unit,
+    contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
 ) {
     val lazyListState = rememberLazyListState()
@@ -201,7 +200,11 @@ private fun SuggestionsList(
 //            lazyListState.animateScrollToItem(0)
 //        }
     }
-    LazyColumn(modifier, lazyListState) {
+    LazyColumn(
+        modifier = modifier,
+        state = lazyListState,
+        contentPadding = contentPadding,
+    ) {
         items(
             items = viewState.results,
             key = { item -> item.id ?: item.address }
