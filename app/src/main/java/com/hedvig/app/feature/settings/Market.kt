@@ -74,7 +74,7 @@ enum class Market {
         }
     }
 
-    fun openOnboarding(context: Context) = when (this) {
+    fun openOnboarding(context: Context, isNativeDkOnboardingEnabled: Boolean) = when (this) {
         SE -> {
             context.startActivity(ChoosePlanActivity.newInstance(context))
         }
@@ -82,7 +82,11 @@ enum class Market {
             context.startActivity(ChoosePlanActivity.newInstance(context))
         }
         DK -> {
-            context.startActivity(WebOnboardingActivity.newInstance(context))
+            if (isNativeDkOnboardingEnabled) {
+                context.startActivity(ChoosePlanActivity.newInstance(context))
+            } else {
+                context.startActivity(WebOnboardingActivity.newInstance(context))
+            }
         }
         FR -> {
             context.startActivity(WebOnboardingActivity.newInstance(context))
@@ -99,7 +103,8 @@ enum class Market {
             -> R.string.Direct_Debit_Not_Connected
         }
         DK,
-        NO -> if (data.activePaymentMethods == null) {
+        NO,
+        -> if (data.activePaymentMethods == null) {
             R.string.Card_Not_Connected
         } else {
             R.string.Card_Connected

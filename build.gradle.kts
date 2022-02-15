@@ -11,6 +11,12 @@ subprojects {
     plugins.withType<com.android.build.gradle.BasePlugin> {
         project.apply(plugin = "org.gradle.android.cache-fix")
     }
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+        kotlinOptions.freeCompilerArgs += listOf(
+            "-Xopt-in=kotlin.RequiresOptIn",
+            "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+        )
+    }
 }
 
 buildscript {

@@ -1,6 +1,7 @@
 package com.hedvig.app.util.compose.preview
 
 import com.hedvig.android.owldroid.type.ClaimStatus
+import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
 import com.hedvig.app.feature.claimdetail.model.ClaimDetailCardUiState
 import com.hedvig.app.feature.claimdetail.model.ClaimDetailResult
 import com.hedvig.app.feature.claimdetail.model.ClaimDetailUiState
@@ -16,13 +17,13 @@ import javax.money.CurrencyContext
 import javax.money.CurrencyUnit
 import javax.money.MonetaryAmount
 
-fun PillUiState.Companion.previewData(): List<PillUiState> {
+fun PillUiState.Companion.previewList(): List<PillUiState> {
     return PillUiState.PillType.values().dropLast(1).map { pillType ->
         PillUiState(pillType.name, pillType)
     }
 }
 
-fun ClaimProgressUiState.Companion.previewData(): List<ClaimProgressUiState> {
+fun ClaimProgressUiState.Companion.previewList(): List<ClaimProgressUiState> {
     return ClaimProgressUiState.ClaimProgressType.values().dropLast(1).map { progressType ->
         ClaimProgressUiState(progressType.name, progressType)
     }
@@ -36,7 +37,7 @@ fun ClaimDetailUiState.Companion.previewData(): ClaimDetailUiState {
         submittedAt = Instant.now().minus(Duration.ofMinutes(30)),
         closedAt = null,
         claimDetailCard = ClaimDetailCardUiState(
-            ClaimProgressUiState.previewData(),
+            ClaimProgressUiState.previewList(),
             statusParagraph = """
                 |Your claim in being reviewed by one of our insurance specialists.
                 | We'll get back to you soon with an update.
@@ -68,6 +69,83 @@ fun OfferModel.InsurelyCard.Retrieved.Companion.previewData(): OfferModel.Insure
             )
         },
         savedWithHedvig = Money.of(19, fakeSekCurrency),
+    )
+}
+fun DanishAddress.Companion.previewData(): DanishAddress {
+    return DanishAddress(
+        address = "Asagården 20",
+        id = "0a3f50bd-ea90-32b8-ef44-0003ba298018",
+        postalCode = null,
+        city = null,
+        streetName = "Asagården",
+        streetNumber = "20",
+        floor = null,
+        apartment = null,
+    )
+}
+
+fun DanishAddress.Companion.previewList(): List<DanishAddress> {
+    return listOf(
+        DanishAddress(
+            address = "Asagården 20, 2. tv, 7500 Holstebro",
+            id = "0a3f50bd-ea90-32b8-e044-0003ba298018",
+            postalCode = "7500",
+            city = "Holstebro",
+            streetName = "Asagården",
+            streetNumber = "20",
+            floor = "2",
+            apartment = "tv",
+        ),
+        DanishAddress(
+            address = "Asagården 20, 2. th, 7500 Holstebro",
+            id = "0a3f50bd-ea8f-32b8-e044-0003ba298018",
+            postalCode = "7500",
+            city = "Holstebro",
+            streetName = "Asagården",
+            streetNumber = "20",
+            floor = "2",
+            apartment = "th",
+        ),
+        DanishAddress(
+            address = "Asagården 21, 2. tv, 7500 Holstebro",
+            id = "0a3f50bd-ea96-32b8-e044-0003ba298018",
+            postalCode = "7500",
+            city = "Holstebro",
+            streetName = "Asagården",
+            streetNumber = "21",
+            floor = "2",
+            apartment = "tv",
+        ),
+        DanishAddress(
+            address = "Asagården 21, 2. th, 7500 Holstebro",
+            id = "0a3f50bd-ea95-32b8-e044-0003ba298018",
+            postalCode = "7500",
+            city = "Holstebro",
+            streetName = "Asagården",
+            streetNumber = "21",
+            floor = "2",
+            apartment = "th",
+        ),
+        DanishAddress(
+            address = "Asagården 22, 2. tv, 7500 Holstebro",
+            id = "0a3f50bd-ea9c-32b8-e044-0003ba298018",
+            postalCode = "7500",
+            city = "Holstebro",
+            streetName = "Asagården",
+            streetNumber = "22",
+            floor = "2",
+            apartment = "tv",
+        ),
+        DanishAddress(
+            address = "Asagården 22, 2. th, 7500 Holstebro",
+            id = "0a3f50bd-ea9b-32b8-e044-0003ba298018",
+            postalCode = "7500",
+            city = "Holstebro",
+            streetName = "Asagården",
+            streetNumber = "22",
+            floor = "2",
+            apartment = "th",
+        ),
     )
 }
 

@@ -9,7 +9,6 @@ class ProductionFeatureFlagProvider(
 
     override val priority = PRODUCTION_PRIORITY
 
-    @Suppress("ComplexMethod")
     override fun isFeatureEnabled(feature: Feature) = when (feature) {
         Feature.MOVING_FLOW -> marketManager.market == Market.SE || marketManager.market == Market.NO
         Feature.FRANCE_MARKET -> false

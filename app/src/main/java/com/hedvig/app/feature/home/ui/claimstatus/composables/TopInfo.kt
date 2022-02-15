@@ -16,7 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.app.feature.home.ui.claimstatus.data.PillUiState
 import com.hedvig.app.ui.compose.theme.HedvigTheme
-import com.hedvig.app.util.compose.preview.previewData
+import com.hedvig.app.util.compose.preview.previewList
 
 @Composable
 fun TopInfo(
@@ -49,7 +49,7 @@ fun TopInfoPreview() {
             color = MaterialTheme.colors.background,
         ) {
             TopInfo(
-                pillsUiState = PillUiState.previewData(),
+                pillsUiState = PillUiState.previewList(),
                 title = "All-risk",
                 subtitle = "Home Insurance Renter",
             )

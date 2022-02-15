@@ -171,6 +171,7 @@ dependencies {
     implementation(libs.androidx.other.recyclerView)
     implementation(libs.androidx.other.fragment)
     implementation(libs.androidx.other.browser)
+    implementation(libs.androidx.other.transition)
     implementation(libs.androidx.lifecycle.common)
     implementation(libs.androidx.lifecycle.liveData)
     implementation(libs.androidx.lifecycle.runtime)
@@ -296,8 +297,4 @@ lokalise {
     token = lokaliseProperties.getProperty("token")
 
     downloadConfig = com.likandr.gradle.config.DownloadConfig()
-}
-
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
 }
