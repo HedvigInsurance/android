@@ -14,7 +14,7 @@ class DebugFeatureFlagProvider(
         Feature.FRANCE_MARKET -> true
         Feature.ADDRESS_AUTO_COMPLETE -> true
         Feature.REFERRAL_CAMPAIGN -> true
-        Feature.QUOTE_CART -> true
+        Feature.QUOTE_CART -> false
     }
 
     override fun hasFeature(feature: Feature) = true
