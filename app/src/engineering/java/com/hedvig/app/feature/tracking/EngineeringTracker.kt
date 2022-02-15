@@ -18,4 +18,8 @@ class EngineeringTracker : HAnalyticsSink {
             ) + it
         }
     }
+
+    fun clear() {
+        _tracks.update { listOf() }
+    }
 }
