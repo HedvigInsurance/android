@@ -17,8 +17,8 @@ import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModel
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.loggedInModule
 import com.hedvig.app.referralsModule
-import com.hedvig.app.service.push.managers.ReferralsNotificationSender
-import com.hedvig.app.service.push.managers.ReferralsNotificationSender.Companion.DATA_MESSAGE_REFERRED_SUCCESS_NAME
+import com.hedvig.app.service.push.senders.ReferralsNotificationSender
+import com.hedvig.app.service.push.senders.ReferralsNotificationSender.Companion.DATA_MESSAGE_REFERRED_SUCCESS_NAME
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_NO_DISCOUNTS
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_ONE_REFEREE

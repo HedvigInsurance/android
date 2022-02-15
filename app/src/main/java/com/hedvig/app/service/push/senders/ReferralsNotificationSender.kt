@@ -1,4 +1,4 @@
-package com.hedvig.app.service.push.managers
+package com.hedvig.app.service.push.senders
 
 import android.app.PendingIntent
 import android.content.Context
@@ -11,8 +11,6 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.service.push.DATA_MESSAGE_BODY
 import com.hedvig.app.service.push.DATA_MESSAGE_TITLE
-import com.hedvig.app.service.push.NotificationSender
-import com.hedvig.app.service.push.PushNotificationService.Companion.NOTIFICATION_TYPE_KEY
 import com.hedvig.app.service.push.getImmutablePendingIntentFlags
 import com.hedvig.app.service.push.setupNotificationChannel
 
@@ -28,8 +26,8 @@ class ReferralsNotificationSender(
         )
     }
 
-    override fun sendNotification(remoteMessage: RemoteMessage) {
-        when (remoteMessage.data[NOTIFICATION_TYPE_KEY]) {
+    override fun sendNotification(type: String, remoteMessage: RemoteMessage) {
+        when (type) {
             NOTIFICATION_TYPE_REFERRAL_SUCCESS -> sendReferralSuccessfulNotification(remoteMessage)
             NOTIFICATION_TYPE_REFERRALS_CAMPAIGN -> sendReferralCampaignNotification(remoteMessage)
         }
@@ -97,7 +95,7 @@ class ReferralsNotificationSender(
             .notify(REFERRALS_CAMPAIGN_ID, notificationBuilder.build())
     }
 
-    override fun handlesNotificationType(notificationType: String?) = when (notificationType) {
+    override fun handlesNotificationType(notificationType: String) = when (notificationType) {
         NOTIFICATION_TYPE_REFERRAL_SUCCESS,
         NOTIFICATION_TYPE_REFERRALS_CAMPAIGN -> true
         else -> false

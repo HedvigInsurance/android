@@ -1,4 +1,4 @@
-package com.hedvig.app.service.push.managers
+package com.hedvig.app.service.push.senders
 
 import android.content.Context
 import android.content.Intent
@@ -10,7 +10,6 @@ import com.hedvig.app.R
 import com.hedvig.app.SplashActivity
 import com.hedvig.app.service.push.DATA_MESSAGE_BODY
 import com.hedvig.app.service.push.DATA_MESSAGE_TITLE
-import com.hedvig.app.service.push.NotificationSender
 import com.hedvig.app.service.push.getImmutablePendingIntentFlags
 import com.hedvig.app.service.push.setupNotificationChannel
 import java.util.concurrent.atomic.AtomicInteger
@@ -28,7 +27,7 @@ class GenericNotificationSender(
         )
     }
 
-    override fun sendNotification(remoteMessage: RemoteMessage) {
+    override fun sendNotification(type: String, remoteMessage: RemoteMessage) {
         val title = remoteMessage.data[DATA_MESSAGE_TITLE]
         val body = remoteMessage.data[DATA_MESSAGE_BODY]
         val pendingIntent = TaskStackBuilder
@@ -64,7 +63,7 @@ class GenericNotificationSender(
             )
     }
 
-    override fun handlesNotificationType(notificationType: String?) =
+    override fun handlesNotificationType(notificationType: String) =
         notificationType == NOTIFICATION_TYPE_GENERIC_COMMUNICATION
 
     companion object {

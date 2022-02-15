@@ -193,12 +193,12 @@ import com.hedvig.app.service.RemoteConfig
 import com.hedvig.app.service.badge.CrossSellNotificationBadgeService
 import com.hedvig.app.service.badge.NotificationBadgeService
 import com.hedvig.app.service.badge.ReferralsNotificationBadgeService
-import com.hedvig.app.service.push.NotificationSender
 import com.hedvig.app.service.push.PushTokenManager
-import com.hedvig.app.service.push.managers.CrossSellNotificationSender
-import com.hedvig.app.service.push.managers.GenericNotificationSender
-import com.hedvig.app.service.push.managers.PaymentNotificationSender
-import com.hedvig.app.service.push.managers.ReferralsNotificationSender
+import com.hedvig.app.service.push.senders.CrossSellNotificationSender
+import com.hedvig.app.service.push.senders.GenericNotificationSender
+import com.hedvig.app.service.push.senders.NotificationSender
+import com.hedvig.app.service.push.senders.PaymentNotificationSender
+import com.hedvig.app.service.push.senders.ReferralsNotificationSender
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.ApolloTimberLogger
 import com.hedvig.app.util.apollo.CacheManager

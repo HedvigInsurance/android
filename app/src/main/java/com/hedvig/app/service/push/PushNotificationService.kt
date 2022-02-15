@@ -9,6 +9,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.service.push.senders.NotificationSender
 import com.hedvig.app.util.extensions.injectAll
 import org.koin.android.ext.android.inject
 import java.util.concurrent.TimeUnit
@@ -45,21 +46,16 @@ class PushNotificationService : FirebaseMessagingService() {
     }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
+        val type = remoteMessage.data[NOTIFICATION_TYPE_KEY] ?: return
         notificationSenders.forEach { sender ->
-            if (sender.handlesNotificationType(remoteMessage.data[NOTIFICATION_TYPE_KEY])) {
-                sender.sendNotification(remoteMessage)
+            if (sender.handlesNotificationType(type)) {
+                sender.sendNotification(type, remoteMessage)
                 return@onMessageReceived
             }
         }
     }
 
     companion object {
-        const val NOTIFICATION_TYPE_KEY = "TYPE"
+        private const val NOTIFICATION_TYPE_KEY = "TYPE"
     }
-}
-
-interface NotificationSender {
-    fun createChannel()
-    fun sendNotification(remoteMessage: RemoteMessage)
-    fun handlesNotificationType(notificationType: String?): Boolean
 }

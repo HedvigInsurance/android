@@ -1,4 +1,4 @@
-package com.hedvig.app.service.push.managers
+package com.hedvig.app.service.push.senders
 
 import android.content.Context
 import android.content.Intent
@@ -10,8 +10,6 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
 import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.service.push.NotificationSender
-import com.hedvig.app.service.push.PushNotificationService.Companion.NOTIFICATION_TYPE_KEY
 import com.hedvig.app.service.push.getImmutablePendingIntentFlags
 import com.hedvig.app.service.push.setupNotificationChannel
 
@@ -28,8 +26,8 @@ class PaymentNotificationSender(
         )
     }
 
-    override fun sendNotification(remoteMessage: RemoteMessage) {
-        when (remoteMessage.data[NOTIFICATION_TYPE_KEY]) {
+    override fun sendNotification(type: String, remoteMessage: RemoteMessage) {
+        when (type) {
             NOTIFICATION_TYPE_CONNECT_DIRECT_DEBIT -> sendConnectDirectDebitNotification()
             NOTIFICATION_TYPE_PAYMENT_FAILED -> sendPaymentFailedNotification()
         }
@@ -71,7 +69,7 @@ class PaymentNotificationSender(
             .notify(CONNECT_DIRECT_DEBIT_NOTIFICATION_ID, notification)
     }
 
-    fun sendPaymentFailedNotification() {
+    private fun sendPaymentFailedNotification() {
         val pendingIntent = TaskStackBuilder
             .create(context)
             .run {
@@ -109,7 +107,7 @@ class PaymentNotificationSender(
             .notify(PAYMENT_FAILED_NOTIFICATION_ID, notification)
     }
 
-    override fun handlesNotificationType(notificationType: String?) = when (notificationType) {
+    override fun handlesNotificationType(notificationType: String) = when (notificationType) {
         NOTIFICATION_TYPE_CONNECT_DIRECT_DEBIT,
         NOTIFICATION_TYPE_PAYMENT_FAILED -> true
         else -> false

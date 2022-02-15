@@ -17,8 +17,8 @@ import androidx.core.graphics.drawable.IconCompat
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.ui.ChatActivity
-import com.hedvig.app.service.push.NotificationSender
 import com.hedvig.app.service.push.getMutablePendingIntentFlags
+import com.hedvig.app.service.push.senders.NotificationSender
 import com.hedvig.app.service.push.setupNotificationChannel
 import com.hedvig.app.util.extensions.getStoredBoolean
 
@@ -34,7 +34,7 @@ class ChatNotificationSender(
         )
     }
 
-    override fun sendNotification(remoteMessage: RemoteMessage) {
+    override fun sendNotification(type: String, remoteMessage: RemoteMessage) {
         if (context.getStoredBoolean(ChatActivity.ACTIVITY_IS_IN_FOREGROUND)) {
             return
         }
@@ -70,7 +70,7 @@ class ChatNotificationSender(
         )
     }
 
-    override fun handlesNotificationType(notificationType: String?) = notificationType == NOTIFICATION_TYPE_NEW_MESSAGE
+    override fun handlesNotificationType(notificationType: String) = notificationType == NOTIFICATION_TYPE_NEW_MESSAGE
 
     private fun defaultMessagingStyle(
         message: NotificationCompat.MessagingStyle.Message

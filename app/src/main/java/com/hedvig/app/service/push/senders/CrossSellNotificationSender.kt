@@ -1,4 +1,4 @@
-package com.hedvig.app.service.push.managers
+package com.hedvig.app.service.push.senders
 
 import android.app.Notification
 import android.app.PendingIntent
@@ -16,7 +16,6 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.service.push.DATA_MESSAGE_BODY
 import com.hedvig.app.service.push.DATA_MESSAGE_TITLE
-import com.hedvig.app.service.push.NotificationSender
 import com.hedvig.app.service.push.getImmutablePendingIntentFlags
 import com.hedvig.app.service.push.setupNotificationChannel
 import kotlinx.coroutines.CoroutineScope
@@ -35,7 +34,7 @@ class CrossSellNotificationSender(
         )
     }
 
-    override fun sendNotification(remoteMessage: RemoteMessage) {
+    override fun sendNotification(type: String, remoteMessage: RemoteMessage) {
         val title = remoteMessage.data[DATA_MESSAGE_TITLE]
         val body = remoteMessage.data[DATA_MESSAGE_BODY]
         val type = remoteMessage.data[CROSS_SELL_TYPE]
@@ -63,7 +62,7 @@ class CrossSellNotificationSender(
         }
     }
 
-    override fun handlesNotificationType(notificationType: String?) = notificationType == NOTIFICATION_CROSS_SELL
+    override fun handlesNotificationType(notificationType: String) = notificationType == NOTIFICATION_CROSS_SELL
 
     private fun createCrossSellIntent(
         context: Context,
