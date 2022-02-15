@@ -674,7 +674,7 @@ val sharedPreferencesModule = module {
 }
 
 val featureManagerModule = module {
-    single { FeatureManager(get(), get()) }
+    single { FeatureManager(get(), get(), get()) }
 }
 
 val coilModule = module {
