@@ -14,6 +14,7 @@ import com.hedvig.app.feature.crossselling.ui.detail.CrossSellNotificationMetada
 import com.hedvig.app.feature.crossselling.usecase.GetCrossSellsUseCase
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
+import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
 import com.hedvig.app.service.push.DATA_MESSAGE_BODY
 import com.hedvig.app.service.push.DATA_MESSAGE_TITLE
 import com.hedvig.app.service.push.getImmutablePendingIntentFlags
@@ -76,6 +77,9 @@ class CrossSellNotificationSender(
             notificationMetadata = notificationMetadata,
         )
         builder.addNextIntentWithParentStack(intent)
+        builder.addNextIntentWithParentStack(
+            NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_CROSS_SELL)
+        )
         return builder.getPendingIntent(0, getImmutablePendingIntentFlags())
     }
 
@@ -87,6 +91,9 @@ class CrossSellNotificationSender(
             withoutHistory = true
         )
         builder.addNextIntentWithParentStack(intent)
+        builder.addNextIntentWithParentStack(
+            NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_CROSS_SELL)
+        )
         return builder.getPendingIntent(0, getImmutablePendingIntentFlags())
     }
 

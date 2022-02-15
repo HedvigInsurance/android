@@ -9,6 +9,7 @@ import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
+import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
 import com.hedvig.app.service.push.DATA_MESSAGE_BODY
 import com.hedvig.app.service.push.DATA_MESSAGE_TITLE
 import com.hedvig.app.service.push.getImmutablePendingIntentFlags
@@ -43,6 +44,9 @@ class ReferralsNotificationSender(
                         initialTab = LoggedInTabs.REFERRALS
                     )
                 )
+                addNextIntentWithParentStack(
+                    NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_TYPE_REFERRAL_SUCCESS)
+                )
                 getPendingIntent(0, getImmutablePendingIntentFlags())
             }
 
@@ -76,6 +80,9 @@ class ReferralsNotificationSender(
                         context,
                         initialTab = LoggedInTabs.REFERRALS
                     )
+                )
+                addNextIntentWithParentStack(
+                    NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_TYPE_REFERRALS_CAMPAIGN)
                 )
                 getPendingIntent(0, getImmutablePendingIntentFlags())
             }

@@ -10,6 +10,7 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
 import com.hedvig.app.service.push.getImmutablePendingIntentFlags
 import com.hedvig.app.service.push.setupNotificationChannel
 
@@ -46,6 +47,9 @@ class PaymentNotificationSender(
                 )
                 addNextIntentWithParentStack(
                     market.connectPayin(context)
+                )
+                addNextIntentWithParentStack(
+                    NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_TYPE_CONNECT_DIRECT_DEBIT)
                 )
                 getPendingIntent(0, getImmutablePendingIntentFlags())
             }
@@ -84,6 +88,9 @@ class PaymentNotificationSender(
                         context,
                         PaymentActivity::class.java
                     )
+                )
+                addNextIntentWithParentStack(
+                    NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_TYPE_PAYMENT_FAILED)
                 )
                 getPendingIntent(0, getImmutablePendingIntentFlags())
             }

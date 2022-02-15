@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.chat.service
 
-import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
@@ -17,6 +16,7 @@ import androidx.core.graphics.drawable.IconCompat
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.ui.ChatActivity
+import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
 import com.hedvig.app.service.push.getMutablePendingIntentFlags
 import com.hedvig.app.service.push.senders.NotificationSender
 import com.hedvig.app.service.push.setupNotificationChannel
@@ -76,7 +76,6 @@ class ChatNotificationSender(
         message: NotificationCompat.MessagingStyle.Message
     ) = NotificationCompat.MessagingStyle(youPerson()).addMessage(message)
 
-    @SuppressLint("UnspecifiedImmutableFlag") // Remove this lint warning when targeting SDK 31
     private fun sendChatNotificationInner(
         context: Context,
         style: NotificationCompat.MessagingStyle,
@@ -91,6 +90,9 @@ class ChatNotificationSender(
             .create(context)
             .run {
                 addNextIntentWithParentStack(chatIntent)
+                addNextIntentWithParentStack(
+                    NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_TYPE_NEW_MESSAGE)
+                )
                 getPendingIntent(0, flags)
             }
         val replyRemoteInput = RemoteInput.Builder(CHAT_REPLY_KEY)
