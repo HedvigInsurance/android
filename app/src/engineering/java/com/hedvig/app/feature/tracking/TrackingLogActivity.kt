@@ -90,7 +90,6 @@ fun TrackingLogScreen(
     onClickClearEvents: () -> Unit,
     tracks: List<TrackEvent>,
 ) {
-    var dropdownOpen by rememberSaveable { mutableStateOf(false) }
     var showNotification by rememberSaveable { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -110,6 +109,7 @@ fun TrackingLogScreen(
                     }
                 },
                 actions = {
+                    var dropdownOpen by rememberSaveable { mutableStateOf(false) }
                     Box(
                         modifier = Modifier
                             .wrapContentSize(Alignment.TopEnd)
@@ -151,7 +151,11 @@ fun TrackingLogScreen(
             )
         }
     ) { paddingValues ->
-        LazyColumn(modifier = Modifier.padding(paddingValues).fillMaxWidth()) {
+        LazyColumn(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxWidth()
+        ) {
             items(tracks) { event ->
                 Column(
                     modifier = Modifier
