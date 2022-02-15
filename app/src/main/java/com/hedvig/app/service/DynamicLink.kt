@@ -40,16 +40,16 @@ suspend fun getDynamicLinkFromFirebase(intent: Intent): DynamicLink = suspendCan
 
 fun createDynamicLinkFromUri(uri: Uri?): DynamicLink {
     return if (uri != null) {
-        when (uri.pathSegments.getOrNull(0)) {
-            "referrals" -> DynamicLink.Referrals(
+        when {
+            uri.pathSegments.contains("referrals") -> DynamicLink.Referrals(
                 code = uri.getQueryParameter("code") ?: "",
                 // Fixme "10" should not be hard coded
                 incentive = "10"
             )
-            "direct-debit" -> DynamicLink.DirectDebit
-            "forever" -> DynamicLink.Forever
-            "insurances" -> DynamicLink.Insurance
-            null -> DynamicLink.None
+            uri.pathSegments.contains("direct-debit") -> DynamicLink.DirectDebit
+            uri.pathSegments.contains("forever") -> DynamicLink.Forever
+            uri.pathSegments.contains("insurances") -> DynamicLink.Insurance
+            uri.pathSegments.isEmpty() -> DynamicLink.None
             else -> DynamicLink.Unknown
         }
     } else {
