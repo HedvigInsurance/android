@@ -36,6 +36,7 @@ class RemoteFeatureFlagProvider(
                 (marketManager.market == Market.NO && noCampaignVisible) ||
                 (marketManager.market == Market.DK && dkCampaignVisible)
         }
+        Feature.QUOTE_CART -> false
     }
 
     override fun hasFeature(feature: Feature) = when (feature) {
@@ -43,5 +44,6 @@ class RemoteFeatureFlagProvider(
         Feature.FRANCE_MARKET -> false
         Feature.ADDRESS_AUTO_COMPLETE -> false
         Feature.REFERRAL_CAMPAIGN -> true
+        Feature.QUOTE_CART -> false
     }
 }
