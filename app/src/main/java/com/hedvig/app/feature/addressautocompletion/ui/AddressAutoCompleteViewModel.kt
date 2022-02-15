@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.mapNotNull
@@ -39,7 +38,6 @@ class AddressAutoCompleteViewModel(
         DanishAddressInput.fromDanishAddress(initialAddress)
     )
     private val queryResults: Flow<List<DanishAddress>> = currentInput
-        .debounce(50)
         .mapLatest { input ->
             if (input.selectedDanishAddress != null) {
                 getDanishAddressAutoCompletionUseCase.invoke(input.selectedDanishAddress)
