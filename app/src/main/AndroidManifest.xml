@@ -361,6 +361,10 @@
                 android:name="com.hedvig.app.feature.di.KoinInitializer"
                 android:value="androidx.startup" />
 
+            <meta-data
+                android:name="com.hedvig.app.feature.tracking.LaunchTrackingInitializer"
+                android:value="androidx.startup" />
+
         </provider>
     </application>
 
