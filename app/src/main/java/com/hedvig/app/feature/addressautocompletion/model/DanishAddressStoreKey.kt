@@ -2,16 +2,15 @@ package com.hedvig.app.feature.addressautocompletion.model
 
 @Suppress("EnumEntryName")
 enum class DanishAddressStoreKey {
-    bbrId,
     fullAddress,
-    street,
-    streetName,
-    streetNumber,
+    bbrId,
     zipCode,
     city,
+    streetName,
+    streetNumber,
+    street,
     floor,
     apartment,
-    addressSearchTerm,
     ;
 
     companion object {
@@ -28,18 +27,16 @@ enum class DanishAddressStoreKey {
 }
 
 fun DanishAddress.toValueStoreKeys(): Map<String, String?> {
-    @Suppress("EnumEntryName")
     return mapOf(
-        DanishAddressStoreKey.bbrId to id,
         DanishAddressStoreKey.fullAddress to address,
-        DanishAddressStoreKey.street to "$streetName $streetName",
-        DanishAddressStoreKey.streetName to streetName,
-        DanishAddressStoreKey.streetNumber to streetNumber,
-        DanishAddressStoreKey.floor to floor,
-        DanishAddressStoreKey.apartment to apartment,
+        DanishAddressStoreKey.bbrId to id,
         DanishAddressStoreKey.zipCode to postalCode,
         DanishAddressStoreKey.city to city,
-        DanishAddressStoreKey.addressSearchTerm to toQueryString(), // todo why do we need this
+        DanishAddressStoreKey.streetName to streetName,
+        DanishAddressStoreKey.streetNumber to streetNumber,
+        DanishAddressStoreKey.street to "$streetName $streetNumber",
+        DanishAddressStoreKey.floor to floor,
+        DanishAddressStoreKey.apartment to apartment,
     ).mapKeys { entry ->
         entry.key.name
     }
