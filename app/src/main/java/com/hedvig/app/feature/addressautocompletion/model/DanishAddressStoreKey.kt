@@ -11,7 +11,6 @@ enum class DanishAddressStoreKey {
     city,
     floor,
     apartment,
-    addressSearchTerm,
     ;
 
     companion object {
@@ -39,7 +38,6 @@ fun DanishAddress.toValueStoreKeys(): Map<String, String?> {
         DanishAddressStoreKey.apartment to apartment,
         DanishAddressStoreKey.zipCode to postalCode,
         DanishAddressStoreKey.city to city,
-        DanishAddressStoreKey.addressSearchTerm to toQueryString(), // todo why do we need this
     ).mapKeys { entry ->
         entry.key.name
     }
