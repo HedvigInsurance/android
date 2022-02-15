@@ -241,7 +241,6 @@ class HomeAdapter(
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                tracker: HomeTracker,
                 marketManager: MarketManager
             ) {
                 if (data !is HomeModel.Space) return invalid(data)

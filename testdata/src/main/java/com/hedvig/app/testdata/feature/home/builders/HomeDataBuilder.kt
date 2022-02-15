@@ -2,6 +2,7 @@ package com.hedvig.app.testdata.feature.home.builders
 
 import com.hedvig.android.owldroid.fragment.IconVariantsFragment
 import com.hedvig.android.owldroid.graphql.HomeQuery
+import com.hedvig.android.owldroid.type.ClaimStatus
 import com.hedvig.android.owldroid.type.ClaimStatusCardPillType
 import com.hedvig.android.owldroid.type.ClaimStatusProgressType
 import com.hedvig.app.testdata.common.ContractStatus
@@ -198,6 +199,7 @@ class ClaimStatusCardsBuilder {
                     type = "Claim type",
                     statusParagraph = "Status Paragraph",
                     progressSegments = emptyList(),
+                    status = ClaimStatus.CLOSED
                 ),
             )
         }
