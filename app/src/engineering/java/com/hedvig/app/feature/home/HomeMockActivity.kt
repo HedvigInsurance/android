@@ -21,6 +21,7 @@ import com.hedvig.app.testdata.feature.home.HOME_DATA_PENDING
 import com.hedvig.app.testdata.feature.home.HOME_DATA_TERMINATED
 import com.hedvig.app.testdata.feature.home.HOME_DATA_TERMINATED_IN_FUTURE
 import com.hedvig.app.testdata.feature.home.HOME_DATA_TERMINATED_TODAY
+import com.hedvig.app.testdata.feature.home.HOME_DATA_TERMINATED_WITH_ONGOING_CLAIMS
 import com.hedvig.app.testdata.feature.home.HOME_DATA_UPCOMING_RENEWAL
 import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_ACTIVE
 import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_NEEDS_SETUP
@@ -106,6 +107,13 @@ class HomeMockActivity : MockActivity() {
         clickableItem("Terminated") {
             MockHomeViewModel.apply {
                 homeMockData = HOME_DATA_TERMINATED
+                shouldError = false
+            }
+            startActivity(LoggedInActivity.newInstance(this@HomeMockActivity))
+        }
+        clickableItem("Terminated with ongoing past claims") {
+            MockHomeViewModel.apply {
+                homeMockData = HOME_DATA_TERMINATED_WITH_ONGOING_CLAIMS
                 shouldError = false
             }
             startActivity(LoggedInActivity.newInstance(this@HomeMockActivity))

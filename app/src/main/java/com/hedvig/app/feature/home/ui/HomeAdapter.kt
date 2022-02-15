@@ -5,6 +5,9 @@ import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.FragmentManager
@@ -69,6 +72,7 @@ class HomeAdapter(
             onClaimDetailCardClicked,
             onClaimDetailCardShown,
         )
+        SPACE -> ViewHolder.Space(ComposeView(parent.context))
         R.layout.home_start_claim_outlined -> ViewHolder.StartClaimOutlined(parent, startIntentForResult)
         R.layout.home_start_claim_contained -> ViewHolder.StartClaimContained(parent, startIntentForResult)
         CONNECT_PAYIN -> ViewHolder.InfoCard(ComposeView(parent.context), onPaymentCardShown)
@@ -86,6 +90,7 @@ class HomeAdapter(
         is HomeModel.BigText -> R.layout.home_big_text
         is HomeModel.BodyText -> R.layout.home_body_text
         is HomeModel.ClaimStatus -> ACTIVE_CLAIM
+        is HomeModel.Space -> SPACE
         is HomeModel.StartClaimOutlined -> R.layout.home_start_claim_outlined
         is HomeModel.StartClaimContained -> R.layout.home_start_claim_contained
         is HomeModel.ConnectPayin -> CONNECT_PAYIN
@@ -222,6 +227,25 @@ class HomeAdapter(
                             claimStatusCardsUiState = data.claimStatusCardsUiState,
                         )
                     }
+                }
+            }
+        }
+
+        class Space(
+            private val composeView: ComposeView,
+        ) : ViewHolder(composeView) {
+            init {
+                composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            }
+
+            override fun bind(
+                data: HomeModel,
+                fragmentManager: FragmentManager,
+                marketManager: MarketManager
+            ) {
+                if (data !is HomeModel.Space) return invalid(data)
+                composeView.setContent {
+                    Spacer(Modifier.height(data.height))
                 }
             }
         }
@@ -532,6 +556,7 @@ class HomeAdapter(
     companion object {
         const val ACTIVE_CLAIM = 1
         const val CONNECT_PAYIN = 2
+        const val SPACE = 3
 
         fun daysLeft(date: LocalDate): Int = ChronoUnit.DAYS.between(LocalDate.now(), date).toInt()
 

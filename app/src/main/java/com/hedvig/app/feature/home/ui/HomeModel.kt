@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.home.ui
 
 import androidx.annotation.StringRes
+import androidx.compose.ui.unit.Dp
 import arrow.core.NonEmptyList
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.app.R
@@ -44,8 +45,11 @@ sealed class HomeModel {
         val claimStatusCardsUiState: NonEmptyList<ClaimStatusCardUiState>,
     ) : HomeModel()
 
+    data class Space(val height: Dp) : HomeModel()
+
     sealed class StartClaimOutlined : HomeModel() {
-        @get:StringRes abstract val textId: Int
+        @get:StringRes
+        abstract val textId: Int
 
         object FirstClaim : StartClaimOutlined() {
             override val textId: Int
@@ -59,7 +63,8 @@ sealed class HomeModel {
     }
 
     sealed class StartClaimContained : HomeModel() {
-        @get:StringRes abstract val textId: Int
+        @get:StringRes
+        abstract val textId: Int
 
         object FirstClaim : StartClaimContained() {
             override val textId: Int
