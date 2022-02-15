@@ -32,7 +32,7 @@ fun DanishAddress.toValueStoreKeys(): Map<String, String?> {
     return mapOf(
         DanishAddressStoreKey.bbrId to id,
         DanishAddressStoreKey.fullAddress to address,
-        DanishAddressStoreKey.street to "$streetName $streetName",
+        DanishAddressStoreKey.street to "$streetName $streetNumber",
         DanishAddressStoreKey.streetName to streetName,
         DanishAddressStoreKey.streetNumber to streetNumber,
         DanishAddressStoreKey.floor to floor,
