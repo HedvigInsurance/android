@@ -209,17 +209,11 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     }
 
     private fun claimStatusCardOrNull(successData: HomeQuery.Data): HomeModel.ClaimStatus? {
-        if (featureManager.isFeatureEnabled(Feature.CLAIMS_STATUS).not()) return null
         return NonEmptyList.fromList(successData.claimStatusCards)
             .map { claimStatusCardsQuery ->
-                claimStatusCardsQuery.map(ClaimStatusCardUiState::fromClaimStatusCardsQuery)
+                HomeModel.ClaimStatus(claimStatusCardsQuery.map(ClaimStatusCardUiState::fromClaimStatusCardsQuery))
             }
-            .fold(
-                ifEmpty = { null },
-                ifSome = { claimStatusCardDataList ->
-                    HomeModel.ClaimStatus(claimStatusCardDataList)
-                },
-            )
+            .orNull()
     }
 
     private fun psaItems(
