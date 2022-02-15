@@ -143,3 +143,38 @@ class JSONArrayEntryIterator(
         return json
     }
 }
+
+fun JSONObject.createAndAddWithLodashNotation(value: Any?, key: String, currentKey: String): JSONObject {
+
+    fun String.isArray() = contains("[") && contains("]")
+    fun String.getArrayField() = substringBefore("[")
+    fun String.getField() = if (isArray()) getArrayField() else substringBefore(".")
+    fun String.getIndex() = substringAfter("[").substringBefore("]").toInt()
+    fun String.tail(current: String) = substringAfter(current).substringAfter(".").substringBefore(".")
+    fun String.hasNext() = substringAfter(currentKey).contains(".")
+
+    val field = currentKey.getField()
+
+    return if (key.hasNext()) {
+        val innerJson = if (currentKey.isArray()) {
+            if (!has(field)) {
+                put(field, JSONArray())
+            }
+            try {
+                getJSONArray(field).getJSONObject(currentKey.getIndex())
+            } catch (throwable: JSONException) {
+                getJSONArray(field).put(currentKey.getIndex(), JSONObject())
+                getJSONArray(field).getJSONObject(currentKey.getIndex())
+            }
+        } else {
+            if (!has(field)) {
+                put(field, JSONObject())
+            }
+            getJSONObject(field)
+        }
+        innerJson.createAndAddWithLodashNotation(value, key, key.tail(currentKey))
+    } else {
+        put(field, value)
+        this
+    }
+}

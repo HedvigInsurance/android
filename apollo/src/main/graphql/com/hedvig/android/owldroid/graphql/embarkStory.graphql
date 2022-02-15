@@ -397,6 +397,11 @@ fragment GraphQLVariablesFragment on EmbarkAPIGraphQLVariable {
       }
     }
   }
+  ... on EmbarkAPIGraphQLConstantVariable {
+    key
+    value
+    as
+  }
 }
 
 fragment GraphQLErrorsFragment on EmbarkAPIGraphQLError {
