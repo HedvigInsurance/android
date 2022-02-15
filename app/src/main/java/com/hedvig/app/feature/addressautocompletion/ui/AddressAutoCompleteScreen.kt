@@ -82,7 +82,7 @@ fun AddressAutoCompleteScreen(
             ) {
                 Column {
                     CenterAlignedTopAppBar(
-                        title = "Address",
+                        title = stringResource(R.string.EMBARK_ADDRESS_AUTOCOMPLETE_ADDRESS),
                         onClick = { cancelAutoCompletion() },
                         backgroundColor = MaterialTheme.colors.background,
                         contentPadding = rememberInsetsPaddingValues(
