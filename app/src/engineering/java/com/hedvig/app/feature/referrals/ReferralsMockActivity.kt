@@ -17,12 +17,14 @@ import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModel
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.loggedInModule
 import com.hedvig.app.referralsModule
-import com.hedvig.app.service.push.managers.ReferralsNotificationManager
+import com.hedvig.app.service.push.senders.ReferralsNotificationSender
+import com.hedvig.app.service.push.senders.ReferralsNotificationSender.Companion.DATA_MESSAGE_REFERRED_SUCCESS_NAME
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_NO_DISCOUNTS
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_ONE_REFEREE
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_ONE_REFEREE_AND_OTHER_DISCOUNT
 import com.hedvig.app.testdata.feature.referrals.builders.EditCodeDataBuilder
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -36,6 +38,8 @@ class ReferralsMockActivity : MockActivity() {
             viewModel<ReferralsEditCodeViewModel> { MockReferralsEditCodeViewModel() }
         }
     )
+
+    private val referralsNotificationSender: ReferralsNotificationSender by inject()
 
     override fun adapter() = genericDevelopmentAdapter {
         header("Referrals Tab")
@@ -211,17 +215,11 @@ class ReferralsMockActivity : MockActivity() {
             )
         }
         header("Notifications")
-        clickableItem("Referrals Enabled") {
-            ReferralsNotificationManager.sendReferralsEnabledNotification(
-                this@ReferralsMockActivity
-            )
-        }
         clickableItem("Referrals Success") {
-            ReferralsNotificationManager.sendReferralNotification(
-                this@ReferralsMockActivity,
+            referralsNotificationSender.sendReferralSuccessfulNotification(
                 RemoteMessage(
                     bundleOf(
-                        ReferralsNotificationManager.DATA_MESSAGE_REFERRED_SUCCESS_NAME to "William"
+                        DATA_MESSAGE_REFERRED_SUCCESS_NAME to "William"
                     )
                 )
             )

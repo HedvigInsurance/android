@@ -320,6 +320,7 @@
             android:exported="true"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".feature.claimdetail.ClaimDetailActivity" />
+        <activity android:name=".feature.tracking.NotificationOpenedTrackingActivity" />
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
@@ -360,6 +361,10 @@
 
             <meta-data
                 android:name="com.hedvig.app.feature.di.KoinInitializer"
+                android:value="androidx.startup" />
+
+            <meta-data
+                android:name="com.hedvig.app.feature.tracking.LaunchTrackingInitializer"
                 android:value="androidx.startup" />
 
         </provider>

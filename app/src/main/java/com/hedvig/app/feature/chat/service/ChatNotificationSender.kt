@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.chat.service
 
-import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
@@ -16,24 +15,31 @@ import androidx.core.content.getSystemService
 import androidx.core.graphics.drawable.IconCompat
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.app.R
-import com.hedvig.app.SplashActivity
 import com.hedvig.app.feature.chat.ui.ChatActivity
-import com.hedvig.app.service.push.DATA_MESSAGE_BODY
-import com.hedvig.app.service.push.DATA_MESSAGE_TITLE
-import com.hedvig.app.service.push.PushNotificationService
+import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
 import com.hedvig.app.service.push.getMutablePendingIntentFlags
+import com.hedvig.app.service.push.senders.NotificationSender
 import com.hedvig.app.service.push.setupNotificationChannel
 import com.hedvig.app.util.extensions.getStoredBoolean
 
-object ChatNotificationManager {
-    fun sendChatNotification(context: Context, remoteMessage: RemoteMessage) {
-        createChannel(context)
+class ChatNotificationSender(
+    private val context: Context,
+) : NotificationSender {
+    override fun createChannel() {
+        setupNotificationChannel(
+            context,
+            CHAT_CHANNEL_ID,
+            context.resources.getString(R.string.NOTIFICATION_CHAT_CHANNEL_NAME),
+            context.resources.getString(R.string.NOTIFICATION_CHAT_CHANNEL_DESCRIPTION)
+        )
+    }
 
+    override fun sendNotification(type: String, remoteMessage: RemoteMessage) {
         if (context.getStoredBoolean(ChatActivity.ACTIVITY_IS_IN_FOREGROUND)) {
             return
         }
 
-        val hedvigPerson = hedvigPerson(context)
+        val hedvigPerson = hedvigPerson()
         val messageText =
             remoteMessage.data[DATA_NEW_MESSAGE_BODY] ?: return
         val message = NotificationCompat.MessagingStyle.Message(
@@ -53,9 +59,9 @@ object ChatNotificationManager {
                     NotificationCompat.MessagingStyle
                         .extractMessagingStyleFromNotification(existingNotification)
                         ?.addMessage(message)
-                } ?: defaultMessagingStyle(context, message)
+                } ?: defaultMessagingStyle(message)
         } else {
-            defaultMessagingStyle(context, message)
+            defaultMessagingStyle(message)
         }
 
         sendChatNotificationInner(
@@ -64,12 +70,12 @@ object ChatNotificationManager {
         )
     }
 
-    private fun defaultMessagingStyle(
-        context: Context,
-        message: NotificationCompat.MessagingStyle.Message
-    ) = NotificationCompat.MessagingStyle(youPerson(context)).addMessage(message)
+    override fun handlesNotificationType(notificationType: String) = notificationType == NOTIFICATION_TYPE_NEW_MESSAGE
 
-    @SuppressLint("UnspecifiedImmutableFlag") // Remove this lint warning when targeting SDK 31
+    private fun defaultMessagingStyle(
+        message: NotificationCompat.MessagingStyle.Message
+    ) = NotificationCompat.MessagingStyle(youPerson()).addMessage(message)
+
     private fun sendChatNotificationInner(
         context: Context,
         style: NotificationCompat.MessagingStyle,
@@ -84,6 +90,9 @@ object ChatNotificationManager {
             .create(context)
             .run {
                 addNextIntentWithParentStack(chatIntent)
+                addNextIntentWithParentStack(
+                    NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_TYPE_NEW_MESSAGE)
+                )
                 getPendingIntent(0, flags)
             }
         val replyRemoteInput = RemoteInput.Builder(CHAT_REPLY_KEY)
@@ -157,73 +166,31 @@ object ChatNotificationManager {
         )
     }
 
-    fun sendDefaultNotification(context: Context, remoteMessage: RemoteMessage) {
-        createChannel(
-            context
-        )
-
-        val title = remoteMessage.data[DATA_MESSAGE_TITLE]
-            ?: context.resources.getString(R.string.NOTIFICATION_CHAT_TITLE)
-        val body = remoteMessage.data[DATA_MESSAGE_BODY]
-            ?: context.resources.getString(R.string.NOTIFICATION_CHAT_BODY)
-
-        val pendingIntent = PendingIntent.getActivity(
-            context,
-            0,
-            Intent(context, SplashActivity::class.java),
-            PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        val notification = NotificationCompat
-            .Builder(
-                context,
-                PushNotificationService.NOTIFICATION_CHANNEL_ID
-            )
-            .setSmallIcon(R.drawable.ic_hedvig_h)
-            .setContentTitle(title)
-            .setContentText(body)
-            .setPriority(NotificationCompat.PRIORITY_MAX)
-            .setAutoCancel(true)
-            .setChannelId(PushNotificationService.NOTIFICATION_CHANNEL_ID)
-            .setContentIntent(pendingIntent)
-            .build()
-
-        NotificationManagerCompat
-            .from(context)
-            .notify(PushNotificationService.NOTIFICATION_ID, notification)
-    }
-
-    fun createChannel(context: Context) {
-        setupNotificationChannel(
-            context,
-            CHAT_CHANNEL_ID,
-            context.resources.getString(R.string.NOTIFICATION_CHAT_CHANNEL_NAME),
-            context.resources.getString(R.string.NOTIFICATION_CHAT_CHANNEL_DESCRIPTION)
-        )
-    }
-
-    private const val CHAT_CHANNEL_ID = "hedvig-chat"
-    private const val CHAT_NOTIFICATION_ID = 1
-
-    private const val HEDVIG_PERSON_KEY = "HEDVIG"
-    private const val YOU_PERSON_KEY = "YOU"
-
-    const val CHAT_REPLY_KEY = "CHAT_REPLY_KEY"
-    const val CHAT_REPLY_DATA_NOTIFICATION_ID = "CHAT_REPLY_DATA_NOTIFICATION_ID"
-    private const val CHAT_REPLY_REQUEST_CODE = 2380
-
-    internal const val DATA_NEW_MESSAGE_BODY = "DATA_NEW_MESSAGE_BODY"
-
-    private fun hedvigPerson(context: Context) = Person.Builder()
+    private fun hedvigPerson() = Person.Builder()
         .setName(context.getString(R.string.NOTIFICATION_CHAT_TITLE))
         .setImportant(true)
         .setKey(HEDVIG_PERSON_KEY)
         .setIcon(IconCompat.createWithResource(context, R.drawable.ic_hedvig_h))
         .build()
 
-    private fun youPerson(context: Context) = Person.Builder()
+    private fun youPerson() = Person.Builder()
         .setName(context.getString(R.string.notifications_chat_you))
         .setImportant(true)
         .setKey(YOU_PERSON_KEY)
         .build()
+
+    companion object {
+        private const val CHAT_CHANNEL_ID = "hedvig-chat"
+        private const val CHAT_NOTIFICATION_ID = 1
+        private const val HEDVIG_PERSON_KEY = "HEDVIG"
+        private const val YOU_PERSON_KEY = "YOU"
+
+        internal const val CHAT_REPLY_KEY = "CHAT_REPLY_KEY"
+        internal const val CHAT_REPLY_DATA_NOTIFICATION_ID = "CHAT_REPLY_DATA_NOTIFICATION_ID"
+        private const val CHAT_REPLY_REQUEST_CODE = 2380
+
+        internal const val DATA_NEW_MESSAGE_BODY = "DATA_NEW_MESSAGE_BODY"
+
+        private const val NOTIFICATION_TYPE_NEW_MESSAGE = "NEW_MESSAGE"
+    }
 }
