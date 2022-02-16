@@ -2,16 +2,27 @@ query HomeQuery($locale: Locale!, $languageCode: String!) {
   member {
     firstName
   }
-  claims {
+  claimStatusCards: claims_statusCards(locale: $locale) {
     id
-    contract {
-      id
-      displayName
+    pills {
+      text
+      type
     }
-    status
-    outcome
-    payout {
-      ...MonetaryAmountFragment
+    title
+    subtitle
+    progressSegments {
+      ...ProgressSegments
+    }
+    claim {
+      submittedAt
+      closedAt
+      type
+      statusParagraph
+      progressSegments {
+        text
+        type
+      }
+      status
     }
   }
   contracts {
@@ -47,6 +58,7 @@ query HomeQuery($locale: Locale!, $languageCode: String!) {
   }
   isEligibleToCreateClaim
   commonClaims(locale: $locale) {
+    id
     title
     icon {
       variants {

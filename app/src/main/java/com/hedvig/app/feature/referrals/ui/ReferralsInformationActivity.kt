@@ -7,7 +7,6 @@ import android.os.Bundle
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityReferralsInformationBinding
-import com.hedvig.app.feature.referrals.service.ReferralsTracker
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.extensions.canOpenUri
@@ -26,7 +25,6 @@ import javax.money.MonetaryAmount
 
 class ReferralsInformationActivity : BaseActivity(R.layout.activity_referrals_information) {
     private val binding by viewBinding(ActivityReferralsInformationBinding::bind)
-    private val tracker: ReferralsTracker by inject()
     private val marketManager: MarketManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,7 +61,6 @@ class ReferralsInformationActivity : BaseActivity(R.layout.activity_referrals_in
             val termsAsUri = Uri.parse(termsUrl)
 
             termsAndConditions.setHapticClickListener {
-                tracker.termsAndConditions()
                 if (canOpenUri(termsAsUri)) {
                     openUri(termsAsUri)
                 }

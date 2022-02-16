@@ -4,13 +4,19 @@ import com.hedvig.android.owldroid.fragment.CurrentInsurerFragment
 import com.hedvig.android.owldroid.fragment.IncentiveFragment
 import com.hedvig.android.owldroid.fragment.InsurableLimitsFragment
 import com.hedvig.android.owldroid.fragment.InsuranceTermFragment
+import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
+import com.hedvig.android.owldroid.graphql.DataCollectionResultQuery
+import com.hedvig.android.owldroid.graphql.DataCollectionStatusSubscription
 import com.hedvig.android.owldroid.graphql.OfferQuery
+import com.hedvig.android.owldroid.type.DataCollectionStatus
 import com.hedvig.android.owldroid.type.InsuranceTermType
 import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.testdata.common.builders.CostBuilder
 import com.hedvig.app.testdata.common.builders.TableFragmentBuilder
 import com.hedvig.app.testdata.feature.offer.builders.ConcurrentInceptionBuilder
+import com.hedvig.app.testdata.feature.offer.builders.DataCollectionResultQueryBuilder
+import com.hedvig.app.testdata.feature.offer.builders.DataCollectionStatusSubscriptionBuilder
 import com.hedvig.app.testdata.feature.offer.builders.FaqBuilder
 import com.hedvig.app.testdata.feature.offer.builders.IndependentInceptionBuilder
 import com.hedvig.app.testdata.feature.offer.builders.OfferDataBuilder
@@ -137,6 +143,29 @@ val OFFER_DATA_SWEDISH_HOUSE_WITH_DISCOUNT = OfferDataBuilder(
             )
         )
     )
+).build()
+
+val INSURELY_COMPARISON_WITH_DATA_COLLECTION_COLLECTING: DataCollectionStatusSubscription.Data =
+    DataCollectionStatusSubscriptionBuilder(
+        status = DataCollectionStatus.COLLECTING,
+        insuranceCompany = "Test Insurance Company"
+    ).build()
+val INSURELY_COMPARISON_WITH_DATA_COLLECTION_FAILED: DataCollectionStatusSubscription.Data =
+    DataCollectionStatusSubscriptionBuilder(
+        status = DataCollectionStatus.FAILED,
+        insuranceCompany = "Test Insurance Company"
+    ).build()
+val INSURELY_COMPARISON_WITH_DATA_COLLECTION_COMPLETED: DataCollectionStatusSubscription.Data =
+    DataCollectionStatusSubscriptionBuilder(
+        status = DataCollectionStatus.COMPLETED,
+        insuranceCompany = "Test Insurance Company"
+    ).build()
+
+val DATA_COLLECTION_RESULT_ONE_RESULT: DataCollectionResultQuery.Data = DataCollectionResultQueryBuilder().build()
+val DATA_COLLECTION_RESULT_TWO_RESULTS: DataCollectionResultQuery.Data = DataCollectionResultQueryBuilder(
+    payouts = List(2) {
+        MonetaryAmountFragment(amount = ((it + 1) * 179).toString(), currency = "SEK")
+    }
 ).build()
 
 val CONCURRENT_INCEPTION_START_DATE: LocalDate = LocalDate.of(2021, 6, 22)
@@ -459,7 +488,28 @@ val OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_ALL
                 id = "ab2a1f4c-83af-4b9f-98d2-e7ea767b080d",
                 displayName = "Annat Försäkringsbolag",
                 switchable = true
-            )
+            ),
+            detailsTable = TableFragmentBuilder(
+                title = "Home Contents Insurance",
+                sections = listOf(
+                    Pair(
+                        "Test",
+                        listOf(Triple("Test1", "Test2", "tws")),
+                    ),
+                    Pair(
+                        "Test",
+                        listOf(Triple("Test1", "Test2", "tws")),
+                    ),
+                    Pair(
+                        "Test",
+                        listOf(Triple("Test1", "Test2", "tws")),
+                    ),
+                    Pair(
+                        "Test",
+                        listOf(Triple("Test1", "Test2", "tws")),
+                    ),
+                )
+            ).build()
         ).build(),
         QuoteBuilder(
             displayName = "Travel Insurance",
@@ -468,7 +518,28 @@ val OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_ALL
                 id = "ab2a1f4c-83af-4b9f-98d2-e7ea767b080f",
                 displayName = "Annat Försäkringsbolag 2",
                 switchable = true
-            )
+            ),
+            detailsTable = TableFragmentBuilder(
+                title = "Travel Insurance",
+                sections = listOf(
+                    Pair(
+                        "Test",
+                        listOf(Triple("Test1", "Test2", "tws")),
+                    ),
+                    Pair(
+                        "Test",
+                        listOf(Triple("Test1", "Test2", "tws")),
+                    ),
+                    Pair(
+                        "Test",
+                        listOf(Triple("Test1", "Test2", "tws")),
+                    ),
+                    Pair(
+                        "Test",
+                        listOf(Triple("Test1", "Test2", "tws")),
+                    ),
+                )
+            ).build()
         ).build()
     ),
     frequentlyAskedQuestions = listOf(

@@ -1,13 +1,12 @@
 package com.hedvig.app.feature.insurance.ui
 
-import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 
 sealed class InsuranceModel {
     object Header : InsuranceModel()
 
     data class Contract(
-        val inner: InsuranceQuery.Contract
+        val contractCardViewState: ContractCardViewState
     ) : InsuranceModel()
 
     data class CrossSellHeader(

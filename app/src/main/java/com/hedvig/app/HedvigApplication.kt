@@ -2,6 +2,7 @@ package com.hedvig.app
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.preference.PreferenceManager
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.coroutines.await
@@ -11,6 +12,7 @@ import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.settings.Theme
+import com.hedvig.app.feature.tracking.ApplicationLifecycleTracker
 import com.hedvig.app.feature.whatsnew.WhatsNewRepository
 import com.hedvig.app.util.FirebaseCrashlyticsLogExceptionTree
 import com.hedvig.app.util.extensions.SHARED_PREFERENCE_TRIED_MIGRATION_OF_TOKEN
@@ -29,10 +31,11 @@ open class HedvigApplication : Application() {
     private val whatsNewRepository: WhatsNewRepository by inject()
     private val marketManager: MarketManager by inject()
     private val authenticationTokenService: AuthenticationTokenService by inject()
+    private val applicationLifecycleTracker: ApplicationLifecycleTracker by inject()
 
     override fun onCreate() {
         super.onCreate()
-
+        ProcessLifecycleOwner.get().lifecycle.addObserver(applicationLifecycleTracker)
         Theme
             .fromSettings(this)
             ?.apply()

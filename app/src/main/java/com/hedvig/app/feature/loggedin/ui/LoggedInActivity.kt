@@ -22,8 +22,6 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityLoggedInBinding
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
-import com.hedvig.app.feature.onboarding.MemberIdViewModel
-import com.hedvig.app.feature.ratings.RatingsTracker
 import com.hedvig.app.feature.referrals.ui.ReferralsInformationActivity
 import com.hedvig.app.feature.welcome.WelcomeDialog
 import com.hedvig.app.feature.welcome.WelcomeViewModel
@@ -40,8 +38,9 @@ import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.getLastOpen
 import com.hedvig.app.util.extensions.isDarkThemeActive
 import com.hedvig.app.util.extensions.setLastOpen
+import com.hedvig.app.util.extensions.showErrorDialog
 import com.hedvig.app.util.extensions.showReviewDialog
-import com.hedvig.app.util.extensions.startClosableChat
+import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.performOnTapHapticFeedback
@@ -52,7 +51,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.time.LocalDate
 import javax.money.MonetaryAmount
@@ -61,12 +59,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     private val claimsViewModel: ClaimsViewModel by viewModel()
     private val whatsNewViewModel: WhatsNewViewModel by viewModel()
 
-    private val memberIdViewModel: MemberIdViewModel by viewModel()
     private val welcomeViewModel: WelcomeViewModel by viewModel()
     private val loggedInViewModel: LoggedInViewModel by viewModel()
-
-    private val loggedInTracker: LoggedInTracker by inject()
-    private val ratingsTracker: RatingsTracker by inject()
 
     private val binding by viewBinding(ActivityLoggedInBinding::bind)
 
@@ -114,6 +108,16 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 }
                 .launchIn(lifecycleScope)
 
+            claimsViewModel.events
+                .flowWithLifecycle(lifecycle)
+                .onEach { event ->
+                    when (event) {
+                        ClaimsViewModel.Event.Error -> showErrorDialog(getString(R.string.component_error)) {}
+                        ClaimsViewModel.Event.StartChat -> startChat()
+                    }
+                }
+                .launchIn(lifecycleScope)
+
             setSupportActionBar(toolbar)
             supportActionBar?.setDisplayShowTitleEnabled(false)
 
@@ -137,7 +141,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 animateGradient(selectedTab)
                 lastSelectedTab = selectedTab
                 loggedInViewModel.onTabVisited(selectedTab)
-                loggedInTracker.tabVisited(selectedTab)
                 true
             }
 
@@ -186,9 +189,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
     private suspend fun showReviewWithDelay() {
         delay(REVIEW_DIALOG_DELAY_MILLIS)
-        showReviewDialog {
-            ratingsTracker.rate()
-        }
+        showReviewDialog {}
     }
 
     private fun shouldShowTooltip(lastOpen: Long, currentEpochDay: Long): Boolean {
@@ -275,7 +276,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             -> {
                 lifecycleScope.launch {
                     claimsViewModel.triggerFreeTextChat()
-                    startClosableChat()
                 }
             }
             LoggedInTabs.REFERRALS -> {
@@ -373,19 +373,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 ?.let { referralsIncentive = it }
         }
 
-        memberIdViewModel
-            .state
-            .flowWithLifecycle(lifecycle)
-            .onEach { state ->
-                when (state) {
-                    is MemberIdViewModel.State.Success -> {
-                        loggedInTracker.setMemberId(state.id)
-                    }
-                    else -> {
-                    }
-                }
-            }
-            .launchIn(lifecycleScope)
         whatsNewViewModel.fetchNews()
     }
 

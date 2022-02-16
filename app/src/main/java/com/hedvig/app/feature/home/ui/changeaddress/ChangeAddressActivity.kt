@@ -6,12 +6,12 @@ import android.os.Bundle
 import android.transition.TransitionManager
 import androidx.annotation.DrawableRes
 import androidx.core.view.isVisible
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ChangeAddressActivityBinding
 import com.hedvig.app.databinding.ListTextItemBinding
-import com.hedvig.app.feature.chat.ui.ChatActivity
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.Error.GeneralError
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult.Error.NoContractsError
@@ -23,12 +23,16 @@ import com.hedvig.app.feature.home.ui.changeaddress.ViewState.SelfChangeError
 import com.hedvig.app.feature.home.ui.changeaddress.ViewState.UpcomingAgreementError
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
+import com.hedvig.app.util.extensions.showErrorDialog
+import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsetsMargin
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -39,6 +43,16 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        model.events
+            .flowWithLifecycle(lifecycle)
+            .onEach { event ->
+                when (event) {
+                    Event.Error -> showErrorDialog(getString(R.string.component_error)) {}
+                    Event.StartChat -> startChat()
+                }
+            }
+            .launchIn(lifecycleScope)
 
         with(binding) {
             window.compatSetDecorFitsSystemWindows(false)
@@ -86,7 +100,7 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
                 subtitleText = getString(R.string.moving_intro_manual_handling_description),
                 buttonText = getString(R.string.moving_intro_manual_handling_button_text),
                 buttonIcon = R.drawable.ic_chat_white,
-                onContinue = { openChat() }
+                onContinue = { startChat() }
             )
             is ChangeAddressInProgress -> setUpcomingChangeContent(
                 titleText = getString(R.string.moving_intro_existing_move_title),
@@ -96,7 +110,6 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
                 onContinue = {
                     lifecycleScope.launch {
                         model.triggerFreeTextChat()
-                        openChat()
                     }
                 },
                 viewState.upcomingAgreementResult
@@ -120,8 +133,6 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
             )
         }
     }
-
-    private fun openChat() = startActivity(ChatActivity.newInstance(this, true))
 
     private fun setContent(
         titleText: String,

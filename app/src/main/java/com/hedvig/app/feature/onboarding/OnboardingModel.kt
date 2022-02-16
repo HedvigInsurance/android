@@ -1,12 +1,10 @@
 package com.hedvig.app.feature.onboarding
 
-import com.hedvig.android.owldroid.graphql.ChoosePlanQuery
-
 sealed class OnboardingModel {
 
-    data class Bundle(
+    data class BundleItem(
         val selected: Boolean,
-        val embarkStory: ChoosePlanQuery.EmbarkStory
+        val bundle: BundlesResult.Success.Bundle
     ) : OnboardingModel()
 
     object Error : OnboardingModel()

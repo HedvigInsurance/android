@@ -1,0 +1,4 @@
+fragment ProgressSegments on ClaimStatusProgressSegment {
+  text
+  type
+}

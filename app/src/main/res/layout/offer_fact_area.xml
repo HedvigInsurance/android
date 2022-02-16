@@ -1,16 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.hedvig.app.ui.view.ExpandableContentView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/expandableContentView"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="?android:colorBackground"
+    android:id="@+id/expandableContent"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?android:colorBackground">
-
-    <LinearLayout
-        android:id="@+id/expandableContent"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:paddingBottom="@dimen/base_margin" />
-
-</com.hedvig.app.ui.view.ExpandableContentView>
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/base_margin" />
 

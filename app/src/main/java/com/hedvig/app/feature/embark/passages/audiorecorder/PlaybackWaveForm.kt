@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.embark.passages.audiorecorder
 
+import androidx.annotation.FloatRange
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row
@@ -35,7 +36,7 @@ fun PlaybackWaveForm(
     play: () -> Unit,
     pause: () -> Unit,
     amplitudes: List<Int>,
-    progress: Float, // 0f to 1f
+    @FloatRange(from = 0.0, to = 1.0) progress: Float,
     modifier: Modifier = Modifier,
 ) {
     Card(

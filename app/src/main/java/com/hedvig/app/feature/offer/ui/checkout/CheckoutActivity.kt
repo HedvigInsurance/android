@@ -128,7 +128,7 @@ class CheckoutActivity : BaseActivity(R.layout.activity_checkout) {
                 binding.title.show()
                 binding.cost.show()
                 binding.originalCost.isVisible = !(titleState.netAmount - titleState.grossAmount).isZero
-
+                binding.emailEditText.setText(titleState.email)
                 binding.title.text = titleState.bundleName
                 val netAmount = titleState.netAmount.format(this, titleState.market)
                 val netString = getString(R.string.OFFER_COST_AND_PREMIUM_PERIOD_ABBREVIATION, netAmount)

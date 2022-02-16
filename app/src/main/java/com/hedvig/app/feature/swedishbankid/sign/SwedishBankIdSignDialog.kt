@@ -134,10 +134,7 @@ class SwedishBankIdSignDialog : DialogFragment() {
         private const val AUTO_START_TOKEN = "AUTO_START_TOKEN"
         private const val QUOTE_IDS = "QUOTE_IDS"
         const val TAG = "OfferSignDialog"
-        fun newInstance(
-            autoStartToken: String,
-            quoteIds: List<String>,
-        ) = SwedishBankIdSignDialog().apply {
+        fun newInstance(autoStartToken: String, quoteIds: List<String>) = SwedishBankIdSignDialog().apply {
             arguments = bundleOf(
                 AUTO_START_TOKEN to autoStartToken,
                 QUOTE_IDS to quoteIds.toArrayList(),

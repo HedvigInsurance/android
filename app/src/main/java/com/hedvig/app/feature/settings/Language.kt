@@ -16,7 +16,9 @@ enum class Language {
     NB_NO,
     EN_NO,
     DA_DK,
-    EN_DK;
+    EN_DK,
+    FR_FR,
+    EN_FR;
 
     fun apply(context: Context): Context {
         val locale = into()
@@ -64,6 +66,8 @@ enum class Language {
         EN_NO -> LocaleWrapper.SingleLocale(Locale.forLanguageTag(SETTING_EN_NO))
         DA_DK -> LocaleWrapper.SingleLocale(Locale.forLanguageTag(SETTING_DA_DK))
         EN_DK -> LocaleWrapper.SingleLocale(Locale.forLanguageTag(SETTING_EN_DK))
+        FR_FR -> LocaleWrapper.SingleLocale(Locale.forLanguageTag(SETTING_FR_FR))
+        EN_FR -> LocaleWrapper.SingleLocale(Locale.forLanguageTag(SETTING_EN_FR))
     }
 
     fun getLabel() = when (this) {
@@ -73,6 +77,8 @@ enum class Language {
         EN_NO -> R.string.english_norwegian
         DA_DK -> R.string.danish
         EN_DK -> R.string.english_danish
+        FR_FR -> R.string.french
+        EN_FR -> R.string.english_french
     }
 
     override fun toString() = when (this) {
@@ -82,6 +88,8 @@ enum class Language {
         EN_NO -> SETTING_EN_NO
         DA_DK -> SETTING_DA_DK
         EN_DK -> SETTING_EN_DK
+        FR_FR -> SETTING_FR_FR
+        EN_FR -> SETTING_EN_FR
     }
 
     companion object {
@@ -92,6 +100,8 @@ enum class Language {
         const val SETTING_EN_NO = "en-NO"
         const val SETTING_DA_DK = "da-DK"
         const val SETTING_EN_DK = "en-DK"
+        const val SETTING_FR_FR = "fr-FR"
+        const val SETTING_EN_FR = "en-FR"
 
         fun from(value: String) = when (value) {
             SETTING_SV_SE -> SV_SE
@@ -100,6 +110,8 @@ enum class Language {
             SETTING_EN_NO -> EN_NO
             SETTING_DA_DK -> DA_DK
             SETTING_EN_DK -> EN_DK
+            SETTING_FR_FR -> FR_FR
+            SETTING_EN_FR -> EN_FR
             else -> throw RuntimeException("Invalid language value: $value")
         }
 
@@ -131,6 +143,7 @@ enum class Language {
                 Market.SE -> listOf(SV_SE, EN_SE)
                 Market.NO -> listOf(NB_NO, EN_NO)
                 Market.DK -> listOf(DA_DK, EN_DK)
+                Market.FR -> listOf(FR_FR, EN_FR)
             }
         }
     }

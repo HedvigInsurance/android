@@ -7,4 +7,5 @@ interface FeatureFlagProvider {
 }
 
 const val DEBUG_PRIORITY = 1
-const val PRODUCTION_PRIORITY = 2
+const val REMOTE_PRIORITY = 2
+const val PRODUCTION_PRIORITY = 3

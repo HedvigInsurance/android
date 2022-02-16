@@ -10,14 +10,12 @@ import com.hedvig.app.feature.marketing.ui.MarketingViewModel
 import com.hedvig.app.feature.marketing.ui.NavigationState
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsetsMargin
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class MarketPickerFragment : Fragment(R.layout.fragment_market_picker) {
     private val model: MarketPickerViewModel by sharedViewModel()
     private val marketingViewModel: MarketingViewModel by sharedViewModel()
     private val binding by viewBinding(FragmentMarketPickerBinding::bind)
-    private val tracker: MarketPickerTracker by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         postponeEnterTransition()
@@ -26,7 +24,6 @@ class MarketPickerFragment : Fragment(R.layout.fragment_market_picker) {
             picker.adapter = PickerAdapter(
                 parentFragmentManager,
                 onSubmit = { sharedElements ->
-                    tracker.submit()
                     model.submit()
                     marketingViewModel.navigateTo(
                         NavigationState(

@@ -41,5 +41,7 @@ data class NumberActionBuilder(
         asEmbarkDatePickerAction = null,
         asEmbarkMultiAction = null,
         asEmbarkAudioRecorderAction = null,
+        asEmbarkExternalInsuranceProviderAction = null,
+        asEmbarkAddressAutocompleteAction = null,
     )
 }

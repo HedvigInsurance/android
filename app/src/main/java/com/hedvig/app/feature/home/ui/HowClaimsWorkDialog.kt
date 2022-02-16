@@ -5,8 +5,6 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
 import com.hedvig.app.feature.dismissiblepager.DismissiblePager
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
-import com.hedvig.app.feature.welcome.WelcomeTracker
-import org.koin.android.ext.android.inject
 
 class HowClaimsWorkDialog : DismissiblePager() {
     override val proceedLabel = R.string.claims_explainer_button_next
@@ -15,7 +13,6 @@ class HowClaimsWorkDialog : DismissiblePager() {
     override val titleLabel: Nothing? = null
     override val shouldShowLogo = false
 
-    override val tracker: WelcomeTracker by inject()
     override val items: List<DismissiblePagerModel>
         get() = requireArguments().getParcelableArrayList<DismissiblePagerModel>(ITEMS).orEmpty()
 

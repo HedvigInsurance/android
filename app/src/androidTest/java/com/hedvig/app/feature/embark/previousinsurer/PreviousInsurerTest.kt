@@ -6,11 +6,9 @@ import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.testdata.feature.embark.data.PREVIOUS_INSURER_STORY
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
-import com.hedvig.app.util.FeatureFlagRule
 import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
-import com.hedvig.app.util.featureflags.Feature
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.kakao.screen.Screen.Companion.onScreen
 import org.junit.Rule
@@ -27,11 +25,6 @@ class PreviousInsurerTest : TestCase() {
 
     @get:Rule
     val apolloCacheClearRule = ApolloCacheClearRule()
-
-    @get:Rule
-    val featureFlagRule = FeatureFlagRule(
-        Feature.INSURELY_EMBARK to false,
-    )
 
     @Test
     fun shouldShowPreviousInsurerInBottomSheetWhenPressingButton() = run {

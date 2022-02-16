@@ -7,11 +7,13 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.profile.ui.payment.PaymentRepository
 import com.hedvig.app.util.LiveEvent
+import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.launch
 
 class ConnectPaymentViewModel(
     private val payinStatusRepository: PayinStatusRepository,
-    private val paymentRepository: PaymentRepository
+    private val paymentRepository: PaymentRepository,
+    private val hAnalytics: HAnalytics,
 ) : ViewModel() {
     private val _navigationState = MutableLiveData<ConnectPaymentScreenState>()
     val navigationState: LiveData<ConnectPaymentScreenState> = _navigationState
@@ -23,12 +25,17 @@ class ConnectPaymentViewModel(
 
     fun navigateTo(screen: ConnectPaymentScreenState) {
         _navigationState.postValue(screen)
-        if (screen is ConnectPaymentScreenState.Result && screen.success) {
-            viewModelScope.launch {
-                runCatching {
-                    payinStatusRepository.refreshPayinStatus()
-                    paymentRepository.refresh()
+        if (screen is ConnectPaymentScreenState.Result) {
+            if (screen.success) {
+                hAnalytics.screenViewConnectPaymentSuccess()
+                viewModelScope.launch {
+                    runCatching {
+                        payinStatusRepository.refreshPayinStatus()
+                        paymentRepository.refresh()
+                    }
                 }
+            } else {
+                hAnalytics.screenViewConnectPaymentFailed()
             }
         }
     }

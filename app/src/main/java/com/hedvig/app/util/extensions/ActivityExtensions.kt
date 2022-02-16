@@ -2,7 +2,9 @@ package com.hedvig.app.util.extensions
 
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.LabeledIntent
 import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
@@ -13,12 +15,11 @@ import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
-import androidx.core.app.ActivityOptionsCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticateDialog
-import com.hedvig.app.feature.chat.ui.ChatActivity
+import com.hedvig.app.authenticate.LoginDialog
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.util.extensions.view.setupToolbar
 import e
@@ -55,24 +56,6 @@ fun AppCompatActivity.setupToolbar(
         rootLayout = rootLayout,
         backAction = backAction
     )
-}
-
-fun Activity.startClosableChat(restartable: Boolean = false) {
-    val intent = Intent(this, ChatActivity::class.java)
-    intent.putExtra(ChatActivity.EXTRA_SHOW_CLOSE, true)
-
-    if (restartable) {
-        intent.putExtra(ChatActivity.EXTRA_SHOW_RESTART, true)
-    }
-
-    val options =
-        ActivityOptionsCompat.makeCustomAnimation(
-            this,
-            R.anim.chat_slide_up_in,
-            R.anim.stay_in_place
-        )
-
-    ActivityCompat.startActivity(this, intent, options.toBundle())
 }
 
 fun Activity.askForPermissions(
@@ -133,6 +116,35 @@ private fun Activity.openAppSettings() {
     startActivity(intent)
 }
 
+fun Activity.openEmail(title: String) {
+    val emailIntent = Intent(Intent.ACTION_VIEW, Uri.parse("mailto:"))
+
+    val resInfo = packageManager.queryIntentActivities(emailIntent, 0)
+    if (resInfo.isNotEmpty()) {
+        // First create an intent with only the package name of the first registered email app
+        // and build a picked based on it
+        val intentChooser = packageManager.getLaunchIntentForPackage(
+            resInfo.first().activityInfo.packageName
+        )
+        val openInChooser = Intent.createChooser(intentChooser, title)
+
+        // Then create a list of LabeledIntent for the rest of the registered email apps
+        val emailApps = resInfo.toLabeledIntentArray(packageManager)
+
+        // Add the rest of the email apps to the picker selection
+        openInChooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, emailApps)
+        startActivity(openInChooser)
+    } else {
+        e { "No email app found" }
+    }
+}
+
+private fun List<ResolveInfo>.toLabeledIntentArray(packageManager: PackageManager): Array<LabeledIntent> = map {
+    val packageName = it.activityInfo.packageName
+    val intent = packageManager.getLaunchIntentForPackage(packageName)
+    LabeledIntent(intent, packageName, it.loadLabel(packageManager), it.icon)
+}.toTypedArray()
+
 fun AppCompatActivity.handleSingleSelectLink(value: String) = when (value) {
     "message.forslag.dashboard" -> {
         startActivity(
@@ -147,7 +159,7 @@ fun AppCompatActivity.handleSingleSelectLink(value: String) = when (value) {
         )
     }
     "message.bankid.start", "message.bankid.autostart.respond", "message.bankid.autostart.respond.two" -> {
-        AuthenticateDialog().show(supportFragmentManager, AuthenticateDialog.TAG)
+        LoginDialog().show(supportFragmentManager, AuthenticateDialog.TAG)
     }
     // bot-service is weird. it sends this when the user gets the option to go to `Hem`.
     // We simply dismiss the activity for now in this case

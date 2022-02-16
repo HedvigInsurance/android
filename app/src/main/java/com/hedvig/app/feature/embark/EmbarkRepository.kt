@@ -10,7 +10,7 @@ import com.hedvig.app.HedvigApplication
 import com.hedvig.app.service.FileService
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.QueryResult
-import com.hedvig.app.util.apollo.safeCall
+import com.hedvig.app.util.apollo.safeGraphqlCall
 import com.hedvig.app.util.jsonObjectOfNotNull
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
@@ -63,7 +63,7 @@ class EmbarkRepository(
                     .header("Content-Type", APPLICATION_JSON)
                     .post(requestBody)
                     .build()
-            ).safeCall()
+            ).safeGraphqlCall()
     }
 
     private fun createVariableRequestBody(

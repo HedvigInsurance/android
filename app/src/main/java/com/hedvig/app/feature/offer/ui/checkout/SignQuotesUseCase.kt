@@ -3,14 +3,12 @@ package com.hedvig.app.feature.offer.ui.checkout
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.EditMailAndSSNMutation
 import com.hedvig.android.owldroid.graphql.SignQuotesMutation
-import com.hedvig.app.feature.offer.OfferTracker
 import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
 
 class SignQuotesUseCase(
     private val apolloClient: ApolloClient,
-    private val tracker: OfferTracker,
     private val cacheManager: CacheManager
 ) {
 
@@ -33,11 +31,7 @@ class SignQuotesUseCase(
         }
 
         return if (results.all { it is SignQuoteResult.Success }) {
-            val result = signQuotesAndClearCache(quoteIds)
-            if (result == SignQuoteResult.Success) {
-                tracker.signQuotes(quoteIds)
-            }
-            result
+            signQuotesAndClearCache(quoteIds)
         } else {
             results.firstOrNull { it is SignQuoteResult.Error }
                 ?.let { SignQuoteResult.Error((it as? SignQuoteResult.Error)?.message) }

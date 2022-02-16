@@ -7,11 +7,12 @@
     <item name="colorOnPrimary" type="color">@color/hedvig_white</item>
     <item name="colorPrimaryVariant" type="color">@color/hedvig_dark_gray</item>
     <item name="colorBackground" type="color">#F6F6F6</item>
+    <item name="colorOnBackground" type="color">@color/hedvig_black</item>
     <item name="colorSurface" type="color">@color/hedvig_white</item>
     <item name="colorOnSurface" type="color">@color/colorPrimary</item>
     <item name="colorSurfaceOnSurface" type="color">#EAEAEA</item>
     <item name="colorSecondary" type="color">@color/lavender_300</item>
-    <item name="colorOnSecondary" type="color">@color/hedvig_white</item>
+    <item name="colorOnSecondary" type="color">@color/hedvig_black</item>
     <item name="colorPlaceholder" type="color">#57121212</item>
     <item name="colorWarning" type="color">#fae098</item>
 
@@ -32,5 +33,7 @@
     <item name="colorInfoCardSurface" type="color">@color/lavender_200</item>
 
     <item name="colorTooltip" type="color">@color/lavender_300</item>
+
+    <item name="progress_overlay" type="color">#66000000</item>
 
 </resources>

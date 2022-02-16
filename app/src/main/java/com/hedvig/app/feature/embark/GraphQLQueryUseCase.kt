@@ -16,7 +16,7 @@ sealed class GraphQLQueryResult {
 
     data class ValuesFromResponse(
         val arrayValues: List<Pair<String, List<String>>>,
-        val objectValues: List<Pair<String, String>>,
+        val objectValues: List<Pair<String, String?>>,
         val passageName: String?
     ) : GraphQLQueryResult()
 }
@@ -82,7 +82,7 @@ class GraphQLQueryUseCase(
 
         val response = result.data.getJSONObject(DATA_TITLE)
         val arrayValues = mutableListOf<Pair<String, List<String>>>()
-        val objectValues = mutableListOf<Pair<String, String>>()
+        val objectValues = mutableListOf<Pair<String, String?>>()
 
         graphQLQuery.queryData.results.forEach { r ->
             addValues(
@@ -107,7 +107,7 @@ class GraphQLQueryUseCase(
         val response = result.data.getJSONObject(DATA_TITLE)
 
         val arrayValues = mutableListOf<Pair<String, List<String>>>()
-        val objectValues = mutableListOf<Pair<String, String>>()
+        val objectValues = mutableListOf<Pair<String, String?>>()
 
         graphQLMutation.mutationData.results.filterNotNull().forEach { r ->
             addValues(
@@ -126,11 +126,12 @@ class GraphQLQueryUseCase(
         key: String,
         response: JSONObject,
         arrayValues: MutableList<Pair<String, List<String>>>,
-        objectValues: MutableList<Pair<String, String>>
+        objectValues: MutableList<Pair<String, String?>>
     ) {
         when (val value = response.getWithDotNotation(accessor)) {
             is JSONArray -> arrayValues.add(Pair(key, value.toStringArray()))
             is JSONObject -> objectValues.add(Pair(key, value.toString()))
+            JSONObject.NULL -> objectValues.add(Pair(key, null))
             else -> objectValues.add(Pair(key, value.toString()))
         }
     }

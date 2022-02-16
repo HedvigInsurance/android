@@ -27,29 +27,18 @@ fun GraphQLVariablesFragment.Variable.toFragment() = GraphQLVariablesFragment(
 )
 
 fun GraphQLVariablesFragment.createKeyValuePairs(getStoredValue: (String) -> String?): Pair<String, Any>? {
-    return asEmbarkAPIGraphQLSingleVariable?.let {
-        val storeValue = getStoredValue(it.from)
-        if (storeValue != null) {
-            it.createSingleVariable(storeValue)
-        } else {
-            null
-        }
+    return asEmbarkAPIGraphQLSingleVariable?.let { embarkAPIGraphQLSingleVariable ->
+        val storeValue = getStoredValue(embarkAPIGraphQLSingleVariable.from)
+        embarkAPIGraphQLSingleVariable.createSingleVariableOrNull(storeValue)
     } ?: asEmbarkAPIGraphQLGeneratedVariable?.createGeneratedVariable()
 }
 
-fun GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable.createSingleVariable(
-    storeValue: String,
+fun GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable.createSingleVariableOrNull(
+    storeValue: String?,
 ): Pair<String, Any>? {
     val value = when (as_) {
         EmbarkAPIGraphQLSingleVariableCasting.STRING -> storeValue
-        EmbarkAPIGraphQLSingleVariableCasting.INT -> {
-            try {
-                storeValue.toInt()
-            } catch (exception: NumberFormatException) {
-                // The stored value can in some cases be floats, eg. for computed store values
-                storeValue.toFloat().toInt()
-            }
-        }
+        EmbarkAPIGraphQLSingleVariableCasting.INT -> getIntOrNull(storeValue)
         EmbarkAPIGraphQLSingleVariableCasting.BOOLEAN -> storeValue.toBoolean()
         // FILE is not handled here since we need to create a separate multipart request body for
         // uploading. See extractFileVariable in VariableExtractor.
@@ -61,8 +50,16 @@ fun GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable.createSingleVariab
     return Pair(key, value)
 }
 
+private fun getIntOrNull(storeValue: String?): Int? {
+    if (storeValue == null) return null
+    val intValue = storeValue.toIntOrNull()
+    if (intValue != null) return intValue
+    // The stored value can in some cases be floats, eg. for computed store values
+    return storeValue.toFloatOrNull()?.toInt()
+}
+
 fun GraphQLVariablesFragment.AsEmbarkAPIGraphQLGeneratedVariable.createGeneratedVariable(
-    generatedValue: UUID = UUID.randomUUID()
+    generatedValue: UUID = UUID.randomUUID(),
 ): Pair<String, String>? {
     return when (type) {
         EmbarkAPIGraphQLVariableGeneratedType.UUID -> Pair(key, generatedValue.toString())
@@ -72,7 +69,7 @@ fun GraphQLVariablesFragment.AsEmbarkAPIGraphQLGeneratedVariable.createGenerated
 }
 
 fun GraphQLVariablesFragment.AsEmbarkAPIGraphQLMultiActionVariable.createMultiActionVariables(
-    getMultiActionItems: (String) -> List<Map<String, String>>
+    getMultiActionItems: (String) -> List<Map<String, String>>,
 ): JSONObject? {
     return getMultiActionItems(key)
         .map { multiActionMap ->

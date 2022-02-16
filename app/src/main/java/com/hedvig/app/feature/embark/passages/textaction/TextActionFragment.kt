@@ -12,16 +12,12 @@ import com.hedvig.app.databinding.EmbarkInputItemBinding
 import com.hedvig.app.databinding.FragmentTextActionSetBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.Response
-import com.hedvig.app.feature.embark.masking.derivedValues
-import com.hedvig.app.feature.embark.masking.remask
-import com.hedvig.app.feature.embark.masking.unmask
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.animateResponse
-import com.hedvig.app.feature.embark.setInputType
-import com.hedvig.app.feature.embark.setValidationFormatter
 import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.KEY_BOARD_DELAY_MILLIS
 import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_MILLIS
-import com.hedvig.app.feature.embark.validationCheck
+import com.hedvig.app.feature.embark.util.setInputType
+import com.hedvig.app.feature.embark.util.setValidationFormatter
 import com.hedvig.app.util.extensions.addViews
 import com.hedvig.app.util.extensions.hideKeyboardWithDelay
 import com.hedvig.app.util.extensions.onChange
@@ -42,6 +38,7 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import java.time.Clock
+import java.time.LocalDate
 
 /**
  * Used for Embark actions TextAction and TextActionSet
@@ -106,10 +103,10 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
         textActionSetViewModel.inputs.value?.let { inputs ->
             data.keys.zip(inputs.values).forEachIndexed { index, (key, input) ->
                 key?.let {
-                    val mask = data.mask.getOrNull(index)
-                    val unmasked = unmask(input, mask)
+                    val mask = data.masks.getOrNull(index)
+                    val unmasked = mask?.unMask(input) ?: input
                     model.putInStore(key, unmasked)
-                    derivedValues(unmasked, key, mask, clock).forEach { (key, value) ->
+                    mask?.derivedValues(unmasked, key, LocalDate.now())?.forEach { (key, value) ->
                         model.putInStore(key, value)
                     }
                 }
@@ -129,7 +126,7 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
         inputView.textField.isExpandedHintEnabled = false
         data.hints.getOrNull(index)?.let { inputView.textField.hint = it }
         data.placeholders.getOrNull(index)?.let { inputView.textField.placeholderText = it }
-        val mask = data.mask.getOrNull(index)
+        val mask = data.masks.getOrNull(index)
         mask?.let {
             inputView.input.apply {
                 setInputType(it)
@@ -144,7 +141,7 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
                     textActionSetViewModel.updateIsValid(index, true)
                 }
             } else {
-                if (text.isNotBlank() && validationCheck(mask, text)) {
+                if (text.isNotBlank() && mask.isValid(text)) {
                     textActionSetViewModel.updateIsValid(index, true)
                 } else {
                     textActionSetViewModel.updateIsValid(index, false)
@@ -173,7 +170,7 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
         }
 
         key?.let(model::getPrefillFromStore)
-            ?.let { remask(it, mask) }
+            ?.let { mask?.mask(it) ?: it }
             ?.let(inputView.input::setText)
         inputView.root
     }

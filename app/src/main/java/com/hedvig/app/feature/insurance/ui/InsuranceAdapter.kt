@@ -20,7 +20,6 @@ import com.hedvig.app.databinding.InsuranceContractCardBinding
 import com.hedvig.app.databinding.InsuranceTerminatedContractsBinding
 import com.hedvig.app.feature.crossselling.ui.detail.CrossSellDetailActivity
 import com.hedvig.app.feature.crossselling.ui.detail.handleAction
-import com.hedvig.app.feature.insurance.service.InsuranceTracker
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
 import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
@@ -33,16 +32,15 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 
 class InsuranceAdapter(
-    private val tracker: InsuranceTracker,
     private val marketManager: MarketManager,
     private val retry: () -> Unit
 ) : ListAdapter<InsuranceModel, InsuranceAdapter.ViewHolder>(InsuranceAdapterDiffUtilItemCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.insurance_contract_card -> ViewHolder.ContractViewHolder(parent)
-        CROSS_SELL -> ViewHolder.CrossSellViewHolder(ComposeView(parent.context), tracker)
+        CROSS_SELL -> ViewHolder.CrossSellViewHolder(ComposeView(parent.context))
         R.layout.insurance_header -> ViewHolder.TitleViewHolder(parent)
-        R.layout.generic_error -> ViewHolder.Error(parent, tracker)
+        R.layout.generic_error -> ViewHolder.Error(parent)
         SUBHEADING -> ViewHolder.SubheadingViewHolder(ComposeView(parent.context))
         NOTIFICATION_SUBHEADING -> ViewHolder.NotificationSubheadingViewHolder(ComposeView(parent.context))
         R.layout.insurance_terminated_contracts -> ViewHolder.TerminatedContracts(parent)
@@ -66,8 +64,9 @@ class InsuranceAdapter(
     }
 
     override fun onViewRecycled(holder: ViewHolder) {
-        if (holder.itemView is ComposeView) {
-            holder.itemView.disposeComposition()
+        val itemView = holder.itemView
+        if (itemView is ComposeView) {
+            itemView.disposeComposition()
         }
     }
 
@@ -80,7 +79,6 @@ class InsuranceAdapter(
 
         class CrossSellViewHolder(
             private val composeView: ComposeView,
-            private val tracker: InsuranceTracker,
         ) : ViewHolder(composeView) {
             init {
                 composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
@@ -101,14 +99,9 @@ class InsuranceAdapter(
                         CrossSell(
                             data = data.inner,
                             onCardClick = {
-                                tracker.crossSellCard(data.inner.typeOfContract)
                                 context.startActivity(CrossSellDetailActivity.newInstance(context, data.inner))
                             },
                             onCtaClick = { label ->
-                                tracker.crossSellCta(
-                                    typeOfContract = data.inner.typeOfContract,
-                                    label = label,
-                                )
                                 handleAction(context, data.inner.action)
                             }
                         )
@@ -130,7 +123,7 @@ class InsuranceAdapter(
                 if (data !is InsuranceModel.Contract) {
                     return invalid(data)
                 }
-                data.inner.bindTo(binding, marketManager)
+                data.contractCardViewState.bindTo(binding, marketManager)
                 card.setHapticClickListener {
                     card.transitionName = TRANSITION_NAME
                     card.context.getActivity()?.let { activity ->
@@ -141,7 +134,7 @@ class InsuranceAdapter(
                         card.context.startActivity(
                             ContractDetailActivity.newInstance(
                                 card.context,
-                                data.inner.id
+                                data.contractCardViewState.id
                             ),
                             ActivityOptionsCompat.makeSceneTransitionAnimation(
                                 activity,
@@ -165,7 +158,6 @@ class InsuranceAdapter(
 
         class Error(
             parent: ViewGroup,
-            private val tracker: InsuranceTracker,
         ) : ViewHolder(parent.inflate(R.layout.generic_error)) {
             private val binding by viewBinding(GenericErrorBinding::bind)
             override fun bind(
@@ -174,7 +166,6 @@ class InsuranceAdapter(
                 marketManager: MarketManager
             ) = with(binding) {
                 this.retry.setHapticClickListener {
-                    tracker.retry()
                     retry()
                 }
             }

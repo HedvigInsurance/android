@@ -9,6 +9,12 @@
     android:orientation="vertical"
     android:padding="@dimen/base_margin_double">
 
+    <androidx.core.widget.ContentLoadingProgressBar
+        android:id="@+id/progress"
+        android:visibility="gone"
+        android:layout_width="40dp"
+        android:layout_height="40dp" />
+
     <TextView
         android:id="@+id/authTitle"
         android:layout_width="wrap_content"

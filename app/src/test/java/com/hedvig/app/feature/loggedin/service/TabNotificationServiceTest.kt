@@ -2,9 +2,9 @@ package com.hedvig.app.feature.loggedin.service
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import com.hedvig.android.owldroid.type.TypeOfContract
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.service.badge.CrossSellNotificationBadgeService
+import com.hedvig.app.service.badge.ReferralsNotificationBadgeService
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.flow.first
@@ -15,12 +15,19 @@ import org.junit.Test
 class TabNotificationServiceTest {
 
     @Test
-    fun `when all cross-sells have been seen, should not show notification for insurance tab`() {
-        val mockService = mockedCrossSellNotificationBadgeService(
-            returnValue = emptySet()
+    fun `when all notifications have been seen, should not show notification for any tab`() {
+        val mockedCrossSellNotificationBadgeService = mockedCrossSellNotificationBadgeService(
+            showNotification = false
         )
 
-        val sut = TabNotificationService(mockService)
+        val mockedReferralsNotificationBadgeService = mockedReferralsNotificationBadgeService(
+            showNotification = false
+        )
+
+        val sut = TabNotificationService(
+            mockedCrossSellNotificationBadgeService,
+            mockedReferralsNotificationBadgeService
+        )
 
         runBlockingTest {
             assertThat(sut.unseenTabNotifications().first()).isEqualTo(emptySet())
@@ -28,23 +35,58 @@ class TabNotificationServiceTest {
     }
 
     @Test
-    fun `when there is an unseen cross-sell, should show notification for insurance tab`() {
-        val mockService = mockedCrossSellNotificationBadgeService(
-            returnValue = setOf(TypeOfContract.SE_ACCIDENT)
+    fun `when there is an unseen cross-sell notification, should show notification for insurance tab`() {
+        val mockedCrossSellNotificationBadgeService = mockedCrossSellNotificationBadgeService(
+            showNotification = true
         )
 
-        val sut = TabNotificationService(mockService)
+        val mockedReferralsNotificationBadgeService = mockedReferralsNotificationBadgeService(
+            showNotification = false
+        )
+
+        val sut = TabNotificationService(
+            mockedCrossSellNotificationBadgeService,
+            mockedReferralsNotificationBadgeService
+        )
 
         runBlockingTest {
             assertThat(sut.unseenTabNotifications().first()).isEqualTo(setOf(LoggedInTabs.INSURANCE))
         }
     }
 
+    @Test
+    fun `when there is an unseen referral notification, should show notification for referral tab`() {
+        val mockedCrossSellNotificationBadgeService = mockedCrossSellNotificationBadgeService(
+            showNotification = false
+        )
+
+        val mockedReferralsNotificationBadgeService = mockedReferralsNotificationBadgeService(
+            showNotification = true
+        )
+
+        val sut = TabNotificationService(
+            mockedCrossSellNotificationBadgeService,
+            mockedReferralsNotificationBadgeService
+        )
+
+        runBlockingTest {
+            assertThat(sut.unseenTabNotifications().first()).isEqualTo(setOf(LoggedInTabs.REFERRALS))
+        }
+    }
+
     private fun mockedCrossSellNotificationBadgeService(
-        returnValue: Set<TypeOfContract>
+        showNotification: Boolean
     ): CrossSellNotificationBadgeService {
         val mock = mockk<CrossSellNotificationBadgeService>()
-        coEvery { mock.getUnseenCrossSells(any()) } returns flowOf(returnValue)
+        coEvery { mock.shouldShowTabNotification() } returns flowOf(showNotification)
+        return mock
+    }
+
+    private fun mockedReferralsNotificationBadgeService(
+        showNotification: Boolean
+    ): ReferralsNotificationBadgeService {
+        val mock = mockk<ReferralsNotificationBadgeService>()
+        coEvery { mock.shouldShowNotification() } returns flowOf(showNotification)
         return mock
     }
 }

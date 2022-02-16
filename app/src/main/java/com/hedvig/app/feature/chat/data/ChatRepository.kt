@@ -2,6 +2,8 @@ package com.hedvig.app.feature.chat.data
 
 import android.content.Context
 import android.net.Uri
+import arrow.core.Either
+import arrow.core.flatMap
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.FileUpload
 import com.apollographql.apollo.api.Response
@@ -28,6 +30,7 @@ import com.hedvig.android.owldroid.type.ChatResponseFileInput
 import com.hedvig.android.owldroid.type.ChatResponseSingleSelectInput
 import com.hedvig.android.owldroid.type.ChatResponseTextInput
 import com.hedvig.app.service.FileService
+import com.hedvig.app.util.apollo.safeQuery
 import com.hedvig.app.util.extensions.into
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -172,12 +175,30 @@ class ChatRepository(
         return apolloClient.mutate(chatFileResponse).await()
     }
 
-    suspend fun editLastResponse() =
+    suspend fun editLastResponse(): Response<EditLastResponseMutation.Data> =
         apolloClient.mutate(EditLastResponseMutation()).await()
 
-    suspend fun triggerFreeTextChat() =
-        apolloClient.mutate(TriggerFreeTextChatMutation()).await()
+    suspend fun triggerFreeTextChat(): Either<FreeTextError, FreeTextSuccess> =
+        apolloClient.mutate(TriggerFreeTextChatMutation())
+            .safeQuery()
+            .toEither { FreeTextError.NetworkError }
+            .flatMap { data ->
+                val didTriggerFreeTextChat = data.triggerFreeTextChat ?: false
 
-    suspend fun searchGifs(query: String) =
+                Either.conditionally(
+                    didTriggerFreeTextChat,
+                    ifFalse = { FreeTextError.CouldNotTrigger },
+                    ifTrue = { FreeTextSuccess }
+                )
+            }
+
+    suspend fun searchGifs(query: String): Response<GifQuery.Data> =
         apolloClient.query(GifQuery(query)).await()
 }
+
+sealed class FreeTextError {
+    object NetworkError : FreeTextError()
+    object CouldNotTrigger : FreeTextError()
+}
+
+object FreeTextSuccess

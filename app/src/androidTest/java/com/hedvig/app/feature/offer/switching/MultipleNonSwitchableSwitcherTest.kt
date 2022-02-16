@@ -35,21 +35,22 @@ class MultipleNonSwitchableSwitcherTest : TestCase() {
 
         OfferScreen {
             scroll {
-                childAt<OfferScreen.SwitcherItem>(8) {
+                val startIndex = 8
+                childAt<OfferScreen.SwitcherItem>(startIndex) {
                     associatedQuote {
                         isVisible()
                         hasText(quoteDisplayName(0))
                     }
                     currentInsurer { hasText(previousInsurerNameForQuote(0)) }
                 }
-                childAt<OfferScreen.SwitcherItem>(9) {
+                childAt<OfferScreen.SwitcherItem>(startIndex + 1) {
                     associatedQuote {
                         isVisible()
                         hasText(quoteDisplayName(1))
                     }
                     currentInsurer { hasText(previousInsurerNameForQuote(1)) }
                 }
-                childAt<OfferScreen.WarningCard>(10) { isShown() }
+                childAt<OfferScreen.WarningCard>(startIndex + 2) { isShown() }
             }
         }
     }

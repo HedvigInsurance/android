@@ -17,6 +17,7 @@ data class PreviousInsurerParameter(
         val name: String,
         val icon: String,
         val id: String,
+        val collectionId: String?,
     ) : Parcelable
 
     companion object {
@@ -36,6 +37,7 @@ data class PreviousInsurerParameter(
                             it.name,
                             it.logo.variants.fragments.iconVariantsFragment.light.svgUrl,
                             it.id,
+                            null,
                         )
                     },
                 storeKey = previousInsuranceAction.previousInsurerData.storeKey,

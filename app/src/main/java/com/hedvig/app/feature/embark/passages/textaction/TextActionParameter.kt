@@ -2,6 +2,8 @@ package com.hedvig.app.feature.embark.passages.textaction
 
 import android.os.Parcelable
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
+import com.hedvig.app.feature.embark.util.MaskType
+import com.hedvig.app.feature.embark.util.maskTypeFromString
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -13,7 +15,7 @@ data class TextActionParameter(
     val messages: List<String>,
     val submitLabel: String,
     val passageName: String,
-    val mask: List<String?>,
+    val masks: List<MaskType?>,
 ) : Parcelable {
     companion object {
         fun from(
@@ -29,8 +31,11 @@ data class TextActionParameter(
                 messages = messages,
                 submitLabel = data.link.fragments.embarkLinkFragment.label,
                 passageName = passageName,
-                mask = data.textActions.map { it.data?.mask }
+                masks = data.textActions.map {
+                    it.data?.mask?.let(::maskTypeFromString)
+                }
             )
+
         fun from(
             messages: List<String>,
             data: EmbarkStoryQuery.TextData,
@@ -44,7 +49,7 @@ data class TextActionParameter(
                 messages = messages,
                 submitLabel = data.link.fragments.embarkLinkFragment.label,
                 passageName = passageName,
-                mask = listOf(data.mask)
+                masks = listOf(data.mask?.let(::maskTypeFromString))
             )
     }
 }

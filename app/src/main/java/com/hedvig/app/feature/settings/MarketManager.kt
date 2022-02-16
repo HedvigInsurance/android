@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
+import com.hedvig.app.isDebug
 
 interface MarketManager {
     val enabledMarkets: List<Market>
@@ -12,7 +13,7 @@ interface MarketManager {
 }
 
 class MarketManagerImpl(
-    context: Context,
+    context: Context
 ) : MarketManager {
 
     private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
@@ -21,6 +22,7 @@ class MarketManagerImpl(
         Market.SE,
         Market.NO,
         Market.DK,
+        if (isDebug()) Market.FR else null
     )
 
     override var market: Market?

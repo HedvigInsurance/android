@@ -40,7 +40,7 @@ android {
         applicationId = "com.hedvig"
 
         versionCode = 43
-        versionName = "6.2.4"
+        versionName = "6.4.3"
 
         vectorDrawables.useSupportLibrary = true
 
@@ -175,34 +175,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.liveData)
     implementation(libs.androidx.lifecycle.runtime)
     implementation(libs.androidx.lifecycle.viewModel)
-    implementation(libs.androidx.other.workManager)
-    implementation(libs.androidx.datastore.core)
-    implementation(libs.androidx.datastore.preferences)
-    implementation(libs.androidx.other.startup)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(libs.androidx.espresso.intents)
-    androidTestImplementation(libs.androidx.espresso.contrib)
-    testImplementation(libs.androidx.test.junit)
-    testImplementation(libs.jsonTest)
-    androidTestImplementation(libs.androidx.test.runner)
-    androidTestImplementation(libs.androidx.test.rules)
-    androidTestImplementation(libs.androidx.test.junit)
-
-    implementation(libs.androidx.other.appCompat)
-    implementation(libs.androidx.other.media)
-    implementation(libs.androidx.other.constraintLayout)
-    implementation(libs.androidx.other.dynamicAnimation)
-    implementation(libs.androidx.other.preference)
-    implementation(libs.androidx.other.core)
-    implementation(libs.androidx.other.viewPager2)
-    implementation(libs.androidx.other.swipeRefreshLayout)
-    implementation(libs.androidx.other.recyclerView)
-    implementation(libs.androidx.other.fragment)
-    implementation(libs.androidx.other.browser)
-    implementation(libs.androidx.lifecycle.common)
-    implementation(libs.androidx.lifecycle.liveData)
-    implementation(libs.androidx.lifecycle.runtime)
-    implementation(libs.androidx.lifecycle.viewModel)
+    implementation(libs.androidx.lifecycle.process)
     implementation(libs.androidx.other.workManager)
     implementation(libs.androidx.datastore.core)
     implementation(libs.androidx.datastore.preferences)
@@ -220,6 +193,8 @@ dependencies {
     implementation(libs.accompanist.pagerIndicators)
     implementation(libs.accompanist.insets)
     implementation(libs.accompanist.insetsUi)
+
+    implementation(libs.arrowKt.core)
 
     implementation(libs.materialComponents)
     implementation(libs.flexbox)
@@ -240,9 +215,8 @@ dependencies {
     implementation(libs.firebase.dynamicLinks)
     implementation(libs.firebase.config)
     implementation(libs.firebase.messaging)
-    implementation(libs.firebase.tracking)
 
-    implementation(libs.mixpanel)
+    implementation(libs.hAnalytics)
 
     implementation(libs.koin.android)
     androidTestImplementation(libs.koin.test)
@@ -296,9 +270,11 @@ dependencies {
 
     implementation(libs.androidx.other.activityCompose)
     implementation(libs.androidx.compose.material)
+    implementation(libs.androidx.compose.materialIconsExtended)
     implementation(libs.androidx.compose.animation)
     implementation(libs.androidx.compose.mdcAdapter)
     implementation(libs.androidx.compose.uiTooling)
+    implementation(libs.androidx.compose.uiViewBinding)
     implementation(libs.androidx.lifecycle.compose)
     androidTestImplementation(libs.androidx.compose.uiTestJunit)
     debugImplementation(libs.androidx.compose.uiTestManifest)

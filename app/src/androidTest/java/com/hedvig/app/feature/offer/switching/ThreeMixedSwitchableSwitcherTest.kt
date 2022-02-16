@@ -35,26 +35,27 @@ class ThreeMixedSwitchableSwitcherTest : TestCase() {
 
         OfferScreen {
             scroll {
-                childAt<OfferScreen.SwitcherItem>(8) {
+                val startIndex = 10
+                childAt<OfferScreen.SwitcherItem>(startIndex) {
                     associatedQuote {
                         isVisible()
                         hasText(quoteDisplayName(0))
                     }
                 }
-                childAt<OfferScreen.SwitcherItem>(9) {
+                childAt<OfferScreen.SwitcherItem>(startIndex + 1) {
                     associatedQuote {
                         isVisible()
                         hasText(quoteDisplayName(2))
                     }
                 }
-                childAt<OfferScreen.WarningCard>(10) { isShown() }
-                childAt<OfferScreen.SwitcherItem>(11) {
+                childAt<OfferScreen.WarningCard>(startIndex + 2) { isShown() }
+                childAt<OfferScreen.SwitcherItem>(startIndex + 3) {
                     associatedQuote {
                         isVisible()
                         hasText(quoteDisplayName(1))
                     }
                 }
-                childAt<OfferScreen.InfoCard>(12) { isShown() }
+                childAt<OfferScreen.InfoCard>(startIndex + 4) { isShown() }
             }
         }
     }

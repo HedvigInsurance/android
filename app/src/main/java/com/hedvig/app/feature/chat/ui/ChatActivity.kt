@@ -2,7 +2,6 @@ package com.hedvig.app.feature.chat.ui
 
 import android.Manifest
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -23,7 +22,6 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityChatBinding
 import com.hedvig.app.feature.chat.ChatInputType
 import com.hedvig.app.feature.chat.ParagraphInput
-import com.hedvig.app.feature.chat.service.ChatTracker
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.extensions.askForPermissions
@@ -54,7 +52,6 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
     private val chatViewModel: ChatViewModel by viewModel()
     private val binding by viewBinding(ActivityChatBinding::bind)
 
-    private val tracker: ChatTracker by inject()
     private val imageLoader: ImageLoader by inject()
 
     private var keyboardHeight = 0
@@ -78,6 +75,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         keyboardHeight = resources.getDimensionPixelSize(R.dimen.default_attach_file_height)
         isKeyboardBreakPoint =
             resources.getDimensionPixelSize(R.dimen.is_keyboard_brake_point_height)
@@ -134,7 +132,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
         binding.input.initialize(
             sendTextMessage = { message ->
                 scrollToBottom(true)
-                chatViewModel.respondToLastMessage(message)
+                chatViewModel.respondWithTextMessage(message)
             },
             sendSingleSelect = { value ->
                 scrollToBottom(true)
@@ -171,7 +169,6 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
                 scrollToBottom(true)
                 chatViewModel.uploadClaim(path)
             },
-            tracker = tracker,
             chatRecyclerView = binding.messages,
         )
     }
@@ -189,7 +186,6 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
                     }
                 )
             },
-            tracker = tracker,
             imageLoader = imageLoader
         )
         binding.messages.adapter = adapter
@@ -197,13 +193,11 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
 
     private fun initializeToolbarButtons() {
         binding.settings.setHapticClickListener {
-            tracker.settings()
             startActivity(SettingsActivity.newInstance(this))
         }
 
         if (intent?.extras?.getBoolean(EXTRA_SHOW_RESTART, false) == true) {
             binding.restart.setOnClickListener {
-                tracker.restartChat()
                 showAlert(
                     R.string.CHAT_RESET_DIALOG_TITLE,
                     R.string.CHAT_RESET_DIALOG_MESSAGE,
@@ -221,7 +215,6 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
 
         if (intent?.extras?.getBoolean(EXTRA_SHOW_CLOSE, false) == true) {
             binding.close.setOnClickListener {
-                tracker.closeChat()
                 onBackPressed()
             }
             binding.close.contentDescription = getString(R.string.CHAT_CLOSE_DESCRIPTION)
@@ -371,17 +364,12 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
     }
 
     private fun openGifPicker() {
-        val gifPickerBottomSheet =
-            GifPickerBottomSheet.newInstance(isKeyboardShown)
-        gifPickerBottomSheet.initialize(
-            onSelectGif = { gifUrl ->
-                chatViewModel.respondToLastMessage(gifUrl)
-            }
-        )
-        gifPickerBottomSheet.show(
-            supportFragmentManager,
-            GifPickerBottomSheet.TAG
-        )
+        GifPickerBottomSheet
+            .newInstance(isKeyboardShown)
+            .show(
+                supportFragmentManager,
+                GifPickerBottomSheet.TAG
+            )
     }
 
     private fun startTakePicture() {
@@ -492,7 +480,6 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
     }
 
     companion object {
-        fun newInstance(context: Context) = Intent(context, ChatActivity::class.java)
 
         private const val REQUEST_WRITE_PERMISSION = 35134
         private const val REQUEST_CAMERA_PERMISSION = 54332
@@ -504,12 +491,5 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
         const val EXTRA_SHOW_RESTART = "extra_show_restart"
 
         const val ACTIVITY_IS_IN_FOREGROUND = "chat_activity_is_in_foreground"
-
-        fun newInstance(context: Context, showClose: Boolean = false) =
-            Intent(context, ChatActivity::class.java).apply {
-                if (showClose) {
-                    putExtra(EXTRA_SHOW_CLOSE, true)
-                }
-            }
     }
 }

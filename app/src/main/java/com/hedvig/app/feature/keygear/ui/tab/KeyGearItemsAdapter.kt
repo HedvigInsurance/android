@@ -15,7 +15,6 @@ import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.R
 import com.hedvig.app.databinding.KeyGearAddItemBinding
 import com.hedvig.app.databinding.KeyGearItemBinding
-import com.hedvig.app.feature.keygear.KeyGearTracker
 import com.hedvig.app.feature.keygear.ui.createitem.illustration
 import com.hedvig.app.feature.keygear.ui.createitem.label
 import com.hedvig.app.util.GenericDiffUtilItemCallback
@@ -25,7 +24,6 @@ import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 
 class KeyGearItemsAdapter(
-    private val tracker: KeyGearTracker,
     private val createItem: (view: View) -> Unit,
     private val openItem: (root: View, item: KeyGearItemsQuery.KeyGearItem) -> Unit,
 ) : ListAdapter<KeyGearItemsQuery.KeyGearItem, KeyGearItemsAdapter.ViewHolder>(
@@ -60,7 +58,7 @@ class KeyGearItemsAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         when (holder) {
             is ViewHolder.NewItem -> {
-                holder.bind(tracker, createItem)
+                holder.bind(createItem)
             }
             is ViewHolder.Item -> {
                 holder.bind(getItem(position), openItem)
@@ -71,10 +69,9 @@ class KeyGearItemsAdapter(
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         class NewItem(view: View) : ViewHolder(view) {
             val binding by viewBinding(KeyGearAddItemBinding::bind)
-            fun bind(tracker: KeyGearTracker, createItem: (view: View) -> Unit) {
+            fun bind(createItem: (view: View) -> Unit) {
                 binding.root.apply {
                     setHapticClickListener { v ->
-                        tracker.createItem()
                         createItem(v)
                     }
                 }

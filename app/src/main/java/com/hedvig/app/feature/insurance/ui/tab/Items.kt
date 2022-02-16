@@ -3,21 +3,26 @@ package com.hedvig.app.feature.insurance.ui.tab
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.feature.insurance.ui.InsuranceModel
+import com.hedvig.app.feature.insurance.ui.detail.toContractCardViewState
 
 fun items(
     data: InsuranceQuery.Data,
     showCrossSellNotificationBadge: Boolean = false
 ): List<InsuranceModel> = ArrayList<InsuranceModel>().apply {
     add(InsuranceModel.Header)
-    val contracts = data.contracts.map(InsuranceModel::Contract).let { contractModels ->
-        if (hasNotOnlyTerminatedContracts(data.contracts)) {
-            contractModels.filter {
-                it.inner.status.fragments.contractStatusFragment.asTerminatedStatus == null
+    val contracts = data.contracts
+        .let { contractModels ->
+            if (hasNotOnlyTerminatedContracts(data.contracts)) {
+                contractModels.filter {
+                    it.status.fragments.contractStatusFragment.asTerminatedStatus == null
+                }
+            } else {
+                contractModels
             }
-        } else {
-            contractModels
         }
-    }
+        .map { it.toContractCardViewState() }
+        .map { InsuranceModel.Contract(it) }
+
     addAll(contracts)
 
     val potentialCrossSells = data.activeContractBundles.flatMap { it.potentialCrossSells }

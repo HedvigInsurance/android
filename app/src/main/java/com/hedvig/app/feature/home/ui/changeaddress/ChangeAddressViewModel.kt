@@ -4,16 +4,28 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import arrow.core.Either
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.home.ui.changeaddress.GetAddressChangeStoryIdUseCase.SelfChangeEligibilityResult
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult
-import com.hedvig.app.util.coroutines.runSuspendCatching
-import e
+import com.hedvig.hanalytics.HAnalytics
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
-abstract class ChangeAddressViewModel : ViewModel() {
+abstract class ChangeAddressViewModel(
+    hAnalytics: HAnalytics,
+) : ViewModel() {
     protected val _viewState = MutableLiveData<ViewState>()
     abstract val viewState: LiveData<ViewState>
+
+    protected val _events = Channel<Event>(Channel.UNLIMITED)
+    val events = _events.receiveAsFlow()
+
+    init {
+        hAnalytics.screenViewMovingFlowIntro()
+    }
+
     abstract fun reload()
 
     abstract suspend fun triggerFreeTextChat()
@@ -23,7 +35,8 @@ class ChangeAddressViewModelImpl(
     private val getUpcomingAgreement: GetUpcomingAgreementUseCase,
     private val addressChangeStoryId: GetAddressChangeStoryIdUseCase,
     private val chatRepository: ChatRepository,
-) : ChangeAddressViewModel() {
+    hAnalytics: HAnalytics,
+) : ChangeAddressViewModel(hAnalytics) {
 
     override val viewState: LiveData<ViewState>
         get() = _viewState
@@ -63,10 +76,13 @@ class ChangeAddressViewModelImpl(
     }
 
     override suspend fun triggerFreeTextChat() {
-        val result = runSuspendCatching {
-            chatRepository.triggerFreeTextChat()
+        viewModelScope.launch {
+            val event = when (chatRepository.triggerFreeTextChat()) {
+                is Either.Left -> Event.Error
+                is Either.Right -> Event.StartChat
+            }
+            _events.trySend(event)
         }
-        result.exceptionOrNull()?.let { e(it) }
     }
 }
 
@@ -79,4 +95,9 @@ sealed class ViewState {
     data class ChangeAddressInProgress(
         val upcomingAgreementResult: UpcomingAgreementResult.UpcomingAgreement
     ) : ViewState()
+}
+
+sealed class Event {
+    object StartChat : Event()
+    object Error : Event()
 }

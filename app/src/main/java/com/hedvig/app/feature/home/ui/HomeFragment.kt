@@ -7,6 +7,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
+import arrow.core.NonEmptyList
 import coil.ImageLoader
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.type.PayinMethodStatus
@@ -14,12 +15,10 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.HomeFragmentBinding
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
-import com.hedvig.app.feature.home.service.HomeTracker
-import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusData
+import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusCardUiState
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
 import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.getLocale
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
@@ -35,7 +34,6 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
     private val binding by viewBinding(HomeFragmentBinding::bind)
     private var scroll = 0
-    private val tracker: HomeTracker by inject()
     private val imageLoader: ImageLoader by inject()
     private val marketManager: MarketManager by inject()
     private val featureManager: FeatureManager by inject()
@@ -50,16 +48,19 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
         loggedInViewModel.onScroll(scroll)
     }
 
+    @OptIn(ExperimentalStdlibApi::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         scroll = 0
 
         val adapter = HomeAdapter(
             fragmentManager = parentFragmentManager,
-            retry = model::load,
+            retry = model::reload,
             startIntentForResult = ::startEmbarkForResult,
             imageLoader = imageLoader,
-            tracker = tracker,
-            marketManager = marketManager
+            marketManager = marketManager,
+            onClaimDetailCardClicked = model::onClaimDetailCardClicked,
+            onClaimDetailCardShown = model::onClaimDetailCardShown,
+            onPaymentCardShown = model::onPaymentCardShown,
         )
 
         binding.swipeToRefresh.setOnRefreshListener {
@@ -114,12 +115,10 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                 return@observe
             }
             if (isPending(successData.contracts)) {
-                val items = mutableListOf<HomeModel>().apply {
+                val items = buildList {
                     add(HomeModel.BigText.Pending(firstName))
                     add(HomeModel.BodyText.Pending)
-                    if (featureManager.isFeatureEnabled(Feature.CLAIMS_STATUS)) {
-                        add(claimStatusCards(successData))
-                    }
+                    addClaimStatusCardsIfApplicable(successData)
                 }
                 adapter.submitList(items)
             }
@@ -132,32 +131,25 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     }
                     .minOrNull()
 
-                if (firstInceptionDate == null) {
-                    adapter.submitList(listOf(HomeModel.Error))
-                    return@observe
-                }
-
-                val items = mutableListOf<HomeModel>().apply {
-                    add(HomeModel.BigText.ActiveInFuture(firstName, firstInceptionDate))
-                    add(HomeModel.BodyText.ActiveInFuture)
-                    if (featureManager.isFeatureEnabled(Feature.CLAIMS_STATUS)) {
-                        add(claimStatusCards(successData))
+                val items = buildList {
+                    if (firstInceptionDate != null) {
+                        add(HomeModel.BigText.ActiveInFuture(firstName, firstInceptionDate))
                     }
+                    add(HomeModel.BodyText.ActiveInFuture)
+                    addClaimStatusCardsIfApplicable(successData)
                 }
                 adapter.submitList(items)
             }
 
             if (isTerminated(successData.contracts)) {
-                val items = mutableListOf<HomeModel>().apply {
+                val items = buildList {
                     add(HomeModel.BigText.Terminated(firstName))
                     add(HomeModel.BodyText.Terminated)
-                    if (successData.claims.isNotEmpty()) {
-                        if (featureManager.isFeatureEnabled(Feature.CLAIMS_STATUS)) {
-                            add(claimStatusCards(successData))
-                        }
+                    val didAddClaimStatusCards = addClaimStatusCardsIfApplicable(successData)
+                    if (didAddClaimStatusCards) {
                         add(HomeModel.StartClaimOutlined.NewClaim)
                     } else {
-                        add(HomeModel.StartClaimOutlined.FirstClaim)
+                        add(HomeModel.StartClaimContained.FirstClaim)
                     }
                     add(HomeModel.HowClaimsWork(successData.howClaimsWork))
                     if (pendingAddress != null && pendingAddress.isNotBlank()) {
@@ -172,13 +164,11 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             }
 
             if (isActive(successData.contracts)) {
-                val items = mutableListOf<HomeModel>().apply {
+                val items = buildList {
                     addAll(listOfNotNull(*psaItems(successData.importantMessages).toTypedArray()))
                     add(HomeModel.BigText.Active(firstName))
-                    if (successData.claims.isNotEmpty()) {
-                        if (featureManager.isFeatureEnabled(Feature.CLAIMS_STATUS)) {
-                            add(claimStatusCards(successData))
-                        }
+                    val didAddClaimStatusCards = addClaimStatusCardsIfApplicable(successData)
+                    if (didAddClaimStatusCards) {
                         add(HomeModel.StartClaimOutlined.NewClaim)
                     } else {
                         add(HomeModel.StartClaimContained.FirstClaim)
@@ -214,15 +204,22 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
         registerForActivityResult.launch(intent)
     }
 
-    private fun claimStatusCards(successData: HomeQuery.Data) = HomeModel.ClaimStatus(
-        successData.claims.map { claim ->
-            ClaimStatusData.fromHomeQueryClaim(
-                homeQueryClaim = claim,
-                resources = resources,
-                locale = getLocale(requireContext(), marketManager.market)
+    /**
+     * returns whether adding the claimStatusCards was applied or not
+     */
+    private fun MutableList<HomeModel>.addClaimStatusCardsIfApplicable(successData: HomeQuery.Data): Boolean {
+        return NonEmptyList.fromList(successData.claimStatusCards)
+            .map { claimStatusCardsQuery ->
+                claimStatusCardsQuery.map(ClaimStatusCardUiState::fromClaimStatusCardsQuery)
+            }
+            .fold(
+                ifEmpty = { false },
+                ifSome = { claimStatusCardDataList ->
+                    add(HomeModel.ClaimStatus(claimStatusCardDataList))
+                    true
+                },
             )
-        }
-    )
+    }
 
     private fun psaItems(
         importantMessages: List<HomeQuery.ImportantMessage?>,
@@ -230,7 +227,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
         .filterNotNull()
         .map { HomeModel.PSA(it) }
 
-    private fun upcomingRenewals(contracts: List<HomeQuery.Contract1>) =
+    private fun upcomingRenewals(contracts: List<HomeQuery.Contract>): List<HomeModel.UpcomingRenewal> =
         contracts.mapNotNull { c ->
             c.upcomingRenewal?.let {
                 HomeModel.UpcomingRenewal(c.displayName, it)
@@ -257,23 +254,23 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
         }
 
     companion object {
-        private fun isPending(contracts: List<HomeQuery.Contract1>) =
+        private fun isPending(contracts: List<HomeQuery.Contract>) =
             contracts.all { it.status.asPendingStatus != null }
 
-        private fun isActiveInFuture(contracts: List<HomeQuery.Contract1>) =
+        private fun isActiveInFuture(contracts: List<HomeQuery.Contract>) =
             contracts.all {
                 it.status.asActiveInFutureStatus != null ||
                     it.status.asActiveInFutureAndTerminatedInFutureStatus != null
             }
 
-        private fun isActive(contracts: List<HomeQuery.Contract1>) =
+        private fun isActive(contracts: List<HomeQuery.Contract>) =
             contracts.any {
                 it.status.asActiveStatus != null ||
                     it.status.asTerminatedTodayStatus != null ||
                     it.status.asTerminatedInFutureStatus != null
             }
 
-        private fun isTerminated(contracts: List<HomeQuery.Contract1>) =
+        private fun isTerminated(contracts: List<HomeQuery.Contract>) =
             contracts.all { it.status.asTerminatedStatus != null }
     }
 }

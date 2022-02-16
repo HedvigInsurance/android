@@ -8,18 +8,15 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.graphql.ProfileQuery
-import com.hedvig.android.owldroid.type.DirectDebitStatus
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ProfileFragmentBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
-import com.hedvig.app.feature.profile.service.ProfileTracker
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppActivity
 import com.hedvig.app.feature.profile.ui.charity.CharityActivity
 import com.hedvig.app.feature.profile.ui.myinfo.MyInfoActivity
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
-import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.apollo.format
@@ -40,7 +37,6 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
     private val model: ProfileViewModel by sharedViewModel()
     private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
     private var scroll = 0
-    private val tracker: ProfileTracker by inject()
     private val marketManager: MarketManager by inject()
 
     override fun onResume() {
@@ -88,7 +84,6 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                                     "${viewState.data.member.firstName} ${viewState.data.member.lastName}",
                                     R.drawable.ic_contact_information
                                 ) {
-                                    tracker.myInfoRow()
                                     startActivity(Intent(requireContext(), MyInfoActivity::class.java))
                                 },
                                 ProfileModel.Row(
@@ -96,7 +91,6 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                                     viewState.data.cashback?.fragments?.cashbackFragment?.name ?: "",
                                     R.drawable.ic_profile_charity
                                 ) {
-                                    tracker.charityRow()
                                     startActivity(Intent(requireContext(), CharityActivity::class.java))
                                 },
                                 ProfileModel.Row(
@@ -117,7 +111,6 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                                     ),
                                     R.drawable.ic_payment
                                 ) {
-                                    tracker.paymentRow()
                                     startActivity(Intent(requireContext(), PaymentActivity::class.java))
                                 },
                                 ProfileModel.Subtitle,
@@ -126,7 +119,6 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                                     getString(R.string.profile_appSettingsSection_row_subheadline),
                                     R.drawable.ic_profile_settings
                                 ) {
-                                    tracker.settings()
                                     startActivity(SettingsActivity.newInstance(requireContext()))
                                 },
                                 ProfileModel.Row(
@@ -134,7 +126,6 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                                     getString(R.string.profile_tab_about_row_subtitle),
                                     R.drawable.ic_info_toolbar
                                 ) {
-                                    tracker.aboutAppRow()
                                     startActivity(Intent(requireContext(), AboutAppActivity::class.java))
                                 },
                                 ProfileModel.Logout
@@ -160,25 +151,11 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
             .launchIn(lifecycleScope)
     }
 
-    private fun getPriceCaption(data: ProfileQuery.Data, monetaryMonthlyNet: String) =
-        when (marketManager.market) {
-            Market.SE -> when (data.bankAccount?.directDebitStatus) {
-                DirectDebitStatus.ACTIVE -> getString(R.string.Direct_Debit_Connected, monetaryMonthlyNet)
-                DirectDebitStatus.NEEDS_SETUP,
-                DirectDebitStatus.PENDING,
-                DirectDebitStatus.UNKNOWN__,
-                null,
-                -> getString(R.string.Direct_Debit_Not_Connected, monetaryMonthlyNet)
-            }
-            Market.DK,
-            Market.NO,
-            -> if (data.activePaymentMethods == null) {
-                getString(R.string.Card_Not_Connected, monetaryMonthlyNet)
-            } else {
-                getString(R.string.Card_Connected, monetaryMonthlyNet)
-            }
-            null -> ""
-        }
+    private fun getPriceCaption(data: ProfileQuery.Data, monetaryMonthlyNet: String): String {
+        return marketManager.market?.getPriceCaption(data)?.let {
+            getString(it, monetaryMonthlyNet)
+        } ?: ""
+    }
 
     companion object {
         val CostFragment.monetaryMonthlyNet: MonetaryAmount

@@ -1,12 +1,23 @@
 package com.hedvig.app.feature.embark
 
-import com.hedvig.app.authenticate.LoginStatus
+import com.hedvig.app.authenticate.LoginStatusService
+import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.testdata.feature.embark.data.STANDARD_STORY
+import com.hedvig.hanalytics.HAnalytics
 
 class MockEmbarkViewModel(
-    tracker: EmbarkTracker,
-    graphQLQueryUseCase: GraphQLQueryUseCase
-) : EmbarkViewModel(tracker, ValueStoreImpl(), graphQLQueryUseCase) {
+    graphQLQueryUseCase: GraphQLQueryUseCase,
+    chatRepository: ChatRepository,
+    hAnalytics: HAnalytics,
+    loginStatusService: LoginStatusService,
+) : EmbarkViewModel(
+    ValueStoreImpl(),
+    graphQLQueryUseCase,
+    chatRepository,
+    hAnalytics,
+    "",
+    loginStatusService,
+) {
     init {
         fetchStory("")
     }
@@ -16,7 +27,7 @@ class MockEmbarkViewModel(
             return
         }
         storyData = mockedData
-        setInitialState(LoginStatus.ONBOARDING)
+        setInitialState()
     }
 
     companion object {

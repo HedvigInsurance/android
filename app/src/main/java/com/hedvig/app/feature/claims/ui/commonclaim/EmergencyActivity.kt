@@ -4,17 +4,18 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import coil.ImageLoader
 import coil.load
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityEmergencyBinding
-import com.hedvig.app.feature.claims.service.ClaimsTracker
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.makeACall
-import com.hedvig.app.util.extensions.startClosableChat
+import com.hedvig.app.util.extensions.showErrorDialog
+import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.disable
@@ -24,13 +25,14 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
 import com.hedvig.app.util.extensions.viewBinding
 import e
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class EmergencyActivity : BaseActivity(R.layout.activity_emergency) {
     private val claimsViewModel: ClaimsViewModel by viewModel()
-    private val tracker: ClaimsTracker by inject()
     private val binding by viewBinding(ActivityEmergencyBinding::bind)
     private val imageLoader: ImageLoader by inject()
 
@@ -44,6 +46,16 @@ class EmergencyActivity : BaseActivity(R.layout.activity_emergency) {
             return
         }
 
+        claimsViewModel.events
+            .flowWithLifecycle(lifecycle)
+            .onEach { event ->
+                when (event) {
+                    ClaimsViewModel.Event.Error -> showErrorDialog(getString(R.string.component_error)) {}
+                    ClaimsViewModel.Event.StartChat -> startChat()
+                }
+            }
+            .launchIn(lifecycleScope)
+
         binding.apply {
             window.compatSetDecorFitsSystemWindows(false)
             toolbar.applyStatusBarInsets()
@@ -55,10 +67,7 @@ class EmergencyActivity : BaseActivity(R.layout.activity_emergency) {
             }
             scrollView.setupToolbarScrollListener(toolbar = toolbar)
 
-            val url = Uri.parse(
-                getString(R.string.BASE_URL) +
-                    data.iconUrls.iconByTheme(firstMessage.commonClaimFirstMessageIcon.context)
-            )
+            val url = Uri.parse(data.iconUrls.iconByTheme(firstMessage.commonClaimFirstMessageIcon.context))
             firstMessage.commonClaimFirstMessageIcon.load(url, imageLoader)
 
             firstMessage.commonClaimFirstMessage.text =
@@ -72,10 +81,8 @@ class EmergencyActivity : BaseActivity(R.layout.activity_emergency) {
             }
 
             thirdEmergencyButton.setHapticClickListener {
-                tracker.emergencyChat()
                 lifecycleScope.launch {
                     claimsViewModel.triggerFreeTextChat()
-                    startClosableChat()
                 }
             }
         }
@@ -85,7 +92,6 @@ class EmergencyActivity : BaseActivity(R.layout.activity_emergency) {
         binding.apply {
             secondEmergencyButton.enable()
             secondEmergencyButton.setHapticClickListener {
-                tracker.callGlobalAssistance()
                 makeACall(Uri.parse("tel:$emergencyNumber"))
             }
         }

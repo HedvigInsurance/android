@@ -14,9 +14,9 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.TerminatedContractsActivityBinding
 import com.hedvig.app.feature.insurance.data.GetContractsUseCase
-import com.hedvig.app.feature.insurance.service.InsuranceTracker
 import com.hedvig.app.feature.insurance.ui.InsuranceAdapter
 import com.hedvig.app.feature.insurance.ui.InsuranceModel
+import com.hedvig.app.feature.insurance.ui.detail.toContractCardViewState
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
@@ -33,7 +33,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class TerminatedContractsActivity : BaseActivity(R.layout.terminated_contracts_activity) {
     private val binding by viewBinding(TerminatedContractsActivityBinding::bind)
     private val model: TerminatedContractsViewModel by viewModel()
-    private val tracker: InsuranceTracker by inject()
     private val marketManager: MarketManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,7 +48,7 @@ class TerminatedContractsActivity : BaseActivity(R.layout.terminated_contracts_a
             toolbar.applyStatusBarInsets()
             recycler.applyNavigationBarInsets()
             toolbar.setNavigationOnClickListener { onBackPressed() }
-            val adapter = InsuranceAdapter(tracker, marketManager, model::load)
+            val adapter = InsuranceAdapter(marketManager, model::load)
             recycler.adapter = adapter
             model
                 .viewState
@@ -110,4 +109,5 @@ class TerminatedContractsViewModel(
 private fun items(data: InsuranceQuery.Data): List<InsuranceModel> = data
     .contracts
     .filter { it.status.fragments.contractStatusFragment.asTerminatedStatus != null }
-    .map(InsuranceModel::Contract)
+    .map { it.toContractCardViewState() }
+    .map { InsuranceModel.Contract(it) }

@@ -15,8 +15,8 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.authenticate.UserViewModel
 import com.hedvig.app.databinding.ActivitySettingsBinding
-import com.hedvig.app.feature.chat.viewmodel.UserViewModel
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.makeLocaleString
 import com.hedvig.app.util.LocaleManager
@@ -27,8 +27,8 @@ import com.hedvig.app.util.extensions.viewBinding
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SettingsActivity : BaseActivity(R.layout.activity_settings) {
     private val binding by viewBinding(ActivitySettingsBinding::bind)
@@ -49,12 +49,14 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
     class PreferenceFragment : PreferenceFragmentCompat() {
         private val marketManager: MarketManager by inject()
         private val userViewModel: UserViewModel by sharedViewModel()
-        private val model: SettingsViewModel by viewModel()
+        private val model: SettingsViewModel by sharedViewModel()
         private val localeManager: LocaleManager by inject()
 
         @SuppressLint("ApplySharedPref")
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.preferences, rootKey)
+
+            getViewModel<SettingsViewModel>()
 
             userViewModel.events
                 .flowWithLifecycle(lifecycle)

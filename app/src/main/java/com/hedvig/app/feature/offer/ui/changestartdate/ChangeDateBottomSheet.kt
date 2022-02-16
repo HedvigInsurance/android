@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.lifecycle.flowWithLifecycle
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.hedvig.app.R
 import com.hedvig.app.databinding.DialogChangeStartDateBinding
@@ -76,7 +78,9 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
     private fun createChangeDateView(inception: ChangeDateBottomSheetData.Inception): View {
         val changeDateView = ChangeDateView(requireContext())
         changeDateView.bind(
-            title = if (!inception.isConcurrent) { inception.title } else null,
+            title = if (!inception.isConcurrent) {
+                inception.title
+            } else null,
             currentInsurerDisplayName = inception.currentInsurer?.displayName,
             startDate = inception.startDate,
             switchable = inception.currentInsurer?.switchable ?: false,
@@ -85,6 +89,9 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
                 MaterialDatePicker.Builder
                     .datePicker()
                     .setTitleText("")
+                    .setCalendarConstraints(
+                        CalendarConstraints.Builder().setValidator(DateValidatorPointForward.now()).build()
+                    )
                     .build()
                     .apply {
                         addOnPositiveButtonClickListener { epochMillis ->

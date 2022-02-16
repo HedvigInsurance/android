@@ -1,0 +1,6 @@
+subscription dataCollectionStatus($reference: ID!) {
+  dataCollectionStatusV2(reference: $reference) {
+    status
+    insuranceCompany
+  }
+}

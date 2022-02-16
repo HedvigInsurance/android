@@ -8,35 +8,43 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimProgressData
-import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusColors
-import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusData
-import com.hedvig.app.feature.home.ui.claimstatus.data.PillData
+import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusCardUiState
+import com.hedvig.app.feature.home.ui.claimstatus.data.PillUiState
+import com.hedvig.app.ui.compose.composables.claimprogress.ClaimProgressRow
+import com.hedvig.app.ui.compose.composables.claimprogress.ClaimProgressUiState
 import com.hedvig.app.ui.compose.theme.HedvigTheme
+import com.hedvig.app.util.compose.preview.previewData
 import java.util.UUID
 
 @Composable
 fun ClaimStatusCard(
-    claimStatusData: ClaimStatusData,
+    uiState: ClaimStatusCardUiState,
     modifier: Modifier = Modifier,
+    isClickable: Boolean = false,
+    onClaimCardShown: (String) -> Unit,
 ) {
+    LaunchedEffect(uiState.id) {
+        onClaimCardShown(uiState.id)
+    }
     Card(
         modifier = modifier,
         elevation = 4.dp
     ) {
         Column {
             TopInfo(
-                pillDataList = claimStatusData.pillData,
-                title = claimStatusData.title,
-                subtitle = claimStatusData.subtitle,
+                pillsUiState = uiState.pillsUiState,
+                title = uiState.title,
+                subtitle = uiState.subtitle,
+                isClickable = isClickable,
                 modifier = Modifier.padding(16.dp)
             )
             Divider()
-            ClaimProgress(
-                claimProgressData = claimStatusData.claimProgressData,
+            ClaimProgressRow(
+                claimProgressItemsUiState = uiState.claimProgressItemsUiState,
                 modifier = Modifier.padding(16.dp)
             )
         }
@@ -51,21 +59,14 @@ fun ClaimStatusCardPreview() {
         Surface(
             color = MaterialTheme.colors.background,
         ) {
-            val claimStatusData = ClaimStatusData(
+            val claimStatusData = ClaimStatusCardUiState(
                 id = UUID.randomUUID().toString(),
-                pillData = listOf(
-                    PillData("Reopened", PillData.PillType.Contained(ClaimStatusColors.Pill.reopened)),
-                    PillData("Claim", PillData.PillType.Outlined),
-                ),
+                pillsUiState = PillUiState.previewData(),
                 title = "All-risk",
-                subtitle = "Contents insurance",
-                claimProgressData = listOf(
-                    ClaimProgressData("Submitted", ClaimProgressData.ClaimProgressType.PastInactive),
-                    ClaimProgressData("Being Handled", ClaimProgressData.ClaimProgressType.Paid),
-                    ClaimProgressData("Closed", ClaimProgressData.ClaimProgressType.FutureInactive),
-                )
+                subtitle = "Home Insurance Renter",
+                claimProgressItemsUiState = ClaimProgressUiState.previewData(),
             )
-            ClaimStatusCard(claimStatusData)
+            ClaimStatusCard(claimStatusData, onClaimCardShown = {})
         }
     }
 }

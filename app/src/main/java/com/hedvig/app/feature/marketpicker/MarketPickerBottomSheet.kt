@@ -14,7 +14,6 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class MarketPickerBottomSheet : BottomSheetDialogFragment() {
     private val binding by viewBinding(ListBottomSheetBinding::bind)
-    private val tracker: MarketPickerTracker by inject()
     private val viewModel: MarketPickerViewModel by sharedViewModel()
     private val marketManager: MarketManager by inject()
 
@@ -26,7 +25,7 @@ class MarketPickerBottomSheet : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.apply {
-            recycler.adapter = MarketPickerBottomSheetAdapter(viewModel, tracker, dialog).also {
+            recycler.adapter = MarketPickerBottomSheetAdapter(viewModel, dialog).also {
                 it.submitList(
                     listOf(MarketAdapterModel.Header) +
                         marketManager.enabledMarkets.map { m ->

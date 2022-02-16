@@ -25,7 +25,6 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
     private val binding by viewBinding(ActivityPaymentBinding::bind)
     private val model: PaymentViewModel by viewModel()
 
-    private val tracker: PaymentTracker by inject()
     private val marketManager: MarketManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +36,7 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
             toolbar.setNavigationOnClickListener { onBackPressed() }
 
             recycler.applyNavigationBarInsets()
-            recycler.adapter = PaymentAdapter(marketManager, supportFragmentManager, tracker)
+            recycler.adapter = PaymentAdapter(marketManager, supportFragmentManager)
 
             model.data.observe(this@PaymentActivity) { (paymentData, payinStatusData) ->
                 if (paymentData == null || payinStatusData == null) {

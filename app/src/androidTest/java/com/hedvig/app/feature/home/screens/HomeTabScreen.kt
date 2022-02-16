@@ -4,8 +4,6 @@ import android.content.Intent
 import android.view.View
 import com.hedvig.app.R
 import com.hedvig.app.common.ErrorItem
-import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinActivity
-import com.hedvig.app.feature.trustly.TrustlyConnectPayinActivity
 import io.github.kakaocup.kakao.image.KImageView
 import io.github.kakaocup.kakao.intent.KIntent
 import io.github.kakaocup.kakao.recycler.KRecyclerItem
@@ -26,7 +24,6 @@ class HomeTabScreen : Screen<HomeTabScreen>() {
                 itemType(::BigTextItem)
                 itemType(::BodyTextItem)
                 itemType(::StartClaimItem)
-                itemType(::InfoCardItem)
                 itemType(::CommonClaimTitleItem)
                 itemType(::CommonClaimItem)
                 itemType(::ErrorItem)
@@ -66,19 +63,6 @@ class HomeTabScreen : Screen<HomeTabScreen>() {
 
     class StartClaimItem(parent: Matcher<View>) : KRecyclerItem<StartClaimItem>(parent) {
         val button = KButton { withMatcher(parent) }
-    }
-
-    class InfoCardItem(parent: Matcher<View>) : KRecyclerItem<InfoCardItem>(parent) {
-        val title = KTextView(parent) { withId(R.id.title) }
-        val body = KTextView(parent) { withId(R.id.body) }
-        val action = KButton(parent) { withId(R.id.action) }
-
-        val connectPayinTrustly = KIntent {
-            hasComponent(TrustlyConnectPayinActivity::class.java.name)
-        }
-
-        val connectPayinAdyen =
-            KIntent { hasComponent(AdyenConnectPayinActivity::class.java.name) }
     }
 
     class CommonClaimTitleItem(parent: Matcher<View>) :

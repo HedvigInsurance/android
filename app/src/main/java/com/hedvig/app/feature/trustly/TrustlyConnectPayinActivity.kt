@@ -15,6 +15,9 @@ import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class TrustlyConnectPayinActivity : BaseActivity(R.layout.fragment_container_activity) {
+
+    override val screenName = "connect_payment_trustly"
+
     private val connectPaymentViewModel: ConnectPaymentViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {

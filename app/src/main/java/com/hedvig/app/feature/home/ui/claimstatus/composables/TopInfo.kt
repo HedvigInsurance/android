@@ -12,22 +12,22 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hedvig.app.feature.home.ui.claimstatus.data.PillData
+import com.hedvig.app.feature.home.ui.claimstatus.data.PillUiState
 import com.hedvig.app.ui.compose.theme.HedvigTheme
-import com.hedvig.app.util.compose.DarkAndLightColor
+import com.hedvig.app.util.compose.preview.previewData
 
 @Composable
 fun TopInfo(
-    pillDataList: List<PillData>,
+    pillsUiState: List<PillUiState>,
     title: String,
     subtitle: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isClickable: Boolean = false,
 ) {
     Column(modifier = modifier) {
-        Pills(pillDataList)
+        ClaimPillsAndForwardArrow(pillsUiState, isClickable = isClickable)
         Spacer(modifier = Modifier.height(20.dp))
         Text(title)
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
@@ -49,15 +49,9 @@ fun TopInfoPreview() {
             color = MaterialTheme.colors.background,
         ) {
             TopInfo(
-                pillDataList = listOf(
-                    PillData(
-                        "Reopened",
-                        PillData.PillType.Contained(DarkAndLightColor(Color(0xFFFE9650)))
-                    ),
-                    PillData("Claim", PillData.PillType.Outlined),
-                ),
+                pillsUiState = PillUiState.previewData(),
                 title = "All-risk",
-                subtitle = "Contents insurance",
+                subtitle = "Home Insurance Renter",
             )
         }
     }

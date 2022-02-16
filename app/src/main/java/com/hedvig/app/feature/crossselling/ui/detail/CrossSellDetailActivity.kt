@@ -16,6 +16,9 @@ import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.core.parameter.parametersOf
 
 class CrossSellDetailActivity : BaseActivity() {
+
+    override val screenName = "cross_sell_detail"
+
     private val crossSell: CrossSellData
         get() = intent.getParcelableExtra(CROSS_SELL)
             ?: throw IllegalArgumentException("Programmer error: CROSS_SELL not passed to ${this.javaClass.name}")

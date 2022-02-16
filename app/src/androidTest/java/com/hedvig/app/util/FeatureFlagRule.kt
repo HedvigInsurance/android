@@ -1,6 +1,6 @@
 package com.hedvig.app.util
 
-import com.hedvig.app.featureRuntimeBehaviorModule
+import com.hedvig.app.featureManagerModule
 import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
 import io.mockk.every
@@ -22,12 +22,12 @@ class FeatureFlagRule(
     }
 
     override fun before() {
-        unloadKoinModules(featureRuntimeBehaviorModule)
+        unloadKoinModules(featureManagerModule)
         loadKoinModules(mockModule)
     }
 
     override fun after() {
         unloadKoinModules(mockModule)
-        loadKoinModules(featureRuntimeBehaviorModule)
+        loadKoinModules(featureManagerModule)
     }
 }

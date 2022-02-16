@@ -1,0 +1,13 @@
+mutation initiateDataCollectionNO(
+  $reference: ID!,
+  $insuranceProvider: String!,
+  $personalNumber: String!
+) {
+  externalInsuranceProvider {
+    initiateDataCollectionWithNorwegianPersonalNumber(input: {
+      reference: $reference,
+      insuranceProvider: $insuranceProvider,
+      personalNumber: $personalNumber,
+    })
+  }
+}

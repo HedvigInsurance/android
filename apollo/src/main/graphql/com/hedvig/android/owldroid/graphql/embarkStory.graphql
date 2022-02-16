@@ -73,6 +73,7 @@ query EmbarkStory($name: String!, $locale: String!) {
               }
               keys
               values
+              badge
               api {
                 ...ApiFragment
               }
@@ -128,6 +129,17 @@ query EmbarkStory($name: String!, $locale: String!) {
                 }
               }
             }
+          }
+        }
+        ... on EmbarkExternalInsuranceProviderAction {
+          externalInsurerData: data {
+            next {
+              ...EmbarkLinkFragment
+            }
+            skip {
+              ...EmbarkLinkFragment
+            },
+            storeKey
           }
         }
         ... on EmbarkNumberAction {
@@ -206,6 +218,19 @@ query EmbarkStory($name: String!, $locale: String!) {
             }
           }
         }
+        ... on EmbarkAddressAutocompleteAction {
+          component
+          addressAutocompleteActionData: data {
+            placeholder
+            key
+            link {
+              ...EmbarkLinkFragment
+            }
+            api {
+              ...ApiFragment
+            }
+          }
+        }
       }
       api {
         ...ApiFragment
@@ -222,6 +247,15 @@ query EmbarkStory($name: String!, $locale: String!) {
         eventKeys
         includeAllKeys
         customData
+      }
+      variantedOfferRedirects {
+        data {
+          selectedKeys
+          allKeys
+          expression {
+            ...ExpressionFragment
+          }
+        }
       }
     }
   }

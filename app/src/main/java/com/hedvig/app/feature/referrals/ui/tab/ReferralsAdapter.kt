@@ -4,6 +4,11 @@ import android.animation.ValueAnimator
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.unit.dp
 import androidx.core.view.doOnDetach
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.ListAdapter
@@ -16,10 +21,11 @@ import com.hedvig.app.databinding.ReferralsCodeBinding
 import com.hedvig.app.databinding.ReferralsErrorBinding
 import com.hedvig.app.databinding.ReferralsHeaderBinding
 import com.hedvig.app.databinding.ReferralsRowBinding
-import com.hedvig.app.feature.referrals.service.ReferralsTracker
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeActivity
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.ui.compose.composables.banner.InfoBanner
+import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
@@ -41,8 +47,8 @@ import org.javamoney.moneta.Money
 
 class ReferralsAdapter(
     private val reload: () -> Unit,
-    private val tracker: ReferralsTracker,
-    private val marketManager: MarketManager
+    private val onBannerClicked: () -> Unit,
+    private val marketManager: MarketManager,
 ) : ListAdapter<ReferralsModel, ReferralsAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
@@ -52,6 +58,7 @@ class ReferralsAdapter(
         ReferralsModel.InvitesHeader -> R.layout.referrals_invites_header
         is ReferralsModel.Referral -> R.layout.referrals_row
         ReferralsModel.Error -> R.layout.referrals_error
+        is ReferralsModel.ReferralTopBar -> INFO_BANNER
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
@@ -61,18 +68,18 @@ class ReferralsAdapter(
         R.layout.referrals_invites_header -> ViewHolder.InvitesHeaderViewHolder(parent)
         R.layout.referrals_row -> ViewHolder.ReferralViewHolder(parent)
         R.layout.referrals_error -> ViewHolder.ErrorViewHolder(parent)
+        INFO_BANNER -> ViewHolder.InfoBanner(ComposeView(parent.context), onBannerClicked)
         else -> throw Error("Invalid viewType")
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position), reload, tracker, marketManager)
+        holder.bind(getItem(position), reload, marketManager)
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         abstract fun bind(
             data: ReferralsModel,
             reload: () -> Unit,
-            tracker: ReferralsTracker,
             marketManager: MarketManager
         )
 
@@ -80,7 +87,6 @@ class ReferralsAdapter(
             override fun bind(
                 data: ReferralsModel,
                 reload: () -> Unit,
-                tracker: ReferralsTracker,
                 marketManager: MarketManager
             ) =
                 Unit
@@ -91,7 +97,6 @@ class ReferralsAdapter(
             override fun bind(
                 data: ReferralsModel,
                 reload: () -> Unit,
-                tracker: ReferralsTracker,
                 marketManager: MarketManager
             ) {
                 binding.apply {
@@ -307,8 +312,7 @@ class ReferralsAdapter(
             override fun bind(
                 data: ReferralsModel,
                 reload: () -> Unit,
-                tracker: ReferralsTracker,
-                marketManager: MarketManager,
+                marketManager: MarketManager
             ) {
                 binding.apply {
                     when (data) {
@@ -350,7 +354,6 @@ class ReferralsAdapter(
                                     )
                                 }
                             edit.setHapticClickListener {
-                                tracker.editCode()
                                 edit.context.startActivity(
                                     ReferralsEditCodeActivity.newInstance(
                                         edit.context,
@@ -373,10 +376,8 @@ class ReferralsAdapter(
             override fun bind(
                 data: ReferralsModel,
                 reload: () -> Unit,
-                tracker: ReferralsTracker,
                 marketManager: MarketManager
-            ) =
-                Unit
+            ) = Unit
         }
 
         class ReferralViewHolder(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.referrals_row)) {
@@ -384,7 +385,6 @@ class ReferralsAdapter(
             override fun bind(
                 data: ReferralsModel,
                 reload: () -> Unit,
-                tracker: ReferralsTracker,
                 marketManager: MarketManager
             ) {
                 binding.apply {
@@ -461,12 +461,36 @@ class ReferralsAdapter(
             override fun bind(
                 data: ReferralsModel,
                 reload: () -> Unit,
-                tracker: ReferralsTracker,
                 marketManager: MarketManager
             ) {
                 binding.retry.setHapticClickListener {
-                    tracker.reload()
                     reload()
+                }
+            }
+        }
+
+        class InfoBanner(private val composeView: ComposeView, private val onBannerClicked: () -> Unit) :
+            ViewHolder(composeView) {
+            init {
+                composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            }
+
+            override fun bind(
+                data: ReferralsModel,
+                reload: () -> Unit,
+                marketManager: MarketManager
+            ) {
+                if (data !is ReferralsModel.ReferralTopBar) {
+                    return
+                }
+                composeView.setContent {
+                    HedvigTheme {
+                        InfoBanner(
+                            onClick = onBannerClicked,
+                            text = data.description,
+                            modifier = Modifier.padding(top = 16.dp)
+                        )
+                    }
                 }
             }
         }
@@ -485,5 +509,7 @@ class ReferralsAdapter(
             ReferralsModel.Title,
             ReferralsModel.Error,
         )
+
+        private const val INFO_BANNER = 1
     }
 }

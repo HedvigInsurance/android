@@ -4,9 +4,9 @@ import androidx.recyclerview.widget.DiffUtil
 
 class OnboardingDiffUtilCallback : DiffUtil.ItemCallback<OnboardingModel>() {
     override fun areItemsTheSame(oldItem: OnboardingModel, newItem: OnboardingModel): Boolean {
-        if (oldItem is OnboardingModel.Bundle && newItem is OnboardingModel.Bundle) {
-            return when (oldItem.embarkStory.name) {
-                newItem.embarkStory.name -> true
+        if (oldItem is OnboardingModel.BundleItem && newItem is OnboardingModel.BundleItem) {
+            return when (oldItem.bundle.storyName) {
+                newItem.bundle.storyName -> true
                 else -> false
             }
         }

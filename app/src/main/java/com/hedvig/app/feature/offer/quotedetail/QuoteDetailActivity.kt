@@ -81,7 +81,7 @@ class QuoteDetailActivity : BaseActivity(R.layout.quote_detail_activity) {
                 fragmentManager = supportFragmentManager
             ).also { it.submitList(listOf(InsurableLimitItem.Header.Details) + insurableLimits) }
 
-            val documentAdapter = DocumentAdapter {}
+            val documentAdapter = DocumentAdapter()
                 .also {
                     it.submitList(
                         listOf(

@@ -1,24 +1,38 @@
 package com.hedvig.app.feature.home.ui.claimstatus.data
 
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import com.hedvig.app.R
-import com.hedvig.app.util.compose.DarkAndLightColor
 
 object ClaimStatusColors {
     object Pill {
-        val paid: DarkAndLightColor = DarkAndLightColor(
-            dark = R.color.lavender_400,
-            light = R.color.lavender_200,
-        )
+        val paid: Color
+            @Composable
+            get() = if (isSystemInDarkTheme()) {
+                colorResource(R.color.lavender_400)
+            } else {
+                colorResource(R.color.lavender_200)
+            }
 
-        val reopened: DarkAndLightColor = DarkAndLightColor(
-            dark = R.color.forever_orange_500,
-            light = R.color.forever_orange_300,
-        )
+        val reopened: Color
+            @Composable
+            get() = if (isSystemInDarkTheme()) {
+                colorResource(R.color.forever_orange_500)
+            } else {
+                colorResource(R.color.forever_orange_300)
+            }
     }
 
     object Progress {
-        val paid: DarkAndLightColor = DarkAndLightColor(R.color.colorSecondary)
+        val paid: Color
+            @Composable
+            get() = MaterialTheme.colors.secondary
 
-        val reopened: DarkAndLightColor = DarkAndLightColor(R.color.forever_orange_500)
+        val reopened: Color
+            @Composable
+            get() = colorResource(R.color.forever_orange_500)
     }
 }

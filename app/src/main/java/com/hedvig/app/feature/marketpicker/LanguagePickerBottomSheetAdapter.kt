@@ -17,7 +17,6 @@ import com.hedvig.app.util.extensions.viewBinding
 
 class LanguagePickerBottomSheetAdapter(
     private val viewModel: MarketPickerViewModel,
-    private val tracker: MarketPickerTracker,
     private val dialog: Dialog?,
 ) : ListAdapter<LanguageAdapterModel, LanguagePickerBottomSheetAdapter.ViewHolder>(
     GenericDiffUtilItemCallback()
@@ -37,14 +36,13 @@ class LanguagePickerBottomSheetAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position), viewModel, tracker, dialog)
+        holder.bind(getItem(position), viewModel, dialog)
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         abstract fun bind(
             item: LanguageAdapterModel,
             viewModel: MarketPickerViewModel,
-            tracker: MarketPickerTracker,
             dialog: Dialog?,
         )
 
@@ -54,7 +52,6 @@ class LanguagePickerBottomSheetAdapter(
             override fun bind(
                 item: LanguageAdapterModel,
                 viewModel: MarketPickerViewModel,
-                tracker: MarketPickerTracker,
                 dialog: Dialog?,
             ) {
                 if (item !is LanguageAdapterModel.LanguageItem) {
@@ -66,7 +63,6 @@ class LanguagePickerBottomSheetAdapter(
                     text.text = text.context.getString(item.inner.getLabel())
 
                     root.setHapticClickListener {
-                        tracker.selectLocale(item.inner)
                         viewModel.applyLanguageAndReload(item.inner)
                         dialog?.cancel()
                     }
@@ -79,7 +75,6 @@ class LanguagePickerBottomSheetAdapter(
             override fun bind(
                 item: LanguageAdapterModel,
                 viewModel: MarketPickerViewModel,
-                tracker: MarketPickerTracker,
                 dialog: Dialog?,
             ) {
                 binding.header.setText(R.string.language_picker_modal_title)
@@ -91,7 +86,6 @@ class LanguagePickerBottomSheetAdapter(
             override fun bind(
                 item: LanguageAdapterModel,
                 viewModel: MarketPickerViewModel,
-                tracker: MarketPickerTracker,
                 dialog: Dialog?,
             ) {
             }
