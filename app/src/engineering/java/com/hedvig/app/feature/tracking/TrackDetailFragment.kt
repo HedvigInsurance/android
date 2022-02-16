@@ -28,7 +28,8 @@ class TrackDetailFragment : DialogFragment(R.layout.tracking_detail_fragment) {
                 properties.setMarkdownText(
                     """```json
 ${event.propertiesJsonString}
-```"""
+```
+                    """
                 )
             } else {
                 properties.setText(com.hedvig.app.R.string.event_detail_properties_none)
