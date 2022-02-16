@@ -103,6 +103,21 @@
             android:name=".feature.tracking.TrackingLogActivity"
             android:launchMode="singleTop" />
 
+        <activity
+            android:exported="true"
+            android:name=".feature.impersonation.ImpersonationReceiverActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:scheme="hedvigengineering"
+                    android:host="impersonate" />
+            </intent-filter>
+        </activity>
+
         <meta-data
             android:name="com.mixpanel.android.MPConfig.DisableEmulatorBindingUI"
             android:value="true" />
