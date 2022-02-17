@@ -320,8 +320,6 @@
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".feature.claimdetail.ClaimDetailActivity" />
 
-        <activity android:name=".util.featureflags.FeatureFlagActivity" />
-
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_hedvig_h" />
