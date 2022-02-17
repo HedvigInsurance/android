@@ -592,7 +592,7 @@ val repositoriesModule = module {
     single { TrustlyRepository(get()) }
     single { GetMemberIdUseCase(get()) }
     single { PaymentRepository(get(), get()) }
-    single { GetBundlesUseCase(get(), get()) }
+    single { GetBundlesUseCase(get(), get(), get()) }
 }
 
 val trackerModule = module {

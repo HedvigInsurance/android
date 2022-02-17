@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.onboarding
 
+import com.hedvig.android.owldroid.type.EmbarkStoryType
 import com.hedvig.app.feature.tracking.MockHAnalytics
 import com.hedvig.app.testdata.feature.onboarding.CHOOSE_PLAN_DATA
 
@@ -13,6 +14,6 @@ class MockChoosePlanViewModel : ChoosePlanViewModel(MockHAnalytics()) {
     }
 
     companion object {
-        var mockData = CHOOSE_PLAN_DATA.mapToSuccess().toModel()
+        var mockData = CHOOSE_PLAN_DATA.mapToSuccess(EmbarkStoryType.APP_ONBOARDING).toModel()
     }
 }
