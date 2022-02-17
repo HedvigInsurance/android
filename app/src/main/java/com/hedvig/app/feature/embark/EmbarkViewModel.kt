@@ -16,6 +16,7 @@ import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.embark.extensions.api
 import com.hedvig.app.feature.embark.extensions.getComputedValues
+import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.embark.util.evaluateExpression
 import com.hedvig.app.feature.embark.util.getFileVariables
 import com.hedvig.app.feature.embark.util.getOfferKeysOrNull
@@ -490,6 +491,7 @@ class EmbarkViewModelImpl(
     valueStore: ValueStore,
     hAnalytics: HAnalytics,
     storyName: String,
+    private val createQuoteCartUseCase: CreateQuoteCartUseCase,
 ) : EmbarkViewModel(
     valueStore,
     graphQLQueryUseCase,
@@ -508,6 +510,12 @@ class EmbarkViewModelImpl(
             val result = runCatching {
                 embarkRepository.embarkStory(name)
             }
+
+            when (val quoteCartResult = createQuoteCartUseCase.invoke()) {
+                is Either.Left -> Event.Error()
+                is Either.Right -> putInStore("quoteCartId", quoteCartResult.value.id)
+            }
+
             if (result.isFailure) {
                 _events.trySend(
                     Event.Error(
