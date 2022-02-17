@@ -41,7 +41,7 @@ fun ClaimDetailUiState.Companion.previewData(): ClaimDetailUiState {
             statusParagraph = """
                 |Your claim in being reviewed by one of our insurance specialists.
                 | We'll get back to you soon with an update.
-                """.trimMargin(),
+            """.trimMargin(),
         ),
         signedAudioURL = null,
         claimStatus = ClaimStatus.BEING_HANDLED,

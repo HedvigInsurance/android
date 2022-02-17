@@ -60,7 +60,8 @@ class MockAdyenConnectPayinViewModel : AdyenConnectPayinViewModel() {
       "type": "scheme"
     }
   ]
-}"""
+}
+                    """
                 )
             )
         )
