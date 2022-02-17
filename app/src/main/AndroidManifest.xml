@@ -322,8 +322,6 @@
         <activity android:name=".feature.claimdetail.ClaimDetailActivity" />
         <activity android:name=".feature.tracking.NotificationOpenedTrackingActivity" />
 
-        <activity android:name=".util.featureflags.FeatureFlagActivity" />
-
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/ic_hedvig_h" />

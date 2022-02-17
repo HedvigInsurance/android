@@ -1,4 +1,4 @@
-package com.hedvig.app.util.featureflags
+package com.hedvig.app.featureflags
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -33,6 +33,7 @@ import com.google.accompanist.insets.systemBarsPadding
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.ui.compose.composables.appbar.TopAppBarWithBack
 import com.hedvig.app.ui.compose.theme.HedvigTheme
+import com.hedvig.app.util.featureflags.Feature
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject

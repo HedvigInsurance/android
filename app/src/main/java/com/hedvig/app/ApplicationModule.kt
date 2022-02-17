@@ -194,6 +194,7 @@ import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
 import com.hedvig.app.feature.zignsec.usecase.StartDanishAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.StartNorwegianAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthStatusUseCase
+import com.hedvig.app.featureflags.FeatureFlagEntryProvider
 import com.hedvig.app.service.FileService
 import com.hedvig.app.service.RemoteConfig
 import com.hedvig.app.service.badge.CrossSellNotificationBadgeService
@@ -675,6 +676,7 @@ val sharedPreferencesModule = module {
 
 val featureManagerModule = module {
     single { FeatureManager(get(), get(), get()) }
+    single { FeatureFlagEntryProvider() }
 }
 
 val coilModule = module {
