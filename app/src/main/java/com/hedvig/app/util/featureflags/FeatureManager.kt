@@ -1,6 +1,8 @@
 package com.hedvig.app.util.featureflags
 
 import androidx.annotation.VisibleForTesting
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.isDebug
 import com.hedvig.app.service.RemoteConfig
@@ -9,6 +11,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 data class FeatureManager(
     private val marketManager: MarketManager,
     private val remoteConfig: RemoteConfig,
+    private val dataStore: DataStore<Preferences>,
 ) {
 
     @VisibleForTesting
@@ -16,7 +19,7 @@ data class FeatureManager(
 
     init {
         if (isDebug()) {
-            addProvider(DebugFeatureFlagProvider(marketManager))
+            addProvider(DebugFeatureFlagProvider(dataStore))
         } else {
             addProvider(RemoteFeatureFlagProvider(marketManager, remoteConfig))
             addProvider(ProductionFeatureFlagProvider(marketManager))
