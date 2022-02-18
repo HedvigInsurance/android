@@ -16,7 +16,7 @@ class CreateQuoteCartUseCase(
 
     private val mutation = CreateOnboardingQuoteCartMutation(
         localeManager.defaultLocale().toString(),
-        marketManager.market!!.toGraphQLMarket()
+        marketManager.market?.toGraphQLMarket() ?: Market.SWEDEN
     )
 
     data class Error(val message: String?)
