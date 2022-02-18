@@ -512,7 +512,7 @@ class EmbarkViewModelImpl(
             }
 
             when (val quoteCartResult = createQuoteCartUseCase.invoke()) {
-                is Either.Left -> Event.Error()
+                is Either.Left -> _events.trySend(Event.Error(quoteCartResult.value.message))
                 is Either.Right -> putInStore("quoteCartId", quoteCartResult.value.id)
             }
 

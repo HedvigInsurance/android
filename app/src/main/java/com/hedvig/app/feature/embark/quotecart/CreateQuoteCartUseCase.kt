@@ -10,32 +10,26 @@ import com.hedvig.app.util.apollo.safeQuery
 
 class CreateQuoteCartUseCase(
     val apolloClient: ApolloClient,
-    private val localeManager: LocaleManager,
-    private val marketManager: MarketManager,
+    localeManager: LocaleManager,
+    marketManager: MarketManager,
 ) {
 
-    sealed interface Error {
-        object NetworkError : Error
-    }
+    private val mutation = CreateOnboardingQuoteCartMutation(
+        localeManager.defaultLocale().toString(),
+        marketManager.market!!.toGraphQLMarket()
+    )
+
+    data class Error(val message: String?)
 
     @JvmInline
     value class QuoteCartId(val id: String)
 
     suspend operator fun invoke(): Either<Error, QuoteCartId> {
         return apolloClient
-            .mutate(
-                CreateOnboardingQuoteCartMutation(
-                    localeManager.defaultLocale().toString(),
-                    marketManager.market!!.toGraphQLMarket()
-                )
-            )
+            .mutate(mutation)
             .safeQuery()
-            .toEither {
-                Error.NetworkError
-            }
-            .map { data ->
-                QuoteCartId(data.onboardingQuoteCart_create.id)
-            }
+            .toEither { Error(it) }
+            .map { QuoteCartId(it.onboardingQuoteCart_create.id) }
     }
 
     private fun com.hedvig.app.feature.settings.Market.toGraphQLMarket(): Market = when (this) {
