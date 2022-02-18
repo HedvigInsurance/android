@@ -124,14 +124,6 @@ abstract class EmbarkViewModel(
 
     fun getPrefillFromStore(key: String) = valueStore.prefill.get(key)
 
-    private fun getFromStore(key: String) = valueStore.get(key)
-
-    private fun getListFromStore(keys: List<String>): List<String> {
-        return keys.map {
-            valueStore.getList(it) ?: listOfNotNull(valueStore.get(it))
-        }.flatten()
-    }
-
     fun submitAction(nextPassageName: String, submitIndex: Int = 0) {
         val apiFromAction = viewState.value?.passageState?.passage?.action?.api(submitIndex)
         if (apiFromAction != null) {
@@ -152,8 +144,12 @@ abstract class EmbarkViewModel(
             storyData.embarkStory == null || nextPassage == null -> _events.trySend(Event.Error())
             redirectPassage != null -> navigateToPassage(redirectPassage)
             keys != null && keys.isNotEmpty() -> {
-                val ids = getListFromStore(keys)
-                _events.trySend(Event.Offer(ids))
+                // For offers, there is a problem with the Offer screen not committing before this stage is reached,
+                //  meaning that the old values were returned from getList/get.
+                valueStore.withCommittedVersion {
+                    val ids = keys.flatMap { this.getList(it) ?: listOfNotNull(this.get(it)) }
+                    _events.trySend(Event.Offer(ids))
+                }
             }
             location != null -> handleRedirectLocation(location)
             api != null -> callApi(api)
@@ -246,7 +242,7 @@ abstract class EmbarkViewModel(
     }
 
     private fun sendOfferId() {
-        val id = getFromStore("quoteId")
+        val id = valueStore.get("quoteId")
         if (id == null) {
             _events.trySend(Event.Error())
         } else {

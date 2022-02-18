@@ -5,6 +5,7 @@ import java.util.Stack
 
 interface ValueStore : ValueStoreView {
     var computedValues: Map<String, String>?
+    fun withCommittedVersion(block: ValueStore.() -> Unit)
     fun commitVersion()
     fun rollbackVersion()
     fun put(key: String, value: String?)
@@ -28,6 +29,18 @@ class ValueStoreImpl : ValueStore {
     private val prefillValues = HashMap<String, String?>()
 
     override var computedValues: Map<String, String>? = null
+
+    /**
+     * Runs [block] on the committed version of the current [ValueStore]. Makes sure to revert the store to its previous
+     * state after the [block] scope.
+     */
+    override fun withCommittedVersion(block: ValueStore.() -> Unit) {
+        val oldStage = HashMap(stage)
+        commitVersion()
+        this.block()
+        rollbackVersion()
+        stage.putAll(oldStage)
+    }
 
     override fun commitVersion() {
         storedValues.push(HashMap(storedValues.peek() + stage))

@@ -37,6 +37,7 @@ import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.hanalytics.HAnalytics
 import e
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
@@ -170,6 +171,7 @@ class OfferViewModelImpl(
     private val offerAndLoginStatus: MutableStateFlow<OfferAndLoginStatus> =
         MutableStateFlow(OfferAndLoginStatus.Loading)
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override val viewState: StateFlow<ViewState> = offerAndLoginStatus.transformLatest { offerResponse ->
         when (offerResponse) {
             OfferAndLoginStatus.Error -> emit(ViewState.Error)
@@ -365,7 +367,7 @@ class OfferViewModelImpl(
 
     override fun onOpenQuoteDetails(id: String) {
         viewModelScope.launch {
-            when (val result = getQuoteUseCase(quoteIds, id)) {
+            when (val result = getQuoteUseCase.invoke(quoteIds, id)) {
                 GetQuoteUseCase.Result.Error -> {
                     offerAndLoginStatus.value = OfferAndLoginStatus.Error
                 }

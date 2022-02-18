@@ -20,6 +20,9 @@ class ValueStoreRule(
         unloadKoinModules(valueStoreModule)
         loadKoinModules(module { single { valueStore } })
         every { valueStore.get(key) } returns value
+        every { valueStore.withCommittedVersion(any()) } coAnswers {
+            firstArg<ValueStore.() -> Unit>().invoke(valueStore)
+        }
     }
 
     override fun after() {
