@@ -301,7 +301,7 @@ abstract class EmbarkViewModel(
         else -> emptyMap()
     }.let { data ->
         track.customData?.let { data + it.asMap() } ?: data
-    }
+    }.map { it.key to it.value.toString() }.toMap()
 
     private fun currentProgress(passage: EmbarkStoryQuery.Passage?): ProgressPercentage {
         if (passage == null) {

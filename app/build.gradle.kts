@@ -9,6 +9,7 @@ plugins {
     id("kotlin-parcelize")
     id("kotlin-kapt")
     id("com.hedvig.android.lokalise")
+    kotlin("plugin.serialization") version "1.5.31"
 }
 
 apply(plugin = "com.jaredsburrows.license")
@@ -159,6 +160,8 @@ dependencies {
     implementation(libs.coroutines.core)
     implementation(libs.coroutines.android)
     testImplementation(libs.coroutines.test)
+
+    implementation(libs.serialization)
 
     implementation(libs.androidx.other.appCompat)
     implementation(libs.androidx.other.media)
