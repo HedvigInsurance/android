@@ -85,6 +85,7 @@ import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionParams
 import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionViewModel
 import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
 import com.hedvig.app.feature.embark.passages.textaction.TextActionViewModel
+import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.embark.ui.TooltipViewModel
 import com.hedvig.app.feature.genericauth.CreateOtpAttemptUseCase
 import com.hedvig.app.feature.genericauth.GenericAuthViewModel
@@ -490,7 +491,8 @@ val embarkModule = module {
             get(),
             get(),
             get(),
-            storyName
+            storyName,
+            get(),
         )
     }
 }
@@ -660,6 +662,7 @@ val useCaseModule = module {
     single { GetContractDetailsUseCase(get(), get(), get()) }
     single<GetDanishAddressAutoCompletionUseCase> { GetDanishAddressAutoCompletionUseCase(get()) }
     single<GetFinalDanishAddressSelectionUseCase> { GetFinalDanishAddressSelectionUseCase(get()) }
+    single { CreateQuoteCartUseCase(get(), get(), get()) }
 }
 
 val cacheManagerModule = module {
