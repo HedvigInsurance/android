@@ -1,12 +1,15 @@
-package com.hedvig.app.feature.offer.usecase
+package com.hedvig.app.feature.offer.usecase.getquote
 
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.featureflags.Feature
+import com.hedvig.app.util.featureflags.FeatureManager
 import kotlinx.coroutines.flow.Flow
 
 class GetQuotesUseCase(
     private val offerRepository: OfferRepository,
+    private val featureManager: FeatureManager,
 ) {
     sealed class Result {
         data class Success(
@@ -18,7 +21,7 @@ class GetQuotesUseCase(
     }
 
     suspend operator fun invoke(ids: List<String>): Result {
-        if (ids.isEmpty()) {
+        if (ids.isEmpty() && !featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
             when (val idResult = offerRepository.quoteIdOfLastQuoteOfMember().safeQuery()) {
                 is QueryResult.Error -> return Result.Error(idResult.message)
                 is QueryResult.Success -> {

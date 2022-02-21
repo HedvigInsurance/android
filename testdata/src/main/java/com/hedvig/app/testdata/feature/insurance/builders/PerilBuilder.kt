@@ -1,8 +1,8 @@
 package com.hedvig.app.testdata.feature.insurance.builders
 
 import com.hedvig.android.owldroid.fragment.PerilFragment
+import com.hedvig.android.owldroid.fragment.QuoteBundleFragment
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
-import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.util.toArrayList
 
 class PerilBuilder {
@@ -24,12 +24,12 @@ class PerilBuilder {
             return perilList
         }
 
-        private fun offerQueryPerils(noOfPerils: Int): MutableList<OfferQuery.ContractPeril> {
-            val perilList: MutableList<OfferQuery.ContractPeril> = mutableListOf()
+        private fun offerQueryPerils(noOfPerils: Int): MutableList<QuoteBundleFragment.ContractPeril> {
+            val perilList: MutableList<QuoteBundleFragment.ContractPeril> = mutableListOf()
             for (i in 0..noOfPerils) {
                 perilList.add(
-                    OfferQuery.ContractPeril(
-                        fragments = OfferQuery.ContractPeril.Fragments(PERIL_FRAGMENT)
+                    QuoteBundleFragment.ContractPeril(
+                        fragments = QuoteBundleFragment.ContractPeril.Fragments(PERIL_FRAGMENT)
                     )
                 )
             }

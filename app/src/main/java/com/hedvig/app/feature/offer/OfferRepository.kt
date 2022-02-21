@@ -8,38 +8,90 @@ import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.coroutines.toFlow
 import com.apollographql.apollo.fetcher.ApolloResponseFetchers
 import com.hedvig.android.owldroid.fragment.CostFragment
+import com.hedvig.android.owldroid.fragment.QuoteBundleFragment
 import com.hedvig.android.owldroid.graphql.LastQuoteIdQuery
 import com.hedvig.android.owldroid.graphql.OfferQuery
+import com.hedvig.android.owldroid.graphql.QuoteCartSubscription
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.RemoveDiscountCodeMutation
+import com.hedvig.app.feature.offer.model.OfferModel
+import com.hedvig.app.feature.offer.model.quotebundle.Campaign
+import com.hedvig.app.feature.offer.model.quotebundle.toCampaign
+import com.hedvig.app.feature.offer.model.quotebundle.toCheckoutMethod
+import com.hedvig.app.feature.offer.model.quotebundle.toIncentive
+import com.hedvig.app.feature.offer.model.quotebundle.toQuoteBundle
+import com.hedvig.app.feature.offer.ui.checkoutLabel
 import com.hedvig.app.util.LocaleManager
+import com.hedvig.app.util.apollo.QueryResult
+import com.hedvig.app.util.apollo.safeSubscription
+import com.hedvig.app.util.featureflags.Feature
+import com.hedvig.app.util.featureflags.FeatureManager
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class OfferRepository(
     private val apolloClient: ApolloClient,
     private val localeManager: LocaleManager,
+    private val featureManager: FeatureManager,
 ) {
     fun offerQuery(ids: List<String>) = OfferQuery(localeManager.defaultLocale(), ids)
 
-    fun offer(ids: List<String>) = apolloClient
-        .query(offerQuery(ids))
-        .watcher()
-        .toFlow()
-        .map(::toDataOrError)
+    fun offer(ids: List<String>): Flow<OfferResult> {
+        return if (featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
+            val subscription = QuoteCartSubscription(localeManager.defaultLocale(), ids.first())
+            apolloClient.subscribe(subscription)
+                .safeSubscription()
+                .map { it.toDataOrError() }
+        } else {
+            apolloClient
+                .query(offerQuery(ids))
+                .watcher()
+                .toFlow()
+                .map { it.toDataOrError() }
+        }
+    }
 
     sealed class OfferResult {
         data class Error(val message: String? = null) : OfferResult()
-        data class Success(
-            val data: OfferQuery.Data
-        ) : OfferResult()
+        data class Success(val data: OfferModel) : OfferResult()
     }
 
-    private fun toDataOrError(response: Response<OfferQuery.Data>): OfferResult {
-        response.errors?.let {
+    private fun Response<OfferQuery.Data>.toDataOrError(): OfferResult {
+        errors?.let {
             return OfferResult.Error(it.firstOrNull()?.message)
         }
-        val data = response.data ?: return OfferResult.Error()
-        return OfferResult.Success(data)
+        val data = data ?: return OfferResult.Error()
+        val offerResult = OfferModel(
+            quoteBundle = data.quoteBundle.fragments.quoteBundleFragment.toQuoteBundle(),
+            checkoutMethod = data.signMethodForQuotes.toCheckoutMethod(),
+            checkoutLabel = data.checkoutLabel(),
+            campaign = Campaign(
+                displayValue = data.redeemedCampaigns
+                    .firstNotNullOfOrNull { it.fragments.incentiveFragment.displayValue },
+                incentive = data.redeemedCampaigns.firstOrNull()?.fragments?.incentiveFragment?.incentive?.toIncentive()
+                    ?: Campaign.Incentive.NoDiscount
+            )
+        )
+        return OfferResult.Success(offerResult)
+    }
+
+    private fun QueryResult<QuoteCartSubscription.Data>.toDataOrError(): OfferResult {
+        return when (this) {
+            is QueryResult.Error -> OfferResult.Error(message)
+            is QueryResult.Success -> {
+                if (data.quoteCart == null) {
+                    OfferResult.Error()
+                } else {
+                    val offerResult = OfferModel(
+                        quoteBundle = data.quoteCart!!.bundle!!.fragments.quoteBundleFragment.toQuoteBundle(),
+                        checkoutMethod = data.quoteCart!!.checkoutMethods.map { it.toCheckoutMethod() }.first(),
+                        checkoutLabel = data.quoteCart!!.checkoutLabel(),
+                        campaign = data.quoteCart!!.campaign?.toCampaign()
+                    )
+                    OfferResult.Success(offerResult)
+                }
+            }
+        }
     }
 
     fun writeDiscountToCache(ids: List<String>, data: RedeemReferralCodeMutation.Data) {
@@ -48,14 +100,20 @@ class OfferRepository(
             .read(offerQuery(ids))
             .execute()
 
-        val newCost = cachedData.quoteBundle.bundleCost.copy(
-            fragments = OfferQuery.BundleCost.Fragments(costFragment = data.redeemCode.cost.fragments.costFragment)
+        val newCost = cachedData.quoteBundle.fragments.copy(
+            quoteBundleFragment = cachedData.quoteBundle.fragments.quoteBundleFragment.copy(
+                bundleCost = cachedData.quoteBundle.fragments.quoteBundleFragment.bundleCost.copy(
+                    fragments = QuoteBundleFragment.BundleCost.Fragments(
+                        costFragment = data.redeemCode.cost.fragments.costFragment
+                    )
+                )
+            )
         )
 
         val newData = cachedData
             .copy(
                 quoteBundle = cachedData.quoteBundle.copy(
-                    bundleCost = newCost
+                    fragments = newCost
                 ),
                 redeemedCampaigns = listOf(
                     OfferQuery.RedeemedCampaign(
@@ -82,8 +140,7 @@ class OfferRepository(
             .read(offerQuery(ids))
             .execute()
 
-        val oldCostFragment =
-            cachedData.quoteBundle.bundleCost.fragments.costFragment
+        val oldCostFragment = cachedData.quoteBundle.fragments.quoteBundleFragment.bundleCost.fragments.costFragment
         val newCostFragment = oldCostFragment
             .copy(
                 monthlyDiscount = oldCostFragment
@@ -109,9 +166,13 @@ class OfferRepository(
         val newData = cachedData
             .copy(
                 quoteBundle = cachedData.quoteBundle.copy(
-                    bundleCost = OfferQuery.BundleCost(
-                        fragments = OfferQuery.BundleCost.Fragments(newCostFragment)
-                    )
+                    fragments = cachedData.quoteBundle.fragments.copy(
+                        quoteBundleFragment = cachedData.quoteBundle.fragments.quoteBundleFragment.copy(
+                            bundleCost = QuoteBundleFragment.BundleCost(
+                                fragments = QuoteBundleFragment.BundleCost.Fragments(newCostFragment)
+                            )
+                        )
+                    ),
                 ),
                 redeemedCampaigns = emptyList()
             )

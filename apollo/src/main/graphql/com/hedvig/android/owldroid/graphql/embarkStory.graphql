@@ -248,6 +248,14 @@ query EmbarkStory($name: String!, $locale: String!) {
         includeAllKeys
         customData
       }
+      quoteCartOfferRedirects {
+        data {
+          id
+          expression {
+            ...ExpressionFragment
+          }
+        }
+      }
       variantedOfferRedirects {
         data {
           selectedKeys

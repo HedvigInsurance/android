@@ -1,20 +1,17 @@
 package com.hedvig.app.feature.offer.ui
 
-import android.content.Context
 import androidx.compose.ui.unit.Dp
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
-import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationApproveButtonTerminology
-import com.hedvig.android.owldroid.type.SignMethod
-import com.hedvig.app.R
-import com.hedvig.app.feature.embark.masking.ISO_8601_DATE
 import com.hedvig.app.feature.faq.FAQItem
+import com.hedvig.app.feature.offer.model.quotebundle.CheckoutMethod
+import com.hedvig.app.feature.offer.model.quotebundle.GradientType
+import com.hedvig.app.feature.offer.model.quotebundle.OfferStartDate
+import com.hedvig.app.feature.offer.model.quotebundle.StartDateLabel
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
 import com.hedvig.app.feature.table.Table
-import com.hedvig.app.util.extensions.isToday
-import java.time.LocalDate
 import javax.money.MonetaryAmount
 
-sealed class OfferModel {
+sealed class OfferItems {
 
     data class Header(
         val title: String?,
@@ -24,44 +21,43 @@ sealed class OfferModel {
         val premium: MonetaryAmount,
         val hasDiscountedPrice: Boolean,
         val originalPremium: MonetaryAmount,
-        val incentiveDisplayValue: List<String>,
+        val incentiveDisplayValue: String?,
         val hasCampaigns: Boolean,
         val changeDateBottomSheetData: ChangeDateBottomSheetData,
-        val signMethod: SignMethod,
-        val approveButtonTerminology: QuoteBundleAppConfigurationApproveButtonTerminology,
+        val checkoutMethod: CheckoutMethod,
         val showCampaignManagement: Boolean,
         val ignoreCampaigns: Boolean,
         val gradientType: GradientType,
         val paymentMethodsApiResponse: PaymentMethodsApiResponse?
-    ) : OfferModel()
+    ) : OfferItems()
 
     data class Facts(
         val table: Table,
-    ) : OfferModel()
+    ) : OfferItems()
 
     data class CurrentInsurer(
         val displayName: String?,
         val associatedQuote: String?,
-    ) : OfferModel()
+    ) : OfferItems()
 
     data class Footer(
         val checkoutLabel: CheckoutLabel,
-    ) : OfferModel()
+    ) : OfferItems()
 
-    sealed class Subheading : OfferModel() {
+    sealed class Subheading : OfferItems() {
         object Coverage : Subheading()
         data class Switcher(val amountOfCurrentInsurers: Int) : Subheading()
     }
 
-    sealed class Paragraph : OfferModel() {
+    sealed class Paragraph : OfferItems() {
         object Coverage : Paragraph()
     }
 
-    data class InsurelyDivider(val topPadding: Dp) : OfferModel()
+    data class InsurelyDivider(val topPadding: Dp) : OfferItems()
 
-    object PriceComparisonHeader : OfferModel()
+    object PriceComparisonHeader : OfferItems()
 
-    sealed class InsurelyCard : OfferModel() {
+    sealed class InsurelyCard : OfferItems() {
         abstract val id: String
         abstract val insuranceProviderDisplayName: String?
 
@@ -95,29 +91,13 @@ sealed class OfferModel {
     data class QuoteDetails(
         val name: String,
         val id: String,
-    ) : OfferModel()
+    ) : OfferItems()
 
     data class FAQ(
         val items: List<FAQItem>,
-    ) : OfferModel()
+    ) : OfferItems()
 
-    object AutomaticSwitchCard : OfferModel()
-    object ManualSwitchCard : OfferModel()
-    object Error : OfferModel()
-}
-
-sealed class OfferStartDate {
-    object WhenCurrentPlanExpires : OfferStartDate()
-    object Multiple : OfferStartDate()
-    data class AtDate(val date: LocalDate) : OfferStartDate()
-}
-
-fun OfferStartDate.getString(context: Context): String? = when (this) {
-    is OfferStartDate.AtDate -> if (date.isToday()) {
-        context.getString(R.string.START_DATE_TODAY)
-    } else {
-        date.format(ISO_8601_DATE)
-    }
-    OfferStartDate.Multiple -> context.getString(R.string.OFFER_START_DATE_MULTIPLE)
-    OfferStartDate.WhenCurrentPlanExpires -> context.getString(R.string.START_DATE_EXPIRES)
+    object AutomaticSwitchCard : OfferItems()
+    object ManualSwitchCard : OfferItems()
+    object Error : OfferItems()
 }

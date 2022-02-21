@@ -2,12 +2,10 @@ package com.hedvig.app.feature.offer.ui.checkout
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.offer.OfferRepository
-import com.hedvig.app.feature.offer.ui.grossMonthlyCost
-import com.hedvig.app.feature.offer.ui.netMonthlyCost
-import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
+import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
+import com.hedvig.app.feature.offer.usecase.getquote.GetQuotesUseCase
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.ValidationResult
@@ -61,11 +59,11 @@ class CheckoutViewModel(
             }
             is OfferRepository.OfferResult.Success -> {
                 _titleViewState.value = TitleViewState.Loaded(
-                    bundleName = response.data.quoteBundle.displayName,
-                    netAmount = response.data.netMonthlyCost(),
-                    grossAmount = response.data.grossMonthlyCost(),
+                    bundleName = response.data.quoteBundle.name,
+                    netAmount = response.data.quoteBundle.cost.netMonthlyCost,
+                    grossAmount = response.data.quoteBundle.cost.grossMonthlyCost,
                     market = marketManager.market,
-                    email = response.data.quoteBundle.quotes.firstNotNullOfOrNull(OfferQuery.Quote::email)
+                    email = response.data.quoteBundle.quotes.firstNotNullOfOrNull(QuoteBundle.Quote::email)
                 )
             }
         }

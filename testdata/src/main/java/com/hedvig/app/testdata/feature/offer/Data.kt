@@ -5,6 +5,7 @@ import com.hedvig.android.owldroid.fragment.IncentiveFragment
 import com.hedvig.android.owldroid.fragment.InsurableLimitsFragment
 import com.hedvig.android.owldroid.fragment.InsuranceTermFragment
 import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
+import com.hedvig.android.owldroid.fragment.QuoteBundleFragment
 import com.hedvig.android.owldroid.graphql.DataCollectionResultQuery
 import com.hedvig.android.owldroid.graphql.DataCollectionStatusSubscription
 import com.hedvig.android.owldroid.graphql.OfferQuery
@@ -28,7 +29,7 @@ val OFFER_DATA_SWEDISH_APARTMENT = OfferDataBuilder().build()
 val OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_SWITCHABLE = OfferDataBuilder(
     quotes = listOf(
         QuoteBuilder(
-            currentInsurer = OfferQuery.CurrentInsurer(
+            currentInsurer = QuoteBundleFragment.CurrentInsurer(
                 id = "ab2a1f4c-83af-4b9f-98d2-e7ea767b080c",
                 displayName = "Annat Försäkringsbolag",
                 switchable = true
@@ -40,7 +41,7 @@ val OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_SWITCHABLE = OfferDataBuil
 val OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_NON_SWITCHABLE = OfferDataBuilder(
     quotes = listOf(
         QuoteBuilder(
-            currentInsurer = OfferQuery.CurrentInsurer(
+            currentInsurer = QuoteBundleFragment.CurrentInsurer(
                 id = "ab2a1f4c-83af-4b9f-98d2-e7ea767b080d",
                 displayName = "Annat Försäkringsbolag",
                 switchable = false
@@ -73,8 +74,8 @@ val OFFER_DATA_SWEDISH_HOUSE = OfferDataBuilder(
                 )
             ).build(),
             insurableLimits = listOf(
-                OfferQuery.InsurableLimit(
-                    fragments = OfferQuery.InsurableLimit.Fragments(
+                QuoteBundleFragment.InsurableLimit(
+                    fragments = QuoteBundleFragment.InsurableLimit.Fragments(
                         InsurableLimitsFragment(
                             label = "Test insurable limit",
                             limit = "Limit",
@@ -82,8 +83,8 @@ val OFFER_DATA_SWEDISH_HOUSE = OfferDataBuilder(
                         )
                     )
                 ),
-                OfferQuery.InsurableLimit(
-                    fragments = OfferQuery.InsurableLimit.Fragments(
+                QuoteBundleFragment.InsurableLimit(
+                    fragments = QuoteBundleFragment.InsurableLimit.Fragments(
                         InsurableLimitsFragment(
                             label = "Test insurable limit 2",
                             limit = "Limit 2",
@@ -93,8 +94,8 @@ val OFFER_DATA_SWEDISH_HOUSE = OfferDataBuilder(
                 ),
             ),
             insuranceTerms = listOf(
-                OfferQuery.InsuranceTerm(
-                    fragments = OfferQuery.InsuranceTerm.Fragments(
+                QuoteBundleFragment.InsuranceTerm(
+                    fragments = QuoteBundleFragment.InsuranceTerm.Fragments(
                         InsuranceTermFragment(
                             type = InsuranceTermType.GENERAL_TERMS,
                             displayName = "General term",
@@ -102,8 +103,8 @@ val OFFER_DATA_SWEDISH_HOUSE = OfferDataBuilder(
                         )
                     )
                 ),
-                OfferQuery.InsuranceTerm(
-                    fragments = OfferQuery.InsuranceTerm.Fragments(
+                QuoteBundleFragment.InsuranceTerm(
+                    fragments = QuoteBundleFragment.InsuranceTerm.Fragments(
                         InsuranceTermFragment(
                             type = InsuranceTermType.TERMS_AND_CONDITIONS,
                             displayName = "Terms and conditions",
@@ -194,8 +195,8 @@ val BUNDLE_WITH_CONCURRENT_INCEPTION_DATES_SPECIFIC_DATE = OfferDataBuilder(
                 )
             ).build(),
             insurableLimits = listOf(
-                OfferQuery.InsurableLimit(
-                    fragments = OfferQuery.InsurableLimit.Fragments(
+                QuoteBundleFragment.InsurableLimit(
+                    fragments = QuoteBundleFragment.InsurableLimit.Fragments(
                         InsurableLimitsFragment(
                             label = "Test insurable limit",
                             limit = "Limit",
@@ -203,8 +204,8 @@ val BUNDLE_WITH_CONCURRENT_INCEPTION_DATES_SPECIFIC_DATE = OfferDataBuilder(
                         )
                     )
                 ),
-                OfferQuery.InsurableLimit(
-                    fragments = OfferQuery.InsurableLimit.Fragments(
+                QuoteBundleFragment.InsurableLimit(
+                    fragments = QuoteBundleFragment.InsurableLimit.Fragments(
                         InsurableLimitsFragment(
                             label = "Test insurable limit",
                             limit = "Limit",
@@ -212,8 +213,8 @@ val BUNDLE_WITH_CONCURRENT_INCEPTION_DATES_SPECIFIC_DATE = OfferDataBuilder(
                         )
                     )
                 ),
-                OfferQuery.InsurableLimit(
-                    fragments = OfferQuery.InsurableLimit.Fragments(
+                QuoteBundleFragment.InsurableLimit(
+                    fragments = QuoteBundleFragment.InsurableLimit.Fragments(
                         InsurableLimitsFragment(
                             label = "Test insurable limit 2",
                             limit = "Limit 2",
@@ -223,8 +224,8 @@ val BUNDLE_WITH_CONCURRENT_INCEPTION_DATES_SPECIFIC_DATE = OfferDataBuilder(
                 ),
             ),
             insuranceTerms = listOf(
-                OfferQuery.InsuranceTerm(
-                    fragments = OfferQuery.InsuranceTerm.Fragments(
+                QuoteBundleFragment.InsuranceTerm(
+                    fragments = QuoteBundleFragment.InsuranceTerm.Fragments(
                         InsuranceTermFragment(
                             type = InsuranceTermType.GENERAL_TERMS,
                             displayName = "General term",
@@ -232,8 +233,8 @@ val BUNDLE_WITH_CONCURRENT_INCEPTION_DATES_SPECIFIC_DATE = OfferDataBuilder(
                         )
                     )
                 ),
-                OfferQuery.InsuranceTerm(
-                    fragments = OfferQuery.InsuranceTerm.Fragments(
+                QuoteBundleFragment.InsuranceTerm(
+                    fragments = QuoteBundleFragment.InsuranceTerm.Fragments(
                         InsuranceTermFragment(
                             type = InsuranceTermType.TERMS_AND_CONDITIONS,
                             displayName = "Terms and conditions",
@@ -272,8 +273,8 @@ val BUNDLE_WITH_CONCURRENT_INCEPTION_DATES = OfferDataBuilder(
                 )
             ).build(),
             insurableLimits = listOf(
-                OfferQuery.InsurableLimit(
-                    fragments = OfferQuery.InsurableLimit.Fragments(
+                QuoteBundleFragment.InsurableLimit(
+                    fragments = QuoteBundleFragment.InsurableLimit.Fragments(
                         InsurableLimitsFragment(
                             label = "Test insurable limit",
                             limit = "Limit",
@@ -281,8 +282,8 @@ val BUNDLE_WITH_CONCURRENT_INCEPTION_DATES = OfferDataBuilder(
                         )
                     )
                 ),
-                OfferQuery.InsurableLimit(
-                    fragments = OfferQuery.InsurableLimit.Fragments(
+                QuoteBundleFragment.InsurableLimit(
+                    fragments = QuoteBundleFragment.InsurableLimit.Fragments(
                         InsurableLimitsFragment(
                             label = "Test insurable limit 2",
                             limit = "Limit 2",
@@ -303,8 +304,8 @@ val BUNDLE_WITH_INDEPENDENT_INCEPTION_DATES = OfferDataBuilder(
         QuoteBuilder(
             typeOfContract = TypeOfContract.SE_HOUSE,
             insuranceTerms = listOf(
-                OfferQuery.InsuranceTerm(
-                    fragments = OfferQuery.InsuranceTerm.Fragments(
+                QuoteBundleFragment.InsuranceTerm(
+                    fragments = QuoteBundleFragment.InsuranceTerm.Fragments(
                         InsuranceTermFragment(
                             type = InsuranceTermType.GENERAL_TERMS,
                             displayName = "General term",
@@ -312,8 +313,8 @@ val BUNDLE_WITH_INDEPENDENT_INCEPTION_DATES = OfferDataBuilder(
                         )
                     )
                 ),
-                OfferQuery.InsuranceTerm(
-                    fragments = OfferQuery.InsuranceTerm.Fragments(
+                QuoteBundleFragment.InsuranceTerm(
+                    fragments = QuoteBundleFragment.InsuranceTerm.Fragments(
                         InsuranceTermFragment(
                             type = InsuranceTermType.TERMS_AND_CONDITIONS,
                             displayName = "Terms and conditions",
@@ -362,8 +363,8 @@ val BUNDLE_WITH_START_DATE_FROM_PREVIOUS_INSURER = OfferDataBuilder(
                 )
             ).build(),
             insurableLimits = listOf(
-                OfferQuery.InsurableLimit(
-                    fragments = OfferQuery.InsurableLimit.Fragments(
+                QuoteBundleFragment.InsurableLimit(
+                    fragments = QuoteBundleFragment.InsurableLimit.Fragments(
                         InsurableLimitsFragment(
                             label = "Test insurable limit",
                             limit = "Limit",
@@ -371,8 +372,8 @@ val BUNDLE_WITH_START_DATE_FROM_PREVIOUS_INSURER = OfferDataBuilder(
                         )
                     )
                 ),
-                OfferQuery.InsurableLimit(
-                    fragments = OfferQuery.InsurableLimit.Fragments(
+                QuoteBundleFragment.InsurableLimit(
+                    fragments = QuoteBundleFragment.InsurableLimit.Fragments(
                         InsurableLimitsFragment(
                             label = "Test insurable limit 2",
                             limit = "Limit 2",
@@ -382,8 +383,8 @@ val BUNDLE_WITH_START_DATE_FROM_PREVIOUS_INSURER = OfferDataBuilder(
                 ),
             ),
             insuranceTerms = listOf(
-                OfferQuery.InsuranceTerm(
-                    fragments = OfferQuery.InsuranceTerm.Fragments(
+                QuoteBundleFragment.InsuranceTerm(
+                    fragments = QuoteBundleFragment.InsuranceTerm.Fragments(
                         InsuranceTermFragment(
                             type = InsuranceTermType.GENERAL_TERMS,
                             displayName = "General term",
@@ -391,8 +392,8 @@ val BUNDLE_WITH_START_DATE_FROM_PREVIOUS_INSURER = OfferDataBuilder(
                         )
                     )
                 ),
-                OfferQuery.InsuranceTerm(
-                    fragments = OfferQuery.InsuranceTerm.Fragments(
+                QuoteBundleFragment.InsuranceTerm(
+                    fragments = QuoteBundleFragment.InsuranceTerm.Fragments(
                         InsuranceTermFragment(
                             type = InsuranceTermType.TERMS_AND_CONDITIONS,
                             displayName = "Terms and conditions",
@@ -404,19 +405,19 @@ val BUNDLE_WITH_START_DATE_FROM_PREVIOUS_INSURER = OfferDataBuilder(
         ).build()
     ),
     redeemedCampaigns = listOf(),
-    inceptions = OfferQuery.Inception1(
-        asIndependentInceptions = OfferQuery.AsIndependentInceptions(
+    inceptions = QuoteBundleFragment.Inception1(
+        asIndependentInceptions = QuoteBundleFragment.AsIndependentInceptions(
             inceptions = listOf(
-                OfferQuery.Inception(
-                    correspondingQuote = OfferQuery.CorrespondingQuote1(
-                        asCompleteQuote1 = OfferQuery.AsCompleteQuote1(
+                QuoteBundleFragment.Inception(
+                    correspondingQuote = QuoteBundleFragment.CorrespondingQuote1(
+                        asCompleteQuote1 = QuoteBundleFragment.AsCompleteQuote1(
                             displayName = "Test Insurance",
                             id = "ea656f5f-40b2-4953-85d9-752b33e69e38"
                         )
                     ),
                     startDate = null,
-                    currentInsurer = OfferQuery.CurrentInsurer2(
-                        fragments = OfferQuery.CurrentInsurer2.Fragments(
+                    currentInsurer = QuoteBundleFragment.CurrentInsurer2(
+                        fragments = QuoteBundleFragment.CurrentInsurer2.Fragments(
                             CurrentInsurerFragment(
                                 id = "currentinsurerid",
                                 displayName = TEST_INSURER_DISPLAY_NAME,
@@ -434,10 +435,12 @@ val BUNDLE_WITH_START_DATE_FROM_PREVIOUS_INSURER = OfferDataBuilder(
 val OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL = OfferDataBuilder(
     quotes = listOf(
         QuoteBuilder(
+            id = "id1",
             displayName = "Home Contents Insurance",
             typeOfContract = TypeOfContract.NO_HOME_CONTENT_OWN,
         ).build(),
         QuoteBuilder(
+            id = "id2",
             displayName = "Travel Insurance",
             typeOfContract = TypeOfContract.NO_TRAVEL,
         ).build()
@@ -455,7 +458,7 @@ val OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_ALL
         QuoteBuilder(
             displayName = "Home Contents Insurance",
             typeOfContract = TypeOfContract.NO_HOME_CONTENT_OWN,
-            currentInsurer = OfferQuery.CurrentInsurer(
+            currentInsurer = QuoteBundleFragment.CurrentInsurer(
                 id = "ab2a1f4c-83af-4b9f-98d2-e7ea767b080d",
                 displayName = "Annat Försäkringsbolag",
                 switchable = false
@@ -464,7 +467,7 @@ val OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_ALL
         QuoteBuilder(
             displayName = "Travel Insurance",
             typeOfContract = TypeOfContract.NO_TRAVEL,
-            currentInsurer = OfferQuery.CurrentInsurer(
+            currentInsurer = QuoteBundleFragment.CurrentInsurer(
                 id = "ab2a1f4c-83af-4b9f-98d2-e7ea767b080f",
                 displayName = "Annat Försäkringsbolag 2",
                 switchable = false
@@ -484,7 +487,7 @@ val OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_ALL
         QuoteBuilder(
             displayName = "Home Contents Insurance",
             typeOfContract = TypeOfContract.NO_HOME_CONTENT_OWN,
-            currentInsurer = OfferQuery.CurrentInsurer(
+            currentInsurer = QuoteBundleFragment.CurrentInsurer(
                 id = "ab2a1f4c-83af-4b9f-98d2-e7ea767b080d",
                 displayName = "Annat Försäkringsbolag",
                 switchable = true
@@ -514,7 +517,7 @@ val OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_ALL
         QuoteBuilder(
             displayName = "Travel Insurance",
             typeOfContract = TypeOfContract.NO_TRAVEL,
-            currentInsurer = OfferQuery.CurrentInsurer(
+            currentInsurer = QuoteBundleFragment.CurrentInsurer(
                 id = "ab2a1f4c-83af-4b9f-98d2-e7ea767b080f",
                 displayName = "Annat Försäkringsbolag 2",
                 switchable = true
@@ -555,7 +558,7 @@ val OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_MIX
         QuoteBuilder(
             displayName = "Home Contents Insurance",
             typeOfContract = TypeOfContract.NO_HOME_CONTENT_OWN,
-            currentInsurer = OfferQuery.CurrentInsurer(
+            currentInsurer = QuoteBundleFragment.CurrentInsurer(
                 id = "ab2a1f4c-83af-4b9f-98d2-e7ea767b080d",
                 displayName = "Annat Försäkringsbolag",
                 switchable = false
@@ -564,7 +567,7 @@ val OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_MIX
         QuoteBuilder(
             displayName = "Travel Insurance",
             typeOfContract = TypeOfContract.NO_TRAVEL,
-            currentInsurer = OfferQuery.CurrentInsurer(
+            currentInsurer = QuoteBundleFragment.CurrentInsurer(
                 id = "ab2a1f4c-83af-4b9f-98d2-e7ea767b080f",
                 displayName = "Annat Försäkringsbolag 2",
                 switchable = true
@@ -585,7 +588,7 @@ val OFFER_DATA_DENMARK_BUNDLE_HOME_CONTENTS_TRAVEL_ACCIDENT_MULTIPLE_PREVIOUS_IN
             QuoteBuilder(
                 displayName = "Home Contents Insurance",
                 typeOfContract = TypeOfContract.DK_HOME_CONTENT_OWN,
-                currentInsurer = OfferQuery.CurrentInsurer(
+                currentInsurer = QuoteBundleFragment.CurrentInsurer(
                     id = "ab2a1f4c-83af-4b9f-98d2-e7ea767b080d",
                     displayName = "Annat Försäkringsbolag",
                     switchable = false
@@ -594,7 +597,7 @@ val OFFER_DATA_DENMARK_BUNDLE_HOME_CONTENTS_TRAVEL_ACCIDENT_MULTIPLE_PREVIOUS_IN
             QuoteBuilder(
                 displayName = "Travel Insurance",
                 typeOfContract = TypeOfContract.DK_TRAVEL,
-                currentInsurer = OfferQuery.CurrentInsurer(
+                currentInsurer = QuoteBundleFragment.CurrentInsurer(
                     id = "ab2a1f4c-83af-4b9f-98d2-e7ea767b080f",
                     displayName = "Annat Försäkringsbolag 2",
                     switchable = true
@@ -603,7 +606,7 @@ val OFFER_DATA_DENMARK_BUNDLE_HOME_CONTENTS_TRAVEL_ACCIDENT_MULTIPLE_PREVIOUS_IN
             QuoteBuilder(
                 displayName = "Travel Insurance",
                 typeOfContract = TypeOfContract.DK_ACCIDENT,
-                currentInsurer = OfferQuery.CurrentInsurer(
+                currentInsurer = QuoteBundleFragment.CurrentInsurer(
                     id = "ab2a1f4c-83af-4b9f-98d2-e7ea767b080f",
                     displayName = "Annat Försäkringsbolag 3",
                     switchable = false
@@ -646,8 +649,8 @@ val BUNDLE_WITH_SIMPLE_SIGN = OfferDataBuilder(
                 )
             ).build(),
             insurableLimits = listOf(
-                OfferQuery.InsurableLimit(
-                    fragments = OfferQuery.InsurableLimit.Fragments(
+                QuoteBundleFragment.InsurableLimit(
+                    fragments = QuoteBundleFragment.InsurableLimit.Fragments(
                         InsurableLimitsFragment(
                             label = "Test insurable limit",
                             limit = "Limit",
@@ -655,8 +658,8 @@ val BUNDLE_WITH_SIMPLE_SIGN = OfferDataBuilder(
                         )
                     )
                 ),
-                OfferQuery.InsurableLimit(
-                    fragments = OfferQuery.InsurableLimit.Fragments(
+                QuoteBundleFragment.InsurableLimit(
+                    fragments = QuoteBundleFragment.InsurableLimit.Fragments(
                         InsurableLimitsFragment(
                             label = "Test insurable limit 2",
                             limit = "Limit 2",
@@ -696,8 +699,8 @@ val BUNDLE_WITH_APPROVE = OfferDataBuilder(
                 )
             ).build(),
             insurableLimits = listOf(
-                OfferQuery.InsurableLimit(
-                    fragments = OfferQuery.InsurableLimit.Fragments(
+                QuoteBundleFragment.InsurableLimit(
+                    fragments = QuoteBundleFragment.InsurableLimit.Fragments(
                         InsurableLimitsFragment(
                             label = "Test insurable limit",
                             limit = "Limit",
@@ -705,8 +708,8 @@ val BUNDLE_WITH_APPROVE = OfferDataBuilder(
                         )
                     )
                 ),
-                OfferQuery.InsurableLimit(
-                    fragments = OfferQuery.InsurableLimit.Fragments(
+                QuoteBundleFragment.InsurableLimit(
+                    fragments = QuoteBundleFragment.InsurableLimit.Fragments(
                         InsurableLimitsFragment(
                             label = "Test insurable limit 2",
                             limit = "Limit 2",

@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.offer.ui
+package com.hedvig.app.feature.offer.model.quotebundle
 
 import android.content.Context
 import com.hedvig.app.R

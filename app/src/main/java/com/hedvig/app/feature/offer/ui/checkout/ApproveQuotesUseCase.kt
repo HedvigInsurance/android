@@ -47,7 +47,8 @@ class ApproveQuotesUseCase(
             .read(offerRepository.offerQuery(quoteIds))
             .execute()
 
-        return cachedData.quoteBundle.inception.asConcurrentInception?.startDate
-            ?: cachedData.quoteBundle.inception.asIndependentInceptions?.inceptions?.firstOrNull()?.startDate
+        return cachedData.quoteBundle.fragments.quoteBundleFragment.inception.asConcurrentInception?.startDate
+            ?: cachedData.quoteBundle.fragments.quoteBundleFragment.inception.asIndependentInceptions?.inceptions
+                ?.firstOrNull()?.startDate
     }
 }

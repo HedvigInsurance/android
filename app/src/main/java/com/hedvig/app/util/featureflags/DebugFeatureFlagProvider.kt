@@ -18,7 +18,7 @@ class DebugFeatureFlagProvider(
         Feature.FRANCE_MARKET -> isEnabled(Feature.FRANCE_MARKET)
         Feature.ADDRESS_AUTO_COMPLETE -> isEnabled(Feature.ADDRESS_AUTO_COMPLETE)
         Feature.REFERRAL_CAMPAIGN -> isEnabled(Feature.REFERRAL_CAMPAIGN)
-        Feature.QUOTE_CART -> isEnabled(Feature.QUOTE_CART)
+        Feature.QUOTE_CART -> false
     }
 
     private fun isEnabled(feature: Feature): Boolean {

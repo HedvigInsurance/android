@@ -1,7 +1,7 @@
-package com.hedvig.app.feature.offer.usecase
+package com.hedvig.app.feature.offer.usecase.getquote
 
-import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.feature.offer.OfferRepository
+import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
 import kotlinx.coroutines.flow.first
 
 class GetQuoteUseCase(
@@ -9,7 +9,7 @@ class GetQuoteUseCase(
 ) {
     sealed class Result {
         data class Success(
-            val quote: OfferQuery.Quote,
+            val quote: QuoteBundle.Quote,
         ) : Result()
 
         object Error : Result()
@@ -23,9 +23,7 @@ class GetQuoteUseCase(
         if (offer !is OfferRepository.OfferResult.Success) {
             return Result.Error
         }
-
         val quote = offer.data.quoteBundle.quotes.firstOrNull { it.id == quoteId } ?: return Result.Error
-
         return Result.Success(quote)
     }
 }

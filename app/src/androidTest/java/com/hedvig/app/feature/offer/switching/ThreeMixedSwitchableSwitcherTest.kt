@@ -63,6 +63,8 @@ class ThreeMixedSwitchableSwitcherTest : TestCase() {
     private fun quoteDisplayName(quoteNumber: Int) =
         OFFER_DATA_DENMARK_BUNDLE_HOME_CONTENTS_TRAVEL_ACCIDENT_MULTIPLE_PREVIOUS_INSURERS_MIXED_SWITCHABLE
             .quoteBundle
+            .fragments
+            .quoteBundleFragment
             .quotes[quoteNumber]
             .displayName
 }

@@ -24,6 +24,8 @@ import com.hedvig.app.feature.embark.util.getVariables
 import com.hedvig.app.feature.embark.util.toExpressionFragment
 import com.hedvig.app.util.ProgressPercentage
 import com.hedvig.app.util.asMap
+import com.hedvig.app.util.featureflags.Feature
+import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.app.util.safeLet
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.channels.Channel
@@ -47,6 +49,7 @@ abstract class EmbarkViewModel(
     private val hAnalytics: HAnalytics,
     private val storyName: String,
     loginStatusService: LoginStatusService,
+    private val featureManager: FeatureManager,
 ) : ViewModel() {
     private val _passageState = MutableLiveData<PassageState>()
     val passageState: LiveData<PassageState> = _passageState
@@ -139,7 +142,8 @@ abstract class EmbarkViewModel(
         val redirectPassage = getRedirectPassageAndPutInStore(nextPassage?.redirects)
         val location = nextPassage?.externalRedirect?.data?.location
         val api = nextPassage?.api?.fragments?.apiFragment
-        val keys = nextPassage?.getOfferKeysOrNull(valueStore)
+
+        val keys = nextPassage?.getOfferKeysOrNull(valueStore, featureManager)
 
         when {
             storyData.embarkStory == null || nextPassage == null -> _events.trySend(Event.Error())
@@ -492,6 +496,7 @@ class EmbarkViewModelImpl(
     hAnalytics: HAnalytics,
     storyName: String,
     private val createQuoteCartUseCase: CreateQuoteCartUseCase,
+    private val featureManager: FeatureManager,
 ) : EmbarkViewModel(
     valueStore,
     graphQLQueryUseCase,
@@ -499,6 +504,7 @@ class EmbarkViewModelImpl(
     hAnalytics,
     storyName,
     loginStatusService,
+    featureManager,
 ) {
 
     init {
@@ -511,9 +517,11 @@ class EmbarkViewModelImpl(
                 embarkRepository.embarkStory(name)
             }
 
-            when (val quoteCartResult = createQuoteCartUseCase.invoke()) {
-                is Either.Left -> _events.trySend(Event.Error(quoteCartResult.value.message))
-                is Either.Right -> putInStore("quoteCartId", quoteCartResult.value.id)
+            if (featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
+                when (val quoteCartResult = createQuoteCartUseCase.invoke()) {
+                    is Either.Left -> _events.trySend(Event.Error(quoteCartResult.value.message))
+                    is Either.Right -> putInStore("quoteCartId", quoteCartResult.value.id)
+                }
             }
 
             if (result.isFailure) {
