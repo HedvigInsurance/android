@@ -518,7 +518,7 @@ val referralsModule = module {
 
 val homeModule = module {
     single<HomeItemsBuilder> { HomeItemsBuilder(get()) }
-    viewModel<HomeViewModel> { HomeViewModelImpl(get(), get(), get(), get()) }
+    viewModel<HomeViewModel> { HomeViewModelImpl(get(), get(), get()) }
 }
 
 val connectPaymentModule = module {

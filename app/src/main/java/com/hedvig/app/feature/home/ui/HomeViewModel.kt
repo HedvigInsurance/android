@@ -3,10 +3,7 @@ package com.hedvig.app.feature.home.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
-import arrow.core.zip
 import com.hedvig.android.owldroid.graphql.HomeQuery
-import com.hedvig.android.owldroid.type.PayinMethodStatus
-import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.home.data.GetHomeUseCase
 import com.hedvig.app.feature.home.model.HomeItemsBuilder
 import com.hedvig.app.feature.home.model.HomeModel
@@ -60,7 +57,6 @@ abstract class HomeViewModel(
 
 class HomeViewModelImpl(
     private val getHomeUseCase: GetHomeUseCase,
-    private val payinStatusRepository: PayinStatusRepository,
     private val homeItemsBuilder: HomeItemsBuilder,
     hAnalytics: HAnalytics,
 ) : HomeViewModel(hAnalytics) {
@@ -82,21 +78,14 @@ class HomeViewModelImpl(
 
     private suspend fun createViewState(forceReload: Boolean) {
         _viewState.value = ViewState.Loading
-
-        val result = getHomeUseCase.invoke(forceReload)
-            .zip(payinStatusRepository.payinStatus())
-
-        _viewState.value = when (result) {
+        _viewState.value = when (val result = getHomeUseCase.invoke(forceReload)) {
             is Either.Left -> ViewState.Error(result.value.message)
             is Either.Right -> ViewState.Success(
-                homeData = result.value.first,
+                homeData = result.value,
                 homeItems = homeItemsBuilder.buildItems(
-                    homeData = result.value.first,
-                    needsPayinSetup = result.value.second.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP
+                    homeData = result.value
                 )
             )
         }
-
-        runCatching { payinStatusRepository.refreshPayinStatus() }
     }
 }

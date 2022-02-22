@@ -138,32 +138,26 @@ class HomeAdapter(
                     return invalid(data)
                 }
 
-                when (data) {
-                    is HomeModel.BigText.Pending -> {
-                        root.text = root.resources.getString(
-                            R.string.home_tab_pending_unknown_title,
-                            data.name
-                        )
-                    }
-                    is HomeModel.BigText.ActiveInFuture -> {
-                        root.text = root.resources.getString(
-                            R.string.home_tab_active_in_future_welcome_title,
-                            data.name,
-                            formatter.format(data.inception)
-                        )
-                    }
-                    is HomeModel.BigText.Active -> {
-                        root.text =
-                            root.resources.getString(R.string.home_tab_welcome_title, data.name)
-                    }
-                    is HomeModel.BigText.Terminated -> {
-                        root.text =
-                            root.resources.getString(
-                                R.string.home_tab_terminated_welcome_title,
-                                data.name
-                            )
-                    }
+                val textRes = when (data) {
+                    is HomeModel.BigText.Pending -> root.resources.getString(
+                        R.string.home_tab_pending_unknown_title,
+                        data.name
+                    )
+                    is HomeModel.BigText.ActiveInFuture -> root.resources.getString(
+                        R.string.home_tab_active_in_future_welcome_title,
+                        data.name,
+                        formatter.format(data.inception)
+                    )
+                    is HomeModel.BigText.Active -> root.resources.getString(R.string.home_tab_welcome_title, data.name)
+                    is HomeModel.BigText.Terminated -> root.resources.getString(
+                        R.string.home_tab_terminated_welcome_title,
+                        data.name
+                    )
+                    is HomeModel.BigText.Switching -> root.resources.getString(
+                        R.string.home_tab_pending_switchable_welcome_title
+                    )
                 }
+                root.text = textRes
             }
         }
 
@@ -179,17 +173,13 @@ class HomeAdapter(
                     return invalid(data)
                 }
 
-                when (data) {
-                    HomeModel.BodyText.Pending -> {
-                        root.setText(R.string.home_tab_pending_unknown_body)
-                    }
-                    HomeModel.BodyText.ActiveInFuture -> {
-                        root.setText(R.string.home_tab_active_in_future_body)
-                    }
-                    HomeModel.BodyText.Terminated -> {
-                        root.setText(R.string.home_tab_terminated_body)
-                    }
+                val textRes = when (data) {
+                    HomeModel.BodyText.Pending -> R.string.home_tab_pending_unknown_body
+                    HomeModel.BodyText.ActiveInFuture -> R.string.home_tab_active_in_future_body
+                    HomeModel.BodyText.Terminated -> R.string.home_tab_terminated_body
+                    HomeModel.BodyText.Switching -> R.string.home_tab_pending_switchable_body
                 }
+                root.setText(textRes)
             }
         }
 

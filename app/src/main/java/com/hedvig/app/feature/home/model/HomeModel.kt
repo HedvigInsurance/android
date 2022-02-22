@@ -12,6 +12,10 @@ import java.time.LocalDate
 
 sealed class HomeModel {
     sealed class BigText : HomeModel() {
+        data class Switching(
+            val name: String,
+        ) : BigText()
+
         data class Pending(
             val name: String,
         ) : BigText()
@@ -39,6 +43,7 @@ sealed class HomeModel {
         object Pending : BodyText()
         object ActiveInFuture : BodyText()
         object Terminated : BodyText()
+        object Switching : BodyText()
     }
 
     data class ClaimStatus(
