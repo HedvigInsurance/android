@@ -4,7 +4,6 @@ import android.content.Intent
 import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.ui.Modifier
@@ -16,7 +15,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
 import coil.load
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ChangeAddressPendingChangeCardBinding
 import com.hedvig.app.databinding.GenericErrorBinding
@@ -35,6 +33,7 @@ import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimActivity
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyActivity
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
+import com.hedvig.app.feature.home.model.HomeModel
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
 import com.hedvig.app.feature.home.ui.claimstatus.composables.ClaimStatusCards
 import com.hedvig.app.feature.home.ui.connectpayincard.ConnectPayinCard
@@ -142,7 +141,7 @@ class HomeAdapter(
                 when (data) {
                     is HomeModel.BigText.Pending -> {
                         root.text = root.resources.getString(
-                            R.string.home_tab_pending_switchable_welcome_title,
+                            R.string.home_tab_pending_unknown_title,
                             data.name
                         )
                     }
@@ -182,7 +181,7 @@ class HomeAdapter(
 
                 when (data) {
                     HomeModel.BodyText.Pending -> {
-                        root.setText(R.string.home_tab_pending_switchable_body)
+                        root.setText(R.string.home_tab_pending_unknown_body)
                     }
                     HomeModel.BodyText.ActiveInFuture -> {
                         root.setText(R.string.home_tab_active_in_future_body)
@@ -483,35 +482,8 @@ class HomeAdapter(
                 if (data !is HomeModel.ChangeAddress) {
                     invalid(data)
                 } else {
-                    if (data.pendingAddress != null && data.pendingAddress.isNotBlank()) {
-                        title.setHapticClickListener {
-                            MaterialAlertDialogBuilder(root.context)
-                                .setTitle(R.string.home_tab_moving_info_card_title)
-                                .setMessage(
-                                    root.context.getString(
-                                        R.string.home_tab_moving_action_sheet_description,
-                                        data.pendingAddress
-                                    )
-                                )
-                                .setPositiveButton(R.string.home_tab_moving_info_card_button_text) { _, _ ->
-                                    Toast.makeText(
-                                        root.context,
-                                        "Go to pending offer not implemented",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                }
-                                .setNegativeButton(
-                                    R.string.home_tab_moving_action_sheet_start_new_offer_button
-                                ) { _, _ ->
-                                    root.context.startActivity(ChangeAddressActivity.newInstance(root.context))
-                                }
-                                .setNeutralButton(R.string.general_cancel_button) { dialog, _ -> dialog.dismiss() }
-                                .show()
-                        }
-                    } else {
-                        title.setHapticClickListener {
-                            root.context.startActivity(ChangeAddressActivity.newInstance(root.context))
-                        }
+                    title.setHapticClickListener {
+                        root.context.startActivity(ChangeAddressActivity.newInstance(root.context))
                     }
                 }
             }
@@ -548,7 +520,7 @@ class HomeAdapter(
                 if (data !is HomeModel.Header) {
                     return invalid(data)
                 }
-                binding.headerItem.text = data.text
+                binding.headerItem.text = itemView.context.getString(data.stringRes)
             }
         }
     }

@@ -43,7 +43,7 @@ class PaymentViewModelImpl(
                 .launchIn(this)
 
             payinStatusRepository
-                .payinStatus()
+                .payinStatusFlow()
                 .onEach { _payinStatusData.postValue(it.data) }
                 .catch { e(it) }
                 .launchIn(this)

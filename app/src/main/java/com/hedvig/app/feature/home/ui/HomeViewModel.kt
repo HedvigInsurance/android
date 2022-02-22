@@ -1,20 +1,18 @@
 package com.hedvig.app.feature.home.ui
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.viewModelScope
+import arrow.core.Either
+import arrow.core.zip
 import com.hedvig.android.owldroid.graphql.HomeQuery
-import com.hedvig.android.owldroid.graphql.PayinStatusQuery
+import com.hedvig.android.owldroid.type.PayinMethodStatus
 import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.home.data.GetHomeUseCase
+import com.hedvig.app.feature.home.model.HomeItemsBuilder
+import com.hedvig.app.feature.home.model.HomeModel
 import com.hedvig.hanalytics.HAnalytics
-import com.zhuinden.livedatacombinetuplekt.combineTuple
-import e
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 abstract class HomeViewModel(
@@ -23,23 +21,15 @@ abstract class HomeViewModel(
     sealed class ViewState {
         data class Success(
             val homeData: HomeQuery.Data,
+            val homeItems: List<HomeModel>
         ) : ViewState()
 
+        data class Error(val message: String?) : ViewState()
         object Loading : ViewState()
-        object Error : ViewState()
     }
 
-    protected val _homeData = MutableLiveData<ViewState>()
-    protected val _payinStatusData = MutableLiveData<PayinStatusQuery.Data>()
-
-    // TODO Fetch address change in progress
-    protected val _addressChangeInProgress = MutableLiveData("")
-
-    val data: LiveData<Triple<ViewState?, PayinStatusQuery.Data?, String?>> = combineTuple(
-        _homeData,
-        _payinStatusData,
-        _addressChangeInProgress
-    ).distinctUntilChanged()
+    protected val _viewState = MutableStateFlow<ViewState>(ViewState.Loading)
+    val viewState: StateFlow<ViewState> = _viewState
 
     abstract fun load()
     abstract fun reload()
@@ -57,7 +47,7 @@ abstract class HomeViewModel(
     }
 
     private fun getClaimById(claimId: String): HomeQuery.Claim? =
-        (_homeData.value as? ViewState.Success)
+        (_viewState.value as? ViewState.Success)
             ?.homeData
             ?.claimStatusCards
             ?.firstOrNull { it.id == claimId }
@@ -71,18 +61,11 @@ abstract class HomeViewModel(
 class HomeViewModelImpl(
     private val getHomeUseCase: GetHomeUseCase,
     private val payinStatusRepository: PayinStatusRepository,
+    private val homeItemsBuilder: HomeItemsBuilder,
     hAnalytics: HAnalytics,
 ) : HomeViewModel(hAnalytics) {
     init {
         load()
-        payinStatusRepository
-            .payinStatus()
-            .onEach { response ->
-                response.data?.let { _payinStatusData.postValue(it) }
-            }
-            .catch { err ->
-                e(err)
-            }.launchIn(viewModelScope)
     }
 
     override fun load() {
@@ -98,12 +81,21 @@ class HomeViewModelImpl(
     }
 
     private suspend fun createViewState(forceReload: Boolean) {
-        _homeData.value = ViewState.Loading
-        val viewState = when (val result = getHomeUseCase.invoke(forceReload)) {
-            is GetHomeUseCase.HomeResult.Error -> ViewState.Error
-            is GetHomeUseCase.HomeResult.Home -> ViewState.Success(result.home)
+        _viewState.value = ViewState.Loading
+
+        val result = getHomeUseCase.invoke(forceReload)
+            .zip(payinStatusRepository.payinStatus())
+
+        _viewState.value = when (result) {
+            is Either.Left -> ViewState.Error(result.value.message)
+            is Either.Right -> ViewState.Success(
+                homeData = result.value.first,
+                homeItems = homeItemsBuilder.buildItems(
+                    homeData = result.value.first,
+                    needsPayinSetup = result.value.second.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP
+                )
+            )
         }
-        _homeData.postValue(viewState)
 
         runCatching { payinStatusRepository.refreshPayinStatus() }
     }

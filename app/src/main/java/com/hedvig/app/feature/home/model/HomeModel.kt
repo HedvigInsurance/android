@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.home.ui
+package com.hedvig.app.feature.home.model
 
 import androidx.annotation.StringRes
 import androidx.compose.ui.unit.Dp
@@ -95,9 +95,9 @@ sealed class HomeModel {
         ) : CommonClaim()
     }
 
-    data class Header(val text: String) : HomeModel()
+    data class Header(val stringRes: Int) : HomeModel()
 
     data class PendingAddressChange(val address: String) : HomeModel()
 
-    data class ChangeAddress(val pendingAddress: String?) : HomeModel()
+    object ChangeAddress : HomeModel()
 }

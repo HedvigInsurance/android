@@ -5,13 +5,19 @@ import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.coroutines.toFlow
 import com.apollographql.apollo.fetcher.ApolloResponseFetchers
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
+import com.hedvig.app.util.apollo.safeQuery
 
 class PayinStatusRepository(
     private val apolloClient: ApolloClient,
 ) {
     private val payinStatusQuery = PayinStatusQuery()
 
-    fun payinStatus() = apolloClient
+    suspend fun payinStatus() = apolloClient
+        .query(payinStatusQuery)
+        .safeQuery()
+        .toEither()
+
+    fun payinStatusFlow() = apolloClient
         .query(payinStatusQuery)
         .watcher()
         .toFlow()

@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.home.data
 
+import arrow.core.Either
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.ApolloQueryCall
 import com.apollographql.apollo.api.cache.http.HttpCachePolicy
@@ -14,11 +15,10 @@ class GetHomeUseCase(
     private val localeManager: LocaleManager,
 ) {
 
-    suspend operator fun invoke(forceReload: Boolean): HomeResult {
-        return when (val response = createHomeCall(forceReload = forceReload).safeQuery()) {
-            is QueryResult.Error -> HomeResult.Error(response.message)
-            is QueryResult.Success -> HomeResult.Home(response.data)
-        }
+    suspend operator fun invoke(forceReload: Boolean): Either<QueryResult.Error, HomeQuery.Data> {
+        return createHomeCall(forceReload = forceReload)
+            .safeQuery()
+            .toEither()
     }
 
     private fun createHomeCall(forceReload: Boolean): ApolloQueryCall<HomeQuery.Data> {
@@ -36,8 +36,5 @@ class GetHomeUseCase(
 
     private fun homeQuery() = HomeQuery(localeManager.defaultLocale(), localeManager.defaultLocale().rawValue)
 
-    sealed class HomeResult {
-        data class Home(val home: HomeQuery.Data) : HomeResult()
-        data class Error(val message: String?) : HomeResult()
-    }
+    data class Error(val message: String?)
 }
