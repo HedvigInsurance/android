@@ -15,12 +15,7 @@ import com.hedvig.android.owldroid.graphql.QuoteCartSubscription
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.RemoveDiscountCodeMutation
 import com.hedvig.app.feature.offer.model.OfferModel
-import com.hedvig.app.feature.offer.model.quotebundle.Campaign
-import com.hedvig.app.feature.offer.model.quotebundle.toCampaign
-import com.hedvig.app.feature.offer.model.quotebundle.toCheckoutMethod
-import com.hedvig.app.feature.offer.model.quotebundle.toIncentive
-import com.hedvig.app.feature.offer.model.quotebundle.toQuoteBundle
-import com.hedvig.app.feature.offer.ui.checkoutLabel
+import com.hedvig.app.feature.offer.model.toOfferModel
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeSubscription
@@ -41,13 +36,13 @@ class OfferRepository(
             val subscription = QuoteCartSubscription(localeManager.defaultLocale(), ids.first())
             apolloClient.subscribe(subscription)
                 .safeSubscription()
-                .map { it.toDataOrError() }
+                .map { it.toResult() }
         } else {
             apolloClient
                 .query(offerQuery(ids))
                 .watcher()
                 .toFlow()
-                .map { it.toDataOrError() }
+                .map { it.toResult() }
         }
     }
 
@@ -56,42 +51,17 @@ class OfferRepository(
         data class Success(val data: OfferModel) : OfferResult()
     }
 
-    private fun Response<OfferQuery.Data>.toDataOrError(): OfferResult {
-        errors?.let {
-            return OfferResult.Error(it.firstOrNull()?.message)
-        }
-        val data = data ?: return OfferResult.Error()
-        val offerResult = OfferModel(
-            quoteBundle = data.quoteBundle.fragments.quoteBundleFragment.toQuoteBundle(),
-            checkoutMethod = data.signMethodForQuotes.toCheckoutMethod(),
-            checkoutLabel = data.checkoutLabel(),
-            campaign = Campaign(
-                displayValue = data.redeemedCampaigns
-                    .firstNotNullOfOrNull { it.fragments.incentiveFragment.displayValue },
-                incentive = data.redeemedCampaigns.firstOrNull()?.fragments?.incentiveFragment?.incentive?.toIncentive()
-                    ?: Campaign.Incentive.NoDiscount
-            )
-        )
-        return OfferResult.Success(offerResult)
+    private fun Response<OfferQuery.Data>.toResult(): OfferResult = when {
+        errors != null -> OfferResult.Error(errors!!.firstOrNull()?.message)
+        data == null -> OfferResult.Error()
+        else -> OfferResult.Success(data!!.toOfferModel())
     }
 
-    private fun QueryResult<QuoteCartSubscription.Data>.toDataOrError(): OfferResult {
-        return when (this) {
-            is QueryResult.Error -> OfferResult.Error(message)
-            is QueryResult.Success -> {
-                if (data.quoteCart == null) {
-                    OfferResult.Error()
-                } else {
-                    val offerResult = OfferModel(
-                        quoteBundle = data.quoteCart!!.bundle!!.fragments.quoteBundleFragment.toQuoteBundle(),
-                        checkoutMethod = data.quoteCart!!.checkoutMethods.map { it.toCheckoutMethod() }.first(),
-                        checkoutLabel = data.quoteCart!!.checkoutLabel(),
-                        campaign = data.quoteCart!!.campaign?.toCampaign()
-                    )
-                    OfferResult.Success(offerResult)
-                }
-            }
-        }
+    private fun QueryResult<QuoteCartSubscription.Data>.toResult(): OfferResult = when (this) {
+        is QueryResult.Error -> OfferResult.Error(message)
+        is QueryResult.Success -> data.quoteCart?.toOfferModel()
+            ?.let { OfferResult.Success(it) }
+            ?: OfferResult.Error()
     }
 
     fun writeDiscountToCache(ids: List<String>, data: RedeemReferralCodeMutation.Data) {
