@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.offer
 
-import com.apollographql.apollo.ApolloCall
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.api.cache.http.HttpCachePolicy
@@ -9,7 +8,6 @@ import com.apollographql.apollo.coroutines.toFlow
 import com.apollographql.apollo.fetcher.ApolloResponseFetchers
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.QuoteBundleFragment
-import com.hedvig.android.owldroid.graphql.LastQuoteIdQuery
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.QuoteCartSubscription
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
@@ -21,8 +19,12 @@ import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeSubscription
 import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.shareIn
 
 class OfferRepository(
     private val apolloClient: ApolloClient,
@@ -31,18 +33,20 @@ class OfferRepository(
 ) {
     fun offerQuery(ids: List<String>) = OfferQuery(localeManager.defaultLocale(), ids)
 
-    fun offer(ids: List<String>): Flow<OfferResult> {
+    fun offer(ids: List<String>): SharedFlow<OfferResult> {
         return if (featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
             val subscription = QuoteCartSubscription(localeManager.defaultLocale(), ids.first())
             apolloClient.subscribe(subscription)
                 .safeSubscription()
                 .map { it.toResult() }
+                .shareIn(CoroutineScope(SupervisorJob()), started = SharingStarted.Lazily)
         } else {
             apolloClient
                 .query(offerQuery(ids))
                 .watcher()
                 .toFlow()
                 .map { it.toResult() }
+                .shareIn(CoroutineScope(SupervisorJob()), started = SharingStarted.Lazily)
         }
     }
 
@@ -152,9 +156,6 @@ class OfferRepository(
             .writeAndPublish(offerQuery(ids), newData)
             .execute()
     }
-
-    fun quoteIdOfLastQuoteOfMember(): ApolloCall<LastQuoteIdQuery.Data> = apolloClient
-        .query(LastQuoteIdQuery())
 
     fun refreshOfferQuery(ids: List<String>) = apolloClient
         .query(offerQuery(ids))

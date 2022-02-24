@@ -26,6 +26,7 @@ class CheckoutMockActivity : MockActivity() {
                     context,
                     CheckoutParameter(
                         quoteIds = listOf(""),
+                        quoteCartId = null,
                     )
                 )
             )

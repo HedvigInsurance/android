@@ -51,7 +51,8 @@ class MockOfferViewModel : OfferViewModel() {
         _events.trySend(
             Event.OpenCheckout(
                 CheckoutParameter(
-                    quoteIds = listOf("")
+                    quoteIds = listOf(""),
+                    quoteCartId = null,
                 )
             )
         )
