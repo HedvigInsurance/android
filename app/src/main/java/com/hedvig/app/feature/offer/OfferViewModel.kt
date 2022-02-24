@@ -139,6 +139,7 @@ abstract class OfferViewModel : ViewModel() {
 
 class OfferViewModelImpl(
     private val _quoteIds: List<String>,
+    private val quoteCartId: String?,
     private val offerRepository: OfferRepository,
     private val getQuotesUseCase: GetQuotesUseCase,
     private val getQuoteUseCase: GetQuoteUseCase,

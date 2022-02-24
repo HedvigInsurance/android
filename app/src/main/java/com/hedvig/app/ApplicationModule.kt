@@ -434,9 +434,10 @@ val marketingModule = module {
 
 val offerModule = module {
     viewModel<OfferViewModel> { parametersHolder: ParametersHolder ->
-        val (ids: List<String>, shouldShowOnNextAppStart: Boolean) = parametersHolder
+        val (ids: List<String>, quoteCartId: String?, shouldShowOnNextAppStart: Boolean) = parametersHolder
         OfferViewModelImpl(
             _quoteIds = ids,
+            quoteCartId = quoteCartId,
             offerRepository = get(),
             getQuotesUseCase = get(),
             getQuoteUseCase = get(),
