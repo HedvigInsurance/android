@@ -20,7 +20,7 @@ class HomeItemsBuilder(
         homeData: HomeQuery.Data
     ): List<HomeModel> = when {
         homeData.isActive() -> buildActiveItems(homeData)
-        (homeData.isPending() || homeData.isActiveInFuture()) && homeData.isSwitching() -> buildSwitchingItems(homeData)
+        homeData.isSwitching() && (homeData.isPending() || homeData.isActiveInFuture()) -> buildSwitchingItems(homeData)
         homeData.isPending() -> buildPendingItems(homeData)
         homeData.isActiveInFuture() -> buildActiveInFutureItems(homeData)
         homeData.isTerminated() -> buildTerminatedItems(homeData)

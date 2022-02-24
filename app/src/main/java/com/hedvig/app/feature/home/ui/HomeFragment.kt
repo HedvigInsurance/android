@@ -6,6 +6,7 @@ import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import coil.ImageLoader
@@ -94,6 +95,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
         }
 
         model.viewState
+            .flowWithLifecycle(lifecycle)
             .onEach { viewState ->
                 binding.swipeToRefresh.isRefreshing = viewState is HomeViewModel.ViewState.Loading
 

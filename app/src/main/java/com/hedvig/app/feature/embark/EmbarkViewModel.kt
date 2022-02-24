@@ -24,6 +24,8 @@ import com.hedvig.app.feature.embark.util.getVariables
 import com.hedvig.app.feature.embark.util.toExpressionFragment
 import com.hedvig.app.util.ProgressPercentage
 import com.hedvig.app.util.asMap
+import com.hedvig.app.util.featureflags.Feature
+import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.app.util.safeLet
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.channels.Channel
@@ -492,6 +494,7 @@ class EmbarkViewModelImpl(
     hAnalytics: HAnalytics,
     storyName: String,
     private val createQuoteCartUseCase: CreateQuoteCartUseCase,
+    private val featureManager: FeatureManager,
 ) : EmbarkViewModel(
     valueStore,
     graphQLQueryUseCase,
@@ -511,9 +514,11 @@ class EmbarkViewModelImpl(
                 embarkRepository.embarkStory(name)
             }
 
-            when (val quoteCartResult = createQuoteCartUseCase.invoke()) {
-                is Either.Left -> _events.trySend(Event.Error(quoteCartResult.value.message))
-                is Either.Right -> putInStore("quoteCartId", quoteCartResult.value.id)
+            if (featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
+                when (val quoteCartResult = createQuoteCartUseCase.invoke()) {
+                    is Either.Left -> _events.trySend(Event.Error(quoteCartResult.value.message))
+                    is Either.Right -> putInStore("quoteCartId", quoteCartResult.value.id)
+                }
             }
 
             if (result.isFailure) {

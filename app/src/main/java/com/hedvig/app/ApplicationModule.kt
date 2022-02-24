@@ -494,6 +494,7 @@ val embarkModule = module {
             get(),
             storyName,
             get(),
+            get(),
         )
     }
 }
