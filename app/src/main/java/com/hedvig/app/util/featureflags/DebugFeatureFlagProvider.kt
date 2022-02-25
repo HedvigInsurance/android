@@ -14,16 +14,16 @@ class DebugFeatureFlagProvider(
     override val priority = DEBUG_PRIORITY
 
     override fun isFeatureEnabled(feature: Feature) = when (feature) {
-        Feature.MOVING_FLOW -> isEnabled(Feature.MOVING_FLOW)
-        Feature.FRANCE_MARKET -> isEnabled(Feature.FRANCE_MARKET)
-        Feature.ADDRESS_AUTO_COMPLETE -> isEnabled(Feature.ADDRESS_AUTO_COMPLETE)
-        Feature.REFERRAL_CAMPAIGN -> isEnabled(Feature.REFERRAL_CAMPAIGN)
-        Feature.QUOTE_CART -> isEnabled(Feature.QUOTE_CART)
+        Feature.MOVING_FLOW -> isEnabled(Feature.MOVING_FLOW, defaultValue = true)
+        Feature.FRANCE_MARKET -> isEnabled(Feature.FRANCE_MARKET, defaultValue = true)
+        Feature.ADDRESS_AUTO_COMPLETE -> isEnabled(Feature.ADDRESS_AUTO_COMPLETE, defaultValue = true)
+        Feature.REFERRAL_CAMPAIGN -> isEnabled(Feature.REFERRAL_CAMPAIGN, defaultValue = false)
+        Feature.QUOTE_CART -> isEnabled(Feature.QUOTE_CART, defaultValue = false)
     }
 
-    private fun isEnabled(feature: Feature): Boolean {
+    private fun isEnabled(feature: Feature, defaultValue: Boolean): Boolean {
         return runBlocking {
-            dataStore.data.map { it[booleanPreferencesKey(feature.name)] }.firstOrNull() ?: true
+            dataStore.data.map { it[booleanPreferencesKey(feature.name)] }.firstOrNull() ?: defaultValue
         }
     }
 
