@@ -10,7 +10,6 @@ import com.hedvig.app.feature.offer.usecase.getquote.GetQuotesUseCase
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.ValidationResult
-import com.hedvig.app.util.getLeftAndRight
 import com.hedvig.app.util.validateEmail
 import com.hedvig.app.util.validateNationalIdentityNumber
 import com.hedvig.hanalytics.HAnalytics
@@ -124,10 +123,12 @@ class CheckoutViewModel(
         viewModelScope.launch {
             val result = editQuotesUseCase.editAndSignQuotes(parameter)
                 .map { signQuotesUseCase.signQuotesAndClearCache(quoteIds, quoteCartId) }
-                .mapLeft { Event.Error(it.message) }
-                .map { it.toEvent() }
-
-            _events.trySend(result.getLeftAndRight())
+                .mapLeft { it.message }
+                .fold(
+                    ifLeft = Event::Error,
+                    ifRight = { it.toEvent() }
+                )
+            _events.trySend(result)
         }
     }
 

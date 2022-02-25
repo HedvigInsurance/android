@@ -8,6 +8,7 @@ import com.hedvig.android.owldroid.graphql.EditMailAndSSNMutation
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
 
 class EditQuotesUseCase(
@@ -22,11 +23,33 @@ class EditQuotesUseCase(
     object Success
 
     suspend fun editAndSignQuotes(parameter: EditAndSignParameter): Either<Error, Success> = parameter.quoteIds
-        .map { editQuote(it, parameter.ssn, parameter.email) }
+        .map { editQuote(it, parameter.quoteCartId, parameter.ssn, parameter.email) }
         .sequenceEither()
         .map { Success }
 
     private suspend fun editQuote(
+        quoteId: String,
+        quoteCartId: String?,
+        ssn: String,
+        email: String
+    ): Either<Error, Success> {
+        return if (featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
+            editQuoteCart(quoteCartId!!, quoteId, ssn, email)
+        } else {
+            editQuoteWithEmailAndSSN(quoteId, ssn, email)
+        }
+    }
+
+    private fun editQuoteCart(
+        quoteCartId: String,
+        quoteId: String,
+        ssn: String,
+        email: String
+    ): Either<Error, Success> {
+        return Either.Left(Error())
+    }
+
+    private suspend fun editQuoteWithEmailAndSSN(
         quoteId: String,
         ssn: String,
         email: String
