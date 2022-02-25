@@ -22,11 +22,11 @@ class GetQuotesUseCase(
     suspend operator fun invoke(quoteIds: List<String>, quoteCartId: String?): Flow<Result> {
         return when {
             featureManager.isFeatureEnabled(Feature.QUOTE_CART) -> {
-                getOffer(listOf(quoteCartId!!))
+                quoteCartId
+                    ?.let { getOffer(listOf(quoteCartId)) }
+                    ?: flowOf(Result.Error("No quote cart id found"))
             }
-            quoteIds.isNotEmpty() -> {
-                getOffer(quoteIds)
-            }
+            quoteIds.isNotEmpty() -> getOffer(quoteIds)
             else -> {
                 when (val result = getQuoteIdsUseCase.invoke(null)) {
                     is Either.Left -> flowOf(Result.Error(result.value.message))
