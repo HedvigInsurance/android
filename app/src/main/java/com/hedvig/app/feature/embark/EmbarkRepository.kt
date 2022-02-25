@@ -3,7 +3,6 @@ package com.hedvig.app.feature.embark
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.internal.json.JsonWriter
 import com.apollographql.apollo.api.internal.network.ContentType.APPLICATION_JSON
-import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.internal.interceptor.ApolloServerInterceptor
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.HedvigApplication
@@ -11,6 +10,7 @@ import com.hedvig.app.service.FileService
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeGraphqlCall
+import com.hedvig.app.util.apollo.safeQuery
 import com.hedvig.app.util.jsonObjectOfNotNull
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
@@ -31,9 +31,9 @@ class EmbarkRepository(
     private val localeManager: LocaleManager,
     private val fileService: FileService
 ) {
-    suspend fun embarkStory(name: String) = apolloClient
+    suspend fun embarkStory(name: String): QueryResult<EmbarkStoryQuery.Data> = apolloClient
         .query(EmbarkStoryQuery(name, localeManager.defaultLocale().rawValue))
-        .await()
+        .safeQuery()
 
     suspend fun graphQLQuery(
         query: String,

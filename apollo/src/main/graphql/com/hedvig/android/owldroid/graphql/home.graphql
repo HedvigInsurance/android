@@ -99,4 +99,8 @@ query HomeQuery($locale: Locale!, $languageCode: String!) {
     }
     body
   }
+  payinMethodStatus
+  insuranceProviders(locale: $locale) {
+    id
+  }
 }

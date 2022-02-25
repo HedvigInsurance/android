@@ -23,7 +23,10 @@ import com.hedvig.app.feature.embark.util.getOfferKeysOrNull
 import com.hedvig.app.feature.embark.util.getVariables
 import com.hedvig.app.feature.embark.util.toExpressionFragment
 import com.hedvig.app.util.ProgressPercentage
+import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.asMap
+import com.hedvig.app.util.featureflags.Feature
+import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.app.util.safeLet
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.channels.Channel
@@ -492,6 +495,7 @@ class EmbarkViewModelImpl(
     hAnalytics: HAnalytics,
     storyName: String,
     private val createQuoteCartUseCase: CreateQuoteCartUseCase,
+    private val featureManager: FeatureManager,
 ) : EmbarkViewModel(
     valueStore,
     graphQLQueryUseCase,
@@ -507,27 +511,19 @@ class EmbarkViewModelImpl(
 
     override fun fetchStory(name: String) {
         viewModelScope.launch {
-            val result = runCatching {
-                embarkRepository.embarkStory(name)
+            if (featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
+                when (val quoteCartResult = createQuoteCartUseCase.invoke()) {
+                    is Either.Left -> _events.trySend(Event.Error(quoteCartResult.value.message))
+                    is Either.Right -> putInStore("quoteCartId", quoteCartResult.value.id)
+                }
             }
 
-            when (val quoteCartResult = createQuoteCartUseCase.invoke()) {
-                is Either.Left -> _events.trySend(Event.Error(quoteCartResult.value.message))
-                is Either.Right -> putInStore("quoteCartId", quoteCartResult.value.id)
-            }
-
-            if (result.isFailure) {
-                _events.trySend(
-                    Event.Error(
-                        result.getOrNull()?.errors?.toString()
-                            ?: result.exceptionOrNull()?.message
-                    )
-                )
-                return@launch
-            }
-            result.getOrNull()?.data?.let { d ->
-                storyData = d
-                setInitialState()
+            when (val result = embarkRepository.embarkStory(name)) {
+                is QueryResult.Error -> _events.trySend(Event.Error(result.message))
+                is QueryResult.Success -> {
+                    storyData = result.data
+                    setInitialState()
+                }
             }
         }
     }

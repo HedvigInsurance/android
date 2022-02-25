@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.home.ui
+package com.hedvig.app.feature.home.model
 
 import androidx.annotation.StringRes
 import androidx.compose.ui.unit.Dp
@@ -12,6 +12,10 @@ import java.time.LocalDate
 
 sealed class HomeModel {
     sealed class BigText : HomeModel() {
+        data class Switching(
+            val name: String,
+        ) : BigText()
+
         data class Pending(
             val name: String,
         ) : BigText()
@@ -39,6 +43,7 @@ sealed class HomeModel {
         object Pending : BodyText()
         object ActiveInFuture : BodyText()
         object Terminated : BodyText()
+        object Switching : BodyText()
     }
 
     data class ClaimStatus(
@@ -95,9 +100,9 @@ sealed class HomeModel {
         ) : CommonClaim()
     }
 
-    data class Header(val text: String) : HomeModel()
+    data class Header(val stringRes: Int) : HomeModel()
 
     data class PendingAddressChange(val address: String) : HomeModel()
 
-    data class ChangeAddress(val pendingAddress: String?) : HomeModel()
+    object ChangeAddress : HomeModel()
 }

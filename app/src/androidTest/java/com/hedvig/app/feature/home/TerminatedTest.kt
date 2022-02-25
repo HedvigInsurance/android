@@ -30,7 +30,9 @@ class TerminatedTest : TestCase() {
                 LOGGED_IN_DATA_WITH_REFERRALS_ENABLED
             )
         },
-        HomeQuery.QUERY_DOCUMENT to apolloResponse { success(HOME_DATA_TERMINATED) }
+        HomeQuery.QUERY_DOCUMENT to apolloResponse {
+            success(HOME_DATA_TERMINATED)
+        }
     )
 
     @get:Rule
