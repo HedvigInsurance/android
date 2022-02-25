@@ -10,6 +10,9 @@ import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.app.feature.chat.data.ChatRepository
+import com.hedvig.app.feature.checkout.ApproveQuotesUseCase
+import com.hedvig.app.feature.checkout.CheckoutParameter
+import com.hedvig.app.feature.checkout.SignQuotesUseCase
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.offer.model.OfferModel
@@ -19,9 +22,6 @@ import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
 import com.hedvig.app.feature.offer.model.quotebundle.ViewConfiguration
 import com.hedvig.app.feature.offer.ui.CheckoutLabel
 import com.hedvig.app.feature.offer.ui.OfferItems
-import com.hedvig.app.feature.offer.ui.checkout.ApproveQuotesUseCase
-import com.hedvig.app.feature.offer.ui.checkout.CheckoutParameter
-import com.hedvig.app.feature.offer.ui.checkout.SignQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.GetPostSignDependenciesUseCase
 import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.datacollectionresult.DataCollectionResult

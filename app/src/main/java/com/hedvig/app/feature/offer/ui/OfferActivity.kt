@@ -25,6 +25,7 @@ import com.hedvig.app.SplashActivity
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.databinding.ActivityOfferBinding
 import com.hedvig.app.feature.adyen.payin.startAdyenPayment
+import com.hedvig.app.feature.checkout.CheckoutActivity
 import com.hedvig.app.feature.crossselling.ui.CrossSellingResult
 import com.hedvig.app.feature.crossselling.ui.CrossSellingResultActivity
 import com.hedvig.app.feature.documents.DocumentAdapter
@@ -37,7 +38,6 @@ import com.hedvig.app.feature.offer.model.quotebundle.PostSignScreen
 import com.hedvig.app.feature.offer.model.quotebundle.ViewConfiguration
 import com.hedvig.app.feature.offer.model.quotebundle.checkoutIconRes
 import com.hedvig.app.feature.offer.quotedetail.QuoteDetailActivity
-import com.hedvig.app.feature.offer.ui.checkout.CheckoutActivity
 import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity

@@ -184,7 +184,7 @@
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".feature.offer.ui.checkout.CheckoutActivity"
+            android:name="com.hedvig.app.feature.checkout.CheckoutActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".feature.crossselling.ui.CrossSellingResultActivity"

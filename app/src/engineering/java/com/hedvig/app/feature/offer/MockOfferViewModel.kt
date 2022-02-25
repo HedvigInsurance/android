@@ -5,8 +5,8 @@ import com.hedvig.android.owldroid.graphql.DataCollectionResultQuery
 import com.hedvig.android.owldroid.graphql.DataCollectionStatusSubscription
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
+import com.hedvig.app.feature.checkout.CheckoutParameter
 import com.hedvig.app.feature.offer.model.quotebundle.PostSignScreen
-import com.hedvig.app.feature.offer.ui.checkout.CheckoutParameter
 import com.hedvig.app.feature.offer.usecase.datacollectionresult.DataCollectionResult
 import com.hedvig.app.feature.offer.usecase.datacollectionresult.GetDataCollectionResultUseCase
 import com.hedvig.app.feature.offer.usecase.datacollectionstatus.DataCollectionStatus

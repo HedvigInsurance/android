@@ -48,6 +48,9 @@ import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.feature.chat.service.ChatNotificationSender
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
+import com.hedvig.app.feature.checkout.ApproveQuotesUseCase
+import com.hedvig.app.feature.checkout.CheckoutViewModel
+import com.hedvig.app.feature.checkout.SignQuotesUseCase
 import com.hedvig.app.feature.claimdetail.data.GetClaimDetailUiStateFlowUseCase
 import com.hedvig.app.feature.claimdetail.data.GetClaimDetailUseCase
 import com.hedvig.app.feature.claimdetail.ui.ClaimDetailViewModel
@@ -138,9 +141,6 @@ import com.hedvig.app.feature.offer.OfferViewModelImpl
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetViewModel
 import com.hedvig.app.feature.offer.ui.changestartdate.EditStartDateUseCase
-import com.hedvig.app.feature.offer.ui.checkout.ApproveQuotesUseCase
-import com.hedvig.app.feature.offer.ui.checkout.CheckoutViewModel
-import com.hedvig.app.feature.offer.ui.checkout.SignQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.GetPostSignDependenciesUseCase
 import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.datacollectionresult.GetDataCollectionResultUseCase

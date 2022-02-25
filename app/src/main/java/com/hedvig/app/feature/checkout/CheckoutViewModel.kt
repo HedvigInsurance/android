@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.offer.ui.checkout
+package com.hedvig.app.feature.checkout
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
