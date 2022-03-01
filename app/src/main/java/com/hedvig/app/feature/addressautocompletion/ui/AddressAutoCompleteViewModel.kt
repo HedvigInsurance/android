@@ -39,8 +39,8 @@ class AddressAutoCompleteViewModel(
     )
     private val queryResults: Flow<List<DanishAddress>> = currentInput
         .mapLatest { input ->
-            if (input.selectedDanishAddress != null) {
-                getDanishAddressAutoCompletionUseCase.invoke(input.selectedDanishAddress)
+            if (input.selectedAddress != null) {
+                getDanishAddressAutoCompletionUseCase.invoke(input.selectedAddress)
             } else {
                 getDanishAddressAutoCompletionUseCase.invoke(input.rawText)
             }
@@ -57,7 +57,6 @@ class AddressAutoCompleteViewModel(
     ) { input, results ->
         AddressAutoCompleteViewState(
             input = input,
-            showCantFindAddressItem = input.isEmptyInput.not(),
             results = results,
         )
     }.stateIn(
@@ -98,10 +97,10 @@ class AddressAutoCompleteViewModel(
         }
     }
 
-    fun selectAddress(danishAddress: DanishAddress) {
-        addressSelectionChannel.trySend(danishAddress)
+    fun selectAddress(address: DanishAddress) {
+        addressSelectionChannel.trySend(address)
         currentInput.update { danishAddressInput ->
-            danishAddressInput.withSelectedAddress(danishAddress)
+            danishAddressInput.withSelectedAddress(address)
         }
     }
 }

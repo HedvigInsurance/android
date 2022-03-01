@@ -161,8 +161,8 @@ private fun AddressInput(
                     )
                 )
             }
-            LaunchedEffect(viewState.input.selectedDanishAddress) {
-                if (viewState.input.selectedDanishAddress == null) return@LaunchedEffect
+            LaunchedEffect(viewState.input.selectedAddress) {
+                if (viewState.input.selectedAddress == null) return@LaunchedEffect
                 textFieldValue = textFieldValue.copy(
                     text = viewState.input.rawText,
                     selection = TextRange(viewState.input.rawText.length),
@@ -191,7 +191,7 @@ private fun AddressInput(
                     .focusRequester(focusRequester)
                     .fillMaxWidth()
             )
-            val numberAndCity = viewState.input.selectedDanishAddress?.toPresentableTextPair()?.second
+            val numberAndCity = viewState.input.selectedAddress?.toPresentableTextPair()?.second
             AnimatedVisibility(numberAndCity != null) {
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                     numberAndCity?.let {
