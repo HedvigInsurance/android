@@ -328,10 +328,10 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         val menu = binding.offerToolbar.menu
         menu.clear()
         when (loginStatus) {
-            LoginStatus.ONBOARDING,
-            LoginStatus.IN_OFFER,
+            LoginStatus.Onboarding,
+            is LoginStatus.InOffer,
             -> binding.offerToolbar.inflateMenu(R.menu.offer_menu)
-            LoginStatus.LOGGED_IN -> {
+            LoginStatus.LoggedIn -> {
                 binding.offerToolbar.inflateMenu(R.menu.offer_menu_logged_in)
                 menu.getItem(0).actionView.setOnClickListener {
                     handleMenuItem(menu[0])

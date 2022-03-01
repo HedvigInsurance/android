@@ -50,6 +50,7 @@ import com.hedvig.app.feature.chat.service.ChatNotificationSender
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
 import com.hedvig.app.feature.checkout.ApproveQuotesUseCase
 import com.hedvig.app.feature.checkout.CheckoutViewModel
+import com.hedvig.app.feature.checkout.EditQuotesUseCase
 import com.hedvig.app.feature.claimdetail.data.GetClaimDetailUiStateFlowUseCase
 import com.hedvig.app.feature.claimdetail.data.GetClaimDetailUseCase
 import com.hedvig.app.feature.claimdetail.ui.ClaimDetailViewModel
@@ -436,10 +437,9 @@ val marketingModule = module {
 
 val offerModule = module {
     viewModel<OfferViewModel> { parametersHolder: ParametersHolder ->
-        val (ids: List<String>, quoteCartId: String?, shouldShowOnNextAppStart: Boolean) = parametersHolder
         OfferViewModelImpl(
-            quoteIds = ids,
-            quoteCartId = quoteCartId,
+            quoteIds = parametersHolder.get(),
+            quoteCartId = parametersHolder.getOrNull(),
             offerRepository = get(),
             getQuotesUseCase = get(),
             getQuoteUseCase = get(),
@@ -448,7 +448,7 @@ val offerModule = module {
             approveQuotesUseCase = get(),
             refreshQuotesUseCase = get(),
             signQuotesUseCase = get(),
-            shouldShowOnNextAppStart = shouldShowOnNextAppStart,
+            shouldShowOnNextAppStart = parametersHolder.get(),
             getPostSignDependenciesUseCase = get(),
             subscribeToDataCollectionStatusUseCase = get(),
             getDataCollectionResultUseCase = get(),
@@ -681,6 +681,7 @@ val useCaseModule = module {
     single<GetFinalDanishAddressSelectionUseCase> { GetFinalDanishAddressSelectionUseCase(get()) }
     single { CreateQuoteCartUseCase(get(), get(), get()) }
     single<GetQuoteIdsUseCase> { GetQuoteIdsUseCase(get(), get(), get()) }
+    single<EditQuotesUseCase> { EditQuotesUseCase(get(), get(), get()) }
 }
 
 val cacheManagerModule = module {
