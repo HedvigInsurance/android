@@ -45,6 +45,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.derivedWindowInsetsTypeOf
 import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.ui.Scaffold
 import com.hedvig.app.R
@@ -103,6 +104,9 @@ fun AddressAutoCompleteScreen(
         },
         backgroundColor = MaterialTheme.colors.surface
     ) { paddingValues ->
+        val ime = LocalWindowInsets.current.ime
+        val navBars = LocalWindowInsets.current.navigationBars
+        val imeAndNavBarInsets = remember(ime, navBars) { derivedWindowInsetsTypeOf(ime, navBars) }
         SuggestionsList(
             viewState = viewState,
             selectAddress = { address ->
@@ -110,8 +114,13 @@ fun AddressAutoCompleteScreen(
                 selectAddress(address)
             },
             cantFindAddress = cantFindAddress,
-            contentPadding = rememberInsetsPaddingValues(LocalWindowInsets.current.navigationBars),
-            modifier = Modifier.padding(paddingValues),
+            contentPadding = rememberInsetsPaddingValues(
+                imeAndNavBarInsets,
+                applyStart = true,
+                applyEnd = true,
+                applyBottom = true,
+            ),
+            modifier = Modifier.padding(paddingValues)
         )
     }
 }
