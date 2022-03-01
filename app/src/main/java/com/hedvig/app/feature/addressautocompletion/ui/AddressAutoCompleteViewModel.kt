@@ -108,9 +108,11 @@ class AddressAutoCompleteViewModel(
 
 data class AddressAutoCompleteViewState(
     val input: DanishAddressInput,
-    val showCantFindAddressItem: Boolean = false,
     val results: List<DanishAddress> = emptyList(),
-)
+) {
+    val showCantFindAddressItem: Boolean
+        get() = input.isEmptyInput.not()
+}
 
 sealed interface AddressAutoCompleteEvent {
     data class Selection(val selectedAddress: DanishAddress) : AddressAutoCompleteEvent

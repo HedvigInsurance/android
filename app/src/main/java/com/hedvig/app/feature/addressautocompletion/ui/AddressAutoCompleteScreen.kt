@@ -265,7 +265,6 @@ fun AddressAutoCompleteScreenPreview() {
             AddressAutoCompleteScreen(
                 AddressAutoCompleteViewState(
                     input = DanishAddressInput.fromDanishAddress(previewDanishAddress),
-                    true,
                     results = DanishAddress.previewList(),
                 ),
                 {},
