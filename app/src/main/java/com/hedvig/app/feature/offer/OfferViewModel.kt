@@ -4,33 +4,33 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
-import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
-import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationTitle
-import com.hedvig.android.owldroid.type.SignMethod
+import com.hedvig.app.R
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
-import com.hedvig.app.feature.offer.quotedetail.buildDocuments
-import com.hedvig.app.feature.offer.quotedetail.buildInsurableLimits
-import com.hedvig.app.feature.offer.quotedetail.buildPerils
+import com.hedvig.app.feature.offer.model.OfferModel
+import com.hedvig.app.feature.offer.model.quotebundle.CheckoutMethod
+import com.hedvig.app.feature.offer.model.quotebundle.PostSignScreen
+import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
+import com.hedvig.app.feature.offer.model.quotebundle.ViewConfiguration
 import com.hedvig.app.feature.offer.ui.CheckoutLabel
-import com.hedvig.app.feature.offer.ui.OfferModel
+import com.hedvig.app.feature.offer.ui.OfferItems
 import com.hedvig.app.feature.offer.ui.checkout.ApproveQuotesUseCase
 import com.hedvig.app.feature.offer.ui.checkout.CheckoutParameter
 import com.hedvig.app.feature.offer.ui.checkout.SignQuotesUseCase
-import com.hedvig.app.feature.offer.ui.checkoutLabel
 import com.hedvig.app.feature.offer.usecase.GetPostSignDependenciesUseCase
-import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
-import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.datacollectionresult.DataCollectionResult
 import com.hedvig.app.feature.offer.usecase.datacollectionresult.GetDataCollectionResultUseCase
 import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToDataCollectionStatusUseCase
 import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToDataCollectionStatusUseCase.Status.Content
+import com.hedvig.app.feature.offer.usecase.getquote.GetQuoteIdsUseCase
+import com.hedvig.app.feature.offer.usecase.getquote.GetQuoteUseCase
+import com.hedvig.app.feature.offer.usecase.getquote.GetQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.providerstatus.GetProviderDisplayNameUseCase
 import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.feature.settings.Market
@@ -108,14 +108,14 @@ abstract class OfferViewModel : ViewModel() {
         object Loading : ViewState()
         object Error : ViewState()
         data class Content(
-            val topOfferItems: List<OfferModel> = emptyList(),
+            val topOfferItems: List<OfferItems> = emptyList(),
             val perils: List<PerilItem> = emptyList(),
             val documents: List<DocumentItems> = emptyList(),
             val insurableLimitsItems: List<InsurableLimitItem> = emptyList(),
-            val bottomOfferItems: List<OfferModel> = emptyList(),
-            val signMethod: SignMethod = SignMethod.SIMPLE_SIGN,
+            val bottomOfferItems: List<OfferItems> = emptyList(),
+            val checkoutMethod: CheckoutMethod = CheckoutMethod.SIMPLE_SIGN,
             val checkoutLabel: CheckoutLabel = CheckoutLabel.CONFIRM,
-            val title: QuoteBundleAppConfigurationTitle = QuoteBundleAppConfigurationTitle.LOGO,
+            val title: ViewConfiguration.Title = ViewConfiguration.Title.LOGO,
             val loginStatus: LoginStatus = LoginStatus.LOGGED_IN,
             val paymentMethods: PaymentMethodsApiResponse?,
         ) : ViewState()
@@ -125,7 +125,7 @@ abstract class OfferViewModel : ViewModel() {
         object Loading : OfferAndLoginStatus()
         object Error : OfferAndLoginStatus()
         data class Content(
-            val offerData: OfferQuery.Data,
+            val offerResult: OfferModel,
             val loginStatus: LoginStatus,
             val paymentMethods: PaymentMethodsApiResponse?,
         ) : OfferAndLoginStatus()
@@ -139,9 +139,11 @@ abstract class OfferViewModel : ViewModel() {
 }
 
 class OfferViewModelImpl(
-    private val _quoteIds: List<String>,
+    private var quoteIds: List<String>,
+    private val quoteCartId: String?,
     private val offerRepository: OfferRepository,
     private val getQuotesUseCase: GetQuotesUseCase,
+    private val getQuoteIdsUseCase: GetQuoteIdsUseCase,
     private val getQuoteUseCase: GetQuoteUseCase,
     private val loginStatusService: LoginStatusService,
     private val approveQuotesUseCase: ApproveQuotesUseCase,
@@ -158,13 +160,11 @@ class OfferViewModelImpl(
     private val hAnalytics: HAnalytics,
 ) : OfferViewModel() {
 
-    private lateinit var quoteIds: List<String>
-
     init {
         loginStatusService.isViewingOffer = shouldShowOnNextAppStart
 
         viewModelScope.launch {
-            loadQuoteIds()
+            loadQuotes()
         }
     }
 
@@ -178,12 +178,15 @@ class OfferViewModelImpl(
             OfferAndLoginStatus.Loading -> emit(ViewState.Loading)
             is OfferAndLoginStatus.Content -> {
                 // When we do more than one insurance comparison we will want to get all the dataCollectionIds instead.
-                val insurelyDataCollectionReferenceUuid =
-                    offerResponse.offerData.quoteBundle.quotes.firstNotNullOfOrNull(OfferQuery.Quote::dataCollectionId)
+                val insurelyDataCollectionReferenceUuid = offerResponse.offerResult
+                    .quoteBundle
+                    .quotes
+                    .firstNotNullOfOrNull(QuoteBundle.Quote::dataCollectionId)
+
                 if (insurelyDataCollectionReferenceUuid == null) {
                     emit(
                         produceViewState(
-                            data = offerResponse.offerData,
+                            data = offerResponse.offerResult,
                             loginStatus = offerResponse.loginStatus,
                             paymentMethods = offerResponse.paymentMethods,
                         )
@@ -210,7 +213,7 @@ class OfferViewModelImpl(
                                 }
                                 emit(
                                     produceViewState(
-                                        offerResponse.offerData,
+                                        offerResponse.offerResult,
                                         offerResponse.loginStatus,
                                         offerResponse.paymentMethods,
                                         dataCollectionStatus,
@@ -231,50 +234,54 @@ class OfferViewModelImpl(
         )
 
     private suspend fun loadQuoteIds() {
-        when (val idsResult = getQuotesUseCase.invoke(_quoteIds)) {
-            is GetQuotesUseCase.Result.Success -> {
-                quoteIds = idsResult.ids
-                hAnalytics.screenViewOffer(quoteIds)
-                idsResult
-                    .data
-                    .onEach { response ->
-                        when (response) {
-                            is OfferRepository.OfferResult.Error -> {
-                                offerAndLoginStatus.value = OfferAndLoginStatus.Error
-                            }
-                            is OfferRepository.OfferResult.Success -> {
-                                val loginStatus = loginStatusService.getLoginStatus()
-
-                                val paymentMethods = if (marketManager.market == Market.NO) {
-                                    adyenRepository.paymentMethods()
-                                        .data
-                                        ?.availablePaymentMethods
-                                        ?.paymentMethodsResponse
-                                } else {
-                                    null
-                                }
-
-                                offerAndLoginStatus.value = OfferAndLoginStatus.Content(
-                                    response.data,
-                                    loginStatus,
-                                    paymentMethods
-                                )
-                            }
-                        }
-                    }
-                    .catch {
-                        offerAndLoginStatus.value = OfferAndLoginStatus.Error
-                    }
-                    .launchIn(viewModelScope)
-            }
-            is GetQuotesUseCase.Result.Error -> {
-                offerAndLoginStatus.value = OfferAndLoginStatus.Error
+        when (val result = getQuoteIdsUseCase.invoke(quoteCartId)) {
+            is Either.Left -> offerAndLoginStatus.value = OfferAndLoginStatus.Error
+            is Either.Right -> {
+                hAnalytics.screenViewOffer(result.value.ids)
+                quoteIds = result.value.ids
             }
         }
     }
 
+    private suspend fun loadQuotes() {
+        getQuotesUseCase.invoke(quoteIds, quoteCartId).onEach { result ->
+            when (result) {
+                is GetQuotesUseCase.Result.Error -> {
+                    offerAndLoginStatus.value = OfferAndLoginStatus.Error
+                }
+                is GetQuotesUseCase.Result.Success -> {
+                    val loginStatus = loginStatusService.getLoginStatus()
+
+                    val paymentMethods = if (marketManager.market == Market.NO) {
+                        adyenRepository.paymentMethods()
+                            .data
+                            ?.availablePaymentMethods
+                            ?.paymentMethodsResponse
+                    } else {
+                        null
+                    }
+
+                    offerAndLoginStatus.value = OfferAndLoginStatus.Content(
+                        result.data,
+                        loginStatus,
+                        paymentMethods
+                    )
+                }
+            }
+        }.catch {
+            offerAndLoginStatus.value = OfferAndLoginStatus.Error
+        }.launchIn(viewModelScope)
+    }
+
     override fun onOpenCheckout() {
-        _events.trySend(Event.OpenCheckout(CheckoutParameter(quoteIds = _quoteIds)))
+        _events.trySend(
+            Event.OpenCheckout(
+                CheckoutParameter(
+                    quoteIds = quoteIds,
+                    quoteCartId = quoteCartId
+                )
+            )
+        )
     }
 
     override fun approveOffer() {
@@ -307,7 +314,7 @@ class OfferViewModelImpl(
     }
 
     private fun produceViewState(
-        data: OfferQuery.Data,
+        data: OfferModel,
         loginStatus: LoginStatus,
         paymentMethods: PaymentMethodsApiResponse?,
         dataCollectionStatus: SubscribeToDataCollectionStatusUseCase.Status? = null,
@@ -321,19 +328,31 @@ class OfferViewModelImpl(
             insuranceProviderDisplayName,
             paymentMethods
         )
-        val perilItems = OfferItemsBuilder.createPerilItems(data.quoteBundle.quotes)
-        val insurableLimitsItems = OfferItemsBuilder.createInsurableLimits(data.quoteBundle.quotes)
-        val documentItems = OfferItemsBuilder.createDocumentItems(data.quoteBundle.quotes)
+
         val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems(data)
+
         return ViewState.Content(
             topOfferItems = topOfferItems,
-            perils = perilItems,
-            documents = documentItems,
-            insurableLimitsItems = insurableLimitsItems,
+            perils = if (data.quoteBundle.quotes.size == 1) {
+                data.quoteBundle.quotes.first().perils.map { PerilItem.Peril(it) }
+            } else {
+                emptyList()
+            },
+            documents = if (data.quoteBundle.quotes.size == 1) {
+                listOf(DocumentItems.Header(R.string.OFFER_DOCUMENTS_SECTION_TITLE)) +
+                    data.quoteBundle.quotes.first().insuranceTerms
+            } else {
+                emptyList()
+            },
+            insurableLimitsItems = if (data.quoteBundle.quotes.size == 1) {
+                listOf(InsurableLimitItem.Header.Details) +
+                    data.quoteBundle.quotes.first().insurableLimits
+            } else {
+                emptyList()
+            },
             bottomOfferItems = bottomOfferItems,
-            signMethod = data.signMethodForQuotes,
-            checkoutLabel = data.checkoutLabel(),
-            title = data.quoteBundle.appConfiguration.title,
+            checkoutLabel = data.checkoutLabel,
+            title = data.quoteBundle.viewConfiguration.title,
             loginStatus = loginStatus,
             paymentMethods = paymentMethods
         )
@@ -376,9 +395,9 @@ class OfferViewModelImpl(
                         Event.OpenQuoteDetails(
                             QuoteDetailItems(
                                 result.quote.displayName,
-                                buildPerils(result.quote),
-                                buildInsurableLimits(result.quote),
-                                buildDocuments(result.quote)
+                                result.quote.perils.map { PerilItem.Peril(it) },
+                                result.quote.insurableLimits,
+                                result.quote.insuranceTerms
                             )
                         )
                     )
@@ -390,12 +409,12 @@ class OfferViewModelImpl(
     override fun reload() {
         offerAndLoginStatus.value = OfferAndLoginStatus.Loading
         viewModelScope.launch {
-            if (!::quoteIds.isInitialized) {
+            if (quoteIds.isEmpty()) {
                 loadQuoteIds()
             }
+
             when (refreshQuotesUseCase.invoke(quoteIds)) {
-                RefreshQuotesUseCase.Result.Success -> {
-                }
+                RefreshQuotesUseCase.Result.Success -> loadQuotes()
                 is RefreshQuotesUseCase.Result.Error -> offerAndLoginStatus.value = OfferAndLoginStatus.Error
             }
         }
@@ -412,7 +431,7 @@ class OfferViewModelImpl(
 
     override fun onSwedishBankIdSign() {
         viewModelScope.launch {
-            when (val result = signQuotesUseCase.signQuotesAndClearCache(quoteIds)) {
+            when (val result = signQuotesUseCase.signQuotesAndClearCache(quoteIds, quoteCartId)) {
                 is SignQuotesUseCase.SignQuoteResult.Error -> offerAndLoginStatus.value = OfferAndLoginStatus.Error
                 is SignQuotesUseCase.SignQuoteResult.StartSwedishBankId -> _events.trySend(
                     Event.StartSwedishBankIdSign(result.autoStartToken)

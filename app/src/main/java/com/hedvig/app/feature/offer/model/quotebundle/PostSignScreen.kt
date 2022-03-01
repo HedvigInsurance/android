@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.offer
+package com.hedvig.app.feature.offer.model.quotebundle
 
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationPostSignStep
 

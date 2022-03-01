@@ -33,7 +33,7 @@ class CheckoutActivity : BaseActivity(R.layout.activity_checkout) {
         intent.getParcelableExtra<CheckoutParameter>(PARAMETER)
             ?: throw IllegalArgumentException("No parameter found for ${this.javaClass.simpleName}")
     }
-    private val viewModel: CheckoutViewModel by viewModel { parametersOf(parameter.quoteIds) }
+    private val viewModel: CheckoutViewModel by viewModel { parametersOf(parameter.quoteIds, parameter.quoteCartId) }
     private val binding by viewBinding(ActivityCheckoutBinding::bind)
     private lateinit var progressDialog: AlertDialog
 

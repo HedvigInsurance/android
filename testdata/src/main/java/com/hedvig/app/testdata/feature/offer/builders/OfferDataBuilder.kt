@@ -2,6 +2,7 @@ package com.hedvig.app.testdata.feature.offer.builders
 
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
+import com.hedvig.android.owldroid.fragment.QuoteBundleFragment
 import com.hedvig.android.owldroid.fragment.TableFragment
 import com.hedvig.android.owldroid.graphql.DataCollectionResultQuery
 import com.hedvig.android.owldroid.graphql.DataCollectionResultQuery.AsHouseInsuranceCollection
@@ -22,27 +23,31 @@ import java.time.LocalDate
 
 data class OfferDataBuilder(
     private val bundleDisplayName: String = "Bundle Display Name",
-    private val quotes: List<OfferQuery.Quote> = listOf(QuoteBuilder().build()),
+    private val quotes: List<QuoteBundleFragment.Quote> = listOf(QuoteBuilder().build()),
     private val insuranceCost: CostFragment = CostBuilder()
         .build(),
     private val redeemedCampaigns: List<OfferQuery.RedeemedCampaign> = emptyList(),
-    private val frequentlyAskedQuestions: List<OfferQuery.FrequentlyAskedQuestion> = emptyList(),
-    private val inceptions: OfferQuery.Inception1 = ConcurrentInceptionBuilder().build(),
+    private val frequentlyAskedQuestions: List<QuoteBundleFragment.FrequentlyAskedQuestion> = emptyList(),
+    private val inceptions: QuoteBundleFragment.Inception1 = ConcurrentInceptionBuilder().build(),
     private val signMethod: SignMethod = SignMethod.SWEDISH_BANK_ID,
     private val postSignStep: QuoteBundleAppConfigurationPostSignStep =
         QuoteBundleAppConfigurationPostSignStep.CONNECT_PAYIN,
-    private val appConfiguration: OfferQuery.AppConfiguration = AppConfigurationBuilder().build(),
+    private val appConfiguration: QuoteBundleFragment.AppConfiguration = AppConfigurationBuilder().build(),
 ) {
     fun build() = OfferQuery.Data(
         quoteBundle = OfferQuery.QuoteBundle(
-            displayName = bundleDisplayName,
-            quotes = quotes,
-            bundleCost = OfferQuery.BundleCost(
-                fragments = OfferQuery.BundleCost.Fragments(insuranceCost)
-            ),
-            frequentlyAskedQuestions = frequentlyAskedQuestions,
-            inception = inceptions,
-            appConfiguration = appConfiguration
+            fragments = OfferQuery.QuoteBundle.Fragments(
+                quoteBundleFragment = QuoteBundleFragment(
+                    displayName = bundleDisplayName,
+                    quotes = quotes,
+                    bundleCost = QuoteBundleFragment.BundleCost(
+                        fragments = QuoteBundleFragment.BundleCost.Fragments(insuranceCost)
+                    ),
+                    frequentlyAskedQuestions = frequentlyAskedQuestions,
+                    inception = inceptions,
+                    appConfiguration = appConfiguration
+                )
+            )
         ),
         redeemedCampaigns = redeemedCampaigns,
         signMethodForQuotes = signMethod,
@@ -54,25 +59,25 @@ data class QuoteBuilder(
     private val id: String = "ea656f5f-40b2-4953-85d9-752b33e69e38",
     private val dataCollectionId: String? = null,
     private val typeOfContract: TypeOfContract = TypeOfContract.SE_APARTMENT_RENT,
-    private val currentInsurer: OfferQuery.CurrentInsurer? = null,
-    private val perils: List<OfferQuery.ContractPeril> = PerilBuilder().offerQueryBuild(5),
+    private val currentInsurer: QuoteBundleFragment.CurrentInsurer? = null,
+    private val perils: List<QuoteBundleFragment.ContractPeril> = PerilBuilder().offerQueryBuild(5),
     private val termsAndConditionsUrl: String = "https://www.example.com",
-    private val insurableLimits: List<OfferQuery.InsurableLimit> = emptyList(),
-    private val insuranceTerms: List<OfferQuery.InsuranceTerm> = emptyList(),
+    private val insurableLimits: List<QuoteBundleFragment.InsurableLimit> = emptyList(),
+    private val insuranceTerms: List<QuoteBundleFragment.InsuranceTerm> = emptyList(),
     private val detailsTable: TableFragment = TableFragmentBuilder().build(),
     private val displayName: String = typeOfContract.toString(),
 ) {
-    fun build() = OfferQuery.Quote(
+    fun build() = QuoteBundleFragment.Quote(
         displayName = displayName,
         startDate = startDate,
         id = id,
         dataCollectionId = dataCollectionId,
         currentInsurer = currentInsurer,
-        detailsTable = OfferQuery.DetailsTable(
-            fragments = OfferQuery.DetailsTable.Fragments(detailsTable),
+        detailsTable = QuoteBundleFragment.DetailsTable(
+            fragments = QuoteBundleFragment.DetailsTable.Fragments(detailsTable),
         ),
         contractPerils = perils,
-        termsAndConditions = OfferQuery.TermsAndConditions(
+        termsAndConditions = QuoteBundleFragment.TermsAndConditions(
             displayName = "Villkor",
             url = termsAndConditionsUrl,
         ),
@@ -96,7 +101,7 @@ data class AppConfigurationBuilder(
     private val postSignStep: QuoteBundleAppConfigurationPostSignStep =
         QuoteBundleAppConfigurationPostSignStep.CONNECT_PAYIN,
 ) {
-    fun build() = OfferQuery.AppConfiguration(
+    fun build() = QuoteBundleFragment.AppConfiguration(
         showCampaignManagement = showCampaignManagement,
         showFAQ = showFAQ,
         ignoreCampaigns = ignoreCampaigns,
@@ -113,7 +118,7 @@ data class FaqBuilder(
     private val body: String,
     private val id: String = "123",
 ) {
-    fun build() = OfferQuery.FrequentlyAskedQuestion(
+    fun build() = QuoteBundleFragment.FrequentlyAskedQuestion(
         id = id,
         headline = headline,
         body = body

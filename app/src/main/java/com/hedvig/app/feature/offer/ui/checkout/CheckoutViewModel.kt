@@ -2,12 +2,10 @@ package com.hedvig.app.feature.offer.ui.checkout
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.authenticate.LoginStatusService
-import com.hedvig.app.feature.offer.OfferRepository
-import com.hedvig.app.feature.offer.ui.grossMonthlyCost
-import com.hedvig.app.feature.offer.ui.netMonthlyCost
-import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
+import com.hedvig.app.feature.offer.model.OfferModel
+import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
+import com.hedvig.app.feature.offer.usecase.getquote.GetQuotesUseCase
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.ValidationResult
@@ -18,7 +16,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -26,7 +23,8 @@ import kotlinx.coroutines.launch
 import javax.money.MonetaryAmount
 
 class CheckoutViewModel(
-    _quoteIds: List<String>,
+    private val quoteIds: List<String>,
+    private val quoteCartId: String?,
     private val getQuotesUseCase: GetQuotesUseCase,
     private val signQuotesUseCase: SignQuotesUseCase,
     private val marketManager: MarketManager,
@@ -34,42 +32,24 @@ class CheckoutViewModel(
     private val hAnalytics: HAnalytics,
 ) : ViewModel() {
 
-    private lateinit var quoteIds: List<String>
-
     init {
         viewModelScope.launch {
-            when (val idsResult = getQuotesUseCase(_quoteIds)) {
-                is GetQuotesUseCase.Result.Success -> {
-                    quoteIds = idsResult.ids
-                    idsResult
-                        .data
-                        .onEach(::handleResponse)
-                        .catch { _events.trySend(Event.Error(it.message)) }
-                        .launchIn(this)
+            getQuotesUseCase.invoke(quoteIds, quoteCartId).onEach { result ->
+                when (result) {
+                    is GetQuotesUseCase.Result.Success -> _titleViewState.value = result.data.mapToViewState()
+                    is GetQuotesUseCase.Result.Error -> _events.trySend(Event.Error(result.message))
                 }
-                is GetQuotesUseCase.Result.Error -> {
-                    _events.trySend(Event.Error(idsResult.message))
-                }
-            }
+            }.launchIn(viewModelScope)
         }
     }
 
-    private fun handleResponse(response: OfferRepository.OfferResult) {
-        when (response) {
-            is OfferRepository.OfferResult.Error -> {
-                _events.trySend(Event.Error(response.message))
-            }
-            is OfferRepository.OfferResult.Success -> {
-                _titleViewState.value = TitleViewState.Loaded(
-                    bundleName = response.data.quoteBundle.displayName,
-                    netAmount = response.data.netMonthlyCost(),
-                    grossAmount = response.data.grossMonthlyCost(),
-                    market = marketManager.market,
-                    email = response.data.quoteBundle.quotes.firstNotNullOfOrNull(OfferQuery.Quote::email)
-                )
-            }
-        }
-    }
+    private fun OfferModel.mapToViewState() = TitleViewState.Loaded(
+        bundleName = quoteBundle.name,
+        netAmount = quoteBundle.cost.netMonthlyCost,
+        grossAmount = quoteBundle.cost.grossMonthlyCost,
+        market = marketManager.market,
+        email = quoteBundle.quotes.firstNotNullOfOrNull(QuoteBundle.Quote::email)
+    )
 
     private val _titleViewState = MutableStateFlow<TitleViewState>(TitleViewState.Loading)
     val titleViewState: StateFlow<TitleViewState> = _titleViewState
@@ -134,16 +114,16 @@ class CheckoutViewModel(
             _events.trySend(Event.Loading)
             signQuotes(
                 identityNumberInput = identityNumberInput,
-                emailInput = emailInput,
-                quoteIds = quoteIds
+                emailInput = emailInput
             )
         }
     }
 
-    private fun signQuotes(identityNumberInput: String, emailInput: String, quoteIds: List<String>) {
+    private fun signQuotes(identityNumberInput: String, emailInput: String) {
         viewModelScope.launch {
             val result = signQuotesUseCase.editAndSignQuotes(
                 quoteIds = quoteIds,
+                quoteCartId = quoteCartId,
                 ssn = identityNumberInput,
                 email = emailInput
             )

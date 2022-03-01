@@ -25,7 +25,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.app.R
-import com.hedvig.app.feature.offer.ui.OfferModel
+import com.hedvig.app.feature.offer.ui.OfferItems
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.compose.preview.previewData
@@ -34,7 +34,7 @@ import javax.money.MonetaryAmount
 
 @Composable
 fun RetrievedInfo(
-    data: OfferModel.InsurelyCard.Retrieved,
+    data: OfferItems.InsurelyCard.Retrieved,
     locale: Locale,
 ) {
     Column(
@@ -106,7 +106,7 @@ private fun SavedWithHedvigChip(savedWithHedvig: MonetaryAmount) {
 
 @Composable
 private fun CurrentInsurancesList(
-    data: OfferModel.InsurelyCard.Retrieved,
+    data: OfferItems.InsurelyCard.Retrieved,
     locale: Locale,
 ) {
     data.currentInsurances.forEach { insurance ->
@@ -140,7 +140,7 @@ fun RetrievedInfoPreview() {
             color = MaterialTheme.colors.background,
         ) {
             RetrievedInfo(
-                OfferModel.InsurelyCard.Retrieved.previewData(),
+                OfferItems.InsurelyCard.Retrieved.previewData(),
                 Locale.ENGLISH
             )
         }

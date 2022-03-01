@@ -53,11 +53,15 @@ class MultipleQuotesTest : TestCase() {
 
     private val firstFaqRowText = OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL
         .quoteBundle
+        .fragments
+        .quoteBundleFragment
         .frequentlyAskedQuestions[0]
         .headline!!
 
     private val firstFaqRowBody = OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL
         .quoteBundle
+        .fragments
+        .quoteBundleFragment
         .frequentlyAskedQuestions[0]
         .body!!
 
@@ -87,11 +91,15 @@ class MultipleQuotesTest : TestCase() {
 
     private val homeContentsDisplayName = OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL
         .quoteBundle
+        .fragments
+        .quoteBundleFragment
         .quotes[0]
         .displayName
 
     private val homeContentsFirstPerilTitle = OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL
         .quoteBundle
+        .fragments
+        .quoteBundleFragment
         .quotes[0]
         .contractPerils[0]
         .fragments

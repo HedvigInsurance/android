@@ -47,6 +47,8 @@ class OneSwitchableSwitcherTest : TestCase() {
 
     private val previousInsurerName = OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_SWITCHABLE
         .quoteBundle
+        .fragments
+        .quoteBundleFragment
         .quotes[0]
         .currentInsurer!!
         .displayName!!

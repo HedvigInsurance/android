@@ -6,7 +6,7 @@ import com.hedvig.app.feature.claimdetail.model.ClaimDetailCardUiState
 import com.hedvig.app.feature.claimdetail.model.ClaimDetailResult
 import com.hedvig.app.feature.claimdetail.model.ClaimDetailUiState
 import com.hedvig.app.feature.home.ui.claimstatus.data.PillUiState
-import com.hedvig.app.feature.offer.ui.OfferModel
+import com.hedvig.app.feature.offer.ui.OfferItems
 import com.hedvig.app.ui.compose.composables.claimprogress.ClaimProgressUiState
 import org.javamoney.moneta.CurrencyUnitBuilder
 import org.javamoney.moneta.Money
@@ -48,7 +48,7 @@ fun ClaimDetailUiState.Companion.previewData(): ClaimDetailUiState {
     )
 }
 
-fun OfferModel.InsurelyCard.Retrieved.Companion.previewData(): OfferModel.InsurelyCard.Retrieved {
+fun OfferItems.InsurelyCard.Retrieved.Companion.previewData(): OfferItems.InsurelyCard.Retrieved {
     val fakeSekCurrency = object : CurrencyUnit {
         override fun compareTo(other: CurrencyUnit?): Int = 0
         override fun getCurrencyCode(): String = "SEK"
@@ -56,11 +56,11 @@ fun OfferModel.InsurelyCard.Retrieved.Companion.previewData(): OfferModel.Insure
         override fun getDefaultFractionDigits(): Int = 0
         override fun getContext(): CurrencyContext? = null
     }
-    return OfferModel.InsurelyCard.Retrieved(
+    return OfferItems.InsurelyCard.Retrieved(
         id = UUID.randomUUID().toString(),
         insuranceProviderDisplayName = "Some Insurance",
         currentInsurances = List(2) {
-            OfferModel.InsurelyCard.Retrieved.CurrentInsurance(
+            OfferItems.InsurelyCard.Retrieved.CurrentInsurance(
                 "SmthInsrnce",
                 Money.of(
                     (it + 1) * 12,

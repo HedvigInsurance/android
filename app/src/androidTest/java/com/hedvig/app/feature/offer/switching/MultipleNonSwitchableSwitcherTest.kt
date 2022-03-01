@@ -58,6 +58,8 @@ class MultipleNonSwitchableSwitcherTest : TestCase() {
     private fun previousInsurerNameForQuote(quoteNumber: Int) =
         OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_ALL_NONSWITCHABLE
             .quoteBundle
+            .fragments
+            .quoteBundleFragment
             .quotes[quoteNumber]
             .currentInsurer!!
             .displayName!!
@@ -65,6 +67,8 @@ class MultipleNonSwitchableSwitcherTest : TestCase() {
     private fun quoteDisplayName(quoteNumber: Int) =
         OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_ALL_NONSWITCHABLE
             .quoteBundle
+            .fragments
+            .quoteBundleFragment
             .quotes[quoteNumber]
             .displayName
 }

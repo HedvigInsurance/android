@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.offer.ui.changestartdate
 
 import com.apollographql.apollo.ApolloClient
+import com.hedvig.android.owldroid.fragment.QuoteBundleFragment
 import com.hedvig.android.owldroid.graphql.ChooseStartDateMutation
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RemoveStartDateMutation
@@ -66,7 +67,11 @@ class EditStartDateUseCase(
 
         return cachedOffer.copy(
             quoteBundle = cachedOffer.quoteBundle.copy(
-                inception = modifiedInception
+                fragments = cachedOffer.quoteBundle.fragments.copy(
+                    quoteBundleFragment = cachedOffer.quoteBundle.fragments.quoteBundleFragment.copy(
+                        inception = modifiedInception
+                    )
+                )
             )
         )
     }
@@ -85,15 +90,17 @@ class EditStartDateUseCase(
         cachedData: OfferQuery.Data,
         id: String,
         startDate: LocalDate?
-    ): OfferQuery.Inception1 {
+    ): QuoteBundleFragment.Inception1 {
         val modifiedIndependentInception = cachedData.quoteBundle
+            .fragments
+            .quoteBundleFragment
             .inception
             .asIndependentInceptions
             ?.inceptions
             ?.find { it.correspondingQuote.asCompleteQuote1?.id == id }
             ?.copy(startDate = startDate)
 
-        return with(cachedData.quoteBundle.inception) {
+        return with(cachedData.quoteBundle.fragments.quoteBundleFragment.inception) {
             if (modifiedIndependentInception != null) {
                 copy(
                     asIndependentInceptions = asIndependentInceptions?.copy(
