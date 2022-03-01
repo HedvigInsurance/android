@@ -28,9 +28,9 @@ class GetFinalDanishAddressSelectionUseCase(
         val newResults: List<DanishAddress> = fetchNewResults(selectedAddress).getOrElse {
             return FinalAddressResult.NetworkError
         }
-        if (newResults.size != 1) return FinalAddressResult.NotFinalAddress
-        val newResult = newResults.first()
-        if (newResult.isSameAddressAs(selectedAddress)) return FinalAddressResult.Found(selectedAddress)
+        if (newResults.size == 1) {
+            if (newResults.first().isSameAddressAs(selectedAddress)) return FinalAddressResult.Found(selectedAddress)
+        }
         return FinalAddressResult.NotFinalAddress
     }
 
