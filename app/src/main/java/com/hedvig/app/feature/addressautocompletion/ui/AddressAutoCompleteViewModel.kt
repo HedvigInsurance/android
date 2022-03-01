@@ -72,7 +72,7 @@ class AddressAutoCompleteViewModel(
         .mapLatest { selectedAddressHistory ->
             val newSelection = selectedAddressHistory.current ?: return@mapLatest null
             val oldSelection = selectedAddressHistory.old
-            return@mapLatest getFinalDanishAddressSelectionUseCase.invoke(
+            getFinalDanishAddressSelectionUseCase.invoke(
                 selectedAddress = newSelection,
                 lastSelection = oldSelection,
             )
