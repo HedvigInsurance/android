@@ -1,8 +1,12 @@
-fragment ActivePaymentMethodsFragment on ActivePaymentMethodsResponse {
-  storedPaymentMethodsDetails {
+fragment ActivePaymentMethodsFragment on ActivePaymentMethodsV2Response {
+  ... on StoredCardDetails {
     brand
     lastFourDigits
     expiryMonth
     expiryYear
+  }
+  ... on StoredThirdPartyDetails {
+    name
+    type
   }
 }
