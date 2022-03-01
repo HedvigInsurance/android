@@ -13,11 +13,10 @@ class MockHomeViewModel : HomeViewModel(MockHAnalytics()) {
     override fun load() {
         if (shouldError) {
             shouldError = false
-            _homeData.postValue(ViewState.Error)
+            _viewState.value = ViewState.Error(null)
             return
         }
-        _homeData.postValue(ViewState.Success(homeMockData))
-        _payinStatusData.postValue(payinStatusData)
+        _viewState.value = ViewState.Success(homeMockData, emptyList())
     }
 
     override fun reload() {

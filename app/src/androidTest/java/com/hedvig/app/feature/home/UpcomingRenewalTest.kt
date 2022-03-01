@@ -31,7 +31,9 @@ class UpcomingRenewalTest : TestCase() {
                 LOGGED_IN_DATA_WITH_REFERRALS_ENABLED
             )
         },
-        HomeQuery.QUERY_DOCUMENT to apolloResponse { success(HOME_DATA_UPCOMING_RENEWAL) },
+        HomeQuery.QUERY_DOCUMENT to apolloResponse {
+            success(HOME_DATA_UPCOMING_RENEWAL)
+        }
     )
 
     @get:Rule

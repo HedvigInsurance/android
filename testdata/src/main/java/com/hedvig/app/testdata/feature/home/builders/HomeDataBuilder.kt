@@ -5,6 +5,7 @@ import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.type.ClaimStatus
 import com.hedvig.android.owldroid.type.ClaimStatusCardPillType
 import com.hedvig.android.owldroid.type.ClaimStatusProgressType
+import com.hedvig.android.owldroid.type.PayinMethodStatus
 import com.hedvig.app.testdata.common.ContractStatus
 import java.time.Instant
 import java.time.LocalDate
@@ -155,7 +156,9 @@ data class HomeDataBuilder(
                 ),
                 body = "3"
             )
-        )
+        ),
+        payinMethodStatus = PayinMethodStatus.ACTIVE,
+        insuranceProviders = emptyList()
     )
 
     companion object {

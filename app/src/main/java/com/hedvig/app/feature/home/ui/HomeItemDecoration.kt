@@ -12,6 +12,7 @@ import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.BASE_MARGIN_HALF
 import com.hedvig.app.BASE_MARGIN_SEPTUPLE
 import com.hedvig.app.R
+import com.hedvig.app.feature.home.model.HomeModel
 import com.hedvig.app.util.extensions.children
 
 class HomeItemDecoration(context: Context) : RecyclerView.ItemDecoration() {
