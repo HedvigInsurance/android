@@ -79,28 +79,7 @@ fun AddressAutoCompleteScreen(
     }
     Scaffold(
         topBar = {
-            Surface(
-                color = MaterialTheme.colors.background,
-            ) {
-                Column {
-                    CenterAlignedTopAppBar(
-                        title = stringResource(R.string.EMBARK_ADDRESS_AUTOCOMPLETE_ADDRESS),
-                        onClick = { cancelAutoCompletion() },
-                        backgroundColor = MaterialTheme.colors.background,
-                        contentPadding = rememberInsetsPaddingValues(
-                            insets = LocalWindowInsets.current.statusBars,
-                            applyBottom = false
-                        ),
-                    )
-                    AddressInput(
-                        viewState = viewState,
-                        setNewTextInput = setNewTextInput,
-                        focusRequester = focusRequester,
-                        closeKeyboard = closeKeyboard,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                    )
-                }
-            }
+            TopAppBar(viewState, cancelAutoCompletion, setNewTextInput, focusRequester, closeKeyboard)
         },
         backgroundColor = MaterialTheme.colors.surface
     ) { paddingValues ->
@@ -122,6 +101,38 @@ fun AddressAutoCompleteScreen(
             ),
             modifier = Modifier.padding(paddingValues)
         )
+    }
+}
+
+@Composable
+private fun TopAppBar(
+    viewState: AddressAutoCompleteViewState,
+    cancelAutoCompletion: () -> Unit,
+    setNewTextInput: (String) -> Unit,
+    focusRequester: FocusRequester,
+    closeKeyboard: () -> Unit,
+) {
+    Surface(
+        color = MaterialTheme.colors.background,
+    ) {
+        Column {
+            CenterAlignedTopAppBar(
+                title = stringResource(R.string.EMBARK_ADDRESS_AUTOCOMPLETE_ADDRESS),
+                onClick = { cancelAutoCompletion() },
+                backgroundColor = MaterialTheme.colors.background,
+                contentPadding = rememberInsetsPaddingValues(
+                    insets = LocalWindowInsets.current.statusBars,
+                    applyBottom = false
+                ),
+            )
+            AddressInput(
+                viewState = viewState,
+                setNewTextInput = setNewTextInput,
+                focusRequester = focusRequester,
+                closeKeyboard = closeKeyboard,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            )
+        }
     }
 }
 
