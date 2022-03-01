@@ -82,9 +82,9 @@ class SignQuotesUseCase(
             when (val result = apolloClient.mutate(mutation).safeQuery()) {
                 is QueryResult.Error -> SignQuoteResult.Error(result.message)
                 is QueryResult.Success -> {
-                    result.data.quoteCart_startCheckout.asBasicError?.let {
+                    result.data.quoteCartStartCheckout.asBasicError?.let {
                         SignQuoteResult.Error(it.message)
-                    } ?: result.data.quoteCart_startCheckout.asQuoteCart?.paymentConnection?.id?.let {
+                    } ?: result.data.quoteCartStartCheckout.asQuoteCart?.paymentConnection?.id?.let {
                         SignQuoteResult.StartSwedishBankId(it)
                     } ?: SignQuoteResult.Error(null)
                 }

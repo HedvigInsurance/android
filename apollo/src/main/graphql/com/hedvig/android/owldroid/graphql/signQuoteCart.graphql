@@ -1,5 +1,5 @@
 mutation SignQuoteCart($quoteCartId: ID!, $quoteIds: [ID!]!, $locale: Locale!) {
-  quoteCart_startCheckout(id: $quoteCartId, quoteIds: $quoteIds) {
+  quoteCartStartCheckout: quoteCart_startCheckout(id: $quoteCartId, quoteIds: $quoteIds) {
     ... on BasicError {
       message
     }
