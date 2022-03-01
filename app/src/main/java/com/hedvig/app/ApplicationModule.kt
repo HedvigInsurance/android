@@ -144,6 +144,7 @@ import com.hedvig.app.feature.offer.usecase.GetPostSignDependenciesUseCase
 import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.datacollectionresult.GetDataCollectionResultUseCase
 import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToDataCollectionStatusUseCase
+import com.hedvig.app.feature.offer.usecase.getquote.GetQuoteIdsUseCase
 import com.hedvig.app.feature.offer.usecase.getquote.GetQuoteUseCase
 import com.hedvig.app.feature.offer.usecase.getquote.GetQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.providerstatus.GetProviderDisplayNameUseCase
@@ -434,12 +435,14 @@ val marketingModule = module {
 
 val offerModule = module {
     viewModel<OfferViewModel> { parametersHolder: ParametersHolder ->
-        val (ids: List<String>, shouldShowOnNextAppStart: Boolean) = parametersHolder
+        val (ids: List<String>, quoteCartId: String?, shouldShowOnNextAppStart: Boolean) = parametersHolder
         OfferViewModelImpl(
-            _quoteIds = ids,
+            quoteIds = ids,
+            quoteCartId = quoteCartId,
             offerRepository = get(),
             getQuotesUseCase = get(),
             getQuoteUseCase = get(),
+            getQuoteIdsUseCase = get(),
             loginStatusService = get(),
             approveQuotesUseCase = get(),
             refreshQuotesUseCase = get(),
@@ -537,7 +540,17 @@ val changeDateBottomSheetModule = module {
 }
 
 val checkoutModule = module {
-    viewModel { (ids: List<String>) -> CheckoutViewModel(ids, get(), get(), get(), get(), get()) }
+    viewModel { (ids: List<String>, quoteCartId: String?) ->
+        CheckoutViewModel(
+            ids,
+            quoteCartId,
+            get(),
+            get(),
+            get(),
+            get(),
+            get()
+        )
+    }
 }
 
 val retrievePriceModule = module {
@@ -638,10 +651,10 @@ val useCaseModule = module {
     single { StartDanishAuthUseCase(get()) }
     single { StartNorwegianAuthUseCase(get()) }
     single { SubscribeToAuthStatusUseCase(get()) }
-    single { GetQuotesUseCase(get(), get()) }
+    single { GetQuotesUseCase(get(), get(), get()) }
     single { GetQuoteUseCase(get()) }
     single { EditStartDateUseCase(get(), get()) }
-    single { SignQuotesUseCase(get(), get()) }
+    single { SignQuotesUseCase(get(), get(), get(), get()) }
     single { ApproveQuotesUseCase(get(), get(), get()) }
     single { RefreshQuotesUseCase(get()) }
     single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get()) }
@@ -664,6 +677,7 @@ val useCaseModule = module {
     single<GetDanishAddressAutoCompletionUseCase> { GetDanishAddressAutoCompletionUseCase(get()) }
     single<GetFinalDanishAddressSelectionUseCase> { GetFinalDanishAddressSelectionUseCase(get()) }
     single { CreateQuoteCartUseCase(get(), get(), get()) }
+    single<GetQuoteIdsUseCase> { GetQuoteIdsUseCase(get(), get(), get()) }
 }
 
 val cacheManagerModule = module {

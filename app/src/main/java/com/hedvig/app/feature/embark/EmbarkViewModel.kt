@@ -42,6 +42,9 @@ import kotlinx.coroutines.launch
 import java.util.Stack
 import kotlin.math.max
 
+private const val QUOTE_CART_ID_KEY = "quoteCartId"
+private const val QUOTE_ID_KEY = "quoteId"
+
 abstract class EmbarkViewModel(
     private val valueStore: ValueStore,
     private val graphQLQueryUseCase: GraphQLQueryUseCase,
@@ -91,7 +94,11 @@ abstract class EmbarkViewModel(
     )
 
     sealed class Event {
-        data class Offer(val ids: List<String>) : Event()
+        data class Offer(
+            val quoteIds: List<String>,
+            val quoteCartId: String?,
+        ) : Event()
+
         data class Error(val message: String? = null) : Event()
         object Close : Event()
         object Chat : Event()
@@ -153,7 +160,8 @@ abstract class EmbarkViewModel(
                 //  meaning that the old values were returned from getList/get.
                 valueStore.withCommittedVersion {
                     val ids = keys.flatMap { this.getList(it) ?: listOfNotNull(this.get(it)) }
-                    _events.trySend(Event.Offer(ids))
+                    val quoteCartId = this.get(QUOTE_CART_ID_KEY)
+                    _events.trySend(Event.Offer(ids, quoteCartId))
                 }
             }
             location != null -> handleRedirectLocation(location)
@@ -247,12 +255,17 @@ abstract class EmbarkViewModel(
     }
 
     private fun sendOfferId() {
-        val id = valueStore.get("quoteId")
-        if (id == null) {
-            _events.trySend(Event.Error())
+        val id = valueStore.get(QUOTE_ID_KEY)
+        val quoteCartId = valueStore.get(QUOTE_CART_ID_KEY)
+        val event = if (id == null) {
+            Event.Error()
         } else {
-            _events.trySend(Event.Offer(listOf(id)))
+            Event.Offer(
+                quoteIds = listOf(id),
+                quoteCartId = quoteCartId,
+            )
         }
+        _events.trySend(event)
     }
 
     private fun triggerChat() {
@@ -520,7 +533,7 @@ class EmbarkViewModelImpl(
             if (featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
                 when (val quoteCartResult = createQuoteCartUseCase.invoke()) {
                     is Either.Left -> _events.trySend(Event.Error(quoteCartResult.value.message))
-                    is Either.Right -> putInStore("quoteCartId", quoteCartResult.value.id)
+                    is Either.Right -> putInStore(QUOTE_CART_ID_KEY, quoteCartResult.value.id)
                 }
             }
 
