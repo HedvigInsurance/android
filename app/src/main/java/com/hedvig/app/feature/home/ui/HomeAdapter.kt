@@ -154,7 +154,8 @@ class HomeAdapter(
                         data.name
                     )
                     is HomeModel.BigText.Switching -> root.resources.getString(
-                        R.string.home_tab_pending_switchable_welcome_title
+                        R.string.home_tab_pending_switchable_welcome_title,
+                        data.name
                     )
                 }
                 root.text = textRes
