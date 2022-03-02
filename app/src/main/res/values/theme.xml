@@ -23,8 +23,10 @@
         <item name="android:textColorPrimary">@color/textColorPrimary</item>
         <item name="android:textColorSecondary">@color/colorPrimary</item>
         <item name="android:textColorTertiary">@color/textColorThird</item>
-<!--        <item name="fontFamily">@font/hedvigbeta_sans</item>-->
-<!--        <item name="android:fontFamily">@font/hedvigbeta_sans</item>-->
+
+        <!-- Default font as a fallback -->
+        <item name="fontFamily">@font/hedvig_letters_standard</item>
+        <item name="android:fontFamily">@font/hedvig_letters_standard</item>
 
         <item name="android:windowActivityTransitions">true</item>
 

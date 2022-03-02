@@ -8,36 +8,36 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.hedvig.app.R
 
-private val SerifBook = FontFamily(
-    Font(R.font.hedvigbeta_serifbook),
+private val SerifBookSmall = FontFamily(
+    Font(R.font.hedvig_letters_small),
 )
 
-private val Sans = FontFamily(
-    Font(R.font.hedvigbeta_sans),
+private val SansStandard = FontFamily(
+    Font(R.font.hedvig_letters_standard),
 )
 
 val HedvigTypography = Typography(
-    defaultFontFamily = Sans,
+    defaultFontFamily = SansStandard,
     h4 = TextStyle(
         fontWeight = FontWeight.Normal,
         fontSize = 34.sp,
         letterSpacing = (-0.025).sp,
         lineHeight = 41.sp,
-        fontFamily = SerifBook,
+        fontFamily = SerifBookSmall,
     ),
     h5 = TextStyle(
         fontWeight = FontWeight.Normal,
         fontSize = 24.sp,
         letterSpacing = 0.sp,
         lineHeight = 32.sp,
-        fontFamily = SerifBook,
+        fontFamily = SerifBookSmall,
     ),
     h6 = TextStyle(
         fontWeight = FontWeight.Medium,
         fontSize = 20.sp,
         letterSpacing = 0.sp,
         lineHeight = 26.sp,
-        fontFamily = SerifBook,
+        fontFamily = SerifBookSmall,
     ),
     subtitle1 = TextStyle(
         fontWeight = FontWeight.Normal,
