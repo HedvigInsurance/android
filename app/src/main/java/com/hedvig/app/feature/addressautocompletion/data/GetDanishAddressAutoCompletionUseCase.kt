@@ -5,6 +5,7 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.AddressAutocompleteQuery
 import com.hedvig.android.owldroid.type.AddressAutocompleteType
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
+import com.hedvig.app.feature.addressautocompletion.model.DanishAddressInput
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
 
@@ -12,13 +13,13 @@ class GetDanishAddressAutoCompletionUseCase(
     private val apolloClient: ApolloClient,
 ) {
     suspend operator fun invoke(
-        addressText: String,
+        input: DanishAddressInput,
     ): Either<QueryResult.Error, AddressAutoCompleteResults> {
-        val query = AddressAutocompleteQuery(
-            addressText,
-            AddressAutocompleteType.STREET,
-        )
-        return runQuery(query)
+        return if (input.selectedAddress != null) {
+            invoke(input.selectedAddress)
+        } else {
+            invoke(input.rawText)
+        }
     }
 
     suspend operator fun invoke(
@@ -28,6 +29,16 @@ class GetDanishAddressAutoCompletionUseCase(
         val query = AddressAutocompleteQuery(
             address.toQueryString(),
             addressAutocompleteType ?: address.toAddressAutocompleteType(),
+        )
+        return runQuery(query)
+    }
+
+    private suspend operator fun invoke(
+        addressText: String,
+    ): Either<QueryResult.Error, AddressAutoCompleteResults> {
+        val query = AddressAutocompleteQuery(
+            addressText,
+            AddressAutocompleteType.STREET,
         )
         return runQuery(query)
     }

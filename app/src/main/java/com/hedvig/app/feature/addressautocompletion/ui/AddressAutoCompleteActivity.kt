@@ -5,9 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -36,19 +33,13 @@ class AddressAutoCompleteActivity : AppCompatActivity() {
                 finishWithResult(FetchDanishAddressContractResult.Selected(selectedFinalAddress))
             }
             HedvigTheme {
-                AnimatedVisibility(
-                    visible = viewState.selectedFinalAddress == null,
-                    enter = fadeIn(),
-                    exit = fadeOut(),
-                ) {
-                    AddressAutoCompleteScreen(
-                        viewState = viewState,
-                        setNewTextInput = viewModel::setNewTextInput,
-                        selectAddress = viewModel::selectAddress,
-                        cancelAutoCompletion = { finishWithResult(FetchDanishAddressContractResult.Canceled) },
-                        cantFindAddress = { finishWithResult(FetchDanishAddressContractResult.CantFind) },
-                    )
-                }
+                AddressAutoCompleteScreen(
+                    viewState = viewState,
+                    setNewTextInput = viewModel::setNewTextInput,
+                    selectAddress = viewModel::selectAddress,
+                    cancelAutoCompletion = { finishWithResult(FetchDanishAddressContractResult.Canceled) },
+                    cantFindAddress = { finishWithResult(FetchDanishAddressContractResult.CantFind) },
+                )
             }
         }
     }
