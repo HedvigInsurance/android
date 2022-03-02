@@ -13,7 +13,6 @@ import com.hedvig.app.feature.addressautocompletion.activityresult.FetchDanishAd
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
-import kotlinx.coroutines.flow.collect
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -29,14 +28,9 @@ class AddressAutoCompleteActivity : AppCompatActivity() {
 
         setContent {
             val viewState by viewModel.viewState.collectAsState()
-            LaunchedEffect(viewModel) {
-                viewModel.events.collect { event ->
-                    when (event) {
-                        is AddressAutoCompleteEvent.Selection -> finishWithResult(
-                            FetchDanishAddressContractResult.Selected(event.selectedAddress)
-                        )
-                    }
-                }
+            LaunchedEffect(viewState.selectedFinalAddress) {
+                val selectedFinalAddress = viewState.selectedFinalAddress ?: return@LaunchedEffect
+                finishWithResult(FetchDanishAddressContractResult.Selected(selectedFinalAddress))
             }
             HedvigTheme {
                 AddressAutoCompleteScreen(
