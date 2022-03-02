@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.offer.usecase
 
 import com.apollographql.apollo.ApolloClient
-import com.hedvig.android.owldroid.graphql.QuoteCartStartCheckoutMutation
+import com.hedvig.android.owldroid.graphql.SignQuoteCartMutation
 import com.hedvig.android.owldroid.graphql.SignQuotesMutation
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.CacheManager
@@ -38,7 +38,7 @@ class SignQuotesUseCase(
         return if (quoteCartId == null) {
             SignQuoteResult.Error(null)
         } else {
-            val mutation = QuoteCartStartCheckoutMutation(quoteCartId, quoteIds, localeManager.defaultLocale())
+            val mutation = SignQuoteCartMutation(quoteCartId, quoteIds, localeManager.defaultLocale())
             when (val result = apolloClient.mutate(mutation).safeQuery()) {
                 is QueryResult.Error -> SignQuoteResult.Error(result.message)
                 is QueryResult.Success -> {

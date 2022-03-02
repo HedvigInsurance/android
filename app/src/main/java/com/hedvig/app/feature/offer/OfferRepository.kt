@@ -9,6 +9,7 @@ import com.apollographql.apollo.fetcher.ApolloResponseFetchers
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.QuoteBundleFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
+import com.hedvig.android.owldroid.graphql.QuoteCartQuery
 import com.hedvig.android.owldroid.graphql.QuoteCartSubscription
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.RemoveDiscountCodeMutation
@@ -16,11 +17,13 @@ import com.hedvig.app.feature.offer.model.OfferModel
 import com.hedvig.app.feature.offer.model.toOfferModel
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.QueryResult
+import com.hedvig.app.util.apollo.safeQuery
 import com.hedvig.app.util.apollo.safeSubscription
 import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 
 class OfferRepository(
     private val apolloClient: ApolloClient,
@@ -35,6 +38,14 @@ class OfferRepository(
             apolloClient.subscribe(subscription)
                 .safeSubscription()
                 .map { it.toResult() }
+                .onStart {
+                    val query = QuoteCartQuery(localeManager.defaultLocale(), ids.first())
+                    val result = apolloClient
+                        .query(query)
+                        .safeQuery()
+                        .toOfferResult()
+                    emit(result)
+                }
         } else {
             apolloClient
                 .query(offerQuery(ids))
@@ -57,9 +68,15 @@ class OfferRepository(
 
     private fun QueryResult<QuoteCartSubscription.Data>.toResult(): OfferResult = when (this) {
         is QueryResult.Error -> OfferResult.Error(message)
-        is QueryResult.Success -> data.quoteCart?.toOfferModel()
+        is QueryResult.Success -> data.quoteCart?.fragments?.quoteCartFragment?.toOfferModel()
             ?.let { OfferResult.Success(it) }
             ?: OfferResult.Error()
+    }
+
+    private fun QueryResult<QuoteCartQuery.Data>.toOfferResult(): OfferResult = when (this) {
+        is QueryResult.Error -> OfferResult.Error(message)
+        is QueryResult.Success -> data.quoteCart.fragments.quoteCartFragment.toOfferModel()
+            .let { OfferResult.Success(it) }
     }
 
     fun writeDiscountToCache(ids: List<String>, data: RedeemReferralCodeMutation.Data) {

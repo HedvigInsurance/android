@@ -121,7 +121,7 @@ class CheckoutViewModel(
 
     private fun signQuotes(parameter: EditAndSignParameter) {
         viewModelScope.launch {
-            val result = editQuotesUseCase.editAndSignQuotes(parameter)
+            val result = editQuotesUseCase.editQuotes(parameter)
                 .map { signQuotesUseCase.signQuotesAndClearCache(quoteIds, quoteCartId) }
                 .mapLeft { it.message }
                 .fold(

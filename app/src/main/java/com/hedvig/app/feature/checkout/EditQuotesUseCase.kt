@@ -24,7 +24,7 @@ class EditQuotesUseCase(
 
     object Success
 
-    suspend fun editAndSignQuotes(parameter: EditAndSignParameter): Either<Error, Success> = parameter.quoteIds
+    suspend fun editQuotes(parameter: EditAndSignParameter): Either<Error, Success> = parameter.quoteIds
         .map { editQuote(it, parameter.quoteCartId, parameter.ssn, parameter.email) }
         .sequenceEither()
         .map { Success }
