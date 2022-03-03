@@ -44,9 +44,7 @@ class SignQuotesUseCase(
                 is QueryResult.Success -> {
                     result.data.quoteCartStartCheckout.asBasicError?.let {
                         SignQuoteResult.Error(it.message)
-                    } ?: result.data.quoteCartStartCheckout.asQuoteCart?.paymentConnection?.id?.let {
-                        SignQuoteResult.StartSwedishBankId(it)
-                    } ?: SignQuoteResult.Error(null)
+                    } ?: SignQuoteResult.Success
                 }
             }
         }

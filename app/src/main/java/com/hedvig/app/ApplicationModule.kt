@@ -214,6 +214,7 @@ import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.ApolloTimberLogger
 import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.apollo.DeviceIdInterceptor
+import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import com.hedvig.app.util.apollo.SunsettingInterceptor
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.hanalytics.HAnalytics
@@ -605,7 +606,7 @@ val repositoriesModule = module {
     single { MarketRepository(get(), get(), get()) }
     single { MarketingRepository(get(), get()) }
     single { AdyenRepository(get(), get()) }
-    single { EmbarkRepository(get(), get(), get(), get(), get()) }
+    single { EmbarkRepository(get(), get()) }
     single { ReferralsRepository(get()) }
     single { LoggedInRepository(get(), get()) }
     single { GetHomeUseCase(get(), get()) }
@@ -681,7 +682,7 @@ val useCaseModule = module {
     single<GetFinalDanishAddressSelectionUseCase> { GetFinalDanishAddressSelectionUseCase(get()) }
     single { CreateQuoteCartUseCase(get(), get(), get()) }
     single<GetQuoteIdsUseCase> { GetQuoteIdsUseCase(get(), get(), get()) }
-    single<EditQuotesUseCase> { EditQuotesUseCase(get(), get(), get()) }
+    single<EditQuotesUseCase> { EditQuotesUseCase(get(), get(), get(), get()) }
 }
 
 val cacheManagerModule = module {
@@ -733,4 +734,8 @@ val dataStoreModule = module {
 
 val deviceIdStoreModule = module {
     single<DeviceIdStore> { DeviceIdDataStore(get()) }
+}
+
+val graphQLQueryModule = module {
+    single<GraphQLQueryHandler> { GraphQLQueryHandler(get(), get(), get()) }
 }

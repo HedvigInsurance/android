@@ -2,8 +2,8 @@ package com.hedvig.app.feature.embark.variables
 
 import com.hedvig.android.owldroid.fragment.GraphQLVariablesFragment
 import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLSingleVariableCasting
-import com.hedvig.app.feature.embark.FileVariable
 import com.hedvig.app.feature.embark.ValueStore
+import com.hedvig.app.util.apollo.FileVariable
 import com.hedvig.app.util.createAndAddWithLodashNotation
 import org.json.JSONArray
 import org.json.JSONObject
