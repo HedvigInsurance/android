@@ -50,8 +50,7 @@
     </style>
 
     <style name="Hedvig.TextAppearance.Headline5" parent="TextAppearance.MaterialComponents.Headline5">
-        <item name="fontFamily">@font/hedvig_letters_small</item>
-        <item name="android:fontFamily">@font/hedvig_letters_small</item>
+        <item name="fontFamily">@font/hedvig_letters_standard</item>
         <item name="lineHeight">32sp</item>
         <item name="android:textColor">?android:textColorSecondary</item>
         <item name="android:letterSpacing">0</item>
@@ -61,8 +60,7 @@
     <dimen name="headline_5_placeholder_height">24sp</dimen>
 
     <style name="Hedvig.TextAppearance.Headline6" parent="TextAppearance.MaterialComponents.Headline6">
-        <item name="fontFamily">@font/hedvig_letters_small</item>
-        <item name="android:fontFamily">@font/hedvig_letters_small</item>
+        <item name="fontFamily">@font/hedvig_letters_standard</item>
         <item name="lineHeight">26sp</item>
         <item name="android:textColor">?android:textColorSecondary</item>
         <item name="android:letterSpacing">0</item>
