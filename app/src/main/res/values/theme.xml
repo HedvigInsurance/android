@@ -26,7 +26,6 @@
 
         <!-- Default font as a fallback -->
         <item name="fontFamily">@font/hedvig_letters_standard</item>
-        <item name="android:fontFamily">@font/hedvig_letters_standard</item>
 
         <item name="android:windowActivityTransitions">true</item>
 
