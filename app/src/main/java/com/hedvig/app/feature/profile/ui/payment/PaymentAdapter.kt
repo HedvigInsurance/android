@@ -33,6 +33,7 @@ import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.invalid
 import com.hedvig.app.util.extensions.putCompoundDrawablesRelativeWithIntrinsicBounds
 import com.hedvig.app.util.extensions.setStrikethrough
+import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
@@ -341,19 +342,23 @@ class PaymentAdapter(
                 data: PaymentModel,
                 marketManager: MarketManager,
                 fragmentManager: FragmentManager,
-            ) = with(binding) {
+            ) {
                 if (data !is PaymentModel.AdyenPayinDetails) {
                     return invalid(data)
                 }
-
-                data.inner.fragments.activePaymentMethodsFragment.storedPaymentMethodsDetails.brand?.let {
-                    cardType.text = it
+                with(binding) {
+                    data.inner.fragments.activePaymentMethodsFragment.asStoredCardDetails?.let {
+                        cardType.text = it.brand
+                        maskedCardNumber.text = maskedCardNumber.context.getString(
+                            R.string.payment_screen_credit_card_masking,
+                            it.lastFourDigits
+                        )
+                        maskedCardNumber.show()
+                    } ?: data.inner.fragments.activePaymentMethodsFragment.asStoredThirdPartyDetails?.let {
+                        cardType.text = it.name
+                        maskedCardNumber.hide()
+                    }
                 }
-                maskedCardNumber.text =
-                    maskedCardNumber.context.getString(
-                        R.string.payment_screen_credit_card_masking,
-                        data.inner.fragments.activePaymentMethodsFragment.storedPaymentMethodsDetails.lastFourDigits
-                    )
             }
         }
 

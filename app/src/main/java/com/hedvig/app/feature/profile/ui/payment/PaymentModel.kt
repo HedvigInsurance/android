@@ -29,7 +29,7 @@ sealed class PaymentModel {
         val status: PayinMethodStatus,
     ) : PaymentModel()
 
-    data class AdyenPayinDetails(val inner: PaymentQuery.ActivePaymentMethods) : PaymentModel()
+    data class AdyenPayinDetails(val inner: PaymentQuery.ActivePaymentMethodsV2) : PaymentModel()
 
     object PayoutDetailsHeader : PaymentModel()
     data class PayoutConnectionStatus(
