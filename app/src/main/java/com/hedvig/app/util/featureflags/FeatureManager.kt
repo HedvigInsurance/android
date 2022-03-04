@@ -22,7 +22,7 @@ data class FeatureManager(
             addProvider(DebugFeatureFlagProvider(dataStore))
         } else {
             addProvider(RemoteFeatureFlagProvider(marketManager, remoteConfig))
-            addProvider(ProductionFeatureFlagProvider())
+            addProvider(ProductionFeatureFlagProvider(marketManager))
         }
     }
 

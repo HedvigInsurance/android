@@ -1,11 +1,16 @@
 package com.hedvig.app.util.featureflags
 
-class ProductionFeatureFlagProvider : FeatureFlagProvider {
+import com.hedvig.app.feature.settings.Market
+import com.hedvig.app.feature.settings.MarketManager
+
+class ProductionFeatureFlagProvider(
+    private val marketManager: MarketManager
+) : FeatureFlagProvider {
 
     override val priority = PRODUCTION_PRIORITY
 
     override fun isFeatureEnabled(feature: Feature) = when (feature) {
-        Feature.MOVING_FLOW -> true
+        Feature.MOVING_FLOW -> marketManager.market == Market.SE || marketManager.market == Market.NO
         Feature.FRANCE_MARKET -> false
         Feature.ADDRESS_AUTO_COMPLETE -> true
         else -> false
