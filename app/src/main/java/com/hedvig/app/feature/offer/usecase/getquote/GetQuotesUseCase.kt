@@ -2,9 +2,11 @@ package com.hedvig.app.feature.offer.usecase.getquote
 
 import arrow.core.Either
 import arrow.core.NonEmptyList
+import arrow.core.left
 import arrow.core.nonEmptyListOf
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.model.OfferModel
+import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
 import kotlinx.coroutines.flow.Flow
@@ -17,34 +19,18 @@ class GetQuotesUseCase(
     private val featureManager: FeatureManager,
     private val getQuoteIdsUseCase: GetQuoteIdsUseCase,
 ) {
-    sealed class Result {
-        data class Success(val data: OfferModel) : Result()
-        data class Error(val message: String?) : Result()
-    }
 
-    operator fun invoke(quoteIds: List<String>, quoteCartId: String?): Flow<Result> {
+    operator fun invoke(quoteIds: List<String>, quoteCartId: String?): Flow<Either<ErrorMessage, OfferModel>> {
         return flow {
             when {
-                featureManager.isFeatureEnabled(Feature.QUOTE_CART) -> {
-                    quoteCartId
-                        ?.let { emitAll(getOffer(nonEmptyListOf(quoteCartId))) }
-                        ?: emit(Result.Error("No quote cart id found"))
-                }
-                quoteIds.isNotEmpty() -> emitAll(getOffer(NonEmptyList.fromListUnsafe(quoteIds)))
-                else -> {
-                    when (val result = getQuoteIdsUseCase.invoke(null)) {
-                        is Either.Left -> emit(Result.Error(result.value.message))
-                        is Either.Right -> emitAll(getOffer(NonEmptyList.fromListUnsafe(result.value.ids)))
-                    }
+                featureManager.isFeatureEnabled(Feature.QUOTE_CART) -> quoteCartId?.let {
+                    emitAll(offerRepository.offer(nonEmptyListOf(quoteCartId)))
+                } ?: ErrorMessage("No quote id found").left()
+                quoteIds.isNotEmpty() -> emitAll(offerRepository.offer(NonEmptyList.fromListUnsafe(quoteIds)))
+                else -> getQuoteIdsUseCase.invoke(null).map {
+                    offerRepository.offer(NonEmptyList.fromListUnsafe(it.ids))
                 }
             }
-        }
-    }
-
-    private fun getOffer(id: NonEmptyList<String>): Flow<Result> = offerRepository.offer(id).map { offerResult ->
-        when (offerResult) {
-            is OfferRepository.OfferResult.Error -> Result.Error(offerResult.message)
-            is OfferRepository.OfferResult.Success -> Result.Success(offerResult.data)
         }
     }
 }

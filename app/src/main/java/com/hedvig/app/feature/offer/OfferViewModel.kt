@@ -2,7 +2,6 @@ package com.hedvig.app.feature.offer
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import arrow.core.Either
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.app.R
@@ -234,21 +233,21 @@ class OfferViewModelImpl(
             initialValue = ViewState.Loading,
         )
 
-    private suspend fun loadQuoteIds() {
-        return when (val result = getQuoteIdsUseCase.invoke(quoteCartId)) {
-            is Either.Left -> offerAndLoginStatus.value = OfferAndLoginStatus.Error
-            is Either.Right -> {
-                hAnalytics.screenViewOffer(result.value.ids)
-                quoteIds = result.value.ids
+    private suspend fun loadQuoteIds() = getQuoteIdsUseCase.invoke(quoteCartId)
+        .map { it.ids }
+        .fold(
+            ifLeft = { offerAndLoginStatus.value = OfferAndLoginStatus.Error },
+            ifRight = {
+                hAnalytics.screenViewOffer(it)
+                quoteIds = it
             }
-        }
-    }
+        )
 
     private fun loadQuotes(quoteIds: List<String>) {
         getQuotesUseCase.invoke(quoteIds, quoteCartId).onEach { result ->
-            when (result) {
-                is GetQuotesUseCase.Result.Error -> offerAndLoginStatus.value = OfferAndLoginStatus.Error
-                is GetQuotesUseCase.Result.Success -> {
+            result.fold(
+                ifLeft = { offerAndLoginStatus.value = OfferAndLoginStatus.Error },
+                ifRight = {
                     val loginStatus = loginStatusService.getLoginStatus()
 
                     val paymentMethods = if (marketManager.market == Market.NO) {
@@ -261,12 +260,12 @@ class OfferViewModelImpl(
                     }
 
                     offerAndLoginStatus.value = OfferAndLoginStatus.Content(
-                        result.data,
+                        it,
                         loginStatus,
                         paymentMethods
                     )
                 }
-            }
+            )
         }.launchIn(viewModelScope)
     }
 
@@ -284,28 +283,39 @@ class OfferViewModelImpl(
     override fun approveOffer() {
         viewModelScope.launch {
             offerAndLoginStatus.value = OfferAndLoginStatus.Loading
-            val postSignDependencies = getPostSignDependenciesUseCase.invoke(quoteIds)
-            if (postSignDependencies !is GetPostSignDependenciesUseCase.Result.Success) {
-                offerAndLoginStatus.value = OfferAndLoginStatus.Error
-                return@launch
-            }
-            when (val result = approveQuotesUseCase.approveQuotesAndClearCache(quoteIds)) {
-                is ApproveQuotesUseCase.ApproveQuotesResult.Error.GeneralError ->
-                    offerAndLoginStatus.value = OfferAndLoginStatus.Error
-                ApproveQuotesUseCase.ApproveQuotesResult.Error.ApproveError -> _events.trySend(
-                    Event.ApproveError(postSignDependencies.postSignScreen)
-                )
-                is ApproveQuotesUseCase.ApproveQuotesResult.Success -> {
-                    hAnalytics.quotesSigned(quoteIds)
-                    loginStatusService.isViewingOffer = false
-                    _events.trySend(
-                        Event.ApproveSuccessful(
-                            result.date,
-                            postSignDependencies.postSignScreen,
-                            postSignDependencies.displayName
-                        )
+            getPostSignDependenciesUseCase.invoke(quoteIds).fold(
+                ifLeft = { offerAndLoginStatus.value = OfferAndLoginStatus.Error },
+                ifRight = { approveQuotes(it) }
+            )
+        }
+    }
+
+    private suspend fun approveQuotes(postSignResult: GetPostSignDependenciesUseCase.Result) {
+        approveQuotesUseCase.approveQuotesAndClearCache(quoteIds)
+            .mapLeft { handleApproveError(it, postSignResult) }
+            .map { date ->
+                hAnalytics.quotesSigned(quoteIds)
+                loginStatusService.isViewingOffer = false
+                _events.trySend(
+                    Event.ApproveSuccessful(
+                        date,
+                        postSignResult.postSignScreen,
+                        postSignResult.displayName
                     )
-                }
+                )
+            }
+    }
+
+    private fun handleApproveError(
+        error: ApproveQuotesUseCase.Error,
+        postSignResult: GetPostSignDependenciesUseCase.Result
+    ) {
+        when (error) {
+            ApproveQuotesUseCase.Error.ApproveError -> {
+                _events.trySend(Event.ApproveError(postSignResult.postSignScreen))
+            }
+            is ApproveQuotesUseCase.Error.GeneralError -> {
+                offerAndLoginStatus.value = OfferAndLoginStatus.Error
             }
         }
     }
@@ -374,32 +384,30 @@ class OfferViewModelImpl(
         offerRepository.writeDiscountToCache(quoteIds, data)
 
     override suspend fun triggerOpenChat() {
-        val event = when (chatRepository.triggerFreeTextChat()) {
-            is Either.Left -> Event.Error
-            is Either.Right -> Event.OpenChat
-        }
-        _events.trySend(event)
+        chatRepository.triggerFreeTextChat()
+            .fold(
+                ifLeft = { Event.Error },
+                ifRight = { Event.OpenChat }
+            )
+            .let(_events::trySend)
     }
 
     override fun onOpenQuoteDetails(id: String) {
         viewModelScope.launch {
-            when (val result = getQuoteUseCase.invoke(quoteIds, id)) {
-                GetQuoteUseCase.Result.Error -> {
-                    offerAndLoginStatus.value = OfferAndLoginStatus.Error
-                }
-                is GetQuoteUseCase.Result.Success -> {
+            getQuoteUseCase.invoke(quoteIds, id)
+                .mapLeft { offerAndLoginStatus.value = OfferAndLoginStatus.Error }
+                .map {
                     _events.trySend(
                         Event.OpenQuoteDetails(
                             QuoteDetailItems(
-                                result.quote.displayName,
-                                result.quote.perils.map { PerilItem.Peril(it) },
-                                result.quote.insurableLimits,
-                                result.quote.insuranceTerms
+                                it.displayName,
+                                it.perils.map { PerilItem.Peril(it) },
+                                it.insurableLimits,
+                                it.insuranceTerms
                             )
                         )
                     )
                 }
-            }
         }
     }
 

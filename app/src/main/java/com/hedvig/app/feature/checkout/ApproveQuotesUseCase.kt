@@ -1,10 +1,13 @@
 package com.hedvig.app.feature.checkout
 
+import arrow.core.Either
+import arrow.core.flatMap
+import arrow.core.left
+import arrow.core.right
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.SignQuotesMutation
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.util.apollo.CacheManager
-import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
 import java.time.LocalDate
 
@@ -14,31 +17,26 @@ class ApproveQuotesUseCase(
     private val cacheManager: CacheManager
 ) {
 
-    sealed class ApproveQuotesResult {
-        data class Success(val date: LocalDate?) : ApproveQuotesResult()
-        sealed class Error : ApproveQuotesResult() {
-            data class GeneralError(val message: String? = null) : Error()
-            object ApproveError : Error()
-        }
+    sealed class Error {
+        data class GeneralError(val message: String? = null) : Error()
+        object ApproveError : Error()
     }
 
-    suspend fun approveQuotesAndClearCache(quoteIds: List<String>): ApproveQuotesResult {
-        val mutation = SignQuotesMutation(quoteIds)
-        return when (val result = apolloClient.mutate(mutation).safeQuery()) {
-            is QueryResult.Error -> ApproveQuotesResult.Error.GeneralError(result.message)
-            is QueryResult.Success -> {
-                val approveResponseResponse = result.data?.signOrApproveQuotes?.asApproveQuoteResponse
-                approveResponseResponse?.approved?.let { approved ->
+    suspend fun approveQuotesAndClearCache(quoteIds: List<String>): Either<Error, LocalDate?> {
+        return apolloClient.mutate(SignQuotesMutation(quoteIds))
+            .safeQuery()
+            .toEither { Error.GeneralError(it) }
+            .flatMap {
+                it.signOrApproveQuotes.asApproveQuoteResponse?.approved?.let { approved ->
                     if (approved) {
                         val startDate = readCachedStartDate(quoteIds)
                         cacheManager.clearCache()
-                        ApproveQuotesResult.Success(startDate)
+                        startDate.right()
                     } else {
-                        ApproveQuotesResult.Error.ApproveError
+                        Error.ApproveError.left()
                     }
-                } ?: ApproveQuotesResult.Error.GeneralError()
+                } ?: Error.GeneralError().left()
             }
-        }
     }
 
     private fun readCachedStartDate(quoteIds: List<String>): LocalDate? {

@@ -37,10 +37,10 @@ class CheckoutViewModel(
     init {
         viewModelScope.launch {
             getQuotesUseCase.invoke(quoteIds, quoteCartId).onEach { result ->
-                when (result) {
-                    is GetQuotesUseCase.Result.Success -> _titleViewState.value = result.data.mapToViewState()
-                    is GetQuotesUseCase.Result.Error -> _events.trySend(Event.Error(result.message))
-                }
+                result.fold(
+                    ifLeft = { _events.trySend(Event.Error(it.message)) },
+                    ifRight = { _titleViewState.value = it.mapToViewState() }
+                )
             }.launchIn(viewModelScope)
         }
     }
@@ -121,14 +121,14 @@ class CheckoutViewModel(
 
     private fun signQuotes(parameter: EditAndSignParameter) {
         viewModelScope.launch {
-            val result = editQuotesUseCase.editQuotes(parameter)
+            editQuotesUseCase.editQuotes(parameter)
                 .map { signQuotesUseCase.signQuotesAndClearCache(quoteIds, quoteCartId) }
                 .mapLeft { it.message }
                 .fold(
                     ifLeft = Event::Error,
                     ifRight = { it.toEvent() }
                 )
-            _events.trySend(result)
+                .let(_events::trySend)
         }
     }
 
