@@ -104,7 +104,7 @@ enum class Market {
         }
         DK,
         NO,
-        -> if (data.activePaymentMethods == null) {
+        -> if (data.activePaymentMethodsV2 == null) {
             R.string.Card_Not_Connected
         } else {
             R.string.Card_Connected
