@@ -2,6 +2,8 @@ package com.hedvig.app.feature.checkout
 
 import arrow.core.Either
 import arrow.core.flatMap
+import arrow.core.left
+import arrow.core.right
 import arrow.core.sequenceEither
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.EditMailAndSSNMutation
@@ -89,9 +91,9 @@ class EditQuotesUseCase(
                 }
 
                 if (errorCode != null) {
-                    Either.Left(Error(errorCode))
+                    Error(errorCode).left()
                 } else {
-                    Either.Right(Success)
+                    Success.right()
                 }
             }
     }
@@ -102,8 +104,7 @@ class EditQuotesUseCase(
         email: String
     ): Either<Error, Success> = apolloClient.mutate(EditMailAndSSNMutation(quoteId, ssn, email))
         .safeQuery()
-        .toEither()
-        .mapLeft { Error(it.message) }
+        .toEither { Error(it) }
         .flatMap(::checkErrors)
 
     private fun checkErrors(data: EditMailAndSSNMutation.Data): Either<Error, Success> =

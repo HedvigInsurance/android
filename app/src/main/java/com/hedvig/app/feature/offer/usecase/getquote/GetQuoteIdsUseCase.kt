@@ -2,6 +2,7 @@ package com.hedvig.app.feature.offer.usecase.getquote
 
 import arrow.core.Either
 import arrow.core.flatMap
+import arrow.core.nonEmptyListOf
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.LastQuoteIdQuery
 import com.hedvig.app.feature.offer.OfferRepository
@@ -30,7 +31,7 @@ class GetQuoteIdsUseCase(
     }
 
     private suspend fun getIdsFromQuoteCart(quoteCartId: String): Either<Error, QuoteIds> {
-        return when (val result = offerRepository.offer(listOf(quoteCartId)).first()) {
+        return when (val result = offerRepository.offer(nonEmptyListOf(quoteCartId)).first()) {
             is OfferRepository.OfferResult.Error -> Either.Left(Error(null))
             is OfferRepository.OfferResult.Success -> {
                 val ids = QuoteIds(result.data.quoteBundle.quotes.map { it.id })

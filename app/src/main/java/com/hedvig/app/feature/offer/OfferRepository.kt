@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.offer
 
+import arrow.core.NonEmptyList
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.api.cache.http.HttpCachePolicy
@@ -32,7 +33,7 @@ class OfferRepository(
 ) {
     fun offerQuery(ids: List<String>) = OfferQuery(localeManager.defaultLocale(), ids)
 
-    fun offer(ids: List<String>): Flow<OfferResult> {
+    fun offer(ids: NonEmptyList<String>): Flow<OfferResult> {
         return if (featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
             val subscription = QuoteCartSubscription(localeManager.defaultLocale(), ids.first())
             apolloClient.subscribe(subscription)
