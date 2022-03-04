@@ -38,7 +38,7 @@ query Payment($locale: Locale!) {
   bankAccount {
     ...BankAccountFragment
   }
-  activePaymentMethods {
+  activePaymentMethodsV2 {
     ...ActivePaymentMethodsFragment
   }
   activePayoutMethods {

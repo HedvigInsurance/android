@@ -180,11 +180,12 @@
             android:name=".feature.offer.ui.OfferActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
+            android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".feature.offer.ui.checkout.CheckoutActivity"
+            android:name="com.hedvig.app.feature.checkout.CheckoutActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".feature.crossselling.ui.CrossSellingResultActivity"
@@ -313,6 +314,9 @@
 
         <activity android:name=".feature.embark.passages.externalinsurer.askforprice.AskForPriceInfoActivity" />
         <activity android:name=".feature.embark.passages.externalinsurer.retrieveprice.RetrievePriceInfoActivity" />
+        <activity
+            android:name=".feature.addressautocompletion.ui.AddressAutoCompleteActivity"
+            android:windowSoftInputMode="adjustResize" />
 
         <activity
             android:name=".feature.genericauth.otpinput.OtpInputActivity"

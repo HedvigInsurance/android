@@ -18,6 +18,7 @@ import com.hedvig.app.deviceIdStoreModule
 import com.hedvig.app.embarkModule
 import com.hedvig.app.externalInsuranceModule
 import com.hedvig.app.featureManagerModule
+import com.hedvig.app.graphQLQueryModule
 import com.hedvig.app.homeModule
 import com.hedvig.app.insuranceModule
 import com.hedvig.app.insurelyAuthModule
@@ -51,10 +52,11 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
+import org.koin.core.logger.Level
 
 class KoinInitializer : Initializer<KoinApplication> {
     override fun create(context: Context) = startKoin {
-        androidLogger()
+        androidLogger(Level.ERROR)
         androidContext(context.applicationContext)
         modules(
             listOf(
@@ -103,6 +105,7 @@ class KoinInitializer : Initializer<KoinApplication> {
                 externalInsuranceModule,
                 insurelyAuthModule,
                 deviceIdStoreModule,
+                graphQLQueryModule,
             )
         )
     }

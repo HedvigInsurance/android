@@ -1,3 +1,5 @@
+@file:Suppress("RemoveExplicitTypeArguments")
+
 package com.hedvig.app
 
 import android.content.Context
@@ -32,6 +34,9 @@ import com.hedvig.app.authenticate.UserViewModel
 import com.hedvig.app.authenticate.insurely.GetDataCollectionUseCase
 import com.hedvig.app.authenticate.insurely.InsurelyAuthViewModel
 import com.hedvig.app.data.debit.PayinStatusRepository
+import com.hedvig.app.feature.addressautocompletion.data.GetDanishAddressAutoCompletionUseCase
+import com.hedvig.app.feature.addressautocompletion.data.GetFinalDanishAddressSelectionUseCase
+import com.hedvig.app.feature.addressautocompletion.ui.AddressAutoCompleteViewModel
 import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModel
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModelImpl
@@ -43,6 +48,9 @@ import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.feature.chat.service.ChatNotificationSender
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
+import com.hedvig.app.feature.checkout.ApproveQuotesUseCase
+import com.hedvig.app.feature.checkout.CheckoutViewModel
+import com.hedvig.app.feature.checkout.EditQuotesUseCase
 import com.hedvig.app.feature.claimdetail.data.GetClaimDetailUiStateFlowUseCase
 import com.hedvig.app.feature.claimdetail.data.GetClaimDetailUseCase
 import com.hedvig.app.feature.claimdetail.ui.ClaimDetailViewModel
@@ -63,6 +71,7 @@ import com.hedvig.app.feature.embark.EmbarkViewModelImpl
 import com.hedvig.app.feature.embark.GraphQLQueryUseCase
 import com.hedvig.app.feature.embark.ValueStore
 import com.hedvig.app.feature.embark.ValueStoreImpl
+import com.hedvig.app.feature.embark.passages.addressautocomplete.EmbarkAddressAutoCompleteViewModel
 import com.hedvig.app.feature.embark.passages.audiorecorder.AudioRecorderViewModel
 import com.hedvig.app.feature.embark.passages.datepicker.DatePickerViewModel
 import com.hedvig.app.feature.embark.passages.externalinsurer.ExternalInsurerViewModel
@@ -79,6 +88,7 @@ import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionParams
 import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionViewModel
 import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
 import com.hedvig.app.feature.embark.passages.textaction.TextActionViewModel
+import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.embark.ui.TooltipViewModel
 import com.hedvig.app.feature.genericauth.CreateOtpAttemptUseCase
 import com.hedvig.app.feature.genericauth.GenericAuthViewModel
@@ -88,6 +98,7 @@ import com.hedvig.app.feature.genericauth.otpinput.ReSendOtpCodeUseCaseImpl
 import com.hedvig.app.feature.genericauth.otpinput.SendOtpCodeUseCase
 import com.hedvig.app.feature.genericauth.otpinput.SendOtpCodeUseCaseImpl
 import com.hedvig.app.feature.home.data.GetHomeUseCase
+import com.hedvig.app.feature.home.model.HomeItemsBuilder
 import com.hedvig.app.feature.home.ui.HomeViewModel
 import com.hedvig.app.feature.home.ui.HomeViewModelImpl
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressViewModel
@@ -130,15 +141,14 @@ import com.hedvig.app.feature.offer.OfferViewModelImpl
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetViewModel
 import com.hedvig.app.feature.offer.ui.changestartdate.EditStartDateUseCase
-import com.hedvig.app.feature.offer.ui.checkout.ApproveQuotesUseCase
-import com.hedvig.app.feature.offer.ui.checkout.CheckoutViewModel
-import com.hedvig.app.feature.offer.ui.checkout.SignQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.GetPostSignDependenciesUseCase
-import com.hedvig.app.feature.offer.usecase.GetQuoteUseCase
-import com.hedvig.app.feature.offer.usecase.GetQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
+import com.hedvig.app.feature.offer.usecase.SignQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.datacollectionresult.GetDataCollectionResultUseCase
 import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToDataCollectionStatusUseCase
+import com.hedvig.app.feature.offer.usecase.getquote.GetQuoteIdsUseCase
+import com.hedvig.app.feature.offer.usecase.getquote.GetQuoteUseCase
+import com.hedvig.app.feature.offer.usecase.getquote.GetQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.providerstatus.GetProviderDisplayNameUseCase
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModelImpl
@@ -188,6 +198,7 @@ import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
 import com.hedvig.app.feature.zignsec.usecase.StartDanishAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.StartNorwegianAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthStatusUseCase
+import com.hedvig.app.featureflags.FeatureFlagEntryProvider
 import com.hedvig.app.service.FileService
 import com.hedvig.app.service.RemoteConfig
 import com.hedvig.app.service.badge.CrossSellNotificationBadgeService
@@ -203,6 +214,7 @@ import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.ApolloTimberLogger
 import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.apollo.DeviceIdInterceptor
+import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import com.hedvig.app.util.apollo.SunsettingInterceptor
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.hanalytics.HAnalytics
@@ -380,6 +392,8 @@ val viewModelModule = module {
     }
     viewModel { GenericAuthViewModel(get()) }
     viewModel { (otpId: String, credential: String) -> OtpInputViewModel(otpId, credential, get(), get(), get()) }
+    viewModel { parametersHolder: ParametersHolder -> EmbarkAddressAutoCompleteViewModel(parametersHolder.getOrNull()) }
+    viewModel { parametersHolder -> AddressAutoCompleteViewModel(parametersHolder.getOrNull(), get(), get()) }
     viewModel { (claimId: String) -> ClaimDetailViewModel(claimId, get(), get(), get(), get()) }
     viewModel { HonestyPledgeViewModel(get()) }
     viewModel { (commonClaimId: String) -> CommonClaimViewModel(commonClaimId, get()) }
@@ -424,17 +438,18 @@ val marketingModule = module {
 
 val offerModule = module {
     viewModel<OfferViewModel> { parametersHolder: ParametersHolder ->
-        val (ids: List<String>, shouldShowOnNextAppStart: Boolean) = parametersHolder
         OfferViewModelImpl(
-            _quoteIds = ids,
+            quoteIds = parametersHolder.get(),
+            quoteCartId = parametersHolder.getOrNull(),
             offerRepository = get(),
             getQuotesUseCase = get(),
             getQuoteUseCase = get(),
+            getQuoteIdsUseCase = get(),
             loginStatusService = get(),
             approveQuotesUseCase = get(),
             refreshQuotesUseCase = get(),
             signQuotesUseCase = get(),
-            shouldShowOnNextAppStart = shouldShowOnNextAppStart,
+            shouldShowOnNextAppStart = parametersHolder.get(),
             getPostSignDependenciesUseCase = get(),
             subscribeToDataCollectionStatusUseCase = get(),
             getDataCollectionResultUseCase = get(),
@@ -481,7 +496,9 @@ val embarkModule = module {
             get(),
             get(),
             get(),
-            storyName
+            storyName,
+            get(),
+            get(),
         )
     }
 }
@@ -505,6 +522,7 @@ val referralsModule = module {
 }
 
 val homeModule = module {
+    single<HomeItemsBuilder> { HomeItemsBuilder(get()) }
     viewModel<HomeViewModel> { HomeViewModelImpl(get(), get(), get()) }
 }
 
@@ -525,7 +543,18 @@ val changeDateBottomSheetModule = module {
 }
 
 val checkoutModule = module {
-    viewModel { (ids: List<String>) -> CheckoutViewModel(ids, get(), get(), get(), get(), get()) }
+    viewModel { (ids: List<String>, quoteCartId: String?) ->
+        CheckoutViewModel(
+            ids,
+            quoteCartId,
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+        )
+    }
 }
 
 val retrievePriceModule = module {
@@ -571,20 +600,20 @@ val repositoriesModule = module {
     single { UserRepository(get()) }
     single { WhatsNewRepository(get(), get(), get()) }
     single { WelcomeRepository(get(), get()) }
-    single { OfferRepository(get(), get()) }
+    single { OfferRepository(get(), get(), get()) }
     single { LanguageRepository(get(), get(), get(), get()) }
     single { KeyGearItemsRepository(get(), get(), get(), get()) }
     single { MarketRepository(get(), get(), get()) }
     single { MarketingRepository(get(), get()) }
     single { AdyenRepository(get(), get()) }
-    single { EmbarkRepository(get(), get(), get(), get(), get()) }
+    single { EmbarkRepository(get(), get()) }
     single { ReferralsRepository(get()) }
     single { LoggedInRepository(get(), get()) }
     single { GetHomeUseCase(get(), get()) }
     single { TrustlyRepository(get()) }
     single { GetMemberIdUseCase(get()) }
     single { PaymentRepository(get(), get()) }
-    single { GetBundlesUseCase(get(), get()) }
+    single { GetBundlesUseCase(get(), get(), get()) }
 }
 
 val trackerModule = module {
@@ -626,10 +655,10 @@ val useCaseModule = module {
     single { StartDanishAuthUseCase(get()) }
     single { StartNorwegianAuthUseCase(get()) }
     single { SubscribeToAuthStatusUseCase(get()) }
-    single { GetQuotesUseCase(get()) }
+    single { GetQuotesUseCase(get(), get(), get()) }
     single { GetQuoteUseCase(get()) }
     single { EditStartDateUseCase(get(), get()) }
-    single { SignQuotesUseCase(get(), get()) }
+    single { SignQuotesUseCase(get(), get(), get(), get()) }
     single { ApproveQuotesUseCase(get(), get(), get()) }
     single { RefreshQuotesUseCase(get()) }
     single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get()) }
@@ -649,6 +678,11 @@ val useCaseModule = module {
     single { GetClaimDetailUseCase(get(), get()) }
     single { GetClaimDetailUiStateFlowUseCase(get()) }
     single { GetContractDetailsUseCase(get(), get(), get()) }
+    single<GetDanishAddressAutoCompletionUseCase> { GetDanishAddressAutoCompletionUseCase(get()) }
+    single<GetFinalDanishAddressSelectionUseCase> { GetFinalDanishAddressSelectionUseCase(get()) }
+    single { CreateQuoteCartUseCase(get(), get(), get()) }
+    single<GetQuoteIdsUseCase> { GetQuoteIdsUseCase(get(), get(), get()) }
+    single<EditQuotesUseCase> { EditQuotesUseCase(get(), get(), get(), get()) }
 }
 
 val cacheManagerModule = module {
@@ -664,7 +698,8 @@ val sharedPreferencesModule = module {
 }
 
 val featureManagerModule = module {
-    single { FeatureManager(get(), get()) }
+    single { FeatureManager(get(), get(), get()) }
+    single { FeatureFlagEntryProvider() }
 }
 
 val coilModule = module {
@@ -699,4 +734,8 @@ val dataStoreModule = module {
 
 val deviceIdStoreModule = module {
     single<DeviceIdStore> { DeviceIdDataStore(get()) }
+}
+
+val graphQLQueryModule = module {
+    single<GraphQLQueryHandler> { GraphQLQueryHandler(get(), get(), get()) }
 }

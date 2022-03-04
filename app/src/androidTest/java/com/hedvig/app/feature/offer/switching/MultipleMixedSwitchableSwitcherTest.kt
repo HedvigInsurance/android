@@ -63,6 +63,8 @@ class MultipleMixedSwitchableSwitcherTest : TestCase() {
     private fun previousInsurerNameForQuote(quoteNumber: Int) =
         OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_MIXED_SWITCHABLE
             .quoteBundle
+            .fragments
+            .quoteBundleFragment
             .quotes[quoteNumber]
             .currentInsurer!!
             .displayName!!
@@ -70,6 +72,8 @@ class MultipleMixedSwitchableSwitcherTest : TestCase() {
     private fun quoteDisplayName(quoteNumber: Int) =
         OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_MIXED_SWITCHABLE
             .quoteBundle
+            .fragments
+            .quoteBundleFragment
             .quotes[quoteNumber]
             .displayName
 }

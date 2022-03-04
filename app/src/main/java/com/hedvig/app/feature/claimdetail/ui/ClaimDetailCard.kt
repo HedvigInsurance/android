@@ -27,7 +27,7 @@ import com.hedvig.app.ui.compose.composables.ChatIcon
 import com.hedvig.app.ui.compose.composables.claimprogress.ClaimProgressRow
 import com.hedvig.app.ui.compose.composables.claimprogress.ClaimProgressUiState
 import com.hedvig.app.ui.compose.theme.HedvigTheme
-import com.hedvig.app.util.compose.preview.previewData
+import com.hedvig.app.util.compose.preview.previewList
 
 @Composable
 fun ClaimDetailCard(
@@ -117,7 +117,7 @@ fun ClaimDetailCardPreview() {
         ) {
             ClaimDetailCard(
                 ClaimDetailCardUiState(
-                    claimProgressItemsUiState = ClaimProgressUiState.previewData(),
+                    claimProgressItemsUiState = ClaimProgressUiState.previewList(),
                     statusParagraph = "StatusParagraph"
                 ),
                 {}

@@ -3,8 +3,6 @@ package com.hedvig.app.feature.checkout
 import com.hedvig.app.MockActivity
 import com.hedvig.app.feature.offer.MockOfferViewModel
 import com.hedvig.app.feature.offer.OfferViewModel
-import com.hedvig.app.feature.offer.ui.checkout.CheckoutActivity
-import com.hedvig.app.feature.offer.ui.checkout.CheckoutParameter
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.offerModule
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -26,6 +24,7 @@ class CheckoutMockActivity : MockActivity() {
                     context,
                     CheckoutParameter(
                         quoteIds = listOf(""),
+                        quoteCartId = null,
                     )
                 )
             )

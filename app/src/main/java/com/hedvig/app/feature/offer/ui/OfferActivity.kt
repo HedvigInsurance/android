@@ -19,14 +19,13 @@ import com.adyen.checkout.dropin.DropIn
 import com.adyen.checkout.dropin.DropInResult
 import com.carousell.concatadapterextension.ConcatItemDecoration
 import com.carousell.concatadapterextension.ConcatSpanSizeLookup
-import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationTitle
-import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.SplashActivity
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.databinding.ActivityOfferBinding
 import com.hedvig.app.feature.adyen.payin.startAdyenPayment
+import com.hedvig.app.feature.checkout.CheckoutActivity
 import com.hedvig.app.feature.crossselling.ui.CrossSellingResult
 import com.hedvig.app.feature.crossselling.ui.CrossSellingResultActivity
 import com.hedvig.app.feature.documents.DocumentAdapter
@@ -34,9 +33,11 @@ import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
 import com.hedvig.app.feature.home.ui.changeaddress.result.ChangeAddressResultActivity
 import com.hedvig.app.feature.insurablelimits.InsurableLimitsAdapter
 import com.hedvig.app.feature.offer.OfferViewModel
-import com.hedvig.app.feature.offer.PostSignScreen
+import com.hedvig.app.feature.offer.model.quotebundle.CheckoutMethod
+import com.hedvig.app.feature.offer.model.quotebundle.PostSignScreen
+import com.hedvig.app.feature.offer.model.quotebundle.ViewConfiguration
+import com.hedvig.app.feature.offer.model.quotebundle.checkoutIconRes
 import com.hedvig.app.feature.offer.quotedetail.QuoteDetailActivity
-import com.hedvig.app.feature.offer.ui.checkout.CheckoutActivity
 import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
@@ -63,15 +64,18 @@ import org.koin.core.parameter.parametersOf
 
 class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
+    private lateinit var concatAdapter: ConcatAdapter
     override val screenName = "offer"
 
     private val quoteIds: List<String>
         get() = intent.getStringArrayExtra(QUOTE_IDS)?.toList() ?: emptyList()
+    private val quoteCartId: String?
+        get() = intent.getStringExtra(QUOTE_CART_ID)
     private val shouldShowOnNextAppStart: Boolean
         get() = intent.getBooleanExtra(SHOULD_SHOW_ON_NEXT_APP_START, false)
 
     private val model: OfferViewModel by viewModel {
-        parametersOf(quoteIds, shouldShowOnNextAppStart)
+        parametersOf(quoteIds, quoteCartId, shouldShowOnNextAppStart)
     }
     private val binding by viewBinding(ActivityOfferBinding::bind)
     private val imageLoader: ImageLoader by inject()
@@ -141,7 +145,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 openChat = ::openChat,
             )
 
-            val concatAdapter = ConcatAdapter(
+            concatAdapter = ConcatAdapter(
                 topOfferAdapter,
                 perilsAdapter,
                 insurableLimitsAdapter,
@@ -170,7 +174,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                             insurableLimitsAdapter.submitList(emptyList())
                             documentAdapter.submitList(emptyList())
                             bottomOfferAdapter.submitList(emptyList())
-                            topOfferAdapter.submitList(listOf(OfferModel.Error))
+                            topOfferAdapter.submitList(listOf(OfferItems.Error))
                             binding.progressBar.isVisible = false
                             binding.offerScroll.isVisible = true
                         }
@@ -180,7 +184,11 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                             insurableLimitsAdapter.submitList(viewState.insurableLimitsItems)
                             documentAdapter.submitList(viewState.documents)
                             bottomOfferAdapter.submitList(viewState.bottomOfferItems)
-                            setSignButtonState(viewState.signMethod, viewState.checkoutLabel, viewState.paymentMethods)
+                            setSignButtonState(
+                                viewState.checkoutMethod,
+                                viewState.checkoutLabel,
+                                viewState.paymentMethods
+                            )
 
                             TransitionManager.beginDelayedTransition(binding.offerToolbar)
                             setTitleVisibility(viewState)
@@ -291,18 +299,15 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         )
     }
 
-    private fun setTitleVisibility(viewState: OfferViewModel.ViewState.Content) {
-        when (viewState.title) {
-            QuoteBundleAppConfigurationTitle.LOGO -> {
-                binding.toolbarLogo.isVisible = true
-                binding.toolbarTitle.isVisible = false
-            }
-            QuoteBundleAppConfigurationTitle.UPDATE_SUMMARY,
-            QuoteBundleAppConfigurationTitle.UNKNOWN__,
-            -> {
-                binding.toolbarTitle.isVisible = true
-                binding.toolbarLogo.isVisible = false
-            }
+    private fun setTitleVisibility(viewState: OfferViewModel.ViewState.Content) = when (viewState.title) {
+        ViewConfiguration.Title.LOGO -> {
+            binding.toolbarLogo.isVisible = true
+            binding.toolbarTitle.isVisible = false
+        }
+        ViewConfiguration.Title.UPDATE,
+        ViewConfiguration.Title.UNKNOWN -> {
+            binding.toolbarTitle.isVisible = true
+            binding.toolbarLogo.isVisible = false
         }
     }
 
@@ -323,10 +328,10 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         val menu = binding.offerToolbar.menu
         menu.clear()
         when (loginStatus) {
-            LoginStatus.ONBOARDING,
-            LoginStatus.IN_OFFER,
+            LoginStatus.Onboarding,
+            is LoginStatus.InOffer,
             -> binding.offerToolbar.inflateMenu(R.menu.offer_menu)
-            LoginStatus.LOGGED_IN -> {
+            LoginStatus.LoggedIn -> {
                 binding.offerToolbar.inflateMenu(R.menu.offer_menu_logged_in)
                 menu.getItem(0).actionView.setOnClickListener {
                     handleMenuItem(menu[0])
@@ -336,31 +341,31 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     }
 
     private fun setSignButtonState(
-        signMethod: SignMethod,
+        checkoutMethod: CheckoutMethod,
         checkoutLabel: CheckoutLabel,
         paymentMethods: PaymentMethodsApiResponse?
     ) {
         binding.signButton.text = checkoutLabel.toString(this)
-        binding.signButton.icon = signMethod.checkoutIconRes()?.let(::compatDrawable)
+        binding.signButton.icon = checkoutMethod.checkoutIconRes()?.let(::compatDrawable)
         binding.signButton.setHapticClickListener {
-            onSign(signMethod, paymentMethods)
+            onSign(checkoutMethod, paymentMethods)
         }
     }
 
-    private fun onSign(signMethod: SignMethod, paymentMethods: PaymentMethodsApiResponse?) {
-        when (signMethod) {
-            SignMethod.SWEDISH_BANK_ID -> model.onSwedishBankIdSign()
-            SignMethod.SIMPLE_SIGN -> {
+    private fun onSign(checkoutMethod: CheckoutMethod, paymentMethods: PaymentMethodsApiResponse?) {
+        when (checkoutMethod) {
+            CheckoutMethod.SWEDISH_BANK_ID -> model.onSwedishBankIdSign()
+            CheckoutMethod.SIMPLE_SIGN -> {
                 if (paymentMethods != null) {
                     startAdyenPayment(marketManager.market, paymentMethods)
                 } else {
                     model.onOpenCheckout()
                 }
             }
-            SignMethod.APPROVE_ONLY -> model.approveOffer()
-            SignMethod.NORWEGIAN_BANK_ID,
-            SignMethod.DANISH_BANK_ID,
-            SignMethod.UNKNOWN__,
+            CheckoutMethod.APPROVE_ONLY -> model.approveOffer()
+            CheckoutMethod.NORWEGIAN_BANK_ID,
+            CheckoutMethod.DANISH_BANK_ID,
+            CheckoutMethod.UNKNOWN,
             -> showErrorDialog("Could not parse sign method", ::finish)
         }
     }
@@ -409,14 +414,17 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
     companion object {
         private const val QUOTE_IDS = "QUOTE_IDS"
+        private const val QUOTE_CART_ID = "QUOTE_CART_ID"
         private const val SHOULD_SHOW_ON_NEXT_APP_START = "SHOULD_SHOW_ON_NEXT_APP_START"
 
         fun newInstance(
             context: Context,
             quoteIds: List<String> = emptyList(),
+            quoteCartId: String? = null,
             shouldShowOnNextAppStart: Boolean = false,
         ) = Intent(context, OfferActivity::class.java).apply {
             putExtra(QUOTE_IDS, quoteIds.toTypedArray())
+            putExtra(QUOTE_CART_ID, quoteCartId)
             putExtra(SHOULD_SHOW_ON_NEXT_APP_START, shouldShowOnNextAppStart)
         }
     }

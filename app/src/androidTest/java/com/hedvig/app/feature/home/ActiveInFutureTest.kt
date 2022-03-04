@@ -32,7 +32,9 @@ class ActiveInFutureTest : TestCase() {
                 LOGGED_IN_DATA_WITH_KEY_GEAR_FEATURE_ENABLED
             )
         },
-        HomeQuery.QUERY_DOCUMENT to apolloResponse { success(HOME_DATA_ACTIVE_IN_FUTURE) }
+        HomeQuery.QUERY_DOCUMENT to apolloResponse {
+            success(HOME_DATA_ACTIVE_IN_FUTURE)
+        }
     )
 
     @get:Rule

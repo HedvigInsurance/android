@@ -21,8 +21,8 @@ import com.hedvig.app.databinding.ActivityEmbarkBinding
 import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.NavigationDirection
 import com.hedvig.app.feature.embark.passages.UpgradeAppFragment
-import com.hedvig.app.feature.embark.passages.addressautocomplete.AddressAutoCompleteFragment
-import com.hedvig.app.feature.embark.passages.addressautocomplete.AddressAutoCompleteParams
+import com.hedvig.app.feature.embark.passages.addressautocomplete.EmbarkAddressAutoCompleteFragment
+import com.hedvig.app.feature.embark.passages.addressautocomplete.EmbarkAddressAutoCompleteParams
 import com.hedvig.app.feature.embark.passages.audiorecorder.AudioRecorderFragment
 import com.hedvig.app.feature.embark.passages.audiorecorder.AudioRecorderParameters
 import com.hedvig.app.feature.embark.passages.datepicker.DatePickerFragment
@@ -119,7 +119,8 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                             startActivity(
                                 OfferActivity.newInstance(
                                     context = this@EmbarkActivity,
-                                    quoteIds = event.ids,
+                                    quoteIds = event.quoteIds,
+                                    quoteCartId = event.quoteCartId,
                                     shouldShowOnNextAppStart = true
                                 )
                             )
@@ -371,14 +372,14 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
 
         if (featureManager.isFeatureEnabled(Feature.ADDRESS_AUTO_COMPLETE)) {
             passage?.action?.asEmbarkAddressAutocompleteAction?.let { addressAutocompleteAction ->
-                val params = AddressAutoCompleteParams(
+                val params = EmbarkAddressAutoCompleteParams(
                     messages = passage.messages.map { it.fragments.messageFragment.text },
                     key = addressAutocompleteAction.addressAutocompleteActionData.key,
                     placeholder = addressAutocompleteAction.addressAutocompleteActionData.placeholder,
                     link = addressAutocompleteAction.addressAutocompleteActionData.link
                         .fragments.embarkLinkFragment.name,
                 )
-                return AddressAutoCompleteFragment.newInstance(params)
+                return EmbarkAddressAutoCompleteFragment.newInstance(params)
             }
         }
 

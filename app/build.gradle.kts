@@ -9,6 +9,7 @@ plugins {
     id("kotlin-parcelize")
     id("kotlin-kapt")
     id("com.hedvig.android.lokalise")
+    kotlin("plugin.serialization") version "1.6.10"
 }
 
 apply(plugin = "com.jaredsburrows.license")
@@ -40,7 +41,7 @@ android {
         applicationId = "com.hedvig"
 
         versionCode = 43
-        versionName = "6.4.3"
+        versionName = "6.4.4"
 
         vectorDrawables.useSupportLibrary = true
 
@@ -171,6 +172,7 @@ dependencies {
     implementation(libs.androidx.other.recyclerView)
     implementation(libs.androidx.other.fragment)
     implementation(libs.androidx.other.browser)
+    implementation(libs.androidx.other.transition)
     implementation(libs.androidx.lifecycle.common)
     implementation(libs.androidx.lifecycle.liveData)
     implementation(libs.androidx.lifecycle.runtime)
@@ -278,6 +280,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.compose)
     androidTestImplementation(libs.androidx.compose.uiTestJunit)
     debugImplementation(libs.androidx.compose.uiTestManifest)
+    implementation(libs.serialization.json)
 
     implementation(libs.showkase.annotation)
     debugImplementation(libs.showkase.showkase)
@@ -296,8 +299,4 @@ lokalise {
     token = lokaliseProperties.getProperty("token")
 
     downloadConfig = com.likandr.gradle.config.DownloadConfig()
-}
-
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-    kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
 }

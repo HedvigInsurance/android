@@ -248,6 +248,14 @@ query EmbarkStory($name: String!, $locale: String!) {
         includeAllKeys
         customData
       }
+      quoteCartOfferRedirects {
+        data {
+          id
+          expression {
+            ...ExpressionFragment
+          }
+        }
+      }
       variantedOfferRedirects {
         data {
           selectedKeys
@@ -396,6 +404,11 @@ fragment GraphQLVariablesFragment on EmbarkAPIGraphQLVariable {
         type
       }
     }
+  }
+  ... on EmbarkAPIGraphQLConstantVariable {
+    key
+    value
+    as
   }
 }
 

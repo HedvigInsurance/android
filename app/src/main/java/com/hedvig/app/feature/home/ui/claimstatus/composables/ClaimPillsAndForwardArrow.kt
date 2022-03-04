@@ -22,7 +22,7 @@ import com.hedvig.app.feature.home.ui.claimstatus.data.PillUiState
 import com.hedvig.app.ui.compose.composables.pill.OutlinedPill
 import com.hedvig.app.ui.compose.composables.pill.Pill
 import com.hedvig.app.ui.compose.theme.HedvigTheme
-import com.hedvig.app.util.compose.preview.previewData
+import com.hedvig.app.util.compose.preview.previewList
 
 @Composable
 fun ClaimPillsAndForwardArrow(
@@ -86,7 +86,7 @@ fun PillsPreview(
 
 class PillsUiStateProvider : CollectionPreviewParameterProvider<List<PillUiState>>(
     listOf(
-        PillUiState.previewData(),
+        PillUiState.previewList(),
         listOf(PillUiState.PillType.CLOSED, PillUiState.PillType.PAYMENT).map { pillType ->
             PillUiState(pillType.name, pillType)
         },

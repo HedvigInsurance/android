@@ -29,7 +29,9 @@ class PendingTest : TestCase() {
                 LOGGED_IN_DATA_WITH_REFERRALS_ENABLED
             )
         },
-        HomeQuery.QUERY_DOCUMENT to apolloResponse { success(HOME_DATA_PENDING) }
+        HomeQuery.QUERY_DOCUMENT to apolloResponse {
+            success(HOME_DATA_PENDING)
+        }
     )
 
     @get:Rule
@@ -42,10 +44,10 @@ class PendingTest : TestCase() {
         onScreen<HomeTabScreen> {
             recycler {
                 childAt<HomeTabScreen.BigTextItem>(0) {
-                    text { hasText(R.string.home_tab_pending_switchable_welcome_title, "Test") }
+                    text { hasText(R.string.home_tab_pending_unknown_title, "Test") }
                 }
                 childAt<HomeTabScreen.BodyTextItem>(1) {
-                    text { hasText(R.string.home_tab_pending_switchable_body) }
+                    text { hasText(R.string.home_tab_pending_unknown_body) }
                 }
             }
         }

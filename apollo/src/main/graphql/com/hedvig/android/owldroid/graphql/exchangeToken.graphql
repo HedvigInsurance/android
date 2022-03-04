@@ -1,0 +1,7 @@
+mutation ExchangeTokenMutation($token: String!) {
+  exchangeToken(input: { exchangeToken: $token }) {
+    ... on ExchangeTokenSuccessResponse {
+      token
+    }
+  }
+}

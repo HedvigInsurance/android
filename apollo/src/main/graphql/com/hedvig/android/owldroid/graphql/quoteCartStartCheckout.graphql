@@ -1,0 +1,15 @@
+mutation SignQuoteCart($quoteCartId: ID!, $quoteIds: [ID!]!, $locale: Locale!) {
+  quoteCartStartCheckout: quoteCart_startCheckout(id: $quoteCartId, quoteIds: $quoteIds) {
+    ... on BasicError {
+      message
+    }
+    ... on QuoteCart {
+      paymentConnection {
+        id
+      }
+      bundle {
+        ...QuoteBundleFragment
+      }
+    }
+  }
+}

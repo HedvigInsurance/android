@@ -15,10 +15,10 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.app.R
-import com.hedvig.app.feature.offer.ui.OfferModel
-import com.hedvig.app.feature.offer.ui.OfferModel.InsurelyCard.FailedToRetrieve
-import com.hedvig.app.feature.offer.ui.OfferModel.InsurelyCard.Loading
-import com.hedvig.app.feature.offer.ui.OfferModel.InsurelyCard.Retrieved
+import com.hedvig.app.feature.offer.ui.OfferItems
+import com.hedvig.app.feature.offer.ui.OfferItems.InsurelyCard.FailedToRetrieve
+import com.hedvig.app.feature.offer.ui.OfferItems.InsurelyCard.Loading
+import com.hedvig.app.feature.offer.ui.OfferItems.InsurelyCard.Retrieved
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.ui.compose.theme.hedvigBlack12percent
 import com.hedvig.app.ui.compose.theme.hedvigContentColorFor
@@ -28,7 +28,7 @@ import java.util.UUID
 
 @Composable
 fun InsurelyCard(
-    data: OfferModel.InsurelyCard,
+    data: OfferItems.InsurelyCard,
     locale: Locale,
     modifier: Modifier = Modifier,
 ) {

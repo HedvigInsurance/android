@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clipChildren="false"
     android:orientation="vertical">
 
     <androidx.recyclerview.widget.RecyclerView
@@ -15,57 +16,32 @@
         tools:itemCount="3"
         tools:listitem="@layout/embark_message_item" />
 
-    <TextView
-        android:id="@+id/response"
+    <include
+        android:id="@+id/responseContainer"
+        layout="@layout/embark_response"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/base_margin_double"
-        android:layout_marginTop="@dimen/base_margin_half"
-        android:layout_marginEnd="@dimen/base_margin_double"
-        android:alpha="0"
-        android:textAppearance="?textAppearanceSubtitle1"
-        android:theme="@style/ThemeOverlay.Hedvig.Embark.Chat.Self"
-        android:translationY="100dp"
-        android:visibility="gone"
+        android:layout_marginHorizontal="@dimen/base_margin_double"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/messages" />
+        app:layout_constraintTop_toBottomOf="@id/messages"
+        app:layout_constraintWidth_max="@dimen/embark_chat_bubble_max_width" />
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/input_layout"
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/input_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/base_margin_double"
         android:layout_marginEnd="@dimen/base_margin_double"
         android:layout_marginBottom="@dimen/base_margin_double"
-        app:layout_constraintBottom_toTopOf="@id/textActionSubmit"
+        android:transitionGroup="true"
+        app:layout_constraintBottom_toTopOf="@id/continueButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="@dimen/base_margin_double">
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/filledTextField"
-                style="@style/Hedvig.Theme.TextInputLayout.FilledBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/input"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:imeOptions="actionDone"
-                    android:importantForAutofill="no"
-                    android:inputType="text" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-        </FrameLayout>
-    </com.google.android.material.card.MaterialCardView>
+        app:layout_constraintStart_toStartOf="parent"
+        tools:background="#ffffff"
+        tools:layout_height="60dp" />
 
     <Button
-        android:id="@+id/textActionSubmit"
+        android:id="@+id/continueButton"
         style="?materialButtonContainedLargeStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -73,8 +49,10 @@
         android:layout_marginEnd="@dimen/base_margin_double"
         android:layout_marginBottom="@dimen/base_margin_double"
         android:enabled="false"
+        android:text="@string/continue_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Continue" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

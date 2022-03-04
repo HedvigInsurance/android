@@ -2,7 +2,12 @@ package com.hedvig.app.testdata.feature.home.builders
 
 import com.hedvig.android.owldroid.fragment.IconVariantsFragment
 import com.hedvig.android.owldroid.graphql.HomeQuery
+import com.hedvig.android.owldroid.type.ClaimStatus
+import com.hedvig.android.owldroid.type.ClaimStatusCardPillType
+import com.hedvig.android.owldroid.type.ClaimStatusProgressType
+import com.hedvig.android.owldroid.type.PayinMethodStatus
 import com.hedvig.app.testdata.common.ContractStatus
+import java.time.Instant
 import java.time.LocalDate
 
 data class HomeDataBuilder(
@@ -16,6 +21,7 @@ data class HomeDataBuilder(
         CommonClaimBuilder(title = "Trasig telefon").build(),
         CommonClaimBuilder(title = "Försenat bagage").build()
     ),
+    private val withClaimStatusCards: Boolean = false,
     private val importantMessages: List<HomeQuery.ImportantMessage> = emptyList(),
     private val renewalDate: LocalDate? = null,
 ) {
@@ -23,7 +29,11 @@ data class HomeDataBuilder(
         member = HomeQuery.Member(
             firstName = firstName
         ),
-        claimStatusCards = listOf(), // Preview the cards using Showkase
+        claimStatusCards = if (withClaimStatusCards) { // Better preview the cards using Showkase
+            ClaimStatusCardsBuilder().build()
+        } else {
+            emptyList()
+        },
         contracts = contracts.map { c ->
             HomeQuery.Contract(
                 displayName = CONTRACT_DISPLAY_NAME,
@@ -146,7 +156,9 @@ data class HomeDataBuilder(
                 ),
                 body = "3"
             )
-        )
+        ),
+        payinMethodStatus = PayinMethodStatus.ACTIVE,
+        insuranceProviders = emptyList()
     )
 
     companion object {
@@ -162,4 +174,37 @@ data class ImportantMessageBuilder(
         message = body,
         link = url
     )
+}
+
+class ClaimStatusCardsBuilder {
+    fun build(): List<HomeQuery.ClaimStatusCard> {
+        return List(2) { index ->
+            HomeQuery.ClaimStatusCard(
+                id = index.toString(),
+                pills = List(3) {
+                    HomeQuery.Pill(text = "Pill #$it", type = ClaimStatusCardPillType.values().random())
+                },
+                title = "Title. Random pills ^^",
+                subtitle = "Subtitle. Random progress segments vv",
+                progressSegments = List(3) {
+                    HomeQuery.ProgressSegment(
+                        fragments = HomeQuery.ProgressSegment.Fragments(
+                            progressSegments = com.hedvig.android.owldroid.fragment.ProgressSegments(
+                                text = "Segment #$it",
+                                type = ClaimStatusProgressType.values().random()
+                            )
+                        )
+                    )
+                },
+                claim = HomeQuery.Claim(
+                    submittedAt = Instant.now(),
+                    closedAt = null,
+                    type = "Claim type",
+                    statusParagraph = "Status Paragraph",
+                    progressSegments = emptyList(),
+                    status = ClaimStatus.CLOSED
+                ),
+            )
+        }
+    }
 }

@@ -1,0 +1,5 @@
+subscription QuoteCartSubscription($locale: Locale!, $id: ID!) {
+  quoteCart(id: $id) {
+    ...QuoteCartFragment
+  }
+}

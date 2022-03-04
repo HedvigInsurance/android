@@ -92,16 +92,17 @@ data class PaymentDataBuilder(
         } else {
             null
         },
-        activePaymentMethods = if (payinType == PayinType.ADYEN && payinConnected) {
-            PaymentQuery.ActivePaymentMethods(
-                fragments = PaymentQuery.ActivePaymentMethods.Fragments(
+        activePaymentMethodsV2 = if (payinType == PayinType.ADYEN && payinConnected) {
+            PaymentQuery.ActivePaymentMethodsV2(
+                fragments = PaymentQuery.ActivePaymentMethodsV2.Fragments(
                     ActivePaymentMethodsFragment(
-                        storedPaymentMethodsDetails = ActivePaymentMethodsFragment.StoredPaymentMethodsDetails(
+                        asStoredCardDetails = ActivePaymentMethodsFragment.AsStoredCardDetails(
                             brand = "Testkortet",
                             lastFourDigits = "1234",
                             expiryMonth = "01",
                             expiryYear = "2050",
-                        )
+                        ),
+                        asStoredThirdPartyDetails = null
                     )
                 )
             )

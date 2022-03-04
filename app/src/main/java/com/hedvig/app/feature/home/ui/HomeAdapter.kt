@@ -4,7 +4,9 @@ import android.content.Intent
 import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.FragmentManager
@@ -13,7 +15,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
 import coil.load
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ChangeAddressPendingChangeCardBinding
 import com.hedvig.app.databinding.GenericErrorBinding
@@ -32,6 +33,7 @@ import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimActivity
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyActivity
 import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
+import com.hedvig.app.feature.home.model.HomeModel
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
 import com.hedvig.app.feature.home.ui.claimstatus.composables.ClaimStatusCards
 import com.hedvig.app.feature.home.ui.connectpayincard.ConnectPayinCard
@@ -69,6 +71,7 @@ class HomeAdapter(
             onClaimDetailCardClicked,
             onClaimDetailCardShown,
         )
+        SPACE -> ViewHolder.Space(ComposeView(parent.context))
         R.layout.home_start_claim_outlined -> ViewHolder.StartClaimOutlined(parent, startIntentForResult)
         R.layout.home_start_claim_contained -> ViewHolder.StartClaimContained(parent, startIntentForResult)
         CONNECT_PAYIN -> ViewHolder.InfoCard(ComposeView(parent.context), onPaymentCardShown)
@@ -86,6 +89,7 @@ class HomeAdapter(
         is HomeModel.BigText -> R.layout.home_big_text
         is HomeModel.BodyText -> R.layout.home_body_text
         is HomeModel.ClaimStatus -> ACTIVE_CLAIM
+        is HomeModel.Space -> SPACE
         is HomeModel.StartClaimOutlined -> R.layout.home_start_claim_outlined
         is HomeModel.StartClaimContained -> R.layout.home_start_claim_contained
         is HomeModel.ConnectPayin -> CONNECT_PAYIN
@@ -134,32 +138,27 @@ class HomeAdapter(
                     return invalid(data)
                 }
 
-                when (data) {
-                    is HomeModel.BigText.Pending -> {
-                        root.text = root.resources.getString(
-                            R.string.home_tab_pending_switchable_welcome_title,
-                            data.name
-                        )
-                    }
-                    is HomeModel.BigText.ActiveInFuture -> {
-                        root.text = root.resources.getString(
-                            R.string.home_tab_active_in_future_welcome_title,
-                            data.name,
-                            formatter.format(data.inception)
-                        )
-                    }
-                    is HomeModel.BigText.Active -> {
-                        root.text =
-                            root.resources.getString(R.string.home_tab_welcome_title, data.name)
-                    }
-                    is HomeModel.BigText.Terminated -> {
-                        root.text =
-                            root.resources.getString(
-                                R.string.home_tab_terminated_welcome_title,
-                                data.name
-                            )
-                    }
+                val textRes = when (data) {
+                    is HomeModel.BigText.Pending -> root.resources.getString(
+                        R.string.home_tab_pending_unknown_title,
+                        data.name
+                    )
+                    is HomeModel.BigText.ActiveInFuture -> root.resources.getString(
+                        R.string.home_tab_active_in_future_welcome_title,
+                        data.name,
+                        formatter.format(data.inception)
+                    )
+                    is HomeModel.BigText.Active -> root.resources.getString(R.string.home_tab_welcome_title, data.name)
+                    is HomeModel.BigText.Terminated -> root.resources.getString(
+                        R.string.home_tab_terminated_welcome_title,
+                        data.name
+                    )
+                    is HomeModel.BigText.Switching -> root.resources.getString(
+                        R.string.home_tab_pending_switchable_welcome_title,
+                        data.name
+                    )
                 }
+                root.text = textRes
             }
         }
 
@@ -175,17 +174,13 @@ class HomeAdapter(
                     return invalid(data)
                 }
 
-                when (data) {
-                    HomeModel.BodyText.Pending -> {
-                        root.setText(R.string.home_tab_pending_switchable_body)
-                    }
-                    HomeModel.BodyText.ActiveInFuture -> {
-                        root.setText(R.string.home_tab_active_in_future_body)
-                    }
-                    HomeModel.BodyText.Terminated -> {
-                        root.setText(R.string.home_tab_terminated_body)
-                    }
+                val textRes = when (data) {
+                    HomeModel.BodyText.Pending -> R.string.home_tab_pending_unknown_body
+                    HomeModel.BodyText.ActiveInFuture -> R.string.home_tab_active_in_future_body
+                    HomeModel.BodyText.Terminated -> R.string.home_tab_terminated_body
+                    HomeModel.BodyText.Switching -> R.string.home_tab_pending_switchable_body
                 }
+                root.setText(textRes)
             }
         }
 
@@ -222,6 +217,25 @@ class HomeAdapter(
                             claimStatusCardsUiState = data.claimStatusCardsUiState,
                         )
                     }
+                }
+            }
+        }
+
+        class Space(
+            private val composeView: ComposeView,
+        ) : ViewHolder(composeView) {
+            init {
+                composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            }
+
+            override fun bind(
+                data: HomeModel,
+                fragmentManager: FragmentManager,
+                marketManager: MarketManager
+            ) {
+                if (data !is HomeModel.Space) return invalid(data)
+                composeView.setContent {
+                    Spacer(Modifier.height(data.height))
                 }
             }
         }
@@ -459,35 +473,8 @@ class HomeAdapter(
                 if (data !is HomeModel.ChangeAddress) {
                     invalid(data)
                 } else {
-                    if (data.pendingAddress != null && data.pendingAddress.isNotBlank()) {
-                        title.setHapticClickListener {
-                            MaterialAlertDialogBuilder(root.context)
-                                .setTitle(R.string.home_tab_moving_info_card_title)
-                                .setMessage(
-                                    root.context.getString(
-                                        R.string.home_tab_moving_action_sheet_description,
-                                        data.pendingAddress
-                                    )
-                                )
-                                .setPositiveButton(R.string.home_tab_moving_info_card_button_text) { _, _ ->
-                                    Toast.makeText(
-                                        root.context,
-                                        "Go to pending offer not implemented",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                }
-                                .setNegativeButton(
-                                    R.string.home_tab_moving_action_sheet_start_new_offer_button
-                                ) { _, _ ->
-                                    root.context.startActivity(ChangeAddressActivity.newInstance(root.context))
-                                }
-                                .setNeutralButton(R.string.general_cancel_button) { dialog, _ -> dialog.dismiss() }
-                                .show()
-                        }
-                    } else {
-                        title.setHapticClickListener {
-                            root.context.startActivity(ChangeAddressActivity.newInstance(root.context))
-                        }
+                    title.setHapticClickListener {
+                        root.context.startActivity(ChangeAddressActivity.newInstance(root.context))
                     }
                 }
             }
@@ -524,7 +511,7 @@ class HomeAdapter(
                 if (data !is HomeModel.Header) {
                     return invalid(data)
                 }
-                binding.headerItem.text = data.text
+                binding.headerItem.text = itemView.context.getString(data.stringRes)
             }
         }
     }
@@ -532,6 +519,7 @@ class HomeAdapter(
     companion object {
         const val ACTIVE_CLAIM = 1
         const val CONNECT_PAYIN = 2
+        const val SPACE = 3
 
         fun daysLeft(date: LocalDate): Int = ChronoUnit.DAYS.between(LocalDate.now(), date).toInt()
 

@@ -28,5 +28,11 @@ enum class Feature(
         "Referral Campaign",
         "Used to show banner in referral view",
         false
+    ),
+    QUOTE_CART(
+        "quote_Cart",
+        "Quote Cart APIs",
+        "Use new APIs for onboarding",
+        false
     )
 }

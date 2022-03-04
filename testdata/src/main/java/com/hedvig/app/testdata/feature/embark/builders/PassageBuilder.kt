@@ -47,6 +47,7 @@ data class PassageBuilder(
                 )
             )
         },
-        variantedOfferRedirects = listOf()
+        variantedOfferRedirects = listOf(),
+        quoteCartOfferRedirects = listOf(),
     )
 }
