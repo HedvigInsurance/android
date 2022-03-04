@@ -2,21 +2,16 @@ package com.hedvig.app.feature.offer.model
 
 import com.hedvig.android.owldroid.fragment.QuoteCartFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
-import com.hedvig.app.feature.offer.model.quotebundle.Campaign
-import com.hedvig.app.feature.offer.model.quotebundle.CheckoutMethod
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
-import com.hedvig.app.feature.offer.model.quotebundle.toCampaign
-import com.hedvig.app.feature.offer.model.quotebundle.toCheckoutMethod
-import com.hedvig.app.feature.offer.model.quotebundle.toIncentive
 import com.hedvig.app.feature.offer.model.quotebundle.toQuoteBundle
-import com.hedvig.app.feature.offer.ui.CheckoutLabel
 import com.hedvig.app.feature.offer.ui.checkoutLabel
 
 data class OfferModel(
     val quoteBundle: QuoteBundle,
     val checkoutMethod: CheckoutMethod,
     val checkoutLabel: CheckoutLabel,
-    val campaign: Campaign?
+    val campaign: Campaign?,
+    val checkout: Checkout?,
 )
 
 fun OfferQuery.Data.toOfferModel() = OfferModel(
@@ -28,6 +23,11 @@ fun OfferQuery.Data.toOfferModel() = OfferModel(
             .firstNotNullOfOrNull { it.fragments.incentiveFragment.displayValue },
         incentive = redeemedCampaigns.firstOrNull()?.fragments?.incentiveFragment?.incentive?.toIncentive()
             ?: Campaign.Incentive.NoDiscount
+    ),
+    checkout = Checkout(
+        status = Checkout.CheckoutStatus.FAILED,
+        statusText = null,
+        redirectUrl = null
     )
 )
 
@@ -35,5 +35,6 @@ fun QuoteCartFragment.toOfferModel() = OfferModel(
     quoteBundle = bundle!!.fragments.quoteBundleFragment.toQuoteBundle(),
     checkoutMethod = checkoutMethods.map { it.toCheckoutMethod() }.first(),
     checkoutLabel = checkoutLabel(),
-    campaign = campaign?.toCampaign()
+    campaign = campaign?.toCampaign(),
+    checkout = checkout?.toCheckout()
 )

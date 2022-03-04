@@ -13,12 +13,12 @@ import com.hedvig.app.feature.checkout.ApproveQuotesUseCase
 import com.hedvig.app.feature.checkout.CheckoutParameter
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
+import com.hedvig.app.feature.offer.model.CheckoutLabel
+import com.hedvig.app.feature.offer.model.CheckoutMethod
 import com.hedvig.app.feature.offer.model.OfferModel
-import com.hedvig.app.feature.offer.model.quotebundle.CheckoutMethod
 import com.hedvig.app.feature.offer.model.quotebundle.PostSignScreen
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
 import com.hedvig.app.feature.offer.model.quotebundle.ViewConfiguration
-import com.hedvig.app.feature.offer.ui.CheckoutLabel
 import com.hedvig.app.feature.offer.ui.OfferItems
 import com.hedvig.app.feature.offer.usecase.GetPostSignDependenciesUseCase
 import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
@@ -115,7 +115,7 @@ abstract class OfferViewModel : ViewModel() {
             val checkoutLabel: CheckoutLabel = CheckoutLabel.CONFIRM,
             val title: ViewConfiguration.Title = ViewConfiguration.Title.LOGO,
             val loginStatus: LoginStatus = LoginStatus.LoggedIn,
-            val paymentMethods: PaymentMethodsApiResponse?,
+            val paymentMethods: PaymentMethodsApiResponse?
         ) : ViewState()
     }
 

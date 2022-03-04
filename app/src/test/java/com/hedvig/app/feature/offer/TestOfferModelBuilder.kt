@@ -2,6 +2,7 @@ package com.hedvig.app.feature.offer
 
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
+import com.hedvig.app.feature.offer.model.CheckoutLabel
 import com.hedvig.app.feature.offer.model.OfferModel
 import com.hedvig.app.feature.offer.model.quotebundle.BundleCost
 import com.hedvig.app.feature.offer.model.quotebundle.Campaign
@@ -13,7 +14,6 @@ import com.hedvig.app.feature.offer.model.quotebundle.PostSignScreen
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
 import com.hedvig.app.feature.offer.model.quotebundle.StartDateLabel
 import com.hedvig.app.feature.offer.model.quotebundle.ViewConfiguration
-import com.hedvig.app.feature.offer.ui.CheckoutLabel
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
 import com.hedvig.app.feature.perils.Peril
 import com.hedvig.app.feature.table.Table
