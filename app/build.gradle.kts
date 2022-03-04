@@ -9,6 +9,7 @@ plugins {
     id("kotlin-parcelize")
     id("kotlin-kapt")
     id("com.hedvig.android.lokalise")
+    kotlin("plugin.serialization") version "1.6.10"
 }
 
 apply(plugin = "com.jaredsburrows.license")
@@ -279,6 +280,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.compose)
     androidTestImplementation(libs.androidx.compose.uiTestJunit)
     debugImplementation(libs.androidx.compose.uiTestManifest)
+    implementation(libs.serialization.json)
 
     implementation(libs.showkase.annotation)
     debugImplementation(libs.showkase.showkase)

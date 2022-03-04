@@ -1,0 +1,32 @@
+fragment QuoteCartFragment on QuoteCart {
+  bundle {
+    ...QuoteBundleFragment
+  }
+  checkoutMethods
+  campaign {
+    displayValue(locale: $locale)
+    incentive {
+      ... on FreeMonths {
+        freeQuantity: quantity
+      }
+      ... on MonthlyCostDeduction {
+        amount {
+          ...MonetaryAmountFragment
+        }
+      }
+      ... on IndefinitePercentageDiscount {
+        indefinitePercentageDiscount: percentageDiscount
+      }
+      ... on PercentageDiscountMonths {
+        monthsPercentageDiscount: percentageDiscount
+        monthsQuantity: quantity
+      }
+      ... on NoDiscount {
+        valueNoDiscount: _
+      }
+      ... on VisibleNoDiscount {
+        valueVisibleNoDiscount: _
+      }
+    }
+  }
+}

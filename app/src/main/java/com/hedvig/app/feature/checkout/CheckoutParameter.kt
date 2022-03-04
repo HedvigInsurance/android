@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.offer.ui.checkout
+package com.hedvig.app.feature.checkout
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

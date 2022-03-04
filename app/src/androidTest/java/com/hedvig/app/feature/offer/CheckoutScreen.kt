@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.offer
 
 import com.hedvig.app.R
-import com.hedvig.app.feature.offer.ui.checkout.CheckoutActivity
+import com.hedvig.app.feature.checkout.CheckoutActivity
 import com.kaspersky.kaspresso.screens.KScreen
 import io.github.kakaocup.kakao.edit.KTextInputLayout
 import io.github.kakaocup.kakao.text.KButton

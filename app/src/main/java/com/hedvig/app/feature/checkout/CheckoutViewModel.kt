@@ -1,10 +1,11 @@
-package com.hedvig.app.feature.offer.ui.checkout
+package com.hedvig.app.feature.checkout
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.offer.model.OfferModel
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
+import com.hedvig.app.feature.offer.usecase.SignQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.getquote.GetQuotesUseCase
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
@@ -27,6 +28,7 @@ class CheckoutViewModel(
     private val quoteCartId: String?,
     private val getQuotesUseCase: GetQuotesUseCase,
     private val signQuotesUseCase: SignQuotesUseCase,
+    private val editQuotesUseCase: EditQuotesUseCase,
     private val marketManager: MarketManager,
     private val loginStatusService: LoginStatusService,
     private val hAnalytics: HAnalytics,
@@ -112,37 +114,47 @@ class CheckoutViewModel(
     fun onTrySign(emailInput: String, identityNumberInput: String) {
         if (inputViewState.value.canSign()) {
             _events.trySend(Event.Loading)
-            signQuotes(
-                identityNumberInput = identityNumberInput,
-                emailInput = emailInput
-            )
+            val parameter = createEditAndSignParameter(identityNumberInput, emailInput)
+            signQuotes(parameter)
         }
     }
 
-    private fun signQuotes(identityNumberInput: String, emailInput: String) {
+    private fun signQuotes(parameter: EditAndSignParameter) {
         viewModelScope.launch {
-            val result = signQuotesUseCase.editAndSignQuotes(
-                quoteIds = quoteIds,
-                quoteCartId = quoteCartId,
-                ssn = identityNumberInput,
-                email = emailInput
-            )
-            val event = when (result) {
-                is SignQuotesUseCase.SignQuoteResult.Error -> Event.Error(result.message)
-                SignQuotesUseCase.SignQuoteResult.Success -> {
-                    hAnalytics.quotesSigned(quoteIds)
-                    loginStatusService.isLoggedIn = true
-                    loginStatusService.isViewingOffer = false
-                    // Delay sending success in order for the signed quotes to be added on the member
-                    // Sending success instantly will start HomeFragment, but the member will not have
-                    // updated contracts.
-                    delay(5000)
-                    Event.CheckoutSuccess
-                }
-                else -> Event.Error()
-            }
-            _events.trySend(event)
+            val result = editQuotesUseCase.editQuotes(parameter)
+                .map { signQuotesUseCase.signQuotesAndClearCache(quoteIds, quoteCartId) }
+                .mapLeft { it.message }
+                .fold(
+                    ifLeft = Event::Error,
+                    ifRight = { it.toEvent() }
+                )
+            _events.trySend(result)
         }
+    }
+
+    private fun createEditAndSignParameter(
+        identityNumberInput: String,
+        emailInput: String
+    ) = EditAndSignParameter(
+        quoteIds = quoteIds,
+        quoteCartId = quoteCartId,
+        ssn = identityNumberInput,
+        email = emailInput
+    )
+
+    private suspend fun SignQuotesUseCase.SignQuoteResult.toEvent(): Event = when (this) {
+        is SignQuotesUseCase.SignQuoteResult.Error -> Event.Error(message)
+        SignQuotesUseCase.SignQuoteResult.Success -> {
+            hAnalytics.quotesSigned(quoteIds)
+            loginStatusService.isLoggedIn = true
+            loginStatusService.isViewingOffer = false
+            // Delay sending success in order for the signed quotes to be added on the member
+            // Sending success instantly will start HomeFragment, but the member will not have
+            // updated contracts.
+            delay(5000)
+            Event.CheckoutSuccess
+        }
+        else -> Event.Error()
     }
 
     sealed class TitleViewState {

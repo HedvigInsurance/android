@@ -10,6 +10,8 @@ import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.app.feature.chat.data.ChatRepository
+import com.hedvig.app.feature.checkout.ApproveQuotesUseCase
+import com.hedvig.app.feature.checkout.CheckoutParameter
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.offer.model.OfferModel
@@ -19,11 +21,9 @@ import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
 import com.hedvig.app.feature.offer.model.quotebundle.ViewConfiguration
 import com.hedvig.app.feature.offer.ui.CheckoutLabel
 import com.hedvig.app.feature.offer.ui.OfferItems
-import com.hedvig.app.feature.offer.ui.checkout.ApproveQuotesUseCase
-import com.hedvig.app.feature.offer.ui.checkout.CheckoutParameter
-import com.hedvig.app.feature.offer.ui.checkout.SignQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.GetPostSignDependenciesUseCase
 import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
+import com.hedvig.app.feature.offer.usecase.SignQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.datacollectionresult.DataCollectionResult
 import com.hedvig.app.feature.offer.usecase.datacollectionresult.GetDataCollectionResultUseCase
 import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToDataCollectionStatusUseCase
@@ -44,7 +44,6 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -116,7 +115,7 @@ abstract class OfferViewModel : ViewModel() {
             val checkoutMethod: CheckoutMethod = CheckoutMethod.SIMPLE_SIGN,
             val checkoutLabel: CheckoutLabel = CheckoutLabel.CONFIRM,
             val title: ViewConfiguration.Title = ViewConfiguration.Title.LOGO,
-            val loginStatus: LoginStatus = LoginStatus.LOGGED_IN,
+            val loginStatus: LoginStatus = LoginStatus.LoggedIn,
             val paymentMethods: PaymentMethodsApiResponse?,
         ) : ViewState()
     }
@@ -162,9 +161,11 @@ class OfferViewModelImpl(
 
     init {
         loginStatusService.isViewingOffer = shouldShowOnNextAppStart
+        loginStatusService.persistOfferIds(quoteCartId, quoteIds)
 
         viewModelScope.launch {
-            loadQuotes()
+            loadQuoteIds()
+            loadQuotes(quoteIds)
         }
     }
 
@@ -234,7 +235,7 @@ class OfferViewModelImpl(
         )
 
     private suspend fun loadQuoteIds() {
-        when (val result = getQuoteIdsUseCase.invoke(quoteCartId)) {
+        return when (val result = getQuoteIdsUseCase.invoke(quoteCartId)) {
             is Either.Left -> offerAndLoginStatus.value = OfferAndLoginStatus.Error
             is Either.Right -> {
                 hAnalytics.screenViewOffer(result.value.ids)
@@ -243,12 +244,10 @@ class OfferViewModelImpl(
         }
     }
 
-    private suspend fun loadQuotes() {
+    private fun loadQuotes(quoteIds: List<String>) {
         getQuotesUseCase.invoke(quoteIds, quoteCartId).onEach { result ->
             when (result) {
-                is GetQuotesUseCase.Result.Error -> {
-                    offerAndLoginStatus.value = OfferAndLoginStatus.Error
-                }
+                is GetQuotesUseCase.Result.Error -> offerAndLoginStatus.value = OfferAndLoginStatus.Error
                 is GetQuotesUseCase.Result.Success -> {
                     val loginStatus = loginStatusService.getLoginStatus()
 
@@ -268,8 +267,6 @@ class OfferViewModelImpl(
                     )
                 }
             }
-        }.catch {
-            offerAndLoginStatus.value = OfferAndLoginStatus.Error
         }.launchIn(viewModelScope)
     }
 
@@ -414,7 +411,7 @@ class OfferViewModelImpl(
             }
 
             when (refreshQuotesUseCase.invoke(quoteIds)) {
-                RefreshQuotesUseCase.Result.Success -> loadQuotes()
+                RefreshQuotesUseCase.Result.Success -> loadQuotes(quoteIds)
                 is RefreshQuotesUseCase.Result.Error -> offerAndLoginStatus.value = OfferAndLoginStatus.Error
             }
         }

@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.offer.usecase.getquote
 
+import arrow.core.NonEmptyList
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
 import kotlinx.coroutines.flow.first
@@ -16,8 +17,12 @@ class GetQuoteUseCase(
     }
 
     suspend operator fun invoke(bundleIds: List<String>, quoteId: String): Result {
+        if (bundleIds.isEmpty()) {
+            return Result.Error
+        }
+
         val offer = offerRepository
-            .offer(bundleIds)
+            .offer(NonEmptyList.fromListUnsafe(bundleIds))
             .first()
 
         if (offer !is OfferRepository.OfferResult.Success) {

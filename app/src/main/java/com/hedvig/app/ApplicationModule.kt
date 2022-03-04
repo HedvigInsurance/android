@@ -48,6 +48,9 @@ import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.feature.chat.service.ChatNotificationSender
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
+import com.hedvig.app.feature.checkout.ApproveQuotesUseCase
+import com.hedvig.app.feature.checkout.CheckoutViewModel
+import com.hedvig.app.feature.checkout.EditQuotesUseCase
 import com.hedvig.app.feature.claimdetail.data.GetClaimDetailUiStateFlowUseCase
 import com.hedvig.app.feature.claimdetail.data.GetClaimDetailUseCase
 import com.hedvig.app.feature.claimdetail.ui.ClaimDetailViewModel
@@ -138,11 +141,9 @@ import com.hedvig.app.feature.offer.OfferViewModelImpl
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetViewModel
 import com.hedvig.app.feature.offer.ui.changestartdate.EditStartDateUseCase
-import com.hedvig.app.feature.offer.ui.checkout.ApproveQuotesUseCase
-import com.hedvig.app.feature.offer.ui.checkout.CheckoutViewModel
-import com.hedvig.app.feature.offer.ui.checkout.SignQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.GetPostSignDependenciesUseCase
 import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
+import com.hedvig.app.feature.offer.usecase.SignQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.datacollectionresult.GetDataCollectionResultUseCase
 import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToDataCollectionStatusUseCase
 import com.hedvig.app.feature.offer.usecase.getquote.GetQuoteIdsUseCase
@@ -213,6 +214,7 @@ import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.ApolloTimberLogger
 import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.apollo.DeviceIdInterceptor
+import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import com.hedvig.app.util.apollo.SunsettingInterceptor
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.hanalytics.HAnalytics
@@ -436,10 +438,9 @@ val marketingModule = module {
 
 val offerModule = module {
     viewModel<OfferViewModel> { parametersHolder: ParametersHolder ->
-        val (ids: List<String>, quoteCartId: String?, shouldShowOnNextAppStart: Boolean) = parametersHolder
         OfferViewModelImpl(
-            quoteIds = ids,
-            quoteCartId = quoteCartId,
+            quoteIds = parametersHolder.get(),
+            quoteCartId = parametersHolder.getOrNull(),
             offerRepository = get(),
             getQuotesUseCase = get(),
             getQuoteUseCase = get(),
@@ -448,7 +449,7 @@ val offerModule = module {
             approveQuotesUseCase = get(),
             refreshQuotesUseCase = get(),
             signQuotesUseCase = get(),
-            shouldShowOnNextAppStart = shouldShowOnNextAppStart,
+            shouldShowOnNextAppStart = parametersHolder.get(),
             getPostSignDependenciesUseCase = get(),
             subscribeToDataCollectionStatusUseCase = get(),
             getDataCollectionResultUseCase = get(),
@@ -550,7 +551,8 @@ val checkoutModule = module {
             get(),
             get(),
             get(),
-            get()
+            get(),
+            get(),
         )
     }
 }
@@ -604,7 +606,7 @@ val repositoriesModule = module {
     single { MarketRepository(get(), get(), get()) }
     single { MarketingRepository(get(), get()) }
     single { AdyenRepository(get(), get()) }
-    single { EmbarkRepository(get(), get(), get(), get(), get()) }
+    single { EmbarkRepository(get(), get()) }
     single { ReferralsRepository(get()) }
     single { LoggedInRepository(get(), get()) }
     single { GetHomeUseCase(get(), get()) }
@@ -680,6 +682,7 @@ val useCaseModule = module {
     single<GetFinalDanishAddressSelectionUseCase> { GetFinalDanishAddressSelectionUseCase(get()) }
     single { CreateQuoteCartUseCase(get(), get(), get()) }
     single<GetQuoteIdsUseCase> { GetQuoteIdsUseCase(get(), get(), get()) }
+    single<EditQuotesUseCase> { EditQuotesUseCase(get(), get(), get(), get()) }
 }
 
 val cacheManagerModule = module {
@@ -731,4 +734,8 @@ val dataStoreModule = module {
 
 val deviceIdStoreModule = module {
     single<DeviceIdStore> { DeviceIdDataStore(get()) }
+}
+
+val graphQLQueryModule = module {
+    single<GraphQLQueryHandler> { GraphQLQueryHandler(get(), get(), get()) }
 }

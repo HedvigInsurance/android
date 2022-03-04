@@ -71,7 +71,7 @@ abstract class EmbarkViewModel(
             .combine(loginStatus.filterNotNull()) { passageState, loginStatus ->
                 ViewState(
                     passageState,
-                    loginStatus == LoginStatus.LOGGED_IN
+                    loginStatus == LoginStatus.LoggedIn
                 )
             }
             .asLiveData()

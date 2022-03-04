@@ -3,11 +3,11 @@ package com.hedvig.app.feature.embark.util
 import com.hedvig.android.owldroid.fragment.ApiFragment
 import com.hedvig.android.owldroid.fragment.GraphQLVariablesFragment
 import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLSingleVariableCasting
-import com.hedvig.app.feature.embark.FileVariable
 import com.hedvig.app.feature.embark.ValueStore
 import com.hedvig.app.feature.embark.variables.CastType
 import com.hedvig.app.feature.embark.variables.Variable
 import com.hedvig.app.feature.embark.variables.VariableExtractor
+import com.hedvig.app.util.apollo.FileVariable
 import org.json.JSONObject
 
 fun ApiFragment.AsEmbarkApiGraphQLQuery.getVariables(valueStore: ValueStore): JSONObject? {

@@ -1,0 +1,18 @@
+mutation QuoteCartEditQuote($quoteCartId: ID!, $quoteId: ID!, $payload: JSON!, $locale: Locale!) {
+  quoteCart_editQuote(id: $quoteCartId, payload: $payload, quoteId: $quoteId) {
+    ... on QuoteBundleError {
+      limits {
+        code
+      }
+      message
+    }
+    ... on QuoteCart {
+      paymentConnection {
+        id
+      }
+      bundle {
+        ...QuoteBundleFragment
+      }
+    }
+  }
+}

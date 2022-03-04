@@ -1,7 +1,10 @@
 package com.hedvig.app.authenticate
 
-enum class LoginStatus {
-    ONBOARDING,
-    IN_OFFER,
-    LOGGED_IN
+sealed class LoginStatus {
+    object Onboarding : LoginStatus()
+    object LoggedIn : LoginStatus()
+    data class InOffer(
+        val quoteCartId: String?,
+        val quoteIds: Set<String>
+    ) : LoginStatus()
 }
