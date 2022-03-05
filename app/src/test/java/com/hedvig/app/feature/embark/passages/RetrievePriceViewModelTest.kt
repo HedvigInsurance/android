@@ -57,15 +57,20 @@ class RetrievePriceViewModelTest {
     }
 
     @Test
-    fun testInput() = mainCoroutineRule.dispatcher.runBlockingTest {
+    fun testInput() = runTest {
         viewModel.onIdentityInput("1")
         assertThat(viewModel.viewState.value.input).isEqualTo("1")
+        assertThat(viewModel.viewState.value.inputError).isNull()
 
         viewModel.onIdentityInput("Invalid input")
         assertThat(viewModel.viewState.value.input).isEqualTo("Invalid input")
         assertThat(viewModel.viewState.value.inputError).isEqualTo(
             RetrievePriceViewModel.ViewState.InputError(R.string.INVALID_NATIONAL_IDENTITY_NUMBER)
         )
+
+        viewModel.onIdentityInput("1")
+        assertThat(viewModel.viewState.value.input).isEqualTo("1")
+        assertThat(viewModel.viewState.value.inputError).isNull()
     }
 
     @Test
