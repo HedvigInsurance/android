@@ -6,7 +6,7 @@ import com.hedvig.app.feature.genericauth.otpinput.OtpResult
 import com.hedvig.app.feature.genericauth.otpinput.ReSendOtpCodeUseCase
 import com.hedvig.app.feature.genericauth.otpinput.ResendOtpResult
 import com.hedvig.app.feature.genericauth.otpinput.SendOtpCodeUseCase
-import com.hedvig.app.util.coroutines.MainCoroutineRule
+import com.hedvig.app.util.coroutines.StandardTestDispatcherAsMainDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import org.junit.Rule
@@ -14,9 +14,9 @@ import org.junit.Rule
 @ExperimentalCoroutinesApi
 class OtpInputViewModelTest {
 
-    @ExperimentalCoroutinesApi
     @get:Rule
-    var mainCoroutineRule = MainCoroutineRule()
+    val standardTestDispatcherAsMainDispatcherRule = StandardTestDispatcherAsMainDispatcherRule()
+
     private var authToken: String? = "testToken"
 
     private var otpResult: OtpResult = OtpResult.Success("authtest")

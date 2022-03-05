@@ -2,9 +2,8 @@ package com.hedvig.app.feature.embark.passages
 
 import com.hedvig.app.feature.embark.passages.externalinsurer.GetInsuranceProvidersUseCase
 import com.hedvig.app.feature.embark.passages.externalinsurer.InsuranceProvider
-import com.hedvig.app.util.coroutines.MainCoroutineRule
+import com.hedvig.app.util.coroutines.StandardTestDispatcherAsMainDispatcherRule
 import io.mockk.mockk
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Rule
 
 class ExternalInsurerViewModelTest {
@@ -15,9 +14,8 @@ class ExternalInsurerViewModelTest {
         InsuranceProvider("3", "Test3")
     )
 
-    @ExperimentalCoroutinesApi
     @get:Rule
-    var mainCoroutineRule = MainCoroutineRule()
+    val standardTestDispatcherAsMainDispatcherRule = StandardTestDispatcherAsMainDispatcherRule()
 
     private val getInsuranceProvidersUseCase = mockk<GetInsuranceProvidersUseCase>()
 
