@@ -68,6 +68,7 @@ object TopOfferItemsBuilder {
         val showInsurelyInformation = dataCollectionStatus != null
         if (showInsurelyInformation) {
             add(OfferItems.PriceComparisonHeader)
+            @Suppress("NON_EXHAUSTIVE_WHEN_STATEMENT") // https://youtrack.jetbrains.com/issue/KT-51541
             when (dataCollectionStatus) {
                 is Error -> {
                     add(

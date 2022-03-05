@@ -6,8 +6,8 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.ui.platform.ComposeView
 import androidx.recyclerview.widget.RecyclerView
-import coil.clear
 import coil.load
 import coil.size.Scale
 import coil.transform.RoundedCornersTransformation
@@ -80,8 +80,9 @@ class AttachFileAdapter(
         if (position == 0) CAMERA_AND_MISC_VIEW_TYPE else IMAGE_VIEW_TYPE
 
     override fun onViewRecycled(holder: ViewHolder) {
-        when (holder) {
-            is ViewHolder.ImageViewHolder -> holder.binding.attachFileImage.clear()
+        val itemView = holder.itemView
+        if (itemView is ComposeView) {
+            itemView.disposeComposition()
         }
     }
 
