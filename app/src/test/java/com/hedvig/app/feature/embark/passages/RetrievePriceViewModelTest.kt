@@ -30,14 +30,9 @@ class RetrievePriceViewModelTest {
     var mainCoroutineRule = MainCoroutineRule()
 
     private val marketManager = object : MarketManager {
-        override val enabledMarkets: List<Market>
-            get() = listOf(Market.SE, Market.NO, Market.DK)
-        override var market: Market?
-            get() = Market.SE
-            set(value) {}
-        override var hasSelectedMarket: Boolean
-            get() = true
-            set(value) {}
+        override val enabledMarkets: List<Market> = listOf(Market.SE, Market.NO, Market.DK)
+        override var market: Market? = Market.SE
+        override var hasSelectedMarket: Boolean = true
     }
 
     private val startDataCollectionUseCase = mockk<StartDataCollectionUseCase>()
