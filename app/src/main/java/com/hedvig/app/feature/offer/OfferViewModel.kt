@@ -44,6 +44,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -52,6 +53,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import kotlin.time.Duration.Companion.seconds
 
 abstract class OfferViewModel : ViewModel() {
     abstract val viewState: StateFlow<ViewState>
@@ -230,7 +232,7 @@ class OfferViewModelImpl(
     }
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
+            started = SharingStarted.WhileSubscribed(5.seconds),
             initialValue = ViewState.Loading,
         )
 

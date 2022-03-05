@@ -56,6 +56,7 @@ import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.compose.preview.previewData
 import com.hedvig.app.util.compose.preview.previewList
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -69,7 +70,7 @@ fun AddressAutoCompleteScreen(
     val focusRequester = remember { FocusRequester() }
     val keyboardController: SoftwareKeyboardController? = LocalSoftwareKeyboardController.current
     LaunchedEffect(Unit) {
-        delay(100) // Without a delay the keyboard has a low success rate of showing. 100 seems to always work.
+        delay(100.milliseconds) // A delay of 100 milliseconds ensures that the keyboard shows reliably.
         focusRequester.requestFocus()
         keyboardController?.show()
     }

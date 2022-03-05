@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
@@ -25,6 +26,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
+import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 class AddressAutoCompleteViewModel(
@@ -88,7 +90,7 @@ class AddressAutoCompleteViewModel(
         )
     }.stateIn(
         viewModelScope,
-        SharingStarted.WhileSubscribed(5_000),
+        SharingStarted.WhileSubscribed(5.seconds),
         AddressAutoCompleteViewState(currentInput.value),
     )
 

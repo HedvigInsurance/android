@@ -21,6 +21,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import kotlin.time.Duration.Companion.milliseconds
 
 class RetrievePriceViewModelTest {
 
@@ -73,7 +74,7 @@ class RetrievePriceViewModelTest {
                 "testCollectionId"
             )
         } coAnswers {
-            delay(100)
+            delay(100.milliseconds)
             DataCollectionResult.Error.NoData
         }
 
@@ -96,7 +97,7 @@ class RetrievePriceViewModelTest {
                 "testCollectionId"
             )
         } coAnswers {
-            delay(100)
+            delay(100.milliseconds)
             DataCollectionResult.Success("testToken")
         }
 
