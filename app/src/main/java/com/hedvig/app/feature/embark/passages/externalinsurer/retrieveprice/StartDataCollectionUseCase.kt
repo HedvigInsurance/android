@@ -7,12 +7,11 @@ import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
-import java.lang.IllegalArgumentException
 import java.util.UUID
 
 class StartDataCollectionUseCase(
     val apolloClient: ApolloClient,
-    val marketManager: MarketManager
+    val marketManager: MarketManager,
 ) {
 
     suspend fun startDataCollection(
@@ -36,7 +35,7 @@ class StartDataCollectionUseCase(
     private fun createMutation(
         reference: String,
         personalNumber: String,
-        insuranceProvider: String
+        insuranceProvider: String,
     ) = when (marketManager.market) {
         Market.NO -> InitiateDataCollectionNOMutation(
             reference = reference,
@@ -44,13 +43,15 @@ class StartDataCollectionUseCase(
             personalNumber = personalNumber
         )
         null,
-        Market.SE -> InitiateDataCollectionSEMutation(
+        Market.SE,
+        -> InitiateDataCollectionSEMutation(
             reference = reference,
             insuranceProvider = insuranceProvider,
             personalNumber = personalNumber
         )
         Market.DK,
-        Market.FR -> throw IllegalArgumentException("Can not start data collection for ${marketManager.market}")
+        Market.FR,
+        -> throw IllegalArgumentException("Can not start data collection for ${marketManager.market}")
     }
 }
 
