@@ -10,7 +10,7 @@ import com.hedvig.app.util.coroutines.StandardTestDispatcherAsMainDispatcherRule
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
@@ -51,36 +51,40 @@ class ExternalInsurerViewModelTest {
 
         val viewModel = ExternalInsurerViewModel(getInsuranceProvidersUseCase)
 
+        val events = mutableListOf<ExternalInsurerViewModel.Event>()
+        val eventCollectingJob = launch {
+            viewModel.events.collect { events.add(it) }
+        }
+
         assertThat(viewModel.viewState.value.isLoading).isEqualTo(true)
         advanceUntilIdle()
         assertThat(viewModel.viewState.value.isLoading).isEqualTo(false)
-        val event = viewModel.events.first()
-        assertThat(event).isEqualTo(ExternalInsurerViewModel.Event.Error(InsuranceProvidersResult.Error.NetworkError))
+        assertThat(events.size).isEqualTo(1)
+        assertThat(events.first())
+            .isEqualTo(ExternalInsurerViewModel.Event.Error(InsuranceProvidersResult.Error.NetworkError))
+        eventCollectingJob.cancel()
     }
 
-//    @Test
-//    fun testNoErrorState() = mainCoroutineRule.dispatcher.runBlockingTest {
-//        coEvery { getInsuranceProvidersUseCase.getInsuranceProviders() } coAnswers {
-//            delay(100)
-//            InsuranceProvidersResult.Success(insuranceProviders)
-//        }
-//
-//        val viewModel = ExternalInsurerViewModel(getInsuranceProvidersUseCase)
-//
-//        val events = mutableListOf<ExternalInsurerViewModel.Event>()
-//        val job = launch {
-//            viewModel.events.toList(events)
-//        }
-//
-//        advanceTimeBy(1)
-//        assertThat(viewModel.viewState.value.isLoading).isEqualTo(true)
-//
-//        advanceUntilIdle()
-//        assertThat(viewModel.viewState.value.isLoading).isEqualTo(false)
-//        assertThat(events.isEmpty()).isEqualTo(true)
-//
-//        job.cancel()
-//    }
+    @Test
+    fun testNoErrorState() = runTest {
+        coEvery { getInsuranceProvidersUseCase.getInsuranceProviders() } coAnswers {
+            delay(100)
+            InsuranceProvidersResult.Success(insuranceProviders)
+        }
+
+        val viewModel = ExternalInsurerViewModel(getInsuranceProvidersUseCase)
+
+        val events = mutableListOf<ExternalInsurerViewModel.Event>()
+        val eventCollectingJob = launch {
+            viewModel.events.collect { events.add(it) }
+        }
+
+        assertThat(viewModel.viewState.value.isLoading).isEqualTo(true)
+        advanceUntilIdle()
+        assertThat(viewModel.viewState.value.isLoading).isEqualTo(false)
+        assertThat(events.isEmpty()).isEqualTo(true)
+        eventCollectingJob.cancel()
+    }
 //
 //    @Test
 //    fun testSelectProvider() = mainCoroutineRule.dispatcher.runBlockingTest {
