@@ -15,6 +15,7 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -94,30 +95,30 @@ class RetrievePriceViewModelTest {
         assertThat(viewModel.viewState.value.isLoading).isEqualTo(false)
     }
 
-//    @Test
-//    fun testErrorDataCollectionSuccess() = mainCoroutineRule.dispatcher.runBlockingTest {
-//        coEvery {
-//            startDataCollectionUseCase.startDataCollection(
-//                "9101131093",
-//                "testCollectionId"
-//            )
-//        } coAnswers {
-//            delay(100)
-//            DataCollectionResult.Success("testToken")
-//        }
-//
-//        viewModel.onIdentityInput("9101131093")
-//        assertThat(viewModel.viewState.value.inputError).isEqualTo(null)
-//
-//        viewModel.onRetrievePriceInfo()
-//        advanceTimeBy(1)
-//        assertThat(viewModel.viewState.value.isLoading).isEqualTo(true)
-//        advanceUntilIdle()
-//
-//        assertThat(viewModel.events.first()).isEqualTo(
-//            RetrievePriceViewModel.Event.AuthInformation(
-//                "testToken"
-//            )
-//        )
-//    }
+    @Test
+    fun testErrorDataCollectionSuccess() = runTest {
+        coEvery {
+            startDataCollectionUseCase.startDataCollection(
+                "9101131093",
+                "testCollectionId"
+            )
+        } coAnswers {
+            delay(100)
+            DataCollectionResult.Success("testToken")
+        }
+
+        viewModel.onIdentityInput("9101131093")
+        assertThat(viewModel.viewState.value.inputError).isEqualTo(null)
+
+        viewModel.onRetrievePriceInfo()
+        runCurrent()
+        assertThat(viewModel.viewState.value.isLoading).isEqualTo(true)
+        advanceUntilIdle()
+        assertThat(viewModel.events.first()).isEqualTo(
+            RetrievePriceViewModel.Event.AuthInformation(
+                "testToken"
+            )
+        )
+        assertThat(viewModel.viewState.value.isLoading).isEqualTo(false)
+    }
 }
