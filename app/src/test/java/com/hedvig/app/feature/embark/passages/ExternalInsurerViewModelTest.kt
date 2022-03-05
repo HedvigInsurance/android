@@ -85,39 +85,43 @@ class ExternalInsurerViewModelTest {
         assertThat(events.isEmpty()).isEqualTo(true)
         eventCollectingJob.cancel()
     }
-//
-//    @Test
-//    fun testSelectProvider() = mainCoroutineRule.dispatcher.runBlockingTest {
-//        coEvery { getInsuranceProvidersUseCase.getInsuranceProviders() } returns
-//            InsuranceProvidersResult.Success(insuranceProviders)
-//
-//        val viewModel = ExternalInsurerViewModel(getInsuranceProvidersUseCase)
-//        viewModel.selectInsuranceProvider(InsuranceProvider("1", "Test1"))
-//
-//        assertThat(viewModel.viewState.value.selectedProvider).isEqualTo(InsuranceProvider("1", "Test1"))
-//    }
-//
-//    @Test
-//    fun testContinueIfNoProviderSelected() = mainCoroutineRule.dispatcher.runBlockingTest {
-//        coEvery { getInsuranceProvidersUseCase.getInsuranceProviders() } returns
-//            InsuranceProvidersResult.Success(insuranceProviders)
-//
-//        val viewModel = ExternalInsurerViewModel(getInsuranceProvidersUseCase)
-//        advanceUntilIdle()
-//
-//        assertThat(viewModel.viewState.value.isLoading).isEqualTo(false)
-//        assertThat(viewModel.viewState.value.canContinue()).isEqualTo(false)
-//    }
-//
-//    @Test
-//    fun testContinueIfProviderSelected() = mainCoroutineRule.dispatcher.runBlockingTest {
-//        coEvery { getInsuranceProvidersUseCase.getInsuranceProviders() } returns
-//            InsuranceProvidersResult.Success(insuranceProviders)
-//
-//        val viewModel = ExternalInsurerViewModel(getInsuranceProvidersUseCase)
-//        advanceUntilIdle()
-//
-//        viewModel.selectInsuranceProvider(InsuranceProvider("1", "Test1"))
-//        assertThat(viewModel.viewState.value.canContinue()).isEqualTo(true)
-//    }
+
+    @Test
+    fun testSelectProvider() = runTest {
+        coEvery {
+            getInsuranceProvidersUseCase.getInsuranceProviders()
+        } returns InsuranceProvidersResult.Success(insuranceProviders)
+        val viewModel = ExternalInsurerViewModel(getInsuranceProvidersUseCase)
+
+        viewModel.selectInsuranceProvider(InsuranceProvider("1", "Test1"))
+
+        assertThat(viewModel.viewState.value.selectedProvider).isEqualTo(InsuranceProvider("1", "Test1"))
+    }
+
+    @Test
+    fun testCantContinueIfNoProviderSelected() = runTest {
+        coEvery {
+            getInsuranceProvidersUseCase.getInsuranceProviders()
+        } returns InsuranceProvidersResult.Success(insuranceProviders)
+
+        val viewModel = ExternalInsurerViewModel(getInsuranceProvidersUseCase)
+        advanceUntilIdle()
+
+        assertThat(viewModel.viewState.value.isLoading).isEqualTo(false)
+        assertThat(viewModel.viewState.value.canContinue()).isEqualTo(false)
+    }
+
+    @Test
+    fun testCanContinueIfProviderSelected() = runTest {
+        coEvery {
+            getInsuranceProvidersUseCase.getInsuranceProviders()
+        } returns InsuranceProvidersResult.Success(insuranceProviders)
+
+        val viewModel = ExternalInsurerViewModel(getInsuranceProvidersUseCase)
+        advanceUntilIdle()
+
+        viewModel.selectInsuranceProvider(InsuranceProvider("1", "Test1"))
+        assertThat(viewModel.viewState.value.isLoading).isEqualTo(false)
+        assertThat(viewModel.viewState.value.canContinue()).isEqualTo(true)
+    }
 }
