@@ -1,5 +1,7 @@
 package com.hedvig.app.feature.genericauth
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.feature.genericauth.otpinput.OtpInputViewModel
 import com.hedvig.app.feature.genericauth.otpinput.OtpResult
@@ -7,11 +9,13 @@ import com.hedvig.app.feature.genericauth.otpinput.ReSendOtpCodeUseCase
 import com.hedvig.app.feature.genericauth.otpinput.ResendOtpResult
 import com.hedvig.app.feature.genericauth.otpinput.SendOtpCodeUseCase
 import com.hedvig.app.util.coroutines.StandardTestDispatcherAsMainDispatcherRule
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.Rule
+import org.junit.Test
 
-@ExperimentalCoroutinesApi
 class OtpInputViewModelTest {
 
     @get:Rule
@@ -46,112 +50,110 @@ class OtpInputViewModelTest {
         }
     )
 
-//    @ExperimentalCoroutinesApi
-//    @Test
-//    fun testNetworkError() = mainCoroutineRule.dispatcher.runBlockingTest {
-//        otpResult = OtpResult.Error.NetworkError("Error")
-//
-//        viewModel.submitCode("123456")
-//
-//        advanceTimeBy(1)
-//        assertThat(viewModel.viewState.value.loadingCode).isEqualTo(true)
-//        assertThat(viewModel.viewState.value.networkErrorMessage).isEqualTo(null)
-//
-//        advanceUntilIdle()
-//        assertThat(viewModel.viewState.value.loadingCode).isEqualTo(false)
-//        assertThat(viewModel.viewState.value.networkErrorMessage).isEqualTo("Error")
-//    }
-//
-//    @ExperimentalCoroutinesApi
-//    @Test
-//    fun testDismissNetworkError() = mainCoroutineRule.dispatcher.runBlockingTest {
-//        otpResult = OtpResult.Error.NetworkError("Error")
-//
-//        viewModel.submitCode("123456")
-//        advanceTimeBy(1)
-//        assertThat(viewModel.viewState.value.loadingCode).isEqualTo(true)
-//        assertThat(viewModel.viewState.value.loadingResend).isEqualTo(false)
-//
-//        advanceUntilIdle()
-//        assertThat(viewModel.viewState.value.networkErrorMessage).isEqualTo("Error")
-//
-//        viewModel.dismissError()
-//        assertThat(viewModel.viewState.value.networkErrorMessage).isEqualTo(null)
-//    }
-//
-//    @ExperimentalCoroutinesApi
-//    @Test
-//    fun testOtpError() = mainCoroutineRule.dispatcher.runBlockingTest {
-//        otpResult = OtpResult.Error.OtpError.Expired
-//
-//        viewModel.submitCode("123456")
-//        advanceTimeBy(1)
-//        assertThat(viewModel.viewState.value.loadingCode).isEqualTo(true)
-//        assertThat(viewModel.viewState.value.loadingResend).isEqualTo(false)
-//
-//        advanceUntilIdle()
-//        assertThat(viewModel.viewState.value.otpError).isEqualTo(OtpResult.Error.OtpError.Expired)
-//    }
-//
-//    @ExperimentalCoroutinesApi
-//    @Test
-//    fun testOtpSuccess() = mainCoroutineRule.dispatcher.runBlockingTest {
-//        otpResult = OtpResult.Success("testOtpSuccess")
-//
-//        viewModel.submitCode("123456")
-//        advanceTimeBy(1)
-//        assertThat(viewModel.viewState.value.loadingCode).isEqualTo(true)
-//        assertThat(viewModel.viewState.value.loadingResend).isEqualTo(false)
-//
-//        advanceUntilIdle()
-//        assertThat(viewModel.events.first()).isEqualTo(OtpInputViewModel.Event.Success("testOtpSuccess"))
-//        assertThat(authToken).isEqualTo("testOtpSuccess")
-//    }
-//
-//    @ExperimentalCoroutinesApi
-//    @Test
-//    fun testResendError() = mainCoroutineRule.dispatcher.runBlockingTest {
-//        resendOtpResult = ResendOtpResult.Error("Error")
-//
-//        viewModel.resendCode()
-//        advanceTimeBy(1)
-//        assertThat(viewModel.viewState.value.loadingCode).isEqualTo(false)
-//        assertThat(viewModel.viewState.value.loadingResend).isEqualTo(true)
-//
-//        advanceUntilIdle()
-//        assertThat(viewModel.viewState.value.networkErrorMessage).isEqualTo("Error")
-//    }
-//
-//    @ExperimentalCoroutinesApi
-//    @Test
-//    fun testResend() = mainCoroutineRule.dispatcher.runBlockingTest {
-//        resendOtpResult = ResendOtpResult.Success("auth")
-//
-//        viewModel.resendCode()
-//        advanceTimeBy(1)
-//        assertThat(viewModel.viewState.value.loadingCode).isEqualTo(false)
-//        assertThat(viewModel.viewState.value.loadingResend).isEqualTo(true)
-//
-//        advanceUntilIdle()
-//        assertThat(viewModel.viewState.value.loadingResend).isEqualTo(false)
-//        assertThat(viewModel.events.first()).isEqualTo(OtpInputViewModel.Event.CodeResent)
-//    }
-//
-//    @ExperimentalCoroutinesApi
-//    @Test
-//    fun testSetInput() = mainCoroutineRule.dispatcher.runBlockingTest {
-//        viewModel.setInput("1")
-//        advanceTimeBy(1)
-//        assertThat(viewModel.viewState.value.loadingCode).isEqualTo(false)
-//        assertThat(viewModel.viewState.value.loadingResend).isEqualTo(false)
-//        assertThat(viewModel.viewState.value.input).isEqualTo("1")
-//
-//        viewModel.setInput("12")
-//        advanceTimeBy(1)
-//        assertThat(viewModel.viewState.value.input).isEqualTo("12")
-//
-//        viewModel.setInput("123")
-//        advanceTimeBy(1)
-//        assertThat(viewModel.viewState.value.input).isEqualTo("123")
-//    }
+    @Test
+    fun testNetworkError() = runTest {
+        otpResult = OtpResult.Error.NetworkError("Error")
+
+        viewModel.submitCode("123456")
+
+        assertThat(viewModel.viewState.value.loadingCode).isEqualTo(true)
+        assertThat(viewModel.viewState.value.networkErrorMessage).isEqualTo(null)
+
+        advanceUntilIdle()
+        assertThat(viewModel.viewState.value.loadingCode).isEqualTo(false)
+        assertThat(viewModel.viewState.value.networkErrorMessage).isEqualTo("Error")
+    }
+
+    @Test
+    fun testDismissNetworkError() = runTest {
+        otpResult = OtpResult.Error.NetworkError("Error")
+
+        viewModel.submitCode("123456")
+        assertThat(viewModel.viewState.value.loadingCode).isEqualTo(true)
+        assertThat(viewModel.viewState.value.loadingResend).isEqualTo(false)
+
+        advanceUntilIdle()
+        assertThat(viewModel.viewState.value.networkErrorMessage).isEqualTo("Error")
+        viewModel.dismissError()
+        assertThat(viewModel.viewState.value.networkErrorMessage).isEqualTo(null)
+    }
+
+    @Test
+    fun testOtpError() = runTest {
+        otpResult = OtpResult.Error.OtpError.Expired
+
+        viewModel.submitCode("123456")
+        assertThat(viewModel.viewState.value.loadingCode).isEqualTo(true)
+        assertThat(viewModel.viewState.value.loadingResend).isEqualTo(false)
+
+        advanceUntilIdle()
+        assertThat(viewModel.viewState.value.otpError).isEqualTo(OtpResult.Error.OtpError.Expired)
+    }
+
+    @Test
+    fun testOtpSuccess() = runTest {
+        otpResult = OtpResult.Success("testOtpSuccess")
+
+        val events = mutableListOf<OtpInputViewModel.Event>()
+        val eventCollectingJob = launch {
+            viewModel.events.collect { events.add(it) }
+        }
+
+        viewModel.submitCode("123456")
+        assertThat(viewModel.viewState.value.loadingCode).isEqualTo(true)
+        assertThat(viewModel.viewState.value.loadingResend).isEqualTo(false)
+
+        advanceUntilIdle()
+        assertThat(viewModel.viewState.value.loadingCode).isEqualTo(false)
+        assertThat(authToken).isEqualTo("testOtpSuccess")
+        assertThat(events.size).isEqualTo(1)
+        assertThat(events.first()).isEqualTo(OtpInputViewModel.Event.Success("testOtpSuccess"))
+        eventCollectingJob.cancel()
+    }
+
+    @Test
+    fun testResendError() = runTest {
+        resendOtpResult = ResendOtpResult.Error("Error")
+
+        viewModel.resendCode()
+        assertThat(viewModel.viewState.value.loadingCode).isEqualTo(false)
+        assertThat(viewModel.viewState.value.loadingResend).isEqualTo(true)
+
+        advanceUntilIdle()
+        assertThat(viewModel.viewState.value.networkErrorMessage).isEqualTo("Error")
+    }
+
+    @Test
+    fun testResend() = runTest {
+        resendOtpResult = ResendOtpResult.Success("auth")
+
+        val events = mutableListOf<OtpInputViewModel.Event>()
+        val eventCollectingJob = launch {
+            viewModel.events.collect { events.add(it) }
+        }
+
+        viewModel.resendCode()
+        assertThat(viewModel.viewState.value.loadingCode).isEqualTo(false)
+        assertThat(viewModel.viewState.value.loadingResend).isEqualTo(true)
+
+        advanceUntilIdle()
+        assertThat(viewModel.viewState.value.loadingResend).isEqualTo(false)
+        assertThat(events.size).isEqualTo(1)
+        assertThat(events.first()).isEqualTo(OtpInputViewModel.Event.CodeResent)
+        eventCollectingJob.cancel()
+    }
+
+    @Test
+    fun testSetInput() = runTest {
+        viewModel.setInput("1")
+        assertThat(viewModel.viewState.value.loadingCode).isEqualTo(false)
+        assertThat(viewModel.viewState.value.loadingResend).isEqualTo(false)
+        assertThat(viewModel.viewState.value.input).isEqualTo("1")
+
+        viewModel.setInput("12")
+        assertThat(viewModel.viewState.value.input).isEqualTo("12")
+
+        viewModel.setInput("123")
+        assertThat(viewModel.viewState.value.input).isEqualTo("123")
+    }
 }
