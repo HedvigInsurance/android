@@ -1,10 +1,19 @@
 package com.hedvig.app.feature.embark.passages
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import com.hedvig.app.feature.embark.passages.externalinsurer.ExternalInsurerViewModel
 import com.hedvig.app.feature.embark.passages.externalinsurer.GetInsuranceProvidersUseCase
 import com.hedvig.app.feature.embark.passages.externalinsurer.InsuranceProvider
+import com.hedvig.app.feature.embark.passages.externalinsurer.InsuranceProvidersResult
 import com.hedvig.app.util.coroutines.StandardTestDispatcherAsMainDispatcherRule
+import io.mockk.coEvery
 import io.mockk.mockk
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.Rule
+import org.junit.Test
 
 class ExternalInsurerViewModelTest {
 
@@ -19,22 +28,19 @@ class ExternalInsurerViewModelTest {
 
     private val getInsuranceProvidersUseCase = mockk<GetInsuranceProvidersUseCase>()
 
-//    @Test
-//    fun testLoadingInsurers() = mainCoroutineRule.dispatcher.runBlockingTest {
-//        coEvery { getInsuranceProvidersUseCase.getInsuranceProviders() } coAnswers {
-//            delay(100)
-//            InsuranceProvidersResult.Success(insuranceProviders)
-//        }
-//
-//        val viewModel = ExternalInsurerViewModel(getInsuranceProvidersUseCase)
-//
-//        advanceTimeBy(1)
-//        assertThat(viewModel.viewState.value.isLoading).isEqualTo(true)
-//
-//        advanceUntilIdle()
-//        assertThat(viewModel.viewState.value.isLoading).isEqualTo(false)
-//    }
-//
+    @Test
+    fun testLoadingInsurers() = runTest {
+        coEvery { getInsuranceProvidersUseCase.getInsuranceProviders() } coAnswers {
+            delay(100)
+            InsuranceProvidersResult.Success(insuranceProviders)
+        }
+
+        val viewModel = ExternalInsurerViewModel(getInsuranceProvidersUseCase)
+        assertThat(viewModel.viewState.value.isLoading).isEqualTo(true)
+        advanceUntilIdle()
+        assertThat(viewModel.viewState.value.isLoading).isEqualTo(false)
+    }
+
 //    @Test
 //    fun testErrorState() = mainCoroutineRule.dispatcher.runBlockingTest {
 //        coEvery { getInsuranceProvidersUseCase.getInsuranceProviders() } coAnswers {
