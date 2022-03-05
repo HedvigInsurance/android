@@ -15,8 +15,8 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -87,10 +87,11 @@ class RetrievePriceViewModelTest {
         assertThat(viewModel.viewState.value.inputError).isEqualTo(null)
 
         viewModel.onRetrievePriceInfo()
-        advanceTimeBy(1)
+        runCurrent()
         assertThat(viewModel.viewState.value.isLoading).isEqualTo(true)
         advanceUntilIdle()
         assertThat(viewModel.viewState.value.error).isEqualTo(DataCollectionResult.Error.NoData)
+        assertThat(viewModel.viewState.value.isLoading).isEqualTo(false)
     }
 
 //    @Test
