@@ -31,7 +31,6 @@ class SimpleSignAuthenticationActivityTest : TestCase() {
             }
             input {
                 hasHint(R.string.simple_sign_login_text_field_label_dk)
-                hasHelperText(R.string.simple_sign_login_text_field_helper_text_dk)
                 edit { typeText("1212121212") }
             }
             signIn { isEnabled() }
