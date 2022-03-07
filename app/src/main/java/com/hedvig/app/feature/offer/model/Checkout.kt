@@ -4,9 +4,9 @@ import com.hedvig.android.owldroid.fragment.QuoteCartFragment
 import com.hedvig.android.owldroid.type.CheckoutStatus
 
 data class Checkout(
-    private val status: CheckoutStatus,
-    private val statusText: String?,
-    private val redirectUrl: String?,
+    val status: CheckoutStatus,
+    val statusText: String?,
+    val redirectUrl: String?,
 ) {
     enum class CheckoutStatus {
         COMPLETED,
