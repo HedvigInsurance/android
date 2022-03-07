@@ -85,6 +85,7 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             var actionJob: Job? = null
             setContent {
+                isTransitionGroup = true // https://issuetracker.google.com/issues/206947893
                 HedvigTheme {
                     SelectActionView(
                         selectActions = data.actions,
