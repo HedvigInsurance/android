@@ -15,6 +15,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
+import kotlin.time.Duration.Companion.milliseconds
 
 class ExternalInsurerViewModelTest {
 
@@ -32,7 +33,7 @@ class ExternalInsurerViewModelTest {
     @Test
     fun testLoadingInsurers() = runTest {
         coEvery { getInsuranceProvidersUseCase.getInsuranceProviders() } coAnswers {
-            delay(100)
+            delay(100.milliseconds)
             InsuranceProvidersResult.Success(insuranceProviders)
         }
 
@@ -45,7 +46,7 @@ class ExternalInsurerViewModelTest {
     @Test
     fun testErrorState() = runTest {
         coEvery { getInsuranceProvidersUseCase.getInsuranceProviders() } coAnswers {
-            delay(100)
+            delay(100.milliseconds)
             InsuranceProvidersResult.Error.NetworkError
         }
 
@@ -68,7 +69,7 @@ class ExternalInsurerViewModelTest {
     @Test
     fun testNoErrorState() = runTest {
         coEvery { getInsuranceProvidersUseCase.getInsuranceProviders() } coAnswers {
-            delay(100)
+            delay(100.milliseconds)
             InsuranceProvidersResult.Success(insuranceProviders)
         }
 

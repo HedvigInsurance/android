@@ -15,6 +15,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
+import kotlin.time.Duration.Companion.milliseconds
 
 class OtpInputViewModelTest {
 
@@ -38,13 +39,13 @@ class OtpInputViewModelTest {
         },
         sendOtpCodeUseCase = object : SendOtpCodeUseCase {
             override suspend fun invoke(otpId: String, otpCode: String): OtpResult {
-                delay(100)
+                delay(100.milliseconds)
                 return otpResult
             }
         },
         reSendOtpCodeUseCase = object : ReSendOtpCodeUseCase {
             override suspend fun invoke(credential: String): ResendOtpResult {
-                delay(100)
+                delay(100.milliseconds)
                 return resendOtpResult
             }
         }
