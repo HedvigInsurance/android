@@ -43,9 +43,8 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
@@ -233,40 +232,42 @@ class OfferViewModelImpl(
             initialValue = ViewState.Loading,
         )
 
-    private suspend fun loadQuoteIds() = getQuoteIdsUseCase.invoke(quoteCartId)
-        .map { it.ids }
-        .fold(
-            ifLeft = { offerAndLoginStatus.value = OfferAndLoginStatus.Error },
-            ifRight = {
-                hAnalytics.screenViewOffer(it)
-                quoteIds = it
-            }
-        )
-
-    private fun loadQuotes(quoteIds: List<String>) {
-        getQuotesUseCase.invoke(quoteIds, quoteCartId).onEach { result ->
-            result.fold(
+    private suspend fun loadQuoteIds() {
+        getQuoteIdsUseCase.invoke(quoteCartId)
+            .map { it.ids }
+            .fold(
                 ifLeft = { offerAndLoginStatus.value = OfferAndLoginStatus.Error },
                 ifRight = {
-                    val loginStatus = loginStatusService.getLoginStatus()
+                    hAnalytics.screenViewOffer(it)
+                    quoteIds = it
+                }
+            )
+    }
 
-                    val paymentMethods = if (marketManager.market == Market.NO) {
-                        adyenRepository.paymentMethods()
-                            .data
-                            ?.availablePaymentMethods
-                            ?.paymentMethodsResponse
-                    } else {
-                        null
-                    }
-
+    private suspend fun loadQuotes(quoteIds: List<String>) {
+        getQuotesUseCase.invoke(quoteIds, quoteCartId).collect { result ->
+            result.fold(
+                ifLeft = { offerAndLoginStatus.value = OfferAndLoginStatus.Error },
+                ifRight = { offerModel ->
                     offerAndLoginStatus.value = OfferAndLoginStatus.Content(
-                        it,
-                        loginStatus,
-                        paymentMethods
+                        offerResult = offerModel,
+                        loginStatus = loginStatusService.getLoginStatus(),
+                        paymentMethods = getPaymentMethods()
                     )
                 }
             )
-        }.launchIn(viewModelScope)
+        }
+    }
+
+    private suspend fun getPaymentMethods(): PaymentMethodsApiResponse? {
+        return if (marketManager.market == Market.NO) {
+            adyenRepository.paymentMethods()
+                .data
+                ?.availablePaymentMethods
+                ?.paymentMethodsResponse
+        } else {
+            null
+        }
     }
 
     override fun onOpenCheckout() {
@@ -394,20 +395,21 @@ class OfferViewModelImpl(
 
     override fun onOpenQuoteDetails(id: String) {
         viewModelScope.launch {
-            getQuoteUseCase.invoke(quoteIds, id)
-                .mapLeft { offerAndLoginStatus.value = OfferAndLoginStatus.Error }
-                .map {
+            getQuoteUseCase.invoke(quoteIds, id).fold(
+                ifLeft = { offerAndLoginStatus.value = OfferAndLoginStatus.Error },
+                ifRight = { quote ->
                     _events.trySend(
                         Event.OpenQuoteDetails(
                             QuoteDetailItems(
-                                it.displayName,
-                                it.perils.map { PerilItem.Peril(it) },
-                                it.insurableLimits,
-                                it.insuranceTerms
+                                quote.displayName,
+                                quote.perils.map { PerilItem.Peril(it) },
+                                quote.insurableLimits,
+                                quote.insuranceTerms
                             )
                         )
                     )
                 }
+            )
         }
     }
 

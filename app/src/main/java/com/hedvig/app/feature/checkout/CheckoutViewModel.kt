@@ -17,8 +17,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.money.MonetaryAmount
@@ -36,12 +35,16 @@ class CheckoutViewModel(
 
     init {
         viewModelScope.launch {
-            getQuotesUseCase.invoke(quoteIds, quoteCartId).onEach { result ->
-                result.fold(
-                    ifLeft = { _events.trySend(Event.Error(it.message)) },
-                    ifRight = { _titleViewState.value = it.mapToViewState() }
-                )
-            }.launchIn(viewModelScope)
+            createViewState(quoteIds, quoteCartId)
+        }
+    }
+
+    private suspend fun createViewState(quoteIds: List<String>, quoteCartId: String?) {
+        getQuotesUseCase.invoke(quoteIds, quoteCartId).collect { result ->
+            result.fold(
+                ifLeft = { _events.trySend(Event.Error(it.message)) },
+                ifRight = { _titleViewState.value = it.mapToViewState() }
+            )
         }
     }
 
