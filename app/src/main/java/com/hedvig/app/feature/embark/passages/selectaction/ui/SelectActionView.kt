@@ -82,6 +82,7 @@ fun SelectActionViewPreview() {
                         label = "Index: $index",
                         keys = emptyList(),
                         values = emptyList(),
+                        badge = "badge"
                     )
                 },
                 onActionClick = { _, _ -> }
