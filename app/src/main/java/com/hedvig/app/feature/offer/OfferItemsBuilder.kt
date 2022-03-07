@@ -35,7 +35,6 @@ object OfferItemsBuilder {
     ): List<OfferItems> = BottomOfferItemsBuilder.createBottomOfferItems(data)
 }
 
-@OptIn(ExperimentalStdlibApi::class)
 object TopOfferItemsBuilder {
     fun createTopOfferItems(
         offerModel: OfferModel,
@@ -148,7 +147,6 @@ object TopOfferItemsBuilder {
     }
 }
 
-@OptIn(ExperimentalStdlibApi::class)
 object BottomOfferItemsBuilder {
     fun createBottomOfferItems(
         offerData: OfferModel,

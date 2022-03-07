@@ -10,7 +10,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.hedvig.app.feature.embark.passages.selectaction.ui.InsideGridSpace
 
-@OptIn(ExperimentalStdlibApi::class)
 @Composable
 fun SelectActionGrid(
     modifier: Modifier = Modifier,
@@ -35,7 +34,7 @@ fun SelectActionGrid(
         }
 
         var yPosition = 0
-        val placeableWithCoordinatesList = buildList<PlaceableWithCoordinates> {
+        val placeableWithCoordinatesList: List<PlaceableWithCoordinates> = buildList {
             placeables.chunked(2) { placeables ->
                 if (placeables.size == 1) {
                     val (placeable) = placeables
