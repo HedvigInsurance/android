@@ -235,11 +235,13 @@ class OfferViewModelImpl(
         )
 
     private suspend fun loadQuoteIds() {
-        return when (val result = getQuoteIdsUseCase.invoke(quoteCartId)) {
+        when (val result = getQuoteIdsUseCase.invoke(quoteCartId)) {
             is Either.Left -> offerAndLoginStatus.value = OfferAndLoginStatus.Error
             is Either.Right -> {
-                hAnalytics.screenViewOffer(result.value.ids)
-                quoteIds = result.value.ids
+                if (result.value.ids.isNotEmpty()) {
+                    hAnalytics.screenViewOffer(result.value.ids)
+                    quoteIds = result.value.ids
+                }
             }
         }
     }
