@@ -2,7 +2,8 @@ package com.hedvig.app.feature.offer.usecase
 
 import arrow.core.Either
 import arrow.core.NonEmptyList
-import arrow.core.left
+import arrow.core.computations.either
+import arrow.core.computations.ensureNotNull
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.model.OfferModel
 import com.hedvig.app.feature.offer.model.quotebundle.PostSignScreen
@@ -17,11 +18,16 @@ class GetPostSignDependenciesUseCase(
         val displayName: String,
     )
 
-    suspend operator fun invoke(quoteIds: List<String>): Either<ErrorMessage, Result> = offerRepository
-        .offer(NonEmptyList.fromListUnsafe(quoteIds))
-        .firstOrNull()
-        ?.map { it.toResult() }
-        ?: ErrorMessage().left()
+    suspend operator fun invoke(quoteIds: List<String>): Either<ErrorMessage, Result> {
+        return either {
+            val ids = NonEmptyList.fromList(quoteIds).toEither { ErrorMessage() }.bind()
+            val result = offerRepository
+                .offer(ids)
+                .firstOrNull()
+                ?.bind()?.toResult()
+            ensureNotNull(result) { ErrorMessage() }
+        }
+    }
 
     private fun OfferModel.toResult() = Result(
         quoteBundle.viewConfiguration.postSignScreen,
