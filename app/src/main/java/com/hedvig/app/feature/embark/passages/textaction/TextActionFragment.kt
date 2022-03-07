@@ -14,8 +14,8 @@ import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.Response
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.animateResponse
-import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.KEY_BOARD_DELAY_MILLIS
-import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_MILLIS
+import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.KEYBOARD_HIDE_DELAY_DURATION
+import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_DURATION
 import com.hedvig.app.feature.embark.util.setInputType
 import com.hedvig.app.feature.embark.util.setValidationFormatter
 import com.hedvig.app.util.extensions.addViews
@@ -39,6 +39,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import java.time.Clock
 import java.time.LocalDate
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Used for Embark actions TextAction and TextActionSet
@@ -68,7 +69,7 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
             views.firstOrNull()?.let {
                 val input = it.findViewById<TextInputEditText>(R.id.input)
                 viewLifecycleScope.launchWhenCreated {
-                    requireContext().showKeyboardWithDelay(input, 500)
+                    requireContext().showKeyboardWithDelay(input, 500.milliseconds)
                 }
             }
 
@@ -88,7 +89,7 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
             // We need to wait for all input views to be laid out before starting enter transition.
             // This could perhaps be handled with a callback from the inputContainer.
             viewLifecycleScope.launchWhenCreated {
-                delay(50)
+                delay(50.milliseconds)
                 startPostponedEnterTransition()
             }
         }
@@ -97,7 +98,7 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
     private suspend fun saveAndAnimate(data: TextActionParameter) {
         context?.hideKeyboardWithDelay(
             inputView = binding.inputContainer,
-            delayMillis = KEY_BOARD_DELAY_MILLIS
+            delayDuration = KEYBOARD_HIDE_DELAY_DURATION
         )
 
         textActionSetViewModel.inputs.value?.let { inputs ->
@@ -117,7 +118,7 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
                 model.preProcessResponse(data.passageName) ?: Response.SingleResponse(allInput)
             animateResponse(binding.responseContainer, response)
         }
-        delay(PASSAGE_ANIMATION_DELAY_MILLIS)
+        delay(PASSAGE_ANIMATION_DELAY_DURATION)
     }
 
     private fun createInputViews(): List<View> = data.keys.mapIndexed { index, key ->

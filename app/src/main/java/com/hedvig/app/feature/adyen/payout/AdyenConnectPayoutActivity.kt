@@ -72,13 +72,15 @@ class AdyenConnectPayoutActivity : BaseActivity(R.layout.fragment_container_acti
 
         when (DropIn.handleActivityResult(requestCode, resultCode, data)) {
             is DropInResult.CancelledByUser -> finish()
-            is DropInResult.Error -> {
-            }
             is DropInResult.Finished -> {
                 supportFragmentManager
                     .beginTransaction()
                     .replace(R.id.container, ConnectPayoutResultFragment.newInstance())
                     .commitAllowingStateLoss()
+            }
+            is DropInResult.Error,
+            null,
+            -> {
             }
         }
     }

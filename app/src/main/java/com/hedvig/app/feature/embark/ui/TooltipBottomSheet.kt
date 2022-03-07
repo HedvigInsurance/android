@@ -157,14 +157,15 @@ class TooltipBottomSheet : BottomSheetDialogFragment() {
         val TAG: String = TooltipBottomSheet::class.java.name
         fun newInstance(tooltips: List<EmbarkStoryQuery.Tooltip>) =
             TooltipBottomSheet().apply {
-                val parcelableTooltips = mutableListOf<Tooltip>()
-                tooltips.forEach {
-                    parcelableTooltips.add(
-                        Tooltip(
-                            title = it.title,
-                            description = it.description
+                val parcelableTooltips: List<Tooltip> = buildList {
+                    tooltips.forEach {
+                        add(
+                            Tooltip(
+                                title = it.title,
+                                description = it.description
+                            )
                         )
-                    )
+                    }
                 }
                 arguments = bundleOf(TOOLTIPS to parcelableTooltips)
             }

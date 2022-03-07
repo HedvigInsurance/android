@@ -23,6 +23,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
+import kotlin.time.Duration.Companion.seconds
 
 class OtpInputActivity : BaseActivity() {
 
@@ -47,12 +48,12 @@ class OtpInputActivity : BaseActivity() {
 
             HedvigTheme {
 
-                LaunchedEffect(key1 = Unit) {
+                LaunchedEffect(Unit) {
                     model.events.collectLatest { event ->
                         when (event) {
                             is OtpInputViewModel.Event.Success -> startLoggedIn()
                             OtpInputViewModel.Event.CodeResent -> {
-                                delay(1000)
+                                delay(1.seconds)
                                 val message = getString(R.string.login_snackbar_code_resent)
                                 scaffoldState.snackbarHostState.showSnackbar(message)
                             }

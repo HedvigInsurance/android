@@ -67,6 +67,10 @@ class ChatInputView : FrameLayout {
                 is SingleSelect -> bindSingleSelect(value)
                 is ParagraphInput -> bindParagraphInput()
                 is Audio -> bindAudio()
+                NullInput,
+                null,
+                -> {
+                }
             }
         }
 
@@ -122,7 +126,7 @@ class ChatInputView : FrameLayout {
         requestAudioPermission: () -> Unit,
         uploadRecording: (String) -> Unit,
         openSendGif: () -> Unit,
-        chatRecyclerView: RecyclerView
+        chatRecyclerView: RecyclerView,
     ) {
         this.sendTextMessage = sendTextMessage
         this.sendSingleSelect = sendSingleSelect
@@ -169,6 +173,7 @@ class ChatInputView : FrameLayout {
                         is SingleSelect -> singleSelectContainer.fadeIn()
                         is ParagraphInput -> paragraphView.fadeIn()
                         is Audio -> audioRecorder.fadeIn()
+                        NullInput -> {}
                     }
                 }
                 currentlyDisplaying = value

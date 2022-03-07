@@ -378,6 +378,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             is DropInResult.CancelledByUser -> {}
             is DropInResult.Error -> showErrorDialog("Could not connect payment") {}
             is DropInResult.Finished -> model.onOpenCheckout()
+            null -> {}
         }
     }
 

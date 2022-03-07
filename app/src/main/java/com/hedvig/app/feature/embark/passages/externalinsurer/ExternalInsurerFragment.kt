@@ -9,8 +9,8 @@ import androidx.core.view.doOnNextLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
-import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hedvig.app.R
 import com.hedvig.app.databinding.PreviousOrExternalInsurerFragmentBinding
@@ -25,10 +25,11 @@ import com.hedvig.app.feature.embark.passages.previousinsurer.InsurerProviderBot
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerParameter
 import com.hedvig.app.util.extensions.showErrorDialog
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
+import com.hedvig.app.util.extensions.viewLifecycle
+import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.hedvig.app.util.whenApiVersion
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_fragment) {
@@ -57,47 +58,44 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
             ?: throw IllegalArgumentException("No argument passed to ${this.javaClass.name}")
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel.events
-            .flowWithLifecycle(lifecycle)
-            .onEach { event ->
-                when (event) {
-                    is ExternalInsurerViewModel.Event.Error -> context?.showErrorDialog(
-                        getString(event.errorResult.getStringRes())
-                    ) {}
-                }
-            }
-            .launchIn(lifecycleScope)
-
-        viewModel.viewState
-            .flowWithLifecycle(lifecycle)
-            .onEach { viewState ->
-                binding.progress.isVisible = viewState.isLoading
-
-                viewState.selectedProvider?.let {
-                    binding.currentInsurerLabel.text = it.name
-                }
-
-                binding.currentInsurerContainer.setOnClickListener {
-                    viewState.insuranceProviders?.let(::showInsurers)
-                }
-
-                binding.continueButton.isEnabled = viewState.canContinue()
-                binding.continueButton.setOnClickListener {
-                    viewState.selectedProvider?.let {
-                        continueWithProvider(it)
-                    }
-                }
-            }
-            .launchIn(lifecycleScope)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         postponeEnterTransition()
 
-        binding.apply {
+        viewLifecycleScope.launch {
+            viewLifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.events.collect { event ->
+                        when (event) {
+                            is ExternalInsurerViewModel.Event.Error -> context?.showErrorDialog(
+                                message = getString(event.errorResult.getStringRes()),
+                                positiveAction = {}
+                            )
+                        }
+                    }
+                }
+                viewModel.viewState.collect { viewState ->
+                    binding.progress.isVisible = viewState.isLoading
+
+                    viewState.selectedProvider?.let {
+                        binding.currentInsurerLabel.text = it.name
+                    }
+
+                    binding.currentInsurerContainer.setOnClickListener {
+                        viewState.insuranceProviders?.let(::showInsurers)
+                    }
+
+                    binding.continueButton.isEnabled = viewState.canContinue()
+                    binding.continueButton.setOnClickListener {
+                        viewState.selectedProvider?.let {
+                            continueWithProvider(it)
+                        }
+                    }
+                }
+            }
+        }
+
+        with(binding) {
             whenApiVersion(Build.VERSION_CODES.R) {
                 currentInsurerContainer.setupInsetsForIme(
                     root = root,
@@ -106,14 +104,12 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
             }
 
             messages.adapter = MessageAdapter(insurerData.messages)
-
             messages.doOnNextLayout {
                 startPostponedEnterTransition()
             }
-
-            setFragmentResultListener(InsurerProviderBottomSheet.REQUEST_KEY) { _: String, bundle: Bundle ->
-                handleInsurerProviderBottomSheetResult(bundle)
-            }
+        }
+        setFragmentResultListener(InsurerProviderBottomSheet.REQUEST_KEY) { _: String, bundle: Bundle ->
+            handleInsurerProviderBottomSheetResult(bundle)
         }
     }
 

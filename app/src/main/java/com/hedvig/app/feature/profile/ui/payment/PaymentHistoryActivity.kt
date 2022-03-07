@@ -50,22 +50,21 @@ class PaymentHistoryActivity : BaseActivity(R.layout.activity_payment_history) {
             Intent(context, PaymentHistoryActivity::class.java)
 
         fun wrapCharges(charges: List<PaymentQuery.ChargeHistory>): List<ChargeWrapper> {
-            val res = mutableListOf<ChargeWrapper>()
-            for (index in charges.indices) {
-                if (index == 0) {
-                    res.add(ChargeWrapper.Header(charges[index].date.year))
-                    res.add(ChargeWrapper.Item(charges[index]))
-                    continue
+            return buildList {
+                for (index in charges.indices) {
+                    if (index == 0) {
+                        add(ChargeWrapper.Header(charges[index].date.year))
+                        add(ChargeWrapper.Item(charges[index]))
+                        continue
+                    }
+                    if (charges[index - 1].date.year != charges[index].date.year) {
+                        add(ChargeWrapper.Header(charges[index].date.year))
+                        add(ChargeWrapper.Item(charges[index]))
+                        continue
+                    }
+                    add(ChargeWrapper.Item(charges[index]))
                 }
-                if (charges[index - 1].date.year != charges[index].date.year) {
-                    res.add(ChargeWrapper.Header(charges[index].date.year))
-                    res.add(ChargeWrapper.Item(charges[index]))
-                    continue
-                }
-                res.add(ChargeWrapper.Item(charges[index]))
             }
-
-            return res
         }
     }
 }
