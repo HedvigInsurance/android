@@ -215,11 +215,9 @@ private fun SuggestionsList(
 ) {
     val lazyListState = rememberLazyListState()
     LaunchedEffect(viewState.results) {
-        // TODO this crashes the app somehow with an compose internal crash. Must see if this is fixed in later versions
-        //  java.lang.IllegalStateException: LayoutNode should be attached to an owner
-//        if (viewState.results.isNotEmpty()) {
-//            lazyListState.animateScrollToItem(0)
-//        }
+        if (viewState.results.isNotEmpty()) {
+            lazyListState.animateScrollToItem(0)
+        }
     }
     LazyColumn(
         modifier = modifier,
