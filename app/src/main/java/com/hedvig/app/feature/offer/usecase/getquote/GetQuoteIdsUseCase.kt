@@ -1,12 +1,10 @@
 package com.hedvig.app.feature.offer.usecase.getquote
 
 import arrow.core.Either
-import arrow.core.flatMap
 import arrow.core.nonEmptyListOf
+import arrow.core.right
 import com.apollographql.apollo.ApolloClient
-import com.hedvig.android.owldroid.graphql.LastQuoteIdQuery
 import com.hedvig.app.feature.offer.OfferRepository
-import com.hedvig.app.util.apollo.safeQuery
 import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
 import kotlinx.coroutines.flow.first
@@ -40,18 +38,7 @@ class GetQuoteIdsUseCase(
         }
     }
 
-    private suspend fun getIdsFromLastQuoteOfMember(): Either<Error, QuoteIds> {
-        return apolloClient
-            .query(LastQuoteIdQuery())
-            .safeQuery()
-            .toEither()
-            .mapLeft { Error(it.message) }
-            .flatMap {
-                Either.conditionally(
-                    it.lastQuoteOfMember.asCompleteQuote?.id != null,
-                    ifFalse = { Error(null) },
-                    ifTrue = { QuoteIds(listOf(it.lastQuoteOfMember.asCompleteQuote!!.id)) }
-                )
-            }
+    private fun getIdsFromLastQuoteOfMember(): Either<Error, QuoteIds> {
+        return QuoteIds(emptyList()).right()
     }
 }
