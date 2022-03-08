@@ -24,9 +24,12 @@ fun SelectActionGrid(
         content = content
     ) { measurables, constraints ->
         val horizontalSpacingInPx = insideGridSpace.horizontal.roundToPx()
+        val width = (constraints.maxWidth / 2) - (horizontalSpacingInPx / 2)
+        val height = measurables.maxOf { it.maxIntrinsicHeight(width) }
         val placeables = measurables.map { measurable ->
-            val width = (constraints.maxWidth / 2) - (horizontalSpacingInPx / 2)
             val halfWidthConstraint = constraints.copy(
+                minHeight = height,
+                maxHeight = height,
                 maxWidth = width,
                 minWidth = width
             )
