@@ -16,9 +16,7 @@ class AdyenRepository(
     private val context: Context,
 ) {
     suspend fun paymentMethods() = apolloClient
-        .query(
-            AdyenPaymentMethodsQuery()
-        )
+        .query(AdyenPaymentMethodsQuery())
         .await()
 
     suspend fun payoutMethods() = apolloClient
