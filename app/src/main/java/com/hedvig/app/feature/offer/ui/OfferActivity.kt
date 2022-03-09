@@ -85,142 +85,140 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding.apply {
-            window.compatSetDecorFitsSystemWindows(false)
-            offerToolbar.applyStatusBarInsets()
-            signButton.applyNavigationBarInsetsMargin()
+        window.compatSetDecorFitsSystemWindows(false)
+        binding.offerToolbar.applyStatusBarInsets()
+        binding.signButton.applyNavigationBarInsetsMargin()
 
-            appbar.background.alpha = 0
-            offerScroll.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                private var scrollY = 0
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    scrollY += dy
-                    val percentage = scrollY.toFloat() / offerToolbar.height
-                    appbar.background.alpha = (percentage * 40).toInt().coerceAtMost(255)
+        binding.appbar.background.alpha = 0
+        binding.offerScroll.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            private var scrollY = 0
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                scrollY += dy
+                val percentage = scrollY.toFloat() / binding.offerToolbar.height
+                binding.appbar.background.alpha = (percentage * 40).toInt().coerceAtMost(255)
 
-                    if (percentage >= 9) {
-                        appbar.elevation = 5f
-                    } else {
-                        appbar.elevation = 0f
-                    }
-
-                    if (percentage > 4 && !signButton.isVisible) {
-                        TransitionManager.beginDelayedTransition(offerRoot)
-                        signButton.show()
-                    } else if (percentage < 4 && signButton.isVisible) {
-                        TransitionManager.beginDelayedTransition(offerRoot)
-                        signButton.hide()
-                    }
+                if (percentage >= 9) {
+                    binding.appbar.elevation = 5f
+                } else {
+                    binding.appbar.elevation = 0f
                 }
-            })
 
-            offerToolbar.setNavigationOnClickListener { onBackPressed() }
-            offerToolbar.setOnMenuItemClickListener(::handleMenuItem)
-
-            val locale = getLocale(this@OfferActivity, marketManager.market)
-            val topOfferAdapter = OfferAdapter(
-                fragmentManager = supportFragmentManager,
-                locale = locale,
-                openQuoteDetails = model::onOpenQuoteDetails,
-                onRemoveDiscount = model::removeDiscount,
-                onSign = ::onSign,
-                reload = model::reload,
-                openChat = ::openChat,
-            )
-            val perilsAdapter = PerilsAdapter(
-                fragmentManager = supportFragmentManager,
-                imageLoader = imageLoader,
-            )
-            val insurableLimitsAdapter = InsurableLimitsAdapter(
-                fragmentManager = supportFragmentManager
-            )
-            val documentAdapter = DocumentAdapter()
-            val bottomOfferAdapter = OfferAdapter(
-                fragmentManager = supportFragmentManager,
-                locale = locale,
-                openQuoteDetails = model::onOpenQuoteDetails,
-                onRemoveDiscount = model::removeDiscount,
-                onSign = ::onSign,
-                reload = model::reload,
-                openChat = ::openChat,
-            )
-
-            concatAdapter = ConcatAdapter(
-                topOfferAdapter,
-                perilsAdapter,
-                insurableLimitsAdapter,
-                documentAdapter,
-                bottomOfferAdapter,
-            )
-
-            binding.offerScroll.adapter = concatAdapter
-            binding.offerScroll.itemAnimator = ViewHolderReusingDefaultItemAnimator()
-            binding.offerScroll.addItemDecoration(ConcatItemDecoration { concatAdapter.adapters })
-            (binding.offerScroll.layoutManager as? GridLayoutManager)?.let { gridLayoutManager ->
-                gridLayoutManager.spanSizeLookup =
-                    ConcatSpanSizeLookup(gridLayoutManager.spanCount) { concatAdapter.adapters }
+                if (percentage > 4 && !binding.signButton.isVisible) {
+                    TransitionManager.beginDelayedTransition(binding.offerRoot)
+                    binding.signButton.show()
+                } else if (percentage < 4 && binding.signButton.isVisible) {
+                    TransitionManager.beginDelayedTransition(binding.offerRoot)
+                    binding.signButton.hide()
+                }
             }
+        })
 
-            model
-                .viewState
-                .flowWithLifecycle(lifecycle)
-                .onEach { viewState ->
-                    binding.progressBar.isVisible = viewState is OfferViewModel.ViewState.Loading
-                    binding.offerScroll.isVisible = viewState !is OfferViewModel.ViewState.Loading
-                    when (viewState) {
-                        is OfferViewModel.ViewState.Loading -> {}
-                        is OfferViewModel.ViewState.Error -> {
-                            perilsAdapter.submitList(emptyList())
-                            insurableLimitsAdapter.submitList(emptyList())
-                            documentAdapter.submitList(emptyList())
-                            bottomOfferAdapter.submitList(emptyList())
-                            topOfferAdapter.submitList(listOf(OfferItems.Error))
-                            binding.progressBar.isVisible = false
-                            binding.offerScroll.isVisible = true
-                        }
-                        is OfferViewModel.ViewState.Content -> {
-                            topOfferAdapter.submitList(viewState.topOfferItems)
-                            perilsAdapter.submitList(viewState.perils)
-                            insurableLimitsAdapter.submitList(viewState.insurableLimitsItems)
-                            documentAdapter.submitList(viewState.documents)
-                            bottomOfferAdapter.submitList(viewState.bottomOfferItems)
-                            setSignButtonState(
-                                viewState.checkoutMethod,
-                                viewState.checkoutLabel,
-                                viewState.paymentMethods
-                            )
+        binding.offerToolbar.setNavigationOnClickListener { onBackPressed() }
+        binding.offerToolbar.setOnMenuItemClickListener(::handleMenuItem)
 
-                            TransitionManager.beginDelayedTransition(binding.offerToolbar)
-                            setTitleVisibility(viewState)
-                            inflateMenu(viewState.loginStatus)
+        val locale = getLocale(this@OfferActivity, marketManager.market)
+        val topOfferAdapter = OfferAdapter(
+            fragmentManager = supportFragmentManager,
+            locale = locale,
+            openQuoteDetails = model::onOpenQuoteDetails,
+            onRemoveDiscount = model::removeDiscount,
+            onSign = ::onSign,
+            reload = model::reload,
+            openChat = ::openChat,
+        )
+        val perilsAdapter = PerilsAdapter(
+            fragmentManager = supportFragmentManager,
+            imageLoader = imageLoader,
+        )
+        val insurableLimitsAdapter = InsurableLimitsAdapter(
+            fragmentManager = supportFragmentManager
+        )
+        val documentAdapter = DocumentAdapter()
+        val bottomOfferAdapter = OfferAdapter(
+            fragmentManager = supportFragmentManager,
+            locale = locale,
+            openQuoteDetails = model::onOpenQuoteDetails,
+            onRemoveDiscount = model::removeDiscount,
+            onSign = ::onSign,
+            reload = model::reload,
+            openChat = ::openChat,
+        )
 
-                            if (!hasStartedRecyclerAnimation) {
-                                scheduleEnterAnimation()
-                            }
-                        }
-                    }
-                }
-                .launchIn(lifecycleScope)
+        concatAdapter = ConcatAdapter(
+            topOfferAdapter,
+            perilsAdapter,
+            insurableLimitsAdapter,
+            documentAdapter,
+            bottomOfferAdapter,
+        )
 
-            model
-                .events
-                .flowWithLifecycle(lifecycle)
-                .onEach { event ->
-                    when (event) {
-                        is OfferViewModel.Event.OpenQuoteDetails -> startQuoteDetailsActivity(event)
-                        is OfferViewModel.Event.OpenCheckout -> startCheckoutActivity(event)
-                        is OfferViewModel.Event.ApproveSuccessful -> handlePostSign(event)
-                        is OfferViewModel.Event.ApproveError -> handlePostSignError(event)
-                        OfferViewModel.Event.DiscardOffer -> startSplashActivity()
-                        is OfferViewModel.Event.StartSwedishBankIdSign -> showSignDialog(event)
-                        OfferViewModel.Event.Error -> showErrorDialog(
-                            getString(R.string.NETWORK_ERROR_ALERT_MESSAGE)
-                        ) {}
-                        OfferViewModel.Event.OpenChat -> startChat()
-                    }
-                }
-                .launchIn(lifecycleScope)
+        binding.offerScroll.adapter = concatAdapter
+        binding.offerScroll.itemAnimator = ViewHolderReusingDefaultItemAnimator()
+        binding.offerScroll.addItemDecoration(ConcatItemDecoration { concatAdapter.adapters })
+        (binding.offerScroll.layoutManager as? GridLayoutManager)?.let { gridLayoutManager ->
+            gridLayoutManager.spanSizeLookup =
+                ConcatSpanSizeLookup(gridLayoutManager.spanCount) { concatAdapter.adapters }
         }
+
+        model
+            .viewState
+            .flowWithLifecycle(lifecycle)
+            .onEach { viewState ->
+                binding.progressBar.isVisible = viewState is OfferViewModel.ViewState.Loading
+                binding.offerScroll.isVisible = viewState !is OfferViewModel.ViewState.Loading
+                when (viewState) {
+                    is OfferViewModel.ViewState.Loading -> {}
+                    is OfferViewModel.ViewState.Error -> {
+                        perilsAdapter.submitList(emptyList())
+                        insurableLimitsAdapter.submitList(emptyList())
+                        documentAdapter.submitList(emptyList())
+                        bottomOfferAdapter.submitList(emptyList())
+                        topOfferAdapter.submitList(listOf(OfferItems.Error))
+                        binding.progressBar.isVisible = false
+                        binding.offerScroll.isVisible = true
+                    }
+                    is OfferViewModel.ViewState.Content -> {
+                        topOfferAdapter.submitList(viewState.topOfferItems)
+                        perilsAdapter.submitList(viewState.perils)
+                        insurableLimitsAdapter.submitList(viewState.insurableLimitsItems)
+                        documentAdapter.submitList(viewState.documents)
+                        bottomOfferAdapter.submitList(viewState.bottomOfferItems)
+                        setSignButtonState(
+                            viewState.checkoutMethod,
+                            viewState.checkoutLabel,
+                            viewState.paymentMethods
+                        )
+
+                        TransitionManager.beginDelayedTransition(binding.offerToolbar)
+                        setTitleVisibility(viewState)
+                        inflateMenu(viewState.loginStatus)
+
+                        if (!hasStartedRecyclerAnimation) {
+                            scheduleEnterAnimation()
+                        }
+                    }
+                }
+            }
+            .launchIn(lifecycleScope)
+
+        model
+            .events
+            .flowWithLifecycle(lifecycle)
+            .onEach { event ->
+                when (event) {
+                    is OfferViewModel.Event.OpenQuoteDetails -> startQuoteDetailsActivity(event)
+                    is OfferViewModel.Event.OpenCheckout -> startCheckoutActivity(event)
+                    is OfferViewModel.Event.ApproveSuccessful -> handlePostSign(event)
+                    is OfferViewModel.Event.ApproveError -> handlePostSignError(event)
+                    OfferViewModel.Event.DiscardOffer -> startSplashActivity()
+                    is OfferViewModel.Event.StartSwedishBankIdSign -> showSignDialog(event)
+                    OfferViewModel.Event.Error -> showErrorDialog(
+                        getString(R.string.NETWORK_ERROR_ALERT_MESSAGE)
+                    ) {}
+                    OfferViewModel.Event.OpenChat -> startChat()
+                }
+            }
+            .launchIn(lifecycleScope)
     }
 
     private fun showSignDialog(event: OfferViewModel.Event.StartSwedishBankIdSign) {
@@ -305,7 +303,8 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             binding.toolbarTitle.isVisible = false
         }
         ViewConfiguration.Title.UPDATE,
-        ViewConfiguration.Title.UNKNOWN -> {
+        ViewConfiguration.Title.UNKNOWN,
+        -> {
             binding.toolbarTitle.isVisible = true
             binding.toolbarLogo.isVisible = false
         }
@@ -343,7 +342,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     private fun setSignButtonState(
         checkoutMethod: CheckoutMethod,
         checkoutLabel: CheckoutLabel,
-        paymentMethods: PaymentMethodsApiResponse?
+        paymentMethods: PaymentMethodsApiResponse?,
     ) {
         binding.signButton.text = checkoutLabel.toString(this)
         binding.signButton.icon = checkoutMethod.checkoutIconRes()?.let(::compatDrawable)
