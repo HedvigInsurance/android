@@ -358,7 +358,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        // Replace with new result API when adyens handleActivityResult is updated
+        @Suppress("DEPRECATION") // Replace with new result API when adyens handleActivityResult is updated
         super.onActivityResult(requestCode, resultCode, data)
 
         when (DropIn.handleActivityResult(requestCode, resultCode, data)) {
