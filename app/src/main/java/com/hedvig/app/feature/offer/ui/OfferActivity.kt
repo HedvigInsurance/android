@@ -183,11 +183,11 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                         insurableLimitsAdapter.submitList(viewState.insurableLimitsItems)
                         documentAdapter.submitList(viewState.documents)
                         bottomOfferAdapter.submitList(viewState.bottomOfferItems)
-                        setSignButtonState(
-                            viewState.checkoutMethod,
-                            viewState.checkoutLabel,
-                            viewState.paymentMethods
-                        )
+                        binding.signButton.text = viewState.checkoutLabel.toString(this)
+                        binding.signButton.icon = viewState.checkoutMethod.checkoutIconRes()?.let(::compatDrawable)
+                        binding.signButton.setHapticClickListener {
+                            onSign(viewState.checkoutMethod, viewState.paymentMethods)
+                        }
 
                         TransitionManager.beginDelayedTransition(binding.offerToolbar)
                         setTitleVisibility(viewState)
@@ -336,18 +336,6 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     handleMenuItem(menu[0])
                 }
             }
-        }
-    }
-
-    private fun setSignButtonState(
-        checkoutMethod: CheckoutMethod,
-        checkoutLabel: CheckoutLabel,
-        paymentMethods: PaymentMethodsApiResponse?,
-    ) {
-        binding.signButton.text = checkoutLabel.toString(this)
-        binding.signButton.icon = checkoutMethod.checkoutIconRes()?.let(::compatDrawable)
-        binding.signButton.setHapticClickListener {
-            onSign(checkoutMethod, paymentMethods)
         }
     }
 
