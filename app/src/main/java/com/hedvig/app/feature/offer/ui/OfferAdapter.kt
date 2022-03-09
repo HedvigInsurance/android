@@ -186,7 +186,7 @@ class OfferAdapter(
                             setTextColor(context.getColor(R.color.textColorSecondary))
                             icon = context.compatDrawable(R.drawable.ic_add_circle)
                             setHapticClickListener {
-                                OfferRedeemCodeBottomSheet.newInstance()
+                                OfferRedeemCodeBottomSheet.newInstance(data.quoteCartId)
                                     .show(
                                         fragmentManager,
                                         OfferRedeemCodeBottomSheet.TAG

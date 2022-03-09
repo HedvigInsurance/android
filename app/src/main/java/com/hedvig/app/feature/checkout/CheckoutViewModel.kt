@@ -5,10 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.offer.model.Checkout
 import com.hedvig.app.feature.offer.model.OfferModel
+import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
 import com.hedvig.app.feature.offer.usecase.CreateAccessTokenUseCase
 import com.hedvig.app.feature.offer.usecase.SignQuotesUseCase
-import com.hedvig.app.feature.offer.usecase.getquote.GetQuotesUseCase
+import com.hedvig.app.feature.offer.usecase.getquote.ObserveQuotesUseCase
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.ValidationResult
@@ -28,8 +29,8 @@ import javax.money.MonetaryAmount
 
 class CheckoutViewModel(
     private val quoteIds: List<String>,
-    private val quoteCartId: String?,
-    private val getQuotesUseCase: GetQuotesUseCase,
+    private val quoteCartId: QuoteCartId?,
+    private val observeQuotesUseCase: ObserveQuotesUseCase,
     private val signQuotesUseCase: SignQuotesUseCase,
     private val editQuotesUseCase: EditQuotesUseCase,
     private val createAccessTokenUseCase: CreateAccessTokenUseCase,
@@ -45,8 +46,8 @@ class CheckoutViewModel(
         }
     }
 
-    private suspend fun observeQuotes(quoteIds: List<String>, quoteCartId: String?) {
-        getQuotesUseCase.invoke(quoteIds, quoteCartId).collect { result ->
+    private suspend fun observeQuotes(quoteIds: List<String>, quoteCartId: QuoteCartId?) {
+        observeQuotesUseCase.invoke(quoteIds, quoteCartId).collect { result ->
             result.fold(
                 ifLeft = { _events.trySend(Event.Error(it.message)) },
                 ifRight = { handleOfferModel(it) }

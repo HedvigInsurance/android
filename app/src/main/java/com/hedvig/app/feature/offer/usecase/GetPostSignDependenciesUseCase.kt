@@ -18,15 +18,15 @@ class GetPostSignDependenciesUseCase(
         val displayName: String,
     )
 
-    suspend operator fun invoke(quoteIds: List<String>): Either<ErrorMessage, Result> {
-        return either {
-            val ids = NonEmptyList.fromList(quoteIds).toEither { ErrorMessage() }.bind()
-            val result = offerRepository
-                .offer(ids)
-                .firstOrNull()
-                ?.bind()?.toResult()
-            ensureNotNull(result) { ErrorMessage() }
-        }
+    suspend operator fun invoke(quoteIds: List<String>): Either<ErrorMessage, Result> = either {
+        val ids = NonEmptyList.fromList(quoteIds).toEither { ErrorMessage() }.bind()
+        val result = offerRepository
+            .offer(ids)
+            .firstOrNull()
+            ?.bind()
+            ?.toResult()
+
+        ensureNotNull(result) { ErrorMessage() }
     }
 
     private fun OfferModel.toResult() = Result(

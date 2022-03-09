@@ -1,0 +1,10 @@
+mutation QuoteCartAddCampaign($code: String!, $quoteCartId: ID!) {
+  quoteCart_addCampaign(code: $code, id: $quoteCartId) {
+    ... on QuoteCart {
+      id
+    }
+    ... on BasicError {
+      message
+    }
+  }
+}

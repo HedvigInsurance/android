@@ -22,8 +22,8 @@ import com.hedvig.app.feature.embark.util.getFileVariables
 import com.hedvig.app.feature.embark.util.getOfferKeysOrNull
 import com.hedvig.app.feature.embark.util.getVariables
 import com.hedvig.app.feature.embark.util.toExpressionFragment
+import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ProgressPercentage
-import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.asMap
 import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
@@ -97,7 +97,7 @@ abstract class EmbarkViewModel(
     sealed class Event {
         data class Offer(
             val quoteIds: List<String>,
-            val quoteCartId: String?,
+            val quoteCartId: QuoteCartId?,
         ) : Event()
 
         data class Error(val message: String? = null) : Event()
@@ -161,7 +161,7 @@ abstract class EmbarkViewModel(
                 //  meaning that the old values were returned from getList/get.
                 valueStore.withCommittedVersion {
                     val ids = keys.flatMap { this.getList(it) ?: listOfNotNull(this.get(it)) }
-                    val quoteCartId = this.get(QUOTE_CART_ID_KEY)
+                    val quoteCartId = this.get(QUOTE_CART_ID_KEY)?.let { QuoteCartId(it) }
                     _events.trySend(Event.Offer(ids, quoteCartId))
                 }
             }
@@ -245,38 +245,33 @@ abstract class EmbarkViewModel(
 
     private fun handleRedirectLocation(location: EmbarkExternalRedirectLocation) {
         hAnalytics.embarkExternalRedirect(location.rawValue)
-        when (location) {
-            EmbarkExternalRedirectLocation.OFFER -> sendOfferId()
-            EmbarkExternalRedirectLocation.CLOSE -> _events.trySend(Event.Close)
-            EmbarkExternalRedirectLocation.CHAT -> triggerChat()
-            else -> {
-                // Do nothing
+        viewModelScope.launch {
+            val event = when (location) {
+                EmbarkExternalRedirectLocation.OFFER -> createOfferEvent()
+                EmbarkExternalRedirectLocation.CHAT -> createChatEvent()
+                EmbarkExternalRedirectLocation.CLOSE -> Event.Close
+                else -> null
             }
+            event?.let(_events::trySend)
         }
     }
 
-    private fun sendOfferId() {
+    private fun createOfferEvent(): Event {
         val id = valueStore.get(QUOTE_ID_KEY)
         val quoteCartId = valueStore.get(QUOTE_CART_ID_KEY)
-        val event = if (id == null) {
+        return if (id == null) {
             Event.Error()
         } else {
             Event.Offer(
                 quoteIds = listOf(id),
-                quoteCartId = quoteCartId,
+                quoteCartId = quoteCartId?.let { QuoteCartId(it) },
             )
         }
-        _events.trySend(event)
     }
 
-    private fun triggerChat() {
-        viewModelScope.launch {
-            val event = when (chatRepository.triggerFreeTextChat()) {
-                is Either.Left -> Event.Error()
-                is Either.Right -> Event.Chat
-            }
-            _events.trySend(event)
-        }
+    private suspend fun createChatEvent(): Event = when (chatRepository.triggerFreeTextChat()) {
+        is Either.Left -> Event.Error()
+        is Either.Right -> Event.Chat
     }
 
     private fun getRedirectPassageAndPutInStore(redirects: List<EmbarkStoryQuery.Redirect>?): String? {
@@ -528,19 +523,19 @@ class EmbarkViewModelImpl(
     override fun fetchStory(name: String) {
         viewModelScope.launch {
             if (featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
-                when (val quoteCartResult = createQuoteCartUseCase.invoke()) {
-                    is Either.Left -> _events.trySend(Event.Error(quoteCartResult.value.message))
-                    is Either.Right -> putInStore(QUOTE_CART_ID_KEY, quoteCartResult.value.id)
-                }
+                createQuoteCartUseCase.invoke().fold(
+                    ifLeft = { _events.trySend(Event.Error(it.message)) },
+                    ifRight = { putInStore(QUOTE_CART_ID_KEY, it.id) }
+                )
             }
 
-            when (val result = embarkRepository.embarkStory(name)) {
-                is QueryResult.Error -> _events.trySend(Event.Error(result.message))
-                is QueryResult.Success -> {
-                    storyData = result.data
+            embarkRepository.embarkStory(name).fold(
+                ifLeft = { _events.trySend(Event.Error(it.message)) },
+                ifRight = {
+                    storyData = it
                     setInitialState()
                 }
-            }
+            )
         }
     }
 }

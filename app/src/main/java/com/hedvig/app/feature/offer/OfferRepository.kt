@@ -6,10 +6,8 @@ import arrow.core.left
 import arrow.core.right
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Response
-import com.apollographql.apollo.api.cache.http.HttpCachePolicy
 import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.coroutines.toFlow
-import com.apollographql.apollo.fetcher.ApolloResponseFetchers
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.QuoteBundleFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
@@ -161,11 +159,4 @@ class OfferRepository(
             .writeAndPublish(offerQuery(ids), newData)
             .execute()
     }
-
-    fun refreshOfferQuery(ids: List<String>) = apolloClient
-        .query(offerQuery(ids))
-        .toBuilder()
-        .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
-        .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
-        .build()
 }

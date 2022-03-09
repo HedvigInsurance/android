@@ -11,14 +11,22 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.app.R
 import com.hedvig.app.databinding.PromotionCodeDialogBinding
+import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.hideKeyboard
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 abstract class RedeemCodeBottomSheet : BottomSheetDialogFragment() {
-    private val model: RedeemCodeViewModel by viewModel()
+
+    abstract val quoteCartId: QuoteCartId?
+
+    private val model: RedeemCodeViewModel by viewModel {
+        parametersOf(quoteCartId)
+    }
+
     private val binding by viewBinding(PromotionCodeDialogBinding::bind)
 
     abstract fun onRedeemSuccess(data: RedeemReferralCodeMutation.Data)

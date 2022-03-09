@@ -35,6 +35,7 @@ import com.hedvig.app.feature.insurablelimits.InsurableLimitsAdapter
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.offer.model.CheckoutLabel
 import com.hedvig.app.feature.offer.model.CheckoutMethod
+import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.model.checkoutIconRes
 import com.hedvig.app.feature.offer.model.quotebundle.PostSignScreen
 import com.hedvig.app.feature.offer.model.quotebundle.ViewConfiguration
@@ -70,8 +71,8 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
     private val quoteIds: List<String>
         get() = intent.getStringArrayExtra(QUOTE_IDS)?.toList() ?: emptyList()
-    private val quoteCartId: String?
-        get() = intent.getStringExtra(QUOTE_CART_ID)
+    private val quoteCartId: QuoteCartId?
+        get() = intent.getParcelableExtra(QUOTE_CART_ID)
     private val shouldShowOnNextAppStart: Boolean
         get() = intent.getBooleanExtra(SHOULD_SHOW_ON_NEXT_APP_START, false)
 
@@ -421,7 +422,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         fun newInstance(
             context: Context,
             quoteIds: List<String> = emptyList(),
-            quoteCartId: String? = null,
+            quoteCartId: QuoteCartId? = null,
             shouldShowOnNextAppStart: Boolean = false,
         ) = Intent(context, OfferActivity::class.java).apply {
             putExtra(QUOTE_IDS, quoteIds.toTypedArray())

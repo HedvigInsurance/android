@@ -6,6 +6,7 @@ import arrow.core.nonEmptyListOf
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.LastQuoteIdQuery
 import com.hedvig.app.feature.offer.OfferRepository
+import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.apollo.safeQuery
 import com.hedvig.app.util.featureflags.Feature
@@ -21,7 +22,7 @@ class GetQuoteIdsUseCase(
     @JvmInline
     value class QuoteIds(val ids: List<String>)
 
-    suspend operator fun invoke(quoteCartId: String?): Either<ErrorMessage, QuoteIds> {
+    suspend operator fun invoke(quoteCartId: QuoteCartId?): Either<ErrorMessage, QuoteIds> {
         return if (featureManager.isFeatureEnabled(Feature.QUOTE_CART) && quoteCartId != null) {
             getIdsFromQuoteCart(quoteCartId)
         } else {
@@ -29,8 +30,8 @@ class GetQuoteIdsUseCase(
         }
     }
 
-    private suspend fun getIdsFromQuoteCart(quoteCartId: String): Either<ErrorMessage, QuoteIds> = either {
-        val offerModel = offerRepository.offer(nonEmptyListOf(quoteCartId)).first().bind()
+    private suspend fun getIdsFromQuoteCart(quoteCartId: QuoteCartId): Either<ErrorMessage, QuoteIds> = either {
+        val offerModel = offerRepository.offer(nonEmptyListOf(quoteCartId.id)).first().bind()
         val quoteIds = offerModel.quoteBundle.quotes.map { it.id }
         QuoteIds(quoteIds)
     }
