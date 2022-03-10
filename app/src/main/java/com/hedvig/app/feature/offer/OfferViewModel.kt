@@ -33,7 +33,6 @@ import com.hedvig.app.feature.offer.usecase.getquote.GetQuoteUseCase
 import com.hedvig.app.feature.offer.usecase.getquote.GetQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.providerstatus.GetProviderDisplayNameUseCase
 import com.hedvig.app.feature.perils.PerilItem
-import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.hanalytics.HAnalytics
 import e
@@ -254,15 +253,7 @@ class OfferViewModelImpl(
                 is GetQuotesUseCase.Result.Error -> offerAndLoginStatus.value = OfferAndLoginStatus.Error
                 is GetQuotesUseCase.Result.Success -> {
                     val loginStatus = loginStatusService.getLoginStatus()
-
-                    val paymentMethods = if (marketManager.market == Market.NO) {
-                        adyenRepository.paymentMethods()
-                            .data
-                            ?.availablePaymentMethods
-                            ?.paymentMethodsResponse
-                    } else {
-                        null
-                    }
+                    val paymentMethods = adyenRepository.paymentMethodsResponse()
 
                     offerAndLoginStatus.value = OfferAndLoginStatus.Content(
                         result.data,
