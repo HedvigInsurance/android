@@ -4,12 +4,10 @@ import com.hedvig.android.owldroid.fragment.QuoteBundleFragment
 
 fun QuoteBundleFragment.Inception1.toChangeDateBottomSheetData() = ChangeDateBottomSheetData(
     inceptions = asConcurrentInception?.let { concurrentInception ->
-        concurrentInception.correspondingQuotes.map { quote ->
+        concurrentInception.correspondingQuoteIds.map { quoteId ->
             ChangeDateBottomSheetData.Inception(
-                title = quote.asCompleteQuote?.displayName
-                    ?: throw IllegalArgumentException("Quote displayName not found"),
-                quoteId = quote.asCompleteQuote?.id
-                    ?: throw IllegalArgumentException("Quote id not found"),
+                title = "",
+                quoteId = quoteId,
                 startDate = concurrentInception.startDate,
                 currentInsurer = concurrentInception.currentInsurer?.fragments?.currentInsurerFragment?.let {
                     ChangeDateBottomSheetData.CurrentInsurer(
@@ -27,10 +25,8 @@ fun QuoteBundleFragment.Inception1.toChangeDateBottomSheetData() = ChangeDateBot
     } ?: asIndependentInceptions?.let { independentInceptions ->
         independentInceptions.inceptions.map { inception ->
             ChangeDateBottomSheetData.Inception(
-                title = inception.correspondingQuote.asCompleteQuote1?.displayName
-                    ?: throw IllegalArgumentException("Quote displayName not found"),
-                quoteId = inception.correspondingQuote.asCompleteQuote1?.id
-                    ?: throw IllegalArgumentException("Quote id not found"),
+                title = "",
+                quoteId = inception.correspondingQuoteId,
                 startDate = inception.startDate,
                 currentInsurer = inception.currentInsurer?.fragments?.currentInsurerFragment?.let {
                     ChangeDateBottomSheetData.CurrentInsurer(

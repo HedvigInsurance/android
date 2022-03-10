@@ -661,7 +661,7 @@ val useCaseModule = module {
     single { GetQuotesUseCase(get(), get(), get()) }
     single { GetQuoteUseCase(get()) }
     single { EditStartDateUseCase(get(), get()) }
-    single { SignQuotesUseCase(get(), get(), get(), get()) }
+    single { SignQuotesUseCase(get(), get(), get()) }
     single { ApproveQuotesUseCase(get(), get(), get()) }
     single { RefreshQuotesUseCase(get()) }
     single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get()) }

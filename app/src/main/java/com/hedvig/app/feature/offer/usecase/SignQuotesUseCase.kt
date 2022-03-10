@@ -3,7 +3,6 @@ package com.hedvig.app.feature.offer.usecase
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.SignQuoteCartMutation
 import com.hedvig.android.owldroid.graphql.SignQuotesMutation
-import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
@@ -13,8 +12,7 @@ import com.hedvig.app.util.featureflags.FeatureManager
 class SignQuotesUseCase(
     private val apolloClient: ApolloClient,
     private val cacheManager: CacheManager,
-    private val featureManager: FeatureManager,
-    private val localeManager: LocaleManager,
+    private val featureManager: FeatureManager
 ) {
 
     sealed class SignQuoteResult {
@@ -38,7 +36,7 @@ class SignQuotesUseCase(
         return if (quoteCartId == null) {
             SignQuoteResult.Error(null)
         } else {
-            val mutation = SignQuoteCartMutation(quoteCartId, quoteIds, localeManager.defaultLocale())
+            val mutation = SignQuoteCartMutation(quoteCartId, quoteIds)
             when (val result = apolloClient.mutate(mutation).safeQuery()) {
                 is QueryResult.Error -> SignQuoteResult.Error(result.message)
                 is QueryResult.Success -> {
