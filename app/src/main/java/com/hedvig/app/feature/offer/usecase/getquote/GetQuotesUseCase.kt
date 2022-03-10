@@ -34,7 +34,13 @@ class GetQuotesUseCase(
                 else -> {
                     when (val result = getQuoteIdsUseCase.invoke(null)) {
                         is Either.Left -> emit(Result.Error(result.value.message))
-                        is Either.Right -> emitAll(getOffer(NonEmptyList.fromListUnsafe(result.value.ids)))
+                        is Either.Right -> {
+                            if (result.value.ids.isEmpty()) {
+                                emit(Result.Error(null))
+                            } else {
+                                emitAll(getOffer(NonEmptyList.fromListUnsafe(result.value.ids)))
+                            }
+                        }
                     }
                 }
             }
