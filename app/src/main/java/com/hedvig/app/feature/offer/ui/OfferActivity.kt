@@ -175,7 +175,6 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                         bottomOfferAdapter.submitList(emptyList())
                         topOfferAdapter.submitList(listOf(OfferItems.Error))
                         binding.progressBar.isVisible = false
-                        binding.offerScroll.isVisible = true
                     }
                     is OfferViewModel.ViewState.Content -> {
                         topOfferAdapter.submitList(viewState.topOfferItems)

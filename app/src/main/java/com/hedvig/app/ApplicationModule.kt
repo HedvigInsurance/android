@@ -685,7 +685,7 @@ val useCaseModule = module {
     single<GetDanishAddressAutoCompletionUseCase> { GetDanishAddressAutoCompletionUseCase(get()) }
     single<GetFinalDanishAddressSelectionUseCase> { GetFinalDanishAddressSelectionUseCase(get()) }
     single { CreateQuoteCartUseCase(get(), get(), get()) }
-    single<GetQuoteIdsUseCase> { GetQuoteIdsUseCase(get(), get(), get()) }
+    single<GetQuoteIdsUseCase> { GetQuoteIdsUseCase(get(), get()) }
     single<EditQuotesUseCase> { EditQuotesUseCase(get(), get(), get(), get()) }
 }
 

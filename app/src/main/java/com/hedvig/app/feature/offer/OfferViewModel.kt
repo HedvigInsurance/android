@@ -251,8 +251,11 @@ class OfferViewModelImpl(
     private fun loadQuotes(quoteIds: List<String>) {
         getQuotesUseCase.invoke(quoteIds, quoteCartId).onEach { result ->
             when (result) {
-                is GetQuotesUseCase.Result.Error -> offerAndLoginStatus.value = OfferAndLoginStatus.Error
-                is GetQuotesUseCase.Result.Success -> {
+                is Either.Left -> {
+                    offerAndLoginStatus.value = OfferAndLoginStatus.Error
+                    onDiscardOffer()
+                }
+                is Either.Right -> {
                     val loginStatus = loginStatusService.getLoginStatus()
 
                     val paymentMethods = if (marketManager.market == Market.NO) {
@@ -265,7 +268,7 @@ class OfferViewModelImpl(
                     }
 
                     offerAndLoginStatus.value = OfferAndLoginStatus.Content(
-                        result.data,
+                        result.value.data,
                         loginStatus,
                         paymentMethods
                     )

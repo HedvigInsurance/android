@@ -2,6 +2,7 @@ package com.hedvig.app.feature.checkout
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import arrow.core.Either
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.offer.model.OfferModel
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
@@ -39,8 +40,8 @@ class CheckoutViewModel(
         viewModelScope.launch {
             getQuotesUseCase.invoke(quoteIds, quoteCartId).onEach { result ->
                 when (result) {
-                    is GetQuotesUseCase.Result.Success -> _titleViewState.value = result.data.mapToViewState()
-                    is GetQuotesUseCase.Result.Error -> _events.trySend(Event.Error(result.message))
+                    is Either.Left -> _events.trySend(Event.Error(result.value.message))
+                    is Either.Right -> _titleViewState.value = result.value.data.mapToViewState()
                 }
             }.launchIn(viewModelScope)
         }
