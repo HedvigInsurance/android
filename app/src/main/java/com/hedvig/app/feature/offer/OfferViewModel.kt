@@ -169,7 +169,7 @@ class OfferViewModelImpl(
         loginStatusService.persistOfferIds(quoteCartId, quoteIds)
 
         viewModelScope.launch {
-            loadQuoteIds()
+            quoteCartId?.let { loadQuoteIds(it) }
             loadQuotes(quoteIds)
         }
     }
@@ -236,7 +236,7 @@ class OfferViewModelImpl(
             initialValue = ViewState.Loading,
         )
 
-    private suspend fun loadQuoteIds() {
+    private suspend fun loadQuoteIds(quoteCartId: String) {
         when (val result = getQuoteIdsUseCase.invoke(quoteCartId)) {
             is Either.Left -> offerAndLoginStatus.value = OfferAndLoginStatus.Error
             is Either.Right -> {
@@ -411,13 +411,17 @@ class OfferViewModelImpl(
     override fun reload() {
         offerAndLoginStatus.value = OfferAndLoginStatus.Loading
         viewModelScope.launch {
-            if (quoteIds.isEmpty()) {
-                loadQuoteIds()
+            if (quoteIds.isEmpty() && quoteCartId != null) {
+                loadQuoteIds(quoteCartId)
             }
 
-            when (refreshQuotesUseCase.invoke(quoteIds)) {
-                RefreshQuotesUseCase.Result.Success -> loadQuotes(quoteIds)
-                is RefreshQuotesUseCase.Result.Error -> offerAndLoginStatus.value = OfferAndLoginStatus.Error
+            if (quoteIds.isNotEmpty()) {
+                when (refreshQuotesUseCase.invoke(quoteIds)) {
+                    RefreshQuotesUseCase.Result.Success -> loadQuotes(quoteIds)
+                    is RefreshQuotesUseCase.Result.Error -> offerAndLoginStatus.value = OfferAndLoginStatus.Error
+                }
+            } else {
+                offerAndLoginStatus.value = OfferAndLoginStatus.Error
             }
         }
     }

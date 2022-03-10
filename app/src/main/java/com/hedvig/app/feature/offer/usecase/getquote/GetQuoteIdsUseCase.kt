@@ -2,16 +2,10 @@ package com.hedvig.app.feature.offer.usecase.getquote
 
 import arrow.core.Either
 import arrow.core.nonEmptyListOf
-import arrow.core.right
-import com.apollographql.apollo.ApolloClient
 import com.hedvig.app.feature.offer.OfferRepository
-import com.hedvig.app.util.featureflags.Feature
-import com.hedvig.app.util.featureflags.FeatureManager
 import kotlinx.coroutines.flow.first
 
 class GetQuoteIdsUseCase(
-    private val apolloClient: ApolloClient,
-    private val featureManager: FeatureManager,
     private val offerRepository: OfferRepository,
 ) {
 
@@ -20,15 +14,7 @@ class GetQuoteIdsUseCase(
     @JvmInline
     value class QuoteIds(val ids: List<String>)
 
-    suspend operator fun invoke(quoteCartId: String?): Either<Error, QuoteIds> {
-        return if (featureManager.isFeatureEnabled(Feature.QUOTE_CART) && quoteCartId != null) {
-            getIdsFromQuoteCart(quoteCartId)
-        } else {
-            getIdsFromLastQuoteOfMember()
-        }
-    }
-
-    private suspend fun getIdsFromQuoteCart(quoteCartId: String): Either<Error, QuoteIds> {
+    suspend operator fun invoke(quoteCartId: String): Either<Error, QuoteIds> {
         return when (val result = offerRepository.offer(nonEmptyListOf(quoteCartId)).first()) {
             is OfferRepository.OfferResult.Error -> Either.Left(Error(null))
             is OfferRepository.OfferResult.Success -> {
@@ -36,9 +22,5 @@ class GetQuoteIdsUseCase(
                 Either.Right(ids)
             }
         }
-    }
-
-    private fun getIdsFromLastQuoteOfMember(): Either<Error, QuoteIds> {
-        return QuoteIds(emptyList()).right()
     }
 }
