@@ -114,7 +114,7 @@ abstract class OfferViewModel : ViewModel() {
             val documents: List<DocumentItems> = emptyList(),
             val insurableLimitsItems: List<InsurableLimitItem> = emptyList(),
             val bottomOfferItems: List<OfferItems> = emptyList(),
-            val checkoutMethod: CheckoutMethod = CheckoutMethod.SIMPLE_SIGN,
+            val checkoutMethod: CheckoutMethod,
             val checkoutLabel: CheckoutLabel = CheckoutLabel.CONFIRM,
             val title: ViewConfiguration.Title = ViewConfiguration.Title.LOGO,
             val loginStatus: LoginStatus = LoginStatus.LoggedIn,
@@ -216,12 +216,12 @@ class OfferViewModelImpl(
                                 }
                                 emit(
                                     produceViewState(
-                                        offerResponse.offerResult,
-                                        offerResponse.loginStatus,
-                                        offerResponse.paymentMethods,
-                                        dataCollectionStatus,
-                                        dataCollectionResult.await(),
-                                        insuranceProviderDisplayName.await()
+                                        data = offerResponse.offerResult,
+                                        loginStatus = offerResponse.loginStatus,
+                                        paymentMethods = offerResponse.paymentMethods,
+                                        dataCollectionStatus = dataCollectionStatus,
+                                        dataCollectionResult = dataCollectionResult.await(),
+                                        insuranceProviderDisplayName = insuranceProviderDisplayName.await()
                                     )
                                 )
                             }
@@ -352,6 +352,7 @@ class OfferViewModelImpl(
                 emptyList()
             },
             bottomOfferItems = bottomOfferItems,
+            checkoutMethod = data.checkoutMethod,
             checkoutLabel = data.checkoutLabel,
             title = data.quoteBundle.viewConfiguration.title,
             loginStatus = loginStatus,
