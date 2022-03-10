@@ -161,6 +161,9 @@ class OfferViewModelImpl(
     private val hAnalytics: HAnalytics,
 ) : OfferViewModel() {
 
+    private val offerAndLoginStatus: MutableStateFlow<OfferAndLoginStatus> =
+        MutableStateFlow(OfferAndLoginStatus.Loading)
+
     init {
         loginStatusService.isViewingOffer = shouldShowOnNextAppStart
         loginStatusService.persistOfferIds(quoteCartId, quoteIds)
@@ -170,9 +173,6 @@ class OfferViewModelImpl(
             loadQuotes(quoteIds)
         }
     }
-
-    private val offerAndLoginStatus: MutableStateFlow<OfferAndLoginStatus> =
-        MutableStateFlow(OfferAndLoginStatus.Loading)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override val viewState: StateFlow<ViewState> = offerAndLoginStatus.transformLatest { offerResponse ->
