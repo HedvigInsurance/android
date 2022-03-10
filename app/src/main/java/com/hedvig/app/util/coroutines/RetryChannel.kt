@@ -26,7 +26,7 @@ import kotlin.experimental.ExperimentalTypeInference
  *     ifFailure = { emit(ClaimDetailViewState.Error) },
  *     ifSuccess = { emit(ClaimDetailViewState.Content(it) },
  *   )
- * }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ClaimDetailViewState.Loading)
+ * }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5.seconds), ClaimDetailViewState.Loading)
  * fun retry() {
  *   viewModelScope.launch { retryChannel.retry() }
  * }

@@ -68,7 +68,7 @@ abstract class DismissiblePager : DialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? =
         inflater.inflate(R.layout.fragment_dismissable_pager, container, false)
 
@@ -126,7 +126,8 @@ abstract class DismissiblePager : DialogFragment() {
                             }
                         }
                         is DismissiblePagerModel.NoTitlePage,
-                        is DismissiblePagerModel.TitlePage -> {
+                        is DismissiblePagerModel.TitlePage,
+                        -> {
                             // No-op }
                         }
                     }
@@ -143,6 +144,7 @@ abstract class DismissiblePager : DialogFragment() {
                     is DismissiblePagerModel.NoTitlePage -> {
                         proceed.text = currentPage.buttonText
                     }
+                    DismissiblePagerModel.SwipeOffScreen -> {}
                 }
 
                 pager.adapter?.itemCount?.let { count ->

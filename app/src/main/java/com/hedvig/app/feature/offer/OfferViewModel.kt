@@ -44,6 +44,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -52,6 +53,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import kotlin.time.Duration.Companion.seconds
 
 abstract class OfferViewModel : ViewModel() {
     abstract val viewState: StateFlow<ViewState>
@@ -112,7 +114,7 @@ abstract class OfferViewModel : ViewModel() {
             val documents: List<DocumentItems> = emptyList(),
             val insurableLimitsItems: List<InsurableLimitItem> = emptyList(),
             val bottomOfferItems: List<OfferItems> = emptyList(),
-            val checkoutMethod: CheckoutMethod = CheckoutMethod.SIMPLE_SIGN,
+            val checkoutMethod: CheckoutMethod,
             val checkoutLabel: CheckoutLabel = CheckoutLabel.CONFIRM,
             val title: ViewConfiguration.Title = ViewConfiguration.Title.LOGO,
             val loginStatus: LoginStatus = LoginStatus.LoggedIn,
@@ -214,12 +216,12 @@ class OfferViewModelImpl(
                                 }
                                 emit(
                                     produceViewState(
-                                        offerResponse.offerResult,
-                                        offerResponse.loginStatus,
-                                        offerResponse.paymentMethods,
-                                        dataCollectionStatus,
-                                        dataCollectionResult.await(),
-                                        insuranceProviderDisplayName.await()
+                                        data = offerResponse.offerResult,
+                                        loginStatus = offerResponse.loginStatus,
+                                        paymentMethods = offerResponse.paymentMethods,
+                                        dataCollectionStatus = dataCollectionStatus,
+                                        dataCollectionResult = dataCollectionResult.await(),
+                                        insuranceProviderDisplayName = insuranceProviderDisplayName.await()
                                     )
                                 )
                             }
@@ -230,16 +232,18 @@ class OfferViewModelImpl(
     }
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
+            started = SharingStarted.WhileSubscribed(5.seconds),
             initialValue = ViewState.Loading,
         )
 
     private suspend fun loadQuoteIds() {
-        return when (val result = getQuoteIdsUseCase.invoke(quoteCartId)) {
+        when (val result = getQuoteIdsUseCase.invoke(quoteCartId)) {
             is Either.Left -> offerAndLoginStatus.value = OfferAndLoginStatus.Error
             is Either.Right -> {
-                hAnalytics.screenViewOffer(result.value.ids)
-                quoteIds = result.value.ids
+                if (result.value.ids.isNotEmpty()) {
+                    hAnalytics.screenViewOffer(result.value.ids)
+                    quoteIds = result.value.ids
+                }
             }
         }
     }
@@ -348,6 +352,7 @@ class OfferViewModelImpl(
                 emptyList()
             },
             bottomOfferItems = bottomOfferItems,
+            checkoutMethod = data.checkoutMethod,
             checkoutLabel = data.checkoutLabel,
             title = data.quoteBundle.viewConfiguration.title,
             loginStatus = loginStatus,

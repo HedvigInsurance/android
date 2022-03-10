@@ -1,5 +1,6 @@
 package com.hedvig.app.testdata.feature.profile.builders
 
+import com.hedvig.android.owldroid.fragment.ActivePaymentMethodsFragment
 import com.hedvig.android.owldroid.fragment.CashbackFragment
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.graphql.ProfileQuery
@@ -41,9 +42,19 @@ data class ProfileDataBuilder(
         ),
         cashbackOptions = emptyList(),
         bankAccount = ProfileQuery.BankAccount(directDebitStatus = directDebitStatus),
-        activePaymentMethods = if (adyenConnected) {
-            ProfileQuery.ActivePaymentMethods(
-                storedPaymentMethodsDetails = ProfileQuery.StoredPaymentMethodsDetails(id = "test")
+        activePaymentMethodsV2 = if (adyenConnected) {
+            ProfileQuery.ActivePaymentMethodsV2(
+                fragments = ProfileQuery.ActivePaymentMethodsV2.Fragments(
+                    activePaymentMethodsFragment = ActivePaymentMethodsFragment(
+                        asStoredCardDetails = ActivePaymentMethodsFragment.AsStoredCardDetails(
+                            brand = "test",
+                            lastFourDigits = "1234",
+                            expiryMonth = "1",
+                            expiryYear = "2022"
+                        ),
+                        asStoredThirdPartyDetails = null
+                    )
+                )
             )
         } else {
             null

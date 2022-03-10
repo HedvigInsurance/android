@@ -104,10 +104,15 @@ enum class Market {
         }
         DK,
         NO,
-        -> if (data.activePaymentMethods == null) {
-            R.string.Card_Not_Connected
-        } else {
-            R.string.Card_Connected
+        -> when {
+            data.activePaymentMethodsV2?.fragments?.activePaymentMethodsFragment?.asStoredCardDetails != null -> {
+                R.string.Card_Connected
+            }
+            data.activePaymentMethodsV2?.fragments?.activePaymentMethodsFragment?.asStoredThirdPartyDetails != null -> {
+                R.string.Third_Party_Connected
+            }
+            data.activePaymentMethodsV2 == null -> R.string.Card_Not_Connected
+            else -> R.string.Card_Not_Connected
         }
         FR -> TODO()
     }

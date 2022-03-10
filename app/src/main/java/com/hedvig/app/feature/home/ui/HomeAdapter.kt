@@ -112,7 +112,10 @@ class HomeAdapter(
     }
 
     override fun onViewRecycled(holder: ViewHolder) {
-        (holder.itemView as? ComposeView)?.disposeComposition()
+        val itemView = holder.itemView
+        if (itemView is ComposeView) {
+            itemView.disposeComposition()
+        }
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
