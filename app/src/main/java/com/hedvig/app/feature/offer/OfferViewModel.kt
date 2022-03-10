@@ -253,7 +253,6 @@ class OfferViewModelImpl(
             when (result) {
                 is Either.Left -> {
                     offerAndLoginStatus.value = OfferAndLoginStatus.Error
-                    onDiscardOffer()
                 }
                 is Either.Right -> {
                     val loginStatus = loginStatusService.getLoginStatus()
