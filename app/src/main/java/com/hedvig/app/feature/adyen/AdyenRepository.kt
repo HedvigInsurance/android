@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.adyen
 
 import android.content.Context
+import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.adyen.checkout.redirect.RedirectComponent
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.coroutines.await
