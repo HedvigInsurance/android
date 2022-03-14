@@ -56,15 +56,15 @@ private fun GraphQLVariablesFragment.toVariable(): Variable? {
                     when {
                         it.asEmbarkAPIGraphQLGeneratedVariable1 != null -> {
                             Variable.Generated(
-                                asEmbarkAPIGraphQLGeneratedVariable!!.key,
-                                asEmbarkAPIGraphQLGeneratedVariable!!.storeAs
+                                it.asEmbarkAPIGraphQLGeneratedVariable1!!.key,
+                                it.asEmbarkAPIGraphQLGeneratedVariable1!!.storeAs
                             )
                         }
                         it.asEmbarkAPIGraphQLSingleVariable1 != null -> {
                             Variable.Single(
-                                asEmbarkAPIGraphQLSingleVariable!!.key,
-                                asEmbarkAPIGraphQLSingleVariable!!.from,
-                                asEmbarkAPIGraphQLSingleVariable!!.as_.toCast()
+                                it.asEmbarkAPIGraphQLSingleVariable1!!.key,
+                                it.asEmbarkAPIGraphQLSingleVariable1!!.from,
+                                it.asEmbarkAPIGraphQLSingleVariable1!!.as_.toCast()
                             )
                         }
                         else -> {
