@@ -13,7 +13,7 @@ import com.hedvig.app.R
  * negate other callers.
  */
 @Composable
-fun KeepScreenOnRequest() {
+fun KeepScreenOn() {
     val view = LocalView.current
     DisposableEffect(view) {
         val keepScreenOnState = view.keepScreenOnState

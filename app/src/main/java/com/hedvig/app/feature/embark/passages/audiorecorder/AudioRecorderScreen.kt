@@ -28,7 +28,7 @@ import com.hedvig.app.R
 import com.hedvig.app.ui.compose.composables.buttons.LargeContainedButton
 import com.hedvig.app.ui.compose.composables.buttons.LargeTextButton
 import com.hedvig.app.ui.compose.theme.HedvigTheme
-import com.hedvig.app.util.compose.KeepScreenOnRequest
+import com.hedvig.app.util.compose.KeepScreenOn
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
@@ -133,7 +133,7 @@ fun Recording(
     clock: Clock,
     modifier: Modifier = Modifier,
 ) {
-    KeepScreenOnRequest()
+    KeepScreenOn()
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier.fillMaxWidth(),
