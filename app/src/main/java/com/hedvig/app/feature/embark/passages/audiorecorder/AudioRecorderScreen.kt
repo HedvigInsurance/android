@@ -28,7 +28,7 @@ import com.hedvig.app.R
 import com.hedvig.app.ui.compose.composables.buttons.LargeContainedButton
 import com.hedvig.app.ui.compose.composables.buttons.LargeTextButton
 import com.hedvig.app.ui.compose.theme.HedvigTheme
-import com.hedvig.app.util.compose.KeepScreenOnRequest
+import com.hedvig.app.util.compose.keepScreenOn
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
@@ -86,6 +86,7 @@ fun AudioRecorderScreen(
                 viewState = viewState,
                 stopRecording = stopRecording,
                 clock = clock,
+                modifier = Modifier.keepScreenOn()
             )
             is AudioRecorderViewModel.ViewState.Playback -> Playback(
                 viewState = viewState,
@@ -131,11 +132,11 @@ fun Recording(
     viewState: AudioRecorderViewModel.ViewState.Recording,
     stopRecording: () -> Unit,
     clock: Clock,
+    modifier: Modifier = Modifier,
 ) {
-    KeepScreenOnRequest()
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
     ) {
         Box(
             contentAlignment = Alignment.Center,
