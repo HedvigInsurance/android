@@ -28,7 +28,7 @@ import com.hedvig.app.R
 import com.hedvig.app.ui.compose.composables.buttons.LargeContainedButton
 import com.hedvig.app.ui.compose.composables.buttons.LargeTextButton
 import com.hedvig.app.ui.compose.theme.HedvigTheme
-import com.hedvig.app.util.compose.AwakeScreen
+import com.hedvig.app.util.compose.KeepScreenOnRequest
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
@@ -132,41 +132,40 @@ fun Recording(
     stopRecording: () -> Unit,
     clock: Clock,
 ) {
-    AwakeScreen {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth(),
+    KeepScreenOnRequest()
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .padding(bottom = 24.dp)
         ) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .padding(bottom = 24.dp)
-            ) {
-                if (viewState.amplitudes.isNotEmpty()) {
-                    RecordingAmplitudeIndicator(amplitude = viewState.amplitudes.last())
-                }
-                IconButton(
-                    onClick = stopRecording,
-                    modifier = Modifier.size(72.dp)
-                ) {
-                    Image(
-                        painter = painterResource(
-                            R.drawable.ic_record_stop
-                        ),
-                        contentDescription = stringResource(R.string.EMBARK_STOP_RECORDING)
-                    )
-                }
+            if (viewState.amplitudes.isNotEmpty()) {
+                RecordingAmplitudeIndicator(amplitude = viewState.amplitudes.last())
             }
-            val diff = Duration.between(
-                viewState.startedAt, Instant.now(clock)
-            )
-            val label = String.format("%02d:%02d", diff.toMinutes(), diff.seconds % 60)
-            Text(
-                text = label,
-                style = MaterialTheme.typography.caption,
-                modifier = Modifier.padding(bottom = 16.dp),
-            )
+            IconButton(
+                onClick = stopRecording,
+                modifier = Modifier.size(72.dp)
+            ) {
+                Image(
+                    painter = painterResource(
+                        R.drawable.ic_record_stop
+                    ),
+                    contentDescription = stringResource(R.string.EMBARK_STOP_RECORDING)
+                )
+            }
         }
+        val diff = Duration.between(
+            viewState.startedAt, Instant.now(clock)
+        )
+        val label = String.format("%02d:%02d", diff.toMinutes(), diff.seconds % 60)
+        Text(
+            text = label,
+            style = MaterialTheme.typography.caption,
+            modifier = Modifier.padding(bottom = 16.dp),
+        )
     }
 }
 
