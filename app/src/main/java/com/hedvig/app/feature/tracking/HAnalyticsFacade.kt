@@ -9,16 +9,26 @@ interface HAnalyticsSink {
 }
 
 interface ExperimentProvider {
-    suspend fun getExperiment(name: String): HAnalyticsExperiment
+    fun getExperimentAsync(name: String): HAnalyticsExperiment
     suspend fun invalidateExperiments()
+    suspend fun loadExperimentsFromServer()
 }
 
 class HAnalyticsFacade(
     private val sinks: List<HAnalyticsSink>,
     private val experimentProvider: ExperimentProvider,
 ) : HAnalytics() {
-    override suspend fun getExperiment(name: String) = experimentProvider.getExperiment(name)
-    override suspend fun invalidateExperiments() = experimentProvider.invalidateExperiments()
+    override suspend fun getExperiment(name: String): HAnalyticsExperiment {
+        return experimentProvider.getExperimentAsync(name)
+    }
+
+    override suspend fun invalidateExperiments() {
+        experimentProvider.invalidateExperiments()
+    }
+
+    suspend fun loadExperimentsFromServer() {
+        experimentProvider.loadExperimentsFromServer()
+    }
 
     override fun send(event: HAnalyticsEvent) {
         sinks.forEach { it.send(event) }

@@ -9,9 +9,6 @@ import com.hedvig.app.util.plus
 import com.hedvig.hanalytics.HAnalytics
 import com.hedvig.hanalytics.HAnalyticsEvent
 import com.hedvig.hanalytics.HAnalyticsExperiment
-import java.util.Locale
-import java.util.TimeZone
-import java.util.UUID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
@@ -26,6 +23,9 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import ru.gildor.coroutines.okhttp.await
+import java.util.Locale
+import java.util.TimeZone
+import java.util.UUID
 
 class NetworkHAnalyticsSink(
     private val okHttpClient: OkHttpClient,
@@ -88,17 +88,10 @@ class NetworkHAnalyticsSink(
     private val mutex = Mutex()
     private val experimentsData = mutableMapOf<String, String>()
 
-    override suspend fun getExperiment(name: String): HAnalyticsExperiment {
-        return mutex.withLock {
-            if (experimentsData.isEmpty()) {
-                loadExperimentsFromServer()
-            }
-
-            experimentsData[name]?.let { variant ->
-                HAnalyticsExperiment(name, variant)
-            } ?: throw Exception("experiment unavailable")
-        }
-    }
+    override fun getExperimentAsync(name: String): HAnalyticsExperiment = experimentsData[name]
+        ?.let { variant ->
+            HAnalyticsExperiment(name, variant)
+        } ?: throw Exception("experiment unavailable")
 
     override suspend fun invalidateExperiments() {
         mutex.withLock {
@@ -106,7 +99,7 @@ class NetworkHAnalyticsSink(
         }
     }
 
-    private suspend fun loadExperimentsFromServer() {
+    override suspend fun loadExperimentsFromServer() {
         withContext(Dispatchers.IO) {
             val result = okHttpClient
                 .newCall(
