@@ -23,9 +23,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import ru.gildor.coroutines.okhttp.await
-import java.util.Locale
-import java.util.TimeZone
-import java.util.UUID
 
 class NetworkHAnalyticsSink(
     private val okHttpClient: OkHttpClient,
