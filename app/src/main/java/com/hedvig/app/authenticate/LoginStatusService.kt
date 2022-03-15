@@ -5,6 +5,7 @@ import androidx.core.content.edit
 import arrow.core.identity
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.ContractStatusQuery
+import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.util.apollo.safeQuery
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -21,7 +22,7 @@ interface LoginStatusService {
     var isLoggedIn: Boolean
     suspend fun getLoginStatus(): LoginStatus
     fun getLoginStatusAsFlow(): Flow<LoginStatus>
-    fun persistOfferIds(quoteCartId: String?, quoteIds: List<String>)
+    fun persistOfferIds(quoteCartId: CreateQuoteCartUseCase.QuoteCartId?, quoteIds: List<String>)
 }
 
 class SharedPreferencesLoginStatusService(
@@ -60,9 +61,9 @@ class SharedPreferencesLoginStatusService(
         }
     }
 
-    override fun persistOfferIds(quoteCartId: String?, quoteIds: List<String>) {
+    override fun persistOfferIds(quoteCartId: CreateQuoteCartUseCase.QuoteCartId?, quoteIds: List<String>) {
         sharedPreferences.edit {
-            putString("quoteCartId", quoteCartId)
+            putString("quoteCartId", quoteCartId?.id)
             putStringSet("quoteIds", quoteIds.toSet())
         }
     }

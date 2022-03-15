@@ -3,6 +3,7 @@ package com.hedvig.app.feature.offer.usecase
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.SignQuoteCartMutation
 import com.hedvig.android.owldroid.graphql.SignQuotesMutation
+import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
@@ -24,7 +25,10 @@ class SignQuotesUseCase(
         data class Error(val message: String? = null) : SignQuoteResult()
     }
 
-    suspend fun signQuotesAndClearCache(quoteIds: List<String>, quoteCartId: String?): SignQuoteResult {
+    suspend fun signQuotesAndClearCache(
+        quoteIds: List<String>,
+        quoteCartId: CreateQuoteCartUseCase.QuoteCartId?
+    ): SignQuoteResult {
         return if (featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
             signQuoteCart(quoteIds, quoteCartId)
         } else {
@@ -32,11 +36,14 @@ class SignQuotesUseCase(
         }
     }
 
-    private suspend fun signQuoteCart(quoteIds: List<String>, quoteCartId: String?): SignQuoteResult {
+    private suspend fun signQuoteCart(
+        quoteIds: List<String>,
+        quoteCartId: CreateQuoteCartUseCase.QuoteCartId?
+    ): SignQuoteResult {
         return if (quoteCartId == null) {
             SignQuoteResult.Error(null)
         } else {
-            val mutation = SignQuoteCartMutation(quoteCartId, quoteIds)
+            val mutation = SignQuoteCartMutation(quoteCartId.id, quoteIds)
             when (val result = apolloClient.mutate(mutation).safeQuery()) {
                 is QueryResult.Error -> SignQuoteResult.Error(result.message)
                 is QueryResult.Success -> {

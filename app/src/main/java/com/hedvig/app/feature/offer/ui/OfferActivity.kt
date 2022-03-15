@@ -24,11 +24,13 @@ import com.hedvig.app.R
 import com.hedvig.app.SplashActivity
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.databinding.ActivityOfferBinding
+import com.hedvig.app.feature.adyen.PaymentTokenId
 import com.hedvig.app.feature.adyen.payin.startAdyenPayment
 import com.hedvig.app.feature.checkout.CheckoutActivity
 import com.hedvig.app.feature.crossselling.ui.CrossSellingResult
 import com.hedvig.app.feature.crossselling.ui.CrossSellingResultActivity
 import com.hedvig.app.feature.documents.DocumentAdapter
+import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
 import com.hedvig.app.feature.home.ui.changeaddress.result.ChangeAddressResultActivity
 import com.hedvig.app.feature.insurablelimits.InsurableLimitsAdapter
@@ -70,8 +72,9 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
     private val quoteIds: List<String>
         get() = intent.getStringArrayExtra(QUOTE_IDS)?.toList() ?: emptyList()
-    private val quoteCartId: String?
-        get() = intent.getStringExtra(QUOTE_CART_ID)
+    private val quoteCartId: CreateQuoteCartUseCase.QuoteCartId?
+        get() = intent.getParcelableExtra(QUOTE_CART_ID)
+            ?: intent.getStringExtra(QUOTE_CART_ID)?.let { CreateQuoteCartUseCase.QuoteCartId(it) }
     private val shouldShowOnNextAppStart: Boolean
         get() = intent.getBooleanExtra(SHOULD_SHOW_ON_NEXT_APP_START, false)
 
@@ -375,10 +378,12 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         // Replace with new result API when adyens handleActivityResult is updated
         super.onActivityResult(requestCode, resultCode, data)
 
-        when (DropIn.handleActivityResult(requestCode, resultCode, data)) {
+        when (val result = DropIn.handleActivityResult(requestCode, resultCode, data)) {
             is DropInResult.CancelledByUser -> {}
             is DropInResult.Error -> showErrorDialog("Could not connect payment") {}
-            is DropInResult.Finished -> model.onOpenCheckout()
+            is DropInResult.Finished -> {
+                model.onPaymentTokenIdReceived(PaymentTokenId(result.result))
+            }
         }
     }
 
@@ -421,7 +426,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         fun newInstance(
             context: Context,
             quoteIds: List<String> = emptyList(),
-            quoteCartId: String? = null,
+            quoteCartId: CreateQuoteCartUseCase.QuoteCartId? = null,
             shouldShowOnNextAppStart: Boolean = false,
         ) = Intent(context, OfferActivity::class.java).apply {
             putExtra(QUOTE_IDS, quoteIds.toTypedArray())

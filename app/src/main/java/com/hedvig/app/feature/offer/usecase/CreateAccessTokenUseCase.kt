@@ -5,6 +5,7 @@ import arrow.core.computations.either
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.CreateAccessTokenMutation
 import com.hedvig.app.authenticate.AuthenticationTokenService
+import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.apollo.safeQuery
 
@@ -18,16 +19,18 @@ class CreateAccessTokenUseCase(
     @JvmInline
     private value class AccessToken(val token: String)
 
-    suspend operator fun invoke(quoteCartId: String): Either<ErrorMessage, Success> = either {
-        val accessToken = query(quoteCartId).bind()
-        authenticationTokenService.authenticationToken = accessToken.token
-        Success
-    }
+    suspend operator fun invoke(quoteCartId: CreateQuoteCartUseCase.QuoteCartId): Either<ErrorMessage, Success> =
+        either {
+            val accessToken = query(quoteCartId).bind()
+            authenticationTokenService.authenticationToken = accessToken.token
+            Success
+        }
 
-    private suspend fun query(quoteCartId: String): Either<ErrorMessage, AccessToken> = apolloClient
-        .mutate(CreateAccessTokenMutation(quoteCartId))
-        .safeQuery()
-        .toEither()
-        .mapLeft { ErrorMessage(it.message) }
-        .map { AccessToken(it.quoteCart_createAccessToken.accessToken) }
+    private suspend fun query(quoteCartId: CreateQuoteCartUseCase.QuoteCartId): Either<ErrorMessage, AccessToken> =
+        apolloClient
+            .mutate(CreateAccessTokenMutation(quoteCartId.id))
+            .safeQuery()
+            .toEither()
+            .mapLeft { ErrorMessage(it.message) }
+            .map { AccessToken(it.quoteCart_createAccessToken.accessToken) }
 }

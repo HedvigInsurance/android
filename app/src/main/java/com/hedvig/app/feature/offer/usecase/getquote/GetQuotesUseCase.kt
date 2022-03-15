@@ -4,6 +4,7 @@ import arrow.core.Either
 import arrow.core.NonEmptyList
 import arrow.core.left
 import arrow.core.nonEmptyListOf
+import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.model.OfferModel
 import com.hedvig.app.util.ErrorMessage
@@ -20,11 +21,14 @@ class GetQuotesUseCase(
     private val getQuoteIdsUseCase: GetQuoteIdsUseCase,
 ) {
 
-    operator fun invoke(quoteIds: List<String>, quoteCartId: String?): Flow<Either<ErrorMessage, OfferModel>> {
+    operator fun invoke(
+        quoteIds: List<String>,
+        quoteCartId: CreateQuoteCartUseCase.QuoteCartId?
+    ): Flow<Either<ErrorMessage, OfferModel>> {
         return flow {
             when {
                 featureManager.isFeatureEnabled(Feature.QUOTE_CART) -> quoteCartId?.let {
-                    emitAll(offerRepository.offer(nonEmptyListOf(quoteCartId)))
+                    emitAll(offerRepository.offer(nonEmptyListOf(quoteCartId.id)))
                 } ?: ErrorMessage("No quote id found").left()
                 quoteIds.isNotEmpty() -> emitAll(offerRepository.offer(NonEmptyList.fromListUnsafe(quoteIds)))
                 else -> getQuoteIdsUseCase.invoke(null).map {

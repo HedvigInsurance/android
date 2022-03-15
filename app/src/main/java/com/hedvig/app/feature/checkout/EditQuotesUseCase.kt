@@ -8,6 +8,7 @@ import arrow.core.sequenceEither
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.EditMailAndSSNMutation
 import com.hedvig.android.owldroid.graphql.QuoteCartEditQuoteMutation
+import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import com.hedvig.app.util.apollo.safeQuery
@@ -37,7 +38,7 @@ class EditQuotesUseCase(
 
     private suspend fun editQuote(
         quoteId: String,
-        quoteCartId: String?,
+        quoteCartId: CreateQuoteCartUseCase.QuoteCartId?,
         ssn: String,
         email: String
     ): Either<Error, Success> {
@@ -53,13 +54,13 @@ class EditQuotesUseCase(
     }
 
     private suspend fun editQuoteCart(
-        quoteCartId: String,
+        quoteCartId: CreateQuoteCartUseCase.QuoteCartId,
         quoteId: String,
         ssn: String,
         email: String
     ): Either<Error, Success> {
         val json = buildJsonObject {
-            put("quoteCartId", quoteCartId)
+            put("quoteCartId", quoteCartId.id)
             put("quoteId", quoteId)
             put("locale", localeManager.defaultLocale().rawValue)
             putJsonObject("payload") {
@@ -118,7 +119,7 @@ class EditQuotesUseCase(
 
 data class EditAndSignParameter(
     val quoteIds: List<String>,
-    val quoteCartId: String?,
+    val quoteCartId: CreateQuoteCartUseCase.QuoteCartId?,
     val ssn: String,
     val email: String
 )

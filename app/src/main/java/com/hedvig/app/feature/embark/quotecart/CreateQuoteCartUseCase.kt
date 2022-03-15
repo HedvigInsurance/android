@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.embark.quotecart
 
+import android.os.Parcelable
 import arrow.core.Either
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.CreateOnboardingQuoteCartMutation
@@ -7,6 +8,7 @@ import com.hedvig.android.owldroid.type.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.safeQuery
+import kotlinx.parcelize.Parcelize
 
 class CreateQuoteCartUseCase(
     val apolloClient: ApolloClient,
@@ -22,7 +24,8 @@ class CreateQuoteCartUseCase(
     data class Error(val message: String?)
 
     @JvmInline
-    value class QuoteCartId(val id: String)
+    @Parcelize
+    value class QuoteCartId(val id: String) : Parcelable
 
     suspend operator fun invoke(): Either<Error, QuoteCartId> {
         return apolloClient

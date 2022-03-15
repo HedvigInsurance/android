@@ -3,6 +3,7 @@ package com.hedvig.app.feature.checkout
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.app.authenticate.LoginStatusService
+import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.offer.model.Checkout
 import com.hedvig.app.feature.offer.model.OfferModel
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
@@ -28,7 +29,7 @@ import javax.money.MonetaryAmount
 
 class CheckoutViewModel(
     private val quoteIds: List<String>,
-    private val quoteCartId: String?,
+    private val quoteCartId: CreateQuoteCartUseCase.QuoteCartId?,
     private val getQuotesUseCase: GetQuotesUseCase,
     private val signQuotesUseCase: SignQuotesUseCase,
     private val editQuotesUseCase: EditQuotesUseCase,
@@ -45,7 +46,7 @@ class CheckoutViewModel(
         }
     }
 
-    private suspend fun observeQuotes(quoteIds: List<String>, quoteCartId: String?) {
+    private suspend fun observeQuotes(quoteIds: List<String>, quoteCartId: CreateQuoteCartUseCase.QuoteCartId?) {
         getQuotesUseCase.invoke(quoteIds, quoteCartId).collect { result ->
             result.fold(
                 ifLeft = { _events.trySend(Event.Error(it.message)) },

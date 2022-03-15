@@ -38,6 +38,8 @@ import com.hedvig.app.feature.addressautocompletion.data.GetDanishAddressAutoCom
 import com.hedvig.app.feature.addressautocompletion.data.GetFinalDanishAddressSelectionUseCase
 import com.hedvig.app.feature.addressautocompletion.ui.AddressAutoCompleteViewModel
 import com.hedvig.app.feature.adyen.AdyenRepository
+import com.hedvig.app.feature.adyen.ConnectPaymentUseCase
+import com.hedvig.app.feature.adyen.ConnectPayoutUseCase
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModel
 import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModelImpl
 import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutViewModel
@@ -141,6 +143,7 @@ import com.hedvig.app.feature.offer.OfferViewModelImpl
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetViewModel
 import com.hedvig.app.feature.offer.ui.changestartdate.EditStartDateUseCase
+import com.hedvig.app.feature.offer.usecase.AddPaymentTokenUseCase
 import com.hedvig.app.feature.offer.usecase.CreateAccessTokenUseCase
 import com.hedvig.app.feature.offer.usecase.GetPostSignDependenciesUseCase
 import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
@@ -456,9 +459,9 @@ val offerModule = module {
             getDataCollectionResultUseCase = get(),
             getProviderDisplayNameUseCase = get(),
             adyenRepository = get(),
-            marketManager = get(),
             chatRepository = get(),
             hAnalytics = get(),
+            addPaymentTokenUseCase = get(),
         )
     }
     single { ApproveQuotesUseCase(get(), get(), get()) }
@@ -544,7 +547,7 @@ val changeDateBottomSheetModule = module {
 }
 
 val checkoutModule = module {
-    viewModel { (ids: List<String>, quoteCartId: String?) ->
+    viewModel { (ids: List<String>, quoteCartId: CreateQuoteCartUseCase.QuoteCartId?) ->
         CheckoutViewModel(
             ids,
             quoteCartId,
@@ -608,7 +611,7 @@ val repositoriesModule = module {
     single { KeyGearItemsRepository(get(), get(), get(), get()) }
     single { MarketRepository(get(), get(), get()) }
     single { MarketingRepository(get(), get()) }
-    single { AdyenRepository(get(), get()) }
+    single { AdyenRepository(get(), get(), get()) }
     single { EmbarkRepository(get(), get()) }
     single { ReferralsRepository(get()) }
     single { LoggedInRepository(get(), get()) }
@@ -687,6 +690,9 @@ val useCaseModule = module {
     single<GetQuoteIdsUseCase> { GetQuoteIdsUseCase(get(), get(), get()) }
     single<EditQuotesUseCase> { EditQuotesUseCase(get(), get(), get(), get()) }
     single<CreateAccessTokenUseCase> { CreateAccessTokenUseCase(get(), get()) }
+    single<AddPaymentTokenUseCase> { AddPaymentTokenUseCase(get()) }
+    single<ConnectPaymentUseCase> { ConnectPaymentUseCase(get(), get(), get(), get()) }
+    single<ConnectPayoutUseCase> { ConnectPayoutUseCase(get(), get()) }
 }
 
 val cacheManagerModule = module {

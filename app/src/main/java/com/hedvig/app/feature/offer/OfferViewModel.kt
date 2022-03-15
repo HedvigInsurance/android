@@ -8,18 +8,22 @@ import com.hedvig.app.R
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.adyen.AdyenRepository
+import com.hedvig.app.feature.adyen.PaymentTokenId
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.checkout.ApproveQuotesUseCase
 import com.hedvig.app.feature.checkout.CheckoutParameter
 import com.hedvig.app.feature.documents.DocumentItems
+import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.offer.model.CheckoutLabel
 import com.hedvig.app.feature.offer.model.CheckoutMethod
 import com.hedvig.app.feature.offer.model.OfferModel
+import com.hedvig.app.feature.offer.model.paymentApiResponseOrNull
 import com.hedvig.app.feature.offer.model.quotebundle.PostSignScreen
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
 import com.hedvig.app.feature.offer.model.quotebundle.ViewConfiguration
 import com.hedvig.app.feature.offer.ui.OfferItems
+import com.hedvig.app.feature.offer.usecase.AddPaymentTokenUseCase
 import com.hedvig.app.feature.offer.usecase.GetPostSignDependenciesUseCase
 import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.SignQuotesUseCase
@@ -32,8 +36,6 @@ import com.hedvig.app.feature.offer.usecase.getquote.GetQuoteUseCase
 import com.hedvig.app.feature.offer.usecase.getquote.GetQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.providerstatus.GetProviderDisplayNameUseCase
 import com.hedvig.app.feature.perils.PerilItem
-import com.hedvig.app.feature.settings.Market
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.hanalytics.HAnalytics
 import e
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -133,11 +135,12 @@ abstract class OfferViewModel : ViewModel() {
     abstract fun onDiscardOffer()
     abstract fun onGoToDirectDebit()
     abstract fun onSwedishBankIdSign()
+    abstract fun onPaymentTokenIdReceived(id: PaymentTokenId)
 }
 
 class OfferViewModelImpl(
     private var quoteIds: List<String>,
-    private val quoteCartId: String?,
+    private val quoteCartId: CreateQuoteCartUseCase.QuoteCartId?,
     private val offerRepository: OfferRepository,
     private val getQuotesUseCase: GetQuotesUseCase,
     private val getQuoteIdsUseCase: GetQuoteIdsUseCase,
@@ -152,9 +155,9 @@ class OfferViewModelImpl(
     private val getDataCollectionResultUseCase: GetDataCollectionResultUseCase,
     private val getProviderDisplayNameUseCase: GetProviderDisplayNameUseCase,
     private val adyenRepository: AdyenRepository,
-    private val marketManager: MarketManager,
     private val chatRepository: ChatRepository,
     private val hAnalytics: HAnalytics,
+    private val addPaymentTokenUseCase: AddPaymentTokenUseCase,
 ) : OfferViewModel() {
 
     init {
@@ -252,21 +255,11 @@ class OfferViewModelImpl(
                     offerAndLoginStatus.value = OfferAndLoginStatus.Content(
                         offerResult = offerModel,
                         loginStatus = loginStatusService.getLoginStatus(),
-                        paymentMethods = getPaymentMethods()
+                        paymentMethods = offerModel.paymentApiResponseOrNull()
+                            ?: adyenRepository.paymentMethodsResponse()
                     )
                 }
             )
-        }
-    }
-
-    private suspend fun getPaymentMethods(): PaymentMethodsApiResponse? {
-        return if (marketManager.market == Market.NO) {
-            adyenRepository.paymentMethods()
-                .data
-                ?.availablePaymentMethods
-                ?.paymentMethodsResponse
-        } else {
-            null
         }
     }
 
@@ -445,6 +438,16 @@ class OfferViewModelImpl(
                 )
                 SignQuotesUseCase.SignQuoteResult.Success -> offerAndLoginStatus.value = OfferAndLoginStatus.Error
             }
+        }
+    }
+
+    override fun onPaymentTokenIdReceived(id: PaymentTokenId) {
+        viewModelScope.launch {
+            if (quoteCartId != null) {
+                addPaymentTokenUseCase.invoke(quoteCartId, id)
+                    .tapLeft { Event.Error }
+            }
+            onOpenCheckout()
         }
     }
 }

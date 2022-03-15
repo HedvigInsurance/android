@@ -97,7 +97,7 @@ abstract class EmbarkViewModel(
     sealed class Event {
         data class Offer(
             val quoteIds: List<String>,
-            val quoteCartId: String?,
+            val quoteCartId: CreateQuoteCartUseCase.QuoteCartId?,
         ) : Event()
 
         data class Error(val message: String? = null) : Event()
@@ -162,7 +162,7 @@ abstract class EmbarkViewModel(
                 valueStore.withCommittedVersion {
                     val ids = keys.flatMap { this.getList(it) ?: listOfNotNull(this.get(it)) }
                     val quoteCartId = this.get(QUOTE_CART_ID_KEY)
-                    _events.trySend(Event.Offer(ids, quoteCartId))
+                    _events.trySend(Event.Offer(ids, quoteCartId?.let(CreateQuoteCartUseCase::QuoteCartId)))
                 }
             }
             location != null -> handleRedirectLocation(location)
@@ -263,7 +263,7 @@ abstract class EmbarkViewModel(
         } else {
             Event.Offer(
                 quoteIds = listOf(id),
-                quoteCartId = quoteCartId,
+                quoteCartId = quoteCartId?.let(CreateQuoteCartUseCase::QuoteCartId),
             )
         }
         _events.trySend(event)
