@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.offer.usecase.getquote
 
-import arrow.core.Either
 import arrow.core.NonEmptyList
 import arrow.core.nonEmptyListOf
 import com.hedvig.app.feature.offer.OfferRepository
@@ -15,7 +14,6 @@ import kotlinx.coroutines.flow.map
 class GetQuotesUseCase(
     private val offerRepository: OfferRepository,
     private val featureManager: FeatureManager,
-    private val getQuoteIdsUseCase: GetQuoteIdsUseCase,
 ) {
     sealed class Result {
         data class Success(val data: OfferModel) : Result()
@@ -31,12 +29,7 @@ class GetQuotesUseCase(
                         ?: emit(Result.Error("No quote cart id found"))
                 }
                 quoteIds.isNotEmpty() -> emitAll(getOffer(NonEmptyList.fromListUnsafe(quoteIds)))
-                else -> {
-                    when (val result = getQuoteIdsUseCase.invoke(null)) {
-                        is Either.Left -> emit(Result.Error(result.value.message))
-                        is Either.Right -> emitAll(getOffer(NonEmptyList.fromListUnsafe(result.value.ids)))
-                    }
-                }
+                else -> Result.Error(null)
             }
         }
     }

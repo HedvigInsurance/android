@@ -33,7 +33,6 @@ import com.hedvig.app.feature.offer.usecase.getquote.GetQuoteUseCase
 import com.hedvig.app.feature.offer.usecase.getquote.GetQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.providerstatus.GetProviderDisplayNameUseCase
 import com.hedvig.app.feature.perils.PerilItem
-import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.hanalytics.HAnalytics
 import e
@@ -114,7 +113,7 @@ abstract class OfferViewModel : ViewModel() {
             val documents: List<DocumentItems> = emptyList(),
             val insurableLimitsItems: List<InsurableLimitItem> = emptyList(),
             val bottomOfferItems: List<OfferItems> = emptyList(),
-            val checkoutMethod: CheckoutMethod = CheckoutMethod.SIMPLE_SIGN,
+            val checkoutMethod: CheckoutMethod,
             val checkoutLabel: CheckoutLabel = CheckoutLabel.CONFIRM,
             val title: ViewConfiguration.Title = ViewConfiguration.Title.LOGO,
             val loginStatus: LoginStatus = LoginStatus.LoggedIn,
@@ -161,18 +160,18 @@ class OfferViewModelImpl(
     private val hAnalytics: HAnalytics,
 ) : OfferViewModel() {
 
+    private val offerAndLoginStatus: MutableStateFlow<OfferAndLoginStatus> =
+        MutableStateFlow(OfferAndLoginStatus.Loading)
+
     init {
         loginStatusService.isViewingOffer = shouldShowOnNextAppStart
         loginStatusService.persistOfferIds(quoteCartId, quoteIds)
 
         viewModelScope.launch {
-            loadQuoteIds()
+            quoteCartId?.let { loadQuoteIds(it) }
             loadQuotes(quoteIds)
         }
     }
-
-    private val offerAndLoginStatus: MutableStateFlow<OfferAndLoginStatus> =
-        MutableStateFlow(OfferAndLoginStatus.Loading)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override val viewState: StateFlow<ViewState> = offerAndLoginStatus.transformLatest { offerResponse ->
@@ -216,12 +215,12 @@ class OfferViewModelImpl(
                                 }
                                 emit(
                                     produceViewState(
-                                        offerResponse.offerResult,
-                                        offerResponse.loginStatus,
-                                        offerResponse.paymentMethods,
-                                        dataCollectionStatus,
-                                        dataCollectionResult.await(),
-                                        insuranceProviderDisplayName.await()
+                                        data = offerResponse.offerResult,
+                                        loginStatus = offerResponse.loginStatus,
+                                        paymentMethods = offerResponse.paymentMethods,
+                                        dataCollectionStatus = dataCollectionStatus,
+                                        dataCollectionResult = dataCollectionResult.await(),
+                                        insuranceProviderDisplayName = insuranceProviderDisplayName.await()
                                     )
                                 )
                             }
@@ -236,7 +235,7 @@ class OfferViewModelImpl(
             initialValue = ViewState.Loading,
         )
 
-    private suspend fun loadQuoteIds() {
+    private suspend fun loadQuoteIds(quoteCartId: String) {
         when (val result = getQuoteIdsUseCase.invoke(quoteCartId)) {
             is Either.Left -> offerAndLoginStatus.value = OfferAndLoginStatus.Error
             is Either.Right -> {
@@ -254,15 +253,7 @@ class OfferViewModelImpl(
                 is GetQuotesUseCase.Result.Error -> offerAndLoginStatus.value = OfferAndLoginStatus.Error
                 is GetQuotesUseCase.Result.Success -> {
                     val loginStatus = loginStatusService.getLoginStatus()
-
-                    val paymentMethods = if (marketManager.market == Market.NO) {
-                        adyenRepository.paymentMethods()
-                            .data
-                            ?.availablePaymentMethods
-                            ?.paymentMethodsResponse
-                    } else {
-                        null
-                    }
+                    val paymentMethods = adyenRepository.paymentMethodsResponse()
 
                     offerAndLoginStatus.value = OfferAndLoginStatus.Content(
                         result.data,
@@ -352,6 +343,7 @@ class OfferViewModelImpl(
                 emptyList()
             },
             bottomOfferItems = bottomOfferItems,
+            checkoutMethod = data.checkoutMethod,
             checkoutLabel = data.checkoutLabel,
             title = data.quoteBundle.viewConfiguration.title,
             loginStatus = loginStatus,
@@ -410,13 +402,17 @@ class OfferViewModelImpl(
     override fun reload() {
         offerAndLoginStatus.value = OfferAndLoginStatus.Loading
         viewModelScope.launch {
-            if (quoteIds.isEmpty()) {
-                loadQuoteIds()
+            if (quoteIds.isEmpty() && quoteCartId != null) {
+                loadQuoteIds(quoteCartId)
             }
 
-            when (refreshQuotesUseCase.invoke(quoteIds)) {
-                RefreshQuotesUseCase.Result.Success -> loadQuotes(quoteIds)
-                is RefreshQuotesUseCase.Result.Error -> offerAndLoginStatus.value = OfferAndLoginStatus.Error
+            if (quoteIds.isNotEmpty()) {
+                when (refreshQuotesUseCase.invoke(quoteIds)) {
+                    RefreshQuotesUseCase.Result.Success -> loadQuotes(quoteIds)
+                    is RefreshQuotesUseCase.Result.Error -> offerAndLoginStatus.value = OfferAndLoginStatus.Error
+                }
+            } else {
+                offerAndLoginStatus.value = OfferAndLoginStatus.Error
             }
         }
     }
