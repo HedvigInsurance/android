@@ -197,6 +197,7 @@ dependencies {
     implementation(libs.accompanist.pagerIndicators)
     implementation(libs.accompanist.insets)
     implementation(libs.accompanist.insetsUi)
+    implementation(libs.accompanist.systemUiController)
 
     implementation(libs.arrowKt.core)
 

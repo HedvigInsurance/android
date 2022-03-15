@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.Intent
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
-import com.hedvig.app.feature.marketing.ui.MarketingActivity
+import com.hedvig.app.feature.marketing.MarketingActivity
 import com.hedvig.app.feature.referrals.ReferralsReceiverActivity
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager

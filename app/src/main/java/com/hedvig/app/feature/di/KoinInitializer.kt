@@ -27,8 +27,6 @@ import com.hedvig.app.localeBroadcastManagerModule
 import com.hedvig.app.localeManagerModule
 import com.hedvig.app.loggedInModule
 import com.hedvig.app.marketManagerModule
-import com.hedvig.app.marketPickerModule
-import com.hedvig.app.marketingModule
 import com.hedvig.app.notificationModule
 import com.hedvig.app.numberActionSetModule
 import com.hedvig.app.offerModule
@@ -64,7 +62,6 @@ class KoinInitializer : Initializer<KoinApplication> {
                 viewModelModule,
                 loggedInModule,
                 insuranceModule,
-                marketingModule,
                 offerModule,
                 profileModule,
                 paymentModule,
@@ -82,7 +79,6 @@ class KoinInitializer : Initializer<KoinApplication> {
                 connectPaymentModule,
                 trustlyModule,
                 notificationModule,
-                marketPickerModule,
                 textActionSetModule,
                 numberActionSetModule,
                 choosePlanModule,
