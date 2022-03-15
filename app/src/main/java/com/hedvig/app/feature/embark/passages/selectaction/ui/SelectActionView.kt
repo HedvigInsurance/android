@@ -33,7 +33,7 @@ fun SelectActionView(
 ) {
     SelectActionGrid(
         modifier = modifier,
-        contentPadding = PaddingValues(8.dp),
+        contentPadding = PaddingValues(16.dp),
         insideGridSpace = InsideGridSpace(8.dp)
     ) {
         selectActions.forEachIndexed { index, selectAction ->
@@ -67,7 +67,7 @@ private fun SelectActionCard(
                     text = text,
                     style = MaterialTheme.typography.subtitle2,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(8.dp)
+                    modifier = Modifier.padding(vertical = 8.dp)
                 )
             },
             topContent = badge?.let {
