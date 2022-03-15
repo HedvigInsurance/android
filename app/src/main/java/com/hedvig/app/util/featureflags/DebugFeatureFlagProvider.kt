@@ -3,12 +3,15 @@ package com.hedvig.app.util.featureflags
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import com.hedvig.app.feature.settings.Market
+import com.hedvig.app.feature.settings.MarketManager
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 
 class DebugFeatureFlagProvider(
     private val dataStore: DataStore<Preferences>,
+    private val marketManager: MarketManager,
 ) : FeatureFlagProvider {
 
     override val priority = DEBUG_PRIORITY
@@ -19,6 +22,8 @@ class DebugFeatureFlagProvider(
         Feature.ADDRESS_AUTO_COMPLETE -> isEnabled(Feature.ADDRESS_AUTO_COMPLETE, defaultValue = true)
         Feature.REFERRAL_CAMPAIGN -> isEnabled(Feature.REFERRAL_CAMPAIGN, defaultValue = false)
         Feature.QUOTE_CART -> false
+        Feature.CONNECT_PAYMENT_AT_SIGN -> (marketManager.market == Market.NO || marketManager.market == Market.DK) &&
+            isEnabled(Feature.REFERRAL_CAMPAIGN, defaultValue = true)
     }
 
     private fun isEnabled(feature: Feature, defaultValue: Boolean): Boolean {
