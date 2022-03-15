@@ -74,13 +74,15 @@ val STANDARD_FIRST_PASSAGE_BUILDER =
         action = SelectActionBuilder(
             listOf(
                 SelectOptionBuilder(
-                    link = STANDARD_FIRST_LINK
+                    link = STANDARD_FIRST_LINK,
+                    badge = "Badge #1"
                 ).build(),
                 SelectOptionBuilder(
-                    link = STANDARD_SECOND_LINK
+                    link = STANDARD_SECOND_LINK,
+                    badge = "Badge #2"
                 ).build(),
                 SelectOptionBuilder(
-                    link = STANDARD_FIRST_LINK
+                    link = STANDARD_FIRST_LINK,
                 ).build(),
             )
         ).build()
