@@ -282,7 +282,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.compose)
     androidTestImplementation(libs.androidx.compose.uiTestJunit)
     debugImplementation(libs.androidx.compose.uiTestManifest)
-    implementation(libs.serialization.json)
 
     implementation(libs.showkase.annotation)
     debugImplementation(libs.showkase.showkase)
