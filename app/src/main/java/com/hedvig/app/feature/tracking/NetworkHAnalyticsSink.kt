@@ -9,9 +9,6 @@ import com.hedvig.app.util.plus
 import com.hedvig.hanalytics.HAnalytics
 import com.hedvig.hanalytics.HAnalyticsEvent
 import com.hedvig.hanalytics.HAnalyticsExperiment
-import java.util.Locale
-import java.util.TimeZone
-import java.util.UUID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
@@ -26,6 +23,9 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import ru.gildor.coroutines.okhttp.await
+import java.util.Locale
+import java.util.TimeZone
+import java.util.UUID
 
 class NetworkHAnalyticsSink(
     private val okHttpClient: OkHttpClient,
