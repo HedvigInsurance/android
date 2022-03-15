@@ -161,6 +161,8 @@ dependencies {
     implementation(libs.coroutines.android)
     testImplementation(libs.coroutines.test)
 
+    implementation(libs.serialization)
+
     implementation(libs.androidx.other.appCompat)
     implementation(libs.androidx.other.media)
     implementation(libs.androidx.other.constraintLayout)

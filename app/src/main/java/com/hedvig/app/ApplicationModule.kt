@@ -183,6 +183,7 @@ import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignViewModel
 import com.hedvig.app.feature.swedishbankid.sign.usecase.ManuallyRecheckSwedishBankIdSignStatusUseCase
 import com.hedvig.app.feature.swedishbankid.sign.usecase.SubscribeToSwedishBankIdSignStatusUseCase
 import com.hedvig.app.feature.tracking.ApplicationLifecycleTracker
+import com.hedvig.app.feature.tracking.ExperimentProvider
 import com.hedvig.app.feature.tracking.HAnalyticsFacade
 import com.hedvig.app.feature.tracking.HAnalyticsSink
 import com.hedvig.app.feature.tracking.NetworkHAnalyticsSink
@@ -372,12 +373,12 @@ fun getLocale(context: Context, market: Market?): Locale {
 val viewModelModule = module {
     viewModel { ClaimsViewModel(get(), get()) }
     viewModel { ChatViewModel(get(), get(), get(), get(), get(), get()) }
-    viewModel { UserViewModel(get(), get(), get(), get()) }
+    viewModel { UserViewModel(get(), get(), get(), get(), get()) }
     viewModel { RedeemCodeViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
     viewModel { SettingsViewModel(get(), get()) }
     viewModel { DatePickerViewModel() }
-    viewModel { params -> SimpleSignAuthenticationViewModel(params.get(), get(), get(), get()) }
+    viewModel { params -> SimpleSignAuthenticationViewModel(params.get(), get(), get(), get(), get(), get()) }
     viewModel { (data: MultiActionParams) -> MultiActionViewModel(data) }
     viewModel { (componentState: MultiActionItem.Component?, multiActionParams: MultiActionParams) ->
         AddComponentViewModel(
@@ -623,11 +624,11 @@ val repositoriesModule = module {
 val trackerModule = module {
     single<HAnalytics> {
         // Workaround for https://github.com/InsertKoinIO/koin/issues/1146
-        HAnalyticsFacade(getAll<HAnalyticsSink>().distinct())
+        HAnalyticsFacade(getAll<HAnalyticsSink>().distinct(), get())
     }
     single {
         NetworkHAnalyticsSink(get(), get(), get(), get<Context>().getString(R.string.HANALYTICS_URL))
-    } bind HAnalyticsSink::class
+    } bind HAnalyticsSink::class bind ExperimentProvider::class
     single { ApplicationLifecycleTracker(get()) }
 }
 
