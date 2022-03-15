@@ -1,11 +1,9 @@
 package com.hedvig.app.feature.embark.passages.selectaction.ui
 
-import androidx.compose.foundation.layout.Column
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeightIn
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.Card
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.ExperimentalMaterialApi
@@ -15,14 +13,14 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.hedvig.app.R
-import com.hedvig.app.feature.embark.passages.selectaction.SelectActionGrid
 import com.hedvig.app.feature.embark.passages.selectaction.SelectActionParameter
 import com.hedvig.app.ui.compose.composables.CenteredContentWithTopBadge
 import com.hedvig.app.ui.compose.theme.HedvigTheme
@@ -34,7 +32,7 @@ fun SelectActionView(
     modifier: Modifier = Modifier,
 ) {
     SelectActionGrid(
-        modifier = modifier.wrapContentHeight(),
+        modifier = modifier,
         contentPadding = PaddingValues(8.dp),
         insideGridSpace = InsideGridSpace(8.dp)
     ) {
@@ -56,31 +54,26 @@ private fun SelectActionCard(
     text: String,
     badge: String?,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Card(
         onClick = onClick,
-        modifier = Modifier
-            .requiredHeightIn(min = dimensionResource(R.dimen.embark_select_action_min_height))
-            .fillMaxWidth()
+        modifier = modifier.heightIn(min = dimensionResource(R.dimen.embark_select_action_min_height))
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(dimensionResource(R.dimen.base_margin))
-        ) {
-            CenteredContentWithTopBadge(
-                centeredContent = {
-                    Text(
-                        text = text,
-                        style = MaterialTheme.typography.subtitle2,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(8.dp)
-                    )
-                },
-                topContent = badge?.let {
-                    { BadgeText(badge) }
-                }
-            )
-        }
+        CenteredContentWithTopBadge(
+            modifier = Modifier.padding(dimensionResource(R.dimen.base_margin)),
+            centeredContent = {
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.subtitle2,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(8.dp)
+                )
+            },
+            topContent = badge?.let {
+                { BadgeText(badge) }
+            }
+        )
     }
 }
 
@@ -96,20 +89,23 @@ private fun BadgeText(badge: String) {
 }
 
 @Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun SelectActionViewPreview() {
+fun SelectActionViewPreview(
+    @PreviewParameter(SelectActionsCollection::class) selectActions: List<Pair<String, String?>>,
+) {
     HedvigTheme {
         Surface(
             color = MaterialTheme.colors.background,
         ) {
             SelectActionView(
-                selectActions = List(3) { index ->
+                selectActions = selectActions.map { (text, badge) ->
                     SelectActionParameter.SelectAction(
                         link = "",
-                        label = "Index: $index\nPlus some more text",
+                        label = text,
                         keys = emptyList(),
                         values = emptyList(),
-                        badge = "badge"
+                        badge = badge
                     )
                 },
                 onActionClick = { _, _ -> }
@@ -117,3 +113,15 @@ fun SelectActionViewPreview() {
         }
     }
 }
+
+class SelectActionsCollection : CollectionPreviewParameterProvider<List<Pair<String, String?>>>(
+    List(3) { listSize ->
+        List(listSize + 1) { index ->
+            if (index % 2 == 0) {
+                "Text#$index".repeat(10 * (index + 1)) to "badge#$index"
+            } else {
+                "Badgeless#$index".repeat(4 * (index + 1)) to null
+            }
+        }
+    },
+)
