@@ -9,7 +9,6 @@ import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusCardUiState
 
-@OptIn(ExperimentalStdlibApi::class)
 class HomeItemsBuilder {
 
     fun buildItems(
