@@ -6,11 +6,6 @@ enum class Feature(
     val explanation: String,
     val enabledByDefault: Boolean = false
 ) {
-    MOVING_FLOW(
-        "moving_flow",
-        "Moving Flow",
-        "Lets a user change their address and get a new offer"
-    ),
     FRANCE_MARKET(
         "france_market",
         "France Market",

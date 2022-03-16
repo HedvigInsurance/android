@@ -8,16 +8,12 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusCardUiState
-import com.hedvig.app.util.featureflags.Feature
-import com.hedvig.app.util.featureflags.FeatureManager
 
 @OptIn(ExperimentalStdlibApi::class)
-class HomeItemsBuilder(
-    private val featureManager: FeatureManager
-) {
+class HomeItemsBuilder {
 
     fun buildItems(
-        homeData: HomeQuery.Data
+        homeData: HomeQuery.Data,
     ): List<HomeModel> = when {
         homeData.isActive() -> buildActiveItems(homeData)
         homeData.isSwitching() && (homeData.isPending() || homeData.isActiveInFuture()) -> buildSwitchingItems(homeData)
@@ -51,10 +47,8 @@ class HomeItemsBuilder(
                 ).toTypedArray()
             )
         )
-        if (featureManager.isFeatureEnabled(Feature.MOVING_FLOW)) {
-            add(HomeModel.Header(R.string.home_tab_editing_section_title))
-            add(HomeModel.ChangeAddress)
-        }
+        add(HomeModel.Header(R.string.home_tab_editing_section_title))
+        add(HomeModel.ChangeAddress)
     }
 
     private fun buildActiveInFutureItems(homeData: HomeQuery.Data): List<HomeModel> = buildList {
@@ -85,10 +79,8 @@ class HomeItemsBuilder(
             add(HomeModel.StartClaimContained.FirstClaim)
         }
         add(HomeModel.HowClaimsWork(homeData.howClaimsWork))
-        if (featureManager.isFeatureEnabled(Feature.MOVING_FLOW)) {
-            add(HomeModel.Header(R.string.home_tab_editing_section_title))
-            add(HomeModel.ChangeAddress)
-        }
+        add(HomeModel.Header(R.string.home_tab_editing_section_title))
+        add(HomeModel.ChangeAddress)
     }
 
     private fun buildPendingItems(homeData: HomeQuery.Data): List<HomeModel> = buildList {

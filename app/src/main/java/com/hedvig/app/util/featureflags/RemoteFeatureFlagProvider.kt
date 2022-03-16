@@ -28,7 +28,6 @@ class RemoteFeatureFlagProvider(
     }
 
     override fun isFeatureEnabled(feature: Feature) = when (feature) {
-        Feature.MOVING_FLOW -> false
         Feature.FRANCE_MARKET -> false
         Feature.ADDRESS_AUTO_COMPLETE -> false
         Feature.REFERRAL_CAMPAIGN -> {
@@ -41,7 +40,6 @@ class RemoteFeatureFlagProvider(
     }
 
     override fun hasFeature(feature: Feature) = when (feature) {
-        Feature.MOVING_FLOW -> false
         Feature.FRANCE_MARKET -> false
         Feature.ADDRESS_AUTO_COMPLETE -> false
         Feature.REFERRAL_CAMPAIGN -> true
