@@ -209,7 +209,6 @@ dependencies {
     implementation(libs.fragmentViewBindingDelegate)
 
     implementation(libs.okhttp.loggingInterceptor)
-    implementation(libs.okhttp.coroutines)
     androidTestImplementation(libs.okhttp.mockWebServer)
 
     // Todo: Look into if this is the proper way to use boms with version catalogs
