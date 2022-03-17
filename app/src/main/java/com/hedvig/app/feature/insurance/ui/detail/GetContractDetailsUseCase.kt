@@ -13,10 +13,10 @@ import com.hedvig.app.util.featureflags.FeatureManager
 class GetContractDetailsUseCase(
     private val apolloClient: ApolloClient,
     private val localeManager: LocaleManager,
-    featureManager: FeatureManager,
+    private val featureManager: FeatureManager,
 ) {
 
-    private val isMovingFlowEnabled = featureManager.isFeatureEnabled(Feature.MOVING_FLOW)
+    private suspend fun isMovingFlowEnabled() = featureManager.isFeatureEnabled(Feature.MOVING_FLOW)
 
     suspend operator fun invoke(contractId: String): Either<ContractDetailError, ContractDetailViewState> {
         return apolloClient
@@ -27,7 +27,7 @@ class GetContractDetailsUseCase(
                 data.contracts
                     .firstOrNone { it.id == contractId }
                     .toEither { ContractDetailError.ContractNotFoundError }
-                    .map { it.toContractDetailViewState(isMovingFlowEnabled) }
+                    .map { it.toContractDetailViewState(isMovingFlowEnabled()) }
             }
     }
 

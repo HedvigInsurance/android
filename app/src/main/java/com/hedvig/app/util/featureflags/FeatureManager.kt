@@ -36,7 +36,7 @@ data class FeatureManager(
         }
     }
 
-    fun isFeatureEnabled(feature: Feature): Boolean {
+    suspend fun isFeatureEnabled(feature: Feature): Boolean {
         return providers.filter { it.hasFeature(feature) }
             .minByOrNull(FeatureFlagProvider::priority)
             ?.isFeatureEnabled(feature)

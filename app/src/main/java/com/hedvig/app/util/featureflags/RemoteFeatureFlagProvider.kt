@@ -27,7 +27,7 @@ class RemoteFeatureFlagProvider(
         }
     }
 
-    override fun isFeatureEnabled(feature: Feature) = when (feature) {
+    override suspend fun isFeatureEnabled(feature: Feature) = when (feature) {
         Feature.MOVING_FLOW -> false
         Feature.FRANCE_MARKET -> false
         Feature.ADDRESS_AUTO_COMPLETE -> false
@@ -37,6 +37,7 @@ class RemoteFeatureFlagProvider(
                 (marketManager.market == Market.DK && dkCampaignVisible)
         }
         Feature.QUOTE_CART -> false
+        else -> false
     }
 
     override fun hasFeature(feature: Feature) = when (feature) {
@@ -45,5 +46,8 @@ class RemoteFeatureFlagProvider(
         Feature.ADDRESS_AUTO_COMPLETE -> false
         Feature.REFERRAL_CAMPAIGN -> true
         Feature.QUOTE_CART -> false
+        Feature.HEDVIG_TYPE_FACE -> false
+        Feature.KEY_GEAR -> false
+        Feature.EXTERNAL_DATA_COLLECTION -> false
     }
 }

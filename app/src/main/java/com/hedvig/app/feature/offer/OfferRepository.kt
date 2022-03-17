@@ -33,7 +33,7 @@ class OfferRepository(
 ) {
     fun offerQuery(ids: List<String>) = OfferQuery(localeManager.defaultLocale(), ids)
 
-    fun offer(ids: List<String>): SharedFlow<OfferResult> {
+    suspend fun offer(ids: List<String>): SharedFlow<OfferResult> {
         return if (featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
             val subscription = QuoteCartSubscription(localeManager.defaultLocale(), ids.first())
             apolloClient.subscribe(subscription)

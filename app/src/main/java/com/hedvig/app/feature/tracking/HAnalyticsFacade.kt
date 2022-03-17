@@ -9,7 +9,7 @@ interface HAnalyticsSink {
 }
 
 interface ExperimentProvider {
-    fun getExperimentAsync(name: String): HAnalyticsExperiment
+    suspend fun getExperiment(name: String): HAnalyticsExperiment
     suspend fun invalidateExperiments()
     suspend fun loadExperimentsFromServer()
 }
@@ -19,7 +19,7 @@ class HAnalyticsFacade(
     private val experimentProvider: ExperimentProvider,
 ) : HAnalytics() {
     override suspend fun getExperiment(name: String): HAnalyticsExperiment {
-        return experimentProvider.getExperimentAsync(name)
+        return experimentProvider.getExperiment(name)
     }
 
     override suspend fun invalidateExperiments() {

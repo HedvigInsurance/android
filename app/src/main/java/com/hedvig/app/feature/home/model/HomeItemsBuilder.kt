@@ -16,7 +16,7 @@ class HomeItemsBuilder(
     private val featureManager: FeatureManager
 ) {
 
-    fun buildItems(
+    suspend fun buildItems(
         homeData: HomeQuery.Data
     ): List<HomeModel> = when {
         homeData.isActive() -> buildActiveItems(homeData)
@@ -27,7 +27,7 @@ class HomeItemsBuilder(
         else -> listOf(HomeModel.Error)
     }
 
-    private fun buildActiveItems(homeData: HomeQuery.Data): List<HomeModel> = buildList {
+    private suspend fun buildActiveItems(homeData: HomeQuery.Data): List<HomeModel> = buildList {
         addAll(listOfNotNull(*psaItems(homeData.importantMessages).toTypedArray()))
         add(HomeModel.BigText.Active(homeData.member.firstName ?: ""))
         val claimStatusCard: HomeModel.ClaimStatus? = claimStatusCardOrNull(homeData)
@@ -73,7 +73,7 @@ class HomeItemsBuilder(
         claimStatusCardOrNull(homeData)?.let(::add)
     }
 
-    private fun buildTerminatedItems(homeData: HomeQuery.Data): List<HomeModel> = buildList {
+    private suspend fun buildTerminatedItems(homeData: HomeQuery.Data): List<HomeModel> = buildList {
         add(HomeModel.BigText.Terminated(homeData.member.firstName ?: ""))
         add(HomeModel.BodyText.Terminated)
         val claimStatusCard: HomeModel.ClaimStatus? = claimStatusCardOrNull(homeData)

@@ -217,8 +217,6 @@ import com.hedvig.app.util.apollo.DeviceIdInterceptor
 import com.hedvig.app.util.apollo.SunsettingInterceptor
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.hanalytics.HAnalytics
-import java.time.Clock
-import java.util.Locale
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidApplication
@@ -227,6 +225,8 @@ import org.koin.core.parameter.ParametersHolder
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import timber.log.Timber
+import java.time.Clock
+import java.util.Locale
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APPLICATION_ID == "com.hedvig.test.app"
 
@@ -332,19 +332,19 @@ val applicationModule = module {
 
 fun makeUserAgent(context: Context, market: Market?) =
     "${
-        BuildConfig.APPLICATION_ID
+    BuildConfig.APPLICATION_ID
     } ${
-        BuildConfig.VERSION_NAME
+    BuildConfig.VERSION_NAME
     } (Android ${
-        Build.VERSION.RELEASE
+    Build.VERSION.RELEASE
     }; ${
-        Build.BRAND
+    Build.BRAND
     } ${
-        Build.MODEL
+    Build.MODEL
     }; ${
-        Build.DEVICE
+    Build.DEVICE
     }; ${
-        getLocale(context, market).language
+    getLocale(context, market).language
     })"
 
 fun makeLocaleString(context: Context, market: Market?): String = getLocale(context, market).toLanguageTag()
@@ -696,7 +696,7 @@ val sharedPreferencesModule = module {
 }
 
 val featureManagerModule = module {
-    single { FeatureManager(get(), get(), get()) }
+    single { FeatureManager(get(), get(), get(), get()) }
     single { FeatureFlagEntryProvider() }
 }
 

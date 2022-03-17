@@ -55,6 +55,7 @@ import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.app.util.whenApiVersion
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -98,7 +99,9 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 val passage = viewState.passageState.passage
                 actionBar?.title = passage?.name
 
-                transitionToNextPassage(viewState.passageState.navigationDirection, passage)
+                lifecycleScope.launch {
+                    transitionToNextPassage(viewState.passageState.navigationDirection, passage)
+                }
             }
 
             viewModel
@@ -192,7 +195,10 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         }
     }
 
-    private fun transitionToNextPassage(navigationDirection: NavigationDirection, passage: EmbarkStoryQuery.Passage?) {
+    private suspend fun transitionToNextPassage(
+        navigationDirection: NavigationDirection,
+        passage: EmbarkStoryQuery.Passage?
+    ) {
         supportFragmentManager
             .findFragmentByTag("passageFragment")
             ?.exitTransition = MaterialSharedAxis(SHARED_AXIS, navigationDirection == NavigationDirection.FORWARDS)
@@ -216,7 +222,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
             .commit()
     }
 
-    private fun passageFragment(passage: EmbarkStoryQuery.Passage?): Fragment {
+    private suspend fun passageFragment(passage: EmbarkStoryQuery.Passage?): Fragment {
         passage?.action?.asEmbarkSelectAction?.let { options ->
             val parameter = SelectActionParameter.from(
                 passage.messages.map { it.fragments.messageFragment.text },
@@ -384,6 +390,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         }
 
         if (passage?.messages?.isNotEmpty() == true) {
+
             val params = NoActionParameter(passage.messages.map { it.fragments.messageFragment.text })
             return NoActionFragment.newInstance(params)
         }

@@ -88,10 +88,17 @@ class NetworkHAnalyticsSink(
     private val mutex = Mutex()
     private val experimentsData = mutableMapOf<String, String>()
 
-    override fun getExperimentAsync(name: String): HAnalyticsExperiment = experimentsData[name]
-        ?.let { variant ->
-            HAnalyticsExperiment(name, variant)
-        } ?: throw Exception("experiment unavailable")
+    override suspend fun getExperiment(name: String): HAnalyticsExperiment {
+        return mutex.withLock {
+            if (experimentsData.isEmpty()) {
+                loadExperimentsFromServer()
+            }
+
+            experimentsData[name]?.let { variant ->
+                HAnalyticsExperiment(name, variant)
+            } ?: throw Exception("experiment unavailable")
+        }
+    }
 
     override suspend fun invalidateExperiments() {
         mutex.withLock {

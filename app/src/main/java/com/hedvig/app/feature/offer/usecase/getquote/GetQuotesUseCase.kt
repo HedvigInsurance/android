@@ -36,7 +36,7 @@ class GetQuotesUseCase(
         }
     }
 
-    private fun getOffer(id: List<String>): Flow<Result> {
+    private suspend fun getOffer(id: List<String>): Flow<Result> {
         return offerRepository.offer(id).map { offerResult ->
             when (offerResult) {
                 is OfferRepository.OfferResult.Error -> Result.Error(offerResult.message)

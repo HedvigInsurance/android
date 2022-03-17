@@ -9,7 +9,7 @@ class ProductionFeatureFlagProvider(
 
     override val priority = PRODUCTION_PRIORITY
 
-    override fun isFeatureEnabled(feature: Feature) = when (feature) {
+    override suspend fun isFeatureEnabled(feature: Feature) = when (feature) {
         Feature.MOVING_FLOW -> marketManager.market == Market.SE || marketManager.market == Market.NO
         Feature.FRANCE_MARKET -> false
         Feature.ADDRESS_AUTO_COMPLETE -> false
@@ -22,5 +22,8 @@ class ProductionFeatureFlagProvider(
         Feature.ADDRESS_AUTO_COMPLETE -> true
         Feature.REFERRAL_CAMPAIGN -> false
         Feature.QUOTE_CART -> false
+        Feature.HEDVIG_TYPE_FACE -> false
+        Feature.KEY_GEAR -> false
+        Feature.EXTERNAL_DATA_COLLECTION -> false
     }
 }
