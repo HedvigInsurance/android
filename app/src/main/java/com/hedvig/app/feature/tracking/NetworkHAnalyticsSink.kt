@@ -27,12 +27,79 @@ import java.util.Locale
 import java.util.TimeZone
 import java.util.UUID
 
+class ExperimentProviderImpl(
+    private val okHttpClient: OkHttpClient,
+    private val sink: HAnalyticsSink,
+) : ExperimentProvider {
+    private val mutex = Mutex()
+    private val experimentsData = mutableMapOf<String, String>()
+
+    override suspend fun getExperiment(name: String): HAnalyticsExperiment {
+        return mutex.withLock {
+            if (experimentsData.isEmpty()) {
+                loadExperimentsFromServer()
+            }
+
+            experimentsData[name]?.let { variant ->
+                HAnalyticsExperiment(name, variant)
+            } ?: throw Exception("experiment unavailable")
+        }
+    }
+
+    override suspend fun preloadExperiments() {
+        mutex.withLock {
+            loadExperimentsFromServer()
+        }
+    }
+
+    override suspend fun invalidateExperiments() {
+        mutex.withLock {
+            experimentsData.clear()
+        }
+    }
+
+    override suspend fun loadExperimentsFromServer() {
+        withContext(Dispatchers.IO) {
+            val result = okHttpClient
+                .newCall(
+                    Request.Builder()
+                        .url("$baseUrl/experiments")
+                        .header("Content-Type", "application/json")
+                        .post(
+                            (
+                                contextProperties() + jsonObjectOf(
+                                    "trackingId" to deviceId(),
+                                    "sessionId" to sessionId,
+                                    "appName" to "android",
+                                    "appVersion" to BuildConfig.VERSION_NAME,
+                                    "filter" to HAnalytics.EXPERIMENTS,
+                                )
+                                ).toString().toRequestBody()
+                        )
+                        .build()
+                ).await()
+
+            val responseBody = result.body?.string() ?: return@withContext
+            val responseParsed = Json.decodeFromString<List<Experiment>>(responseBody)
+
+            experimentsData.clear()
+            experimentsData.putAll(responseParsed.map { it.name to it.variant })
+            sink.send(
+                HAnalyticsEvent(
+                    "experiments_loaded",
+                    mapOf("experiments" to experimentsData),
+                )
+            )
+        }
+    }
+}
+
 class NetworkHAnalyticsSink(
     private val okHttpClient: OkHttpClient,
     private val context: Context,
     private val deviceIdStore: DeviceIdStore,
     private val baseUrl: String,
-) : HAnalyticsSink, ExperimentProvider {
+) : HAnalyticsSink {
     private val sessionId = UUID.randomUUID()
     override fun send(event: HAnalyticsEvent) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -84,62 +151,6 @@ class NetworkHAnalyticsSink(
         "locale" to "${Locale.getDefault().language}-${Locale.getDefault().country}",
         "timezone" to (TimeZone.getDefault()?.id ?: "undefined"),
     )
-
-    private val mutex = Mutex()
-    private val experimentsData = mutableMapOf<String, String>()
-
-    override suspend fun getExperiment(name: String): HAnalyticsExperiment {
-        return mutex.withLock {
-            if (experimentsData.isEmpty()) {
-                loadExperimentsFromServer()
-            }
-
-            experimentsData[name]?.let { variant ->
-                HAnalyticsExperiment(name, variant)
-            } ?: throw Exception("experiment unavailable")
-        }
-    }
-
-    override suspend fun invalidateExperiments() {
-        mutex.withLock {
-            experimentsData.clear()
-        }
-    }
-
-    override suspend fun loadExperimentsFromServer() {
-        withContext(Dispatchers.IO) {
-            val result = okHttpClient
-                .newCall(
-                    Request.Builder()
-                        .url("$baseUrl/experiments")
-                        .header("Content-Type", "application/json")
-                        .post(
-                            (
-                                contextProperties() + jsonObjectOf(
-                                    "trackingId" to deviceId(),
-                                    "sessionId" to sessionId,
-                                    "appName" to "android",
-                                    "appVersion" to BuildConfig.VERSION_NAME,
-                                    "filter" to HAnalytics.EXPERIMENTS,
-                                )
-                                ).toString().toRequestBody()
-                        )
-                        .build()
-                ).await()
-
-            val responseBody = result.body?.string() ?: return@withContext
-            val responseParsed = Json.decodeFromString<List<Experiment>>(responseBody)
-
-            experimentsData.clear()
-            experimentsData.putAll(responseParsed.map { it.name to it.variant })
-            send(
-                HAnalyticsEvent(
-                    "experiments_loaded",
-                    mapOf("experiments" to experimentsData),
-                )
-            )
-        }
-    }
 }
 
 @Serializable

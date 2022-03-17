@@ -10,6 +10,7 @@ interface HAnalyticsSink {
 
 interface ExperimentProvider {
     suspend fun getExperiment(name: String): HAnalyticsExperiment
+    suspend fun preloadExperiments()
     suspend fun invalidateExperiments()
     suspend fun loadExperimentsFromServer()
 }
@@ -24,10 +25,6 @@ class HAnalyticsFacade(
 
     override suspend fun invalidateExperiments() {
         experimentProvider.invalidateExperiments()
-    }
-
-    suspend fun loadExperimentsFromServer() {
-        experimentProvider.loadExperimentsFromServer()
     }
 
     override fun send(event: HAnalyticsEvent) {

@@ -1,22 +1,22 @@
 package com.hedvig.app.util.featureflags
 
-import com.hedvig.app.feature.tracking.HAnalyticsFacade
+import com.hedvig.hanalytics.HAnalytics
 
 class HAnalyticsFeatureFlagProvider(
-    private val hAnalyticsFacade: HAnalyticsFacade,
+    private val hAnalytics: HAnalytics,
 ) : FeatureFlagProvider {
 
     override val priority = HANALYTICS_PRIORITY
 
     override suspend fun isFeatureEnabled(feature: Feature) = when (feature) {
-        Feature.MOVING_FLOW -> hAnalyticsFacade.movingFlow()
-        Feature.FRANCE_MARKET -> hAnalyticsFacade.frenchMarket()
+        Feature.MOVING_FLOW -> hAnalytics.movingFlow()
+        Feature.FRANCE_MARKET -> hAnalytics.frenchMarket()
         Feature.ADDRESS_AUTO_COMPLETE -> false
-        Feature.REFERRAL_CAMPAIGN -> hAnalyticsFacade.foreverFebruaryCampaign()
-        Feature.QUOTE_CART -> hAnalyticsFacade.useQuoteCart()
-        Feature.HEDVIG_TYPE_FACE -> hAnalyticsFacade.useHedvigLettersFont()
-        Feature.KEY_GEAR -> hAnalyticsFacade.keyGear()
-        Feature.EXTERNAL_DATA_COLLECTION -> hAnalyticsFacade.allowExternalDataCollection()
+        Feature.REFERRAL_CAMPAIGN -> hAnalytics.foreverFebruaryCampaign()
+        Feature.QUOTE_CART -> hAnalytics.useQuoteCart()
+        Feature.HEDVIG_TYPE_FACE -> hAnalytics.useHedvigLettersFont()
+        Feature.KEY_GEAR -> hAnalytics.keyGear()
+        Feature.EXTERNAL_DATA_COLLECTION -> hAnalytics.allowExternalDataCollection()
     }
 
     override fun hasFeature(feature: Feature) = when (feature) {
