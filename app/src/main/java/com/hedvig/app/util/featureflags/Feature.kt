@@ -5,7 +5,6 @@ enum class Feature(
     val title: String,
     val explanation: String,
     val enabledByDefault: Boolean = false,
-    val isFromHAnalytics: Boolean = false,
 ) {
     MOVING_FLOW(
         "moving_flow",
