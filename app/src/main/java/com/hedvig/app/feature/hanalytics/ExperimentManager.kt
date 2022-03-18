@@ -18,6 +18,9 @@ class ExperimentManagerImpl(
     private val mutex = Mutex()
     private val experimentsData = mutableMapOf<String, String>()
 
+    /**
+     * Throwing an exception is a normal behavior, which will result in the experiment returning the default value.
+     */
     override suspend fun getExperiment(name: String): HAnalyticsExperiment {
         return mutex.withLock {
             if (experimentsData.isEmpty()) {
