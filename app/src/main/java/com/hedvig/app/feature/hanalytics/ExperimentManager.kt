@@ -7,7 +7,6 @@ import kotlinx.coroutines.sync.withLock
 
 interface ExperimentManager {
     suspend fun getExperiment(name: String): HAnalyticsExperiment
-    suspend fun preloadExperiments()
     suspend fun invalidateExperiments()
 }
 
@@ -30,12 +29,6 @@ class ExperimentManagerImpl(
             experimentsData[name]?.let { variant ->
                 HAnalyticsExperiment(name, variant)
             } ?: throw Exception("experiment unavailable")
-        }
-    }
-
-    override suspend fun preloadExperiments() {
-        mutex.withLock {
-            loadExperimentsFromServer()
         }
     }
 
