@@ -10,6 +10,7 @@ import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.coroutines.toFlow
 import com.apollographql.apollo.exception.ApolloException
+import com.hedvig.app.util.coroutines.await
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -17,7 +18,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import okhttp3.Call
 import org.json.JSONObject
-import ru.gildor.coroutines.okhttp.await
 import java.io.IOException
 
 suspend fun <T> ApolloCall<T>.safeQuery(): QueryResult<T> {

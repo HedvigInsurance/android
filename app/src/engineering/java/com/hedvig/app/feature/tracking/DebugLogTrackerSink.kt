@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.tracking
 
+import com.hedvig.app.feature.hanalytics.HAnalyticsSink
 import com.hedvig.app.util.toJsonObject
 import com.hedvig.hanalytics.HAnalyticsEvent
 import d
