@@ -73,8 +73,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     private val quoteIds: List<String>
         get() = intent.getStringArrayExtra(QUOTE_IDS)?.toList() ?: emptyList()
     private val quoteCartId: CreateQuoteCartUseCase.QuoteCartId?
-        get() = intent.getParcelableExtra(QUOTE_CART_ID)
-            ?: intent.getStringExtra(QUOTE_CART_ID)?.let { CreateQuoteCartUseCase.QuoteCartId(it) }
+        get() = intent.getStringExtra(QUOTE_CART_ID)?.let { CreateQuoteCartUseCase.QuoteCartId(it) }
     private val shouldShowOnNextAppStart: Boolean
         get() = intent.getBooleanExtra(SHOULD_SHOW_ON_NEXT_APP_START, false)
 
@@ -173,24 +172,16 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     binding.offerScroll.isVisible = viewState !is OfferViewModel.ViewState.Loading
                     when (viewState) {
                         is OfferViewModel.ViewState.Loading -> {}
-                        is OfferViewModel.ViewState.Error -> {
-                            perilsAdapter.submitList(emptyList())
-                            insurableLimitsAdapter.submitList(emptyList())
-                            documentAdapter.submitList(emptyList())
-                            bottomOfferAdapter.submitList(emptyList())
-                            topOfferAdapter.submitList(listOf(OfferItems.Error))
-                            binding.progressBar.isVisible = false
-                            binding.offerScroll.isVisible = true
-                        }
+                        is OfferViewModel.ViewState.Error -> showErrorDialog("Error, please try again") {}
                         is OfferViewModel.ViewState.Content -> {
-                            topOfferAdapter.submitList(viewState.topOfferItems)
-                            perilsAdapter.submitList(viewState.perils)
-                            insurableLimitsAdapter.submitList(viewState.insurableLimitsItems)
-                            documentAdapter.submitList(viewState.documents)
-                            bottomOfferAdapter.submitList(viewState.bottomOfferItems)
+                            topOfferAdapter.submitList(viewState.createTopOfferItems())
+                            perilsAdapter.submitList(viewState.createPerilItems())
+                            insurableLimitsAdapter.submitList(viewState.createInsurableLimitItems())
+                            documentAdapter.submitList(viewState.createDocumentItems())
+                            bottomOfferAdapter.submitList(viewState.createBottomOfferItems())
                             setSignButtonState(
-                                viewState.checkoutMethod,
-                                viewState.checkoutLabel,
+                                viewState.offerModel.checkoutMethod,
+                                viewState.offerModel.checkoutLabel,
                                 viewState.paymentMethods
                             )
 
@@ -303,15 +294,17 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         )
     }
 
-    private fun setTitleVisibility(viewState: OfferViewModel.ViewState.Content) = when (viewState.title) {
-        ViewConfiguration.Title.LOGO -> {
-            binding.toolbarLogo.isVisible = true
-            binding.toolbarTitle.isVisible = false
-        }
-        ViewConfiguration.Title.UPDATE,
-        ViewConfiguration.Title.UNKNOWN -> {
-            binding.toolbarTitle.isVisible = true
-            binding.toolbarLogo.isVisible = false
+    private fun setTitleVisibility(viewState: OfferViewModel.ViewState.Content) {
+        when (viewState.offerModel.quoteBundle.viewConfiguration.title) {
+            ViewConfiguration.Title.LOGO -> {
+                binding.toolbarLogo.isVisible = true
+                binding.toolbarTitle.isVisible = false
+            }
+            ViewConfiguration.Title.UPDATE,
+            ViewConfiguration.Title.UNKNOWN -> {
+                binding.toolbarTitle.isVisible = true
+                binding.toolbarLogo.isVisible = false
+            }
         }
     }
 

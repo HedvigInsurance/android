@@ -14,7 +14,11 @@ data class OfferModel(
     val campaign: Campaign?,
     val checkout: Checkout?,
     val paymentConnection: PaymentConnection?,
-)
+) {
+    val externalProviderId = quoteBundle
+        .quotes
+        .firstNotNullOfOrNull(QuoteBundle.Quote::dataCollectionId)
+}
 
 fun OfferModel.paymentApiResponseOrNull(): PaymentMethodsApiResponse? {
     return paymentConnection

@@ -2,6 +2,7 @@ package com.hedvig.app.feature.offer
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import arrow.core.Either
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.app.R
@@ -15,38 +16,29 @@ import com.hedvig.app.feature.checkout.CheckoutParameter
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
-import com.hedvig.app.feature.offer.model.CheckoutLabel
-import com.hedvig.app.feature.offer.model.CheckoutMethod
 import com.hedvig.app.feature.offer.model.OfferModel
 import com.hedvig.app.feature.offer.model.paymentApiResponseOrNull
 import com.hedvig.app.feature.offer.model.quotebundle.PostSignScreen
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
-import com.hedvig.app.feature.offer.model.quotebundle.ViewConfiguration
-import com.hedvig.app.feature.offer.ui.OfferItems
 import com.hedvig.app.feature.offer.usecase.AddPaymentTokenUseCase
-import com.hedvig.app.feature.offer.usecase.GetPostSignDependenciesUseCase
-import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
+import com.hedvig.app.feature.offer.usecase.ExternalProvider
+import com.hedvig.app.feature.offer.usecase.GetExternalInsuranceProviderUseCase
 import com.hedvig.app.feature.offer.usecase.SignQuotesUseCase
-import com.hedvig.app.feature.offer.usecase.datacollectionresult.DataCollectionResult
-import com.hedvig.app.feature.offer.usecase.datacollectionresult.GetDataCollectionResultUseCase
-import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToDataCollectionStatusUseCase
-import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToDataCollectionStatusUseCase.Status.Content
-import com.hedvig.app.feature.offer.usecase.getquote.GetQuoteIdsUseCase
-import com.hedvig.app.feature.offer.usecase.getquote.GetQuoteUseCase
-import com.hedvig.app.feature.offer.usecase.getquote.GetQuotesUseCase
-import com.hedvig.app.feature.offer.usecase.providerstatus.GetProviderDisplayNameUseCase
 import com.hedvig.app.feature.perils.PerilItem
+import com.hedvig.app.util.ErrorMessage
 import com.hedvig.hanalytics.HAnalytics
 import e
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
@@ -95,11 +87,16 @@ abstract class OfferViewModel : ViewModel() {
         val perils: List<PerilItem.Peril>,
         val insurableLimits: List<InsurableLimitItem.InsurableLimit>,
         val documents: List<DocumentItems.Document>,
-    )
+    ) {
+        constructor(quote: QuoteBundle.Quote) : this(
+            quote.displayName,
+            quote.perils.map { PerilItem.Peril(it) },
+            quote.insurableLimits,
+            quote.insuranceTerms
+        )
+    }
 
-    abstract fun onOpenQuoteDetails(
-        id: String,
-    )
+    abstract fun onOpenQuoteDetails(id: String)
 
     abstract fun approveOffer()
 
@@ -107,24 +104,46 @@ abstract class OfferViewModel : ViewModel() {
         object Loading : ViewState()
         object Error : ViewState()
         data class Content(
-            val topOfferItems: List<OfferItems> = emptyList(),
-            val perils: List<PerilItem> = emptyList(),
-            val documents: List<DocumentItems> = emptyList(),
-            val insurableLimitsItems: List<InsurableLimitItem> = emptyList(),
-            val bottomOfferItems: List<OfferItems> = emptyList(),
-            val checkoutMethod: CheckoutMethod = CheckoutMethod.SIMPLE_SIGN,
-            val checkoutLabel: CheckoutLabel = CheckoutLabel.CONFIRM,
-            val title: ViewConfiguration.Title = ViewConfiguration.Title.LOGO,
+            val offerModel: OfferModel,
             val loginStatus: LoginStatus = LoginStatus.LoggedIn,
-            val paymentMethods: PaymentMethodsApiResponse?
-        ) : ViewState()
+            val paymentMethods: PaymentMethodsApiResponse?,
+            val externalProvider: ExternalProvider?,
+        ) : ViewState() {
+            fun createTopOfferItems() = OfferItemsBuilder.createTopOfferItems(
+                offerModel,
+                externalProvider,
+                paymentMethods,
+            )
+
+            fun createBottomOfferItems() = OfferItemsBuilder.createBottomOfferItems(offerModel)
+
+            fun createPerilItems() = if (offerModel.quoteBundle.quotes.size == 1) {
+                offerModel.quoteBundle.quotes.first().perils.map { PerilItem.Peril(it) }
+            } else {
+                emptyList()
+            }
+
+            fun createDocumentItems() = if (offerModel.quoteBundle.quotes.size == 1) {
+                listOf(DocumentItems.Header(R.string.OFFER_DOCUMENTS_SECTION_TITLE)) +
+                    offerModel.quoteBundle.quotes.first().insuranceTerms
+            } else {
+                emptyList()
+            }
+
+            fun createInsurableLimitItems() = if (offerModel.quoteBundle.quotes.size == 1) {
+                listOf(InsurableLimitItem.Header.Details) +
+                    offerModel.quoteBundle.quotes.first().insurableLimits
+            } else {
+                emptyList()
+            }
+        }
     }
 
     protected sealed class OfferAndLoginStatus {
         object Loading : OfferAndLoginStatus()
         object Error : OfferAndLoginStatus()
         data class Content(
-            val offerResult: OfferModel,
+            val offerModel: OfferModel,
             val loginStatus: LoginStatus,
             val paymentMethods: PaymentMethodsApiResponse?,
         ) : OfferAndLoginStatus()
@@ -142,33 +161,16 @@ class OfferViewModelImpl(
     private var quoteIds: List<String>,
     private val quoteCartId: CreateQuoteCartUseCase.QuoteCartId?,
     private val offerRepository: OfferRepository,
-    private val getQuotesUseCase: GetQuotesUseCase,
-    private val getQuoteIdsUseCase: GetQuoteIdsUseCase,
-    private val getQuoteUseCase: GetQuoteUseCase,
     private val loginStatusService: LoginStatusService,
     private val approveQuotesUseCase: ApproveQuotesUseCase,
-    private val refreshQuotesUseCase: RefreshQuotesUseCase,
     private val signQuotesUseCase: SignQuotesUseCase,
     shouldShowOnNextAppStart: Boolean,
-    private val getPostSignDependenciesUseCase: GetPostSignDependenciesUseCase,
-    subscribeToDataCollectionStatusUseCase: SubscribeToDataCollectionStatusUseCase,
-    private val getDataCollectionResultUseCase: GetDataCollectionResultUseCase,
-    private val getProviderDisplayNameUseCase: GetProviderDisplayNameUseCase,
     private val adyenRepository: AdyenRepository,
     private val chatRepository: ChatRepository,
     private val hAnalytics: HAnalytics,
     private val addPaymentTokenUseCase: AddPaymentTokenUseCase,
+    private val getExternalInsuranceProviderUseCase: GetExternalInsuranceProviderUseCase,
 ) : OfferViewModel() {
-
-    init {
-        loginStatusService.isViewingOffer = shouldShowOnNextAppStart
-        loginStatusService.persistOfferIds(quoteCartId, quoteIds)
-
-        viewModelScope.launch {
-            loadQuoteIds()
-            loadQuotes(quoteIds)
-        }
-    }
 
     private val offerAndLoginStatus: MutableStateFlow<OfferAndLoginStatus> =
         MutableStateFlow(OfferAndLoginStatus.Loading)
@@ -180,51 +182,12 @@ class OfferViewModelImpl(
             OfferAndLoginStatus.Loading -> emit(ViewState.Loading)
             is OfferAndLoginStatus.Content -> {
                 // When we do more than one insurance comparison we will want to get all the dataCollectionIds instead.
-                val insurelyDataCollectionReferenceUuid = offerResponse.offerResult
-                    .quoteBundle
-                    .quotes
-                    .firstNotNullOfOrNull(QuoteBundle.Quote::dataCollectionId)
-
-                if (insurelyDataCollectionReferenceUuid == null) {
-                    emit(
-                        produceViewState(
-                            data = offerResponse.offerResult,
-                            loginStatus = offerResponse.loginStatus,
-                            paymentMethods = offerResponse.paymentMethods,
-                        )
-                    )
+                val externalProviderId = offerResponse.offerModel.externalProviderId
+                if (externalProviderId != null) {
+                    val flow = getExternalInsuranceProviderUseCase.getExternalProvider(externalProviderId)
+                    collectExternalProviderAndCreateViewState(flow, offerResponse)
                 } else {
-                    subscribeToDataCollectionStatusUseCase.invoke(insurelyDataCollectionReferenceUuid)
-                        .collectLatest { dataCollectionStatus ->
-                            coroutineScope {
-                                val dataCollectionResult = async {
-                                    getDataCollectionResultUseCase
-                                        .invoke(insurelyDataCollectionReferenceUuid)
-                                        .let { result ->
-                                            (result as? GetDataCollectionResultUseCase.Result.Success)?.data
-                                        }
-                                }
-                                val insuranceProviderDisplayName = async {
-                                    if (dataCollectionStatus is Content) {
-                                        val insuranceCompany =
-                                            dataCollectionStatus.dataCollectionStatus.insuranceCompany
-                                        getProviderDisplayNameUseCase.invoke(insuranceCompany)
-                                    } else {
-                                        null
-                                    }
-                                }
-                                emit(
-                                    produceViewState(
-                                        offerResponse.offerResult,
-                                        offerResponse.loginStatus,
-                                        offerResponse.paymentMethods,
-                                        dataCollectionStatus,
-                                        dataCollectionResult.await(),
-                                        insuranceProviderDisplayName.await()
-                                    )
-                                )
-                            }
-                        }
+                    createViewState(offerResponse)
                 }
             }
         }
@@ -235,128 +198,90 @@ class OfferViewModelImpl(
             initialValue = ViewState.Loading,
         )
 
-    private suspend fun loadQuoteIds() {
-        getQuoteIdsUseCase.invoke(quoteCartId)
-            .map { it.ids }
-            .fold(
-                ifLeft = { offerAndLoginStatus.value = OfferAndLoginStatus.Error },
-                ifRight = {
-                    hAnalytics.screenViewOffer(it)
-                    quoteIds = it
-                }
+    private suspend fun FlowCollector<ViewState>.collectExternalProviderAndCreateViewState(
+        externalProviderFlow: Flow<ExternalProvider>?,
+        offerResponse: OfferAndLoginStatus.Content
+    ) {
+        externalProviderFlow?.collectLatest { externalProvider ->
+            val viewState = ViewState.Content(
+                offerResponse.offerModel,
+                offerResponse.loginStatus,
+                offerResponse.paymentMethods,
+                externalProvider
             )
-    }
-
-    private suspend fun loadQuotes(quoteIds: List<String>) {
-        getQuotesUseCase.invoke(quoteIds, quoteCartId).collect { result ->
-            result.fold(
-                ifLeft = { offerAndLoginStatus.value = OfferAndLoginStatus.Error },
-                ifRight = { offerModel ->
-                    offerAndLoginStatus.value = OfferAndLoginStatus.Content(
-                        offerResult = offerModel,
-                        loginStatus = loginStatusService.getLoginStatus(),
-                        paymentMethods = offerModel.paymentApiResponseOrNull()
-                            ?: adyenRepository.paymentMethodsResponse()
-                    )
-                }
-            )
+            emit(viewState)
         }
     }
 
-    override fun onOpenCheckout() {
-        _events.trySend(
-            Event.OpenCheckout(
-                CheckoutParameter(
-                    quoteIds = quoteIds,
-                    quoteCartId = quoteCartId
-                )
-            )
+    private suspend fun FlowCollector<ViewState>.createViewState(
+        offerResponse: OfferAndLoginStatus.Content
+    ) {
+        val viewState = ViewState.Content(
+            offerModel = offerResponse.offerModel,
+            loginStatus = offerResponse.loginStatus,
+            paymentMethods = offerResponse.paymentMethods,
+            externalProvider = null
         )
+        emit(viewState)
+    }
+
+    init {
+        loginStatusService.isViewingOffer = shouldShowOnNextAppStart
+        loginStatusService.persistOfferIds(quoteCartId, quoteIds)
+
+        offerRepository.offerFlow(quoteIds)
+            .onEach {
+                offerAndLoginStatus.value = handleOfferResult(it)
+            }
+            .launchIn(viewModelScope)
+
+        viewModelScope.launch {
+            offerRepository.queryAndEmitOffer(quoteCartId, quoteIds)
+        }
+    }
+
+    private suspend fun handleOfferResult(
+        result: Either<ErrorMessage, OfferModel>
+    ): OfferAndLoginStatus = result.fold(
+        ifLeft = { OfferAndLoginStatus.Error },
+        ifRight = { offerModel ->
+            OfferAndLoginStatus.Content(
+                offerModel = offerModel,
+                loginStatus = loginStatusService.getLoginStatus(),
+                paymentMethods = offerModel.paymentApiResponseOrNull() ?: adyenRepository.paymentMethodsResponse()
+            )
+        }
+    )
+
+    override fun onOpenCheckout() {
+        val parameter = CheckoutParameter(quoteIds, quoteCartId)
+        val event = Event.OpenCheckout(parameter)
+        _events.trySend(event)
     }
 
     override fun approveOffer() {
         viewModelScope.launch {
-            offerAndLoginStatus.value = OfferAndLoginStatus.Loading
-            getPostSignDependenciesUseCase.invoke(quoteIds).fold(
-                ifLeft = { offerAndLoginStatus.value = OfferAndLoginStatus.Error },
-                ifRight = { approveQuotes(it) }
+            approveQuotesUseCase.approveQuotesAndClearCache(quoteIds).fold(
+                ifLeft = { handleApproveError(it) },
+                ifRight = { result ->
+                    hAnalytics.quotesSigned(quoteIds)
+                    loginStatusService.isViewingOffer = false
+                    val event = Event.ApproveSuccessful(
+                        startDate = result.date,
+                        postSignScreen = result.postSignScreen,
+                        bundleDisplayName = result.bundleName
+                    )
+                    _events.trySend(event)
+                }
             )
         }
     }
 
-    private suspend fun approveQuotes(postSignResult: GetPostSignDependenciesUseCase.Result) {
-        approveQuotesUseCase.approveQuotesAndClearCache(quoteIds)
-            .mapLeft { handleApproveError(it, postSignResult) }
-            .map { date ->
-                hAnalytics.quotesSigned(quoteIds)
-                loginStatusService.isViewingOffer = false
-                _events.trySend(
-                    Event.ApproveSuccessful(
-                        date,
-                        postSignResult.postSignScreen,
-                        postSignResult.displayName
-                    )
-                )
-            }
-    }
-
-    private fun handleApproveError(
-        error: ApproveQuotesUseCase.Error,
-        postSignResult: GetPostSignDependenciesUseCase.Result
-    ) {
+    private fun handleApproveError(error: ApproveQuotesUseCase.Error) {
         when (error) {
-            ApproveQuotesUseCase.Error.ApproveError -> {
-                _events.trySend(Event.ApproveError(postSignResult.postSignScreen))
-            }
-            is ApproveQuotesUseCase.Error.GeneralError -> {
-                offerAndLoginStatus.value = OfferAndLoginStatus.Error
-            }
+            is ApproveQuotesUseCase.Error.ApproveError -> _events.trySend(Event.ApproveError(error.postSignScreen))
+            is ApproveQuotesUseCase.Error.GeneralError -> offerAndLoginStatus.value = OfferAndLoginStatus.Error
         }
-    }
-
-    private fun produceViewState(
-        data: OfferModel,
-        loginStatus: LoginStatus,
-        paymentMethods: PaymentMethodsApiResponse?,
-        dataCollectionStatus: SubscribeToDataCollectionStatusUseCase.Status? = null,
-        dataCollectionResult: DataCollectionResult? = null,
-        insuranceProviderDisplayName: String? = null,
-    ): ViewState {
-        val topOfferItems = OfferItemsBuilder.createTopOfferItems(
-            data,
-            dataCollectionStatus,
-            dataCollectionResult,
-            insuranceProviderDisplayName,
-            paymentMethods
-        )
-
-        val bottomOfferItems = OfferItemsBuilder.createBottomOfferItems(data)
-
-        return ViewState.Content(
-            topOfferItems = topOfferItems,
-            perils = if (data.quoteBundle.quotes.size == 1) {
-                data.quoteBundle.quotes.first().perils.map { PerilItem.Peril(it) }
-            } else {
-                emptyList()
-            },
-            documents = if (data.quoteBundle.quotes.size == 1) {
-                listOf(DocumentItems.Header(R.string.OFFER_DOCUMENTS_SECTION_TITLE)) +
-                    data.quoteBundle.quotes.first().insuranceTerms
-            } else {
-                emptyList()
-            },
-            insurableLimitsItems = if (data.quoteBundle.quotes.size == 1) {
-                listOf(InsurableLimitItem.Header.Details) +
-                    data.quoteBundle.quotes.first().insurableLimits
-            } else {
-                emptyList()
-            },
-            bottomOfferItems = bottomOfferItems,
-            checkoutLabel = data.checkoutLabel,
-            title = data.quoteBundle.viewConfiguration.title,
-            loginStatus = loginStatus,
-            paymentMethods = paymentMethods
-        )
     }
 
     override fun removeDiscount() {
@@ -374,8 +299,9 @@ class OfferViewModelImpl(
         offerRepository.removeDiscountFromCache(quoteIds)
     }
 
-    override fun writeDiscountToCache(data: RedeemReferralCodeMutation.Data) =
+    override fun writeDiscountToCache(data: RedeemReferralCodeMutation.Data) {
         offerRepository.writeDiscountToCache(quoteIds, data)
+    }
 
     override suspend fun triggerOpenChat() {
         chatRepository.triggerFreeTextChat()
@@ -388,35 +314,24 @@ class OfferViewModelImpl(
 
     override fun onOpenQuoteDetails(id: String) {
         viewModelScope.launch {
-            getQuoteUseCase.invoke(quoteIds, id).fold(
-                ifLeft = { offerAndLoginStatus.value = OfferAndLoginStatus.Error },
-                ifRight = { quote ->
-                    _events.trySend(
-                        Event.OpenQuoteDetails(
-                            QuoteDetailItems(
-                                quote.displayName,
-                                quote.perils.map { PerilItem.Peril(it) },
-                                quote.insurableLimits,
-                                quote.insuranceTerms
-                            )
-                        )
-                    )
-                }
-            )
+            offerRepository.offerFlow(quoteIds)
+                .first()
+                .map { it.quoteBundle.quotes.first { it.id == id } }
+                .fold(
+                    ifLeft = { offerAndLoginStatus.value = OfferAndLoginStatus.Error },
+                    ifRight = { quote ->
+                        val quoteDetailItems = QuoteDetailItems(quote)
+                        val event = Event.OpenQuoteDetails(quoteDetailItems)
+                        _events.trySend(event)
+                    }
+                )
         }
     }
 
     override fun reload() {
         offerAndLoginStatus.value = OfferAndLoginStatus.Loading
         viewModelScope.launch {
-            if (quoteIds.isEmpty()) {
-                loadQuoteIds()
-            }
-
-            when (refreshQuotesUseCase.invoke(quoteIds)) {
-                RefreshQuotesUseCase.Result.Success -> loadQuotes(quoteIds)
-                is RefreshQuotesUseCase.Result.Error -> offerAndLoginStatus.value = OfferAndLoginStatus.Error
-            }
+            offerRepository.queryAndEmitOffer(quoteCartId, quoteIds)
         }
     }
 

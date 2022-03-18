@@ -2,16 +2,18 @@ package com.hedvig.app.feature.checkout
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import arrow.core.Either
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
+import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.model.Checkout
 import com.hedvig.app.feature.offer.model.OfferModel
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
 import com.hedvig.app.feature.offer.usecase.CreateAccessTokenUseCase
 import com.hedvig.app.feature.offer.usecase.SignQuotesUseCase
-import com.hedvig.app.feature.offer.usecase.getquote.GetQuotesUseCase
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.ValidationResult
 import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
@@ -22,7 +24,8 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.money.MonetaryAmount
@@ -30,7 +33,6 @@ import javax.money.MonetaryAmount
 class CheckoutViewModel(
     private val quoteIds: List<String>,
     private val quoteCartId: CreateQuoteCartUseCase.QuoteCartId?,
-    private val getQuotesUseCase: GetQuotesUseCase,
     private val signQuotesUseCase: SignQuotesUseCase,
     private val editQuotesUseCase: EditQuotesUseCase,
     private val createAccessTokenUseCase: CreateAccessTokenUseCase,
@@ -38,21 +40,29 @@ class CheckoutViewModel(
     private val loginStatusService: LoginStatusService,
     private val hAnalytics: HAnalytics,
     private val featureManager: FeatureManager,
+    private val offerRepository: OfferRepository,
 ) : ViewModel() {
 
     init {
         viewModelScope.launch {
-            observeQuotes(quoteIds, quoteCartId)
+            observeQuotes(quoteIds)
+            viewModelScope.launch {
+                offerRepository.queryAndEmitOffer(quoteCartId, quoteIds)
+            }
         }
     }
 
-    private suspend fun observeQuotes(quoteIds: List<String>, quoteCartId: CreateQuoteCartUseCase.QuoteCartId?) {
-        getQuotesUseCase.invoke(quoteIds, quoteCartId).collect { result ->
-            result.fold(
-                ifLeft = { _events.trySend(Event.Error(it.message)) },
-                ifRight = { handleOfferModel(it) }
-            )
-        }
+    private suspend fun observeQuotes(quoteIds: List<String>) {
+        offerRepository.offerFlow(quoteIds)
+            .onEach { handleOfferResult(it) }
+            .launchIn(viewModelScope)
+    }
+
+    private suspend fun handleOfferResult(result: Either<ErrorMessage, OfferModel>) {
+        result.fold(
+            ifLeft = { _events.trySend(Event.Error(it.message)) },
+            ifRight = { handleOfferModel(it) }
+        )
     }
 
     private suspend fun handleOfferModel(model: OfferModel) {

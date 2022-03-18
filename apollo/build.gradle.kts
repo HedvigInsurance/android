@@ -15,7 +15,7 @@ apollo {
             "CheckoutPaymentsAction" to "kotlin.String",
             "CheckoutPaymentAction" to "kotlin.String",
             "JSONString" to "org.json.JSONObject",
-            "Instant" to "java.time.Instant"
+            "Instant" to "java.time.Instant",
         )
     )
     sealedClassesForEnumsMatching.set(
