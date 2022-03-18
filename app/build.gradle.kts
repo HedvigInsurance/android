@@ -208,6 +208,7 @@ dependencies {
     implementation(libs.combineTuple)
     implementation(libs.fragmentViewBindingDelegate)
 
+    implementation(libs.okhttp.core)
     implementation(libs.okhttp.loggingInterceptor)
     androidTestImplementation(libs.okhttp.mockWebServer)
 

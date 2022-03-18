@@ -201,6 +201,7 @@ mockk-jvm = { module = "io.mockk:mockk", version.ref = "mockk" }
 
 moneta = { module = "org.javamoney:moneta", version.ref = "moneta" }
 
+okhttp-core = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 okhttp-loggingInterceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
 okhttp-mockWebServer = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }
 
