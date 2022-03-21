@@ -14,7 +14,6 @@ class HAnalyticsFeatureFlagProvider(
         Feature.ADDRESS_AUTO_COMPLETE -> false
         Feature.REFERRAL_CAMPAIGN -> hAnalytics.foreverFebruaryCampaign()
         Feature.QUOTE_CART -> hAnalytics.useQuoteCart()
-        Feature.HEDVIG_TYPE_FACE -> hAnalytics.useHedvigLettersFont()
         Feature.KEY_GEAR -> hAnalytics.keyGear()
         Feature.EXTERNAL_DATA_COLLECTION -> hAnalytics.allowExternalDataCollection()
     }
@@ -25,7 +24,6 @@ class HAnalyticsFeatureFlagProvider(
         Feature.ADDRESS_AUTO_COMPLETE -> false
         Feature.REFERRAL_CAMPAIGN -> true
         Feature.QUOTE_CART -> true
-        Feature.HEDVIG_TYPE_FACE -> true
         Feature.KEY_GEAR -> true
         Feature.EXTERNAL_DATA_COLLECTION -> true
     }

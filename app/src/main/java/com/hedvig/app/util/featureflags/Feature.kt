@@ -35,12 +35,6 @@ enum class Feature(
         "Use new APIs for onboarding",
         false
     ),
-    HEDVIG_TYPE_FACE(
-        "hedvig_type_face",
-        "Use hedvig type face",
-        "Replaces all text with Hedvigs own type face",
-        true
-    ),
     KEY_GEAR(
         "key_gear",
         "Key Gear",

@@ -46,7 +46,6 @@ class RemoteFeatureFlagProvider(
         Feature.ADDRESS_AUTO_COMPLETE -> false
         Feature.REFERRAL_CAMPAIGN -> true
         Feature.QUOTE_CART -> false
-        Feature.HEDVIG_TYPE_FACE -> false
         Feature.KEY_GEAR -> false
         Feature.EXTERNAL_DATA_COLLECTION -> false
     }

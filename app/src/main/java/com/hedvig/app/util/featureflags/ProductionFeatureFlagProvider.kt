@@ -22,7 +22,6 @@ class ProductionFeatureFlagProvider(
         Feature.ADDRESS_AUTO_COMPLETE -> true
         Feature.REFERRAL_CAMPAIGN -> false
         Feature.QUOTE_CART -> false
-        Feature.HEDVIG_TYPE_FACE -> false
         Feature.KEY_GEAR -> false
         Feature.EXTERNAL_DATA_COLLECTION -> false
     }

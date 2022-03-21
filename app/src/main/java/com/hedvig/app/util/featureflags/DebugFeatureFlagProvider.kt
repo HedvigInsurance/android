@@ -19,7 +19,6 @@ class DebugFeatureFlagProvider(
         Feature.ADDRESS_AUTO_COMPLETE -> isEnabled(Feature.ADDRESS_AUTO_COMPLETE, defaultValue = true)
         Feature.REFERRAL_CAMPAIGN -> isEnabled(Feature.REFERRAL_CAMPAIGN, defaultValue = false)
         Feature.QUOTE_CART -> isEnabled(Feature.QUOTE_CART, defaultValue = false)
-        Feature.HEDVIG_TYPE_FACE -> isEnabled(Feature.HEDVIG_TYPE_FACE, defaultValue = false)
         Feature.KEY_GEAR -> isEnabled(Feature.KEY_GEAR, defaultValue = false)
         Feature.EXTERNAL_DATA_COLLECTION -> isEnabled(Feature.EXTERNAL_DATA_COLLECTION, defaultValue = false)
     }
