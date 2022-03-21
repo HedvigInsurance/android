@@ -11,7 +11,6 @@ class HAnalyticsFeatureFlagProvider(
     override suspend fun isFeatureEnabled(feature: Feature) = when (feature) {
         Feature.MOVING_FLOW -> hAnalytics.movingFlow()
         Feature.FRANCE_MARKET -> hAnalytics.frenchMarket()
-        Feature.ADDRESS_AUTO_COMPLETE -> false
         Feature.REFERRAL_CAMPAIGN -> hAnalytics.foreverFebruaryCampaign()
         Feature.QUOTE_CART -> hAnalytics.useQuoteCart()
         Feature.KEY_GEAR -> hAnalytics.keyGear()
@@ -21,7 +20,6 @@ class HAnalyticsFeatureFlagProvider(
     override fun hasFeature(feature: Feature) = when (feature) {
         Feature.MOVING_FLOW -> true
         Feature.FRANCE_MARKET -> true
-        Feature.ADDRESS_AUTO_COMPLETE -> false
         Feature.REFERRAL_CAMPAIGN -> true
         Feature.QUOTE_CART -> true
         Feature.KEY_GEAR -> true

@@ -17,12 +17,6 @@ enum class Feature(
         "Used to select french market in app",
         false
     ),
-    ADDRESS_AUTO_COMPLETE(
-        "address_auto_complete",
-        "Embark component for autocompleting address",
-        "Used in danish onboarding",
-        false
-    ),
     REFERRAL_CAMPAIGN(
         "referral_campaign",
         "Referral Campaign",

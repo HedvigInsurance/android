@@ -3,7 +3,6 @@ package com.hedvig.app.feature.marketpicker
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentMarketSelectedBinding
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
@@ -14,10 +13,8 @@ import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsetsMargin
 import com.hedvig.app.util.extensions.view.applyStatusBarInsetsMargin
 import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
-import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
@@ -53,10 +50,7 @@ class MarketSelectedFragment : Fragment(R.layout.fragment_market_selected) {
             }
 
             signUp.setHapticClickListener {
-                lifecycleScope.launch {
-                    val dkAddressAutocomplete = featureManager.isFeatureEnabled(Feature.ADDRESS_AUTO_COMPLETE)
-                    marketManager.market?.openOnboarding(requireContext(), dkAddressAutocomplete)
-                }
+                marketManager.market?.openOnboarding(requireContext())
             }
 
             logIn.setHapticClickListener {

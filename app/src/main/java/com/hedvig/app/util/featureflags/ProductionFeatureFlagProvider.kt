@@ -12,14 +12,12 @@ class ProductionFeatureFlagProvider(
     override suspend fun isFeatureEnabled(feature: Feature) = when (feature) {
         Feature.MOVING_FLOW -> marketManager.market == Market.SE || marketManager.market == Market.NO
         Feature.FRANCE_MARKET -> false
-        Feature.ADDRESS_AUTO_COMPLETE -> false
         else -> false
     }
 
     override fun hasFeature(feature: Feature) = when (feature) {
         Feature.MOVING_FLOW -> true
         Feature.FRANCE_MARKET -> true
-        Feature.ADDRESS_AUTO_COMPLETE -> true
         Feature.REFERRAL_CAMPAIGN -> false
         Feature.QUOTE_CART -> false
         Feature.KEY_GEAR -> false
