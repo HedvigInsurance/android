@@ -29,6 +29,12 @@ enum class Feature(
         "Use new APIs for onboarding",
         false
     ),
+    CONNECT_PAYMENT_AT_SIGN(
+        "CONNECT_PAYMENT_AT_SIGN",
+        "Connect payment at sign",
+        "Connecting payment at sign, to avoid missing payments",
+        true
+    ),
     KEY_GEAR(
         "key_gear",
         "Key Gear",

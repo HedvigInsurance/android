@@ -37,6 +37,7 @@ class RemoteFeatureFlagProvider(
                 (marketManager.market == Market.DK && dkCampaignVisible)
         }
         Feature.QUOTE_CART -> false
+        Feature.CONNECT_PAYMENT_AT_SIGN -> false
         else -> false
     }
 
@@ -46,6 +47,7 @@ class RemoteFeatureFlagProvider(
         Feature.ADDRESS_AUTO_COMPLETE -> false
         Feature.REFERRAL_CAMPAIGN -> true
         Feature.QUOTE_CART -> false
+        Feature.CONNECT_PAYMENT_AT_SIGN -> false
         Feature.KEY_GEAR -> false
         Feature.EXTERNAL_DATA_COLLECTION -> false
     }

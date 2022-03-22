@@ -2,10 +2,10 @@ package com.hedvig.app.feature.addressautocompletion.model
 
 class DanishAddressInput private constructor(
     val rawText: String,
-    val selectedDanishAddress: DanishAddress? = null,
+    val selectedAddress: DanishAddress? = null,
 ) {
     val isEmptyInput: Boolean
-        get() = selectedDanishAddress == null && rawText.isEmpty()
+        get() = selectedAddress == null && rawText.isEmpty()
 
     fun withNewText(newText: String): DanishAddressInput {
         return DanishAddressInput(newText)
@@ -14,15 +14,15 @@ class DanishAddressInput private constructor(
     fun withSelectedAddress(address: DanishAddress): DanishAddressInput {
         return DanishAddressInput(
             rawText = address.toPresentableTextPair().first,
-            selectedDanishAddress = address,
+            selectedAddress = address,
         )
     }
 
     companion object {
-        fun fromDanishAddress(danishAddress: DanishAddress?): DanishAddressInput {
+        fun fromDanishAddress(address: DanishAddress?): DanishAddressInput {
             return DanishAddressInput(
-                rawText = danishAddress?.toPresentableTextPair()?.first ?: "",
-                selectedDanishAddress = danishAddress,
+                rawText = address?.toPresentableTextPair()?.first ?: "",
+                selectedAddress = address,
             )
         }
     }

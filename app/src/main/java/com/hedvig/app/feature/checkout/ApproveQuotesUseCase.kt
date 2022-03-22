@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.offer.ui.checkout
+package com.hedvig.app.feature.checkout
 
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.SignQuotesMutation

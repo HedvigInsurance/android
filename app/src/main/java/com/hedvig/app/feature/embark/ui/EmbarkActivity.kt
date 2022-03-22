@@ -58,6 +58,7 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
+import kotlin.time.Duration.Companion.milliseconds
 
 class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
 
@@ -406,8 +407,8 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         private const val SHARED_AXIS = MaterialSharedAxis.X
         internal const val STORY_NAME = "STORY_NAME"
         internal const val STORY_TITLE = "STORY_TITLE"
-        internal const val PASSAGE_ANIMATION_DELAY_MILLIS = 150L
-        internal const val KEY_BOARD_DELAY_MILLIS = 450L
+        internal val PASSAGE_ANIMATION_DELAY_DURATION = 150.milliseconds
+        internal val KEYBOARD_HIDE_DELAY_DURATION = 450.milliseconds
 
         fun newInstance(context: Context, storyName: String, storyTitle: String) =
             Intent(context, EmbarkActivity::class.java).apply {

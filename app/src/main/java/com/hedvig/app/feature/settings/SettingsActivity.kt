@@ -125,6 +125,9 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
                         lp.entries = resources.getStringArray(R.array.language_settings_dk)
                         lp.entryValues = resources.getStringArray(R.array.language_settings_values_dk)
                     }
+                    Market.FR,
+                    null,
+                    -> {}
                 }
                 lp.setOnPreferenceChangeListener { _, newValue ->
                     (newValue as? String)?.let { v ->

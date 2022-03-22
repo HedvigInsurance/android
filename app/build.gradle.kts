@@ -9,7 +9,7 @@ plugins {
     id("kotlin-parcelize")
     id("kotlin-kapt")
     id("com.hedvig.android.lokalise")
-    kotlin("plugin.serialization") version "1.5.31"
+    kotlin("plugin.serialization") version "1.6.10"
 }
 
 apply(plugin = "com.jaredsburrows.license")
@@ -41,7 +41,7 @@ android {
         applicationId = "com.hedvig"
 
         versionCode = 43
-        versionName = "6.4.3"
+        versionName = "6.5.3"
 
         vectorDrawables.useSupportLibrary = true
 

@@ -2,9 +2,9 @@ package com.hedvig.app.feature.offer
 
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.R
+import com.hedvig.app.feature.checkout.CheckoutActivity
+import com.hedvig.app.feature.checkout.CheckoutParameter
 import com.hedvig.app.feature.offer.ui.OfferActivity
-import com.hedvig.app.feature.offer.ui.checkout.CheckoutActivity
-import com.hedvig.app.feature.offer.ui.checkout.CheckoutParameter
 import com.hedvig.app.testdata.feature.offer.BUNDLE_GROSS_COST
 import com.hedvig.app.testdata.feature.offer.BUNDLE_NAME
 import com.hedvig.app.testdata.feature.offer.BUNDLE_NET_COST

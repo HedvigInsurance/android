@@ -46,8 +46,8 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
     private fun getLoginStatusAndNavigate(intent: Intent) {
         lifecycleScope.launch {
             when (val loginStatus = loggedInService.getLoginStatus()) {
-                LoginStatus.ONBOARDING,
-                LoginStatus.LOGGED_IN -> {
+                LoginStatus.Onboarding,
+                LoginStatus.LoggedIn -> {
                     val dynamicLink = getDynamicLinkFromFirebase(intent)
                     model.onDynamicLinkOpened(dynamicLink)
                     dynamicLink.startActivity(
@@ -56,27 +56,34 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
                         onDefault = { startDefaultActivity(loginStatus) }
                     )
                 }
-                LoginStatus.IN_OFFER -> startDefaultActivity(loginStatus)
+                is LoginStatus.InOffer -> startDefaultActivity(loginStatus)
             }
         }
     }
 
     @SuppressLint("ApplySharedPref")
     private fun startDefaultActivity(loginStatus: LoginStatus) = when (loginStatus) {
-        LoginStatus.ONBOARDING -> {
+        LoginStatus.Onboarding -> {
             runSplashAnimation {
                 startActivity(MarketingActivity.newInstance(this))
             }
         }
-        LoginStatus.IN_OFFER -> {
+        is LoginStatus.InOffer -> {
             if (marketManager.market == null) {
                 marketManager.market = Market.SE
             }
             runSplashAnimation {
-                startActivity(Intent(this, OfferActivity::class.java))
+                startActivity(
+                    OfferActivity.newInstance(
+                        context = this,
+                        quoteIds = loginStatus.quoteIds.toList(),
+                        quoteCartId = loginStatus.quoteCartId,
+                        shouldShowOnNextAppStart = true
+                    )
+                )
             }
         }
-        LoginStatus.LOGGED_IN -> {
+        LoginStatus.LoggedIn -> {
             // Upcast everyone that were logged in before Norway launch to be in the Swedish market
             if (marketManager.market == null) {
                 marketManager.market = Market.SE

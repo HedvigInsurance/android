@@ -292,6 +292,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                     )
                 }
             }
+            null -> {}
         }
         return true
     }
@@ -447,7 +448,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
             withoutHistory: Boolean = false,
             initialTab: LoggedInTabs = LoggedInTabs.HOME,
             isFromOnboarding: Boolean = false,
-            showRatingDialog: Boolean = false
+            showRatingDialog: Boolean = false,
         ) = Intent(context, LoggedInActivity::class.java).apply {
             if (withoutHistory) {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

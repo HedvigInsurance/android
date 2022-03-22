@@ -56,6 +56,7 @@ import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.compose.preview.previewData
 import com.hedvig.app.util.compose.preview.previewList
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -69,7 +70,7 @@ fun AddressAutoCompleteScreen(
     val focusRequester = remember { FocusRequester() }
     val keyboardController: SoftwareKeyboardController? = LocalSoftwareKeyboardController.current
     LaunchedEffect(Unit) {
-        delay(100) // Without a delay the keyboard has a low success rate of showing. 100 seems to always work.
+        delay(100.milliseconds) // A delay of 100 milliseconds ensures that the keyboard shows reliably.
         focusRequester.requestFocus()
         keyboardController?.show()
     }
@@ -79,28 +80,7 @@ fun AddressAutoCompleteScreen(
     }
     Scaffold(
         topBar = {
-            Surface(
-                color = MaterialTheme.colors.background,
-            ) {
-                Column {
-                    CenterAlignedTopAppBar(
-                        title = stringResource(R.string.EMBARK_ADDRESS_AUTOCOMPLETE_ADDRESS),
-                        onClick = { cancelAutoCompletion() },
-                        backgroundColor = MaterialTheme.colors.background,
-                        contentPadding = rememberInsetsPaddingValues(
-                            insets = LocalWindowInsets.current.statusBars,
-                            applyBottom = false
-                        ),
-                    )
-                    AddressInput(
-                        viewState = viewState,
-                        setNewTextInput = setNewTextInput,
-                        focusRequester = focusRequester,
-                        closeKeyboard = closeKeyboard,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                    )
-                }
-            }
+            TopAppBar(viewState, cancelAutoCompletion, setNewTextInput, focusRequester, closeKeyboard)
         },
         backgroundColor = MaterialTheme.colors.surface
     ) { paddingValues ->
@@ -122,6 +102,38 @@ fun AddressAutoCompleteScreen(
             ),
             modifier = Modifier.padding(paddingValues)
         )
+    }
+}
+
+@Composable
+private fun TopAppBar(
+    viewState: AddressAutoCompleteViewState,
+    cancelAutoCompletion: () -> Unit,
+    setNewTextInput: (String) -> Unit,
+    focusRequester: FocusRequester,
+    closeKeyboard: () -> Unit,
+) {
+    Surface(
+        color = MaterialTheme.colors.background,
+    ) {
+        Column {
+            CenterAlignedTopAppBar(
+                title = stringResource(R.string.EMBARK_ADDRESS_AUTOCOMPLETE_ADDRESS),
+                onClick = { cancelAutoCompletion() },
+                backgroundColor = MaterialTheme.colors.background,
+                contentPadding = rememberInsetsPaddingValues(
+                    insets = LocalWindowInsets.current.statusBars,
+                    applyBottom = false
+                ),
+            )
+            AddressInput(
+                viewState = viewState,
+                setNewTextInput = setNewTextInput,
+                focusRequester = focusRequester,
+                closeKeyboard = closeKeyboard,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            )
+        }
     }
 }
 
@@ -150,8 +162,8 @@ private fun AddressInput(
                     )
                 )
             }
-            LaunchedEffect(viewState.input.selectedDanishAddress) {
-                if (viewState.input.selectedDanishAddress == null) return@LaunchedEffect
+            LaunchedEffect(viewState.input.selectedAddress) {
+                if (viewState.input.selectedAddress == null) return@LaunchedEffect
                 textFieldValue = textFieldValue.copy(
                     text = viewState.input.rawText,
                     selection = TextRange(viewState.input.rawText.length),
@@ -180,7 +192,7 @@ private fun AddressInput(
                     .focusRequester(focusRequester)
                     .fillMaxWidth()
             )
-            val numberAndCity = viewState.input.selectedDanishAddress?.toPresentableTextPair()?.second
+            val numberAndCity = viewState.input.selectedAddress?.toPresentableTextPair()?.second
             AnimatedVisibility(numberAndCity != null) {
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                     numberAndCity?.let {
@@ -203,11 +215,9 @@ private fun SuggestionsList(
 ) {
     val lazyListState = rememberLazyListState()
     LaunchedEffect(viewState.results) {
-        // TODO this crashes the app somehow with an compose internal crash. Must see if this is fixed in later versions
-        //  java.lang.IllegalStateException: LayoutNode should be attached to an owner
-//        if (viewState.results.isNotEmpty()) {
-//            lazyListState.animateScrollToItem(0)
-//        }
+        if (viewState.results.isNotEmpty()) {
+            lazyListState.animateScrollToItem(0)
+        }
     }
     LazyColumn(
         modifier = modifier,
@@ -254,7 +264,6 @@ fun AddressAutoCompleteScreenPreview() {
             AddressAutoCompleteScreen(
                 AddressAutoCompleteViewState(
                     input = DanishAddressInput.fromDanishAddress(previewDanishAddress),
-                    true,
                     results = DanishAddress.previewList(),
                 ),
                 {},

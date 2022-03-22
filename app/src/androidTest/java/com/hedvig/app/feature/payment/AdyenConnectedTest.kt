@@ -47,21 +47,21 @@ class AdyenConnectedTest : TestCase() {
                     cardType {
                         hasText(
                             PAYMENT_DATA_ADYEN_CONNECTED
-                                .activePaymentMethods!!
+                                .activePaymentMethodsV2!!
                                 .fragments
                                 .activePaymentMethodsFragment
-                                .storedPaymentMethodsDetails
-                                .brand!!
+                                .asStoredCardDetails
+                            !!.brand!!
                         )
                     }
                     maskedCardNumber {
                         containsText(
                             PAYMENT_DATA_ADYEN_CONNECTED
-                                .activePaymentMethods!!
+                                .activePaymentMethodsV2!!
                                 .fragments
                                 .activePaymentMethodsFragment
-                                .storedPaymentMethodsDetails
-                                .lastFourDigits
+                                .asStoredCardDetails
+                            !!.lastFourDigits
                         )
                     }
                 }

@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.impersonation
 
-import android.content.Context
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
@@ -39,6 +38,7 @@ import org.koin.core.context.loadKoinModules
 import org.koin.core.context.unloadKoinModules
 import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
+import kotlin.time.Duration.Companion.milliseconds
 
 class ImpersonationReceiverActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -86,7 +86,7 @@ class ImpersonationReceiverActivity : AppCompatActivity() {
     companion object {
         val module = module {
             viewModel { params ->
-                ImpersonationReceiverViewModel(params.get(), get(), get(), get(), get())
+                ImpersonationReceiverViewModel(params.get(), get(), get(), get())
             }
         }
     }
@@ -97,7 +97,6 @@ class ImpersonationReceiverViewModel(
     apolloClient: ApolloClient,
     authenticationTokenService: AuthenticationTokenService,
     loginStatusService: LoginStatusService,
-    context: Context,
 ) : ViewModel() {
     sealed class ViewState {
         object Loading : ViewState()
@@ -136,7 +135,7 @@ class ImpersonationReceiverViewModel(
                     authenticationTokenService.authenticationToken = newToken
                     loginStatusService.isLoggedIn = true
                     _state.value = ViewState.Success
-                    delay(500)
+                    delay(500.milliseconds)
                     _events.send(Event)
                 }
             }

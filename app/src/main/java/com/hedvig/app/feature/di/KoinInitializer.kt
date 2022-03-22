@@ -18,6 +18,7 @@ import com.hedvig.app.deviceIdStoreModule
 import com.hedvig.app.embarkModule
 import com.hedvig.app.externalInsuranceModule
 import com.hedvig.app.featureManagerModule
+import com.hedvig.app.graphQLQueryModule
 import com.hedvig.app.homeModule
 import com.hedvig.app.insuranceModule
 import com.hedvig.app.insurelyAuthModule
@@ -104,6 +105,7 @@ class KoinInitializer : Initializer<KoinApplication> {
                 externalInsuranceModule,
                 insurelyAuthModule,
                 deviceIdStoreModule,
+                graphQLQueryModule,
             )
         )
     }

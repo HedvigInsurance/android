@@ -111,7 +111,7 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
                 PaymentModel.Link.TrustlyChangePayin,
             )
         }
-        paymentData.activePaymentMethods?.let { activePaymentMethods ->
+        paymentData.activePaymentMethodsV2?.let { activePaymentMethods ->
             return arrayOf(
                 PaymentModel.AdyenPayinDetails(activePaymentMethods),
                 PaymentModel.Link.AdyenChangePayin,

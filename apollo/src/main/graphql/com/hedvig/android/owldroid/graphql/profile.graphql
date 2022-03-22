@@ -21,9 +21,7 @@ query Profile {
   bankAccount {
     directDebitStatus
   }
-  activePaymentMethods {
-    storedPaymentMethodsDetails {
-      id
-    }
+  activePaymentMethodsV2 {
+    ...ActivePaymentMethodsFragment
   }
 }

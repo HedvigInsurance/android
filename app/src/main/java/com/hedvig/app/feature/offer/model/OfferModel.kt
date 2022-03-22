@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.offer.model
 
+import com.hedvig.android.owldroid.fragment.QuoteCartFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
-import com.hedvig.android.owldroid.graphql.QuoteCartSubscription
 import com.hedvig.app.feature.offer.model.quotebundle.Campaign
 import com.hedvig.app.feature.offer.model.quotebundle.CheckoutMethod
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
@@ -31,7 +31,7 @@ fun OfferQuery.Data.toOfferModel() = OfferModel(
     )
 )
 
-fun QuoteCartSubscription.QuoteCart.toOfferModel() = OfferModel(
+fun QuoteCartFragment.toOfferModel() = OfferModel(
     quoteBundle = bundle!!.fragments.quoteBundleFragment.toQuoteBundle(),
     checkoutMethod = checkoutMethods.map { it.toCheckoutMethod() }.first(),
     checkoutLabel = checkoutLabel(),

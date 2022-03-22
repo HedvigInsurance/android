@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.offer
 
+import arrow.core.NonEmptyList
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.api.cache.http.HttpCachePolicy
@@ -9,6 +10,7 @@ import com.apollographql.apollo.fetcher.ApolloResponseFetchers
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.QuoteBundleFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
+import com.hedvig.android.owldroid.graphql.QuoteCartQuery
 import com.hedvig.android.owldroid.graphql.QuoteCartSubscription
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.RemoveDiscountCodeMutation
@@ -16,15 +18,13 @@ import com.hedvig.app.feature.offer.model.OfferModel
 import com.hedvig.app.feature.offer.model.toOfferModel
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.QueryResult
+import com.hedvig.app.util.apollo.safeQuery
 import com.hedvig.app.util.apollo.safeSubscription
 import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.onStart
 
 class OfferRepository(
     private val apolloClient: ApolloClient,
@@ -33,20 +33,26 @@ class OfferRepository(
 ) {
     fun offerQuery(ids: List<String>) = OfferQuery(localeManager.defaultLocale(), ids)
 
-    suspend fun offer(ids: List<String>): SharedFlow<OfferResult> {
+    fun offer(ids: NonEmptyList<String>): Flow<OfferResult> {
         return if (featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
             val subscription = QuoteCartSubscription(localeManager.defaultLocale(), ids.first())
             apolloClient.subscribe(subscription)
                 .safeSubscription()
                 .map { it.toResult() }
-                .shareIn(CoroutineScope(SupervisorJob()), started = SharingStarted.Lazily)
+                .onStart {
+                    val query = QuoteCartQuery(localeManager.defaultLocale(), ids.first())
+                    val result = apolloClient
+                        .query(query)
+                        .safeQuery()
+                        .toOfferResult()
+                    emit(result)
+                }
         } else {
             apolloClient
                 .query(offerQuery(ids))
                 .watcher()
                 .toFlow()
                 .map { it.toResult() }
-                .shareIn(CoroutineScope(SupervisorJob()), started = SharingStarted.Lazily)
         }
     }
 
@@ -63,9 +69,15 @@ class OfferRepository(
 
     private fun QueryResult<QuoteCartSubscription.Data>.toResult(): OfferResult = when (this) {
         is QueryResult.Error -> OfferResult.Error(message)
-        is QueryResult.Success -> data.quoteCart?.toOfferModel()
+        is QueryResult.Success -> data.quoteCart?.fragments?.quoteCartFragment?.toOfferModel()
             ?.let { OfferResult.Success(it) }
             ?: OfferResult.Error()
+    }
+
+    private fun QueryResult<QuoteCartQuery.Data>.toOfferResult(): OfferResult = when (this) {
+        is QueryResult.Error -> OfferResult.Error(message)
+        is QueryResult.Success -> data.quoteCart.fragments.quoteCartFragment.toOfferModel()
+            .let { OfferResult.Success(it) }
     }
 
     fun writeDiscountToCache(ids: List<String>, data: RedeemReferralCodeMutation.Data) {

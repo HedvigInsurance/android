@@ -64,6 +64,7 @@ class TerminatedContractsActivity : BaseActivity(R.layout.terminated_contracts_a
                             )
                             recycler.post { startPostponedEnterTransition() }
                         }
+                        TerminatedContractsViewModel.ViewState.Loading -> {}
                     }
                 }
                 .launchIn(lifecycleScope)
@@ -92,7 +93,7 @@ class TerminatedContractsViewModel(
 
     fun load() {
         viewModelScope.launch {
-            when (val result = getContractsUseCase()) {
+            when (val result = getContractsUseCase.invoke()) {
                 is GetContractsUseCase.InsuranceResult.Error -> _viewState.value = ViewState.Error
                 is GetContractsUseCase.InsuranceResult.Insurance -> {
                     _viewState.value = ViewState.Success(items(result.insurance))

@@ -48,6 +48,9 @@ import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.feature.chat.service.ChatNotificationSender
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
+import com.hedvig.app.feature.checkout.ApproveQuotesUseCase
+import com.hedvig.app.feature.checkout.CheckoutViewModel
+import com.hedvig.app.feature.checkout.EditQuotesUseCase
 import com.hedvig.app.feature.claimdetail.data.GetClaimDetailUiStateFlowUseCase
 import com.hedvig.app.feature.claimdetail.data.GetClaimDetailUseCase
 import com.hedvig.app.feature.claimdetail.ui.ClaimDetailViewModel
@@ -147,11 +150,9 @@ import com.hedvig.app.feature.offer.OfferViewModelImpl
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetViewModel
 import com.hedvig.app.feature.offer.ui.changestartdate.EditStartDateUseCase
-import com.hedvig.app.feature.offer.ui.checkout.ApproveQuotesUseCase
-import com.hedvig.app.feature.offer.ui.checkout.CheckoutViewModel
-import com.hedvig.app.feature.offer.ui.checkout.SignQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.GetPostSignDependenciesUseCase
 import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
+import com.hedvig.app.feature.offer.usecase.SignQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.datacollectionresult.GetDataCollectionResultUseCase
 import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToDataCollectionStatusUseCase
 import com.hedvig.app.feature.offer.usecase.getquote.GetQuoteIdsUseCase
@@ -191,6 +192,10 @@ import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignViewModel
 import com.hedvig.app.feature.swedishbankid.sign.usecase.ManuallyRecheckSwedishBankIdSignStatusUseCase
 import com.hedvig.app.feature.swedishbankid.sign.usecase.SubscribeToSwedishBankIdSignStatusUseCase
 import com.hedvig.app.feature.tracking.ApplicationLifecycleTracker
+import com.hedvig.app.feature.tracking.ExperimentProvider
+import com.hedvig.app.feature.tracking.HAnalyticsFacade
+import com.hedvig.app.feature.tracking.HAnalyticsSink
+import com.hedvig.app.feature.tracking.NetworkHAnalyticsSink
 import com.hedvig.app.feature.trustly.TrustlyRepository
 import com.hedvig.app.feature.trustly.TrustlyViewModel
 import com.hedvig.app.feature.trustly.TrustlyViewModelImpl
@@ -219,6 +224,7 @@ import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.ApolloTimberLogger
 import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.apollo.DeviceIdInterceptor
+import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import com.hedvig.app.util.apollo.SunsettingInterceptor
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.hanalytics.HAnalytics
@@ -232,6 +238,7 @@ import org.koin.dsl.module
 import timber.log.Timber
 import java.time.Clock
 import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APPLICATION_ID == "com.hedvig.test.app"
 
@@ -262,11 +269,14 @@ val applicationModule = module {
         val marketManager = get<MarketManager>()
         val context = get<Context>()
         val builder = OkHttpClient.Builder()
+            // Temporary fix until back-end problems are handled
+            .readTimeout(30, TimeUnit.SECONDS)
             .addInterceptor { chain ->
                 val original = chain.request()
                 val builder = original
                     .newBuilder()
                     .method(original.method, original.body)
+
                 get<AuthenticationTokenService>().authenticationToken?.let { token ->
                     builder.header("Authorization", token)
                 }
@@ -442,10 +452,9 @@ val marketingModule = module {
 
 val offerModule = module {
     viewModel<OfferViewModel> { parametersHolder: ParametersHolder ->
-        val (ids: List<String>, quoteCartId: String?, shouldShowOnNextAppStart: Boolean) = parametersHolder
         OfferViewModelImpl(
-            quoteIds = ids,
-            quoteCartId = quoteCartId,
+            quoteIds = parametersHolder.get(),
+            quoteCartId = parametersHolder.getOrNull(),
             offerRepository = get(),
             getQuotesUseCase = get(),
             getQuoteUseCase = get(),
@@ -454,7 +463,7 @@ val offerModule = module {
             approveQuotesUseCase = get(),
             refreshQuotesUseCase = get(),
             signQuotesUseCase = get(),
-            shouldShowOnNextAppStart = shouldShowOnNextAppStart,
+            shouldShowOnNextAppStart = parametersHolder.get(),
             getPostSignDependenciesUseCase = get(),
             subscribeToDataCollectionStatusUseCase = get(),
             getDataCollectionResultUseCase = get(),
@@ -556,7 +565,8 @@ val checkoutModule = module {
             get(),
             get(),
             get(),
-            get()
+            get(),
+            get(),
         )
     }
 }
@@ -609,8 +619,8 @@ val repositoriesModule = module {
     single { KeyGearItemsRepository(get(), get(), get(), get()) }
     single { MarketRepository(get(), get(), get()) }
     single { MarketingRepository(get(), get()) }
-    single { AdyenRepository(get(), get()) }
-    single { EmbarkRepository(get(), get(), get(), get(), get()) }
+    single { AdyenRepository(get(), get(), get()) }
+    single { EmbarkRepository(get(), get()) }
     single { ReferralsRepository(get()) }
     single { LoggedInRepository(get(), get()) }
     single { GetHomeUseCase(get(), get()) }
@@ -663,7 +673,7 @@ val useCaseModule = module {
     single { StartDanishAuthUseCase(get()) }
     single { StartNorwegianAuthUseCase(get()) }
     single { SubscribeToAuthStatusUseCase(get()) }
-    single { GetQuotesUseCase(get(), get(), get()) }
+    single { GetQuotesUseCase(get(), get()) }
     single { GetQuoteUseCase(get()) }
     single { EditStartDateUseCase(get(), get()) }
     single { SignQuotesUseCase(get(), get(), get(), get()) }
@@ -689,7 +699,8 @@ val useCaseModule = module {
     single<GetDanishAddressAutoCompletionUseCase> { GetDanishAddressAutoCompletionUseCase(get()) }
     single<GetFinalDanishAddressSelectionUseCase> { GetFinalDanishAddressSelectionUseCase(get()) }
     single { CreateQuoteCartUseCase(get(), get(), get()) }
-    single<GetQuoteIdsUseCase> { GetQuoteIdsUseCase(get(), get(), get()) }
+    single<GetQuoteIdsUseCase> { GetQuoteIdsUseCase(get()) }
+    single<EditQuotesUseCase> { EditQuotesUseCase(get(), get(), get(), get()) }
 }
 
 val cacheManagerModule = module {
@@ -741,4 +752,8 @@ val dataStoreModule = module {
 
 val deviceIdStoreModule = module {
     single<DeviceIdStore> { DeviceIdDataStore(get()) }
+}
+
+val graphQLQueryModule = module {
+    single<GraphQLQueryHandler> { GraphQLQueryHandler(get(), get(), get()) }
 }

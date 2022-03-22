@@ -112,7 +112,10 @@ class HomeAdapter(
     }
 
     override fun onViewRecycled(holder: ViewHolder) {
-        (holder.itemView as? ComposeView)?.disposeComposition()
+        val itemView = holder.itemView
+        if (itemView is ComposeView) {
+            itemView.disposeComposition()
+        }
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -154,7 +157,8 @@ class HomeAdapter(
                         data.name
                     )
                     is HomeModel.BigText.Switching -> root.resources.getString(
-                        R.string.home_tab_pending_switchable_welcome_title
+                        R.string.home_tab_pending_switchable_welcome_title,
+                        data.name
                     )
                 }
                 root.text = textRes
