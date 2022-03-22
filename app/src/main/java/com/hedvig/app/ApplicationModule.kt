@@ -204,9 +204,7 @@ import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
 import com.hedvig.app.feature.zignsec.usecase.StartDanishAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.StartNorwegianAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthStatusUseCase
-import com.hedvig.app.featureflags.FeatureFlagEntryProvider
 import com.hedvig.app.service.FileService
-import com.hedvig.app.service.RemoteConfig
 import com.hedvig.app.service.badge.CrossSellNotificationBadgeService
 import com.hedvig.app.service.badge.NotificationBadgeService
 import com.hedvig.app.service.badge.ReferralsNotificationBadgeService
@@ -223,6 +221,12 @@ import com.hedvig.app.util.apollo.DeviceIdInterceptor
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import com.hedvig.app.util.apollo.SunsettingInterceptor
 import com.hedvig.app.util.featureflags.FeatureManager
+import com.hedvig.app.util.featureflags.flags.DebugFeatureFlagProvider
+import com.hedvig.app.util.featureflags.flags.HAnalyticsFeatureFlagProvider
+import com.hedvig.app.util.featureflags.loginmethod.DebugLoginMethodProvider
+import com.hedvig.app.util.featureflags.loginmethod.HAnalyticsLoginMethodProvider
+import com.hedvig.app.util.featureflags.paymenttype.DebugPaymentTypeProvider
+import com.hedvig.app.util.featureflags.paymenttype.HAnalyticsPaymentTypeProvider
 import com.hedvig.hanalytics.HAnalytics
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -598,7 +602,6 @@ val serviceModule = module {
     single { NotificationBadgeService(get()) }
 
     single { DeviceInformationService(get()) }
-    single { RemoteConfig() }
 }
 
 val repositoriesModule = module {
@@ -712,8 +715,21 @@ val sharedPreferencesModule = module {
 }
 
 val featureManagerModule = module {
-    single { FeatureManager(get(), get(), get(), get()) }
-    single { FeatureFlagEntryProvider() }
+    single<FeatureManager> {
+        if (BuildConfig.DEBUG) {
+            FeatureManager(
+                DebugFeatureFlagProvider(get(), get()),
+                DebugLoginMethodProvider(get()),
+                DebugPaymentTypeProvider(get())
+            )
+        } else {
+            FeatureManager(
+                HAnalyticsFeatureFlagProvider(get()),
+                HAnalyticsLoginMethodProvider(get()),
+                HAnalyticsPaymentTypeProvider(get()),
+            )
+        }
+    }
 }
 
 val coilModule = module {

@@ -3,8 +3,8 @@ package com.hedvig.app.feature.embark.util
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.ExpressionResult
 import com.hedvig.app.feature.embark.ValueStore
-import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
+import com.hedvig.app.util.featureflags.flags.Feature
 
 suspend fun EmbarkStoryQuery.Passage.getOfferKeysOrNull(
     valueStore: ValueStore,

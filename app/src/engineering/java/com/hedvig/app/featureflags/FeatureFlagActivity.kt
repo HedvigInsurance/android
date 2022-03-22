@@ -33,7 +33,7 @@ import com.google.accompanist.insets.systemBarsPadding
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.ui.compose.composables.appbar.TopAppBarWithBack
 import com.hedvig.app.ui.compose.theme.HedvigTheme
-import com.hedvig.app.util.featureflags.Feature
+import com.hedvig.app.util.featureflags.flags.Feature
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject

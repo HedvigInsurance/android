@@ -7,8 +7,8 @@ import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
-import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
+import com.hedvig.app.util.featureflags.flags.Feature
 
 class SignQuotesUseCase(
     private val apolloClient: ApolloClient,
