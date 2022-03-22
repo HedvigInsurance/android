@@ -23,6 +23,8 @@ import com.hedvig.app.util.apollo.safeSubscription
 import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 
@@ -34,25 +36,31 @@ class OfferRepository(
     fun offerQuery(ids: List<String>) = OfferQuery(localeManager.defaultLocale(), ids)
 
     fun offer(ids: NonEmptyList<String>): Flow<OfferResult> {
-        return if (featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
-            val subscription = QuoteCartSubscription(localeManager.defaultLocale(), ids.first())
-            apolloClient.subscribe(subscription)
-                .safeSubscription()
-                .map { it.toResult() }
-                .onStart {
-                    val query = QuoteCartQuery(localeManager.defaultLocale(), ids.first())
-                    val result = apolloClient
-                        .query(query)
-                        .safeQuery()
-                        .toOfferResult()
-                    emit(result)
-                }
-        } else {
-            apolloClient
-                .query(offerQuery(ids))
-                .watcher()
-                .toFlow()
-                .map { it.toResult() }
+        return flow {
+            if (featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
+                val subscription = QuoteCartSubscription(localeManager.defaultLocale(), ids.first())
+                emitAll(
+                    apolloClient.subscribe(subscription)
+                        .safeSubscription()
+                        .map { it.toResult() }
+                        .onStart {
+                            val query = QuoteCartQuery(localeManager.defaultLocale(), ids.first())
+                            val result = apolloClient
+                                .query(query)
+                                .safeQuery()
+                                .toOfferResult()
+                            emit(result)
+                        }
+                )
+            } else {
+                emitAll(
+                    apolloClient
+                        .query(offerQuery(ids))
+                        .watcher()
+                        .toFlow()
+                        .map { it.toResult() }
+                )
+            }
         }
     }
 

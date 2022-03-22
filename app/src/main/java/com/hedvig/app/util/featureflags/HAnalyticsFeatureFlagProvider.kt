@@ -15,6 +15,7 @@ class HAnalyticsFeatureFlagProvider(
         Feature.QUOTE_CART -> hAnalytics.useQuoteCart()
         Feature.KEY_GEAR -> hAnalytics.keyGear()
         Feature.EXTERNAL_DATA_COLLECTION -> hAnalytics.allowExternalDataCollection()
+        Feature.CONNECT_PAYMENT_AT_SIGN -> false
     }
 
     override fun hasFeature(feature: Feature) = when (feature) {
@@ -24,5 +25,6 @@ class HAnalyticsFeatureFlagProvider(
         Feature.QUOTE_CART -> true
         Feature.KEY_GEAR -> true
         Feature.EXTERNAL_DATA_COLLECTION -> true
+        Feature.CONNECT_PAYMENT_AT_SIGN -> false
     }
 }

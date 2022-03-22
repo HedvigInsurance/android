@@ -30,7 +30,6 @@ class RemoteFeatureFlagProvider(
     override suspend fun isFeatureEnabled(feature: Feature) = when (feature) {
         Feature.MOVING_FLOW -> false
         Feature.FRANCE_MARKET -> false
-        Feature.ADDRESS_AUTO_COMPLETE -> false
         Feature.REFERRAL_CAMPAIGN -> {
             (marketManager.market == Market.SE && seCampaignVisible) ||
                 (marketManager.market == Market.NO && noCampaignVisible) ||
@@ -44,7 +43,6 @@ class RemoteFeatureFlagProvider(
     override fun hasFeature(feature: Feature) = when (feature) {
         Feature.MOVING_FLOW -> false
         Feature.FRANCE_MARKET -> false
-        Feature.ADDRESS_AUTO_COMPLETE -> false
         Feature.REFERRAL_CAMPAIGN -> true
         Feature.QUOTE_CART -> false
         Feature.CONNECT_PAYMENT_AT_SIGN -> false

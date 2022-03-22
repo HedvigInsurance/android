@@ -192,10 +192,6 @@ import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignViewModel
 import com.hedvig.app.feature.swedishbankid.sign.usecase.ManuallyRecheckSwedishBankIdSignStatusUseCase
 import com.hedvig.app.feature.swedishbankid.sign.usecase.SubscribeToSwedishBankIdSignStatusUseCase
 import com.hedvig.app.feature.tracking.ApplicationLifecycleTracker
-import com.hedvig.app.feature.tracking.ExperimentProvider
-import com.hedvig.app.feature.tracking.HAnalyticsFacade
-import com.hedvig.app.feature.tracking.HAnalyticsSink
-import com.hedvig.app.feature.tracking.NetworkHAnalyticsSink
 import com.hedvig.app.feature.trustly.TrustlyRepository
 import com.hedvig.app.feature.trustly.TrustlyViewModel
 import com.hedvig.app.feature.trustly.TrustlyViewModelImpl
