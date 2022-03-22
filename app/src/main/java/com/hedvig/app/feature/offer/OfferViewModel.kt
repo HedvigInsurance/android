@@ -30,18 +30,16 @@ import com.hedvig.hanalytics.HAnalytics
 import e
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
@@ -58,7 +56,6 @@ abstract class OfferViewModel : ViewModel() {
         ) : Event()
 
         object OpenChat : Event()
-        object Error : Event()
 
         data class ApproveError(
             val postSignScreen: PostSignScreen,
@@ -98,11 +95,11 @@ abstract class OfferViewModel : ViewModel() {
 
     abstract fun onOpenQuoteDetails(id: String)
 
-    abstract fun approveOffer()
+    abstract suspend fun approveOffer()
 
     sealed class ViewState {
         object Loading : ViewState()
-        object Error : ViewState()
+        data class Error(val message: String? = null) : ViewState()
         data class Content(
             val offerModel: OfferModel,
             val loginStatus: LoginStatus = LoginStatus.LoggedIn,
@@ -139,16 +136,6 @@ abstract class OfferViewModel : ViewModel() {
         }
     }
 
-    protected sealed class OfferAndLoginStatus {
-        object Loading : OfferAndLoginStatus()
-        object Error : OfferAndLoginStatus()
-        data class Content(
-            val offerModel: OfferModel,
-            val loginStatus: LoginStatus,
-            val paymentMethods: PaymentMethodsApiResponse?,
-        ) : OfferAndLoginStatus()
-    }
-
     abstract fun onOpenCheckout()
     abstract fun reload()
     abstract fun onDiscardOffer()
@@ -172,67 +159,22 @@ class OfferViewModelImpl(
     private val getExternalInsuranceProviderUseCase: GetExternalInsuranceProviderUseCase,
 ) : OfferViewModel() {
 
-    private val offerAndLoginStatus: MutableStateFlow<OfferAndLoginStatus> =
-        MutableStateFlow(OfferAndLoginStatus.Loading)
+    private val _viewState: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.Loading)
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override val viewState: StateFlow<ViewState> = offerAndLoginStatus.transformLatest { offerResponse ->
-        when (offerResponse) {
-            OfferAndLoginStatus.Error -> emit(ViewState.Error)
-            OfferAndLoginStatus.Loading -> emit(ViewState.Loading)
-            is OfferAndLoginStatus.Content -> {
-                // When we do more than one insurance comparison we will want to get all the dataCollectionIds instead.
-                val externalProviderId = offerResponse.offerModel.externalProviderId
-                if (externalProviderId != null) {
-                    val flow = getExternalInsuranceProviderUseCase.getExternalProvider(externalProviderId)
-                    collectExternalProviderAndCreateViewState(flow, offerResponse)
-                } else {
-                    createViewState(offerResponse)
-                }
-            }
-        }
-    }
+    override val viewState: StateFlow<ViewState> = _viewState
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = ViewState.Loading,
         )
 
-    private suspend fun FlowCollector<ViewState>.collectExternalProviderAndCreateViewState(
-        externalProviderFlow: Flow<ExternalProvider>?,
-        offerResponse: OfferAndLoginStatus.Content
-    ) {
-        externalProviderFlow?.collectLatest { externalProvider ->
-            val viewState = ViewState.Content(
-                offerResponse.offerModel,
-                offerResponse.loginStatus,
-                offerResponse.paymentMethods,
-                externalProvider
-            )
-            emit(viewState)
-        }
-    }
-
-    private suspend fun FlowCollector<ViewState>.createViewState(
-        offerResponse: OfferAndLoginStatus.Content
-    ) {
-        val viewState = ViewState.Content(
-            offerModel = offerResponse.offerModel,
-            loginStatus = offerResponse.loginStatus,
-            paymentMethods = offerResponse.paymentMethods,
-            externalProvider = null
-        )
-        emit(viewState)
-    }
-
     init {
         loginStatusService.isViewingOffer = shouldShowOnNextAppStart
         loginStatusService.persistOfferIds(quoteCartId, quoteIds)
 
         offerRepository.offerFlow(quoteIds)
-            .onEach {
-                offerAndLoginStatus.value = handleOfferResult(it)
-            }
+            .onEach { toViewState(it) }
             .launchIn(viewModelScope)
 
         viewModelScope.launch {
@@ -240,16 +182,22 @@ class OfferViewModelImpl(
         }
     }
 
-    private suspend fun handleOfferResult(
-        result: Either<ErrorMessage, OfferModel>
-    ): OfferAndLoginStatus = result.fold(
-        ifLeft = { OfferAndLoginStatus.Error },
+    private suspend fun toViewState(offerResult: Either<ErrorMessage, OfferModel>) = offerResult.fold(
+        ifLeft = { ViewState.Error(it.message) },
         ifRight = { offerModel ->
-            OfferAndLoginStatus.Content(
-                offerModel = offerModel,
-                loginStatus = loginStatusService.getLoginStatus(),
-                paymentMethods = offerModel.paymentApiResponseOrNull() ?: adyenRepository.paymentMethodsResponse()
-            )
+            getExternalInsuranceProviderUseCase
+                .observeExternalProviderOrNull(offerModel.externalProviderId)
+                .onEach {
+                    _viewState.value = ViewState.Content(
+                        offerModel = offerModel,
+                        loginStatus = loginStatusService.getLoginStatus(),
+                        paymentMethods = offerModel.paymentApiResponseOrNull()
+                            ?: adyenRepository.paymentMethodsResponse(),
+                        externalProvider = it
+                    )
+                }
+                .catch { _viewState.value = ViewState.Error(null) }
+                .launchIn(viewModelScope)
         }
     )
 
@@ -259,28 +207,26 @@ class OfferViewModelImpl(
         _events.trySend(event)
     }
 
-    override fun approveOffer() {
-        viewModelScope.launch {
-            approveQuotesUseCase.approveQuotesAndClearCache(quoteIds).fold(
-                ifLeft = { handleApproveError(it) },
-                ifRight = { result ->
-                    hAnalytics.quotesSigned(quoteIds)
-                    loginStatusService.isViewingOffer = false
-                    val event = Event.ApproveSuccessful(
-                        startDate = result.date,
-                        postSignScreen = result.postSignScreen,
-                        bundleDisplayName = result.bundleName
-                    )
-                    _events.trySend(event)
-                }
-            )
-        }
+    override suspend fun approveOffer() {
+        approveQuotesUseCase.approveQuotesAndClearCache(quoteIds).fold(
+            ifLeft = { handleApproveError(it) },
+            ifRight = { result ->
+                hAnalytics.quotesSigned(quoteIds)
+                loginStatusService.isViewingOffer = false
+                val event = Event.ApproveSuccessful(
+                    startDate = result.date,
+                    postSignScreen = result.postSignScreen,
+                    bundleDisplayName = result.bundleName
+                )
+                _events.trySend(event)
+            }
+        )
     }
 
     private fun handleApproveError(error: ApproveQuotesUseCase.Error) {
         when (error) {
             is ApproveQuotesUseCase.Error.ApproveError -> _events.trySend(Event.ApproveError(error.postSignScreen))
-            is ApproveQuotesUseCase.Error.GeneralError -> offerAndLoginStatus.value = OfferAndLoginStatus.Error
+            is ApproveQuotesUseCase.Error.GeneralError -> _viewState.value = ViewState.Error(error.message)
         }
     }
 
@@ -304,12 +250,10 @@ class OfferViewModelImpl(
     }
 
     override suspend fun triggerOpenChat() {
-        chatRepository.triggerFreeTextChat()
-            .fold(
-                ifLeft = { Event.Error },
-                ifRight = { Event.OpenChat }
-            )
-            .let(_events::trySend)
+        chatRepository.triggerFreeTextChat().fold(
+            ifLeft = { _viewState.value = ViewState.Error(null) },
+            ifRight = { _events.trySend(Event.OpenChat) }
+        )
     }
 
     override fun onOpenQuoteDetails(id: String) {
@@ -318,7 +262,7 @@ class OfferViewModelImpl(
                 .first()
                 .map { it.quoteBundle.quotes.first { it.id == id } }
                 .fold(
-                    ifLeft = { offerAndLoginStatus.value = OfferAndLoginStatus.Error },
+                    ifLeft = { _viewState.value = ViewState.Error(it.message) },
                     ifRight = { quote ->
                         val quoteDetailItems = QuoteDetailItems(quote)
                         val event = Event.OpenQuoteDetails(quoteDetailItems)
@@ -329,7 +273,7 @@ class OfferViewModelImpl(
     }
 
     override fun reload() {
-        offerAndLoginStatus.value = OfferAndLoginStatus.Loading
+        _viewState.value = ViewState.Loading
         viewModelScope.launch {
             offerRepository.queryAndEmitOffer(quoteCartId, quoteIds)
         }
@@ -346,12 +290,21 @@ class OfferViewModelImpl(
 
     override fun onSwedishBankIdSign() {
         viewModelScope.launch {
-            when (val result = signQuotesUseCase.signQuotesAndClearCache(quoteIds, quoteCartId)) {
-                is SignQuotesUseCase.SignQuoteResult.Error -> offerAndLoginStatus.value = OfferAndLoginStatus.Error
-                is SignQuotesUseCase.SignQuoteResult.StartSwedishBankId -> _events.trySend(
-                    Event.StartSwedishBankIdSign(result.autoStartToken)
+            signQuotesUseCase.signQuotesAndClearCache(quoteIds, quoteCartId)
+                .fold(
+                    ifLeft = { _viewState.value = ViewState.Error(it.message) },
+                    ifRight = { result -> handleSignQuoteResult(result) }
                 )
-                SignQuotesUseCase.SignQuoteResult.Success -> offerAndLoginStatus.value = OfferAndLoginStatus.Error
+        }
+    }
+
+    private fun handleSignQuoteResult(result: SignQuotesUseCase.SignQuoteResult) {
+        when (result) {
+            is SignQuotesUseCase.SignQuoteResult.StartSwedishBankId -> {
+                _events.trySend(Event.StartSwedishBankIdSign(result.autoStartToken))
+            }
+            SignQuotesUseCase.SignQuoteResult.Success -> {
+                _viewState.value = ViewState.Error("Invalid offer state")
             }
         }
     }
@@ -360,7 +313,7 @@ class OfferViewModelImpl(
         viewModelScope.launch {
             if (quoteCartId != null) {
                 addPaymentTokenUseCase.invoke(quoteCartId, id)
-                    .tapLeft { Event.Error }
+                    .tapLeft { _viewState.value = ViewState.Error(null) }
             }
             onOpenCheckout()
         }

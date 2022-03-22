@@ -1,6 +1,8 @@
 package com.hedvig.app.feature.offer
 
 import arrow.core.Either
+import arrow.core.computations.either
+import arrow.core.computations.ensureNotNull
 import arrow.core.left
 import arrow.core.right
 import com.apollographql.apollo.ApolloClient
@@ -51,21 +53,36 @@ class OfferRepository(
 
     suspend fun queryAndEmitOffer(quoteCartId: CreateQuoteCartUseCase.QuoteCartId?, quoteIds: List<String>) {
         if (quoteCartId != null) {
-            val query = QuoteCartQuery(localeManager.defaultLocale(), quoteCartId.id)
-            val offer = apolloClient
-                .query(query)
-                .safeQuery()
-                .toEither { ErrorMessage(it) }
-                .map { it.quoteCart.fragments.quoteCartFragment.toOfferModel() }
-
+            val offer = queryQuoteCart(quoteCartId)
             offerFlow.tryEmit(offer)
         } else {
             refreshOfferQuery(quoteIds)
         }
     }
 
-    private fun Response<OfferQuery.Data>.toResult(): Either<ErrorMessage, OfferModel> = when {
+    suspend fun getQuoteIds(
+        quoteCartId: CreateQuoteCartUseCase.QuoteCartId
+    ): Either<ErrorMessage, List<String>> = queryQuoteCart(quoteCartId)
+        .map { it.quoteBundle.quotes }
+        .map { quotes -> quotes.map { it.id } }
 
+    private suspend fun queryQuoteCart(
+        quoteCartId: CreateQuoteCartUseCase.QuoteCartId
+    ): Either<ErrorMessage, OfferModel> = either {
+        val result = apolloClient
+            .query(QuoteCartQuery(localeManager.defaultLocale(), quoteCartId.id))
+            .safeQuery()
+            .toEither { ErrorMessage(it) }
+            .bind()
+
+        ensureNotNull(result.quoteCart.fragments.quoteCartFragment.bundle) {
+            ErrorMessage("No quotes in offer, please try again")
+        }
+
+        result.quoteCart.fragments.quoteCartFragment.toOfferModel()
+    }
+
+    private fun Response<OfferQuery.Data>.toResult(): Either<ErrorMessage, OfferModel> = when {
         errors != null -> ErrorMessage(errors!!.firstOrNull()?.message).left()
         data == null -> ErrorMessage().left()
         else -> data!!.toOfferModel().right()

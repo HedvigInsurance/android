@@ -11,9 +11,12 @@ import com.hedvig.android.owldroid.graphql.ConnectPaymentMutation
 import com.hedvig.android.owldroid.graphql.TokenizePaymentDetailsMutation
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import com.hedvig.app.util.apollo.safeQuery
 import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import org.json.JSONObject
 
 class ConnectPaymentUseCase(
@@ -21,6 +24,7 @@ class ConnectPaymentUseCase(
     private val context: Context,
     private val featureManager: FeatureManager,
     private val marketManager: MarketManager,
+    private val graphQLQueryHandler: GraphQLQueryHandler,
 ) {
 
     sealed class Error {
@@ -36,30 +40,38 @@ class ConnectPaymentUseCase(
         }
     }
 
-    private suspend fun connectPayment(data: JSONObject): Either<Error, PaymentTokenId> = apolloClient
-        .mutate(createConnectPaymentMutation(data))
-        .safeQuery()
+    private suspend fun connectPayment(data: JSONObject): Either<Error, PaymentTokenId> = graphQLQueryHandler
+        .graphQLQuery(
+            query = ConnectPaymentMutation.QUERY_DOCUMENT,
+            variables = createConnectPaymentVariables(data),
+            files = emptyList()
+        )
         .toEither()
-        .mapLeft { Error.ErrorMessage(it.message) }
-        .flatMap {
-            it.paymentConnection_connectPayment.asConnectPaymentFinished?.let {
-                PaymentTokenId(it.paymentTokenId).right()
-            } ?: it.paymentConnection_connectPayment.asActionRequired?.action?.let {
-                Error.CheckoutPaymentAction(it).left()
-            } ?: Error.ErrorMessage(null).left()
+        .mapLeft { Error.ErrorMessage(null) }
+        .flatMap { jsonResponse ->
+            val id = jsonResponse
+                .getJSONObject("data")
+                .getJSONObject("paymentConnection_connectPayment")
+                .getString("paymentTokenId")
+            PaymentTokenId(id).right()
         }
 
-    private fun createConnectPaymentMutation(data: JSONObject) = ConnectPaymentMutation(
-        paymentMethodDetails = data.getJSONObject("paymentMethod").toString(),
-        returnUrl = RedirectComponent.getReturnUrl(context),
-        market = when (marketManager.market) {
+    private fun createConnectPaymentVariables(data: JSONObject): JSONObject? {
+        val market = when (marketManager.market) {
             Market.SE -> com.hedvig.android.owldroid.type.Market.SWEDEN
             Market.NO -> com.hedvig.android.owldroid.type.Market.NORWAY
             Market.DK -> com.hedvig.android.owldroid.type.Market.DENMARK
             Market.FR -> com.hedvig.android.owldroid.type.Market.UNKNOWN__
             null -> com.hedvig.android.owldroid.type.Market.UNKNOWN__
+        }.toString()
+
+        return buildJsonObject {
+            put("market", market)
+            put("returnUrl", RedirectComponent.getReturnUrl(context))
         }
-    )
+            .toString()
+            .let { JSONObject(it) }.put("paymentMethodDetails", data.getJSONObject("paymentMethod"))
+    }
 
     private suspend fun tokenizePaymentDetails(data: JSONObject): Either<Error, PaymentTokenId> = apolloClient
         .mutate(createTokenizePaymentMutation(data))

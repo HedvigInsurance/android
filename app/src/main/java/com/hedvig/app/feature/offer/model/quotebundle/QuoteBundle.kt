@@ -17,11 +17,11 @@ data class QuoteBundle(
     val viewConfiguration: ViewConfiguration
 ) {
     data class Quote(
+        val id: String,
         val dataCollectionId: String?,
         val displayName: String,
         val startDate: LocalDate?,
         val email: String?,
-        val id: String,
         val currentInsurer: CurrentInsurer?,
         val detailsTable: Table,
         val perils: List<Peril>,

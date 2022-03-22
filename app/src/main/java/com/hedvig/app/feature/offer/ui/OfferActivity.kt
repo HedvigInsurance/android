@@ -73,7 +73,8 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     private val quoteIds: List<String>
         get() = intent.getStringArrayExtra(QUOTE_IDS)?.toList() ?: emptyList()
     private val quoteCartId: CreateQuoteCartUseCase.QuoteCartId?
-        get() = intent.getStringExtra(QUOTE_CART_ID)?.let { CreateQuoteCartUseCase.QuoteCartId(it) }
+        get() = intent.getParcelableExtra(QUOTE_CART_ID)
+            ?: intent.getStringExtra(QUOTE_CART_ID)?.let { CreateQuoteCartUseCase.QuoteCartId(it) }
     private val shouldShowOnNextAppStart: Boolean
         get() = intent.getBooleanExtra(SHOULD_SHOW_ON_NEXT_APP_START, false)
 
@@ -172,7 +173,9 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     binding.offerScroll.isVisible = viewState !is OfferViewModel.ViewState.Loading
                     when (viewState) {
                         is OfferViewModel.ViewState.Loading -> {}
-                        is OfferViewModel.ViewState.Error -> showErrorDialog("Error, please try again") {}
+                        is OfferViewModel.ViewState.Error -> showErrorDialog(
+                            viewState.message ?: getString(R.string.NETWORK_ERROR_ALERT_MESSAGE)
+                        ) {}
                         is OfferViewModel.ViewState.Content -> {
                             topOfferAdapter.submitList(viewState.createTopOfferItems())
                             perilsAdapter.submitList(viewState.createPerilItems())
@@ -208,9 +211,6 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                         is OfferViewModel.Event.ApproveError -> handlePostSignError(event)
                         OfferViewModel.Event.DiscardOffer -> startSplashActivity()
                         is OfferViewModel.Event.StartSwedishBankIdSign -> showSignDialog(event)
-                        OfferViewModel.Event.Error -> showErrorDialog(
-                            getString(R.string.NETWORK_ERROR_ALERT_MESSAGE)
-                        ) {}
                         OfferViewModel.Event.OpenChat -> startChat()
                     }
                 }
@@ -359,7 +359,9 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     model.onOpenCheckout()
                 }
             }
-            CheckoutMethod.APPROVE_ONLY -> model.approveOffer()
+            CheckoutMethod.APPROVE_ONLY -> lifecycleScope.launch {
+                model.approveOffer()
+            }
             CheckoutMethod.NORWEGIAN_BANK_ID,
             CheckoutMethod.DANISH_BANK_ID,
             CheckoutMethod.UNKNOWN,

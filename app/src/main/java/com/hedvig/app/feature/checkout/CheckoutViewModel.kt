@@ -3,6 +3,7 @@ package com.hedvig.app.feature.checkout
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
+import arrow.core.computations.either
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.offer.OfferRepository
@@ -26,6 +27,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.money.MonetaryAmount
@@ -43,19 +45,28 @@ class CheckoutViewModel(
     private val offerRepository: OfferRepository,
 ) : ViewModel() {
 
+    private val _titleViewState = MutableStateFlow<TitleViewState>(TitleViewState.Loading)
+    val titleViewState: StateFlow<TitleViewState> = _titleViewState
+
+    private val _inputViewState = MutableStateFlow(
+        InputViewState(
+            enableSign = false,
+            emailInputState = InputViewState.InputState.NoInput,
+            identityInputState = InputViewState.InputState.NoInput
+        )
+    )
+    val inputViewState: StateFlow<InputViewState> = _inputViewState
+
+    private var emailInput: String = ""
+    private var identityNumberInput: String = ""
+
     init {
         viewModelScope.launch {
-            observeQuotes(quoteIds)
-            viewModelScope.launch {
-                offerRepository.queryAndEmitOffer(quoteCartId, quoteIds)
-            }
+            offerRepository.offerFlow(quoteIds)
+                .onEach { handleOfferResult(it) }
+                .onStart { offerRepository.queryAndEmitOffer(quoteCartId, quoteIds) }
+                .launchIn(viewModelScope)
         }
-    }
-
-    private suspend fun observeQuotes(quoteIds: List<String>) {
-        offerRepository.offerFlow(quoteIds)
-            .onEach { handleOfferResult(it) }
-            .launchIn(viewModelScope)
     }
 
     private suspend fun handleOfferResult(result: Either<ErrorMessage, OfferModel>) {
@@ -75,12 +86,12 @@ class CheckoutViewModel(
     private suspend fun handleCheckoutStatus(model: OfferModel) {
         val checkout = model.checkout
         when (checkout?.status) {
-            Checkout.CheckoutStatus.PENDING -> Event.Loading
+            Checkout.CheckoutStatus.PENDING -> _events.trySend(Event.Loading)
             Checkout.CheckoutStatus.SIGNED -> createAccessToken()
             Checkout.CheckoutStatus.COMPLETED -> _events.trySend(onSignSuccess())
             Checkout.CheckoutStatus.FAILED,
-            Checkout.CheckoutStatus.UNKNOWN -> Event.Error(checkout.statusText)
-            null -> {}
+            Checkout.CheckoutStatus.UNKNOWN -> _events.trySend(Event.Error(checkout.statusText))
+            null -> _events.trySend(Event.Error("No checkout found!"))
         }
     }
 
@@ -100,21 +111,6 @@ class CheckoutViewModel(
         market = marketManager.market,
         email = quoteBundle.quotes.firstNotNullOfOrNull(QuoteBundle.Quote::email)
     )
-
-    private val _titleViewState = MutableStateFlow<TitleViewState>(TitleViewState.Loading)
-    val titleViewState: StateFlow<TitleViewState> = _titleViewState
-
-    private val _inputViewState = MutableStateFlow(
-        InputViewState(
-            enableSign = false,
-            emailInputState = InputViewState.InputState.NoInput,
-            identityInputState = InputViewState.InputState.NoInput
-        )
-    )
-    val inputViewState: StateFlow<InputViewState> = _inputViewState
-
-    private var emailInput: String = ""
-    private var identityNumberInput: String = ""
 
     fun validateInput() {
         _inputViewState.value = _inputViewState.value.copy(
@@ -159,7 +155,8 @@ class CheckoutViewModel(
         )
     }
 
-    fun onTrySign(emailInput: String, identityNumberInput: String) {
+    fun
+    onTrySign(emailInput: String, identityNumberInput: String) {
         if (inputViewState.value.canSign()) {
             _events.trySend(Event.Loading)
             val parameter = createEditAndSignParameter(identityNumberInput, emailInput)
@@ -169,19 +166,20 @@ class CheckoutViewModel(
 
     private fun signQuotes(parameter: EditAndSignParameter) {
         viewModelScope.launch {
-            editQuotesUseCase.editQuotes(parameter)
-                .map { signQuotesUseCase.signQuotesAndClearCache(quoteIds, quoteCartId) }
-                .mapLeft { it.message }
-                .fold(
-                    ifLeft = {
-                        _events.trySend(Event.Error(it))
-                    },
-                    ifRight = {
-                        if (!featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
-                            _events.trySend(it.toEvent())
-                        }
+            either<ErrorMessage, SignQuotesUseCase.SignQuoteResult> {
+                editQuotesUseCase.editQuotes(parameter).bind()
+                signQuotesUseCase.signQuotesAndClearCache(quoteIds, quoteCartId).bind()
+            }.fold(
+                ifLeft = { _events.trySend(Event.Error(it.message)) },
+                ifRight = {
+                    if (!featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
+                        _events.trySend(it.toEvent())
+                    } else {
+                        delay(1000)
+                        offerRepository.queryAndEmitOffer(quoteCartId, quoteIds)
                     }
-                )
+                }
+            )
         }
     }
 
@@ -196,7 +194,6 @@ class CheckoutViewModel(
     )
 
     private suspend fun SignQuotesUseCase.SignQuoteResult.toEvent(): Event = when (this) {
-        is SignQuotesUseCase.SignQuoteResult.Error -> Event.Error(message)
         SignQuotesUseCase.SignQuoteResult.Success -> onSignSuccess()
         else -> Event.Error()
     }

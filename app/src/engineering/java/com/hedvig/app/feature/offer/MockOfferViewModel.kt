@@ -38,7 +38,7 @@ class MockOfferViewModel : OfferViewModel() {
         // TODO
     }
 
-    override fun approveOffer() {
+    override suspend fun approveOffer() {
         _events.trySend(
             Event.ApproveSuccessful(
                 LocalDate.now(),
@@ -77,7 +77,7 @@ class MockOfferViewModel : OfferViewModel() {
             delay(650)
             do {
                 if (shouldError) {
-                    _viewState.value = ViewState.Error
+                    _viewState.value = ViewState.Error()
                     return@launch
                 }
 

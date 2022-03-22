@@ -650,7 +650,7 @@ val useCaseModule = module {
     single { StartNorwegianAuthUseCase(get()) }
     single { SubscribeToAuthStatusUseCase(get()) }
     single { EditStartDateUseCase(get(), get()) }
-    single { SignQuotesUseCase(get(), get(), get()) }
+    single { SignQuotesUseCase(get(), get(), get(), get()) }
     single { ApproveQuotesUseCase(get(), get(), get()) }
     single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get()) }
     single { GetContractsUseCase(get(), get()) }
@@ -671,10 +671,10 @@ val useCaseModule = module {
     single<GetDanishAddressAutoCompletionUseCase> { GetDanishAddressAutoCompletionUseCase(get()) }
     single<GetFinalDanishAddressSelectionUseCase> { GetFinalDanishAddressSelectionUseCase(get()) }
     single { CreateQuoteCartUseCase(get(), get(), get()) }
-    single<EditQuotesUseCase> { EditQuotesUseCase(get(), get(), get(), get()) }
+    single<EditQuotesUseCase> { EditQuotesUseCase(get(), get(), get(), get(), get()) }
     single<CreateAccessTokenUseCase> { CreateAccessTokenUseCase(get(), get()) }
     single<AddPaymentTokenUseCase> { AddPaymentTokenUseCase(get()) }
-    single<ConnectPaymentUseCase> { ConnectPaymentUseCase(get(), get(), get(), get()) }
+    single<ConnectPaymentUseCase> { ConnectPaymentUseCase(get(), get(), get(), get(), get()) }
     single<ConnectPayoutUseCase> { ConnectPayoutUseCase(get(), get()) }
     single<GetExternalInsuranceProviderUseCase> { GetExternalInsuranceProviderUseCase(get(), get(), get()) }
 }
