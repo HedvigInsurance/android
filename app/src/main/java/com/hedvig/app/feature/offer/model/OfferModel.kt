@@ -3,6 +3,7 @@ package com.hedvig.app.feature.offer.model
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.hedvig.android.owldroid.fragment.QuoteCartFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
+import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
 import com.hedvig.app.feature.offer.model.quotebundle.toQuoteBundle
 import com.hedvig.app.feature.offer.ui.checkoutLabel
@@ -29,7 +30,7 @@ fun OfferModel.paymentApiResponseOrNull(): PaymentMethodsApiResponse? {
 }
 
 fun OfferQuery.Data.toOfferModel() = OfferModel(
-    quoteBundle = quoteBundle.fragments.quoteBundleFragment.toQuoteBundle(),
+    quoteBundle = quoteBundle.fragments.quoteBundleFragment.toQuoteBundle(null),
     checkoutMethod = signMethodForQuotes.toCheckoutMethod(),
     checkoutLabel = checkoutLabel(),
     campaign = Campaign(
@@ -46,8 +47,8 @@ fun OfferQuery.Data.toOfferModel() = OfferModel(
     paymentConnection = null,
 )
 
-fun QuoteCartFragment.toOfferModel() = OfferModel(
-    quoteBundle = bundle!!.fragments.quoteBundleFragment.toQuoteBundle(),
+fun QuoteCartFragment.toOfferModel(quoteCartId: CreateQuoteCartUseCase.QuoteCartId) = OfferModel(
+    quoteBundle = bundle!!.fragments.quoteBundleFragment.toQuoteBundle(quoteCartId),
     checkoutMethod = checkoutMethods.map { it.toCheckoutMethod() }.first(),
     checkoutLabel = checkoutLabel(),
     campaign = campaign?.toCampaign(),

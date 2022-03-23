@@ -2,6 +2,8 @@ package com.hedvig.app.feature.offer.ui.changestartdate
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import arrow.core.sequenceEither
+import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.extensions.epochMillisToLocalDate
 import kotlinx.coroutines.async
@@ -14,7 +16,9 @@ import java.time.LocalDate
 
 class ChangeDateBottomSheetViewModel(
     private val editStartDateUseCase: EditStartDateUseCase,
-    private val data: ChangeDateBottomSheetData
+    private val quoteCartEditStartDateUseCase: QuoteCartEditStartDateUseCase,
+    private val data: ChangeDateBottomSheetData,
+    private val offerRepository: OfferRepository,
 ) : ViewModel() {
 
     private val _viewState = MutableStateFlow<ViewState>(ViewState.Inceptions(data.inceptions))
@@ -36,6 +40,10 @@ class ChangeDateBottomSheetViewModel(
     }
 
     fun onSwitchChecked(quoteId: String, checked: Boolean) {
+        if (data.quoteCartId != null) {
+            return
+        }
+
         if (checked) {
             viewModelScope.launch {
                 _viewState.value = ViewState.Loading(true)
@@ -58,22 +66,43 @@ class ChangeDateBottomSheetViewModel(
     fun setNewDateAndDismiss() {
         viewModelScope.launch {
             _viewState.value = ViewState.Loading(true)
-            val results = coroutineScope {
+
+            if (data.quoteCartId != null) {
                 selectedDates.map { dateMapEntry ->
-                    async {
-                        editStartDateUseCase.setStartDate(
-                            id = dateMapEntry.key,
-                            idsInBundle = data.idsInBundle,
-                            date = dateMapEntry.value
-                        )
-                    }
-                }.awaitAll()
-            }
-            if (results.any { it is QueryResult.Error }) {
-                val message = (results.first { it is QueryResult.Error } as? QueryResult.Error.QueryError)?.message
-                _viewState.value = ViewState.Error(message)
+                    quoteCartEditStartDateUseCase.setStartDate(
+                        quoteCartId = data.quoteCartId,
+                        quoteId = dateMapEntry.key,
+                        idsInBundle = data.idsInBundle,
+                        date = dateMapEntry.value,
+                    )
+                }
+                    .sequenceEither()
+                    .fold(
+                        ifLeft = { ViewState.Error(it.message) },
+                        ifRight = {
+                            offerRepository.queryAndEmitOffer(data.quoteCartId, emptyList())
+                            _viewState.value = ViewState.Dismiss
+                        }
+                    )
             } else {
-                _viewState.value = ViewState.Dismiss
+                val results = coroutineScope {
+
+                    selectedDates.map { dateMapEntry ->
+                        async {
+                            editStartDateUseCase.setStartDate(
+                                id = dateMapEntry.key,
+                                idsInBundle = data.idsInBundle,
+                                date = dateMapEntry.value
+                            )
+                        }
+                    }.awaitAll()
+                }
+                if (results.any { it is QueryResult.Error }) {
+                    val message = (results.first { it is QueryResult.Error } as? QueryResult.Error.QueryError)?.message
+                    _viewState.value = ViewState.Error(message)
+                } else {
+                    _viewState.value = ViewState.Dismiss
+                }
             }
         }
     }

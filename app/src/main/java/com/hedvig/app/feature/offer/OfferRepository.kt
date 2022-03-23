@@ -17,7 +17,7 @@ import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.QuoteCartQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.RemoveDiscountCodeMutation
-import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
+import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase.QuoteCartId
 import com.hedvig.app.feature.offer.model.OfferModel
 import com.hedvig.app.feature.offer.model.toOfferModel
 import com.hedvig.app.util.ErrorMessage
@@ -51,7 +51,7 @@ class OfferRepository(
         }
     }
 
-    suspend fun queryAndEmitOffer(quoteCartId: CreateQuoteCartUseCase.QuoteCartId?, quoteIds: List<String>) {
+    suspend fun queryAndEmitOffer(quoteCartId: QuoteCartId?, quoteIds: List<String>) {
         if (quoteCartId != null) {
             val offer = queryQuoteCart(quoteCartId)
             offerFlow.tryEmit(offer)
@@ -61,16 +61,16 @@ class OfferRepository(
     }
 
     suspend fun getQuoteIds(
-        quoteCartId: CreateQuoteCartUseCase.QuoteCartId
+        quoteCartId: QuoteCartId
     ): Either<ErrorMessage, List<String>> = queryQuoteCart(quoteCartId)
         .map { it.quoteBundle.quotes }
         .map { quotes -> quotes.map { it.id } }
 
     private suspend fun queryQuoteCart(
-        quoteCartId: CreateQuoteCartUseCase.QuoteCartId
+        id: QuoteCartId
     ): Either<ErrorMessage, OfferModel> = either {
         val result = apolloClient
-            .query(QuoteCartQuery(localeManager.defaultLocale(), quoteCartId.id))
+            .query(QuoteCartQuery(localeManager.defaultLocale(), id.id))
             .toBuilder()
             .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
             .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
@@ -83,7 +83,8 @@ class OfferRepository(
             ErrorMessage("No quotes in offer, please try again")
         }
 
-        result.quoteCart.fragments.quoteCartFragment.toOfferModel()
+        val quoteCartId = result.quoteCart.id.let(::QuoteCartId)
+        result.quoteCart.fragments.quoteCartFragment.toOfferModel(quoteCartId)
     }
 
     private fun Response<OfferQuery.Data>.toResult(): Either<ErrorMessage, OfferModel> = when {

@@ -13,7 +13,7 @@ import java.time.LocalDate
 
 class EditStartDateUseCase(
     private val apolloClient: ApolloClient,
-    private val offerRepository: OfferRepository
+    private val offerRepository: OfferRepository,
 ) {
     suspend fun removeStartDate(
         id: String,

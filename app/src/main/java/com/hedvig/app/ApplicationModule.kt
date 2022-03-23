@@ -52,7 +52,7 @@ import com.hedvig.app.feature.chat.service.ChatNotificationSender
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
 import com.hedvig.app.feature.checkout.ApproveQuotesUseCase
 import com.hedvig.app.feature.checkout.CheckoutViewModel
-import com.hedvig.app.feature.checkout.EditQuotesUseCase
+import com.hedvig.app.feature.checkout.EditCheckoutUseCase
 import com.hedvig.app.feature.claimdetail.data.GetClaimDetailUiStateFlowUseCase
 import com.hedvig.app.feature.claimdetail.data.GetClaimDetailUseCase
 import com.hedvig.app.feature.claimdetail.ui.ClaimDetailViewModel
@@ -143,6 +143,7 @@ import com.hedvig.app.feature.offer.OfferViewModelImpl
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetViewModel
 import com.hedvig.app.feature.offer.ui.changestartdate.EditStartDateUseCase
+import com.hedvig.app.feature.offer.ui.changestartdate.QuoteCartEditStartDateUseCase
 import com.hedvig.app.feature.offer.usecase.AddPaymentTokenUseCase
 import com.hedvig.app.feature.offer.usecase.CreateAccessTokenUseCase
 import com.hedvig.app.feature.offer.usecase.GetExternalInsuranceProviderUseCase
@@ -531,7 +532,7 @@ val changeAddressModule = module {
 }
 
 val changeDateBottomSheetModule = module {
-    viewModel { (data: ChangeDateBottomSheetData) -> ChangeDateBottomSheetViewModel(get(), data) }
+    viewModel { (data: ChangeDateBottomSheetData) -> ChangeDateBottomSheetViewModel(get(), get(), data, get()) }
 }
 
 val checkoutModule = module {
@@ -671,7 +672,8 @@ val useCaseModule = module {
     single<GetDanishAddressAutoCompletionUseCase> { GetDanishAddressAutoCompletionUseCase(get()) }
     single<GetFinalDanishAddressSelectionUseCase> { GetFinalDanishAddressSelectionUseCase(get()) }
     single { CreateQuoteCartUseCase(get(), get(), get()) }
-    single<EditQuotesUseCase> { EditQuotesUseCase(get(), get(), get(), get(), get()) }
+    single<EditCheckoutUseCase> { EditCheckoutUseCase(get(), get(), get(), get(), get()) }
+    single<QuoteCartEditStartDateUseCase> { QuoteCartEditStartDateUseCase(get(), get(), get(), get()) }
     single<CreateAccessTokenUseCase> { CreateAccessTokenUseCase(get(), get()) }
     single<AddPaymentTokenUseCase> { AddPaymentTokenUseCase(get()) }
     single<ConnectPaymentUseCase> { ConnectPaymentUseCase(get(), get(), get(), get(), get()) }
