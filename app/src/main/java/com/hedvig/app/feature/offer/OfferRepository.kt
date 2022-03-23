@@ -71,6 +71,10 @@ class OfferRepository(
     ): Either<ErrorMessage, OfferModel> = either {
         val result = apolloClient
             .query(QuoteCartQuery(localeManager.defaultLocale(), quoteCartId.id))
+            .toBuilder()
+            .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
+            .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
+            .build()
             .safeQuery()
             .toEither { ErrorMessage(it) }
             .bind()

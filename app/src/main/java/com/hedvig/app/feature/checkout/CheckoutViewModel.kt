@@ -101,6 +101,7 @@ class CheckoutViewModel(
         } else {
             createAccessTokenUseCase.invoke(quoteCartId)
                 .tapLeft { _events.trySend(Event.Error(it.message)) }
+                .tap { offerRepository.queryAndEmitOffer(quoteCartId, quoteIds) }
         }
     }
 
