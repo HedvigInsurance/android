@@ -176,7 +176,6 @@ class CheckoutViewModel(
                     if (!featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
                         _events.trySend(it.toEvent())
                     } else {
-                        delay(1000)
                         offerRepository.queryAndEmitOffer(quoteCartId, quoteIds)
                     }
                 }
