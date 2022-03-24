@@ -83,7 +83,7 @@ fun CenteredContentWithTopBadge(
             )
             centerPlaceable.place(
                 x = (layoutWidth - centerPlaceable.width) / 2,
-                y = maxOf(topContentHeight, (layoutHeight - centerPlaceable.height) / 2),
+                y = (layoutHeight - centerPlaceable.height) / 2,
             )
         }
     }
