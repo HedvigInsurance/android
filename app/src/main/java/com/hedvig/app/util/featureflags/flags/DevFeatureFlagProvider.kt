@@ -8,7 +8,7 @@ import com.hedvig.app.feature.settings.MarketManager
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 
-class DebugFeatureFlagProvider(
+class DevFeatureFlagProvider(
     private val dataStore: DataStore<Preferences>,
     private val marketManager: MarketManager,
 ) : FeatureFlagProvider {

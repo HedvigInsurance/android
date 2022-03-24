@@ -4,7 +4,7 @@ import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.hanalytics.LoginMethod
 
-class DebugLoginMethodProvider(
+class DevLoginMethodProvider(
     private val marketManager: MarketManager,
 ) : LoginMethodProvider {
     override suspend fun getLoginMethod(): LoginMethod {

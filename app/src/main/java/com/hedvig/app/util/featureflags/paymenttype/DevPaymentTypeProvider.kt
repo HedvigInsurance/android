@@ -4,7 +4,7 @@ import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.hanalytics.PaymentType
 
-class DebugPaymentTypeProvider(
+class DevPaymentTypeProvider(
     private val marketManager: MarketManager,
 ) : PaymentTypeProvider {
     // todo actually check what this needs to be in our dev environment

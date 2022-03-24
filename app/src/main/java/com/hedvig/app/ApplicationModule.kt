@@ -221,11 +221,11 @@ import com.hedvig.app.util.apollo.DeviceIdInterceptor
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import com.hedvig.app.util.apollo.SunsettingInterceptor
 import com.hedvig.app.util.featureflags.FeatureManager
-import com.hedvig.app.util.featureflags.flags.DebugFeatureFlagProvider
+import com.hedvig.app.util.featureflags.flags.DevFeatureFlagProvider
 import com.hedvig.app.util.featureflags.flags.HAnalyticsFeatureFlagProvider
-import com.hedvig.app.util.featureflags.loginmethod.DebugLoginMethodProvider
+import com.hedvig.app.util.featureflags.loginmethod.DevLoginMethodProvider
 import com.hedvig.app.util.featureflags.loginmethod.HAnalyticsLoginMethodProvider
-import com.hedvig.app.util.featureflags.paymenttype.DebugPaymentTypeProvider
+import com.hedvig.app.util.featureflags.paymenttype.DevPaymentTypeProvider
 import com.hedvig.app.util.featureflags.paymenttype.HAnalyticsPaymentTypeProvider
 import com.hedvig.hanalytics.HAnalytics
 import okhttp3.OkHttpClient
@@ -718,9 +718,9 @@ val featureManagerModule = module {
     single<FeatureManager> {
         if (BuildConfig.DEBUG) {
             FeatureManager(
-                DebugFeatureFlagProvider(get(), get()),
-                DebugLoginMethodProvider(get()),
-                DebugPaymentTypeProvider(get())
+                DevFeatureFlagProvider(get(), get()),
+                DevLoginMethodProvider(get()),
+                DevPaymentTypeProvider(get())
             )
         } else {
             FeatureManager(
