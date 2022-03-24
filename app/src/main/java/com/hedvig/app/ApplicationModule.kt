@@ -221,6 +221,7 @@ import com.hedvig.app.util.apollo.DeviceIdInterceptor
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import com.hedvig.app.util.apollo.SunsettingInterceptor
 import com.hedvig.app.util.featureflags.FeatureManager
+import com.hedvig.app.util.featureflags.FeatureManagerImpl
 import com.hedvig.app.util.featureflags.flags.DevFeatureFlagProvider
 import com.hedvig.app.util.featureflags.flags.HAnalyticsFeatureFlagProvider
 import com.hedvig.app.util.featureflags.loginmethod.DevLoginMethodProvider
@@ -717,13 +718,13 @@ val sharedPreferencesModule = module {
 val featureManagerModule = module {
     single<FeatureManager> {
         if (BuildConfig.DEBUG) {
-            FeatureManager(
+            FeatureManagerImpl(
                 DevFeatureFlagProvider(get(), get()),
                 DevLoginMethodProvider(get()),
                 DevPaymentTypeProvider(get())
             )
         } else {
-            FeatureManager(
+            FeatureManagerImpl(
                 HAnalyticsFeatureFlagProvider(get()),
                 HAnalyticsLoginMethodProvider(get()),
                 HAnalyticsPaymentTypeProvider(get()),
