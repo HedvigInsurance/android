@@ -25,7 +25,6 @@ import com.hedvig.app.ui.compose.theme.HedvigTheme
  * of [topContent]. It does so by measuring the height of [topContent] and adds at least an equivalent space at the
  * bottom of the layout.
  * Places both [centeredContent] and [topContent] centered horizontally by default without a choice of adjusting it.
- * Has a min height of [80.dp]
  *
  * ```
  * +-------------------------------------+
