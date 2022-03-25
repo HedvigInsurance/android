@@ -193,7 +193,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: Homebrew/actions/setup-homebrew@master
-      - uses: mxschitt/action-tmate@v3
+      - uses: mxschmitt/action-tmate@v3
       - run: sudo apt-get install libxml2-utils
       - run: brew install ktlint --build-from-source ktlint
       - name: run ktlint
