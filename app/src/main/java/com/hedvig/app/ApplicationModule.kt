@@ -753,7 +753,6 @@ val chatEventModule = module {
 }
 
 val dataStoreModule = module {
-    @Suppress("RemoveExplicitTypeArguments")
     single<DataStore<Preferences>> {
         PreferenceDataStoreFactory.create(
             produceFile = {
