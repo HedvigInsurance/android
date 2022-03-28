@@ -12,12 +12,16 @@ import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.feature.sunsetting.ForceUpgradeActivity
 import com.hedvig.app.service.getDynamicLinkFromFirebase
 import com.hedvig.app.service.startActivity
 import com.hedvig.app.util.extensions.avdDoOnEnd
 import com.hedvig.app.util.extensions.avdStart
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.viewBinding
+import com.hedvig.app.util.featureflags.FeatureManager
+import com.hedvig.app.util.featureflags.flags.Feature
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -25,6 +29,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class SplashActivity : BaseActivity(R.layout.activity_splash) {
     private val loggedInService: LoginStatusService by inject()
     private val marketManager: MarketManager by inject()
+    private val featureManager: FeatureManager by inject()
     private val binding by viewBinding(ActivitySplashBinding::bind)
     private val model: SplashViewModel by viewModel()
 
@@ -45,9 +50,16 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
 
     private fun getLoginStatusAndNavigate(intent: Intent) {
         lifecycleScope.launch {
-            when (val loginStatus = loggedInService.getLoginStatus()) {
+            val loginStatusAsync = async { loggedInService.getLoginStatus() }
+            val mustForceUpdate = async { featureManager.isFeatureEnabled(Feature.UPDATE_NECESSARY) }
+            if (mustForceUpdate.await()) {
+                applicationContext.startActivity(ForceUpgradeActivity.newInstance(applicationContext))
+                return@launch
+            }
+            when (val loginStatus = loginStatusAsync.await()) {
                 LoginStatus.Onboarding,
-                LoginStatus.LoggedIn -> {
+                LoginStatus.LoggedIn,
+                -> {
                     val dynamicLink = getDynamicLinkFromFirebase(intent)
                     model.onDynamicLinkOpened(dynamicLink)
                     dynamicLink.startActivity(
