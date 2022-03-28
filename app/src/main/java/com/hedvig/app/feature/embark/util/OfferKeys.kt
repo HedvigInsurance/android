@@ -3,10 +3,13 @@ package com.hedvig.app.feature.embark.util
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.ExpressionResult
 import com.hedvig.app.feature.embark.ValueStore
-import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
+import com.hedvig.app.util.featureflags.flags.Feature
 
-fun EmbarkStoryQuery.Passage.getOfferKeysOrNull(valueStore: ValueStore, featureManager: FeatureManager): List<String>? {
+suspend fun EmbarkStoryQuery.Passage.getOfferKeysOrNull(
+    valueStore: ValueStore,
+    featureManager: FeatureManager
+): List<String>? {
     return if (featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
         getQuoteCartRedirectKeysOrNull(valueStore)
     } else {

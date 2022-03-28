@@ -148,7 +148,6 @@ object TopOfferItemsBuilder {
     }
 }
 
-@OptIn(ExperimentalStdlibApi::class)
 object BottomOfferItemsBuilder {
     fun createBottomOfferItems(
         offerData: OfferModel,

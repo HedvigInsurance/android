@@ -10,8 +10,8 @@ import com.hedvig.android.owldroid.graphql.AdyenPayoutMethodsQuery
 import com.hedvig.android.owldroid.graphql.SubmitAdditionalPaymentDetailsMutation
 import com.hedvig.android.owldroid.graphql.TokenizePaymentDetailsMutation
 import com.hedvig.android.owldroid.graphql.TokenizePayoutDetailsMutation
-import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
+import com.hedvig.app.util.featureflags.flags.Feature
 import org.json.JSONObject
 
 class AdyenRepository(

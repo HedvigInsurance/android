@@ -11,8 +11,8 @@ import com.hedvig.android.owldroid.graphql.QuoteCartEditQuoteMutation
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import com.hedvig.app.util.apollo.safeQuery
-import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
+import com.hedvig.app.util.featureflags.flags.Feature
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonObject

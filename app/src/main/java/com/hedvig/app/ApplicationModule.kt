@@ -97,6 +97,15 @@ import com.hedvig.app.feature.genericauth.otpinput.ReSendOtpCodeUseCase
 import com.hedvig.app.feature.genericauth.otpinput.ReSendOtpCodeUseCaseImpl
 import com.hedvig.app.feature.genericauth.otpinput.SendOtpCodeUseCase
 import com.hedvig.app.feature.genericauth.otpinput.SendOtpCodeUseCaseImpl
+import com.hedvig.app.feature.hanalytics.ExperimentManager
+import com.hedvig.app.feature.hanalytics.ExperimentManagerImpl
+import com.hedvig.app.feature.hanalytics.HAnalyticsImpl
+import com.hedvig.app.feature.hanalytics.HAnalyticsService
+import com.hedvig.app.feature.hanalytics.HAnalyticsServiceImpl
+import com.hedvig.app.feature.hanalytics.HAnalyticsSink
+import com.hedvig.app.feature.hanalytics.NetworkHAnalyticsSink
+import com.hedvig.app.feature.hanalytics.SendHAnalyticsEventUseCase
+import com.hedvig.app.feature.hanalytics.SendHAnalyticsEventUseCaseImpl
 import com.hedvig.app.feature.home.data.GetHomeUseCase
 import com.hedvig.app.feature.home.model.HomeItemsBuilder
 import com.hedvig.app.feature.home.ui.HomeViewModel
@@ -183,10 +192,6 @@ import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignViewModel
 import com.hedvig.app.feature.swedishbankid.sign.usecase.ManuallyRecheckSwedishBankIdSignStatusUseCase
 import com.hedvig.app.feature.swedishbankid.sign.usecase.SubscribeToSwedishBankIdSignStatusUseCase
 import com.hedvig.app.feature.tracking.ApplicationLifecycleTracker
-import com.hedvig.app.feature.tracking.ExperimentProvider
-import com.hedvig.app.feature.tracking.HAnalyticsFacade
-import com.hedvig.app.feature.tracking.HAnalyticsSink
-import com.hedvig.app.feature.tracking.NetworkHAnalyticsSink
 import com.hedvig.app.feature.trustly.TrustlyRepository
 import com.hedvig.app.feature.trustly.TrustlyViewModel
 import com.hedvig.app.feature.trustly.TrustlyViewModelImpl
@@ -199,9 +204,7 @@ import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
 import com.hedvig.app.feature.zignsec.usecase.StartDanishAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.StartNorwegianAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthStatusUseCase
-import com.hedvig.app.featureflags.FeatureFlagEntryProvider
 import com.hedvig.app.service.FileService
-import com.hedvig.app.service.RemoteConfig
 import com.hedvig.app.service.badge.CrossSellNotificationBadgeService
 import com.hedvig.app.service.badge.NotificationBadgeService
 import com.hedvig.app.service.badge.ReferralsNotificationBadgeService
@@ -218,6 +221,13 @@ import com.hedvig.app.util.apollo.DeviceIdInterceptor
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import com.hedvig.app.util.apollo.SunsettingInterceptor
 import com.hedvig.app.util.featureflags.FeatureManager
+import com.hedvig.app.util.featureflags.FeatureManagerImpl
+import com.hedvig.app.util.featureflags.flags.DevFeatureFlagProvider
+import com.hedvig.app.util.featureflags.flags.HAnalyticsFeatureFlagProvider
+import com.hedvig.app.util.featureflags.loginmethod.DevLoginMethodProvider
+import com.hedvig.app.util.featureflags.loginmethod.HAnalyticsLoginMethodProvider
+import com.hedvig.app.util.featureflags.paymenttype.DevPaymentTypeProvider
+import com.hedvig.app.util.featureflags.paymenttype.HAnalyticsPaymentTypeProvider
 import com.hedvig.hanalytics.HAnalytics
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -593,7 +603,6 @@ val serviceModule = module {
     single { NotificationBadgeService(get()) }
 
     single { DeviceInformationService(get()) }
-    single { RemoteConfig() }
 }
 
 val repositoriesModule = module {
@@ -622,14 +631,18 @@ val repositoriesModule = module {
 }
 
 val trackerModule = module {
-    single<HAnalytics> {
+    single<HAnalytics> { HAnalyticsImpl(get(), get()) }
+    single<SendHAnalyticsEventUseCase> {
         // Workaround for https://github.com/InsertKoinIO/koin/issues/1146
-        HAnalyticsFacade(getAll<HAnalyticsSink>().distinct(), get())
+        val allAnalyticsSinks = getAll<HAnalyticsSink>().distinct()
+        SendHAnalyticsEventUseCaseImpl(allAnalyticsSinks)
     }
-    single {
-        NetworkHAnalyticsSink(get(), get(), get(), get<Context>().getString(R.string.HANALYTICS_URL))
-    } bind HAnalyticsSink::class bind ExperimentProvider::class
-    single { ApplicationLifecycleTracker(get()) }
+    single<ExperimentManager> { ExperimentManagerImpl(get(), get()) }
+    single<NetworkHAnalyticsSink> { NetworkHAnalyticsSink(get()) } bind HAnalyticsSink::class
+    single<HAnalyticsService> {
+        HAnalyticsServiceImpl(get(), get(), get(), get<Context>().getString(R.string.HANALYTICS_URL))
+    }
+    single<ApplicationLifecycleTracker> { ApplicationLifecycleTracker(get()) }
 }
 
 val localeBroadcastManagerModule = module {
@@ -703,8 +716,21 @@ val sharedPreferencesModule = module {
 }
 
 val featureManagerModule = module {
-    single { FeatureManager(get(), get(), get()) }
-    single { FeatureFlagEntryProvider() }
+    single<FeatureManager> {
+        if (BuildConfig.DEBUG) {
+            FeatureManagerImpl(
+                DevFeatureFlagProvider(get(), get()),
+                DevLoginMethodProvider(get()),
+                DevPaymentTypeProvider(get())
+            )
+        } else {
+            FeatureManagerImpl(
+                HAnalyticsFeatureFlagProvider(get()),
+                HAnalyticsLoginMethodProvider(get()),
+                HAnalyticsPaymentTypeProvider(get()),
+            )
+        }
+    }
 }
 
 val coilModule = module {

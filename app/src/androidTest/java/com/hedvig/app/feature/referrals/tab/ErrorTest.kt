@@ -11,7 +11,7 @@ import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.FeatureFlagRule
 import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.context
-import com.hedvig.app.util.featureflags.Feature
+import com.hedvig.app.util.featureflags.flags.Feature
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.kakao.screen.Screen.Companion.onScreen
 import okhttp3.mockwebserver.Dispatcher
