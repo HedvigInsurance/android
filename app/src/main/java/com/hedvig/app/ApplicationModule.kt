@@ -719,7 +719,7 @@ val featureManagerModule = module {
     single<FeatureManager> {
         if (BuildConfig.DEBUG) {
             FeatureManagerImpl(
-                DevFeatureFlagProvider(get(), get()),
+                DevFeatureFlagProvider(get()),
                 DevLoginMethodProvider(get()),
                 DevPaymentTypeProvider(get())
             )
