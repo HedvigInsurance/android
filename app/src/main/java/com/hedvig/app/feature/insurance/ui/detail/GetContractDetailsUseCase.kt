@@ -16,8 +16,6 @@ class GetContractDetailsUseCase(
     private val featureManager: FeatureManager,
 ) {
 
-    private suspend fun isMovingFlowEnabled() = featureManager.isFeatureEnabled(Feature.MOVING_FLOW)
-
     suspend operator fun invoke(contractId: String): Either<ContractDetailError, ContractDetailViewState> {
         return apolloClient
             .query(InsuranceQuery(localeManager.defaultLocale()))
@@ -27,7 +25,7 @@ class GetContractDetailsUseCase(
                 data.contracts
                     .firstOrNone { it.id == contractId }
                     .toEither { ContractDetailError.ContractNotFoundError }
-                    .map { it.toContractDetailViewState(isMovingFlowEnabled()) }
+                    .map { it.toContractDetailViewState(featureManager.isFeatureEnabled(Feature.MOVING_FLOW)) }
             }
     }
 
