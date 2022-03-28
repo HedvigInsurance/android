@@ -6,8 +6,8 @@ import com.hedvig.android.owldroid.type.EmbarkStoryType
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
-import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
+import com.hedvig.app.util.featureflags.flags.Feature
 
 class GetBundlesUseCase(
     private val apolloClient: ApolloClient,

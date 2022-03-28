@@ -11,7 +11,6 @@ class TabNotificationService(
     private val referralsNotificationBadgeService: ReferralsNotificationBadgeService,
 ) {
 
-    @OptIn(ExperimentalStdlibApi::class)
     fun unseenTabNotifications(): Flow<Set<LoggedInTabs>> {
         return combine(
             crossSellNotificationBadgeService.shouldShowTabNotification(),
