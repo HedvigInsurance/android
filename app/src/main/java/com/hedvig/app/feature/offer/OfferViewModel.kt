@@ -36,7 +36,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -67,7 +66,7 @@ abstract class OfferViewModel : ViewModel() {
             val bundleDisplayName: String,
         ) : Event()
 
-        data class StartSwedishBankIdSign(val autoStartToken: String) : Event()
+        data class StartSwedishBankIdSign(val autoStartToken: String?) : Event()
 
         object DiscardOffer : Event()
     }
@@ -303,7 +302,7 @@ class OfferViewModelImpl(
             is SignQuotesUseCase.SignQuoteResult.StartSwedishBankId -> {
                 _events.trySend(Event.StartSwedishBankIdSign(result.autoStartToken))
             }
-            SignQuotesUseCase.SignQuoteResult.Success -> {
+            SignQuotesUseCase.SignQuoteResult.StartSimpleSign -> {
                 _viewState.value = ViewState.Error("Invalid offer state")
             }
         }

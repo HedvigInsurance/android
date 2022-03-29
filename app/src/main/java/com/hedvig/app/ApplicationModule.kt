@@ -382,8 +382,19 @@ val viewModelModule = module {
         )
     }
     viewModel { TerminatedContractsViewModel(get()) }
-    viewModel { (autoStartToken: String, quoteIds: List<String>) ->
-        SwedishBankIdSignViewModel(autoStartToken, get(), get(), get(), get(), quoteIds)
+    viewModel { (autoStartToken: String, quoteIds: List<String>, quoteCartId: CreateQuoteCartUseCase.QuoteCartId?) ->
+        SwedishBankIdSignViewModel(
+            autoStartToken = autoStartToken,
+            subscribeToSwedishBankIdSignStatusUseCase = get(),
+            manuallyRecheckSwedishBankIdSignStatusUseCase = get(),
+            loginStatusService = get(),
+            hAnalytics = get(),
+            quoteIds = quoteIds,
+            quoteCartId = quoteCartId,
+            offerRepository = get(),
+            featureManager = get(),
+            createAccessTokenUseCase = get()
+        )
     }
     viewModel { AudioRecorderViewModel(get()) }
     viewModel { CrossSellFaqViewModel(get()) }

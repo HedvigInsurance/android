@@ -23,9 +23,9 @@ class SignQuotesUseCase(
 ) {
 
     sealed class SignQuoteResult {
-        object Success : SignQuoteResult()
+        object StartSimpleSign : SignQuoteResult()
         data class StartSwedishBankId(
-            val autoStartToken: String,
+            val autoStartToken: String?,
         ) : SignQuoteResult()
     }
 
@@ -51,12 +51,7 @@ class SignQuotesUseCase(
         val errorMessage = result.quoteCartStartCheckout.asBasicError?.message
         ensure(errorMessage == null) { ErrorMessage(errorMessage) }
 
-        val id = result.quoteCartStartCheckout.asQuoteCart?.paymentConnection?.id
-        if (id == null) {
-            SignQuoteResult.Success
-        } else {
-            SignQuoteResult.StartSwedishBankId(id)
-        }
+        SignQuoteResult.StartSwedishBankId(null)
     }
 
     private suspend fun mutateQuoteCart(
@@ -80,7 +75,7 @@ class SignQuotesUseCase(
         when {
             signResponse?.asSimpleSignSession != null -> {
                 cacheManager.clearCache()
-                SignQuoteResult.Success
+                SignQuoteResult.StartSimpleSign
             }
             signResponse?.asSwedishBankIdSession != null -> {
                 val token = signResponse.asSwedishBankIdSession?.autoStartToken

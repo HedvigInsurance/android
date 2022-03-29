@@ -220,7 +220,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
     private fun showSignDialog(event: OfferViewModel.Event.StartSwedishBankIdSign) {
         SwedishBankIdSignDialog
-            .newInstance(event.autoStartToken, quoteIds)
+            .newInstance(event.autoStartToken, quoteIds, quoteCartId)
             .show(supportFragmentManager, SwedishBankIdSignDialog.TAG)
     }
 

@@ -61,12 +61,10 @@ class CheckoutViewModel(
     private var identityNumberInput: String = ""
 
     init {
-        viewModelScope.launch {
-            offerRepository.offerFlow(quoteIds)
-                .onEach { handleOfferResult(it) }
-                .onStart { offerRepository.queryAndEmitOffer(quoteCartId, quoteIds) }
-                .launchIn(viewModelScope)
-        }
+        offerRepository.offerFlow(quoteIds)
+            .onEach { handleOfferResult(it) }
+            .onStart { offerRepository.queryAndEmitOffer(quoteCartId, quoteIds) }
+            .launchIn(viewModelScope)
     }
 
     private suspend fun handleOfferResult(result: Either<ErrorMessage, OfferModel>) {
@@ -156,8 +154,7 @@ class CheckoutViewModel(
         )
     }
 
-    fun
-    onTrySign(emailInput: String, identityNumberInput: String) {
+    fun onTrySign(emailInput: String, identityNumberInput: String) {
         if (inputViewState.value.canSign()) {
             _events.trySend(Event.Loading)
             val parameter = createEditAndSignParameter(identityNumberInput, emailInput)
@@ -194,7 +191,7 @@ class CheckoutViewModel(
     )
 
     private suspend fun SignQuotesUseCase.SignQuoteResult.toEvent(): Event = when (this) {
-        SignQuotesUseCase.SignQuoteResult.Success -> onSignSuccess()
+        SignQuotesUseCase.SignQuoteResult.StartSimpleSign -> onSignSuccess()
         else -> Event.Error()
     }
 
