@@ -10,11 +10,15 @@ import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ConcatAdapter
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.adyen.checkout.dropin.DropIn
 import com.adyen.checkout.dropin.DropInResult
+import com.carousell.concatadapterextension.ConcatItemDecoration
+import com.carousell.concatadapterextension.ConcatSpanSizeLookup
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.SplashActivity
@@ -42,6 +46,7 @@ import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignDialog
 import com.hedvig.app.getLocale
+import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.showAlert
@@ -62,6 +67,7 @@ import org.koin.core.parameter.parametersOf
 
 class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
+    private lateinit var concatAdapter: ConcatAdapter
     override val screenName = "offer"
 
     private val quoteIds: List<String>
@@ -141,6 +147,22 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             reload = model::reload,
             openChat = ::openChat,
         )
+
+        concatAdapter = ConcatAdapter(
+            topOfferAdapter,
+            perilsAdapter,
+            insurableLimitsAdapter,
+            documentAdapter,
+            bottomOfferAdapter,
+        )
+
+        binding.offerScroll.adapter = concatAdapter
+        binding.offerScroll.itemAnimator = ViewHolderReusingDefaultItemAnimator()
+        binding.offerScroll.addItemDecoration(ConcatItemDecoration { concatAdapter.adapters })
+        (binding.offerScroll.layoutManager as? GridLayoutManager)?.let { gridLayoutManager ->
+            gridLayoutManager.spanSizeLookup =
+                ConcatSpanSizeLookup(gridLayoutManager.spanCount) { concatAdapter.adapters }
+        }
 
         model
             .viewState
