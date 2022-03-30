@@ -2,6 +2,7 @@ package com.hedvig.app.feature.checkout
 
 import arrow.core.Either
 import arrow.core.computations.either
+import arrow.core.computations.ensureNotNull
 import arrow.core.flatMap
 import arrow.core.left
 import arrow.core.right
@@ -11,7 +12,7 @@ import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.model.quotebundle.PostSignScreen
 import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.apollo.safeQuery
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import java.time.LocalDate
 
 class ApproveQuotesUseCase(
@@ -33,9 +34,11 @@ class ApproveQuotesUseCase(
 
     suspend fun approveQuotesAndClearCache(quoteIds: List<String>): Either<Error, ApproveSuccess> = either {
         val offerModel = offerRepository.offerFlow(quoteIds)
-            .first()
-            .mapLeft { Error.GeneralError("Could not get Quote") }
-            .bind()
+            .firstOrNull()
+            ?.mapLeft { Error.GeneralError("Could not get Quote") }
+            ?.bind()
+
+        ensureNotNull(offerModel) { Error.GeneralError("No Offer found") }
 
         val date = signQuotes(quoteIds, offerModel.quoteBundle.viewConfiguration.postSignScreen).bind()
 

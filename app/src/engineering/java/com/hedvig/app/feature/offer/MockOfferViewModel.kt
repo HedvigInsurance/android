@@ -38,7 +38,7 @@ class MockOfferViewModel : OfferViewModel() {
         // TODO
     }
 
-    override suspend fun approveOffer() {
+    override fun approveOffer() {
         _events.trySend(
             Event.ApproveSuccessful(
                 LocalDate.now(),

@@ -27,9 +27,9 @@ class ConnectPaymentUseCase(
     private val graphQLQueryHandler: GraphQLQueryHandler,
 ) {
 
-    sealed class Error {
-        data class CheckoutPaymentAction(val action: String) : Error()
-        data class ErrorMessage(val message: String?) : Error()
+    sealed interface Error {
+        data class CheckoutPaymentAction(val action: String) : Error
+        data class ErrorMessage(val message: String?) : Error
     }
 
     suspend fun getPaymentTokenId(data: JSONObject): Either<Error, PaymentTokenId> {

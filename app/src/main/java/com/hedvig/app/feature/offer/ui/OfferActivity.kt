@@ -359,9 +359,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     model.onOpenCheckout()
                 }
             }
-            CheckoutMethod.APPROVE_ONLY -> lifecycleScope.launch {
-                model.approveOffer()
-            }
+            CheckoutMethod.APPROVE_ONLY -> model.approveOffer()
             CheckoutMethod.NORWEGIAN_BANK_ID,
             CheckoutMethod.DANISH_BANK_ID,
             CheckoutMethod.UNKNOWN,

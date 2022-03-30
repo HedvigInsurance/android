@@ -27,6 +27,7 @@ import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.map
 
 class OfferRepository(
@@ -39,9 +40,15 @@ class OfferRepository(
 
     fun offerQuery(ids: List<String>) = OfferQuery(localeManager.defaultLocale(), ids)
 
+    suspend fun getQuoteIds(
+        quoteCartId: CreateQuoteCartUseCase.QuoteCartId
+    ): Either<ErrorMessage, List<String>> = queryQuoteCart(quoteCartId)
+        .map { it.quoteBundle.quotes }
+        .map { quotes -> quotes.map { it.id } }
+
     fun offerFlow(ids: List<String>): Flow<Either<ErrorMessage, OfferModel>> {
         return if (featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
-            offerFlow
+            offerFlow.asSharedFlow()
         } else {
             apolloClient
                 .query(offerQuery(ids))
@@ -51,24 +58,26 @@ class OfferRepository(
         }
     }
 
-    suspend fun queryAndEmitOffer(quoteCartId: CreateQuoteCartUseCase.QuoteCartId?, quoteIds: List<String>) {
-        if (quoteCartId != null) {
-            val offer = queryQuoteCart(quoteCartId)
-            offerFlow.tryEmit(offer)
-        } else {
-            refreshOfferQuery(quoteIds)
-        }
+    private fun Response<OfferQuery.Data>.toResult(): Either<ErrorMessage, OfferModel> = when {
+        errors != null -> ErrorMessage(errors!!.firstOrNull()?.message).left()
+        data == null -> ErrorMessage().left()
+        else -> data!!.toOfferModel().right()
     }
 
-    suspend fun getQuoteIds(
-        quoteCartId: CreateQuoteCartUseCase.QuoteCartId
-    ): Either<ErrorMessage, List<String>> = queryQuoteCart(quoteCartId)
-        .map { it.quoteBundle.quotes }
-        .map { quotes -> quotes.map { it.id } }
+    suspend fun queryAndEmitOffer(quoteCartId: CreateQuoteCartUseCase.QuoteCartId?, quoteIds: List<String>) {
+        val offer = if (featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
+            queryQuoteCart(quoteCartId)
+        } else {
+            queryOffer(quoteIds)
+        }
+        offerFlow.tryEmit(offer)
+    }
 
     private suspend fun queryQuoteCart(
-        quoteCartId: CreateQuoteCartUseCase.QuoteCartId
+        quoteCartId: CreateQuoteCartUseCase.QuoteCartId?
     ): Either<ErrorMessage, OfferModel> = either {
+        ensureNotNull(quoteCartId) { ErrorMessage("No quote cart id found") }
+
         val result = apolloClient
             .query(QuoteCartQuery(localeManager.defaultLocale(), quoteCartId.id))
             .toBuilder()
@@ -86,10 +95,19 @@ class OfferRepository(
         result.quoteCart.fragments.quoteCartFragment.toOfferModel()
     }
 
-    private fun Response<OfferQuery.Data>.toResult(): Either<ErrorMessage, OfferModel> = when {
-        errors != null -> ErrorMessage(errors!!.firstOrNull()?.message).left()
-        data == null -> ErrorMessage().left()
-        else -> data!!.toOfferModel().right()
+    private suspend fun queryOffer(ids: List<String>): Either<ErrorMessage, OfferModel> = either {
+        ensure(ids.isNotEmpty()) { ErrorMessage("No quote ids found") }
+
+        apolloClient
+            .query(offerQuery(ids))
+            .toBuilder()
+            .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
+            .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
+            .build()
+            .safeQuery()
+            .toEither { ErrorMessage(it) }
+            .bind()
+            .toOfferModel()
     }
 
     fun writeDiscountToCache(ids: List<String>, data: RedeemReferralCodeMutation.Data) {
@@ -180,11 +198,4 @@ class OfferRepository(
             .writeAndPublish(offerQuery(ids), newData)
             .execute()
     }
-
-    private fun refreshOfferQuery(ids: List<String>) = apolloClient
-        .query(offerQuery(ids))
-        .toBuilder()
-        .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
-        .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
-        .build()
 }

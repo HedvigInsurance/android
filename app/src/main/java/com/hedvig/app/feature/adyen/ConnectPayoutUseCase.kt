@@ -21,16 +21,15 @@ class ConnectPayoutUseCase(
         val tokenizationResultType: TokenizationResultType,
     )
 
-    sealed class Error {
-        data class CheckoutPaymentAction(val action: String) : Error()
-        data class ErrorMessage(val message: String?) : Error()
+    sealed interface Error {
+        data class CheckoutPaymentAction(val action: String) : Error
+        data class ErrorMessage(val message: String?) : Error
     }
 
     suspend fun connectPayout(data: JSONObject) = apolloClient
         .mutate(createTokenizePayoutDetailsMutation(data))
         .safeQuery()
-        .toEither()
-        .mapLeft { Error.ErrorMessage(it.message) }
+        .toEither { Error.ErrorMessage(it) }
         .flatMap {
             it.tokenizePayoutDetails?.asTokenizationResponseAction?.let {
                 Error.CheckoutPaymentAction(it.action).left()
