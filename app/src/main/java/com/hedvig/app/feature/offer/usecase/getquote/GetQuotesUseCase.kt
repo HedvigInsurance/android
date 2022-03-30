@@ -12,24 +12,22 @@ import com.hedvig.app.util.featureflags.FeatureManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 
 class GetQuotesUseCase(
     private val offerRepository: OfferRepository,
     private val featureManager: FeatureManager,
-    private val getQuoteIdsUseCase: GetQuoteIdsUseCase,
 ) {
 
     operator fun invoke(quoteIds: List<String>, quoteCartId: String?): Flow<Either<ErrorMessage, OfferModel>> {
         return flow {
             when {
-                featureManager.isFeatureEnabled(Feature.QUOTE_CART) -> quoteCartId?.let {
-                    emitAll(offerRepository.offer(nonEmptyListOf(quoteCartId)))
-                } ?: ErrorMessage("No quote id found").left()
-                quoteIds.isNotEmpty() -> emitAll(offerRepository.offer(NonEmptyList.fromListUnsafe(quoteIds)))
-                else -> getQuoteIdsUseCase.invoke(null).map {
-                    offerRepository.offer(NonEmptyList.fromListUnsafe(it.ids))
+                featureManager.isFeatureEnabled(Feature.QUOTE_CART) -> {
+                    quoteCartId
+                        ?.let { emitAll(offerRepository.offer(nonEmptyListOf(quoteCartId))) }
+                        ?: emit(ErrorMessage("No quote cart id found").left())
                 }
+                quoteIds.isNotEmpty() -> emitAll(offerRepository.offer((NonEmptyList.fromListUnsafe(quoteIds))))
+                else -> ErrorMessage(null)
             }
         }
     }

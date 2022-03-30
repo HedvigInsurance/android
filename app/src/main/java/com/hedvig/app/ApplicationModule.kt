@@ -229,6 +229,7 @@ import org.koin.dsl.module
 import timber.log.Timber
 import java.time.Clock
 import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APPLICATION_ID == "com.hedvig.test.app"
 
@@ -259,11 +260,14 @@ val applicationModule = module {
         val marketManager = get<MarketManager>()
         val context = get<Context>()
         val builder = OkHttpClient.Builder()
+            // Temporary fix until back-end problems are handled
+            .readTimeout(30, TimeUnit.SECONDS)
             .addInterceptor { chain ->
                 val original = chain.request()
                 val builder = original
                     .newBuilder()
                     .method(original.method, original.body)
+
                 get<AuthenticationTokenService>().authenticationToken?.let { token ->
                     builder.header("Authorization", token)
                 }
@@ -608,7 +612,7 @@ val repositoriesModule = module {
     single { KeyGearItemsRepository(get(), get(), get(), get()) }
     single { MarketRepository(get(), get(), get()) }
     single { MarketingRepository(get(), get()) }
-    single { AdyenRepository(get(), get()) }
+    single { AdyenRepository(get(), get(), get()) }
     single { EmbarkRepository(get(), get()) }
     single { ReferralsRepository(get()) }
     single { LoggedInRepository(get(), get()) }
@@ -658,7 +662,7 @@ val useCaseModule = module {
     single { StartDanishAuthUseCase(get()) }
     single { StartNorwegianAuthUseCase(get()) }
     single { SubscribeToAuthStatusUseCase(get()) }
-    single { GetQuotesUseCase(get(), get(), get()) }
+    single { GetQuotesUseCase(get(), get()) }
     single { GetQuoteUseCase(get()) }
     single { EditStartDateUseCase(get(), get()) }
     single { SignQuotesUseCase(get(), get(), get()) }

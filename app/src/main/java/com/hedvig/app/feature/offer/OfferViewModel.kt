@@ -43,6 +43,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -50,6 +51,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import kotlin.time.Duration.Companion.seconds
 
 abstract class OfferViewModel : ViewModel() {
     abstract val viewState: StateFlow<ViewState>
@@ -110,7 +112,7 @@ abstract class OfferViewModel : ViewModel() {
             val documents: List<DocumentItems> = emptyList(),
             val insurableLimitsItems: List<InsurableLimitItem> = emptyList(),
             val bottomOfferItems: List<OfferItems> = emptyList(),
-            val checkoutMethod: CheckoutMethod = CheckoutMethod.SIMPLE_SIGN,
+            val checkoutMethod: CheckoutMethod,
             val checkoutLabel: CheckoutLabel = CheckoutLabel.CONFIRM,
             val title: ViewConfiguration.Title = ViewConfiguration.Title.LOGO,
             val loginStatus: LoginStatus = LoginStatus.LoggedIn,
@@ -157,18 +159,18 @@ class OfferViewModelImpl(
     private val hAnalytics: HAnalytics,
 ) : OfferViewModel() {
 
+    private val offerAndLoginStatus: MutableStateFlow<OfferAndLoginStatus> =
+        MutableStateFlow(OfferAndLoginStatus.Loading)
+
     init {
         loginStatusService.isViewingOffer = shouldShowOnNextAppStart
         loginStatusService.persistOfferIds(quoteCartId, quoteIds)
 
         viewModelScope.launch {
-            loadQuoteIds()
+            quoteCartId?.let { loadQuoteIds() }
             loadQuotes(quoteIds)
         }
     }
-
-    private val offerAndLoginStatus: MutableStateFlow<OfferAndLoginStatus> =
-        MutableStateFlow(OfferAndLoginStatus.Loading)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override val viewState: StateFlow<ViewState> = offerAndLoginStatus.transformLatest { offerResponse ->
@@ -212,12 +214,12 @@ class OfferViewModelImpl(
                                 }
                                 emit(
                                     produceViewState(
-                                        offerResponse.offerResult,
-                                        offerResponse.loginStatus,
-                                        offerResponse.paymentMethods,
-                                        dataCollectionStatus,
-                                        dataCollectionResult.await(),
-                                        insuranceProviderDisplayName.await()
+                                        data = offerResponse.offerResult,
+                                        loginStatus = offerResponse.loginStatus,
+                                        paymentMethods = offerResponse.paymentMethods,
+                                        dataCollectionStatus = dataCollectionStatus,
+                                        dataCollectionResult = dataCollectionResult.await(),
+                                        insuranceProviderDisplayName = insuranceProviderDisplayName.await()
                                     )
                                 )
                             }
@@ -228,7 +230,7 @@ class OfferViewModelImpl(
     }
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
+            started = SharingStarted.WhileSubscribed(5.seconds),
             initialValue = ViewState.Loading,
         )
 
@@ -359,6 +361,7 @@ class OfferViewModelImpl(
                 emptyList()
             },
             bottomOfferItems = bottomOfferItems,
+            checkoutMethod = data.checkoutMethod,
             checkoutLabel = data.checkoutLabel,
             title = data.quoteBundle.viewConfiguration.title,
             loginStatus = loginStatus,
@@ -416,13 +419,17 @@ class OfferViewModelImpl(
     override fun reload() {
         offerAndLoginStatus.value = OfferAndLoginStatus.Loading
         viewModelScope.launch {
-            if (quoteIds.isEmpty()) {
+            if (quoteIds.isEmpty() && quoteCartId != null) {
                 loadQuoteIds()
             }
 
-            when (refreshQuotesUseCase.invoke(quoteIds)) {
-                RefreshQuotesUseCase.Result.Success -> loadQuotes(quoteIds)
-                is RefreshQuotesUseCase.Result.Error -> offerAndLoginStatus.value = OfferAndLoginStatus.Error
+            if (quoteIds.isNotEmpty()) {
+                when (refreshQuotesUseCase.invoke(quoteIds)) {
+                    RefreshQuotesUseCase.Result.Success -> loadQuotes(quoteIds)
+                    is RefreshQuotesUseCase.Result.Error -> offerAndLoginStatus.value = OfferAndLoginStatus.Error
+                }
+            } else {
+                offerAndLoginStatus.value = OfferAndLoginStatus.Error
             }
         }
     }

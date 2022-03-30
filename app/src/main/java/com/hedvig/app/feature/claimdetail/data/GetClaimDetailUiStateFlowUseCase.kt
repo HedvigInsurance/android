@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
+import kotlin.time.Duration.Companion.seconds
 
 class GetClaimDetailUiStateFlowUseCase(
     private val getClaimDetailUseCase: GetClaimDetailUseCase,
@@ -30,7 +31,7 @@ class GetClaimDetailUiStateFlowUseCase(
                     getClaimDetailUseCase
                         .invoke(claimId)
                         .tap { claimDetail -> emit(claimDetail.right()) }
-                    delay(POLL_INTERVAL_MS)
+                    delay(POLL_INTERVAL)
                 }
             }
         }.map { result: Either<GetClaimDetailUseCase.Error, ClaimDetailsQuery.ClaimDetail> ->
@@ -39,6 +40,6 @@ class GetClaimDetailUiStateFlowUseCase(
     }
 
     companion object {
-        private const val POLL_INTERVAL_MS = 5_000L
+        private val POLL_INTERVAL = 5.seconds
     }
 }

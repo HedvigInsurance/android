@@ -28,6 +28,7 @@ import com.hedvig.app.R
 import com.hedvig.app.ui.compose.composables.buttons.LargeContainedButton
 import com.hedvig.app.ui.compose.composables.buttons.LargeTextButton
 import com.hedvig.app.ui.compose.theme.HedvigTheme
+import com.hedvig.app.util.compose.ScreenOnFlag
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
@@ -130,11 +131,12 @@ fun Recording(
     viewState: AudioRecorderViewModel.ViewState.Recording,
     stopRecording: () -> Unit,
     clock: Clock,
+    modifier: Modifier = Modifier,
 ) {
-
+    ScreenOnFlag()
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
     ) {
         Box(
             contentAlignment = Alignment.Center,

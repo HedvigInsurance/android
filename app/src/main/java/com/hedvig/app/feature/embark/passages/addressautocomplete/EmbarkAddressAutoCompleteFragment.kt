@@ -32,6 +32,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.core.parameter.parametersOf
+import kotlin.time.Duration.Companion.milliseconds
 
 class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_address_auto_complete_action) {
 
@@ -98,7 +99,7 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
         // We need to wait for all input views to be laid out before starting enter transition.
         // This could perhaps be handled with a callback from the inputContainer.
         viewLifecycleScope.launchWhenCreated {
-            delay(50)
+            delay(50.milliseconds)
             startPostponedEnterTransition()
         }
     }
@@ -121,7 +122,7 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
                     ?: getString(R.string.EMBARK_ADDRESS_AUTOCOMPLETE_NO_ADDRESS)
             )
         )
-        delay(EmbarkActivity.PASSAGE_ANIMATION_DELAY_MILLIS)
+        delay(EmbarkActivity.PASSAGE_ANIMATION_DELAY_DURATION)
     }
 
     companion object {

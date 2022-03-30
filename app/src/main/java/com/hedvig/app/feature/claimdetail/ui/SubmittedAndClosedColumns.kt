@@ -25,6 +25,7 @@ import com.hedvig.app.util.compose.currentTimeAsState
 import java.time.Duration
 import java.time.Instant
 import java.util.Locale
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun SubmittedAndClosedColumns(
@@ -32,7 +33,7 @@ fun SubmittedAndClosedColumns(
     closedAt: Instant?,
     locale: Locale,
 ) {
-    val now by currentTimeAsState(updateIntervalInSeconds = 1L)
+    val now by currentTimeAsState(updateInterval = 1.seconds)
     val submittedText by remember(submittedAt) {
         derivedStateOf { HedvigDateUtils.getRelativeTimeSpanString(submittedAt, now) }
     }
