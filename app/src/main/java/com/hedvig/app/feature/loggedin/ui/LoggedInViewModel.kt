@@ -7,20 +7,48 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
+import com.hedvig.app.util.featureflags.FeatureManager
+import com.hedvig.app.util.featureflags.flags.Feature
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
+
+data class LoggedInViewState(
+    val loggedInQueryData: LoggedInQuery.Data,
+    val isKeyGearEnabled: Boolean,
+    val unseenTabNotifications: Set<LoggedInTabs>,
+)
 
 abstract class LoggedInViewModel : ViewModel() {
-    protected val _data = MutableLiveData<LoggedInQuery.Data>()
-    val data: LiveData<LoggedInQuery.Data> = _data
+    protected val loggedInQueryData: MutableStateFlow<LoggedInQuery.Data?> = MutableStateFlow(null)
+    protected val isKeyGearEnabled: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    protected val unseenTabNotifications: MutableStateFlow<Set<LoggedInTabs>> = MutableStateFlow(emptySet())
+
+    val viewState: StateFlow<LoggedInViewState?> = combine(
+        loggedInQueryData.filterNotNull(),
+        isKeyGearEnabled,
+        unseenTabNotifications
+    ) { loggedInQueryData, isKeyGearEnabled, unseenTabNotifications ->
+        LoggedInViewState(loggedInQueryData, isKeyGearEnabled, unseenTabNotifications)
+    }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5.seconds),
+            initialValue = null,
+        )
 
     private val _scroll = MutableLiveData<Int>()
     val scroll: LiveData<Int> = _scroll
@@ -30,9 +58,6 @@ abstract class LoggedInViewModel : ViewModel() {
         onBufferOverflow = BufferOverflow.DROP_OLDEST,
     )
     val shouldOpenReviewDialog: SharedFlow<Boolean> = _shouldOpenReviewDialog.asSharedFlow()
-
-    protected val _unseenTabNotifications = MutableStateFlow<Set<LoggedInTabs>>(emptySet())
-    val unseenTabNotifications = _unseenTabNotifications.asStateFlow()
 
     fun onScroll(scroll: Int) {
         _scroll.postValue(scroll)
@@ -47,6 +72,7 @@ class LoggedInViewModelImpl(
     private val loggedInRepository: LoggedInRepository,
     private val chatEventStore: ChatEventStore,
     private val tabNotificationService: TabNotificationService,
+    private val featureManager: FeatureManager,
     private val hAnalytics: HAnalytics,
 ) : LoggedInViewModel() {
 
@@ -56,19 +82,22 @@ class LoggedInViewModelImpl(
                 .map { it == 3 }
                 .collect(_shouldOpenReviewDialog::tryEmit)
         }
-
+        viewModelScope.launch {
+            isKeyGearEnabled.update { featureManager.isFeatureEnabled(Feature.KEY_GEAR) }
+        }
         viewModelScope.launch {
             val response = runCatching {
                 loggedInRepository.loggedInData()
             }
-
-            response.getOrNull()?.data?.let { _data.postValue(it) }
+            response.getOrNull()?.data?.let { loggedInQueryData ->
+                this@LoggedInViewModelImpl.loggedInQueryData.update { loggedInQueryData }
+            }
         }
         viewModelScope.launch {
             tabNotificationService
                 .unseenTabNotifications()
                 .collect { unseenTabNotificationSet ->
-                    _unseenTabNotifications.value = unseenTabNotificationSet
+                    unseenTabNotifications.value = unseenTabNotificationSet
                 }
         }
     }
