@@ -27,7 +27,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
@@ -128,7 +128,7 @@ class SwedishBankIdSignViewModel(
         loginStatusService.isViewingOffer = false
         loginStatusService.isLoggedIn = true
         viewModelScope.launch {
-            delay(Duration.seconds(1))
+            delay(1.seconds)
             _events.trySend(Event.StartDirectDebit)
         }
     }

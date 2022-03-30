@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.money.MonetaryAmount
+import kotlin.time.Duration.Companion.seconds
 
 class CheckoutViewModel(
     private val quoteIds: List<String>,
@@ -202,7 +203,7 @@ class CheckoutViewModel(
         // Delay sending success in order for the signed quotes to be added on the member
         // Sending success instantly will start HomeFragment, but the member will not have
         // updated contracts.
-        delay(5000)
+        delay(5.seconds)
         return Event.CheckoutSuccess
     }
 

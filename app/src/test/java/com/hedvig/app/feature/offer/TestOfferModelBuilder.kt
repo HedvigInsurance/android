@@ -2,11 +2,11 @@ package com.hedvig.app.feature.offer
 
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
+import com.hedvig.app.feature.offer.model.Campaign
 import com.hedvig.app.feature.offer.model.CheckoutLabel
+import com.hedvig.app.feature.offer.model.CheckoutMethod
 import com.hedvig.app.feature.offer.model.OfferModel
 import com.hedvig.app.feature.offer.model.quotebundle.BundleCost
-import com.hedvig.app.feature.offer.model.quotebundle.Campaign
-import com.hedvig.app.feature.offer.model.quotebundle.CheckoutMethod
 import com.hedvig.app.feature.offer.model.quotebundle.GradientType
 import com.hedvig.app.feature.offer.model.quotebundle.Inception
 import com.hedvig.app.feature.offer.model.quotebundle.OfferStartDate
@@ -113,6 +113,7 @@ class TestOfferModelBuilder(
         ),
         checkoutMethod = checkoutMethod,
         checkoutLabel = checkoutLabel,
-        campaign = campaign
+        campaign = campaign,
+        checkout = null
     )
 }

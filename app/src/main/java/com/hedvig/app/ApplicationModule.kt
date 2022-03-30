@@ -228,6 +228,7 @@ import org.koin.dsl.module
 import timber.log.Timber
 import java.time.Clock
 import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APPLICATION_ID == "com.hedvig.test.app"
 
@@ -258,11 +259,14 @@ val applicationModule = module {
         val marketManager = get<MarketManager>()
         val context = get<Context>()
         val builder = OkHttpClient.Builder()
+            // Temporary fix until back-end problems are handled
+            .readTimeout(30, TimeUnit.SECONDS)
             .addInterceptor { chain ->
                 val original = chain.request()
                 val builder = original
                     .newBuilder()
                     .method(original.method, original.body)
+
                 get<AuthenticationTokenService>().authenticationToken?.let { token ->
                     builder.header("Authorization", token)
                 }
