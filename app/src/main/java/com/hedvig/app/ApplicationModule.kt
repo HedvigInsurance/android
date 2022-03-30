@@ -141,6 +141,7 @@ import com.hedvig.app.feature.offer.OfferViewModelImpl
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetViewModel
 import com.hedvig.app.feature.offer.ui.changestartdate.EditStartDateUseCase
+import com.hedvig.app.feature.offer.usecase.CreateAccessTokenUseCase
 import com.hedvig.app.feature.offer.usecase.GetPostSignDependenciesUseCase
 import com.hedvig.app.feature.offer.usecase.RefreshQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.SignQuotesUseCase
@@ -557,6 +558,8 @@ val checkoutModule = module {
             get(),
             get(),
             get(),
+            get(),
+            get(),
         )
     }
 }
@@ -662,7 +665,7 @@ val useCaseModule = module {
     single { GetQuotesUseCase(get(), get()) }
     single { GetQuoteUseCase(get()) }
     single { EditStartDateUseCase(get(), get()) }
-    single { SignQuotesUseCase(get(), get(), get(), get()) }
+    single { SignQuotesUseCase(get(), get(), get()) }
     single { ApproveQuotesUseCase(get(), get(), get()) }
     single { RefreshQuotesUseCase(get()) }
     single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get()) }
@@ -685,8 +688,9 @@ val useCaseModule = module {
     single<GetDanishAddressAutoCompletionUseCase> { GetDanishAddressAutoCompletionUseCase(get()) }
     single<GetFinalDanishAddressSelectionUseCase> { GetFinalDanishAddressSelectionUseCase(get()) }
     single { CreateQuoteCartUseCase(get(), get(), get()) }
-    single<GetQuoteIdsUseCase> { GetQuoteIdsUseCase(get()) }
+    single<GetQuoteIdsUseCase> { GetQuoteIdsUseCase(get(), get(), get()) }
     single<EditQuotesUseCase> { EditQuotesUseCase(get(), get(), get(), get()) }
+    single<CreateAccessTokenUseCase> { CreateAccessTokenUseCase(get(), get()) }
 }
 
 val cacheManagerModule = module {

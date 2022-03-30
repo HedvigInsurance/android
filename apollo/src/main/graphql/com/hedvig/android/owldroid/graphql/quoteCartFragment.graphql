@@ -3,6 +3,11 @@ fragment QuoteCartFragment on QuoteCart {
     ...QuoteBundleFragment
   }
   checkoutMethods
+  checkout {
+    statusText
+    status
+    redirectUrl
+  }
   campaign {
     displayValue(locale: $locale)
     incentive {

@@ -5,6 +5,7 @@ import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.type.CheckoutMethod
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationApproveButtonTerminology
 import com.hedvig.android.owldroid.type.SignMethod
+import com.hedvig.app.feature.offer.model.CheckoutLabel
 
 fun OfferQuery.Data.checkoutLabel() = when (signMethodForQuotes) {
     SignMethod.SWEDISH_BANK_ID -> CheckoutLabel.SIGN_UP

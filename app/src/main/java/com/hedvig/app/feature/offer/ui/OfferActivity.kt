@@ -33,10 +33,10 @@ import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
 import com.hedvig.app.feature.home.ui.changeaddress.result.ChangeAddressResultActivity
 import com.hedvig.app.feature.insurablelimits.InsurableLimitsAdapter
 import com.hedvig.app.feature.offer.OfferViewModel
-import com.hedvig.app.feature.offer.model.quotebundle.CheckoutMethod
+import com.hedvig.app.feature.offer.model.CheckoutMethod
+import com.hedvig.app.feature.offer.model.checkoutIconRes
 import com.hedvig.app.feature.offer.model.quotebundle.PostSignScreen
 import com.hedvig.app.feature.offer.model.quotebundle.ViewConfiguration
-import com.hedvig.app.feature.offer.model.quotebundle.checkoutIconRes
 import com.hedvig.app.feature.offer.quotedetail.QuoteDetailActivity
 import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.feature.settings.MarketManager

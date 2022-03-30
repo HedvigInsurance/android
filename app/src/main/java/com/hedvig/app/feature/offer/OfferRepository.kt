@@ -1,6 +1,9 @@
 package com.hedvig.app.feature.offer
 
+import arrow.core.Either
 import arrow.core.NonEmptyList
+import arrow.core.left
+import arrow.core.right
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.api.cache.http.HttpCachePolicy
@@ -16,6 +19,7 @@ import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.RemoveDiscountCodeMutation
 import com.hedvig.app.feature.offer.model.OfferModel
 import com.hedvig.app.feature.offer.model.toOfferModel
+import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
@@ -33,7 +37,7 @@ class OfferRepository(
 ) {
     fun offerQuery(ids: List<String>) = OfferQuery(localeManager.defaultLocale(), ids)
 
-    fun offer(ids: NonEmptyList<String>): Flow<OfferResult> {
+    fun offer(ids: NonEmptyList<String>): Flow<Either<ErrorMessage, OfferModel>> {
         return if (featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
             val subscription = QuoteCartSubscription(localeManager.defaultLocale(), ids.first())
             apolloClient.subscribe(subscription)
@@ -44,7 +48,8 @@ class OfferRepository(
                     val result = apolloClient
                         .query(query)
                         .safeQuery()
-                        .toOfferResult()
+                        .toEither { ErrorMessage(it) }
+                        .map { it.quoteCart.fragments.quoteCartFragment.toOfferModel() }
                     emit(result)
                 }
         } else {
@@ -56,28 +61,16 @@ class OfferRepository(
         }
     }
 
-    sealed class OfferResult {
-        data class Error(val message: String? = null) : OfferResult()
-        data class Success(val data: OfferModel) : OfferResult()
+    private fun Response<OfferQuery.Data>.toResult(): Either<ErrorMessage, OfferModel> = when {
+        errors != null -> ErrorMessage(errors!!.firstOrNull()?.message).left()
+        data == null -> ErrorMessage().left()
+        else -> data!!.toOfferModel().right()
     }
 
-    private fun Response<OfferQuery.Data>.toResult(): OfferResult = when {
-        errors != null -> OfferResult.Error(errors!!.firstOrNull()?.message)
-        data == null -> OfferResult.Error()
-        else -> OfferResult.Success(data!!.toOfferModel())
-    }
-
-    private fun QueryResult<QuoteCartSubscription.Data>.toResult(): OfferResult = when (this) {
-        is QueryResult.Error -> OfferResult.Error(message)
-        is QueryResult.Success -> data.quoteCart?.fragments?.quoteCartFragment?.toOfferModel()
-            ?.let { OfferResult.Success(it) }
-            ?: OfferResult.Error()
-    }
-
-    private fun QueryResult<QuoteCartQuery.Data>.toOfferResult(): OfferResult = when (this) {
-        is QueryResult.Error -> OfferResult.Error(message)
-        is QueryResult.Success -> data.quoteCart.fragments.quoteCartFragment.toOfferModel()
-            .let { OfferResult.Success(it) }
+    private fun QueryResult<QuoteCartSubscription.Data>.toResult(): Either<ErrorMessage, OfferModel> = when (this) {
+        is QueryResult.Error -> ErrorMessage(message).left()
+        is QueryResult.Success -> data.quoteCart?.fragments?.quoteCartFragment?.toOfferModel()?.right()
+            ?: ErrorMessage().left()
     }
 
     fun writeDiscountToCache(ids: List<String>, data: RedeemReferralCodeMutation.Data) {

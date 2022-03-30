@@ -97,7 +97,7 @@ class EditStartDateUseCase(
             .inception
             .asIndependentInceptions
             ?.inceptions
-            ?.find { it.correspondingQuote.asCompleteQuote1?.id == id }
+            ?.find { it.correspondingQuoteId == id }
             ?.copy(startDate = startDate)
 
         return with(cachedData.quoteBundle.fragments.quoteBundleFragment.inception) {
@@ -105,7 +105,7 @@ class EditStartDateUseCase(
                 copy(
                     asIndependentInceptions = asIndependentInceptions?.copy(
                         inceptions = asIndependentInceptions?.inceptions
-                            ?.replace(modifiedIndependentInception) { it.correspondingQuote.asCompleteQuote1?.id == id }
+                            ?.replace(modifiedIndependentInception) { it.correspondingQuoteId == id }
                             ?: asIndependentInceptions?.inceptions ?: emptyList()
                     )
                 )

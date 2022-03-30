@@ -2,8 +2,8 @@ package com.hedvig.app.feature.offer
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import com.hedvig.app.feature.offer.model.quotebundle.CheckoutMethod
-import com.hedvig.app.feature.offer.ui.CheckoutLabel
+import com.hedvig.app.feature.offer.model.CheckoutLabel
+import com.hedvig.app.feature.offer.model.CheckoutMethod
 import com.hedvig.app.feature.offer.ui.OfferItems
 import com.hedvig.app.util.containsOfType
 import org.javamoney.moneta.Money
