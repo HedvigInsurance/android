@@ -114,6 +114,7 @@ class TestOfferModelBuilder(
         checkoutMethod = checkoutMethod,
         checkoutLabel = checkoutLabel,
         campaign = campaign,
-        checkout = null
+        checkout = null,
+        null,
     )
 }
