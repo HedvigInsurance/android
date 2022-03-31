@@ -1,6 +1,11 @@
 package com.hedvig.app.util.featureflags
 
-class ProductionFeatureFlagProvider : FeatureFlagProvider {
+import com.hedvig.app.feature.settings.Market
+import com.hedvig.app.feature.settings.MarketManager
+
+class ProductionFeatureFlagProvider(
+    private val marketManager: MarketManager,
+) : FeatureFlagProvider {
 
     override val priority = PRODUCTION_PRIORITY
 
@@ -8,6 +13,7 @@ class ProductionFeatureFlagProvider : FeatureFlagProvider {
         Feature.MOVING_FLOW -> true
         Feature.FRANCE_MARKET -> false
         Feature.ADDRESS_AUTO_COMPLETE -> true
+        Feature.CONNECT_PAYMENT_AT_SIGN -> marketManager.market == Market.NO || marketManager.market == Market.DK
         else -> false
     }
 
@@ -17,5 +23,6 @@ class ProductionFeatureFlagProvider : FeatureFlagProvider {
         Feature.ADDRESS_AUTO_COMPLETE -> true
         Feature.REFERRAL_CAMPAIGN -> false
         Feature.QUOTE_CART -> false
+        Feature.CONNECT_PAYMENT_AT_SIGN -> true
     }
 }

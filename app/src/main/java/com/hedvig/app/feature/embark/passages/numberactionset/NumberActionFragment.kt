@@ -17,8 +17,8 @@ import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.Response
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.animateResponse
-import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.KEY_BOARD_DELAY_MILLIS
-import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_MILLIS
+import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.KEYBOARD_HIDE_DELAY_DURATION
+import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_DURATION
 import com.hedvig.app.util.extensions.addViews
 import com.hedvig.app.util.extensions.hideKeyboardWithDelay
 import com.hedvig.app.util.extensions.onImeAction
@@ -36,6 +36,7 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Used for Embark actions NumberAction and NumberActionSet
@@ -65,7 +66,7 @@ class NumberActionFragment : Fragment(R.layout.number_action_set_fragment) {
             views.firstOrNull()?.let {
                 val input = it.findViewById<TextInputEditText>(R.id.input)
                 viewLifecycleScope.launchWhenCreated {
-                    requireContext().showKeyboardWithDelay(input, 500)
+                    requireContext().showKeyboardWithDelay(input, 500.milliseconds)
                 }
             }
             inputContainer.addViews(views)
@@ -127,7 +128,7 @@ class NumberActionFragment : Fragment(R.layout.number_action_set_fragment) {
     private suspend fun saveAndAnimate() {
         context?.hideKeyboardWithDelay(
             inputView = binding.inputLayout,
-            delayMillis = KEY_BOARD_DELAY_MILLIS
+            delayDuration = KEYBOARD_HIDE_DELAY_DURATION
         )
         numberActionViewModel.onContinue(model::putInStore)
         val allInput = numberActionViewModel.getAllInput()
@@ -135,7 +136,7 @@ class NumberActionFragment : Fragment(R.layout.number_action_set_fragment) {
             model.preProcessResponse(data.passageName)
                 ?: Response.SingleResponse(allInput ?: "")
         animateResponse(binding.responseContainer, response)
-        delay(PASSAGE_ANIMATION_DELAY_MILLIS)
+        delay(PASSAGE_ANIMATION_DELAY_DURATION)
     }
 
     companion object {

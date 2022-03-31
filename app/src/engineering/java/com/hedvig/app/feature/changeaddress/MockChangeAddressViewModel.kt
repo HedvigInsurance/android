@@ -8,6 +8,7 @@ import com.hedvig.app.feature.home.ui.changeaddress.ViewState
 import com.hedvig.app.feature.tracking.MockHAnalytics
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
 class MockChangeAddressViewModel : ChangeAddressViewModel(MockHAnalytics()) {
 
@@ -18,7 +19,7 @@ class MockChangeAddressViewModel : ChangeAddressViewModel(MockHAnalytics()) {
         viewModelScope.launch {
             val tempValue = mockedState.value
             mockedState.value = ViewState.Loading
-            delay(2000)
+            delay(2.seconds)
             mockedState.value = tempValue
         }
     }

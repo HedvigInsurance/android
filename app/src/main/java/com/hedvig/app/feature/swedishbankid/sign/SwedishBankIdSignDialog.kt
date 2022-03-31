@@ -31,6 +31,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.flowWithLifecycle
 import com.hedvig.app.R
+import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.extensions.canOpenUri
@@ -46,14 +47,12 @@ import org.koin.core.parameter.parametersOf
 class SwedishBankIdSignDialog : DialogFragment() {
     private val model: SwedishBankIdSignViewModel by viewModel {
         parametersOf(
-            requireArguments().getString(AUTO_START_TOKEN)
-                ?: throw IllegalArgumentException(
-                    "Programmer error: Missing AUTO_START_TOKEN in ${this.javaClass.name}"
-                ),
+            requireArguments().getString(AUTO_START_TOKEN),
             requireArguments().getStringArrayList(QUOTE_IDS)
                 ?: throw IllegalArgumentException(
                     "Programmer error: Missing QUOTE_IDS in ${this.javaClass.name}"
-                )
+                ),
+            requireArguments().getParcelable(QUOTE_CART_ID)
         )
     }
     private val marketManager: MarketManager by inject()
@@ -128,18 +127,30 @@ class SwedishBankIdSignDialog : DialogFragment() {
     }
 
     companion object {
-        private fun bankIdUri(autoStartToken: String): Uri =
-            Uri.parse("bankid:///?autostarttoken=$autoStartToken&redirect=null")
+        private fun bankIdUri(autoStartToken: String?): Uri {
+            return if (autoStartToken != null) {
+                Uri.parse("bankid:///?autostarttoken=$autoStartToken&redirect=null")
+            } else {
+                Uri.parse("bankid:///?redirect=hedvig://")
+            }
+        }
 
         private const val AUTO_START_TOKEN = "AUTO_START_TOKEN"
         private const val QUOTE_IDS = "QUOTE_IDS"
+        private const val QUOTE_CART_ID = "QUOTE_CART_ID"
         const val TAG = "OfferSignDialog"
-        fun newInstance(autoStartToken: String, quoteIds: List<String>) = SwedishBankIdSignDialog().apply {
-            arguments = bundleOf(
-                AUTO_START_TOKEN to autoStartToken,
-                QUOTE_IDS to quoteIds.toArrayList(),
-            )
-        }
+        fun newInstance(
+            autoStartToken: String?,
+            quoteIds: List<String>,
+            quoteCartId: QuoteCartId?
+        ) =
+            SwedishBankIdSignDialog().apply {
+                arguments = bundleOf(
+                    AUTO_START_TOKEN to autoStartToken,
+                    QUOTE_IDS to quoteIds.toArrayList(),
+                    QUOTE_CART_ID to quoteCartId
+                )
+            }
     }
 }
 

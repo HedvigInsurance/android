@@ -12,26 +12,28 @@ class PerilBuilder {
     fun offerQueryBuild(noOfPerils: Int) = offerQueryPerils(noOfPerils)
 
     companion object {
-        private fun insuranceQueryPerils(noOfPerils: Int): MutableList<InsuranceQuery.ContractPeril> {
-            val perilList: MutableList<InsuranceQuery.ContractPeril> = mutableListOf()
-            for (i in 0..noOfPerils) {
-                perilList.add(
-                    InsuranceQuery.ContractPeril(
-                        fragments = InsuranceQuery.ContractPeril.Fragments(PERIL_FRAGMENT)
+        private fun insuranceQueryPerils(noOfPerils: Int): List<InsuranceQuery.ContractPeril> {
+            val perilList: List<InsuranceQuery.ContractPeril> = buildList {
+                for (i in 0..noOfPerils) {
+                    add(
+                        InsuranceQuery.ContractPeril(
+                            fragments = InsuranceQuery.ContractPeril.Fragments(PERIL_FRAGMENT)
+                        )
                     )
-                )
+                }
             }
             return perilList
         }
 
-        private fun offerQueryPerils(noOfPerils: Int): MutableList<QuoteBundleFragment.ContractPeril> {
-            val perilList: MutableList<QuoteBundleFragment.ContractPeril> = mutableListOf()
-            for (i in 0..noOfPerils) {
-                perilList.add(
-                    QuoteBundleFragment.ContractPeril(
-                        fragments = QuoteBundleFragment.ContractPeril.Fragments(PERIL_FRAGMENT)
+        private fun offerQueryPerils(noOfPerils: Int): List<QuoteBundleFragment.ContractPeril> {
+            val perilList: List<QuoteBundleFragment.ContractPeril> = buildList {
+                for (i in 0..noOfPerils) {
+                    add(
+                        QuoteBundleFragment.ContractPeril(
+                            fragments = QuoteBundleFragment.ContractPeril.Fragments(PERIL_FRAGMENT)
+                        )
                     )
-                )
+                }
             }
             return perilList
         }

@@ -20,15 +20,16 @@ class CreateAccessTokenUseCase(
     private value class AccessToken(val token: String)
 
     suspend operator fun invoke(quoteCartId: QuoteCartId): Either<ErrorMessage, Success> = either {
-        val accessToken = query(quoteCartId.id).bind()
+        val accessToken = query(quoteCartId).bind()
         authenticationTokenService.authenticationToken = accessToken.token
         Success
     }
 
-    private suspend fun query(quoteCartId: String): Either<ErrorMessage, AccessToken> = apolloClient
-        .mutate(CreateAccessTokenMutation(quoteCartId))
-        .safeQuery()
-        .toEither()
-        .mapLeft { ErrorMessage(it.message) }
-        .map { AccessToken(it.quoteCart_createAccessToken.accessToken) }
+    private suspend fun query(quoteCartId: QuoteCartId): Either<ErrorMessage, AccessToken> =
+        apolloClient
+            .mutate(CreateAccessTokenMutation(quoteCartId.id))
+            .safeQuery()
+            .toEither()
+            .mapLeft { ErrorMessage(it.message) }
+            .map { AccessToken(it.quoteCart_createAccessToken.accessToken) }
 }

@@ -17,26 +17,12 @@ class ExternalInsurerViewModel(
     private val _events = Channel<Event>(Channel.UNLIMITED)
     val events = _events.receiveAsFlow()
 
-    sealed class Event {
-        data class Error(
-            val errorResult: InsuranceProvidersResult.Error
-        ) : Event()
-    }
+    private val _viewState = MutableStateFlow(ViewState(isLoading = true))
 
-    private val _viewState = MutableStateFlow(ViewState())
     val viewState: StateFlow<ViewState> = _viewState.asStateFlow()
-
-    data class ViewState(
-        val isLoading: Boolean = false,
-        val insuranceProviders: List<InsuranceProvider>? = null,
-        val selectedProvider: InsuranceProvider? = null,
-    ) {
-        fun canContinue() = selectedProvider != null
-    }
 
     init {
         viewModelScope.launch {
-            _viewState.update { it.copy(isLoading = true) }
             when (val result = getInsuranceProvidersUseCase.getInsuranceProviders()) {
                 is InsuranceProvidersResult.Success -> _viewState.update {
                     it.copy(isLoading = false, insuranceProviders = result.providers)
@@ -51,5 +37,19 @@ class ExternalInsurerViewModel(
 
     fun selectInsuranceProvider(provider: InsuranceProvider) {
         _viewState.update { it.copy(selectedProvider = provider) }
+    }
+
+    sealed class Event {
+        data class Error(
+            val errorResult: InsuranceProvidersResult.Error
+        ) : Event()
+    }
+
+    data class ViewState(
+        val isLoading: Boolean = false,
+        val insuranceProviders: List<InsuranceProvider>? = null,
+        val selectedProvider: InsuranceProvider? = null,
+    ) {
+        fun canContinue() = selectedProvider != null
     }
 }

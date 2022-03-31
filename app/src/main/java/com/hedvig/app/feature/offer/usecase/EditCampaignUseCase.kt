@@ -6,12 +6,14 @@ import arrow.core.rightIfNotNull
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.QuoteCartAddCampaignMutation
 import com.hedvig.android.owldroid.graphql.QuoteCartRemoveCampaignMutation
+import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.apollo.safeQuery
 
 class EditCampaignUseCase(
     private val apolloClient: ApolloClient,
+    private val offerRepository: OfferRepository,
 ) {
     suspend fun addCampaignToQuoteCart(
         code: String,
@@ -28,6 +30,7 @@ class EditCampaignUseCase(
                 ?.let { id -> QuoteCartId(id) }
                 .rightIfNotNull { ErrorMessage(it.asBasicError?.message) }
         }
+        .tap { offerRepository.queryAndEmitOffer(quoteCartId, emptyList()) }
 
     suspend fun removeCampaignFromQuoteCart(
         quoteCartId: QuoteCartId
@@ -43,4 +46,5 @@ class EditCampaignUseCase(
                 ?.let { id -> QuoteCartId(id) }
                 .rightIfNotNull { ErrorMessage(it.asBasicError?.message) }
         }
+        .tap { offerRepository.queryAndEmitOffer(quoteCartId, emptyList()) }
 }

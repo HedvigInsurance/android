@@ -24,6 +24,7 @@ import com.hedvig.app.R
 import com.hedvig.app.SplashActivity
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.databinding.ActivityOfferBinding
+import com.hedvig.app.feature.adyen.PaymentTokenId
 import com.hedvig.app.feature.adyen.payin.startAdyenPayment
 import com.hedvig.app.feature.checkout.CheckoutActivity
 import com.hedvig.app.feature.crossselling.ui.CrossSellingResult
@@ -73,6 +74,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         get() = intent.getStringArrayExtra(QUOTE_IDS)?.toList() ?: emptyList()
     private val quoteCartId: QuoteCartId?
         get() = intent.getParcelableExtra(QUOTE_CART_ID)
+            ?: intent.getStringExtra(QUOTE_CART_ID)?.let { QuoteCartId(it) }
     private val shouldShowOnNextAppStart: Boolean
         get() = intent.getBooleanExtra(SHOULD_SHOW_ON_NEXT_APP_START, false)
 
@@ -87,147 +89,148 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding.apply {
-            window.compatSetDecorFitsSystemWindows(false)
-            offerToolbar.applyStatusBarInsets()
-            signButton.applyNavigationBarInsetsMargin()
+        window.compatSetDecorFitsSystemWindows(false)
+        binding.offerToolbar.applyStatusBarInsets()
+        binding.signButton.applyNavigationBarInsetsMargin()
 
-            appbar.background.alpha = 0
-            offerScroll.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                private var scrollY = 0
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    scrollY += dy
-                    val percentage = scrollY.toFloat() / offerToolbar.height
-                    appbar.background.alpha = (percentage * 40).toInt().coerceAtMost(255)
+        binding.appbar.background.alpha = 0
+        binding.offerScroll.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            private var scrollY = 0
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                scrollY += dy
+                val percentage = scrollY.toFloat() / binding.offerToolbar.height
+                binding.appbar.background.alpha = (percentage * 40).toInt().coerceAtMost(255)
 
-                    if (percentage >= 9) {
-                        appbar.elevation = 5f
-                    } else {
-                        appbar.elevation = 0f
-                    }
-
-                    if (percentage > 4 && !signButton.isVisible) {
-                        TransitionManager.beginDelayedTransition(offerRoot)
-                        signButton.show()
-                    } else if (percentage < 4 && signButton.isVisible) {
-                        TransitionManager.beginDelayedTransition(offerRoot)
-                        signButton.hide()
-                    }
+                if (percentage >= 9) {
+                    binding.appbar.elevation = 5f
+                } else {
+                    binding.appbar.elevation = 0f
                 }
-            })
 
-            offerToolbar.setNavigationOnClickListener { onBackPressed() }
-            offerToolbar.setOnMenuItemClickListener(::handleMenuItem)
-
-            val locale = getLocale(this@OfferActivity, marketManager.market)
-            val topOfferAdapter = OfferAdapter(
-                fragmentManager = supportFragmentManager,
-                locale = locale,
-                openQuoteDetails = model::onOpenQuoteDetails,
-                onRemoveDiscount = model::removeDiscount,
-                onSign = ::onSign,
-                reload = model::reload,
-                openChat = ::openChat,
-            )
-            val perilsAdapter = PerilsAdapter(
-                fragmentManager = supportFragmentManager,
-                imageLoader = imageLoader,
-            )
-            val insurableLimitsAdapter = InsurableLimitsAdapter(
-                fragmentManager = supportFragmentManager
-            )
-            val documentAdapter = DocumentAdapter()
-            val bottomOfferAdapter = OfferAdapter(
-                fragmentManager = supportFragmentManager,
-                locale = locale,
-                openQuoteDetails = model::onOpenQuoteDetails,
-                onRemoveDiscount = model::removeDiscount,
-                onSign = ::onSign,
-                reload = model::reload,
-                openChat = ::openChat,
-            )
-
-            concatAdapter = ConcatAdapter(
-                topOfferAdapter,
-                perilsAdapter,
-                insurableLimitsAdapter,
-                documentAdapter,
-                bottomOfferAdapter,
-            )
-
-            binding.offerScroll.adapter = concatAdapter
-            binding.offerScroll.itemAnimator = ViewHolderReusingDefaultItemAnimator()
-            binding.offerScroll.addItemDecoration(ConcatItemDecoration { concatAdapter.adapters })
-            (binding.offerScroll.layoutManager as? GridLayoutManager)?.let { gridLayoutManager ->
-                gridLayoutManager.spanSizeLookup =
-                    ConcatSpanSizeLookup(gridLayoutManager.spanCount) { concatAdapter.adapters }
+                if (percentage > 4 && !binding.signButton.isVisible) {
+                    TransitionManager.beginDelayedTransition(binding.offerRoot)
+                    binding.signButton.show()
+                } else if (percentage < 4 && binding.signButton.isVisible) {
+                    TransitionManager.beginDelayedTransition(binding.offerRoot)
+                    binding.signButton.hide()
+                }
             }
+        })
 
-            model
-                .viewState
-                .flowWithLifecycle(lifecycle)
-                .onEach { viewState ->
-                    binding.progressBar.isVisible = viewState is OfferViewModel.ViewState.Loading
-                    binding.offerScroll.isVisible = viewState !is OfferViewModel.ViewState.Loading
-                    when (viewState) {
-                        is OfferViewModel.ViewState.Loading -> {}
-                        is OfferViewModel.ViewState.Error -> {
-                            perilsAdapter.submitList(emptyList())
-                            insurableLimitsAdapter.submitList(emptyList())
-                            documentAdapter.submitList(emptyList())
-                            bottomOfferAdapter.submitList(emptyList())
-                            topOfferAdapter.submitList(listOf(OfferItems.Error))
-                            binding.progressBar.isVisible = false
-                            binding.offerScroll.isVisible = true
-                        }
-                        is OfferViewModel.ViewState.Content -> {
-                            topOfferAdapter.submitList(viewState.topOfferItems)
-                            perilsAdapter.submitList(viewState.perils)
-                            insurableLimitsAdapter.submitList(viewState.insurableLimitsItems)
-                            documentAdapter.submitList(viewState.documents)
-                            bottomOfferAdapter.submitList(viewState.bottomOfferItems)
-                            setSignButtonState(
-                                viewState.checkoutMethod,
-                                viewState.checkoutLabel,
-                                viewState.paymentMethods
-                            )
+        binding.offerToolbar.setNavigationOnClickListener { onBackPressed() }
+        binding.offerToolbar.setOnMenuItemClickListener(::handleMenuItem)
 
-                            TransitionManager.beginDelayedTransition(binding.offerToolbar)
-                            setTitleVisibility(viewState)
-                            inflateMenu(viewState.loginStatus)
+        val locale = getLocale(this@OfferActivity, marketManager.market)
+        val topOfferAdapter = OfferAdapter(
+            fragmentManager = supportFragmentManager,
+            locale = locale,
+            openQuoteDetails = model::onOpenQuoteDetails,
+            onRemoveDiscount = model::removeDiscount,
+            onSign = ::onSign,
+            reload = model::reload,
+            openChat = ::openChat,
+        )
+        val perilsAdapter = PerilsAdapter(
+            fragmentManager = supportFragmentManager,
+            imageLoader = imageLoader,
+        )
+        val insurableLimitsAdapter = InsurableLimitsAdapter(
+            fragmentManager = supportFragmentManager
+        )
+        val documentAdapter = DocumentAdapter()
+        val bottomOfferAdapter = OfferAdapter(
+            fragmentManager = supportFragmentManager,
+            locale = locale,
+            openQuoteDetails = model::onOpenQuoteDetails,
+            onRemoveDiscount = model::removeDiscount,
+            onSign = ::onSign,
+            reload = model::reload,
+            openChat = ::openChat,
+        )
 
-                            if (!hasStartedRecyclerAnimation) {
-                                scheduleEnterAnimation()
-                            }
+        concatAdapter = ConcatAdapter(
+            topOfferAdapter,
+            perilsAdapter,
+            insurableLimitsAdapter,
+            documentAdapter,
+            bottomOfferAdapter,
+        )
+
+        binding.offerScroll.adapter = concatAdapter
+        binding.offerScroll.itemAnimator = ViewHolderReusingDefaultItemAnimator()
+        binding.offerScroll.addItemDecoration(ConcatItemDecoration { concatAdapter.adapters })
+        (binding.offerScroll.layoutManager as? GridLayoutManager)?.let { gridLayoutManager ->
+            gridLayoutManager.spanSizeLookup =
+                ConcatSpanSizeLookup(gridLayoutManager.spanCount) { concatAdapter.adapters }
+        }
+
+        model
+            .viewState
+            .flowWithLifecycle(lifecycle)
+            .onEach { viewState ->
+                binding.progressBar.isVisible = viewState is OfferViewModel.ViewState.Loading
+                binding.offerScroll.isVisible = viewState !is OfferViewModel.ViewState.Loading
+                when (viewState) {
+                    is OfferViewModel.ViewState.Loading -> {}
+                    is OfferViewModel.ViewState.Error -> showErrorDialog(
+                        viewState.message ?: getString(R.string.NETWORK_ERROR_ALERT_MESSAGE)
+                    ) {}
+                    is OfferViewModel.ViewState.Content -> {
+                        topOfferAdapter.submitList(viewState.createTopOfferItems())
+                        perilsAdapter.submitList(viewState.createPerilItems())
+                        insurableLimitsAdapter.submitList(viewState.createInsurableLimitItems())
+                        documentAdapter.submitList(viewState.createDocumentItems())
+                        bottomOfferAdapter.submitList(viewState.createBottomOfferItems())
+                        setSignButtonState(
+                            viewState.offerModel.checkoutMethod,
+                            viewState.offerModel.checkoutLabel,
+                            viewState.paymentMethods
+                        )
+
+                        TransitionManager.beginDelayedTransition(binding.offerToolbar)
+                        setTitleVisibility(viewState)
+                        inflateMenu(viewState.loginStatus)
+
+                        if (!hasStartedRecyclerAnimation) {
+                            scheduleEnterAnimation()
                         }
                     }
                 }
-                .launchIn(lifecycleScope)
+            }
+            .launchIn(lifecycleScope)
 
-            model
-                .events
-                .flowWithLifecycle(lifecycle)
-                .onEach { event ->
-                    when (event) {
-                        is OfferViewModel.Event.OpenQuoteDetails -> startQuoteDetailsActivity(event)
-                        is OfferViewModel.Event.OpenCheckout -> startCheckoutActivity(event)
-                        is OfferViewModel.Event.ApproveSuccessful -> handlePostSign(event)
-                        is OfferViewModel.Event.ApproveError -> handlePostSignError(event)
-                        OfferViewModel.Event.DiscardOffer -> startSplashActivity()
-                        is OfferViewModel.Event.StartSwedishBankIdSign -> showSignDialog(event)
-                        OfferViewModel.Event.Error -> showErrorDialog(
-                            getString(R.string.NETWORK_ERROR_ALERT_MESSAGE)
-                        ) {}
-                        OfferViewModel.Event.OpenChat -> startChat()
-                    }
+        model
+            .events
+            .flowWithLifecycle(lifecycle)
+            .onEach { event ->
+                when (event) {
+                    is OfferViewModel.Event.OpenQuoteDetails -> startQuoteDetailsActivity(event)
+                    is OfferViewModel.Event.OpenCheckout -> startCheckoutActivity(event)
+                    is OfferViewModel.Event.ApproveSuccessful -> handlePostSign(event)
+                    is OfferViewModel.Event.ApproveError -> handlePostSignError(event)
+                    OfferViewModel.Event.DiscardOffer -> startSplashActivity()
+                    is OfferViewModel.Event.StartSwedishBankIdSign -> showSignDialog(event)
+                    OfferViewModel.Event.OpenChat -> startChat()
                 }
-                .launchIn(lifecycleScope)
+            }
+            .launchIn(lifecycleScope)
+    }
+
+    private fun setSignButtonState(
+        checkoutMethod: CheckoutMethod,
+        checkoutLabel: CheckoutLabel,
+        paymentMethods: PaymentMethodsApiResponse?
+    ) {
+        binding.signButton.text = checkoutLabel.toString(this)
+        binding.signButton.icon = checkoutMethod.checkoutIconRes()?.let(::compatDrawable)
+        binding.signButton.setHapticClickListener {
+            onSign(checkoutMethod, paymentMethods)
         }
     }
 
     private fun showSignDialog(event: OfferViewModel.Event.StartSwedishBankIdSign) {
         SwedishBankIdSignDialog
-            .newInstance(event.autoStartToken, quoteIds)
+            .newInstance(event.autoStartToken, quoteIds, quoteCartId)
             .show(supportFragmentManager, SwedishBankIdSignDialog.TAG)
     }
 
@@ -301,15 +304,17 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         )
     }
 
-    private fun setTitleVisibility(viewState: OfferViewModel.ViewState.Content) = when (viewState.title) {
-        ViewConfiguration.Title.LOGO -> {
-            binding.toolbarLogo.isVisible = true
-            binding.toolbarTitle.isVisible = false
-        }
-        ViewConfiguration.Title.UPDATE,
-        ViewConfiguration.Title.UNKNOWN -> {
-            binding.toolbarTitle.isVisible = true
-            binding.toolbarLogo.isVisible = false
+    private fun setTitleVisibility(viewState: OfferViewModel.ViewState.Content) {
+        when (viewState.offerModel.quoteBundle.viewConfiguration.title) {
+            ViewConfiguration.Title.LOGO -> {
+                binding.toolbarLogo.isVisible = true
+                binding.toolbarTitle.isVisible = false
+            }
+            ViewConfiguration.Title.UPDATE,
+            ViewConfiguration.Title.UNKNOWN -> {
+                binding.toolbarTitle.isVisible = true
+                binding.toolbarLogo.isVisible = false
+            }
         }
     }
 
@@ -342,18 +347,6 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         }
     }
 
-    private fun setSignButtonState(
-        checkoutMethod: CheckoutMethod,
-        checkoutLabel: CheckoutLabel,
-        paymentMethods: PaymentMethodsApiResponse?
-    ) {
-        binding.signButton.text = checkoutLabel.toString(this)
-        binding.signButton.icon = checkoutMethod.checkoutIconRes()?.let(::compatDrawable)
-        binding.signButton.setHapticClickListener {
-            onSign(checkoutMethod, paymentMethods)
-        }
-    }
-
     private fun onSign(checkoutMethod: CheckoutMethod, paymentMethods: PaymentMethodsApiResponse?) {
         when (checkoutMethod) {
             CheckoutMethod.SWEDISH_BANK_ID -> model.onSwedishBankIdSign()
@@ -373,13 +366,15 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        // Replace with new result API when adyens handleActivityResult is updated
+        @Suppress("DEPRECATION") // Replace with new result API when adyens handleActivityResult is updated
         super.onActivityResult(requestCode, resultCode, data)
 
-        when (DropIn.handleActivityResult(requestCode, resultCode, data)) {
+        when (val result = DropIn.handleActivityResult(requestCode, resultCode, data)) {
             is DropInResult.CancelledByUser -> {}
             is DropInResult.Error -> showErrorDialog("Could not connect payment") {}
-            is DropInResult.Finished -> model.onOpenCheckout()
+            is DropInResult.Finished -> {
+                model.onPaymentTokenIdReceived(PaymentTokenId(result.result))
+            }
         }
     }
 
@@ -424,7 +419,9 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             quoteIds: List<String> = emptyList(),
             quoteCartId: QuoteCartId? = null,
             shouldShowOnNextAppStart: Boolean = false,
-        ) = Intent(context, OfferActivity::class.java).apply {
+        ) = Intent(
+            context, OfferActivity::class.java
+        ).apply {
             putExtra(QUOTE_IDS, quoteIds.toTypedArray())
             putExtra(QUOTE_CART_ID, quoteCartId)
             putExtra(SHOULD_SHOW_ON_NEXT_APP_START, shouldShowOnNextAppStart)

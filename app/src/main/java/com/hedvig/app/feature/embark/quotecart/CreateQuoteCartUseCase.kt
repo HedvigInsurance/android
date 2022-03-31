@@ -4,6 +4,7 @@ import arrow.core.Either
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.CreateOnboardingQuoteCartMutation
 import com.hedvig.android.owldroid.type.Market
+import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.LocaleManager
@@ -19,9 +20,6 @@ class CreateQuoteCartUseCase(
         localeManager.defaultLocale().toString(),
         marketManager.market?.toGraphQLMarket() ?: Market.SWEDEN
     )
-
-    @JvmInline
-    value class QuoteCartId(val id: String)
 
     suspend operator fun invoke(): Either<ErrorMessage, QuoteCartId> {
         return apolloClient

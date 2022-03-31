@@ -3,6 +3,7 @@ package com.hedvig.app.feature.referrals
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.lifecycle.lifecycleScope
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ReferralsReceiverActivityBinding
@@ -11,6 +12,8 @@ import com.hedvig.app.feature.referrals.ui.redeemcode.RedeemCodeViewModel
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import e
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ReferralsReceiverActivity : BaseActivity(R.layout.referrals_receiver_activity) {
@@ -21,7 +24,9 @@ class ReferralsReceiverActivity : BaseActivity(R.layout.referrals_receiver_activ
         super.onCreate(savedInstanceState)
 
         binding.apply {
-            referralViewModel.redeemCodeStatus.observe(this@ReferralsReceiverActivity) { startChat() }
+            referralViewModel.viewState.onEach {
+                it.data?.let { startChat() }
+            }.launchIn(lifecycleScope)
             referralReceiverContinueButton.setHapticClickListener {
                 val referralCode = intent.getStringExtra(EXTRA_REFERRAL_CODE)
                 if (referralCode == null) {

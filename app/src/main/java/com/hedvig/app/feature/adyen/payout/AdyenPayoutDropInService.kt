@@ -7,6 +7,9 @@ import com.adyen.checkout.dropin.service.DropInServiceResult
 import com.hedvig.android.owldroid.type.PayoutMethodStatus
 import com.hedvig.android.owldroid.type.TokenizationResultType
 import com.hedvig.app.feature.adyen.AdyenRepository
+import com.hedvig.app.feature.adyen.ConnectPayoutUseCase
+import com.hedvig.app.feature.adyen.SubmitAdditionalPaymentDetailsUseCase
+import com.hedvig.app.feature.adyen.payin.toDropInServiceResult
 import com.hedvig.app.feature.profile.ui.payment.PaymentRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -19,6 +22,8 @@ import kotlin.coroutines.CoroutineContext
 class AdyenPayoutDropInService : DropInService(), CoroutineScope {
     private val adyenRepository: AdyenRepository by inject()
     private val paymentRepository: PaymentRepository by inject()
+    private val submitAdditionalPaymentDetailsUseCase: SubmitAdditionalPaymentDetailsUseCase by inject()
+    private val connectPayoutUseCase: ConnectPayoutUseCase by inject()
 
     private val coroutineJob = Job()
     override val coroutineContext: CoroutineContext
@@ -31,32 +36,18 @@ class AdyenPayoutDropInService : DropInService(), CoroutineScope {
 
     override fun onDetailsCallRequested(actionComponentData: ActionComponentData, actionComponentJson: JSONObject) {
         launch(coroutineContext) {
-            val response = runCatching {
-                adyenRepository
-                    .submitAdditionalPaymentDetails(actionComponentJson)
-            }
-
-            val result = response.getOrNull()?.data?.submitAdditionalPaymentDetails
-
-            if (result == null) {
-                sendResult(DropInServiceResult.Error("Error"))
-                return@launch
-            }
-
-            result.asAdditionalPaymentsDetailsResponseAction?.action?.let { action ->
-                sendResult(DropInServiceResult.Action(action))
-                return@launch
-            }
-
-            result.asAdditionalPaymentsDetailsResponseFinished?.let { finishedResponse ->
-                finishedResponse.tokenizationResult.toPayoutMethodStatusOrNull()?.let { payoutMethodStatus ->
-                    runCatching { paymentRepository.writeActivePayoutMethodStatus(payoutMethodStatus) }
-                }
-                sendResult(DropInServiceResult.Finished(finishedResponse.resultCode))
-                return@launch
-            }
-
-            sendResult(DropInServiceResult.Error("Unknown error"))
+            submitAdditionalPaymentDetailsUseCase.submitAdditionalPaymentDetails(actionComponentJson)
+                .mapLeft { it.toDropInServiceResult() }
+                .fold(
+                    ifLeft = { sendResult(it) },
+                    ifRight = {
+                        it.tokenizationResultType.toPayoutMethodStatusOrNull()
+                            ?.let { payoutMethodStatus ->
+                                runCatching { paymentRepository.writeActivePayoutMethodStatus(payoutMethodStatus) }
+                            }
+                        sendResult(DropInServiceResult.Finished(it.code))
+                    }
+                )
         }
     }
 
@@ -65,32 +56,17 @@ class AdyenPayoutDropInService : DropInService(), CoroutineScope {
         paymentComponentJson: JSONObject
     ) {
         launch(coroutineContext) {
-            val response = runCatching {
-                adyenRepository
-                    .tokenizePayoutDetails(paymentComponentJson)
-            }
-
-            val result = response.getOrNull()?.data?.tokenizePayoutDetails
-
-            if (result == null) {
-                sendResult(DropInServiceResult.Error("Error"))
-                return@launch
-            }
-
-            result.asTokenizationResponseAction?.action?.let { action ->
-                sendResult(DropInServiceResult.Action(action))
-                return@launch
-            }
-
-            result.asTokenizationResponseFinished?.let { finishedResponse ->
-                finishedResponse.tokenizationResult.toPayoutMethodStatusOrNull()?.let { payoutMethodStatus ->
-                    runCatching { paymentRepository.writeActivePayoutMethodStatus(payoutMethodStatus) }
-                }
-                sendResult(DropInServiceResult.Finished(finishedResponse.resultCode))
-                return@launch
-            }
-
-            sendResult(DropInServiceResult.Error("Unknown error"))
+            connectPayoutUseCase.connectPayout(paymentComponentJson)
+                .mapLeft { it.toError() }
+                .fold(
+                    ifLeft = { sendResult(it) },
+                    ifRight = {
+                        it.tokenizationResultType.toPayoutMethodStatusOrNull()?.let { payoutMethodStatus ->
+                            runCatching { paymentRepository.writeActivePayoutMethodStatus(payoutMethodStatus) }
+                        }
+                        sendResult(DropInServiceResult.Finished(it.code))
+                    }
+                )
         }
     }
 
@@ -98,5 +74,10 @@ class AdyenPayoutDropInService : DropInService(), CoroutineScope {
         TokenizationResultType.COMPLETED -> PayoutMethodStatus.ACTIVE
         TokenizationResultType.PENDING -> PayoutMethodStatus.PENDING
         else -> null
+    }
+
+    private fun ConnectPayoutUseCase.Error.toError() = when (this) {
+        is ConnectPayoutUseCase.Error.CheckoutPaymentAction -> DropInServiceResult.Action(action)
+        is ConnectPayoutUseCase.Error.ErrorMessage -> DropInServiceResult.Error(message)
     }
 }

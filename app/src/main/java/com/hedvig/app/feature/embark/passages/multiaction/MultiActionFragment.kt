@@ -14,7 +14,7 @@ import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.animateResponse
 import com.hedvig.app.feature.embark.passages.multiaction.add.AddComponentBottomSheet
 import com.hedvig.app.feature.embark.passages.multiaction.add.AddComponentBottomSheet.Companion.ADD_COMPONENT_REQUEST_KEY
-import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_MILLIS
+import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_DURATION
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsetsMargin
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.viewLifecycle
@@ -93,7 +93,7 @@ class MultiActionFragment : Fragment(R.layout.fragment_embark_multi_action) {
         val response =
             model.preProcessResponse(multiActionParams.passageName) ?: Response.SingleResponse("")
         animateResponse(binding.responseContainer, response)
-        delay(PASSAGE_ANIMATION_DELAY_MILLIS)
+        delay(PASSAGE_ANIMATION_DELAY_DURATION)
     }
 
     private fun showAddBuildingSheet(componentState: MultiActionItem.Component?) {

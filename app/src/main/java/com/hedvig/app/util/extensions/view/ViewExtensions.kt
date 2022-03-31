@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.launch
+import kotlin.time.Duration
 
 fun View.show(): View {
     if (visibility != View.VISIBLE) {
@@ -47,12 +48,12 @@ fun View.hide(): View {
     return this
 }
 
-fun View.hideWithDelay(timeMillis: Long) {
+fun View.hideWithDelay(duration: Duration) {
     if (visibility != View.INVISIBLE) {
         findViewTreeLifecycleOwner()
             ?.lifecycleScope
             ?.launch {
-                delay(timeMillis)
+                delay(duration)
                 visibility = View.INVISIBLE
             }
     }
