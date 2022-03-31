@@ -68,7 +68,7 @@ class TestOfferModelBuilder(
     private val inception: Inception = Inception(
         startDate = OfferStartDate.AtDate(LocalDate.of(2022, 2, 21)),
         startDateLabel = StartDateLabel.SINGLE_START_DATE,
-        changeDateData = ChangeDateBottomSheetData(emptyList())
+        changeDateData = ChangeDateBottomSheetData(null, emptyList())
     ),
     private val viewConfiguration: ViewConfiguration = ViewConfiguration(
         showCampaignManagement = true,
