@@ -33,7 +33,7 @@ class AdyenPayinDropInService : DropInService(), CoroutineScope {
     ) {
         launch(coroutineContext) {
             submitAdditionalPaymentDetailsUseCase.submitAdditionalPaymentDetails(actionComponentJson)
-                .mapLeft { it.toError() }
+                .mapLeft { it.toDropInServiceResult() }
                 .fold(
                     ifLeft = { sendResult(it) },
                     ifRight = { sendResult(DropInServiceResult.Finished(it.code)) }
@@ -61,7 +61,7 @@ class AdyenPayinDropInService : DropInService(), CoroutineScope {
     }
 }
 
-fun SubmitAdditionalPaymentDetailsUseCase.Error.toError() = when (this) {
+fun SubmitAdditionalPaymentDetailsUseCase.Error.toDropInServiceResult() = when (this) {
     is SubmitAdditionalPaymentDetailsUseCase.Error.CheckoutPaymentAction -> DropInServiceResult.Action(action)
     is SubmitAdditionalPaymentDetailsUseCase.Error.ErrorMessage -> DropInServiceResult.Error(message)
 }

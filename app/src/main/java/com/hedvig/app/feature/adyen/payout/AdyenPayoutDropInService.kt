@@ -9,7 +9,7 @@ import com.hedvig.android.owldroid.type.TokenizationResultType
 import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.app.feature.adyen.ConnectPayoutUseCase
 import com.hedvig.app.feature.adyen.SubmitAdditionalPaymentDetailsUseCase
-import com.hedvig.app.feature.adyen.payin.toError
+import com.hedvig.app.feature.adyen.payin.toDropInServiceResult
 import com.hedvig.app.feature.profile.ui.payment.PaymentRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,7 +37,7 @@ class AdyenPayoutDropInService : DropInService(), CoroutineScope {
     override fun onDetailsCallRequested(actionComponentData: ActionComponentData, actionComponentJson: JSONObject) {
         launch(coroutineContext) {
             submitAdditionalPaymentDetailsUseCase.submitAdditionalPaymentDetails(actionComponentJson)
-                .mapLeft { it.toError() }
+                .mapLeft { it.toDropInServiceResult() }
                 .fold(
                     ifLeft = { sendResult(it) },
                     ifRight = {

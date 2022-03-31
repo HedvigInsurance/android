@@ -6,9 +6,11 @@ import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlin.time.Duration.Companion.seconds
 
 class EmbarkAddressAutoCompleteViewModel(
     initialAddress: DanishAddress?,
@@ -26,7 +28,7 @@ class EmbarkAddressAutoCompleteViewModel(
         ViewState(address)
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
+        started = SharingStarted.WhileSubscribed(5.seconds),
         initialValue = ViewState(initialAddress),
     )
 

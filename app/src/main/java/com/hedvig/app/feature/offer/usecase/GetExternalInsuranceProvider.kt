@@ -8,7 +8,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 
 class GetExternalInsuranceProviderUseCase(
     private val subscribeToDataCollectionStatusUseCase: SubscribeToDataCollectionStatusUseCase,
@@ -21,7 +21,7 @@ class GetExternalInsuranceProviderUseCase(
             flow<ExternalProvider?> { emit(null) }
         } else {
             subscribeToDataCollectionStatusUseCase.invoke(id)
-                .map { dataCollectionStatus ->
+                .mapLatest { dataCollectionStatus ->
                     coroutineScope {
                         val dataCollectionResult = async {
                             getDataCollectionResultUseCase

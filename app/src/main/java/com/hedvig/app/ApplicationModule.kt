@@ -229,6 +229,7 @@ import org.koin.dsl.module
 import timber.log.Timber
 import java.time.Clock
 import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APPLICATION_ID == "com.hedvig.test.app"
 
@@ -259,11 +260,14 @@ val applicationModule = module {
         val marketManager = get<MarketManager>()
         val context = get<Context>()
         val builder = OkHttpClient.Builder()
+            // Temporary fix until back-end problems are handled
+            .readTimeout(30, TimeUnit.SECONDS)
             .addInterceptor { chain ->
                 val original = chain.request()
                 val builder = original
                     .newBuilder()
                     .method(original.method, original.body)
+
                 get<AuthenticationTokenService>().authenticationToken?.let { token ->
                     builder.header("Authorization", token)
                 }
@@ -383,8 +387,19 @@ val viewModelModule = module {
         )
     }
     viewModel { TerminatedContractsViewModel(get()) }
-    viewModel { (autoStartToken: String, quoteIds: List<String>) ->
-        SwedishBankIdSignViewModel(autoStartToken, get(), get(), get(), get(), quoteIds)
+    viewModel { (autoStartToken: String, quoteIds: List<String>, quoteCartId: CreateQuoteCartUseCase.QuoteCartId?) ->
+        SwedishBankIdSignViewModel(
+            autoStartToken = autoStartToken,
+            subscribeToSwedishBankIdSignStatusUseCase = get(),
+            manuallyRecheckSwedishBankIdSignStatusUseCase = get(),
+            loginStatusService = get(),
+            hAnalytics = get(),
+            quoteIds = quoteIds,
+            quoteCartId = quoteCartId,
+            offerRepository = get(),
+            featureManager = get(),
+            createAccessTokenUseCase = get()
+        )
     }
     viewModel { AudioRecorderViewModel(get()) }
     viewModel { CrossSellFaqViewModel(get()) }

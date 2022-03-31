@@ -30,13 +30,16 @@ import com.hedvig.hanalytics.HAnalytics
 import e
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -67,7 +70,7 @@ abstract class OfferViewModel : ViewModel() {
             val bundleDisplayName: String,
         ) : Event()
 
-        data class StartSwedishBankIdSign(val autoStartToken: String) : Event()
+        data class StartSwedishBankIdSign(val autoStartToken: String?) : Event()
 
         object DiscardOffer : Event()
     }
@@ -95,7 +98,7 @@ abstract class OfferViewModel : ViewModel() {
 
     abstract fun onOpenQuoteDetails(id: String)
 
-    abstract suspend fun approveOffer()
+    abstract fun approveOffer()
 
     sealed class ViewState {
         object Loading : ViewState()
@@ -174,7 +177,10 @@ class OfferViewModelImpl(
         loginStatusService.persistOfferIds(quoteCartId, quoteIds)
 
         offerRepository.offerFlow(quoteIds)
-            .onEach { toViewState(it) }
+            .flatMapLatest(::toViewState)
+            .onEach { viewState: ViewState ->
+                _viewState.value = viewState
+            }
             .launchIn(viewModelScope)
 
         viewModelScope.launch {
@@ -182,22 +188,34 @@ class OfferViewModelImpl(
         }
     }
 
-    private suspend fun toViewState(offerResult: Either<ErrorMessage, OfferModel>) = offerResult.fold(
-        ifLeft = { ViewState.Error(it.message) },
+    private fun toViewState(offerResult: Either<ErrorMessage, OfferModel>): Flow<ViewState> = offerResult.fold(
+        ifLeft = { flowOf(ViewState.Error(it.message)) },
         ifRight = { offerModel ->
-            getExternalInsuranceProviderUseCase
-                .observeExternalProviderOrNull(offerModel.externalProviderId)
-                .onEach {
-                    _viewState.value = ViewState.Content(
-                        offerModel = offerModel,
-                        loginStatus = loginStatusService.getLoginStatus(),
-                        paymentMethods = offerModel.paymentApiResponseOrNull()
-                            ?: adyenRepository.paymentMethodsResponse(),
-                        externalProvider = it
+            if (offerModel.externalProviderId != null) {
+                getExternalInsuranceProviderUseCase
+                    .observeExternalProviderOrNull(offerModel.externalProviderId)
+                    .mapLatest { externalProvider ->
+                        ViewState.Content(
+                            offerModel = offerModel,
+                            loginStatus = loginStatusService.getLoginStatus(),
+                            paymentMethods = offerModel.paymentApiResponseOrNull()
+                                ?: adyenRepository.paymentMethodsResponse(),
+                            externalProvider = externalProvider
+                        )
+                    }
+            } else {
+                flow {
+                    emit(
+                        ViewState.Content(
+                            offerModel = offerModel,
+                            loginStatus = loginStatusService.getLoginStatus(),
+                            paymentMethods = offerModel.paymentApiResponseOrNull()
+                                ?: adyenRepository.paymentMethodsResponse(),
+                            externalProvider = null
+                        )
                     )
                 }
-                .catch { _viewState.value = ViewState.Error(null) }
-                .launchIn(viewModelScope)
+            }
         }
     )
 
@@ -207,20 +225,22 @@ class OfferViewModelImpl(
         _events.trySend(event)
     }
 
-    override suspend fun approveOffer() {
-        approveQuotesUseCase.approveQuotesAndClearCache(quoteIds).fold(
-            ifLeft = { handleApproveError(it) },
-            ifRight = { result ->
-                hAnalytics.quotesSigned(quoteIds)
-                loginStatusService.isViewingOffer = false
-                val event = Event.ApproveSuccessful(
-                    startDate = result.date,
-                    postSignScreen = result.postSignScreen,
-                    bundleDisplayName = result.bundleName
-                )
-                _events.trySend(event)
-            }
-        )
+    override fun approveOffer() {
+        viewModelScope.launch {
+            approveQuotesUseCase.approveQuotesAndClearCache(quoteIds).fold(
+                ifLeft = { handleApproveError(it) },
+                ifRight = { result ->
+                    hAnalytics.quotesSigned(quoteIds)
+                    loginStatusService.isViewingOffer = false
+                    val event = Event.ApproveSuccessful(
+                        startDate = result.date,
+                        postSignScreen = result.postSignScreen,
+                        bundleDisplayName = result.bundleName
+                    )
+                    _events.trySend(event)
+                }
+            )
+        }
     }
 
     private fun handleApproveError(error: ApproveQuotesUseCase.Error) {
@@ -303,7 +323,7 @@ class OfferViewModelImpl(
             is SignQuotesUseCase.SignQuoteResult.StartSwedishBankId -> {
                 _events.trySend(Event.StartSwedishBankIdSign(result.autoStartToken))
             }
-            SignQuotesUseCase.SignQuoteResult.Success -> {
+            SignQuotesUseCase.SignQuoteResult.StartSimpleSign -> {
                 _viewState.value = ViewState.Error("Invalid offer state")
             }
         }

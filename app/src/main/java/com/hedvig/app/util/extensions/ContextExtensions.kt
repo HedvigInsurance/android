@@ -38,6 +38,8 @@ import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.SettingsActivity
 import kotlinx.coroutines.delay
 import kotlin.system.exitProcess
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 private const val SHARED_PREFERENCE_NAME = "hedvig_shared_preference"
 
@@ -94,18 +96,18 @@ fun Context.showKeyboard(view: View) {
     }
 }
 
-suspend fun Context.hideKeyboardWithDelay(inputView: View, delayMillis: Long = 0) {
+suspend fun Context.hideKeyboardWithDelay(inputView: View, delayDuration: Duration = 0.milliseconds) {
     val windowInsets = WindowInsetsCompat.toWindowInsetsCompat(inputView.rootView.rootWindowInsets)
     if (windowInsets.isVisible(WindowInsetsCompat.Type.ime())) {
         hideKeyboard(inputView)
-        delay(delayMillis)
+        delay(delayDuration)
     }
 }
 
-suspend fun Context.showKeyboardWithDelay(inputView: View, delayMillis: Long = 0) {
+suspend fun Context.showKeyboardWithDelay(inputView: View, delayDuration: Duration = 0.milliseconds) {
     val windowInsets = WindowInsetsCompat.toWindowInsetsCompat(inputView.rootView.rootWindowInsets)
     if (!windowInsets.isVisible(WindowInsetsCompat.Type.ime())) {
-        delay(delayMillis)
+        delay(delayDuration)
         showKeyboard(inputView)
     }
 }

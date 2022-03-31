@@ -48,9 +48,8 @@ class SharedPreferencesLoginStatusService(
         return when {
             isLoggedIn -> LoginStatus.LoggedIn
             isViewingOffer -> LoginStatus.InOffer(
-                quoteCartId = sharedPreferences.getString("quoteCartId", ""),
+                quoteCartId = sharedPreferences.getString("quoteCartId", null),
                 quoteIds = sharedPreferences.getStringSet("quoteIds", emptySet()) ?: emptySet()
-
             )
             authenticationTokenManager.authenticationToken == null -> LoginStatus.Onboarding
             hasNoContracts() -> LoginStatus.Onboarding

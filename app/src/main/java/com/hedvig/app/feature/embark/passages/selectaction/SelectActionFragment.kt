@@ -14,7 +14,7 @@ import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.Response
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.animateResponse
-import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_MILLIS
+import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_DURATION
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
 import com.hedvig.app.util.extensions.viewLifecycleScope
@@ -105,7 +105,7 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
         val response =
             model.preProcessResponse(data.passageName) ?: Response.SingleResponse(selectAction.label)
         animateResponse(responseBinding, response)
-        delay(PASSAGE_ANIMATION_DELAY_MILLIS)
+        delay(PASSAGE_ANIMATION_DELAY_DURATION)
     }
 
     companion object {
