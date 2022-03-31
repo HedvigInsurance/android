@@ -6,6 +6,7 @@ import com.hedvig.app.feature.offer.model.Campaign
 import com.hedvig.app.feature.offer.model.CheckoutLabel
 import com.hedvig.app.feature.offer.model.CheckoutMethod
 import com.hedvig.app.feature.offer.model.OfferModel
+import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.model.quotebundle.BundleCost
 import com.hedvig.app.feature.offer.model.quotebundle.GradientType
 import com.hedvig.app.feature.offer.model.quotebundle.Inception
@@ -86,6 +87,7 @@ class TestOfferModelBuilder(
 ) {
 
     fun build() = OfferModel(
+        id = QuoteCartId("123"),
         quoteBundle = QuoteBundle(
             name = bundleName,
             quotes = listOf(
