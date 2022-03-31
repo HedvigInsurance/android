@@ -7,6 +7,7 @@ import androidx.lifecycle.lifecycleScope
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.databinding.ActivitySplashBinding
+import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.offer.ui.OfferActivity
@@ -77,7 +78,7 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
                     OfferActivity.newInstance(
                         context = this,
                         quoteIds = loginStatus.quoteIds.toList(),
-                        quoteCartId = loginStatus.quoteCartId,
+                        quoteCartId = loginStatus.quoteCartId?.let(CreateQuoteCartUseCase::QuoteCartId),
                         shouldShowOnNextAppStart = true
                     )
                 )

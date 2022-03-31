@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.offer.model
 
+import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.hedvig.android.owldroid.fragment.QuoteCartFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
@@ -12,7 +13,20 @@ data class OfferModel(
     val checkoutLabel: CheckoutLabel,
     val campaign: Campaign?,
     val checkout: Checkout?,
-)
+    val paymentConnection: PaymentConnection?,
+) {
+    val externalProviderId = quoteBundle
+        .quotes
+        .firstNotNullOfOrNull(QuoteBundle.Quote::dataCollectionId)
+}
+
+fun OfferModel.paymentApiResponseOrNull(): PaymentMethodsApiResponse? {
+    return paymentConnection
+        ?.providers
+        ?.filterIsInstance(PaymentProvider.Adyen::class.java)
+        ?.firstOrNull()
+        ?.availablePaymentOptions
+}
 
 fun OfferQuery.Data.toOfferModel() = OfferModel(
     quoteBundle = quoteBundle.fragments.quoteBundleFragment.toQuoteBundle(),
@@ -28,7 +42,8 @@ fun OfferQuery.Data.toOfferModel() = OfferModel(
         status = Checkout.CheckoutStatus.FAILED,
         statusText = null,
         redirectUrl = null
-    )
+    ),
+    paymentConnection = null,
 )
 
 fun QuoteCartFragment.toOfferModel() = OfferModel(
@@ -36,5 +51,6 @@ fun QuoteCartFragment.toOfferModel() = OfferModel(
     checkoutMethod = checkoutMethods.map { it.toCheckoutMethod() }.first(),
     checkoutLabel = checkoutLabel(),
     campaign = campaign?.toCampaign(),
-    checkout = checkout?.toCheckout()
+    checkout = checkout?.toCheckout(),
+    paymentConnection = paymentConnection?.toPaymentConnection(),
 )

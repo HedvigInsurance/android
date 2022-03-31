@@ -24,15 +24,18 @@ import com.hedvig.app.R
 import com.hedvig.app.SplashActivity
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.databinding.ActivityOfferBinding
+import com.hedvig.app.feature.adyen.PaymentTokenId
 import com.hedvig.app.feature.adyen.payin.startAdyenPayment
 import com.hedvig.app.feature.checkout.CheckoutActivity
 import com.hedvig.app.feature.crossselling.ui.CrossSellingResult
 import com.hedvig.app.feature.crossselling.ui.CrossSellingResultActivity
 import com.hedvig.app.feature.documents.DocumentAdapter
+import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
 import com.hedvig.app.feature.home.ui.changeaddress.result.ChangeAddressResultActivity
 import com.hedvig.app.feature.insurablelimits.InsurableLimitsAdapter
 import com.hedvig.app.feature.offer.OfferViewModel
+import com.hedvig.app.feature.offer.model.CheckoutLabel
 import com.hedvig.app.feature.offer.model.CheckoutMethod
 import com.hedvig.app.feature.offer.model.checkoutIconRes
 import com.hedvig.app.feature.offer.model.quotebundle.PostSignScreen
@@ -69,8 +72,9 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
     private val quoteIds: List<String>
         get() = intent.getStringArrayExtra(QUOTE_IDS)?.toList() ?: emptyList()
-    private val quoteCartId: String?
-        get() = intent.getStringExtra(QUOTE_CART_ID)
+    private val quoteCartId: CreateQuoteCartUseCase.QuoteCartId?
+        get() = intent.getParcelableExtra(QUOTE_CART_ID)
+            ?: intent.getStringExtra(QUOTE_CART_ID)?.let { CreateQuoteCartUseCase.QuoteCartId(it) }
     private val shouldShowOnNextAppStart: Boolean
         get() = intent.getBooleanExtra(SHOULD_SHOW_ON_NEXT_APP_START, false)
 
@@ -168,26 +172,20 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 binding.offerScroll.isVisible = viewState !is OfferViewModel.ViewState.Loading
                 when (viewState) {
                     is OfferViewModel.ViewState.Loading -> {}
-                    is OfferViewModel.ViewState.Error -> {
-                        perilsAdapter.submitList(emptyList())
-                        insurableLimitsAdapter.submitList(emptyList())
-                        documentAdapter.submitList(emptyList())
-                        bottomOfferAdapter.submitList(emptyList())
-                        topOfferAdapter.submitList(listOf(OfferItems.Error))
-                        binding.progressBar.isVisible = false
-                        binding.offerScroll.isVisible = true
-                    }
+                    is OfferViewModel.ViewState.Error -> showErrorDialog(
+                        viewState.message ?: getString(R.string.NETWORK_ERROR_ALERT_MESSAGE)
+                    ) {}
                     is OfferViewModel.ViewState.Content -> {
-                        topOfferAdapter.submitList(viewState.topOfferItems)
-                        perilsAdapter.submitList(viewState.perils)
-                        insurableLimitsAdapter.submitList(viewState.insurableLimitsItems)
-                        documentAdapter.submitList(viewState.documents)
-                        bottomOfferAdapter.submitList(viewState.bottomOfferItems)
-                        binding.signButton.text = viewState.checkoutLabel.toString(this)
-                        binding.signButton.icon = viewState.checkoutMethod.checkoutIconRes()?.let(::compatDrawable)
-                        binding.signButton.setHapticClickListener {
-                            onSign(viewState.checkoutMethod, viewState.paymentMethods)
-                        }
+                        topOfferAdapter.submitList(viewState.createTopOfferItems())
+                        perilsAdapter.submitList(viewState.createPerilItems())
+                        insurableLimitsAdapter.submitList(viewState.createInsurableLimitItems())
+                        documentAdapter.submitList(viewState.createDocumentItems())
+                        bottomOfferAdapter.submitList(viewState.createBottomOfferItems())
+                        setSignButtonState(
+                            viewState.offerModel.checkoutMethod,
+                            viewState.offerModel.checkoutLabel,
+                            viewState.paymentMethods
+                        )
 
                         TransitionManager.beginDelayedTransition(binding.offerToolbar)
                         setTitleVisibility(viewState)
@@ -212,18 +210,27 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     is OfferViewModel.Event.ApproveError -> handlePostSignError(event)
                     OfferViewModel.Event.DiscardOffer -> startSplashActivity()
                     is OfferViewModel.Event.StartSwedishBankIdSign -> showSignDialog(event)
-                    OfferViewModel.Event.Error -> showErrorDialog(
-                        getString(R.string.NETWORK_ERROR_ALERT_MESSAGE)
-                    ) {}
                     OfferViewModel.Event.OpenChat -> startChat()
                 }
             }
             .launchIn(lifecycleScope)
     }
 
+    private fun setSignButtonState(
+        checkoutMethod: CheckoutMethod,
+        checkoutLabel: CheckoutLabel,
+        paymentMethods: PaymentMethodsApiResponse?
+    ) {
+        binding.signButton.text = checkoutLabel.toString(this)
+        binding.signButton.icon = checkoutMethod.checkoutIconRes()?.let(::compatDrawable)
+        binding.signButton.setHapticClickListener {
+            onSign(checkoutMethod, paymentMethods)
+        }
+    }
+
     private fun showSignDialog(event: OfferViewModel.Event.StartSwedishBankIdSign) {
         SwedishBankIdSignDialog
-            .newInstance(event.autoStartToken, quoteIds)
+            .newInstance(event.autoStartToken, quoteIds, quoteCartId)
             .show(supportFragmentManager, SwedishBankIdSignDialog.TAG)
     }
 
@@ -297,16 +304,17 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         )
     }
 
-    private fun setTitleVisibility(viewState: OfferViewModel.ViewState.Content) = when (viewState.title) {
-        ViewConfiguration.Title.LOGO -> {
-            binding.toolbarLogo.isVisible = true
-            binding.toolbarTitle.isVisible = false
-        }
-        ViewConfiguration.Title.UPDATE,
-        ViewConfiguration.Title.UNKNOWN,
-        -> {
-            binding.toolbarTitle.isVisible = true
-            binding.toolbarLogo.isVisible = false
+    private fun setTitleVisibility(viewState: OfferViewModel.ViewState.Content) {
+        when (viewState.offerModel.quoteBundle.viewConfiguration.title) {
+            ViewConfiguration.Title.LOGO -> {
+                binding.toolbarLogo.isVisible = true
+                binding.toolbarTitle.isVisible = false
+            }
+            ViewConfiguration.Title.UPDATE,
+            ViewConfiguration.Title.UNKNOWN -> {
+                binding.toolbarTitle.isVisible = true
+                binding.toolbarLogo.isVisible = false
+            }
         }
     }
 
@@ -361,11 +369,12 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         @Suppress("DEPRECATION") // Replace with new result API when adyens handleActivityResult is updated
         super.onActivityResult(requestCode, resultCode, data)
 
-        when (DropIn.handleActivityResult(requestCode, resultCode, data)) {
+        when (val result = DropIn.handleActivityResult(requestCode, resultCode, data)) {
             is DropInResult.CancelledByUser -> {}
             is DropInResult.Error -> showErrorDialog("Could not connect payment") {}
-            is DropInResult.Finished -> model.onOpenCheckout()
-            null -> {}
+            is DropInResult.Finished -> {
+                model.onPaymentTokenIdReceived(PaymentTokenId(result.result))
+            }
         }
     }
 
@@ -408,7 +417,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         fun newInstance(
             context: Context,
             quoteIds: List<String> = emptyList(),
-            quoteCartId: String? = null,
+            quoteCartId: CreateQuoteCartUseCase.QuoteCartId? = null,
             shouldShowOnNextAppStart: Boolean = false,
         ) = Intent(context, OfferActivity::class.java).apply {
             putExtra(QUOTE_IDS, quoteIds.toTypedArray())
