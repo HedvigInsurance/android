@@ -71,7 +71,7 @@ open class HedvigApplication : Application() {
             whatsNewRepository.removeNewsForNewUser()
             CoroutineScope(IO).launch {
                 if (!featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
-            //        acquireHedvigToken()
+                    acquireHedvigToken()
                 }
             }
         }
