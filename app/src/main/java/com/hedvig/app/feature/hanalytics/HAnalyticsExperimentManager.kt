@@ -5,15 +5,15 @@ import com.hedvig.hanalytics.HAnalyticsExperiment
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-interface ExperimentManager {
+interface HAnalyticsExperimentManager {
     suspend fun getExperiment(name: String): HAnalyticsExperiment
     suspend fun invalidateExperiments()
 }
 
-class ExperimentManagerImpl(
+class HAnalyticsExperimentManagerImpl(
     private val sendHAnalyticsEventUseCase: SendHAnalyticsEventUseCase,
     private val hAnalyticsService: HAnalyticsService,
-) : ExperimentManager {
+) : HAnalyticsExperimentManager {
     private val mutex = Mutex()
     private val experimentsData = mutableMapOf<String, String>()
 

@@ -97,8 +97,8 @@ import com.hedvig.app.feature.genericauth.otpinput.ReSendOtpCodeUseCase
 import com.hedvig.app.feature.genericauth.otpinput.ReSendOtpCodeUseCaseImpl
 import com.hedvig.app.feature.genericauth.otpinput.SendOtpCodeUseCase
 import com.hedvig.app.feature.genericauth.otpinput.SendOtpCodeUseCaseImpl
-import com.hedvig.app.feature.hanalytics.ExperimentManager
-import com.hedvig.app.feature.hanalytics.ExperimentManagerImpl
+import com.hedvig.app.feature.hanalytics.HAnalyticsExperimentManager
+import com.hedvig.app.feature.hanalytics.HAnalyticsExperimentManagerImpl
 import com.hedvig.app.feature.hanalytics.HAnalyticsImpl
 import com.hedvig.app.feature.hanalytics.HAnalyticsService
 import com.hedvig.app.feature.hanalytics.HAnalyticsServiceImpl
@@ -220,6 +220,7 @@ import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.apollo.DeviceIdInterceptor
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import com.hedvig.app.util.apollo.SunsettingInterceptor
+import com.hedvig.app.util.featureflags.ClearHAnalyticsExperimentsCacheUseCase
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.app.util.featureflags.FeatureManagerImpl
 import com.hedvig.app.util.featureflags.flags.DevFeatureFlagProvider
@@ -383,12 +384,12 @@ fun getLocale(context: Context, market: Market?): Locale {
 val viewModelModule = module {
     viewModel { ClaimsViewModel(get(), get()) }
     viewModel { ChatViewModel(get(), get(), get(), get(), get(), get()) }
-    viewModel { UserViewModel(get(), get(), get(), get(), get()) }
+    viewModel { UserViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel { RedeemCodeViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
     viewModel { SettingsViewModel(get(), get()) }
     viewModel { DatePickerViewModel() }
-    viewModel { params -> SimpleSignAuthenticationViewModel(params.get(), get(), get(), get(), get(), get()) }
+    viewModel { params -> SimpleSignAuthenticationViewModel(params.get(), get(), get(), get(), get(), get(), get()) }
     viewModel { (data: MultiActionParams) -> MultiActionViewModel(data) }
     viewModel { (componentState: MultiActionItem.Component?, multiActionParams: MultiActionParams) ->
         AddComponentViewModel(
@@ -637,12 +638,13 @@ val trackerModule = module {
         val allAnalyticsSinks = getAll<HAnalyticsSink>().distinct()
         SendHAnalyticsEventUseCaseImpl(allAnalyticsSinks)
     }
-    single<ExperimentManager> { ExperimentManagerImpl(get(), get()) }
+    single<HAnalyticsExperimentManager> { HAnalyticsExperimentManagerImpl(get(), get()) }
     single<NetworkHAnalyticsSink> { NetworkHAnalyticsSink(get()) } bind HAnalyticsSink::class
     single<HAnalyticsService> {
         HAnalyticsServiceImpl(get(), get(), get(), get<Context>().getString(R.string.HANALYTICS_URL))
     }
     single<ApplicationLifecycleTracker> { ApplicationLifecycleTracker(get()) }
+    single<ClearHAnalyticsExperimentsCacheUseCase> { ClearHAnalyticsExperimentsCacheUseCase(get()) }
 }
 
 val localeBroadcastManagerModule = module {
@@ -721,13 +723,15 @@ val featureManagerModule = module {
             FeatureManagerImpl(
                 DevFeatureFlagProvider(get()),
                 DevLoginMethodProvider(get()),
-                DevPaymentTypeProvider(get())
+                DevPaymentTypeProvider(get()),
+                get(),
             )
         } else {
             FeatureManagerImpl(
                 HAnalyticsFeatureFlagProvider(get()),
                 HAnalyticsLoginMethodProvider(get()),
                 HAnalyticsPaymentTypeProvider(get()),
+                get(),
             )
         }
     }
