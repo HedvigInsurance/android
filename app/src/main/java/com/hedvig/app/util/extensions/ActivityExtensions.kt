@@ -182,7 +182,7 @@ fun Activity.makeACall(uri: Uri) {
 }
 
 fun Activity.showReviewDialog(
-    onComplete: () -> Unit
+    onComplete: () -> Unit = {}
 ) {
     val manager = ReviewManagerFactory.create(this)
     val request = manager.requestReviewFlow()

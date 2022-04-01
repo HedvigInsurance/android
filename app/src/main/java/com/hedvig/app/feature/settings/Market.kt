@@ -74,7 +74,7 @@ enum class Market {
         }
     }
 
-    fun openOnboarding(context: Context, isNativeDkOnboardingEnabled: Boolean) = when (this) {
+    fun openOnboarding(context: Context) = when (this) {
         SE -> {
             context.startActivity(ChoosePlanActivity.newInstance(context))
         }
@@ -82,11 +82,7 @@ enum class Market {
             context.startActivity(ChoosePlanActivity.newInstance(context))
         }
         DK -> {
-            if (isNativeDkOnboardingEnabled) {
-                context.startActivity(ChoosePlanActivity.newInstance(context))
-            } else {
-                context.startActivity(WebOnboardingActivity.newInstance(context))
-            }
+            context.startActivity(ChoosePlanActivity.newInstance(context))
         }
         FR -> {
             context.startActivity(WebOnboardingActivity.newInstance(context))

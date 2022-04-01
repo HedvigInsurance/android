@@ -193,7 +193,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: Homebrew/actions/setup-homebrew@master
-      - run: sudo apt-get install libxml2-utils
+      - run: sudo apt-get update && sudo apt-get install libxml2-utils
       - run: brew install ktlint --build-from-source ktlint
       - name: run ktlint
         continue-on-error: true

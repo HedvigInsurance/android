@@ -8,15 +8,14 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusCardUiState
-import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
+import com.hedvig.app.util.featureflags.flags.Feature
 
-@OptIn(ExperimentalStdlibApi::class)
 class HomeItemsBuilder(
     private val featureManager: FeatureManager
 ) {
 
-    fun buildItems(
+    suspend fun buildItems(
         homeData: HomeQuery.Data
     ): List<HomeModel> = when {
         homeData.isActive() -> buildActiveItems(homeData)
@@ -27,7 +26,7 @@ class HomeItemsBuilder(
         else -> listOf(HomeModel.Error)
     }
 
-    private fun buildActiveItems(homeData: HomeQuery.Data): List<HomeModel> = buildList {
+    private suspend fun buildActiveItems(homeData: HomeQuery.Data): List<HomeModel> = buildList {
         addAll(listOfNotNull(*psaItems(homeData.importantMessages).toTypedArray()))
         add(HomeModel.BigText.Active(homeData.member.firstName ?: ""))
         val claimStatusCard: HomeModel.ClaimStatus? = claimStatusCardOrNull(homeData)
@@ -73,7 +72,7 @@ class HomeItemsBuilder(
         claimStatusCardOrNull(homeData)?.let(::add)
     }
 
-    private fun buildTerminatedItems(homeData: HomeQuery.Data): List<HomeModel> = buildList {
+    private suspend fun buildTerminatedItems(homeData: HomeQuery.Data): List<HomeModel> = buildList {
         add(HomeModel.BigText.Terminated(homeData.member.firstName ?: ""))
         add(HomeModel.BodyText.Terminated)
         val claimStatusCard: HomeModel.ClaimStatus? = claimStatusCardOrNull(homeData)

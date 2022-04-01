@@ -43,7 +43,7 @@ class MarketingActivity : BaseActivity() {
                             onClickMarket = viewModel::goToMarketPicker,
                             onClickSignUp = {
                                 viewModel.onClickSignUp()
-                                s.selectedMarket.openOnboarding(this@MarketingActivity, true)
+                                s.selectedMarket.openOnboarding(this@MarketingActivity)
                             },
                             onClickLogIn = {
                                 viewModel.onClickLogIn()

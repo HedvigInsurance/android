@@ -4,8 +4,8 @@ import arrow.core.NonEmptyList
 import arrow.core.nonEmptyListOf
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.model.OfferModel
-import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
+import com.hedvig.app.util.featureflags.flags.Feature
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
