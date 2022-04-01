@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
 
-class MarketingViewModelNew(
+class MarketingViewModel(
     private val marketManager: MarketManager,
     private val hAnalytics: HAnalytics,
     private val submitMarketAndLanguagePreferencesUseCase: SubmitMarketAndLanguagePreferencesUseCase,
@@ -167,7 +167,7 @@ class MarketingViewModelNew(
             val result = submitMarketAndLanguagePreferencesUseCase
                 .invoke(language, market)
             if (result.isLeft()) {
-                updateMarketPickerState { it.copy(isLoading = false) } // TODO: Show an error? Preferably
+                updateMarketPickerState { it.copy(isLoading = false) }
                 return@launch
             }
             updateApplicationLanguageUseCase.invoke(market, language)

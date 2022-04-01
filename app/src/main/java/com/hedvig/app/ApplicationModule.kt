@@ -135,7 +135,7 @@ import com.hedvig.app.feature.loggedin.service.TabNotificationService
 import com.hedvig.app.feature.loggedin.ui.LoggedInRepository
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModelImpl
-import com.hedvig.app.feature.marketing.MarketingViewModelNew
+import com.hedvig.app.feature.marketing.MarketingViewModel
 import com.hedvig.app.feature.marketing.data.GetInitialMarketPickerValuesUseCase
 import com.hedvig.app.feature.marketing.data.GetMarketingBackgroundUseCase
 import com.hedvig.app.feature.marketing.data.MarketingRepository
@@ -436,7 +436,7 @@ val viewModelModule = module {
     viewModel { CharityViewModel(get()) }
     viewModel { MyInfoViewModel(get()) }
     viewModel { AboutAppViewModel(get()) }
-    viewModel { MarketingViewModelNew(get(), get(), get(), get(), get(), get()) }
+    viewModel { MarketingViewModel(get(), get(), get(), get(), get(), get()) }
 }
 
 val choosePlanModule = module {

@@ -11,7 +11,7 @@ import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import assertk.assertions.prop
-import com.hedvig.app.feature.marketing.MarketingViewModelNew
+import com.hedvig.app.feature.marketing.MarketingViewModel
 import com.hedvig.app.feature.marketing.data.GetInitialMarketPickerValuesUseCase
 import com.hedvig.app.feature.marketing.data.GetMarketingBackgroundUseCase
 import com.hedvig.app.feature.marketing.data.SubmitMarketAndLanguagePreferencesUseCase
@@ -30,7 +30,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 
-class MarketingViewModelNewTest {
+class MarketingViewModelTest {
     @get:Rule
     val mainCoroutineRule = StandardTestDispatcherAsMainDispatcherRule()
 
@@ -43,7 +43,7 @@ class MarketingViewModelNewTest {
         getMarketingBackgroundUseCase: GetMarketingBackgroundUseCase = mockk(relaxed = true),
         updateApplicationLanguageUseCase: UpdateApplicationLanguageUseCase = mockk(relaxed = true),
         getInitialMarketPickerValuesUseCase: GetInitialMarketPickerValuesUseCase = mockk(relaxed = true),
-    ) = MarketingViewModelNew(
+    ) = MarketingViewModel(
         marketManager = marketManager,
         hAnalytics = hAnalytics,
         submitMarketAndLanguagePreferencesUseCase = submitMarketAndLanguagePreferencesUseCase,

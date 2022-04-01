@@ -28,7 +28,7 @@ class MarketingActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
 
         window.compatSetDecorFitsSystemWindows(false)
-        val viewModel = getViewModel<MarketingViewModelNew>()
+        val viewModel = getViewModel<MarketingViewModel>()
         setThemeOverlay(R.style.ThemeOverlay_Hedvig_MarketingActivity)
         setContent {
             HedvigTheme {
