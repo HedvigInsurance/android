@@ -117,6 +117,7 @@ fun PickMarketScreen(
                 style = MaterialTheme.typography.h4,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.align(Alignment.Center),
+                color = MaterialTheme.colors.primary,
             )
             Column(
                 modifier = Modifier.align(Alignment.BottomCenter)
@@ -255,10 +256,14 @@ fun PickerRow(
             verticalArrangement = Arrangement.SpaceAround,
 
         ) {
-            Text(text = header ?: "")
+            Text(
+                text = header ?: "",
+                color = MaterialTheme.colors.primary,
+            )
             Text(
                 text = label ?: "",
                 style = MaterialTheme.typography.caption,
+                color = MaterialTheme.colors.primary,
             )
         }
         Spacer(Modifier.weight(1f))
