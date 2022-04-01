@@ -8,6 +8,7 @@ import com.hedvig.android.owldroid.graphql.SwedishBankIdAuthMutation
 import com.hedvig.android.owldroid.type.AuthState
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.service.push.PushTokenManager
+import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.hanalytics.HAnalytics
 import e
 import kotlinx.coroutines.channels.Channel
@@ -22,6 +23,7 @@ class UserViewModel(
     private val logoutUserCase: LogoutUseCase,
     private val loginStatusService: LoginStatusService,
     private val hAnalytics: HAnalytics,
+    private val featureManager: FeatureManager,
     private val pushTokenManager: PushTokenManager,
 ) : ViewModel() {
 
@@ -79,7 +81,7 @@ class UserViewModel(
 
     private suspend fun onAuthSuccess() {
         hAnalytics.loggedIn()
-        hAnalytics.invalidateExperiments()
+        featureManager.invalidateExperiments()
         loginStatusService.isLoggedIn = true
     }
 }

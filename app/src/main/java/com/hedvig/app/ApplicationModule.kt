@@ -384,12 +384,12 @@ fun getLocale(context: Context, market: Market?): Locale {
 val viewModelModule = module {
     viewModel { ClaimsViewModel(get(), get()) }
     viewModel { ChatViewModel(get(), get(), get(), get(), get(), get()) }
-    viewModel { UserViewModel(get(), get(), get(), get(), get()) }
+    viewModel { UserViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel { RedeemCodeViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
     viewModel { SettingsViewModel(get(), get()) }
     viewModel { DatePickerViewModel() }
-    viewModel { params -> SimpleSignAuthenticationViewModel(params.get(), get(), get(), get(), get(), get()) }
+    viewModel { params -> SimpleSignAuthenticationViewModel(params.get(), get(), get(), get(), get(), get(), get()) }
     viewModel { (data: MultiActionParams) -> MultiActionViewModel(data) }
     viewModel { (componentState: MultiActionItem.Component?, multiActionParams: MultiActionParams) ->
         AddComponentViewModel(
