@@ -532,7 +532,7 @@ val numberActionSetModule = module {
 }
 
 val referralsModule = module {
-    viewModel<ReferralsViewModel> { ReferralsViewModelImpl(get(), get()) }
+    viewModel<ReferralsViewModel> { ReferralsViewModelImpl(get()) }
     viewModel<ReferralsActivatedViewModel> { ReferralsActivatedViewModelImpl(get()) }
     viewModel<ReferralsEditCodeViewModel> { ReferralsEditCodeViewModelImpl(get()) }
 }
