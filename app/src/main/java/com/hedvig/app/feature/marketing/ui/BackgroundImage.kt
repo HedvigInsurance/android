@@ -41,7 +41,7 @@ fun BackgroundImage(background: Background, content: @Composable BoxScope.() -> 
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,
             )
-            content()
         }
+        content()
     }
 }
