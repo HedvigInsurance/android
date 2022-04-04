@@ -4,10 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.app.feature.offer.model.QuoteCartId
+import com.hedvig.app.feature.offer.usecase.CampaignCode
 import com.hedvig.app.feature.offer.usecase.EditCampaignUseCase
 import com.hedvig.app.feature.referrals.data.RedeemReferralCodeRepository
-import com.hedvig.app.util.featureflags.Feature
-import com.hedvig.app.util.featureflags.FeatureManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,7 +16,6 @@ import kotlinx.coroutines.launch
 class RedeemCodeViewModel(
     private val quoteCartId: QuoteCartId?,
     private val redeemReferralCodeRepository: RedeemReferralCodeRepository,
-    private val featureManager: FeatureManager,
     private val editCampaignUseCase: EditCampaignUseCase,
 ) : ViewModel() {
 
@@ -31,30 +29,31 @@ class RedeemCodeViewModel(
     private val _viewState = MutableStateFlow(ViewState())
     val viewState: StateFlow<ViewState> = _viewState.asStateFlow()
 
-    fun redeemReferralCode(code: String) {
+    fun redeemReferralCode(code: CampaignCode) {
         viewModelScope.launch {
-            val newState = if (featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
-                editQuoteCart(code)
-            } else {
+            if (quoteCartId == null) {
                 redeemCode(code)
+            } else {
+                editQuoteCart(code, quoteCartId)
             }
-            _viewState.update { newState }
         }
     }
 
-    private suspend fun editQuoteCart(code: String) = if (quoteCartId == null) {
-        viewState.value.copy(errorMessage = "No quote id found")
-    } else {
-        editCampaignUseCase.addCampaignToQuoteCart(code, quoteCartId)
+    private suspend fun editQuoteCart(code: CampaignCode, quoteCartId: QuoteCartId) {
+        val state = editCampaignUseCase.addCampaignToQuoteCart(code, quoteCartId)
             .fold(
                 ifLeft = { error -> _viewState.value.copy(errorMessage = error.message) },
                 ifRight = { id -> _viewState.value.copy(quoteCartId = id) }
             )
+        _viewState.update { state }
     }
 
-    private suspend fun redeemCode(code: String) = redeemReferralCodeRepository.redeemReferralCode(code)
-        .fold(
-            ifLeft = { error -> _viewState.value.copy(errorMessage = error.message) },
-            ifRight = { data -> _viewState.value.copy(data = data) }
-        )
+    private suspend fun redeemCode(code: CampaignCode) {
+        val state = redeemReferralCodeRepository.redeemReferralCode(code)
+            .fold(
+                ifLeft = { error -> _viewState.value.copy(errorMessage = error.message) },
+                ifRight = { data -> _viewState.value.copy(data = data) }
+            )
+        _viewState.update { state }
+    }
 }

@@ -11,18 +11,20 @@ import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.apollo.safeQuery
 
+@JvmInline
+value class CampaignCode(val code: String)
+
 class EditCampaignUseCase(
     private val apolloClient: ApolloClient,
     private val offerRepository: OfferRepository,
 ) {
     suspend fun addCampaignToQuoteCart(
-        code: String,
+        campaignCode: CampaignCode,
         quoteCartId: QuoteCartId
     ): Either<ErrorMessage, QuoteCartId> = apolloClient
-        .mutate(QuoteCartAddCampaignMutation(code, quoteCartId.id))
+        .mutate(QuoteCartAddCampaignMutation(campaignCode.code, quoteCartId.id))
         .safeQuery()
-        .toEither()
-        .mapLeft { ErrorMessage(it.message) }
+        .toEither(::ErrorMessage)
         .map { it.quoteCart_addCampaign }
         .flatMap {
             it.asQuoteCart
@@ -37,8 +39,7 @@ class EditCampaignUseCase(
     ): Either<ErrorMessage, QuoteCartId> = apolloClient
         .mutate(QuoteCartRemoveCampaignMutation(quoteCartId.id))
         .safeQuery()
-        .toEither()
-        .mapLeft { ErrorMessage(it.message) }
+        .toEither(::ErrorMessage)
         .map { it.quoteCart_removeCampaign }
         .flatMap {
             it.asQuoteCart

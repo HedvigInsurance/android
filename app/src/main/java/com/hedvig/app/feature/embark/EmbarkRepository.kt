@@ -14,6 +14,5 @@ class EmbarkRepository(
     suspend fun embarkStory(name: String): Either<ErrorMessage, EmbarkStoryQuery.Data> = apolloClient
         .query(EmbarkStoryQuery(name, localeManager.defaultLocale().rawValue))
         .safeQuery()
-        .toEither()
-        .mapLeft { ErrorMessage(it.message) }
+        .toEither(::ErrorMessage)
 }

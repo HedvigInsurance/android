@@ -4,7 +4,7 @@ import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.checkout.CheckoutActivity
 import com.hedvig.app.feature.checkout.CheckoutParameter
-import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
+import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.testdata.feature.offer.BUNDLE_GROSS_COST
 import com.hedvig.app.testdata.feature.offer.BUNDLE_NAME
@@ -44,7 +44,7 @@ class CheckoutTest : TestCase() {
         activityRule.launch(
             CheckoutActivity.newInstance(
                 context(),
-                CheckoutParameter(listOf("123"), CreateQuoteCartUseCase.QuoteCartId("1234"))
+                CheckoutParameter(listOf("123"), QuoteCartId("1234"))
             )
         )
 
