@@ -48,7 +48,6 @@ import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.performOnTapHapticFeedback
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
-import com.hedvig.hanalytics.HAnalytics
 import e
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -56,7 +55,6 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.time.LocalDate
 import javax.money.MonetaryAmount
@@ -67,7 +65,6 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
     private val welcomeViewModel: WelcomeViewModel by viewModel()
     private val loggedInViewModel: LoggedInViewModel by viewModel()
-    private val hAnalytics: HAnalytics by inject()
 
     private val binding by viewBinding(ActivityLoggedInBinding::bind)
 
