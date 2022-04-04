@@ -13,6 +13,7 @@ import com.hedvig.app.feature.zignsec.usecase.StartDanishAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.StartNorwegianAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthStatusUseCase
 import com.hedvig.app.util.LiveEvent
+import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.hanalytics.HAnalytics
 import e
 import kotlinx.coroutines.flow.catch
@@ -25,6 +26,7 @@ class SimpleSignAuthenticationViewModel(
     private val startDanishAuthUseCase: StartDanishAuthUseCase,
     private val startNorwegianAuthUseCase: StartNorwegianAuthUseCase,
     private val hAnalytics: HAnalytics,
+    private val featureManager: FeatureManager,
     private val loginStatusService: LoginStatusService,
     subscribeToAuthStatusUseCase: SubscribeToAuthStatusUseCase,
 ) : ViewModel() {
@@ -133,7 +135,7 @@ class SimpleSignAuthenticationViewModel(
 
     private suspend fun onAuthSuccess() {
         hAnalytics.loggedIn()
-        hAnalytics.invalidateExperiments()
+        featureManager.invalidateExperiments()
         loginStatusService.isLoggedIn = true
     }
 
