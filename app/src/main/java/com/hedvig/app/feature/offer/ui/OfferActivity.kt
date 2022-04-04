@@ -30,13 +30,13 @@ import com.hedvig.app.feature.checkout.CheckoutActivity
 import com.hedvig.app.feature.crossselling.ui.CrossSellingResult
 import com.hedvig.app.feature.crossselling.ui.CrossSellingResultActivity
 import com.hedvig.app.feature.documents.DocumentAdapter
-import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
 import com.hedvig.app.feature.home.ui.changeaddress.result.ChangeAddressResultActivity
 import com.hedvig.app.feature.insurablelimits.InsurableLimitsAdapter
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.offer.model.CheckoutLabel
 import com.hedvig.app.feature.offer.model.CheckoutMethod
+import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.model.checkoutIconRes
 import com.hedvig.app.feature.offer.model.quotebundle.PostSignScreen
 import com.hedvig.app.feature.offer.model.quotebundle.ViewConfiguration
@@ -72,9 +72,9 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
     private val quoteIds: List<String>
         get() = intent.getStringArrayExtra(QUOTE_IDS)?.toList() ?: emptyList()
-    private val quoteCartId: CreateQuoteCartUseCase.QuoteCartId?
+    private val quoteCartId: QuoteCartId?
         get() = intent.getParcelableExtra(QUOTE_CART_ID)
-            ?: intent.getStringExtra(QUOTE_CART_ID)?.let { CreateQuoteCartUseCase.QuoteCartId(it) }
+            ?: intent.getStringExtra(QUOTE_CART_ID)?.let { QuoteCartId(it) }
     private val shouldShowOnNextAppStart: Boolean
         get() = intent.getBooleanExtra(SHOULD_SHOW_ON_NEXT_APP_START, false)
 
@@ -417,9 +417,11 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         fun newInstance(
             context: Context,
             quoteIds: List<String> = emptyList(),
-            quoteCartId: CreateQuoteCartUseCase.QuoteCartId? = null,
+            quoteCartId: QuoteCartId? = null,
             shouldShowOnNextAppStart: Boolean = false,
-        ) = Intent(context, OfferActivity::class.java).apply {
+        ) = Intent(
+            context, OfferActivity::class.java
+        ).apply {
             putExtra(QUOTE_IDS, quoteIds.toTypedArray())
             putExtra(QUOTE_CART_ID, quoteCartId)
             putExtra(SHOULD_SHOW_ON_NEXT_APP_START, shouldShowOnNextAppStart)

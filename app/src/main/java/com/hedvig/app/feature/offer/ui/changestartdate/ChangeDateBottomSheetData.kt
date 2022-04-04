@@ -1,14 +1,14 @@
 package com.hedvig.app.feature.offer.ui.changestartdate
 
 import android.os.Parcelable
-import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
+import com.hedvig.app.feature.offer.model.QuoteCartId
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
 
 @Parcelize
 data class ChangeDateBottomSheetData(
-    val quoteCartId: CreateQuoteCartUseCase.QuoteCartId?,
+    val quoteCartId: QuoteCartId?,
     val inceptions: List<Inception>
 ) : Parcelable {
 

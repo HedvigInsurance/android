@@ -3,8 +3,8 @@ package com.hedvig.app.feature.offer.ui.changestartdate
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.sequenceEither
-import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.offer.OfferRepository
+import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.extensions.epochMillisToLocalDate
 import kotlinx.coroutines.async
@@ -64,7 +64,7 @@ class ChangeDateBottomSheetViewModel(
         }
     }
 
-    private suspend fun removeDateOnQuoteCart(quoteCartId: CreateQuoteCartUseCase.QuoteCartId, quoteId: String) {
+    private suspend fun removeDateOnQuoteCart(quoteCartId: QuoteCartId, quoteId: String) {
         val state = quoteCartEditStartDateUseCase.removeStartDate(quoteCartId, quoteId)
             .fold(
                 ifLeft = { ViewState.Error(it.message) },
@@ -104,7 +104,7 @@ class ChangeDateBottomSheetViewModel(
         }
     }
 
-    private suspend fun setDateOnQuoteCart(quoteCartId: CreateQuoteCartUseCase.QuoteCartId) {
+    private suspend fun setDateOnQuoteCart(quoteCartId: QuoteCartId) {
         selectedDates.map { dateMapEntry ->
             quoteCartEditStartDateUseCase.setStartDate(
                 quoteCartId = quoteCartId,

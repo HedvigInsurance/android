@@ -1,14 +1,14 @@
 package com.hedvig.app.feature.embark.quotecart
 
-import android.os.Parcelable
 import arrow.core.Either
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.CreateOnboardingQuoteCartMutation
 import com.hedvig.android.owldroid.type.Market
+import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.safeQuery
-import kotlinx.parcelize.Parcelize
 
 class CreateQuoteCartUseCase(
     val apolloClient: ApolloClient,
@@ -21,17 +21,11 @@ class CreateQuoteCartUseCase(
         marketManager.market?.toGraphQLMarket() ?: Market.SWEDEN
     )
 
-    data class Error(val message: String?)
-
-    @JvmInline
-    @Parcelize
-    value class QuoteCartId(val id: String) : Parcelable
-
-    suspend operator fun invoke(): Either<Error, QuoteCartId> {
+    suspend operator fun invoke(): Either<ErrorMessage, QuoteCartId> {
         return apolloClient
             .mutate(mutation)
             .safeQuery()
-            .toEither { Error(it) }
+            .toEither { ErrorMessage(it) }
             .map { QuoteCartId(it.onboardingQuoteCart_create.id) }
     }
 

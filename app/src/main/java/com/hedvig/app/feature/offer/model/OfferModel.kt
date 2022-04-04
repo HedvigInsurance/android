@@ -1,14 +1,20 @@
 package com.hedvig.app.feature.offer.model
 
+import android.os.Parcelable
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.hedvig.android.owldroid.fragment.QuoteCartFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
-import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
 import com.hedvig.app.feature.offer.model.quotebundle.toQuoteBundle
 import com.hedvig.app.feature.offer.ui.checkoutLabel
+import kotlinx.parcelize.Parcelize
+
+@JvmInline
+@Parcelize
+value class QuoteCartId(val id: String) : Parcelable
 
 data class OfferModel(
+    val id: QuoteCartId?,
     val quoteBundle: QuoteBundle,
     val checkoutMethod: CheckoutMethod,
     val checkoutLabel: CheckoutLabel,
@@ -31,6 +37,7 @@ fun OfferModel.paymentApiResponseOrNull(): PaymentMethodsApiResponse? {
 
 fun OfferQuery.Data.toOfferModel() = OfferModel(
     quoteBundle = quoteBundle.fragments.quoteBundleFragment.toQuoteBundle(null),
+    id = null,
     checkoutMethod = signMethodForQuotes.toCheckoutMethod(),
     checkoutLabel = checkoutLabel(),
     campaign = Campaign(
@@ -47,8 +54,9 @@ fun OfferQuery.Data.toOfferModel() = OfferModel(
     paymentConnection = null,
 )
 
-fun QuoteCartFragment.toOfferModel(quoteCartId: CreateQuoteCartUseCase.QuoteCartId) = OfferModel(
-    quoteBundle = bundle!!.fragments.quoteBundleFragment.toQuoteBundle(quoteCartId),
+fun QuoteCartFragment.toOfferModel() = OfferModel(
+    id = QuoteCartId(id),
+    quoteBundle = bundle!!.fragments.quoteBundleFragment.toQuoteBundle(id),
     checkoutMethod = checkoutMethods.map { it.toCheckoutMethod() }.first(),
     checkoutLabel = checkoutLabel(),
     campaign = campaign?.toCampaign(),

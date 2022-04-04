@@ -25,6 +25,7 @@ object OfferItemsBuilder {
         val bundle = offerModel.quoteBundle
         add(
             OfferItems.Header(
+                quoteCartId = offerModel.id,
                 title = bundle.name,
                 startDate = bundle.inception.startDate,
                 startDateLabel = bundle.inception.startDateLabel,

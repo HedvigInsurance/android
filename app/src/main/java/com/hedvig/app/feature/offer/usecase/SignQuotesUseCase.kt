@@ -7,8 +7,8 @@ import arrow.core.left
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.SignQuoteCartMutation
 import com.hedvig.android.owldroid.graphql.SignQuotesMutation
-import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.offer.OfferRepository
+import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.apollo.safeQuery
@@ -31,7 +31,7 @@ class SignQuotesUseCase(
 
     suspend fun signQuotesAndClearCache(
         quoteIds: List<String>,
-        quoteCartId: CreateQuoteCartUseCase.QuoteCartId?
+        quoteCartId: QuoteCartId?
     ): Either<ErrorMessage, SignQuoteResult> {
         return if (featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
             signQuoteCart(quoteCartId)
@@ -41,7 +41,7 @@ class SignQuotesUseCase(
     }
 
     private suspend fun signQuoteCart(
-        quoteCartId: CreateQuoteCartUseCase.QuoteCartId?
+        quoteCartId: QuoteCartId?
     ): Either<ErrorMessage, SignQuoteResult> = either {
         ensureNotNull(quoteCartId) { ErrorMessage("Quote cart id not found") }
 
@@ -55,7 +55,7 @@ class SignQuotesUseCase(
     }
 
     private suspend fun mutateQuoteCart(
-        quoteCartId: CreateQuoteCartUseCase.QuoteCartId,
+        quoteCartId: QuoteCartId,
         quoteIds: List<String>
     ): Either<ErrorMessage, SignQuoteCartMutation.Data> = apolloClient
         .mutate(SignQuoteCartMutation(quoteCartId.id, quoteIds))

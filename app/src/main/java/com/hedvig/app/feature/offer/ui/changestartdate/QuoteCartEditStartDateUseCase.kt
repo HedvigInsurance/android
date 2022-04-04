@@ -5,7 +5,7 @@ import arrow.core.computations.either
 import arrow.core.computations.ensureNotNull
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.QuoteCartEditQuoteMutation
-import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
+import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.safeQuery
@@ -23,7 +23,7 @@ class QuoteCartEditStartDateUseCase(
     object Success
 
     suspend fun removeStartDate(
-        quoteCartId: CreateQuoteCartUseCase.QuoteCartId,
+        quoteCartId: QuoteCartId,
         quoteId: String,
     ): Either<ErrorMessage, Success> {
         return mutateQuoteCartAndUpdate(
@@ -34,7 +34,7 @@ class QuoteCartEditStartDateUseCase(
     }
 
     suspend fun setStartDate(
-        quoteCartId: CreateQuoteCartUseCase.QuoteCartId,
+        quoteCartId: QuoteCartId,
         quoteId: String,
         date: LocalDate,
     ): Either<ErrorMessage, Success> {
@@ -46,7 +46,7 @@ class QuoteCartEditStartDateUseCase(
     }
 
     private suspend fun mutateQuoteCartAndUpdate(
-        quoteCartId: CreateQuoteCartUseCase.QuoteCartId,
+        quoteCartId: QuoteCartId,
         quoteId: String,
         startDate: LocalDate?,
     ): Either<ErrorMessage, Success> {

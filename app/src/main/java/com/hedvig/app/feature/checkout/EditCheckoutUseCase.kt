@@ -10,8 +10,8 @@ import arrow.core.sequenceEither
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.EditMailAndSSNMutation
 import com.hedvig.android.owldroid.graphql.QuoteCartEditQuoteMutation
-import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.offer.OfferRepository
+import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
@@ -57,7 +57,7 @@ class EditCheckoutUseCase(
     }
 
     private suspend fun mutateQuoteCart(
-        quoteCartId: CreateQuoteCartUseCase.QuoteCartId,
+        quoteCartId: QuoteCartId,
         quoteId: String,
         ssn: String,
         email: String
@@ -122,7 +122,7 @@ class EditCheckoutUseCase(
 
 data class EditAndSignParameter(
     val quoteIds: List<String>,
-    val quoteCartId: CreateQuoteCartUseCase.QuoteCartId?,
+    val quoteCartId: QuoteCartId?,
     val ssn: String,
-    val email: String
+    val email: String,
 )

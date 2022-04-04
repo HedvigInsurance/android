@@ -17,8 +17,8 @@ import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.QuoteCartQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.RemoveDiscountCodeMutation
-import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase.QuoteCartId
 import com.hedvig.app.feature.offer.model.OfferModel
+import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.model.toOfferModel
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.LocaleManager
@@ -40,9 +40,7 @@ class OfferRepository(
 
     fun offerQuery(ids: List<String>) = OfferQuery(localeManager.defaultLocale(), ids)
 
-    suspend fun getQuoteIds(
-        quoteCartId: QuoteCartId
-    ): Either<ErrorMessage, List<String>> = queryQuoteCart(quoteCartId)
+    suspend fun getQuoteIds(quoteCartId: QuoteCartId): Either<ErrorMessage, List<String>> = queryQuoteCart(quoteCartId)
         .map { it.quoteBundle.quotes }
         .map { quotes -> quotes.map { it.id } }
 
@@ -90,8 +88,7 @@ class OfferRepository(
             ErrorMessage("No quotes in offer, please try again")
         }
 
-        val quoteCartId = result.quoteCart.id.let(::QuoteCartId)
-        result.quoteCart.fragments.quoteCartFragment.toOfferModel(quoteCartId)
+        result.quoteCart.fragments.quoteCartFragment.toOfferModel()
     }
 
     private suspend fun queryOffer(ids: List<String>): Either<ErrorMessage, OfferModel> = either {

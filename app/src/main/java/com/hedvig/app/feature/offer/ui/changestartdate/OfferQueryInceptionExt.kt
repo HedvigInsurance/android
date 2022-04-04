@@ -1,10 +1,10 @@
 package com.hedvig.app.feature.offer.ui.changestartdate
 
 import com.hedvig.android.owldroid.fragment.QuoteBundleFragment
-import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
+import com.hedvig.app.feature.offer.model.QuoteCartId
 
 fun QuoteBundleFragment.Inception1.toChangeDateBottomSheetData(
-    quoteCartId: CreateQuoteCartUseCase.QuoteCartId?,
+    quoteCartId: QuoteCartId?,
     quoteNames: List<String>
 ) = ChangeDateBottomSheetData(
     quoteCartId = quoteCartId,

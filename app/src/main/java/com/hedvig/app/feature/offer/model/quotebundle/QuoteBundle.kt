@@ -2,8 +2,8 @@ package com.hedvig.app.feature.offer.model.quotebundle
 
 import com.hedvig.android.owldroid.fragment.QuoteBundleFragment
 import com.hedvig.app.feature.documents.DocumentItems
-import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
+import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.perils.Peril
 import com.hedvig.app.feature.table.Table
 import com.hedvig.app.feature.table.intoTable
@@ -44,7 +44,7 @@ data class QuoteBundle(
     fun numberOfCurrentInsurers() = quotes.count { it.currentInsurer?.name != null }
 }
 
-fun QuoteBundleFragment.toQuoteBundle(quoteCartId: CreateQuoteCartUseCase.QuoteCartId?) = QuoteBundle(
+fun QuoteBundleFragment.toQuoteBundle(quoteCartId: QuoteCartId?) = QuoteBundle(
     name = displayName,
     quotes = quotes.map { it.toQuote() },
     cost = toBundleCost(),
