@@ -3,6 +3,7 @@ package com.hedvig.app.feature.offer.ui.changestartdate
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.sequenceEither
+import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.extensions.epochMillisToLocalDate
@@ -40,71 +41,85 @@ class ChangeDateBottomSheetViewModel(
     }
 
     fun onSwitchChecked(quoteId: String, checked: Boolean) {
-        if (data.quoteCartId != null) {
-            return
-        }
-
         if (checked) {
+            _viewState.value = ViewState.Loading(true)
             viewModelScope.launch {
-                _viewState.value = ViewState.Loading(true)
-                val result = editStartDateUseCase.removeStartDate(
-                    id = quoteId,
-                    idsInBundle = data.idsInBundle
-                )
-                _viewState.value = when (result) {
-                    is QueryResult.Error -> ViewState.Error(result.message)
-                    is QueryResult.Success -> ViewState.Loading(false)
+                if (data.quoteCartId != null) {
+                    removeDateOnQuoteCart(data.quoteCartId, quoteId)
+                } else {
+                    removeDateOnOffer(quoteId)
                 }
             }
         }
     }
 
-    fun onDialogConfirmed() {
-        setNewDateAndDismiss()
+    private suspend fun removeDateOnOffer(quoteId: String) {
+        val result = editStartDateUseCase.removeStartDate(
+            id = quoteId,
+            idsInBundle = data.idsInBundle
+        )
+        _viewState.value = when (result) {
+            is QueryResult.Error -> ViewState.Error(result.message)
+            is QueryResult.Success -> ViewState.Loading(false)
+        }
+    }
+
+    private suspend fun removeDateOnQuoteCart(quoteCartId: CreateQuoteCartUseCase.QuoteCartId, quoteId: String) {
+        val state = quoteCartEditStartDateUseCase.removeStartDate(quoteCartId, quoteId)
+            .fold(
+                ifLeft = { ViewState.Error(it.message) },
+                ifRight = { ViewState.Loading(false) }
+            )
+        _viewState.value = state
     }
 
     fun setNewDateAndDismiss() {
         viewModelScope.launch {
             _viewState.value = ViewState.Loading(true)
-
             if (data.quoteCartId != null) {
-                selectedDates.map { dateMapEntry ->
-                    quoteCartEditStartDateUseCase.setStartDate(
-                        quoteCartId = data.quoteCartId,
-                        quoteId = dateMapEntry.key,
-                        idsInBundle = data.idsInBundle,
-                        date = dateMapEntry.value,
-                    )
-                }
-                    .sequenceEither()
-                    .fold(
-                        ifLeft = { ViewState.Error(it.message) },
-                        ifRight = {
-                            offerRepository.queryAndEmitOffer(data.quoteCartId, emptyList())
-                            _viewState.value = ViewState.Dismiss
-                        }
-                    )
+                setDateOnQuoteCart(data.quoteCartId)
             } else {
-                val results = coroutineScope {
-
-                    selectedDates.map { dateMapEntry ->
-                        async {
-                            editStartDateUseCase.setStartDate(
-                                id = dateMapEntry.key,
-                                idsInBundle = data.idsInBundle,
-                                date = dateMapEntry.value
-                            )
-                        }
-                    }.awaitAll()
-                }
-                if (results.any { it is QueryResult.Error }) {
-                    val message = (results.first { it is QueryResult.Error } as? QueryResult.Error.QueryError)?.message
-                    _viewState.value = ViewState.Error(message)
-                } else {
-                    _viewState.value = ViewState.Dismiss
-                }
+                setDateOnOffer()
             }
         }
+    }
+
+    private suspend fun setDateOnOffer() {
+        val results = coroutineScope {
+            selectedDates.map { dateMapEntry ->
+                async {
+                    editStartDateUseCase.setStartDate(
+                        id = dateMapEntry.key,
+                        idsInBundle = data.idsInBundle,
+                        date = dateMapEntry.value
+                    )
+                }
+            }.awaitAll()
+        }
+        if (results.any { it is QueryResult.Error }) {
+            val message = (results.first { it is QueryResult.Error } as? QueryResult.Error.QueryError)?.message
+            _viewState.value = ViewState.Error(message)
+        } else {
+            _viewState.value = ViewState.Dismiss
+        }
+    }
+
+    private suspend fun setDateOnQuoteCart(quoteCartId: CreateQuoteCartUseCase.QuoteCartId) {
+        selectedDates.map { dateMapEntry ->
+            quoteCartEditStartDateUseCase.setStartDate(
+                quoteCartId = quoteCartId,
+                quoteId = dateMapEntry.key,
+                date = dateMapEntry.value,
+            )
+        }
+            .sequenceEither()
+            .fold(
+                ifLeft = { ViewState.Error(it.message) },
+                ifRight = {
+                    offerRepository.queryAndEmitOffer(data.quoteCartId, emptyList())
+                    _viewState.value = ViewState.Dismiss
+                }
+            )
     }
 
     sealed class ViewState {

@@ -688,7 +688,7 @@ val useCaseModule = module {
     single<GetFinalDanishAddressSelectionUseCase> { GetFinalDanishAddressSelectionUseCase(get()) }
     single { CreateQuoteCartUseCase(get(), get(), get()) }
     single<EditCheckoutUseCase> { EditCheckoutUseCase(get(), get(), get(), get(), get()) }
-    single<QuoteCartEditStartDateUseCase> { QuoteCartEditStartDateUseCase(get(), get(), get(), get()) }
+    single<QuoteCartEditStartDateUseCase> { QuoteCartEditStartDateUseCase(get(), get()) }
     single<CreateAccessTokenUseCase> { CreateAccessTokenUseCase(get(), get()) }
     single<AddPaymentTokenUseCase> { AddPaymentTokenUseCase(get()) }
     single<ConnectPaymentUseCase> { ConnectPaymentUseCase(get(), get(), get(), get(), get()) }

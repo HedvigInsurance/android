@@ -1,29 +1,23 @@
 package com.hedvig.app.feature.offer.ui.changestartdate
 
 import arrow.core.Either
-import arrow.core.flatMap
-import arrow.core.left
-import arrow.core.right
+import arrow.core.computations.either
+import arrow.core.computations.ensureNotNull
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.QuoteCartEditQuoteMutation
 import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
-import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.LocaleManager
-import com.hedvig.app.util.apollo.GraphQLQueryHandler
+import com.hedvig.app.util.apollo.safeQuery
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonObject
-import org.json.JSONException
-import org.json.JSONObject
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class QuoteCartEditStartDateUseCase(
     private val apolloClient: ApolloClient,
-    private val offerRepository: OfferRepository,
     private val localeManager: LocaleManager,
-    private val graphQLQueryHandler: GraphQLQueryHandler,
 ) {
 
     object Success
@@ -31,64 +25,59 @@ class QuoteCartEditStartDateUseCase(
     suspend fun removeStartDate(
         quoteCartId: CreateQuoteCartUseCase.QuoteCartId,
         quoteId: String,
-        idsInBundle: List<String>
-    ) {
+    ): Either<ErrorMessage, Success> {
+        return mutateQuoteCartAndUpdate(
+            quoteCartId,
+            quoteId,
+            null
+        )
     }
 
     suspend fun setStartDate(
         quoteCartId: CreateQuoteCartUseCase.QuoteCartId,
         quoteId: String,
-        idsInBundle: List<String>,
-        date: LocalDate
+        date: LocalDate,
     ): Either<ErrorMessage, Success> {
-        return mutateQuoteCart(
+        return mutateQuoteCartAndUpdate(
             quoteCartId,
             quoteId,
             date
         )
     }
 
-    private suspend fun mutateQuoteCart(
+    private suspend fun mutateQuoteCartAndUpdate(
         quoteCartId: CreateQuoteCartUseCase.QuoteCartId,
         quoteId: String,
-        startDate: LocalDate,
+        startDate: LocalDate?,
     ): Either<ErrorMessage, Success> {
-        val formattedStartDate = startDate.format(DateTimeFormatter.ISO_DATE)
-        val json = buildJsonObject {
-            put("quoteCartId", quoteCartId.id)
-            put("quoteId", quoteId)
-            put("locale", localeManager.defaultLocale().rawValue)
-            putJsonObject("payload") {
+        val json = createPayload(startDate)
+        val mutation = QuoteCartEditQuoteMutation(quoteCartId.id, quoteId, json, localeManager.defaultLocale())
+
+        return either {
+            val result = apolloClient.mutate(mutation)
+                .safeQuery()
+                .toEither(::ErrorMessage)
+                .bind()
+
+            ensureNotNull(result.quoteCart_editQuote.asQuoteCart) {
+                result.quoteCart_editQuote.asQuoteBundleError?.let { asQuoteBundleError ->
+                    asQuoteBundleError.limits?.let {
+                        ErrorMessage(it.joinToString())
+                    } ?: ErrorMessage(asQuoteBundleError.message)
+                } ?: ErrorMessage()
+            }
+
+            Success
+        }
+    }
+
+    private fun createPayload(startDate: LocalDate?): String {
+        val formattedStartDate = startDate?.format(DateTimeFormatter.ISO_DATE)
+        return buildJsonObject {
+            put("startDate", formattedStartDate)
+            putJsonObject("data") {
                 put("startDate", formattedStartDate)
-                putJsonObject("data") {
-                    put("startDate", formattedStartDate)
-                }
             }
         }.toString()
-
-        return graphQLQueryHandler.graphQLQuery(
-            query = QuoteCartEditQuoteMutation.QUERY_DOCUMENT,
-            variables = JSONObject(json),
-            files = emptyList()
-        )
-            .toEither()
-            .mapLeft { ErrorMessage(it.message) }
-            .flatMap { jsonResponse ->
-                val errorCode = try {
-                    jsonResponse.getJSONObject("data")
-                        .getJSONObject("quoteCart_editQuote")
-                        .getJSONArray("limits")
-                        .getJSONObject(0)
-                        .getString("code")
-                } catch (exception: JSONException) {
-                    null
-                }
-
-                if (errorCode != null) {
-                    ErrorMessage(errorCode).left()
-                } else {
-                    Success.right()
-                }
-            }
     }
 }
