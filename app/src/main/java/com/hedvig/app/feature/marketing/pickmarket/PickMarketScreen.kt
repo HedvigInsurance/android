@@ -77,16 +77,7 @@ fun PickMarketScreen(
                 },
             )
             Spacer(Modifier.height(8.dp))
-            Box(
-                modifier = Modifier
-                    .size(width = 32.dp, height = 4.dp)
-                    .align(Alignment.CenterHorizontally)
-                    .background(
-                        color = colorResource(R.color.color_divider),
-                        shape = RoundedCornerShape(20.dp)
-                    )
-
-            )
+            BottomSheetHandle(modifier = Modifier.align(Alignment.CenterHorizontally))
             when (sheet) {
                 PickMarketSheet.MARKET -> PickMarketSheetContent(
                     onSelectMarket = { market ->
@@ -151,6 +142,19 @@ fun PickMarketScreen(
             }
         }
     }
+}
+
+@Composable
+fun BottomSheetHandle(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .size(width = 32.dp, height = 4.dp)
+            .background(
+                color = colorResource(R.color.color_divider),
+                shape = RoundedCornerShape(20.dp)
+            )
+
+    )
 }
 
 @Composable
