@@ -7,9 +7,9 @@ import com.hedvig.android.owldroid.fragment.SignStatusFragment
 import com.hedvig.android.owldroid.type.BankIdStatus
 import com.hedvig.android.owldroid.type.SignState
 import com.hedvig.app.authenticate.LoginStatusService
-import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.model.Checkout
+import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.usecase.CreateAccessTokenUseCase
 import com.hedvig.app.feature.swedishbankid.sign.usecase.ManuallyRecheckSwedishBankIdSignStatusUseCase
 import com.hedvig.app.feature.swedishbankid.sign.usecase.SubscribeToSwedishBankIdSignStatusUseCase
@@ -38,7 +38,7 @@ class SwedishBankIdSignViewModel(
     private val loginStatusService: LoginStatusService,
     private val hAnalytics: HAnalytics,
     private val quoteIds: List<String>,
-    private val quoteCartId: CreateQuoteCartUseCase.QuoteCartId?,
+    private val quoteCartId: QuoteCartId?,
     private val offerRepository: OfferRepository,
     private val featureManager: FeatureManager,
     private val createAccessTokenUseCase: CreateAccessTokenUseCase,
@@ -103,7 +103,7 @@ class SwedishBankIdSignViewModel(
         }
     }
 
-    private fun observeOfferSignState(quoteCartId: CreateQuoteCartUseCase.QuoteCartId) {
+    private fun observeOfferSignState(quoteCartId: QuoteCartId) {
         offerRepository.offerFlow(emptyList())
             .mapEitherRight { offer -> offer.checkout }
             .onEach { result ->

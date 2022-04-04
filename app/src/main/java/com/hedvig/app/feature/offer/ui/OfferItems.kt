@@ -5,6 +5,7 @@ import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.hedvig.app.feature.faq.FAQItem
 import com.hedvig.app.feature.offer.model.CheckoutLabel
 import com.hedvig.app.feature.offer.model.CheckoutMethod
+import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.model.quotebundle.GradientType
 import com.hedvig.app.feature.offer.model.quotebundle.OfferStartDate
 import com.hedvig.app.feature.offer.model.quotebundle.StartDateLabel
@@ -29,7 +30,8 @@ sealed class OfferItems {
         val showCampaignManagement: Boolean,
         val ignoreCampaigns: Boolean,
         val gradientType: GradientType,
-        val paymentMethodsApiResponse: PaymentMethodsApiResponse?
+        val paymentMethodsApiResponse: PaymentMethodsApiResponse?,
+        val quoteCartId: QuoteCartId?
     ) : OfferItems()
 
     data class Facts(

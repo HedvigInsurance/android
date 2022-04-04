@@ -5,10 +5,10 @@ import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import arrow.core.computations.either
 import com.hedvig.app.authenticate.LoginStatusService
-import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.model.Checkout
 import com.hedvig.app.feature.offer.model.OfferModel
+import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
 import com.hedvig.app.feature.offer.usecase.CreateAccessTokenUseCase
 import com.hedvig.app.feature.offer.usecase.SignQuotesUseCase
@@ -35,7 +35,7 @@ import kotlin.time.Duration.Companion.seconds
 
 class CheckoutViewModel(
     private val quoteIds: List<String>,
-    private val quoteCartId: CreateQuoteCartUseCase.QuoteCartId?,
+    private val quoteCartId: QuoteCartId?,
     private val signQuotesUseCase: SignQuotesUseCase,
     private val editQuotesUseCase: EditQuotesUseCase,
     private val createAccessTokenUseCase: CreateAccessTokenUseCase,

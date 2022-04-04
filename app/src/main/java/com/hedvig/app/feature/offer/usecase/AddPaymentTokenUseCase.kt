@@ -7,7 +7,7 @@ import arrow.core.right
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.AddPaymentTokenIdMutation
 import com.hedvig.app.feature.adyen.PaymentTokenId
-import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
+import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.apollo.safeQuery
 
 class AddPaymentTokenUseCase(
@@ -22,7 +22,7 @@ class AddPaymentTokenUseCase(
     }
 
     suspend operator fun invoke(
-        quoteCartId: CreateQuoteCartUseCase.QuoteCartId,
+        quoteCartId: QuoteCartId,
         paymentTokenId: PaymentTokenId
     ): Either<Error, Success> {
         val mutation = AddPaymentTokenIdMutation(

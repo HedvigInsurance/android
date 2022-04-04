@@ -31,7 +31,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.flowWithLifecycle
 import com.hedvig.app.R
-import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
+import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.extensions.canOpenUri
@@ -142,7 +142,7 @@ class SwedishBankIdSignDialog : DialogFragment() {
         fun newInstance(
             autoStartToken: String?,
             quoteIds: List<String>,
-            quoteCartId: CreateQuoteCartUseCase.QuoteCartId?
+            quoteCartId: QuoteCartId?
         ) =
             SwedishBankIdSignDialog().apply {
                 arguments = bundleOf(

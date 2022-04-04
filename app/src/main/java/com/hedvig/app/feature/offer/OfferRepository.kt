@@ -17,8 +17,8 @@ import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.QuoteCartQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.RemoveDiscountCodeMutation
-import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.offer.model.OfferModel
+import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.model.toOfferModel
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.LocaleManager
@@ -40,9 +40,7 @@ class OfferRepository(
 
     fun offerQuery(ids: List<String>) = OfferQuery(localeManager.defaultLocale(), ids)
 
-    suspend fun getQuoteIds(
-        quoteCartId: CreateQuoteCartUseCase.QuoteCartId
-    ): Either<ErrorMessage, List<String>> = queryQuoteCart(quoteCartId)
+    suspend fun getQuoteIds(quoteCartId: QuoteCartId): Either<ErrorMessage, List<String>> = queryQuoteCart(quoteCartId)
         .map { it.quoteBundle.quotes }
         .map { quotes -> quotes.map { it.id } }
 
@@ -64,7 +62,7 @@ class OfferRepository(
         else -> data!!.toOfferModel().right()
     }
 
-    suspend fun queryAndEmitOffer(quoteCartId: CreateQuoteCartUseCase.QuoteCartId?, quoteIds: List<String>) {
+    suspend fun queryAndEmitOffer(quoteCartId: QuoteCartId?, quoteIds: List<String>) {
         val offer = if (featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
             queryQuoteCart(quoteCartId)
         } else {
@@ -73,9 +71,7 @@ class OfferRepository(
         offerFlow.tryEmit(offer)
     }
 
-    private suspend fun queryQuoteCart(
-        quoteCartId: CreateQuoteCartUseCase.QuoteCartId?
-    ): Either<ErrorMessage, OfferModel> = either {
+    private suspend fun queryQuoteCart(quoteCartId: QuoteCartId?): Either<ErrorMessage, OfferModel> = either {
         ensureNotNull(quoteCartId) { ErrorMessage("No quote cart id found") }
 
         val result = apolloClient

@@ -14,18 +14,21 @@ import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.checkout.ApproveQuotesUseCase
 import com.hedvig.app.feature.checkout.CheckoutParameter
 import com.hedvig.app.feature.documents.DocumentItems
-import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.offer.model.OfferModel
+import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.model.paymentApiResponseOrNull
 import com.hedvig.app.feature.offer.model.quotebundle.PostSignScreen
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
 import com.hedvig.app.feature.offer.usecase.AddPaymentTokenUseCase
+import com.hedvig.app.feature.offer.usecase.EditCampaignUseCase
 import com.hedvig.app.feature.offer.usecase.ExternalProvider
 import com.hedvig.app.feature.offer.usecase.GetExternalInsuranceProviderUseCase
 import com.hedvig.app.feature.offer.usecase.SignQuotesUseCase
 import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.util.ErrorMessage
+import com.hedvig.app.util.featureflags.Feature
+import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.hanalytics.HAnalytics
 import e
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -149,7 +152,7 @@ abstract class OfferViewModel : ViewModel() {
 
 class OfferViewModelImpl(
     private var quoteIds: List<String>,
-    private val quoteCartId: CreateQuoteCartUseCase.QuoteCartId?,
+    private val quoteCartId: QuoteCartId?,
     private val offerRepository: OfferRepository,
     private val loginStatusService: LoginStatusService,
     private val approveQuotesUseCase: ApproveQuotesUseCase,
@@ -158,6 +161,8 @@ class OfferViewModelImpl(
     private val adyenRepository: AdyenRepository,
     private val chatRepository: ChatRepository,
     private val hAnalytics: HAnalytics,
+    private val editCampaignUseCase: EditCampaignUseCase,
+    private val featureManager: FeatureManager,
     private val addPaymentTokenUseCase: AddPaymentTokenUseCase,
     private val getExternalInsuranceProviderUseCase: GetExternalInsuranceProviderUseCase,
 ) : OfferViewModel() {
@@ -252,12 +257,17 @@ class OfferViewModelImpl(
 
     override fun removeDiscount() {
         viewModelScope.launch {
-            val result = runCatching { offerRepository.removeDiscount() }
-            if (result.isFailure) {
-                result.exceptionOrNull()?.let { e(it) }
-                return@launch
+            if (featureManager.isFeatureEnabled(Feature.QUOTE_CART) && quoteCartId != null) {
+                editCampaignUseCase.removeCampaignFromQuoteCart(quoteCartId)
+                    .tapLeft { _viewState.value = ViewState.Error(null) }
+            } else {
+                val result = runCatching { offerRepository.removeDiscount() }
+                if (result.isFailure) {
+                    result.exceptionOrNull()?.let { e(it) }
+                    return@launch
+                }
+                result.getOrNull()?.let { removeDiscountFromCache() }
             }
-            result.getOrNull()?.let { removeDiscountFromCache() }
         }
     }
 

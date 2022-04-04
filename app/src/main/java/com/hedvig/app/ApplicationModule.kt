@@ -140,11 +140,13 @@ import com.hedvig.app.feature.marketpicker.MarketRepository
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.offer.OfferViewModelImpl
+import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetViewModel
 import com.hedvig.app.feature.offer.ui.changestartdate.EditStartDateUseCase
 import com.hedvig.app.feature.offer.usecase.AddPaymentTokenUseCase
 import com.hedvig.app.feature.offer.usecase.CreateAccessTokenUseCase
+import com.hedvig.app.feature.offer.usecase.EditCampaignUseCase
 import com.hedvig.app.feature.offer.usecase.GetExternalInsuranceProviderUseCase
 import com.hedvig.app.feature.offer.usecase.SignQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.datacollectionresult.GetDataCollectionResultUseCase
@@ -373,7 +375,7 @@ val viewModelModule = module {
     viewModel { ClaimsViewModel(get(), get()) }
     viewModel { ChatViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel { UserViewModel(get(), get(), get(), get()) }
-    viewModel { RedeemCodeViewModel(get()) }
+    viewModel { (quoteCartId: QuoteCartId?) -> RedeemCodeViewModel(quoteCartId, get(), get(), get()) }
     viewModel { WelcomeViewModel(get()) }
     viewModel { SettingsViewModel(get(), get()) }
     viewModel { DatePickerViewModel() }
@@ -386,7 +388,7 @@ val viewModelModule = module {
         )
     }
     viewModel { TerminatedContractsViewModel(get()) }
-    viewModel { (autoStartToken: String, quoteIds: List<String>, quoteCartId: CreateQuoteCartUseCase.QuoteCartId?) ->
+    viewModel { (autoStartToken: String, quoteIds: List<String>, quoteCartId: QuoteCartId?) ->
         SwedishBankIdSignViewModel(
             autoStartToken = autoStartToken,
             subscribeToSwedishBankIdSignStatusUseCase = get(),
@@ -464,6 +466,8 @@ val offerModule = module {
             adyenRepository = get(),
             chatRepository = get(),
             hAnalytics = get(),
+            editCampaignUseCase = get(),
+            featureManager = get(),
             addPaymentTokenUseCase = get(),
             getExternalInsuranceProviderUseCase = get(),
         )
@@ -550,18 +554,18 @@ val changeDateBottomSheetModule = module {
 }
 
 val checkoutModule = module {
-    viewModel { (ids: List<String>, quoteCartId: CreateQuoteCartUseCase.QuoteCartId?) ->
+    viewModel { (ids: List<String>, quoteCartId: QuoteCartId?) ->
         CheckoutViewModel(
-            ids,
-            quoteCartId,
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
+            quoteIds = ids,
+            quoteCartId = quoteCartId,
+            signQuotesUseCase = get(),
+            editQuotesUseCase = get(),
+            createAccessTokenUseCase = get(),
+            marketManager = get(),
+            loginStatusService = get(),
+            hAnalytics = get(),
+            featureManager = get(),
+            offerRepository = get()
         )
     }
 }
@@ -688,6 +692,7 @@ val useCaseModule = module {
     single { CreateQuoteCartUseCase(get(), get(), get()) }
     single<EditQuotesUseCase> { EditQuotesUseCase(get(), get(), get(), get(), get()) }
     single<CreateAccessTokenUseCase> { CreateAccessTokenUseCase(get(), get()) }
+    single<EditCampaignUseCase> { EditCampaignUseCase(get(), get()) }
     single<AddPaymentTokenUseCase> { AddPaymentTokenUseCase(get()) }
     single<ConnectPaymentUseCase> { ConnectPaymentUseCase(get(), get(), get(), get(), get()) }
     single<ConnectPayoutUseCase> { ConnectPayoutUseCase(get(), get()) }

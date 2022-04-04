@@ -7,18 +7,29 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.app.R
 import com.hedvig.app.databinding.PromotionCodeDialogBinding
+import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.extensions.compatDrawable
 import com.hedvig.app.util.extensions.hideKeyboard
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 abstract class RedeemCodeBottomSheet : BottomSheetDialogFragment() {
-    private val model: RedeemCodeViewModel by viewModel()
+
+    abstract val quoteCartId: QuoteCartId?
+
+    private val model: RedeemCodeViewModel by viewModel {
+        parametersOf(quoteCartId)
+    }
+
     private val binding by viewBinding(PromotionCodeDialogBinding::bind)
 
     abstract fun onRedeemSuccess(data: RedeemReferralCodeMutation.Data)
@@ -48,11 +59,17 @@ abstract class RedeemCodeBottomSheet : BottomSheetDialogFragment() {
                     false
                 }
             }
-            model.redeemCodeStatus.observe(viewLifecycleOwner) { data ->
-                data?.let {
+            model.viewState.onEach { state ->
+                state.errorMessage?.let {
+                    wrongPromotionCode(it)
+                }
+                state.data?.let {
                     onRedeemSuccess(it)
-                } ?: wrongPromotionCode()
-            }
+                }
+                state.quoteCartId?.let {
+                    dismiss()
+                }
+            }.launchIn(lifecycleScope)
         }
     }
 
@@ -60,8 +77,8 @@ abstract class RedeemCodeBottomSheet : BottomSheetDialogFragment() {
         model.redeemReferralCode(code)
     }
 
-    private fun wrongPromotionCode() {
+    private fun wrongPromotionCode(errorMessage: String) {
         binding.textField.errorIconDrawable = requireContext().compatDrawable(R.drawable.ic_warning_triangle)
-        binding.textField.error = getString(R.string.offer_discount_error_alert_title)
+        binding.textField.error = errorMessage ?: getString(R.string.offer_discount_error_alert_title)
     }
 }
