@@ -8,7 +8,7 @@ class DevFeatureFlagProvider(
 ) : FeatureFlagProvider {
 
     override suspend fun isFeatureEnabled(feature: Feature) = when (feature) {
-        Feature.EXTERNAL_DATA_COLLECTION -> false
+        Feature.EXTERNAL_DATA_COLLECTION -> marketManager.market == Market.SE
         Feature.FRANCE_MARKET -> true
         Feature.KEY_GEAR -> false
         Feature.MOVING_FLOW -> true
