@@ -6,9 +6,7 @@ import com.hedvig.app.feature.embark.passages.externalinsurer.ExternalInsurerVie
 import com.hedvig.app.feature.embark.passages.externalinsurer.GetInsuranceProvidersUseCase
 import com.hedvig.app.feature.embark.passages.externalinsurer.InsuranceProvider
 import com.hedvig.app.feature.embark.passages.externalinsurer.InsuranceProvidersResult
-import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.util.coroutines.StandardTestDispatcherAsMainDispatcherRule
-import com.hedvig.app.util.featureflags.FakeFeatureManager
 import com.hedvig.app.util.featureflags.FeatureManager
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -32,7 +30,7 @@ class ExternalInsurerViewModelTest {
     val standardTestDispatcherAsMainDispatcherRule = StandardTestDispatcherAsMainDispatcherRule()
 
     private val getInsuranceProvidersUseCase = mockk<GetInsuranceProvidersUseCase>()
-    private val fakeFeatureManager: FeatureManager = FakeFeatureManager(market = Market.SE)
+    private val fakeFeatureManager = mockk<FeatureManager>(relaxed = true)
 
     @Test
     fun testLoadingInsurers() = runTest {
