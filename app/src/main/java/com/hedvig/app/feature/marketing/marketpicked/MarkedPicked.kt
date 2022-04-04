@@ -49,7 +49,7 @@ fun MarketPickedScreen(
         ) {
             Image(
                 painter = painterResource(data.selectedMarket.flag),
-                contentDescription = null, // TODO: Content Description?
+                contentDescription = null,
             )
         }
         Image(
