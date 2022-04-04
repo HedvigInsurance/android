@@ -56,7 +56,7 @@ fun OfferQuery.Data.toOfferModel() = OfferModel(
 
 fun QuoteCartFragment.toOfferModel() = OfferModel(
     id = QuoteCartId(id),
-    quoteBundle = bundle!!.fragments.quoteBundleFragment.toQuoteBundle(id),
+    quoteBundle = bundle!!.fragments.quoteBundleFragment.toQuoteBundle(QuoteCartId(id)),
     checkoutMethod = checkoutMethods.map { it.toCheckoutMethod() }.first(),
     checkoutLabel = checkoutLabel(),
     campaign = campaign?.toCampaign(),
