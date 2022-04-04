@@ -174,7 +174,7 @@ class MarketingViewModel(
                 return@launch
             }
             updateApplicationLanguageUseCase.invoke(market, language)
-            featureManager
+            featureManager.invalidateExperiments()
             _state.value = MarketPicked.Loading
             loadMarketPicked()
         }
