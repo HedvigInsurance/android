@@ -3,9 +3,9 @@ package com.hedvig.app.feature.marketing
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
-import com.hedvig.android.owldroid.type.UserInterfaceStyle
 import com.hedvig.app.feature.marketing.data.GetInitialMarketPickerValuesUseCase
 import com.hedvig.app.feature.marketing.data.GetMarketingBackgroundUseCase
+import com.hedvig.app.feature.marketing.data.MarketingBackground
 import com.hedvig.app.feature.marketing.data.SubmitMarketAndLanguagePreferencesUseCase
 import com.hedvig.app.feature.marketing.data.UpdateApplicationLanguageUseCase
 import com.hedvig.app.feature.settings.Language
@@ -39,7 +39,7 @@ class MarketingViewModel(
     )
     val state = _state.asStateFlow()
 
-    private val _background = MutableStateFlow<Background>(Background.Loading)
+    private val _background = MutableStateFlow(Background(data = null))
     val background = _background.asStateFlow()
 
     init {
@@ -50,18 +50,8 @@ class MarketingViewModel(
                 loadMarketPicker()
             }
 
-            getMarketingBackgroundUseCase.invoke().tap {
-                safeLet(it?.blurhash, it?.image?.url, it?.userInterfaceStyle) { blurHash, url, userInterfaceStyle ->
-                    _background.value = Background.Loaded(
-                        url = url,
-                        blurHash = blurHash,
-                        theme = when (userInterfaceStyle) {
-                            UserInterfaceStyle.LIGHT -> Background.Theme.LIGHT
-                            UserInterfaceStyle.DARK -> Background.Theme.DARK
-                            else -> Background.Theme.DARK
-                        }
-                    )
-                }
+            getMarketingBackgroundUseCase.invoke().tap { bg ->
+                _background.value = Background(data = bg)
             }
         }
     }
@@ -135,27 +125,13 @@ class MarketingViewModel(
 
     private fun languageFromState(state: PickMarket): Language? {
         val market = state.market ?: return state.language
-        val language = state.language ?: return defaultLanguage(market)
+        val language = state.language ?: return market.defaultLanguage()
 
-        if (!isCompatibleLanguage(language, market)) {
-            return defaultLanguage(market)
+        if (market.isCompatible(language)) {
+            return market.defaultLanguage()
         }
 
         return language
-    }
-
-    private fun isCompatibleLanguage(language: Language, market: Market) = when (market) {
-        Market.SE -> language == Language.EN_SE || language == Language.SV_SE
-        Market.NO -> language == Language.EN_NO || language == Language.NB_NO
-        Market.DK -> language == Language.EN_DK || language == Language.DA_DK
-        Market.FR -> language == Language.EN_FR || language == Language.FR_FR
-    }
-
-    private fun defaultLanguage(market: Market) = when (market) {
-        Market.SE -> Language.EN_SE
-        Market.NO -> Language.EN_NO
-        Market.DK -> Language.EN_DK
-        Market.FR -> Language.EN_FR
     }
 
     fun submitMarketAndLanguage() {
@@ -169,14 +145,17 @@ class MarketingViewModel(
         viewModelScope.launch {
             val result = submitMarketAndLanguagePreferencesUseCase
                 .invoke(language, market)
-            if (result.isLeft()) {
-                updateMarketPickerState { it.copy(isLoading = false) }
-                return@launch
+            when (result) {
+                is Either.Left -> {
+                    updateMarketPickerState { it.copy(isLoading = false) }
+                }
+                is Either.Right -> {
+                    updateApplicationLanguageUseCase.invoke(market, language)
+                    featureManager.invalidateExperiments()
+                    _state.value = MarketPicked.Loading
+                    loadMarketPicked()
+                }
             }
-            updateApplicationLanguageUseCase.invoke(market, language)
-            featureManager.invalidateExperiments()
-            _state.value = MarketPicked.Loading
-            loadMarketPicked()
         }
     }
 
@@ -225,16 +204,6 @@ sealed interface MarketPicked : ViewState {
     ) : MarketPicked
 }
 
-sealed interface Background {
-    object Loading : Background
-    data class Loaded(
-        val url: String,
-        val blurHash: String,
-        val theme: Theme,
-    ) : Background
-
-    enum class Theme {
-        LIGHT,
-        DARK;
-    }
-}
+data class Background(
+    val data: MarketingBackground?
+)

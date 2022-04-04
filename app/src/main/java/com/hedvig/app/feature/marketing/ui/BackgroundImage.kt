@@ -13,17 +13,18 @@ import coil.compose.rememberImagePainter
 import coil.size.Scale
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.hedvig.app.feature.marketing.Background
+import com.hedvig.app.feature.marketing.data.MarketingBackground
 import com.hedvig.app.util.compose.rememberBlurHash
 
 @Composable
 fun BackgroundImage(background: Background, content: @Composable BoxScope.() -> Unit) {
     Box(modifier = Modifier.fillMaxSize()) {
-        (background as? Background.Loaded)?.let { bg ->
+        background.data?.let { bg ->
             val systemUiController = rememberSystemUiController()
             SideEffect {
                 systemUiController.statusBarDarkContentEnabled = when (bg.theme) {
-                    Background.Theme.LIGHT -> false
-                    Background.Theme.DARK -> true
+                    MarketingBackground.Theme.LIGHT -> false
+                    MarketingBackground.Theme.DARK -> true
                 }
             }
             val placeholder by rememberBlurHash(bg.blurHash, 32, 32)
