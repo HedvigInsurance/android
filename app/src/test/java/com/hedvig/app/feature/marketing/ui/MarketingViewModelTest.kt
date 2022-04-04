@@ -21,6 +21,7 @@ import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.coroutines.StandardTestDispatcherAsMainDispatcherRule
+import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.hanalytics.HAnalytics
 import io.mockk.coEvery
 import io.mockk.every
@@ -43,6 +44,7 @@ class MarketingViewModelTest {
         getMarketingBackgroundUseCase: GetMarketingBackgroundUseCase = mockk(relaxed = true),
         updateApplicationLanguageUseCase: UpdateApplicationLanguageUseCase = mockk(relaxed = true),
         getInitialMarketPickerValuesUseCase: GetInitialMarketPickerValuesUseCase = mockk(relaxed = true),
+        featureManager: FeatureManager = mockk(relaxed = true)
     ) = MarketingViewModel(
         marketManager = marketManager,
         hAnalytics = hAnalytics,
@@ -50,6 +52,7 @@ class MarketingViewModelTest {
         getMarketingBackgroundUseCase = getMarketingBackgroundUseCase,
         updateApplicationLanguageUseCase = updateApplicationLanguageUseCase,
         getInitialMarketPickerValuesUseCase = getInitialMarketPickerValuesUseCase,
+        featureManager = featureManager,
     )
 
     @Test

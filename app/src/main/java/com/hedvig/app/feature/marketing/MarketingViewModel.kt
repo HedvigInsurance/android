@@ -11,6 +11,8 @@ import com.hedvig.app.feature.marketing.data.UpdateApplicationLanguageUseCase
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.util.featureflags.FeatureManager
+import com.hedvig.app.util.featureflags.flags.Feature
 import com.hedvig.app.util.safeLet
 import com.hedvig.hanalytics.HAnalytics
 import com.hedvig.hanalytics.LoginMethod
@@ -26,6 +28,7 @@ class MarketingViewModel(
     private val getMarketingBackgroundUseCase: GetMarketingBackgroundUseCase,
     private val updateApplicationLanguageUseCase: UpdateApplicationLanguageUseCase,
     private val getInitialMarketPickerValuesUseCase: GetInitialMarketPickerValuesUseCase,
+    private val featureManager: FeatureManager,
 ) : ViewModel() {
     private val _state = MutableStateFlow(
         if (marketManager.hasSelectedMarket) {
@@ -67,7 +70,7 @@ class MarketingViewModel(
         val market = marketManager.market ?: throw IllegalStateException("Market cannot be null when loaded")
         _state.value = MarketPicked.Loaded(
             selectedMarket = market,
-            loginMethod = hAnalytics.loginMethod(),
+            loginMethod = featureManager.getLoginMethod(),
         )
     }
 
@@ -76,7 +79,7 @@ class MarketingViewModel(
             Market.SE,
             Market.NO,
             Market.DK,
-            if (hAnalytics.frenchMarket()) {
+            if (featureManager.isFeatureEnabled(Feature.FRANCE_MARKET)) {
                 Market.FR
             } else {
                 null
@@ -171,7 +174,7 @@ class MarketingViewModel(
                 return@launch
             }
             updateApplicationLanguageUseCase.invoke(market, language)
-            hAnalytics.invalidateExperiments()
+            featureManager
             _state.value = MarketPicked.Loading
             loadMarketPicked()
         }

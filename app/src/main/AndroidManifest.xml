@@ -319,8 +319,7 @@
         <activity android:name=".feature.tracking.NotificationOpenedTrackingActivity" />
         <activity
             android:name=".feature.marketing.MarketingActivity"
-            android:theme="@style/Hedvig.Theme.Marketing"
-            android:exported="true" /> <!-- TODO: Remove this export -->
+            android:theme="@style/Hedvig.Theme.Marketing" />
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"

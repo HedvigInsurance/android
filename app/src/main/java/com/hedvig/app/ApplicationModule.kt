@@ -436,7 +436,7 @@ val viewModelModule = module {
     viewModel { CharityViewModel(get()) }
     viewModel { MyInfoViewModel(get()) }
     viewModel { AboutAppViewModel(get()) }
-    viewModel { MarketingViewModel(get(), get(), get(), get(), get(), get()) }
+    viewModel { MarketingViewModel(get(), get(), get(), get(), get(), get(), get()) }
 }
 
 val choosePlanModule = module {

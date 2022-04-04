@@ -9,13 +9,14 @@ import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
-import com.hedvig.hanalytics.HAnalytics
+import com.hedvig.app.util.featureflags.FeatureManager
+import com.hedvig.app.util.featureflags.flags.Feature
 
 class GetInitialMarketPickerValuesUseCase(
     private val marketManager: MarketManager,
     private val context: Context,
     private val apolloClient: ApolloClient,
-    private val hAnalytics: HAnalytics,
+    private val featureManager: FeatureManager,
 ) {
     suspend operator fun invoke(): Either<QueryResult.Error, Pair<Market?, Language?>> {
         val currentMarket = marketManager.market
@@ -30,7 +31,7 @@ class GetInitialMarketPickerValuesUseCase(
             .toEither()
             .map { runCatching { Market.valueOf(it.geo.countryISOCode) }.getOrNull() }
             .map { market ->
-                if (market == Market.FR && !hAnalytics.frenchMarket()) {
+                if (market == Market.FR && !featureManager.isFeatureEnabled(Feature.FRANCE_MARKET)) {
                     null to null
                 } else {
                     market to null
