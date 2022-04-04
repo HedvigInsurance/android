@@ -585,7 +585,7 @@ val retrievePriceModule = module {
 }
 
 val externalInsuranceModule = module {
-    viewModel { ExternalInsurerViewModel(get()) }
+    viewModel { ExternalInsurerViewModel(get(), get()) }
 }
 
 val insurelyAuthModule = module {
