@@ -15,7 +15,6 @@ import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToData
 import com.hedvig.app.util.minus
 import javax.money.MonetaryAmount
 
-@OptIn(ExperimentalStdlibApi::class)
 object OfferItemsBuilder {
     fun createTopOfferItems(
         offerModel: OfferModel,
