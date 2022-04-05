@@ -37,7 +37,7 @@ class CheckoutViewModel(
     private val quoteIds: List<String>,
     private val quoteCartId: QuoteCartId?,
     private val signQuotesUseCase: SignQuotesUseCase,
-    private val editQuotesUseCase: EditQuotesUseCase,
+    private val editQuotesUseCase: EditCheckoutUseCase,
     private val createAccessTokenUseCase: CreateAccessTokenUseCase,
     private val marketManager: MarketManager,
     private val loginStatusService: LoginStatusService,
@@ -90,7 +90,7 @@ class CheckoutViewModel(
             Checkout.CheckoutStatus.COMPLETED -> _events.trySend(onSignSuccess())
             Checkout.CheckoutStatus.FAILED,
             Checkout.CheckoutStatus.UNKNOWN -> _events.trySend(Event.Error(checkout.statusText))
-            null -> _events.trySend(Event.Error("No checkout found!"))
+            null -> {}
         }
     }
 

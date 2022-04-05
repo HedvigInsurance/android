@@ -24,7 +24,7 @@ import kotlinx.serialization.json.putJsonObject
 import org.json.JSONException
 import org.json.JSONObject
 
-class EditQuotesUseCase(
+class EditCheckoutUseCase(
     private val apolloClient: ApolloClient,
     private val featureManager: FeatureManager,
     private val localeManager: LocaleManager,

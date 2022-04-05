@@ -63,7 +63,7 @@ class OfferRepository(
     }
 
     suspend fun queryAndEmitOffer(quoteCartId: QuoteCartId?, quoteIds: List<String>) {
-        val offer = if (featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
+        val offer = if (quoteCartId != null) {
             queryQuoteCart(quoteCartId)
         } else {
             queryOffer(quoteIds)
@@ -71,11 +71,11 @@ class OfferRepository(
         offerFlow.tryEmit(offer)
     }
 
-    private suspend fun queryQuoteCart(quoteCartId: QuoteCartId?): Either<ErrorMessage, OfferModel> = either {
-        ensureNotNull(quoteCartId) { ErrorMessage("No quote cart id found") }
-
+    private suspend fun queryQuoteCart(
+        id: QuoteCartId
+    ): Either<ErrorMessage, OfferModel> = either {
         val result = apolloClient
-            .query(QuoteCartQuery(localeManager.defaultLocale(), quoteCartId.id))
+            .query(QuoteCartQuery(localeManager.defaultLocale(), id.id))
             .toBuilder()
             .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
             .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)

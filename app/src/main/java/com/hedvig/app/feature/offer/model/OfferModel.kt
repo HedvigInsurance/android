@@ -36,8 +36,8 @@ fun OfferModel.paymentApiResponseOrNull(): PaymentMethodsApiResponse? {
 }
 
 fun OfferQuery.Data.toOfferModel() = OfferModel(
+    quoteBundle = quoteBundle.fragments.quoteBundleFragment.toQuoteBundle(null),
     id = null,
-    quoteBundle = quoteBundle.fragments.quoteBundleFragment.toQuoteBundle(),
     checkoutMethod = signMethodForQuotes.toCheckoutMethod(),
     checkoutLabel = checkoutLabel(),
     campaign = Campaign(
@@ -56,7 +56,7 @@ fun OfferQuery.Data.toOfferModel() = OfferModel(
 
 fun QuoteCartFragment.toOfferModel() = OfferModel(
     id = QuoteCartId(id),
-    quoteBundle = bundle!!.fragments.quoteBundleFragment.toQuoteBundle(),
+    quoteBundle = bundle!!.fragments.quoteBundleFragment.toQuoteBundle(QuoteCartId(id)),
     checkoutMethod = checkoutMethods.map { it.toCheckoutMethod() }.first(),
     checkoutLabel = checkoutLabel(),
     campaign = campaign?.toCampaign(),
