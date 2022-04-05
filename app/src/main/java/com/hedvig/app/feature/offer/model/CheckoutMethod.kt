@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.offer.model.quotebundle
+package com.hedvig.app.feature.offer.model
 
 import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.R

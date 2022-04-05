@@ -1,6 +1,10 @@
 package com.hedvig.app.feature.offer
 
-import arrow.core.NonEmptyList
+import arrow.core.Either
+import arrow.core.computations.either
+import arrow.core.computations.ensureNotNull
+import arrow.core.left
+import arrow.core.right
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.api.cache.http.HttpCachePolicy
@@ -11,42 +15,38 @@ import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.QuoteBundleFragment
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.QuoteCartQuery
-import com.hedvig.android.owldroid.graphql.QuoteCartSubscription
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.RemoveDiscountCodeMutation
 import com.hedvig.app.feature.offer.model.OfferModel
+import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.model.toOfferModel
+import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.LocaleManager
-import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
-import com.hedvig.app.util.apollo.safeSubscription
 import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
 
 class OfferRepository(
     private val apolloClient: ApolloClient,
     private val localeManager: LocaleManager,
     private val featureManager: FeatureManager,
 ) {
+
+    private val offerFlow = MutableSharedFlow<Either<ErrorMessage, OfferModel>>(1)
+
     fun offerQuery(ids: List<String>) = OfferQuery(localeManager.defaultLocale(), ids)
 
-    fun offer(ids: NonEmptyList<String>): Flow<OfferResult> {
+    suspend fun getQuoteIds(quoteCartId: QuoteCartId): Either<ErrorMessage, List<String>> = queryQuoteCart(quoteCartId)
+        .map { it.quoteBundle.quotes }
+        .map { quotes -> quotes.map { it.id } }
+
+    fun offerFlow(ids: List<String>): Flow<Either<ErrorMessage, OfferModel>> {
         return if (featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
-            val subscription = QuoteCartSubscription(localeManager.defaultLocale(), ids.first())
-            apolloClient.subscribe(subscription)
-                .safeSubscription()
-                .map { it.toResult() }
-                .onStart {
-                    val query = QuoteCartQuery(localeManager.defaultLocale(), ids.first())
-                    val result = apolloClient
-                        .query(query)
-                        .safeQuery()
-                        .toOfferResult()
-                    emit(result)
-                }
+            offerFlow.asSharedFlow()
         } else {
             apolloClient
                 .query(offerQuery(ids))
@@ -56,28 +56,54 @@ class OfferRepository(
         }
     }
 
-    sealed class OfferResult {
-        data class Error(val message: String? = null) : OfferResult()
-        data class Success(val data: OfferModel) : OfferResult()
+    private fun Response<OfferQuery.Data>.toResult(): Either<ErrorMessage, OfferModel> = when {
+        errors != null -> ErrorMessage(errors!!.firstOrNull()?.message).left()
+        data == null -> ErrorMessage().left()
+        else -> data!!.toOfferModel().right()
     }
 
-    private fun Response<OfferQuery.Data>.toResult(): OfferResult = when {
-        errors != null -> OfferResult.Error(errors!!.firstOrNull()?.message)
-        data == null -> OfferResult.Error()
-        else -> OfferResult.Success(data!!.toOfferModel())
+    suspend fun queryAndEmitOffer(quoteCartId: QuoteCartId?, quoteIds: List<String>) {
+        val offer = if (quoteCartId != null) {
+            queryQuoteCart(quoteCartId)
+        } else {
+            queryOffer(quoteIds)
+        }
+        offerFlow.tryEmit(offer)
     }
 
-    private fun QueryResult<QuoteCartSubscription.Data>.toResult(): OfferResult = when (this) {
-        is QueryResult.Error -> OfferResult.Error(message)
-        is QueryResult.Success -> data.quoteCart?.fragments?.quoteCartFragment?.toOfferModel()
-            ?.let { OfferResult.Success(it) }
-            ?: OfferResult.Error()
+    private suspend fun queryQuoteCart(
+        id: QuoteCartId
+    ): Either<ErrorMessage, OfferModel> = either {
+        val result = apolloClient
+            .query(QuoteCartQuery(localeManager.defaultLocale(), id.id))
+            .toBuilder()
+            .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
+            .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
+            .build()
+            .safeQuery()
+            .toEither { ErrorMessage(it) }
+            .bind()
+
+        ensureNotNull(result.quoteCart.fragments.quoteCartFragment.bundle) {
+            ErrorMessage("No quotes in offer, please try again")
+        }
+
+        result.quoteCart.fragments.quoteCartFragment.toOfferModel()
     }
 
-    private fun QueryResult<QuoteCartQuery.Data>.toOfferResult(): OfferResult = when (this) {
-        is QueryResult.Error -> OfferResult.Error(message)
-        is QueryResult.Success -> data.quoteCart.fragments.quoteCartFragment.toOfferModel()
-            .let { OfferResult.Success(it) }
+    private suspend fun queryOffer(ids: List<String>): Either<ErrorMessage, OfferModel> = either {
+        ensure(ids.isNotEmpty()) { ErrorMessage("No quote ids found") }
+
+        apolloClient
+            .query(offerQuery(ids))
+            .toBuilder()
+            .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
+            .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
+            .build()
+            .safeQuery()
+            .toEither { ErrorMessage(it) }
+            .bind()
+            .toOfferModel()
     }
 
     fun writeDiscountToCache(ids: List<String>, data: RedeemReferralCodeMutation.Data) {
@@ -168,11 +194,4 @@ class OfferRepository(
             .writeAndPublish(offerQuery(ids), newData)
             .execute()
     }
-
-    fun refreshOfferQuery(ids: List<String>) = apolloClient
-        .query(offerQuery(ids))
-        .toBuilder()
-        .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
-        .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
-        .build()
 }

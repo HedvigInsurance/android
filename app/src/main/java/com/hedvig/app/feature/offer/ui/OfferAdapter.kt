@@ -37,8 +37,8 @@ import com.hedvig.app.databinding.TextSubtitle1Binding
 import com.hedvig.app.databinding.WarningCardBinding
 import com.hedvig.app.feature.faq.FAQBottomSheet
 import com.hedvig.app.feature.offer.OfferRedeemCodeBottomSheet
-import com.hedvig.app.feature.offer.model.quotebundle.CheckoutMethod
-import com.hedvig.app.feature.offer.model.quotebundle.checkoutIconRes
+import com.hedvig.app.feature.offer.model.CheckoutMethod
+import com.hedvig.app.feature.offer.model.checkoutIconRes
 import com.hedvig.app.feature.offer.model.quotebundle.getString
 import com.hedvig.app.feature.offer.model.quotebundle.toDrawable
 import com.hedvig.app.feature.offer.model.quotebundle.toString
@@ -186,7 +186,7 @@ class OfferAdapter(
                             setTextColor(context.getColor(R.color.textColorSecondary))
                             icon = context.compatDrawable(R.drawable.ic_add_circle)
                             setHapticClickListener {
-                                OfferRedeemCodeBottomSheet.newInstance()
+                                OfferRedeemCodeBottomSheet.newInstance(data.quoteCartId)
                                     .show(
                                         fragmentManager,
                                         OfferRedeemCodeBottomSheet.TAG

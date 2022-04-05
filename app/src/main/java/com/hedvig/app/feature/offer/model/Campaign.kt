@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.offer.model.quotebundle
+package com.hedvig.app.feature.offer.model
 
 import com.hedvig.android.owldroid.fragment.IncentiveFragment
 import com.hedvig.android.owldroid.fragment.QuoteCartFragment

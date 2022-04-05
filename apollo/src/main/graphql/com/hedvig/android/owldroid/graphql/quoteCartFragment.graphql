@@ -1,8 +1,25 @@
 fragment QuoteCartFragment on QuoteCart {
+  id
   bundle {
     ...QuoteBundleFragment
   }
   checkoutMethods
+  checkout {
+    statusText
+    status
+    redirectUrl
+  }
+  paymentConnection {
+    id
+    providers {
+      ... on Adyen {
+        availablePaymentMethods
+      }
+      ... on Trustly {
+        blank: _
+      }
+    }
+  }
   campaign {
     displayValue(locale: $locale)
     incentive {
