@@ -60,7 +60,7 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
                             title = getString(R.string.error_dialog_title),
                             message = viewState.message ?: getString(R.string.component_error),
                             positiveLabel = R.string.insurances_tab_error_button_text,
-                            positiveAction = { changeDateBottomSheetViewModel.onDialogConfirmed() }
+                            positiveAction = { changeDateBottomSheetViewModel.setNewDateAndDismiss() }
                         )
                     }
                     is ChangeDateBottomSheetViewModel.ViewState.Loading -> {

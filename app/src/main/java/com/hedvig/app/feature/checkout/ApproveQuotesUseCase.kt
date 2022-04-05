@@ -1,45 +1,72 @@
 package com.hedvig.app.feature.checkout
 
+import arrow.core.Either
+import arrow.core.computations.either
+import arrow.core.computations.ensureNotNull
+import arrow.core.flatMap
+import arrow.core.left
+import arrow.core.right
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.SignQuotesMutation
 import com.hedvig.app.feature.offer.OfferRepository
+import com.hedvig.app.feature.offer.model.quotebundle.PostSignScreen
 import com.hedvig.app.util.apollo.CacheManager
-import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
+import kotlinx.coroutines.flow.firstOrNull
 import java.time.LocalDate
 
 class ApproveQuotesUseCase(
     private val apolloClient: ApolloClient,
     private val offerRepository: OfferRepository,
-    private val cacheManager: CacheManager
+    private val cacheManager: CacheManager,
 ) {
 
-    sealed class ApproveQuotesResult {
-        data class Success(val date: LocalDate?) : ApproveQuotesResult()
-        sealed class Error : ApproveQuotesResult() {
-            data class GeneralError(val message: String? = null) : Error()
-            object ApproveError : Error()
-        }
+    data class ApproveSuccess(
+        val date: LocalDate?,
+        val postSignScreen: PostSignScreen,
+        val bundleName: String
+    )
+
+    sealed class Error {
+        data class GeneralError(val message: String? = null) : Error()
+        data class ApproveError(val postSignScreen: PostSignScreen) : Error()
     }
 
-    suspend fun approveQuotesAndClearCache(quoteIds: List<String>): ApproveQuotesResult {
-        val mutation = SignQuotesMutation(quoteIds)
-        return when (val result = apolloClient.mutate(mutation).safeQuery()) {
-            is QueryResult.Error -> ApproveQuotesResult.Error.GeneralError(result.message)
-            is QueryResult.Success -> {
-                val approveResponseResponse = result.data?.signOrApproveQuotes?.asApproveQuoteResponse
-                approveResponseResponse?.approved?.let { approved ->
-                    if (approved) {
-                        val startDate = readCachedStartDate(quoteIds)
-                        cacheManager.clearCache()
-                        ApproveQuotesResult.Success(startDate)
-                    } else {
-                        ApproveQuotesResult.Error.ApproveError
-                    }
-                } ?: ApproveQuotesResult.Error.GeneralError()
-            }
-        }
+    suspend fun approveQuotesAndClearCache(quoteIds: List<String>): Either<Error, ApproveSuccess> = either {
+        val offerModel = offerRepository.offerFlow(quoteIds)
+            .firstOrNull()
+            ?.mapLeft { Error.GeneralError("Could not get Quote") }
+            ?.bind()
+
+        ensureNotNull(offerModel) { Error.GeneralError("No Offer found") }
+
+        val date = signQuotes(quoteIds, offerModel.quoteBundle.viewConfiguration.postSignScreen).bind()
+
+        ApproveSuccess(
+            date = date,
+            postSignScreen = offerModel.quoteBundle.viewConfiguration.postSignScreen,
+            bundleName = offerModel.quoteBundle.name
+        )
     }
+
+    private suspend fun signQuotes(
+        quoteIds: List<String>,
+        postSignScreen: PostSignScreen
+    ): Either<Error, LocalDate?> = apolloClient
+        .mutate(SignQuotesMutation(quoteIds))
+        .safeQuery()
+        .toEither { Error.GeneralError(it) }
+        .flatMap {
+            it.signOrApproveQuotes.asApproveQuoteResponse?.approved?.let { approved ->
+                if (approved) {
+                    val startDate = readCachedStartDate(quoteIds)
+                    cacheManager.clearCache()
+                    startDate.right()
+                } else {
+                    Error.ApproveError(postSignScreen).left()
+                }
+            } ?: Error.GeneralError().left()
+        }
 
     private fun readCachedStartDate(quoteIds: List<String>): LocalDate? {
         val cachedData = apolloClient

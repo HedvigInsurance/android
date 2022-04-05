@@ -7,8 +7,6 @@ import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.coroutines.await
 import com.hedvig.android.owldroid.graphql.AdyenPaymentMethodsQuery
 import com.hedvig.android.owldroid.graphql.AdyenPayoutMethodsQuery
-import com.hedvig.android.owldroid.graphql.SubmitAdditionalPaymentDetailsMutation
-import com.hedvig.android.owldroid.graphql.TokenizePaymentDetailsMutation
 import com.hedvig.android.owldroid.graphql.TokenizePayoutDetailsMutation
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.app.util.featureflags.flags.Feature
@@ -19,21 +17,13 @@ class AdyenRepository(
     private val context: Context,
     private val featureManager: FeatureManager,
 ) {
+
     suspend fun paymentMethods() = apolloClient
         .query(AdyenPaymentMethodsQuery())
         .await()
 
     suspend fun payoutMethods() = apolloClient
         .query(AdyenPayoutMethodsQuery())
-        .await()
-
-    suspend fun tokenizePaymentDetails(data: JSONObject) = apolloClient
-        .mutate(
-            TokenizePaymentDetailsMutation(
-                data.getJSONObject("paymentMethod").toString(),
-                RedirectComponent.getReturnUrl(context)
-            )
-        )
         .await()
 
     suspend fun tokenizePayoutDetails(data: JSONObject) = apolloClient
@@ -43,10 +33,6 @@ class AdyenRepository(
                 RedirectComponent.getReturnUrl(context)
             )
         )
-        .await()
-
-    suspend fun submitAdditionalPaymentDetails(data: JSONObject) = apolloClient
-        .mutate(SubmitAdditionalPaymentDetailsMutation(data.toString()))
         .await()
 
     suspend fun paymentMethodsResponse(): PaymentMethodsApiResponse? {

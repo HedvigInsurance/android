@@ -1,5 +1,10 @@
 package com.hedvig.app.feature.embark.redirect
 
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onChildren
+import androidx.compose.ui.test.onFirst
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.feature.embark.screens.EmbarkScreen
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
@@ -21,6 +26,9 @@ class OfferRedirectTest : TestCase() {
     val activityRule = LazyIntentsActivityScenarioRule(EmbarkActivity::class.java)
 
     @get:Rule
+    val compose = createComposeRule()
+
+    @get:Rule
     val apolloMockServerRule = ApolloMockServerRule(
         EmbarkStoryQuery.QUERY_DOCUMENT to apolloResponse { success(STORY_WITH_OFFER_REDIRECT) }
     )
@@ -37,7 +45,11 @@ class OfferRedirectTest : TestCase() {
 
         onScreen<EmbarkScreen> {
             offerActivityIntent { stub() }
-            selectActions { childAt<EmbarkScreen.SelectAction>(0) { click() } }
+            compose
+                .onNodeWithTag("SelectActionGrid")
+                .onChildren()
+                .onFirst()
+                .performClick()
             flakySafely { offerActivityIntent { intended() } }
         }
     }
