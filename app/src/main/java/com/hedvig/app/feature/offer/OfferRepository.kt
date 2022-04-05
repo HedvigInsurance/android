@@ -23,12 +23,13 @@ import com.hedvig.app.feature.offer.model.toOfferModel
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.safeQuery
-import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.app.util.featureflags.flags.Feature
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 class OfferRepository(
@@ -46,14 +47,18 @@ class OfferRepository(
         .map { quotes -> quotes.map { it.id } }
 
     fun offerFlow(ids: List<String>): Flow<Either<ErrorMessage, OfferModel>> {
-        return if (featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
-            offerFlow.asSharedFlow()
-        } else {
-            apolloClient
-                .query(offerQuery(ids))
-                .watcher()
-                .toFlow()
-                .map { it.toResult() }
+        return flow {
+            if (featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
+                emitAll(offerFlow.asSharedFlow())
+            } else {
+                emitAll(
+                    apolloClient
+                        .query(offerQuery(ids))
+                        .watcher()
+                        .toFlow()
+                        .map { it.toResult() }
+                )
+            }
         }
     }
 
@@ -73,7 +78,7 @@ class OfferRepository(
     }
 
     private suspend fun queryQuoteCart(
-        id: QuoteCartId
+        id: QuoteCartId,
     ): Either<ErrorMessage, OfferModel> = either {
         val result = apolloClient
             .query(QuoteCartQuery(localeManager.defaultLocale(), id.id))

@@ -389,7 +389,6 @@ val viewModelModule = module {
     viewModel { ChatViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel { (quoteCartId: QuoteCartId?) -> RedeemCodeViewModel(quoteCartId, get(), get()) }
     viewModel { UserViewModel(get(), get(), get(), get(), get(), get()) }
-    viewModel { RedeemCodeViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
     viewModel { SettingsViewModel(get(), get()) }
     viewModel { DatePickerViewModel() }
