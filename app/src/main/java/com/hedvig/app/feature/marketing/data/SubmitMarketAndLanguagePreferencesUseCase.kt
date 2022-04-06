@@ -26,4 +26,5 @@ class SubmitMarketAndLanguagePreferencesUseCase(
         .safeQuery()
         .toEither()
         .tap { marketManager.hasSelectedMarket = true }
+        .map { }
 }

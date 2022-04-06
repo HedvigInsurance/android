@@ -217,8 +217,12 @@ class MarketingViewModelTest {
             val marketManager = mockk<MarketManager>()
             every { marketManager.hasSelectedMarket } returns false
 
+            val submitMarketAndLanguagePreferencesUseCase = mockk<SubmitMarketAndLanguagePreferencesUseCase>()
+            coEvery { submitMarketAndLanguagePreferencesUseCase.invoke(any(), any()) } returns Either.Right(Unit)
+
             val model = sut(
                 marketManager = marketManager,
+                submitMarketAndLanguagePreferencesUseCase = submitMarketAndLanguagePreferencesUseCase,
             )
             advanceUntilIdle()
             model.setMarket(Market.SE)

@@ -127,7 +127,7 @@ class MarketingViewModel(
         val market = state.market ?: return state.language
         val language = state.language ?: return market.defaultLanguage()
 
-        if (market.isCompatible(language)) {
+        if (!market.isCompatible(language)) {
             return market.defaultLanguage()
         }
 
