@@ -24,12 +24,7 @@ class OfferDateTest {
             asIndependentInceptions = QuoteBundleFragment.AsIndependentInceptions(
                 inceptions = listOf(
                     QuoteBundleFragment.Inception(
-                        correspondingQuote = QuoteBundleFragment.CorrespondingQuote1(
-                            asCompleteQuote1 = QuoteBundleFragment.AsCompleteQuote1(
-                                displayName = "Test Insurance",
-                                id = "ea656f5f-40b2-4953-85d9-752b33e69e38"
-                            )
-                        ),
+                        correspondingQuoteId = "ea656f5f-40b2-4953-85d9-752b33e69e38",
                         startDate = LocalDate.now(),
                         currentInsurer = QuoteBundleFragment.CurrentInsurer2(
                             fragments = QuoteBundleFragment.CurrentInsurer2.Fragments(
@@ -92,12 +87,7 @@ class OfferDateTest {
             asIndependentInceptions = QuoteBundleFragment.AsIndependentInceptions(
                 inceptions = listOf(
                     QuoteBundleFragment.Inception(
-                        correspondingQuote = QuoteBundleFragment.CorrespondingQuote1(
-                            asCompleteQuote1 = QuoteBundleFragment.AsCompleteQuote1(
-                                displayName = "Test Insurance",
-                                id = "ea656f5f-40b2-4953-85d9-752b33e69e38"
-                            )
-                        ),
+                        correspondingQuoteId = "ea656f5f-40b2-4953-85d9-752b33e69e38",
                         startDate = LocalDate.now(),
                         currentInsurer = QuoteBundleFragment.CurrentInsurer2(
                             fragments = QuoteBundleFragment.CurrentInsurer2.Fragments(
@@ -110,12 +100,7 @@ class OfferDateTest {
                         )
                     ),
                     QuoteBundleFragment.Inception(
-                        correspondingQuote = QuoteBundleFragment.CorrespondingQuote1(
-                            asCompleteQuote1 = QuoteBundleFragment.AsCompleteQuote1(
-                                displayName = "Test Insurance 2",
-                                id = "ea656f5f-40b2-4953-85d9-752b33e69e37"
-                            )
-                        ),
+                        correspondingQuoteId = "ea656f5f-40b2-4953-85d9-752b33e69e37",
                         startDate = LocalDate.now().plusDays(3),
                         currentInsurer = QuoteBundleFragment.CurrentInsurer2(
                             fragments = QuoteBundleFragment.CurrentInsurer2.Fragments(
@@ -128,12 +113,7 @@ class OfferDateTest {
                         )
                     ),
                     QuoteBundleFragment.Inception(
-                        correspondingQuote = QuoteBundleFragment.CorrespondingQuote1(
-                            asCompleteQuote1 = QuoteBundleFragment.AsCompleteQuote1(
-                                displayName = "Test Insurance 3",
-                                id = "ea656f5f-40b2-4953-85d9-752b33e69e36"
-                            )
-                        ),
+                        correspondingQuoteId = "ea656f5f-40b2-4953-85d9-752b33e69e36",
                         startDate = LocalDate.now().plusDays(5),
                         currentInsurer = QuoteBundleFragment.CurrentInsurer2(
                             fragments = QuoteBundleFragment.CurrentInsurer2.Fragments(
@@ -159,12 +139,7 @@ class OfferDateTest {
             asIndependentInceptions = QuoteBundleFragment.AsIndependentInceptions(
                 inceptions = listOf(
                     QuoteBundleFragment.Inception(
-                        correspondingQuote = QuoteBundleFragment.CorrespondingQuote1(
-                            asCompleteQuote1 = QuoteBundleFragment.AsCompleteQuote1(
-                                displayName = "Test Insurance",
-                                id = "ea656f5f-40b2-4953-85d9-752b33e69e38"
-                            )
-                        ),
+                        correspondingQuoteId = "ea656f5f-40b2-4953-85d9-752b33e69e38",
                         startDate = LocalDate.now(),
                         currentInsurer = QuoteBundleFragment.CurrentInsurer2(
                             fragments = QuoteBundleFragment.CurrentInsurer2.Fragments(
@@ -177,12 +152,7 @@ class OfferDateTest {
                         )
                     ),
                     QuoteBundleFragment.Inception(
-                        correspondingQuote = QuoteBundleFragment.CorrespondingQuote1(
-                            asCompleteQuote1 = QuoteBundleFragment.AsCompleteQuote1(
-                                displayName = "Test Insurance 2",
-                                id = "ea656f5f-40b2-4953-85d9-752b33e69e37"
-                            )
-                        ),
+                        correspondingQuoteId = "ea656f5f-40b2-4953-85d9-752b33e69e37",
                         startDate = LocalDate.now().plusDays(3),
                         currentInsurer = QuoteBundleFragment.CurrentInsurer2(
                             fragments = QuoteBundleFragment.CurrentInsurer2.Fragments(
@@ -195,12 +165,7 @@ class OfferDateTest {
                         )
                     ),
                     QuoteBundleFragment.Inception(
-                        correspondingQuote = QuoteBundleFragment.CorrespondingQuote1(
-                            asCompleteQuote1 = QuoteBundleFragment.AsCompleteQuote1(
-                                displayName = "Test Insurance 3",
-                                id = "ea656f5f-40b2-4953-85d9-752b33e69e36"
-                            )
-                        ),
+                        correspondingQuoteId = "ea656f5f-40b2-4953-85d9-752b33e69e36",
                         startDate = LocalDate.now().plusDays(5),
                         currentInsurer = QuoteBundleFragment.CurrentInsurer2(
                             fragments = QuoteBundleFragment.CurrentInsurer2.Fragments(
@@ -226,12 +191,7 @@ class OfferDateTest {
             asIndependentInceptions = QuoteBundleFragment.AsIndependentInceptions(
                 inceptions = listOf(
                     QuoteBundleFragment.Inception(
-                        correspondingQuote = QuoteBundleFragment.CorrespondingQuote1(
-                            asCompleteQuote1 = QuoteBundleFragment.AsCompleteQuote1(
-                                displayName = "Test Insurance",
-                                id = "ea656f5f-40b2-4953-85d9-752b33e69e38"
-                            )
-                        ),
+                        correspondingQuoteId = "ea656f5f-40b2-4953-85d9-752b33e69e38",
                         startDate = null,
                         currentInsurer = QuoteBundleFragment.CurrentInsurer2(
                             fragments = QuoteBundleFragment.CurrentInsurer2.Fragments(
@@ -244,12 +204,7 @@ class OfferDateTest {
                         )
                     ),
                     QuoteBundleFragment.Inception(
-                        correspondingQuote = QuoteBundleFragment.CorrespondingQuote1(
-                            asCompleteQuote1 = QuoteBundleFragment.AsCompleteQuote1(
-                                displayName = "Test Insurance 2",
-                                id = "ea656f5f-40b2-4953-85d9-752b33e69e37"
-                            )
-                        ),
+                        correspondingQuoteId = "ea656f5f-40b2-4953-85d9-752b33e69e37",
                         startDate = null,
                         currentInsurer = QuoteBundleFragment.CurrentInsurer2(
                             fragments = QuoteBundleFragment.CurrentInsurer2.Fragments(
@@ -262,12 +217,7 @@ class OfferDateTest {
                         )
                     ),
                     QuoteBundleFragment.Inception(
-                        correspondingQuote = QuoteBundleFragment.CorrespondingQuote1(
-                            asCompleteQuote1 = QuoteBundleFragment.AsCompleteQuote1(
-                                displayName = "Test Insurance 3",
-                                id = "ea656f5f-40b2-4953-85d9-752b33e69e36"
-                            )
-                        ),
+                        correspondingQuoteId = "ea656f5f-40b2-4953-85d9-752b33e69e36",
                         startDate = null,
                         currentInsurer = QuoteBundleFragment.CurrentInsurer2(
                             fragments = QuoteBundleFragment.CurrentInsurer2.Fragments(

@@ -40,12 +40,7 @@ fragment QuoteBundleFragment on QuoteBundle {
   }
   inception {
     ... on ConcurrentInception {
-      correspondingQuotes {
-        ... on CompleteQuote {
-          id
-          displayName(locale: $locale)
-        }
-      }
+      correspondingQuoteIds
       startDate
       currentInsurer {
         ...CurrentInsurerFragment
@@ -53,12 +48,7 @@ fragment QuoteBundleFragment on QuoteBundle {
     }
     ... on IndependentInceptions {
       inceptions {
-        correspondingQuote {
-          ... on CompleteQuote {
-            id
-            displayName(locale: $locale)
-          }
-        }
+        correspondingQuoteId
         startDate
         currentInsurer {
           ...CurrentInsurerFragment

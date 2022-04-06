@@ -4,7 +4,8 @@ import com.adyen.checkout.components.ActionComponentData
 import com.adyen.checkout.components.PaymentComponentState
 import com.adyen.checkout.dropin.service.DropInService
 import com.adyen.checkout.dropin.service.DropInServiceResult
-import com.hedvig.app.feature.adyen.AdyenRepository
+import com.hedvig.app.feature.adyen.ConnectPaymentUseCase
+import com.hedvig.app.feature.adyen.SubmitAdditionalPaymentDetailsUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -14,7 +15,8 @@ import org.koin.android.ext.android.inject
 import kotlin.coroutines.CoroutineContext
 
 class AdyenPayinDropInService : DropInService(), CoroutineScope {
-    private val adyenRepository: AdyenRepository by inject()
+    private val connectPaymentUseCase: ConnectPaymentUseCase by inject()
+    private val submitAdditionalPaymentDetailsUseCase: SubmitAdditionalPaymentDetailsUseCase by inject()
 
     private val coroutineJob = Job()
     override val coroutineContext: CoroutineContext
@@ -25,31 +27,17 @@ class AdyenPayinDropInService : DropInService(), CoroutineScope {
         // coroutineJob.cancel() // Cannot cancel this job due to https://github.com/Adyen/adyen-android/issues/447
     }
 
-    override fun onDetailsCallRequested(actionComponentData: ActionComponentData, actionComponentJson: JSONObject) {
+    override fun onDetailsCallRequested(
+        actionComponentData: ActionComponentData,
+        actionComponentJson: JSONObject
+    ) {
         launch(coroutineContext) {
-            val response = runCatching {
-                adyenRepository
-                    .submitAdditionalPaymentDetails(actionComponentJson)
-            }
-
-            val result = response.getOrNull()?.data?.submitAdditionalPaymentDetails
-
-            if (result == null) {
-                sendResult(DropInServiceResult.Error("Error"))
-                return@launch
-            }
-
-            result.asAdditionalPaymentsDetailsResponseAction?.action?.let { action ->
-                sendResult(DropInServiceResult.Action(action))
-                return@launch
-            }
-
-            result.asAdditionalPaymentsDetailsResponseFinished?.resultCode?.let { resultCode ->
-                sendResult(DropInServiceResult.Finished(resultCode))
-                return@launch
-            }
-
-            sendResult(DropInServiceResult.Error("Unknown error"))
+            submitAdditionalPaymentDetailsUseCase.submitAdditionalPaymentDetails(actionComponentJson)
+                .mapLeft { it.toDropInServiceResult() }
+                .fold(
+                    ifLeft = { sendResult(it) },
+                    ifRight = { sendResult(DropInServiceResult.Finished(it.code)) }
+                )
         }
     }
 
@@ -58,28 +46,22 @@ class AdyenPayinDropInService : DropInService(), CoroutineScope {
         paymentComponentJson: JSONObject
     ) {
         launch(coroutineContext) {
-            val response = runCatching {
-                adyenRepository
-                    .tokenizePaymentDetails(paymentComponentJson)
-            }
-
-            val result = response.getOrNull()?.data?.tokenizePaymentDetails
-            if (result == null) {
-                sendResult(DropInServiceResult.Error("Error"))
-                return@launch
-            }
-
-            result.asTokenizationResponseAction?.action?.let { action ->
-                sendResult(DropInServiceResult.Action(action))
-                return@launch
-            }
-
-            result.asTokenizationResponseFinished?.resultCode?.let { resultCode ->
-                sendResult(DropInServiceResult.Finished(resultCode))
-                return@launch
-            }
-
-            sendResult(DropInServiceResult.Error("Unknown error"))
+            connectPaymentUseCase.getPaymentTokenId(paymentComponentJson)
+                .mapLeft { it.toError() }
+                .fold(
+                    ifLeft = { sendResult(it) },
+                    ifRight = { sendResult(DropInServiceResult.Finished(it.id)) }
+                )
         }
     }
+
+    private fun ConnectPaymentUseCase.Error.toError() = when (this) {
+        is ConnectPaymentUseCase.Error.CheckoutPaymentAction -> DropInServiceResult.Action(action)
+        is ConnectPaymentUseCase.Error.ErrorMessage -> DropInServiceResult.Error(message)
+    }
+}
+
+fun SubmitAdditionalPaymentDetailsUseCase.Error.toDropInServiceResult() = when (this) {
+    is SubmitAdditionalPaymentDetailsUseCase.Error.CheckoutPaymentAction -> DropInServiceResult.Action(action)
+    is SubmitAdditionalPaymentDetailsUseCase.Error.ErrorMessage -> DropInServiceResult.Error(message)
 }
