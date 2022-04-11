@@ -16,6 +16,7 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.github.florent37.viewtooltip.ViewTooltip
+import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.android.owldroid.type.Feature
 import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.BaseActivity
@@ -68,6 +69,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
 
     private val binding by viewBinding(ActivityLoggedInBinding::bind)
 
+    private var lastMenuIdInflated: Int? = null
     private var savedTab: LoggedInTabs? = null
     private var lastSelectedTab: LoggedInTabs? = null
 
@@ -326,44 +328,13 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                     .viewState
                     .filterNotNull() // Emulate LiveData behavior of doing nothing until we get valid data
                     .collectLatest { viewState: LoggedInViewState ->
-                        val unseenTabNotifications = viewState.unseenTabNotifications
-                        binding.bottomNavigation.menu.forEach { item ->
-                            val asTab = LoggedInTabs.fromId(item.itemId) ?: return@forEach
-                            if (unseenTabNotifications.contains(asTab)) {
-                                val badge = binding.bottomNavigation.getOrCreateBadge(item.itemId)
-                                badge.isVisible = true
-                                badge.horizontalOffset = 4.dp
-                                badge.verticalOffset = 4.dp
-                            } else {
-                                binding.bottomNavigation.removeBadge(item.itemId)
-                            }
-                        }
-
-                        val queryData = viewState.loggedInQueryData
-                        val referralsEnabled =
-                            if (shouldOverrideFeatureFlags(application as HedvigApplication)) {
-                                true
-                            } else {
-                                queryData.member.features.contains(Feature.REFERRALS)
-                            }
-
-                        val isKeyGearEnabled = viewState.isKeyGearEnabled
-                        val menuId = when {
-                            isKeyGearEnabled && referralsEnabled -> R.menu.logged_in_menu_key_gear
-                            referralsEnabled -> R.menu.logged_in_menu
-                            !isKeyGearEnabled && !referralsEnabled -> R.menu.logged_in_menu_no_referrals
-                            else -> R.menu.logged_in_menu
-                        }
-                        binding.bottomNavigation.inflateMenu(menuId)
-                        val initialTab = savedTab
-                            ?: intent.extras?.getSerializable(INITIAL_TAB) as? LoggedInTabs
-                            ?: LoggedInTabs.HOME
-                        binding.bottomNavigation.selectedItemId = initialTab.id()
+                        val loggedInQueryData = viewState.loggedInQueryData
+                        setupBottomNav(loggedInQueryData, viewState.isKeyGearEnabled, viewState.unseenTabNotifications)
                         setupToolBar()
                         binding.loggedInRoot.show()
 
-                        referralTermsUrl = queryData.referralTerms.url
-                        queryData
+                        referralTermsUrl = loggedInQueryData.referralTerms.url
+                        loggedInQueryData
                             .referralInformation
                             .campaign
                             .incentive
@@ -378,6 +349,47 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
         }
 
         whatsNewViewModel.fetchNews()
+    }
+
+    private fun setupBottomNav(
+        loggedInQueryData: LoggedInQuery.Data,
+        isKeyGearEnabled: Boolean,
+        unseenTabNotifications: Set<LoggedInTabs>,
+    ) {
+        val referralsEnabled =
+            if (shouldOverrideFeatureFlags(application as HedvigApplication)) {
+                true
+            } else {
+                loggedInQueryData.member.features.contains(Feature.REFERRALS)
+            }
+        val menuId = when {
+            isKeyGearEnabled && referralsEnabled -> R.menu.logged_in_menu_key_gear
+            referralsEnabled -> R.menu.logged_in_menu
+            !isKeyGearEnabled && !referralsEnabled -> R.menu.logged_in_menu_no_referrals
+            else -> R.menu.logged_in_menu
+        }
+        // `inflateMenu` on the bottom nav isn't idempotent therefore we need to guard against doing it many times
+        if (lastMenuIdInflated != null && lastMenuIdInflated == menuId) return
+        binding.bottomNavigation.menu.clear()
+        binding.bottomNavigation.inflateMenu(menuId)
+        binding.bottomNavigation.menu.forEach { item ->
+            val asTab = LoggedInTabs.fromId(item.itemId) ?: return@forEach
+            if (unseenTabNotifications.contains(asTab)) {
+                val badge = binding.bottomNavigation.getOrCreateBadge(item.itemId)
+                badge.isVisible = true
+                badge.horizontalOffset = 4.dp
+                badge.verticalOffset = 4.dp
+            } else {
+                binding.bottomNavigation.removeBadge(item.itemId)
+            }
+        }
+
+        val initialTab = savedTab
+            ?: intent.extras?.getSerializable(INITIAL_TAB) as? LoggedInTabs
+            ?: LoggedInTabs.HOME
+        binding.bottomNavigation.selectedItemId = initialTab.id()
+
+        lastMenuIdInflated = menuId
     }
 
     private fun setupToolBar() {
