@@ -31,7 +31,6 @@ import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.app.util.featureflags.flags.Feature
 import com.hedvig.hanalytics.HAnalytics
 import e
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -169,7 +168,6 @@ class OfferViewModelImpl(
 
     private val _viewState: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.Loading)
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override val viewState: StateFlow<ViewState> = _viewState
         .stateIn(
             scope = viewModelScope,
