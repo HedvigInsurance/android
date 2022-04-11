@@ -8,7 +8,7 @@ import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.databinding.ActivitySplashBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.feature.marketing.ui.MarketingActivity
+import com.hedvig.app.feature.marketing.MarketingActivity
 import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
