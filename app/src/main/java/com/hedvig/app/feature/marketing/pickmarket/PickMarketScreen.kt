@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.marketing.pickmarket
 
 import androidx.activity.compose.BackHandler
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
@@ -32,8 +32,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter.Companion.tint
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -46,6 +46,7 @@ import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.ui.compose.composables.buttons.LargeContainedButton
 import com.hedvig.app.ui.compose.theme.HedvigTheme
+import com.hedvig.app.ui.compose.theme.separator
 import kotlinx.coroutines.launch
 
 enum class PickMarketSheet {
@@ -70,36 +71,38 @@ fun PickMarketScreen(
     ModalBottomSheetLayout(
         sheetState = modalBottomSheetState,
         sheetContent = {
-            BackHandler(
-                enabled = modalBottomSheetState.isVisible,
-                onBack = {
-                    coroutineScope.launch { modalBottomSheetState.hide() }
-                },
-            )
-            Spacer(Modifier.height(8.dp))
-            BottomSheetHandle(modifier = Modifier.align(Alignment.CenterHorizontally))
-            when (sheet) {
-                PickMarketSheet.MARKET -> PickMarketSheetContent(
-                    onSelectMarket = { market ->
-                        coroutineScope.launch {
-                            modalBottomSheetState.hide()
-                            onSelectMarket(market)
-                        }
+            HedvigTheme {
+                BackHandler(
+                    enabled = modalBottomSheetState.isVisible,
+                    onBack = {
+                        coroutineScope.launch { modalBottomSheetState.hide() }
                     },
-                    data = data
                 )
-                PickMarketSheet.COUNTRY -> PickLanguageSheetContent(
-                    onSelectLanguage = { language ->
-                        coroutineScope.launch {
-                            modalBottomSheetState.hide()
-                            onSelectLanguage(language)
-                        }
-                    },
-                    data = data
-                )
-                null -> {}
+                Spacer(Modifier.height(8.dp))
+                BottomSheetHandle(modifier = Modifier.align(Alignment.CenterHorizontally))
+                when (sheet) {
+                    PickMarketSheet.MARKET -> PickMarketSheetContent(
+                        onSelectMarket = { market ->
+                            coroutineScope.launch {
+                                modalBottomSheetState.hide()
+                                onSelectMarket(market)
+                            }
+                        },
+                        data = data
+                    )
+                    PickMarketSheet.COUNTRY -> PickLanguageSheetContent(
+                        onSelectLanguage = { language ->
+                            coroutineScope.launch {
+                                modalBottomSheetState.hide()
+                                onSelectLanguage(language)
+                            }
+                        },
+                        data = data
+                    )
+                    null -> {}
+                }
+                Spacer(Modifier.height(24.dp + navigationBarHeight))
             }
-            Spacer(Modifier.height(24.dp + navigationBarHeight))
         },
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -108,7 +111,6 @@ fun PickMarketScreen(
                 style = MaterialTheme.typography.h4,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.align(Alignment.Center),
-                color = MaterialTheme.colors.primary,
             )
             Column(
                 modifier = Modifier.align(Alignment.BottomCenter)
@@ -118,23 +120,35 @@ fun PickMarketScreen(
                         sheet = PickMarketSheet.MARKET
                         coroutineScope.launch { modalBottomSheetState.show() }
                     },
-                    icon = data.market?.flag,
+                    icon = data.market?.flag?.let { flagId ->
+                        {
+                            Image(
+                                painter = painterResource(flagId),
+                                contentDescription = null,
+                            )
+                        }
+                    },
                     header = stringResource(R.string.market_language_screen_market_label),
                     label = data.market?.label?.let { stringResource(it) },
+                    enabled = true,
                 )
                 PickerRow(
                     onClick = {
                         sheet = PickMarketSheet.COUNTRY
                         coroutineScope.launch { modalBottomSheetState.show() }
                     },
-                    icon = R.drawable.ic_language,
+                    icon = {
+                        LanguageFlag()
+                    },
                     header = stringResource(R.string.market_language_screen_language_label),
                     label = data.language?.getLabel()?.let { stringResource(it) },
+                    enabled = data.market?.let { Language.getAvailableLanguages(it).isNotEmpty() } ?: false,
                 )
                 Spacer(Modifier.height(32.dp))
                 LargeContainedButton(
                     onClick = onSubmit,
                     modifier = Modifier.padding(horizontal = 16.dp),
+                    enabled = data.isValid,
                 ) {
                     Text(stringResource(R.string.market_language_screen_continue_button_text))
                 }
@@ -145,12 +159,21 @@ fun PickMarketScreen(
 }
 
 @Composable
+private fun LanguageFlag() {
+    Image(
+        painter = painterResource(R.drawable.ic_language),
+        contentDescription = null,
+        colorFilter = tint(LocalContentColor.current),
+    )
+}
+
+@Composable
 fun BottomSheetHandle(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .size(width = 32.dp, height = 4.dp)
             .background(
-                color = colorResource(R.color.color_divider),
+                color = MaterialTheme.colors.separator,
                 shape = RoundedCornerShape(20.dp)
             )
 
@@ -237,23 +260,24 @@ fun RadioButtonRowPreview() {
 @Composable
 fun PickerRow(
     onClick: () -> Unit,
-    @DrawableRes icon: Int?,
+    icon: (@Composable () -> Unit)?,
     header: String?,
     label: String?,
+    enabled: Boolean,
 ) {
     Row(
         modifier = Modifier
-            .clickable(onClick = onClick)
+            .clickable(enabled = enabled, onClick = onClick)
             .padding(vertical = 8.dp)
     ) {
         Spacer(Modifier.width(16.dp))
-        icon?.let { ic ->
-            Image(
-                painter = painterResource(id = ic),
-                contentDescription = null,
-                modifier = Modifier.align(Alignment.CenterVertically),
-            )
-        } ?: Spacer(Modifier.width(24.dp))
+        if (icon != null) {
+            Box(modifier = Modifier.align(Alignment.CenterVertically)) {
+                icon()
+            }
+        } else {
+            Spacer(Modifier.width(24.dp))
+        }
         Spacer(Modifier.width(16.dp))
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -262,12 +286,10 @@ fun PickerRow(
         ) {
             Text(
                 text = header ?: "",
-                color = MaterialTheme.colors.primary,
             )
             Text(
                 text = label ?: "",
                 style = MaterialTheme.typography.caption,
-                color = MaterialTheme.colors.primary,
             )
         }
         Spacer(Modifier.weight(1f))
@@ -275,6 +297,22 @@ fun PickerRow(
             painter = painterResource(R.drawable.ic_arrow_forward),
             contentDescription = null,
         )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PickerRowPreviewEmpty() {
+    HedvigTheme {
+        PickerRow(onClick = {}, icon = null, header = "asd", label = "efg", enabled = false)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PickerRowPreview() {
+    HedvigTheme {
+        PickerRow(onClick = {}, icon = { LanguageFlag() }, header = "asd", label = "efg", enabled = false)
     }
 }
 

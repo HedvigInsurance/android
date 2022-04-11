@@ -9,11 +9,9 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.view.View
-import android.view.ViewGroup
 import android.view.WindowInsets
 import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
-import androidx.annotation.StyleRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
@@ -195,8 +193,4 @@ fun Activity.showReviewDialog(
             }
         }
     }
-}
-
-fun Activity.setThemeOverlay(@StyleRes themeId: Int) {
-    window.decorView.findViewById<ViewGroup>(android.R.id.content).context.setTheme(themeId)
 }

@@ -10,15 +10,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.hedvig.app.BaseActivity
-import com.hedvig.app.R
 import com.hedvig.app.authenticate.LoginDialog
 import com.hedvig.app.feature.marketing.marketpicked.MarketPickedScreen
 import com.hedvig.app.feature.marketing.pickmarket.PickMarketScreen
 import com.hedvig.app.feature.marketing.ui.BackgroundImage
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationActivity
 import com.hedvig.app.ui.compose.theme.HedvigTheme
+import com.hedvig.app.ui.compose.theme.hedvigBlack
+import com.hedvig.app.ui.compose.theme.hedvigOffWhite
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
-import com.hedvig.app.util.extensions.setThemeOverlay
 import com.hedvig.hanalytics.LoginMethod
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 
@@ -29,9 +29,17 @@ class MarketingActivity : BaseActivity() {
 
         window.compatSetDecorFitsSystemWindows(false)
         val viewModel = getViewModel<MarketingViewModel>()
-        setThemeOverlay(R.style.ThemeOverlay_Hedvig_MarketingActivity)
         setContent {
-            HedvigTheme {
+            HedvigTheme(
+                colorOverrides = {
+                    it.copy(
+                        primary = hedvigOffWhite,
+                        onPrimary = hedvigBlack,
+                        secondary = hedvigOffWhite,
+                        onBackground = hedvigOffWhite
+                    )
+                }
+            ) {
                 val background by viewModel.background.collectAsState()
                 BackgroundImage(background) {
                     val state by viewModel.state.collectAsState()

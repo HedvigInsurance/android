@@ -14,6 +14,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -26,6 +27,7 @@ import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.ui.compose.composables.buttons.LargeContainedButton
 import com.hedvig.app.ui.compose.composables.buttons.LargeOutlinedButton
 import com.hedvig.app.ui.compose.theme.HedvigTheme
+import com.hedvig.app.ui.compose.theme.hedvigOffWhite
 import com.hedvig.hanalytics.LoginMethod
 
 @Composable
@@ -56,6 +58,7 @@ fun MarketPickedScreen(
             painter = painterResource(R.drawable.ic_wordmark_h),
             contentDescription = stringResource(R.string.HEDVIG_LOGO_ACCESSIBILITY),
             modifier = Modifier.align(Alignment.Center),
+            colorFilter = ColorFilter.tint(hedvigOffWhite),
         )
         Column(
             modifier = Modifier
