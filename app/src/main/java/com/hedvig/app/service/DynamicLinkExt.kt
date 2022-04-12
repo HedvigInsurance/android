@@ -5,7 +5,7 @@ import android.content.Intent
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.marketing.MarketingActivity
-import com.hedvig.app.feature.payment.connectPayinActivity
+import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.feature.referrals.ReferralsReceiverActivity
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
@@ -19,10 +19,16 @@ suspend fun DynamicLink.startActivity(
 ) {
     when (this) {
         DynamicLink.DirectDebit -> {
+            val market = marketManager.market ?: return onDefault()
             context.startActivities(
                 arrayOf(
                     Intent(context, LoggedInActivity::class.java),
-                    Intent(context, featureManager.getPaymentType().connectPayinActivity)
+                    connectPayinIntent(
+                        context,
+                        featureManager.getPaymentType(),
+                        market,
+                        false,
+                    )
                 )
             )
         }

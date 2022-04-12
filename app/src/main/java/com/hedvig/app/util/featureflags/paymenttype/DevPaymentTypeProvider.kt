@@ -7,12 +7,11 @@ import com.hedvig.hanalytics.PaymentType
 class DevPaymentTypeProvider(
     private val marketManager: MarketManager,
 ) : PaymentTypeProvider {
-    // todo actually check what this needs to be in our dev environment
     override suspend fun getPaymentType(): PaymentType {
         return when (marketManager.market) {
-            Market.SE -> PaymentType.ADYEN
-            Market.NO -> PaymentType.TRUSTLY
-            Market.DK -> PaymentType.TRUSTLY
+            Market.SE -> PaymentType.TRUSTLY
+            Market.NO -> PaymentType.ADYEN
+            Market.DK -> PaymentType.ADYEN
             Market.FR -> throw IllegalArgumentException()
             null -> PaymentType.TRUSTLY
         }
