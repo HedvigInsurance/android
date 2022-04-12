@@ -17,6 +17,7 @@ import com.hedvig.app.feature.offer.usecase.datacollectionresult.GetDataCollecti
 import com.hedvig.app.feature.offer.usecase.datacollectionstatus.DataCollectionStatus
 import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToDataCollectionStatusUseCase
 import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
+import com.hedvig.hanalytics.PaymentType
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -49,7 +50,8 @@ class MockOfferViewModel : OfferViewModel() {
             Event.ApproveSuccessful(
                 LocalDate.now(),
                 PostSignScreen.MOVE,
-                "mockData.offer.quoteBundle.fragments.quoteBundleFragment.displayName"
+                "mockData.offer.quoteBundle.fragments.quoteBundleFragment.displayName",
+                PaymentType.TRUSTLY,
             )
         )
     }

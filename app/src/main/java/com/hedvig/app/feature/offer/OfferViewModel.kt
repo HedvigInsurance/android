@@ -30,6 +30,7 @@ import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.app.util.featureflags.flags.Feature
 import com.hedvig.hanalytics.HAnalytics
+import com.hedvig.hanalytics.PaymentType
 import e
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
@@ -71,6 +72,7 @@ abstract class OfferViewModel : ViewModel() {
             val startDate: LocalDate?,
             val postSignScreen: PostSignScreen,
             val bundleDisplayName: String,
+            val payinType: PaymentType,
         ) : Event()
 
         data class StartSwedishBankIdSign(val autoStartToken: String?) : Event()
@@ -240,7 +242,8 @@ class OfferViewModelImpl(
                     val event = Event.ApproveSuccessful(
                         startDate = result.date,
                         postSignScreen = result.postSignScreen,
-                        bundleDisplayName = result.bundleName
+                        bundleDisplayName = result.bundleName,
+                        payinType = featureManager.getPaymentType(),
                     )
                     _events.trySend(event)
                 }
