@@ -8,7 +8,6 @@ import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotEqualTo
 import assertk.assertions.isNotNull
-import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import assertk.assertions.prop
 import com.hedvig.app.feature.marketing.MarketingViewModel
@@ -19,7 +18,6 @@ import com.hedvig.app.feature.marketing.data.UpdateApplicationLanguageUseCase
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.coroutines.StandardTestDispatcherAsMainDispatcherRule
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.hanalytics.HAnalytics
@@ -74,7 +72,7 @@ class MarketingViewModelTest {
         val marketManager = mockk<MarketManager>()
         every { marketManager.hasSelectedMarket } returns false
         val initialValues = mockk<GetInitialMarketPickerValuesUseCase>()
-        coEvery { initialValues.invoke() } returns Either.Right(Market.SE to null)
+        coEvery { initialValues.invoke() } returns Pair(Market.SE, null)
 
         val model = sut(
             marketManager = marketManager,
@@ -87,27 +85,6 @@ class MarketingViewModelTest {
             .all {
                 prop(com.hedvig.app.feature.marketing.PickMarket::isLoading).isFalse()
                 prop(com.hedvig.app.feature.marketing.PickMarket::market).isEqualTo(Market.SE)
-            }
-    }
-
-    @Test
-    fun `when geo fails, should not preselect a market`() = runTest {
-        val marketManager = mockk<MarketManager>()
-        every { marketManager.hasSelectedMarket } returns false
-        val initialValues = mockk<GetInitialMarketPickerValuesUseCase>()
-        coEvery { initialValues.invoke() } returns Either.Left(QueryResult.Error.NetworkError(""))
-
-        val model = sut(
-            marketManager = marketManager,
-            getInitialMarketPickerValuesUseCase = initialValues,
-        )
-        advanceUntilIdle()
-
-        assertThat(model.state.value)
-            .isInstanceOf(com.hedvig.app.feature.marketing.PickMarket::class)
-            .all {
-                prop(com.hedvig.app.feature.marketing.PickMarket::isLoading).isFalse()
-                prop(com.hedvig.app.feature.marketing.PickMarket::market).isNull()
             }
     }
 

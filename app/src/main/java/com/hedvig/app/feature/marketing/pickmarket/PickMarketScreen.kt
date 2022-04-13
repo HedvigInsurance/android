@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.marketing.pickmarket
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,6 +28,7 @@ import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -47,11 +49,27 @@ import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.ui.compose.composables.buttons.LargeContainedButton
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.ui.compose.theme.separator
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 enum class PickMarketSheet {
     MARKET,
     COUNTRY,
+}
+
+@Suppress("NOTHING_TO_INLINE")
+@Composable
+inline fun ForceRecompositions() {
+    val bool by produceState(false) {
+        while (isActive) {
+            value = !value
+            delay(1000.milliseconds)
+        }
+    }
+    val f = animateFloatAsState(if (bool) 0f else 1f)
+    println(f.value)
 }
 
 @OptIn(ExperimentalMaterialApi::class)
