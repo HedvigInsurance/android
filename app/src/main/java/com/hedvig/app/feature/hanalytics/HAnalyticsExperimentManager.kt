@@ -2,6 +2,7 @@ package com.hedvig.app.feature.hanalytics
 
 import com.hedvig.hanalytics.HAnalyticsEvent
 import com.hedvig.hanalytics.HAnalyticsExperiment
+import i
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
@@ -44,6 +45,7 @@ class HAnalyticsExperimentManagerImpl(
         if (experimentsList == null) return
         experimentsData.clear()
         experimentsData.putAll(experimentsList.map { it.name to it.variant })
+        i { "Experiments loaded: $experimentsData" }
     }
 
     private fun sendExperimentsLoadedEvent(experimentsList: List<Experiment>?) {
