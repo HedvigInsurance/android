@@ -55,15 +55,23 @@ object VariableExtractor {
                     )
                 }
                 is Variable.Multi -> {
-                    acc.put(variable.key, JSONArray())
-                    getMultiActionItems(variable.key).mapIndexed { index, map ->
-                        val multiActionJson = reduceVariables(
-                            variable.variables,
-                            map::get,
-                            setValue,
-                            getMultiActionItems
+                    val multiActionItems = getMultiActionItems(variable.from)
+                    if (multiActionItems.isNotEmpty()) {
+                        val multiActionArray = JSONArray()
+                        multiActionItems.mapIndexed { index, map ->
+                            val multiActionJson = reduceVariables(
+                                variable.variables,
+                                map::get,
+                                setValue,
+                                getMultiActionItems
+                            )
+                            multiActionArray.put(index, multiActionJson)
+                        }
+                        acc.createAndAddWithLodashNotation(
+                            value = multiActionArray,
+                            key = variable.key,
+                            currentKey = variable.key.substringBefore(".")
                         )
-                        acc.getJSONArray(variable.key).put(index, multiActionJson)
                     }
                 }
             }

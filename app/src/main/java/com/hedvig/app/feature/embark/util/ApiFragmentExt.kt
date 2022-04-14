@@ -52,6 +52,7 @@ private fun GraphQLVariablesFragment.toVariable(): Variable? {
         asEmbarkAPIGraphQLMultiActionVariable != null -> {
             Variable.Multi(
                 asEmbarkAPIGraphQLMultiActionVariable!!.key,
+                asEmbarkAPIGraphQLMultiActionVariable!!.from,
                 asEmbarkAPIGraphQLMultiActionVariable!!.variables.mapNotNull {
                     when {
                         it.asEmbarkAPIGraphQLGeneratedVariable1 != null -> {
