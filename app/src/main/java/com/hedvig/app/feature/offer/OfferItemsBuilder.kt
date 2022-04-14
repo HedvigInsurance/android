@@ -24,23 +24,23 @@ object OfferItemsBuilder {
         val bundle = offerModel.quoteBundle
         add(
             OfferItems.Header(
-                quoteCartId = offerModel.id,
                 title = bundle.name,
                 startDate = bundle.inception.startDate,
                 startDateLabel = bundle.inception.startDateLabel,
+                checkoutLabel = offerModel.checkoutLabel,
                 premium = bundle.cost.finalPremium,
-                originalPremium = bundle.cost.grossMonthlyCost,
                 hasDiscountedPrice = !bundle.cost.grossMonthlyCost.isEqualTo(bundle.cost.netMonthlyCost) &&
                     !bundle.viewConfiguration.ignoreCampaigns,
+                originalPremium = bundle.cost.grossMonthlyCost,
                 incentiveDisplayValue = offerModel.campaign?.displayValue,
                 hasCampaigns = offerModel.campaign?.shouldShowIncentive == true,
                 changeDateBottomSheetData = bundle.inception.changeDateData,
-                checkoutLabel = offerModel.checkoutLabel,
                 checkoutMethod = offerModel.checkoutMethod,
                 showCampaignManagement = bundle.viewConfiguration.showCampaignManagement,
                 ignoreCampaigns = bundle.viewConfiguration.showCampaignManagement,
                 gradientType = bundle.viewConfiguration.gradient,
-                paymentMethodsApiResponse = paymentMethods
+                paymentMethodsApiResponse = paymentMethods,
+                quoteCartId = offerModel.id,
             ),
         )
         if (externalProvider != null) {

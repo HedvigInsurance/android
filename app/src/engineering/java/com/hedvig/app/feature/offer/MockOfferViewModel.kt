@@ -8,9 +8,8 @@ import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.feature.adyen.PaymentTokenId
 import com.hedvig.app.feature.checkout.CheckoutParameter
-import com.hedvig.app.feature.offer.model.paymentApiResponseOrNull
+import com.hedvig.app.feature.offer.model.OfferQueryDataToOfferModelMapper
 import com.hedvig.app.feature.offer.model.quotebundle.PostSignScreen
-import com.hedvig.app.feature.offer.model.toOfferModel
 import com.hedvig.app.feature.offer.usecase.ExternalProvider
 import com.hedvig.app.feature.offer.usecase.datacollectionresult.DataCollectionResult
 import com.hedvig.app.feature.offer.usecase.datacollectionresult.GetDataCollectionResultUseCase
@@ -26,7 +25,9 @@ import java.time.LocalDate
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
-class MockOfferViewModel : OfferViewModel() {
+class MockOfferViewModel(
+    private val offerQueryDataToOfferModelMapper: OfferQueryDataToOfferModelMapper,
+) : OfferViewModel() {
     init {
         load()
     }
@@ -86,18 +87,21 @@ class MockOfferViewModel : OfferViewModel() {
                     _viewState.value = ViewState.Error()
                     return@launch
                 }
-                val offerModel = mockData.offer!!.toOfferModel()
+                val offerModel = offerQueryDataToOfferModelMapper.map(mockData.offer!!)
                 _viewState.value = ViewState.Content(
                     offerModel = offerModel,
                     loginStatus = LoginStatus.LoggedIn,
-                    paymentMethods = offerModel.paymentApiResponseOrNull(),
-                    externalProvider = ExternalProvider(
-                        dataCollectionStatus = mockData.dataCollectionStatus,
-                        dataCollectionResult = mockData.dataCollectionResult?.data,
-                        insuranceProviderDisplayName =
-                        (mockData.dataCollectionResult?.data as? DataCollectionResult.Content)?.collectedList
-                            ?.first()?.name,
-                    ),
+                    paymentMethods = offerModel.paymentMethodsApiResponse,
+                    externalProvider = mockData.dataCollectionStatus.let { dataCollectionStatus ->
+                        if (dataCollectionStatus == null) return@let null
+                        ExternalProvider(
+                            dataCollectionStatus = dataCollectionStatus,
+                            dataCollectionResult = mockData.dataCollectionResult?.data,
+                            insuranceProviderDisplayName =
+                            (mockData.dataCollectionResult?.data as? DataCollectionResult.Content)?.collectedList
+                                ?.first()?.name,
+                        )
+                    },
                 )
                 delay(2.seconds)
             } while (mockRefreshEvery2Seconds)
