@@ -6,7 +6,6 @@ import com.hedvig.app.feature.keygear.KeyGearValuationViewModel
 import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearItemViewModel
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModel
-import com.hedvig.app.feature.marketing.ui.MarketingViewModel
 import com.hedvig.app.feature.offer.MockOfferViewModel
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.profile.MockProfileViewModel
@@ -21,6 +20,5 @@ val mockModule = module {
     viewModel<KeyGearItemDetailViewModel> { MockKeyGearItemDetailViewModel() }
     viewModel<CreateKeyGearItemViewModel> { MockCreateKeyGearItemViewModel() }
     viewModel<KeyGearValuationViewModel> { MockKeyGearValuationViewModel() }
-    viewModel<MarketingViewModel> { MockMarketingViewModel() }
     viewModel<AdyenConnectPayinViewModel> { MockAdyenConnectPayinViewModel() }
 }

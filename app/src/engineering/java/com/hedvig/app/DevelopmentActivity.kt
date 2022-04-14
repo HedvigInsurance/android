@@ -16,7 +16,6 @@ import com.hedvig.app.feature.home.HomeMockActivity
 import com.hedvig.app.feature.insurance.InsuranceMockActivity
 import com.hedvig.app.feature.loggedin.LoggedInMockActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.feature.marketpicker.MarketPickerMockActivity
 import com.hedvig.app.feature.offer.OfferMockActivity
 import com.hedvig.app.feature.onboarding.OnboardingMockActivity
 import com.hedvig.app.feature.payment.PaymentMockActivity
@@ -87,9 +86,6 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
                     },
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Profile") {
                         startActivity(Intent(this, ProfileMockActivity::class.java))
-                    },
-                    DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Market Picker") {
-                        startActivity(Intent(this, MarketPickerMockActivity::class.java))
                     },
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Logged in") {
                         startActivity(Intent(this, LoggedInMockActivity::class.java))
