@@ -16,7 +16,7 @@ class MockInsuranceViewModel : InsuranceViewModel() {
             _viewState.value = ViewState.Error
             return
         }
-        _viewState.value = ViewState.Success(items(insuranceMockData, showCrossSellBadge))
+        _viewState.value = ViewState.Success(items(insuranceMockData, showCrossSellBadge, false))
     }
 
     override fun markCardCrossSellsAsSeen() {}

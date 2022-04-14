@@ -437,7 +437,7 @@ val whatsNewModule = module {
 }
 
 val insuranceModule = module {
-    viewModel<InsuranceViewModel> { InsuranceViewModelImpl(get(), get()) }
+    viewModel<InsuranceViewModel> { InsuranceViewModelImpl(get(), get(), get()) }
     viewModel<ContractDetailViewModel> { (contractId: String) ->
         ContractDetailViewModelImpl(contractId, get(), get(), get())
     }
@@ -655,7 +655,7 @@ val localeManagerModule = module {
 
 val useCaseModule = module {
     single { GetUpcomingAgreementUseCase(get(), get()) }
-    single { GetAddressChangeStoryIdUseCase(get()) }
+    single { GetAddressChangeStoryIdUseCase(get(), get()) }
     single { StartDanishAuthUseCase(get()) }
     single { StartNorwegianAuthUseCase(get()) }
     single { SubscribeToAuthStatusUseCase(get()) }
@@ -664,7 +664,7 @@ val useCaseModule = module {
     single { GetContractsUseCase(get(), get()) }
     single { GetCrossSellsContractTypesUseCase(get(), get()) }
     single { GraphQLQueryUseCase(get()) }
-    single { GetCrossSellsUseCase(get(), get()) }
+    single { GetCrossSellsUseCase(get(), get(), get()) }
     single { StartDataCollectionUseCase(get(), get()) }
     single { GetInsuranceProvidersUseCase(get(), get()) }
     single { CreateOtpAttemptUseCase(get()) }
