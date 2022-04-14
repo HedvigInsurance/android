@@ -5,6 +5,7 @@ import arrow.core.None
 import arrow.core.Option
 import arrow.core.Some
 import com.apollographql.apollo.ApolloCall
+import com.apollographql.apollo.ApolloQueryWatcher
 import com.apollographql.apollo.ApolloSubscriptionCall
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.coroutines.await
@@ -38,6 +39,10 @@ fun <T> ApolloSubscriptionCall<T>.safeSubscription(): Flow<QueryResult<T>> {
     } catch (throwable: Throwable) {
         flowOf(QueryResult.Error.GeneralError(throwable.localizedMessage))
     }
+}
+
+fun <T> ApolloQueryWatcher<T>.safeFlow(): Flow<QueryResult<T>> {
+    return toFlow().map(Response<T>::toQueryResult)
 }
 
 fun <T> Response<T>.toQueryResult(): QueryResult<T> {
