@@ -12,6 +12,7 @@ enum class Feature(
     MOVING_FLOW("Lets a user change their address and get a new offer"),
     QUOTE_CART("Use new APIs for onboarding"),
     REFERRAL_CAMPAIGN("Used to show banner in referral view"),
+    SHOW_CHARITY("Show anything related to the charity options or hide it all completely. Used for Qasa."),
     UPDATE_NECESSARY(
         "Defines the lowest supported app version. Should prompt a user to update if it uses an outdated version."
     ),
