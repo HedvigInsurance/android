@@ -7,7 +7,8 @@ import com.hedvig.app.feature.insurance.ui.detail.toContractCardViewState
 
 fun items(
     data: InsuranceQuery.Data,
-    showCrossSellNotificationBadge: Boolean = false
+    showCrossSellNotificationBadge: Boolean = false,
+    quoteCartEnabled: Boolean
 ): List<InsuranceModel> = ArrayList<InsuranceModel>().apply {
     add(InsuranceModel.Header)
     val contracts = data.contracts
@@ -28,7 +29,11 @@ fun items(
     val potentialCrossSells = data.activeContractBundles.flatMap { it.potentialCrossSells }
     if (potentialCrossSells.isNotEmpty()) {
         add(InsuranceModel.CrossSellHeader(showCrossSellNotificationBadge))
-        addAll(potentialCrossSells.map(::crossSell))
+        addAll(
+            potentialCrossSells.map {
+                crossSell(it, quoteCartEnabled)
+            }
+        )
     }
 
     if (hasNotOnlyTerminatedContracts(data.contracts)) {
@@ -46,5 +51,10 @@ private fun hasNotOnlyTerminatedContracts(contracts: List<InsuranceQuery.Contrac
 private fun amountOfTerminatedContracts(contracts: List<InsuranceQuery.Contract>) =
     contracts.filter { it.status.fragments.contractStatusFragment.asTerminatedStatus != null }.size
 
-private fun crossSell(potentialCrossSell: InsuranceQuery.PotentialCrossSell) =
-    InsuranceModel.CrossSellCard(CrossSellData.from(potentialCrossSell.fragments.crossSellFragment))
+private fun crossSell(potentialCrossSell: InsuranceQuery.PotentialCrossSell, quoteCartEnabled: Boolean) =
+    InsuranceModel.CrossSellCard(
+        CrossSellData.from(
+            potentialCrossSell.fragments.crossSellFragment,
+            quoteCartEnabled,
+        )
+    )
