@@ -32,6 +32,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.flowWithLifecycle
 import com.hedvig.app.R
 import com.hedvig.app.feature.offer.model.QuoteCartId
+import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.extensions.canOpenUri
@@ -97,11 +98,16 @@ class SwedishBankIdSignDialog : DialogFragment() {
                             )
                         }
                     }
-                    SwedishBankIdSignViewModel.Event.StartDirectDebit -> {
-                        marketManager
-                            .market
-                            ?.connectPayin(requireContext(), isPostSign = true)
-                            ?.let { startActivity(it) }
+                    is SwedishBankIdSignViewModel.Event.StartDirectDebit -> {
+                        val market = marketManager.market ?: return@onEach
+                        startActivity(
+                            connectPayinIntent(
+                                requireContext(),
+                                event.payinType,
+                                market,
+                                true,
+                            )
+                        )
                     }
                 }
             }

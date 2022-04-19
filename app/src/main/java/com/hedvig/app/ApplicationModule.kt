@@ -514,7 +514,7 @@ val keyGearModule = module {
 }
 
 val paymentModule = module {
-    viewModel<PaymentViewModel> { PaymentViewModelImpl(get(), get(), get()) }
+    viewModel<PaymentViewModel> { PaymentViewModelImpl(get(), get(), get(), get()) }
 }
 
 val adyenModule = module {
@@ -683,7 +683,7 @@ val marketManagerModule = module {
 }
 
 val notificationModule = module {
-    single { PaymentNotificationSender(get(), get()) } bind NotificationSender::class
+    single { PaymentNotificationSender(get(), get(), get()) } bind NotificationSender::class
     single { CrossSellNotificationSender(get(), get()) } bind NotificationSender::class
     single { ChatNotificationSender(get()) } bind NotificationSender::class
     single { ReferralsNotificationSender(get()) } bind NotificationSender::class

@@ -39,7 +39,7 @@ class HomeItemsBuilder(
         add(HomeModel.HowClaimsWork(homeData.howClaimsWork))
         addAll(listOfNotNull(*upcomingRenewals(homeData.contracts).toTypedArray()))
         if (homeData.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP) {
-            add(HomeModel.ConnectPayin)
+            add(HomeModel.ConnectPayin(featureManager.getPaymentType()))
         }
         add(HomeModel.Header(R.string.home_tab_common_claims_title))
         addAll(
