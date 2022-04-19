@@ -52,7 +52,7 @@ sealed class PaymentModel {
         object AdyenAddPayout : Link()
 
         object AdyenChangePayout : Link()
-       
+
         interface PayinLink {
             val payinType: PaymentType
         }
