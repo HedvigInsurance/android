@@ -9,7 +9,9 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
+import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.ProvideWindowInsets
+import com.google.accompanist.insets.WindowInsets
 import com.google.android.material.composethemeadapter.createMdcTheme
 import java.lang.reflect.Method
 
@@ -18,28 +20,37 @@ fun HedvigTheme(
     colorOverrides: ((Colors) -> Colors)? = null,
     content: @Composable () -> Unit,
 ) {
-    ProvideWindowInsets {
-        val context = LocalContext.current
-        val key = context.theme.key ?: context.theme
-        val layoutDirection = LocalLayoutDirection.current
-        val themeParameters = remember(key) {
-            createMdcTheme(
-                context = context,
-                layoutDirection = layoutDirection,
-                setDefaultFontFamily = true
-            )
+    if (LocalWindowInsets.current == WindowInsets.Empty) {
+        ProvideWindowInsets {
+            InnerTheme(colorOverrides, content)
         }
-        val colors = themeParameters.colors ?: MaterialTheme.colors
-        MaterialTheme(
-            colors = colorOverrides?.invoke(colors) ?: colors,
-            typography = themeParameters.typography ?: MaterialTheme.typography,
-            shapes = themeParameters.shapes ?: MaterialTheme.shapes,
-        ) {
-            CompositionLocalProvider(
-                LocalContentColor provides MaterialTheme.colors.onBackground,
-                content = content
-            )
-        }
+    } else {
+        InnerTheme(colorOverrides, content)
+    }
+}
+
+@Composable
+private fun InnerTheme(colorOverrides: ((Colors) -> Colors)? = null, content: @Composable () -> Unit) {
+    val context = LocalContext.current
+    val key = context.theme.key ?: context.theme
+    val layoutDirection = LocalLayoutDirection.current
+    val themeParameters = remember(key) {
+        createMdcTheme(
+            context = context,
+            layoutDirection = layoutDirection,
+            setDefaultFontFamily = true
+        )
+    }
+    val colors = themeParameters.colors ?: MaterialTheme.colors
+    MaterialTheme(
+        colors = colorOverrides?.invoke(colors) ?: colors,
+        typography = themeParameters.typography ?: MaterialTheme.typography,
+        shapes = themeParameters.shapes ?: MaterialTheme.shapes,
+    ) {
+        CompositionLocalProvider(
+            LocalContentColor provides MaterialTheme.colors.onBackground,
+            content = content
+        )
     }
 }
 
