@@ -16,6 +16,7 @@ class HAnalyticsFeatureFlagProvider(
         Feature.MOVING_FLOW -> hAnalytics.movingFlow()
         Feature.QUOTE_CART -> hAnalytics.useQuoteCart()
         Feature.REFERRAL_CAMPAIGN -> hAnalytics.foreverFebruaryCampaign()
+        Feature.REFERRALS -> true // TODO hAnalytics.qasa()
         Feature.UPDATE_NECESSARY -> hAnalytics.updateNecessary()
     }
 }

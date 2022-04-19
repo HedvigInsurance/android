@@ -15,9 +15,7 @@ class TabNotificationService(
         return combine(
             crossSellNotificationBadgeService.shouldShowTabNotification(),
             referralsNotificationBadgeService.shouldShowNotification()
-        ) { shouldShowCrossSellNotification: Boolean,
-            shouldShowReferralNotification: Boolean ->
-
+        ) { shouldShowCrossSellNotification: Boolean, shouldShowReferralNotification: Boolean ->
             buildSet {
                 if (shouldShowCrossSellNotification) add(LoggedInTabs.INSURANCE)
                 if (shouldShowReferralNotification) add(LoggedInTabs.REFERRALS)

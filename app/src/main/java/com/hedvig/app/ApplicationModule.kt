@@ -246,20 +246,6 @@ import java.util.concurrent.TimeUnit
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APPLICATION_ID == "com.hedvig.test.app"
 
-fun shouldOverrideFeatureFlags(app: HedvigApplication): Boolean {
-    if (app.isTestBuild) {
-        return false
-    }
-    if (BuildConfig.DEBUG) {
-        return true
-    }
-    if (BuildConfig.APPLICATION_ID == "com.hedvig.test.app") {
-        return true
-    }
-
-    return false
-}
-
 val applicationModule = module {
     single { androidApplication() as HedvigApplication }
     single<NormalizedCacheFactory<LruNormalizedCache>> {
