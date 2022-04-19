@@ -29,20 +29,23 @@ import kotlin.time.Duration.Companion.seconds
 data class LoggedInViewState(
     val loggedInQueryData: LoggedInQuery.Data,
     val isKeyGearEnabled: Boolean,
+    val isForeverEnabled: Boolean,
     val unseenTabNotifications: Set<LoggedInTabs>,
 )
 
 abstract class LoggedInViewModel : ViewModel() {
     protected val loggedInQueryData: MutableStateFlow<LoggedInQuery.Data?> = MutableStateFlow(null)
     protected val isKeyGearEnabled: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    protected val isForeverEnabled: MutableStateFlow<Boolean> = MutableStateFlow(false)
     protected val unseenTabNotifications: MutableStateFlow<Set<LoggedInTabs>> = MutableStateFlow(emptySet())
 
     val viewState: StateFlow<LoggedInViewState?> = combine(
         loggedInQueryData.filterNotNull(),
         isKeyGearEnabled,
+        isForeverEnabled,
         unseenTabNotifications
-    ) { loggedInQueryData, isKeyGearEnabled, unseenTabNotifications ->
-        LoggedInViewState(loggedInQueryData, isKeyGearEnabled, unseenTabNotifications)
+    ) { loggedInQueryData, isKeyGearEnabled, isForeverEnabled, unseenTabNotifications ->
+        LoggedInViewState(loggedInQueryData, isKeyGearEnabled, isForeverEnabled, unseenTabNotifications)
     }
         .stateIn(
             scope = viewModelScope,
@@ -84,6 +87,7 @@ class LoggedInViewModelImpl(
         }
         viewModelScope.launch {
             isKeyGearEnabled.update { featureManager.isFeatureEnabled(Feature.KEY_GEAR) }
+            isForeverEnabled.update { featureManager.isFeatureEnabled(Feature.FOREVER) }
         }
         viewModelScope.launch {
             val response = runCatching {

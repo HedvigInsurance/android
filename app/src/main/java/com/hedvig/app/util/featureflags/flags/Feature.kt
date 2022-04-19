@@ -15,4 +15,8 @@ enum class Feature(
     ),
     REFERRAL_CAMPAIGN("Used to show banner in referral view"),
     QUOTE_CART("Use new APIs for onboarding"),
+    FOREVER(
+        "Show the forever tab, allowing the user to track how many people they have invited to Hedvig," +
+            "and share their invite-link"
+    ),
 }
