@@ -4,6 +4,7 @@ import com.hedvig.app.MockActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
+import com.hedvig.app.feature.profile.ui.tab.ProfileQueryDataToProfileUiStateMapper
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.genericDevelopmentAdapter
 import com.hedvig.app.marketManagerModule
@@ -20,8 +21,9 @@ class ProfileMockActivity : MockActivity() {
     override val original = listOf(profileModule, marketManagerModule)
     override val mocks = listOf(
         module {
-            viewModel<ProfileViewModel> { MockProfileViewModel() }
             single<MarketManager> { MockMarketManager() }
+            single { ProfileQueryDataToProfileUiStateMapper(get(), get(), get()) }
+            viewModel<ProfileViewModel> { MockProfileViewModel(get()) }
         }
     )
 

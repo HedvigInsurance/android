@@ -42,7 +42,13 @@ fun <T> ApolloSubscriptionCall<T>.safeSubscription(): Flow<QueryResult<T>> {
 }
 
 fun <T> ApolloQueryWatcher<T>.safeFlow(): Flow<QueryResult<T>> {
-    return toFlow().map(Response<T>::toQueryResult)
+    return try {
+        toFlow().map(Response<T>::toQueryResult)
+    } catch (apolloException: ApolloException) {
+        flowOf(QueryResult.Error.NetworkError(apolloException.localizedMessage))
+    } catch (throwable: Throwable) {
+        flowOf(QueryResult.Error.GeneralError(throwable.localizedMessage))
+    }
 }
 
 fun <T> Response<T>.toQueryResult(): QueryResult<T> {

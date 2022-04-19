@@ -167,6 +167,7 @@ import com.hedvig.app.feature.onboarding.GetBundlesUseCase
 import com.hedvig.app.feature.onboarding.GetMemberIdUseCase
 import com.hedvig.app.feature.onboarding.MemberIdViewModel
 import com.hedvig.app.feature.onboarding.MemberIdViewModelImpl
+import com.hedvig.app.feature.profile.data.ObserveProfileUiStateUseCase
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.profile.ui.ProfileViewModelImpl
@@ -176,6 +177,7 @@ import com.hedvig.app.feature.profile.ui.myinfo.MyInfoViewModel
 import com.hedvig.app.feature.profile.ui.payment.PaymentRepository
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModelImpl
+import com.hedvig.app.feature.profile.ui.tab.ProfileQueryDataToProfileUiStateMapper
 import com.hedvig.app.feature.referrals.data.RedeemReferralCodeRepository
 import com.hedvig.app.feature.referrals.data.ReferralsRepository
 import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedViewModel
@@ -503,7 +505,10 @@ val offerModule = module {
 }
 
 val profileModule = module {
-    viewModel<ProfileViewModel> { ProfileViewModelImpl(get(), get()) }
+    single<ProfileQueryDataToProfileUiStateMapper> { ProfileQueryDataToProfileUiStateMapper(get(), get(), get()) }
+    single<ProfileRepository> { ProfileRepository(get()) }
+    single<ObserveProfileUiStateUseCase> { ObserveProfileUiStateUseCase(get(), get()) }
+    viewModel<ProfileViewModel> { ProfileViewModelImpl(get(), get(), get()) }
 }
 
 val keyGearModule = module {
@@ -638,7 +643,6 @@ val repositoriesModule = module {
     single { ChatRepository(get(), get(), get()) }
     single { PayinStatusRepository(get()) }
     single { ClaimsRepository(get(), get()) }
-    single { ProfileRepository(get()) }
     single { RedeemReferralCodeRepository(get(), get()) }
     single { UserRepository(get()) }
     single { WhatsNewRepository(get(), get(), get()) }

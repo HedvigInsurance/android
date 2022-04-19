@@ -1,8 +1,9 @@
 package com.hedvig.app.feature.settings
 
 import android.content.Context
+import androidx.annotation.StringRes
 import androidx.fragment.app.FragmentManager
-import com.hedvig.android.owldroid.graphql.ProfileQuery
+import com.hedvig.android.owldroid.fragment.ActivePaymentMethodsFragment
 import com.hedvig.android.owldroid.type.DirectDebitStatus
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticateDialog
@@ -89,8 +90,12 @@ enum class Market {
         }
     }
 
-    fun getPriceCaption(data: ProfileQuery.Data) = when (this) {
-        SE -> when (data.bankAccount?.directDebitStatus) {
+    @StringRes
+    fun getPriceCaption(
+        directDebitStatus: DirectDebitStatus?,
+        activePaymentMethodsFragment: ActivePaymentMethodsFragment?,
+    ): Int = when (this) {
+        SE -> when (directDebitStatus) {
             DirectDebitStatus.ACTIVE -> R.string.Direct_Debit_Connected
             DirectDebitStatus.NEEDS_SETUP,
             DirectDebitStatus.PENDING,
@@ -101,13 +106,13 @@ enum class Market {
         DK,
         NO,
         -> when {
-            data.activePaymentMethodsV2?.fragments?.activePaymentMethodsFragment?.asStoredCardDetails != null -> {
+            activePaymentMethodsFragment?.asStoredCardDetails != null -> {
                 R.string.Card_Connected
             }
-            data.activePaymentMethodsV2?.fragments?.activePaymentMethodsFragment?.asStoredThirdPartyDetails != null -> {
+            activePaymentMethodsFragment?.asStoredThirdPartyDetails != null -> {
                 R.string.Third_Party_Connected
             }
-            data.activePaymentMethodsV2 == null -> R.string.Card_Not_Connected
+            activePaymentMethodsFragment == null -> R.string.Card_Not_Connected
             else -> R.string.Card_Not_Connected
         }
         FR -> TODO()

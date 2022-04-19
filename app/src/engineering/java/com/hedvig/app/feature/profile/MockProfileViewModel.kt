@@ -1,24 +1,37 @@
 package com.hedvig.app.feature.profile
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
+import com.hedvig.app.feature.profile.ui.tab.ProfileQueryDataToProfileUiStateMapper
 import com.hedvig.app.testdata.feature.profile.PROFILE_DATA
 import com.hedvig.app.util.LiveEvent
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
-class MockProfileViewModel : ProfileViewModel() {
+class MockProfileViewModel(
+    private val profileQueryDataToProfileUiStateMapper: ProfileQueryDataToProfileUiStateMapper,
+) : ProfileViewModel() {
     override val dirty = MutableLiveData<Boolean>()
     override val trustlyUrl = LiveEvent<String>()
 
+    private val _data: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.Loading)
+    override val data: StateFlow<ViewState> = _data.asStateFlow()
+
     init {
-        load()
+        reload()
     }
 
-    override fun load() {
-        if (!shouldError) {
-            _data.value = ViewState.Success(profileData)
-        } else {
-            _data.value = ViewState.Error
-            shouldError = false
+    override fun reload() {
+        viewModelScope.launch {
+            if (!shouldError) {
+                _data.value = ViewState.Success(profileQueryDataToProfileUiStateMapper.map(profileData))
+            } else {
+                _data.value = ViewState.Error
+                shouldError = false
+            }
         }
     }
 
