@@ -37,8 +37,7 @@ class ProfileQueryDataToProfileUiStateMapper(
             charityState = charityState,
             priceData = priceData,
             cashbackUiState = CashbackUiState.fromDto(cashbackFragment),
-            charityOptions = from.cashbackOptions.filterNotNull()
-                .map(CharityOption.Companion::fromDto),
+            charityOptions = from.cashbackOptions.filterNotNull().map(CharityOption.Companion::fromDto),
         )
     }
 
