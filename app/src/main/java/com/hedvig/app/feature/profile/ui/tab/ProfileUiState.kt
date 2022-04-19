@@ -5,13 +5,27 @@ import com.hedvig.android.owldroid.fragment.CashbackFragment
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 
 data class ProfileUiState(
-    val member: ProfileQuery.Member,
+    val member: Member,
     val contactInfoName: String,
     val charityState: CharityState,
     val priceData: PriceData,
     val cashbackUiState: CashbackUiState?,
     val charityOptions: List<CharityOption>,
 )
+
+data class Member(
+    val email: String?,
+    val phoneNumber: String?,
+) {
+    companion object {
+        fun fromDto(dto: ProfileQuery.Member): Member {
+            return Member(
+                email = dto.email,
+                phoneNumber = dto.phoneNumber,
+            )
+        }
+    }
+}
 
 sealed interface CharityState {
     data class Selected(val charityName: String) : CharityState

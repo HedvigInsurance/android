@@ -32,7 +32,7 @@ class ProfileQueryDataToProfileUiStateMapper(
             )
         )
         return ProfileUiState(
-            member = from.member,
+            member = Member.fromDto(from.member),
             contactInfoName = "${from.member.firstName} ${from.member.lastName}",
             charityState = charityState,
             priceData = priceData,
