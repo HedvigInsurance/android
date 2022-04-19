@@ -5,18 +5,22 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.graphql.PaymentQuery
 import com.hedvig.app.data.debit.PayinStatusRepository
-import com.hedvig.app.util.extensions.combineState
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import com.hedvig.hanalytics.PaymentType
 import e
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
 abstract class PaymentViewModel(
     hAnalytics: HAnalytics,
@@ -24,7 +28,9 @@ abstract class PaymentViewModel(
     protected val _paymentData = MutableStateFlow<PaymentQuery.Data?>(null)
     protected val _payinStatusData = MutableStateFlow<Pair<PayinStatusQuery.Data?, PaymentType>?>(null)
     val data: StateFlow<Pair<PaymentQuery.Data?, Pair<PayinStatusQuery.Data?, PaymentType>?>> =
-        combineState(_paymentData, _payinStatusData, viewModelScope)
+        combine(_paymentData, _payinStatusData) { a, b ->
+            Pair(a, b)
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5.seconds), Pair(null, null))
 
     abstract fun load()
 
