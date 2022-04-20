@@ -7,12 +7,9 @@ import com.hedvig.app.feature.home.ui.changeaddress.GetAddressChangeStoryIdUseCa
 import com.hedvig.app.feature.home.ui.changeaddress.GetAddressChangeStoryIdUseCase.SelfChangeEligibilityResult.Error
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
-import com.hedvig.app.util.featureflags.Feature
-import com.hedvig.app.util.featureflags.FeatureManager
 
 class GetAddressChangeStoryIdUseCase(
     private val apolloClient: ApolloClient,
-    private val featureManager: FeatureManager,
 ) {
 
     suspend operator fun invoke(): SelfChangeEligibilityResult {
@@ -21,7 +18,8 @@ class GetAddressChangeStoryIdUseCase(
                 result.data
                     .activeContractBundles
                     .firstOrNull()
-                    ?.addressChangeStoryId()
+                    ?.angelStories
+                    ?.addressChangeV2
                     ?.let(::Eligible)
                     ?: Blocked
             is QueryResult.Error -> Error(result.message)
@@ -32,14 +30,5 @@ class GetAddressChangeStoryIdUseCase(
         data class Eligible(val embarkStoryId: String) : SelfChangeEligibilityResult()
         object Blocked : SelfChangeEligibilityResult()
         data class Error(val message: String?) : SelfChangeEligibilityResult()
-    }
-
-    private fun ActiveContractBundlesQuery.ActiveContractBundle.addressChangeStoryId(): String? {
-        return if (featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
-            // angelStories.addressChangeV2
-            angelStories.addressChange
-        } else {
-            angelStories.addressChange
-        }
     }
 }

@@ -6,7 +6,6 @@ import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
-import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
 import e
 
@@ -36,6 +35,6 @@ class GetCrossSellsUseCase(
         .flatMap { contractBundle ->
             contractBundle.potentialCrossSells
         }.map {
-            CrossSellData.from(it.fragments.crossSellFragment, featureManager.isFeatureEnabled(Feature.QUOTE_CART))
+            CrossSellData.from(it.fragments.crossSellFragment)
         }
 }

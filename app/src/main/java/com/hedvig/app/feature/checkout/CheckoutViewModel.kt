@@ -18,7 +18,6 @@ import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.ValidationResult
-import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.app.util.validateEmail
 import com.hedvig.app.util.validateNationalIdentityNumber
 import com.hedvig.hanalytics.HAnalytics
@@ -43,9 +42,8 @@ class CheckoutViewModel(
     private val marketManager: MarketManager,
     private val loginStatusService: LoginStatusService,
     private val hAnalytics: HAnalytics,
-    private val featureManager: FeatureManager,
     private val offerRepository: OfferRepository,
-    private val bundleVariantUseCase: GetBundleVariantUseCase,
+    bundleVariantUseCase: GetBundleVariantUseCase,
 ) : ViewModel() {
 
     private val _titleViewState = MutableStateFlow<TitleViewState>(TitleViewState.Loading)
@@ -159,9 +157,9 @@ class CheckoutViewModel(
 
     private fun signQuotes(parameter: EditAndSignParameter) {
         viewModelScope.launch {
-            either<ErrorMessage, SignQuotesUseCase.SignQuoteResult> {
+            either<ErrorMessage, SignQuotesUseCase.Success> {
                 editQuotesUseCase.editQuotes(parameter).bind()
-                signQuotesUseCase.signQuotesAndClearCache(quoteIds, quoteCartId).bind()
+                signQuotesUseCase.signQuotesAndClearCache(quoteCartId, quoteIds).bind()
             }.fold(
                 ifLeft = { _events.trySend(Event.Error(it.message)) },
                 ifRight = { offerRepository.queryAndEmitOffer(quoteCartId) }
@@ -178,11 +176,6 @@ class CheckoutViewModel(
         ssn = identityNumberInput,
         email = emailInput
     )
-
-    private suspend fun SignQuotesUseCase.SignQuoteResult.toEvent(): Event = when (this) {
-        SignQuotesUseCase.SignQuoteResult.StartSimpleSign -> onSignSuccess()
-        else -> Event.Error()
-    }
 
     private suspend fun onSignSuccess(): Event.CheckoutSuccess {
         hAnalytics.quotesSigned(quoteIds)

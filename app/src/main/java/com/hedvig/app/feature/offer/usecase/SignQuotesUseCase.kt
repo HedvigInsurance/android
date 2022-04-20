@@ -13,24 +13,12 @@ class SignQuotesUseCase(
     private val apolloClient: ApolloClient,
 ) {
 
-    sealed class SignQuoteResult {
-        object StartSimpleSign : SignQuoteResult()
-        data class StartSwedishBankId(
-            val autoStartToken: String?,
-        ) : SignQuoteResult()
-    }
+    object Success
 
     suspend fun signQuotesAndClearCache(
-        quoteIds: List<String>,
-        quoteCartId: QuoteCartId?
-    ): Either<ErrorMessage, SignQuoteResult> {
-        return signQuoteCart(quoteCartId, quoteIds)
-    }
-
-    private suspend fun signQuoteCart(
         quoteCartId: QuoteCartId?,
         quoteIds: List<String>
-    ): Either<ErrorMessage, SignQuoteResult> = either {
+    ): Either<ErrorMessage, Success> = either {
         ensureNotNull(quoteCartId) { ErrorMessage("Quote cart id not found") }
 
         val result = mutateQuoteCart(quoteCartId, quoteIds).bind()
@@ -38,7 +26,7 @@ class SignQuotesUseCase(
 
         ensure(errorMessage == null) { ErrorMessage(errorMessage) }
 
-        SignQuoteResult.StartSwedishBankId(null)
+        Success
     }
 
     private suspend fun mutateQuoteCart(

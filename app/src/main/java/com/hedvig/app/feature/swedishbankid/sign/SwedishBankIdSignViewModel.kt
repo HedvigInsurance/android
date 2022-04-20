@@ -23,7 +23,6 @@ import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
 class SwedishBankIdSignViewModel(
-    autoStartToken: String?,
     private val loginStatusService: LoginStatusService,
     private val hAnalytics: HAnalytics,
     private val quoteCartId: QuoteCartId,
@@ -42,7 +41,7 @@ class SwedishBankIdSignViewModel(
     val viewState = _viewState.asStateFlow()
 
     sealed class Event {
-        data class StartBankID(val autoStartToken: String?) : Event()
+        object StartBankID : Event()
         object StartDirectDebit : Event()
     }
 
@@ -52,7 +51,7 @@ class SwedishBankIdSignViewModel(
     private var hasCompletedSign = false
 
     init {
-        _events.trySend(Event.StartBankID(autoStartToken))
+        _events.trySend(Event.StartBankID)
         observeOfferSignState(quoteCartId)
     }
 
