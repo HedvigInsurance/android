@@ -24,18 +24,22 @@ class ProfileQueryDataToProfileUiStateMapper(
             if (charityName != null) return@run CharityState.Selected(charityName)
             CharityState.NoneSelected
         }
-        val priceData = PriceData(
-            monetaryMonthlyNet = from.insuranceCost.formatMonetaryMonthlyNet(localeManager.getJavaUtilLocale()),
-            priceCaptionResId = marketManager.market?.getPriceCaption(
-                from.bankAccount?.directDebitStatus,
-                from.activePaymentMethodsV2?.fragments?.activePaymentMethodsFragment,
+        val priceData = if (featureManager.isFeatureEnabled(Feature.PAYMENT_SCREEN)) {
+            PaymentState.Show(
+                monetaryMonthlyNet = from.insuranceCost.formatMonetaryMonthlyNet(localeManager.getJavaUtilLocale()),
+                priceCaptionResId = marketManager.market?.getPriceCaption(
+                    from.bankAccount?.directDebitStatus,
+                    from.activePaymentMethodsV2?.fragments?.activePaymentMethodsFragment,
+                )
             )
-        )
+        } else {
+            PaymentState.DontShow
+        }
         return ProfileUiState(
             member = Member.fromDto(from.member),
             contactInfoName = "${from.member.firstName} ${from.member.lastName}",
             charityState = charityState,
-            priceData = priceData,
+            paymentState = priceData,
             cashbackUiState = CashbackUiState.fromDto(cashbackFragment),
             charityOptions = from.cashbackOptions.filterNotNull().map(CharityOption.Companion::fromDto),
         )

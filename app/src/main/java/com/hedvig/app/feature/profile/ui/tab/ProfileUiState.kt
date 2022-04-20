@@ -8,7 +8,7 @@ data class ProfileUiState(
     val member: Member,
     val contactInfoName: String,
     val charityState: CharityState,
-    val priceData: PriceData,
+    val paymentState: PaymentState,
     val cashbackUiState: CashbackUiState?,
     val charityOptions: List<CharityOption>,
 )
@@ -33,10 +33,14 @@ sealed interface CharityState {
     object NoneSelected : CharityState
 }
 
-data class PriceData(
-    val monetaryMonthlyNet: String,
-    @StringRes val priceCaptionResId: Int?,
-)
+sealed interface PaymentState {
+    data class Show(
+        val monetaryMonthlyNet: String,
+        @StringRes val priceCaptionResId: Int?,
+    ) : PaymentState
+
+    object DontShow : PaymentState
+}
 
 data class CashbackUiState(
     val id: String?,

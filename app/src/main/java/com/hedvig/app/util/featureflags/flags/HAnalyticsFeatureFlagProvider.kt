@@ -18,5 +18,6 @@ class HAnalyticsFeatureFlagProvider(
         Feature.REFERRAL_CAMPAIGN -> hAnalytics.foreverFebruaryCampaign()
         Feature.SHOW_CHARITY -> TODO("hAnalytics.qasa() or whatever the name will be")
         Feature.UPDATE_NECESSARY -> hAnalytics.updateNecessary()
+        Feature.PAYMENT_SCREEN -> TODO("Implement when added to upstream hAnalytics")
     }
 }

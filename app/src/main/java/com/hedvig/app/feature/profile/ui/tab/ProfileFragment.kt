@@ -15,7 +15,6 @@ import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppActivity
 import com.hedvig.app.feature.profile.ui.charity.CharityActivity
 import com.hedvig.app.feature.profile.ui.myinfo.MyInfoActivity
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.triggerRestartActivity
@@ -24,7 +23,6 @@ import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class ProfileFragment : Fragment(R.layout.profile_fragment) {
@@ -32,7 +30,6 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
     private val model: ProfileViewModel by sharedViewModel()
     private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
     private var scroll = 0
-    private val marketManager: MarketManager by inject()
 
     override fun onResume() {
         super.onResume()
@@ -107,16 +104,21 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                 CharityState.NoneSelected -> add(buildCharityRowItem())
                 is CharityState.Selected -> add(buildCharityRowItem(charityState.charityName))
             }
-            add(
-                ProfileModel.Row(
-                    title = getString(R.string.PROFILE_ROW_PAYMENT_TITLE),
-                    caption = getPriceCaption(profileUiState.priceData),
-                    icon = R.drawable.ic_payment,
-                    onClick = {
-                        startActivity(Intent(requireContext(), PaymentActivity::class.java))
-                    }
-                )
-            )
+            when (val paymentState = profileUiState.paymentState) {
+                is PaymentState.Show -> {
+                    add(
+                        ProfileModel.Row(
+                            title = getString(R.string.PROFILE_ROW_PAYMENT_TITLE),
+                            caption = getPriceCaption(paymentState),
+                            icon = R.drawable.ic_payment,
+                            onClick = {
+                                startActivity(Intent(requireContext(), PaymentActivity::class.java))
+                            }
+                        )
+                    )
+                }
+                PaymentState.DontShow -> {}
+            }
             add(ProfileModel.Subtitle)
             add(
                 ProfileModel.Row(
@@ -153,8 +155,8 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
         )
     }
 
-    private fun getPriceCaption(priceData: PriceData): String {
-        priceData.priceCaptionResId ?: return ""
-        return getString(priceData.priceCaptionResId, priceData.monetaryMonthlyNet)
+    private fun getPriceCaption(paymentState: PaymentState.Show): String {
+        paymentState.priceCaptionResId ?: return ""
+        return getString(paymentState.priceCaptionResId, paymentState.monetaryMonthlyNet)
     }
 }

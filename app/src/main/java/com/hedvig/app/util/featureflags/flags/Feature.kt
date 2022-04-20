@@ -16,4 +16,5 @@ enum class Feature(
     UPDATE_NECESSARY(
         "Defines the lowest supported app version. Should prompt a user to update if it uses an outdated version."
     ),
+    PAYMENT_SCREEN("Controls whether the payment screen should be accessible from the profile tab"),
 }

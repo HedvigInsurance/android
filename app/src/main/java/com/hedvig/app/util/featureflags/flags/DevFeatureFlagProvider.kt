@@ -19,6 +19,7 @@ class DevFeatureFlagProvider(
             Feature.REFERRAL_CAMPAIGN -> false
             Feature.SHOW_CHARITY -> isQasaMember
             Feature.UPDATE_NECESSARY -> false
+            Feature.PAYMENT_SCREEN -> true
         }
     }
 }
