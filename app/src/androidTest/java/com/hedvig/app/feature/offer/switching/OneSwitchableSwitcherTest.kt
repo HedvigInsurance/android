@@ -32,7 +32,7 @@ class OneSwitchableSwitcherTest : TestCase() {
 
     @Test
     fun givenQuoteBundleWithOneSwitchablePreviousInsurerShouldShowPreviousInsurerSection() = run {
-        activityRule.launch(OfferActivity.newInstance(context(), listOf("123")))
+        activityRule.launch(OfferActivity.newInstance(context()))
 
         OfferScreen {
             scroll {

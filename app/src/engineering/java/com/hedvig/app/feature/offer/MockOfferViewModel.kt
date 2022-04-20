@@ -4,7 +4,6 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.DataCollectionResultQuery
 import com.hedvig.android.owldroid.graphql.DataCollectionStatusSubscription
 import com.hedvig.android.owldroid.graphql.OfferQuery
-import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.feature.adyen.PaymentTokenId
 import com.hedvig.app.feature.checkout.CheckoutParameter
@@ -35,7 +34,6 @@ class MockOfferViewModel : OfferViewModel() {
     override val viewState: StateFlow<ViewState> = _viewState.asStateFlow()
 
     override fun removeDiscount() = Unit
-    override fun writeDiscountToCache(data: RedeemReferralCodeMutation.Data) = Unit
     override suspend fun triggerOpenChat() = Unit
 
     override fun onOpenQuoteDetails(
@@ -89,6 +87,7 @@ class MockOfferViewModel : OfferViewModel() {
                 val offerModel = mockData.offer!!.toOfferModel()
                 _viewState.value = ViewState.Content(
                     offerModel = offerModel,
+                    bundleVariant = offerModel.variants.first(),
                     loginStatus = LoginStatus.LoggedIn,
                     paymentMethods = offerModel.paymentApiResponseOrNull(),
                     externalProvider = ExternalProvider(
@@ -98,6 +97,7 @@ class MockOfferViewModel : OfferViewModel() {
                         (mockData.dataCollectionResult?.data as? DataCollectionResult.Content)?.collectedList
                             ?.first()?.name,
                     ),
+                    onVariantSelected = {},
                 )
                 delay(2.seconds)
             } while (mockRefreshEvery2Seconds)

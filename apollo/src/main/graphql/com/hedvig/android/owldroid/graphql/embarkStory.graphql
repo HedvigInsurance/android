@@ -254,6 +254,7 @@ query EmbarkStory($name: String!, $locale: String!) {
           expression {
             ...ExpressionFragment
           }
+          selectedInsuranceTypes
         }
       }
       variantedOfferRedirects {

@@ -35,7 +35,6 @@ import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.extensions.canOpenUri
-import com.hedvig.app.util.extensions.toArrayList
 import com.hedvig.app.util.extensions.viewLifecycle
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import kotlinx.coroutines.flow.launchIn
@@ -48,10 +47,6 @@ class SwedishBankIdSignDialog : DialogFragment() {
     private val model: SwedishBankIdSignViewModel by viewModel {
         parametersOf(
             requireArguments().getString(AUTO_START_TOKEN),
-            requireArguments().getStringArrayList(QUOTE_IDS)
-                ?: throw IllegalArgumentException(
-                    "Programmer error: Missing QUOTE_IDS in ${this.javaClass.name}"
-                ),
             requireArguments().getParcelable(QUOTE_CART_ID)
         )
     }
@@ -136,18 +131,15 @@ class SwedishBankIdSignDialog : DialogFragment() {
         }
 
         private const val AUTO_START_TOKEN = "AUTO_START_TOKEN"
-        private const val QUOTE_IDS = "QUOTE_IDS"
         private const val QUOTE_CART_ID = "QUOTE_CART_ID"
         const val TAG = "OfferSignDialog"
         fun newInstance(
             autoStartToken: String?,
-            quoteIds: List<String>,
             quoteCartId: QuoteCartId?
         ) =
             SwedishBankIdSignDialog().apply {
                 arguments = bundleOf(
                     AUTO_START_TOKEN to autoStartToken,
-                    QUOTE_IDS to quoteIds.toArrayList(),
                     QUOTE_CART_ID to quoteCartId
                 )
             }

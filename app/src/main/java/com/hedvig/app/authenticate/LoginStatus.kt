@@ -6,7 +6,6 @@ sealed class LoginStatus {
     object Onboarding : LoginStatus()
     object LoggedIn : LoginStatus()
     data class InOffer(
-        val quoteCartId: QuoteCartId?,
-        val quoteIds: Set<String>
+        val quoteCartId: QuoteCartId?
     ) : LoginStatus()
 }

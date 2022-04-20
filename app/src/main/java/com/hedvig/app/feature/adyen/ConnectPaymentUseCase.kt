@@ -3,26 +3,18 @@ package com.hedvig.app.feature.adyen
 import android.content.Context
 import arrow.core.Either
 import arrow.core.flatMap
-import arrow.core.left
 import arrow.core.right
 import com.adyen.checkout.redirect.RedirectComponent
-import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.ConnectPaymentMutation
-import com.hedvig.android.owldroid.graphql.TokenizePaymentDetailsMutation
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
-import com.hedvig.app.util.apollo.safeQuery
-import com.hedvig.app.util.featureflags.Feature
-import com.hedvig.app.util.featureflags.FeatureManager
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import org.json.JSONObject
 
 class ConnectPaymentUseCase(
-    private val apolloClient: ApolloClient,
     private val context: Context,
-    private val featureManager: FeatureManager,
     private val marketManager: MarketManager,
     private val graphQLQueryHandler: GraphQLQueryHandler,
 ) {
@@ -33,11 +25,7 @@ class ConnectPaymentUseCase(
     }
 
     suspend fun getPaymentTokenId(data: JSONObject): Either<Error, PaymentTokenId> {
-        return if (featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
-            connectPayment(data)
-        } else {
-            tokenizePaymentDetails(data)
-        }
+        return connectPayment(data)
     }
 
     private suspend fun connectPayment(data: JSONObject): Either<Error, PaymentTokenId> = graphQLQueryHandler
@@ -72,22 +60,4 @@ class ConnectPaymentUseCase(
             .toString()
             .let { JSONObject(it) }.put("paymentMethodDetails", data.getJSONObject("paymentMethod"))
     }
-
-    private suspend fun tokenizePaymentDetails(data: JSONObject): Either<Error, PaymentTokenId> = apolloClient
-        .mutate(createTokenizePaymentMutation(data))
-        .safeQuery()
-        .toEither()
-        .mapLeft { Error.ErrorMessage(it.message) }
-        .flatMap {
-            it.tokenizePaymentDetails?.asTokenizationResponseFinished?.let {
-                PaymentTokenId(it.resultCode).right()
-            } ?: it.tokenizePaymentDetails?.asTokenizationResponseAction?.let {
-                Error.CheckoutPaymentAction(it.action).left()
-            } ?: Error.ErrorMessage(null).left()
-        }
-
-    private fun createTokenizePaymentMutation(data: JSONObject) = TokenizePaymentDetailsMutation(
-        data.getJSONObject("paymentMethod").toString(),
-        RedirectComponent.getReturnUrl(context)
-    )
 }

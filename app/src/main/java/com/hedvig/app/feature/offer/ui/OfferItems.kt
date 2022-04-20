@@ -34,6 +34,15 @@ sealed class OfferItems {
         val quoteCartId: QuoteCartId?
     ) : OfferItems()
 
+    data class VariantButton(
+        val id: String,
+        val title: String,
+        val subTitle: String?,
+        val price: MonetaryAmount,
+        val isSelected: Boolean,
+        val onVariantSelected: (id: String) -> Unit
+    ) : OfferItems()
+
     data class Facts(
         val table: Table,
     ) : OfferItems()

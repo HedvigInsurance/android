@@ -19,7 +19,7 @@ class OfferItemsBuilderTest {
             ignoreCampaigns = true
         ).build()
 
-        val items = OfferItemsBuilder.createTopOfferItems(testData, null, null)
+        val items = OfferItemsBuilder.createTopOfferItems(testData, null, null,)
 
         assertThat(items).containsOfType<OfferItems.Header>()
         val header = items.first { it is OfferItems.Header } as OfferItems.Header
@@ -34,7 +34,7 @@ class OfferItemsBuilderTest {
             ignoreCampaigns = false
         ).build()
 
-        val items = OfferItemsBuilder.createTopOfferItems(testData, null, null)
+        val items = OfferItemsBuilder.createTopOfferItems(testData, null, null,)
 
         assertThat(items).containsOfType<OfferItems.Header>()
         val header = items.first { it is OfferItems.Header } as OfferItems.Header
@@ -48,7 +48,7 @@ class OfferItemsBuilderTest {
             checkoutLabel = CheckoutLabel.APPROVE
         ).build()
 
-        val items = OfferItemsBuilder.createTopOfferItems(testData, null, null)
+        val items = OfferItemsBuilder.createTopOfferItems(testData, null, null,)
 
         assertThat(items).containsOfType<OfferItems.Header>()
         val header = items.first { it is OfferItems.Header } as OfferItems.Header
@@ -68,7 +68,7 @@ class OfferItemsBuilderTest {
             checkoutLabel = CheckoutLabel.CONFIRM
         ).build()
 
-        val topItems = OfferItemsBuilder.createTopOfferItems(testData, null, null)
+        val topItems = OfferItemsBuilder.createTopOfferItems(testData, null, null,)
 
         assertThat(topItems).containsOfType<OfferItems.Header>()
         val header = topItems.first { it is OfferItems.Header } as OfferItems.Header

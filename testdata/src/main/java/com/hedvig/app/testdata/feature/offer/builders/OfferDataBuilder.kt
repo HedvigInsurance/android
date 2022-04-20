@@ -36,18 +36,26 @@ data class OfferDataBuilder(
 ) {
     fun build() = OfferQuery.Data(
         quoteBundle = OfferQuery.QuoteBundle(
-            fragments = OfferQuery.QuoteBundle.Fragments(
-                quoteBundleFragment = QuoteBundleFragment(
-                    displayName = bundleDisplayName,
-                    quotes = quotes,
-                    bundleCost = QuoteBundleFragment.BundleCost(
-                        fragments = QuoteBundleFragment.BundleCost.Fragments(insuranceCost)
-                    ),
-                    frequentlyAskedQuestions = frequentlyAskedQuestions,
-                    inception = inceptions,
-                    appConfiguration = appConfiguration
+            possibleVariations = listOf(
+                OfferQuery.PossibleVariation(
+                    id = "test",
+                    tag = "test tag",
+                    bundle = OfferQuery.Bundle(
+                        fragments = OfferQuery.Bundle.Fragments(
+                            quoteBundleFragment = QuoteBundleFragment(
+                                displayName = bundleDisplayName,
+                                quotes = quotes,
+                                bundleCost = QuoteBundleFragment.BundleCost(
+                                    fragments = QuoteBundleFragment.BundleCost.Fragments(insuranceCost)
+                                ),
+                                frequentlyAskedQuestions = frequentlyAskedQuestions,
+                                inception = inceptions,
+                                appConfiguration = appConfiguration
+                            )
+                        )
+                    )
                 )
-            )
+            ),
         ),
         redeemedCampaigns = redeemedCampaigns,
         signMethodForQuotes = signMethod,
