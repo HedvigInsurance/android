@@ -18,5 +18,6 @@ class HAnalyticsFeatureFlagProvider(
         Feature.REFERRAL_CAMPAIGN -> hAnalytics.foreverFebruaryCampaign()
         Feature.QUOTE_CART -> hAnalytics.useQuoteCart()
         Feature.CONNECT_PAYIN_REMINDER -> TODO("Implement when added to upstream hAnalytics")
+        Feature.COMMON_CLAIMS -> TODO("Implement when added to upstream hAnalytics")
     }
 }

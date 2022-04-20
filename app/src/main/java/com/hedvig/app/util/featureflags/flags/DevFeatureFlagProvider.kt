@@ -17,5 +17,6 @@ class DevFeatureFlagProvider(
         Feature.REFERRAL_CAMPAIGN -> false
         Feature.QUOTE_CART -> false
         Feature.CONNECT_PAYIN_REMINDER -> true
+        Feature.COMMON_CLAIMS -> true
     }
 }
