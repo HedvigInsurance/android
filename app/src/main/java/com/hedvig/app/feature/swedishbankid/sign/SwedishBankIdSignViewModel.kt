@@ -29,9 +29,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalTime::class)
 class SwedishBankIdSignViewModel(
     autoStartToken: String?,
     subscribeToSwedishBankIdSignStatusUseCase: SubscribeToSwedishBankIdSignStatusUseCase,

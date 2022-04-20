@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.insurance.ui
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,7 +18,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun NotificationSubheading(
     text: String,

@@ -35,7 +35,7 @@ class OfferMockActivity : MockActivity() {
     override val original = listOf(offerModule)
     override val mocks = listOf(
         module {
-            viewModel<OfferViewModel> { MockOfferViewModel() }
+            viewModel<OfferViewModel> { MockOfferViewModel(get()) }
         }
     )
 

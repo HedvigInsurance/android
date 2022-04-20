@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.claimdetail.ui
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -25,7 +24,6 @@ import com.hedvig.app.service.audioplayer.AudioPlayer
 import com.hedvig.app.service.audioplayer.AudioPlayerImpl
 import com.hedvig.app.service.audioplayer.AudioPlayerState
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AudioPlayBackItem(
     onPlayClick: () -> Unit,

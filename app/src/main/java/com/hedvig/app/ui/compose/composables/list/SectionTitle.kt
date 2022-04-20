@@ -1,7 +1,6 @@
 package com.hedvig.app.ui.compose.composables.list
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,7 +21,6 @@ import com.hedvig.app.ui.compose.theme.HedvigTheme
  * Matches the specification of the Section Title-component from the List-components section of the design system
  * https://www.figma.com/file/tpp00CvD8ALUKdjDRzyygv/Android-UI-Kit?node-id=1711%3A3938
  */
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun SectionTitle(
     text: String,
