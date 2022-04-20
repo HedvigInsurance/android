@@ -172,7 +172,6 @@ import com.hedvig.app.feature.onboarding.MemberIdViewModelImpl
 import com.hedvig.app.feature.profile.data.ObserveProfileUiStateUseCase
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
-import com.hedvig.app.feature.profile.ui.ProfileViewModelImpl
 import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppViewModel
 import com.hedvig.app.feature.profile.ui.charity.CharityViewModel
 import com.hedvig.app.feature.profile.ui.myinfo.MyInfoViewModel
@@ -513,7 +512,7 @@ val profileModule = module {
     single<ProfileQueryDataToProfileUiStateMapper> { ProfileQueryDataToProfileUiStateMapper(get(), get(), get()) }
     single<ProfileRepository> { ProfileRepository(get()) }
     single<ObserveProfileUiStateUseCase> { ObserveProfileUiStateUseCase(get(), get()) }
-    viewModel<ProfileViewModel> { ProfileViewModelImpl(get(), get(), get()) }
+    viewModel<ProfileViewModel> { ProfileViewModel(get(), get(), get()) }
 }
 
 val keyGearModule = module {
