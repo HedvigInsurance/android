@@ -7,11 +7,9 @@ import assertk.assertions.isInstanceOf
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
 import io.mockk.coEvery
 import io.mockk.mockk
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class GetFinalDanishAddressSelectionUseCaseTest {
 
     private fun getTestUseCase(

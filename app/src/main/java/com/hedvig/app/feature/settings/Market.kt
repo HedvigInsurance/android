@@ -9,10 +9,8 @@ import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticateDialog
 import com.hedvig.app.authenticate.LoginDialog
 import com.hedvig.app.feature.adyen.AdyenCurrency
-import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinActivity
 import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutActivity
 import com.hedvig.app.feature.onboarding.ui.ChoosePlanActivity
-import com.hedvig.app.feature.trustly.TrustlyConnectPayinActivity
 import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationActivity
 
@@ -21,21 +19,6 @@ enum class Market {
     NO,
     DK,
     FR;
-
-    /**
-     * Members paying to Hedvig
-     */
-    fun connectPayin(context: Context, isPostSign: Boolean = false) = when (this) {
-        SE -> TrustlyConnectPayinActivity.newInstance(
-            context,
-            isPostSign
-        )
-        NO, DK, FR -> AdyenConnectPayinActivity.newInstance(
-            context,
-            AdyenCurrency.fromMarket(this),
-            isPostSign
-        )
-    }
 
     /**
      * Hedvig paying to member

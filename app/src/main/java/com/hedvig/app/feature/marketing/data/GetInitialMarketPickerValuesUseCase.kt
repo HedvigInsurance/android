@@ -1,13 +1,12 @@
 package com.hedvig.app.feature.marketing.data
 
 import android.content.Context
-import arrow.core.Either
+import arrow.core.identity
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.GeoQuery
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.app.util.featureflags.flags.Feature
@@ -18,24 +17,28 @@ class GetInitialMarketPickerValuesUseCase(
     private val apolloClient: ApolloClient,
     private val featureManager: FeatureManager,
 ) {
-    suspend operator fun invoke(): Either<QueryResult.Error, Pair<Market?, Language?>> {
+    suspend operator fun invoke(): Pair<Market, Language?> {
         val currentMarket = marketManager.market
         if (currentMarket != null) {
             val currentLanguage = Language.fromSettings(context, currentMarket)
-            return Either.Right(currentMarket to currentLanguage)
+            return currentMarket to currentLanguage
         }
 
-        return apolloClient
+        val marketOrDefault = apolloClient
             .query(GeoQuery())
             .safeQuery()
             .toEither()
             .map { runCatching { Market.valueOf(it.geo.countryISOCode) }.getOrNull() }
             .map { market ->
                 if (market == Market.FR && !featureManager.isFeatureEnabled(Feature.FRANCE_MARKET)) {
-                    null to null
+                    null
                 } else {
-                    market to null
+                    market
                 }
             }
+            .fold({ null }, ::identity)
+            ?: Market.SE
+
+        return Pair(marketOrDefault, null)
     }
 }

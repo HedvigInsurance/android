@@ -3,6 +3,8 @@ package com.hedvig.app.feature.profile.ui.payment
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.hedvig.android.owldroid.graphql.PaymentQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
@@ -13,6 +15,8 @@ import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.setupToolbarScrollListener
 import com.hedvig.app.util.extensions.viewBinding
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -35,13 +39,17 @@ class PaymentHistoryActivity : BaseActivity(R.layout.activity_payment_history) {
 
             paymentHistory.adapter = PaymentHistoryAdapter(marketManager)
 
-            model.data.observe(this@PaymentHistoryActivity) { (data, _) ->
-                data?.chargeHistory?.let { chargeHistory ->
-                    (paymentHistory.adapter as? PaymentHistoryAdapter)?.submitList(
-                        listOf(ChargeWrapper.Title) + wrapCharges(chargeHistory)
-                    )
+            model
+                .data
+                .flowWithLifecycle(lifecycle)
+                .onEach { (data, _) ->
+                    data?.chargeHistory?.let { chargeHistory ->
+                        (paymentHistory.adapter as? PaymentHistoryAdapter)?.submitList(
+                            listOf(ChargeWrapper.Title) + wrapCharges(chargeHistory)
+                        )
+                    }
                 }
-            }
+                .launchIn(lifecycleScope)
         }
     }
 

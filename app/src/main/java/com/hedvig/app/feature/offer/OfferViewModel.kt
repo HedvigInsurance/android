@@ -17,7 +17,6 @@ import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.offer.model.OfferModel
 import com.hedvig.app.feature.offer.model.QuoteCartId
-import com.hedvig.app.feature.offer.model.paymentApiResponseOrNull
 import com.hedvig.app.feature.offer.model.quotebundle.PostSignScreen
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
 import com.hedvig.app.feature.offer.usecase.AddPaymentTokenUseCase
@@ -30,13 +29,13 @@ import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.app.util.featureflags.flags.Feature
 import com.hedvig.hanalytics.HAnalytics
+import com.hedvig.hanalytics.PaymentType
 import e
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
@@ -45,7 +44,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
@@ -71,6 +69,7 @@ abstract class OfferViewModel : ViewModel() {
             val startDate: LocalDate?,
             val postSignScreen: PostSignScreen,
             val bundleDisplayName: String,
+            val payinType: PaymentType,
         ) : Event()
 
         data class StartSwedishBankIdSign(val autoStartToken: String?) : Event()
@@ -168,14 +167,7 @@ class OfferViewModelImpl(
 ) : OfferViewModel() {
 
     private val _viewState: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.Loading)
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override val viewState: StateFlow<ViewState> = _viewState
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = ViewState.Loading,
-        )
+    override val viewState: StateFlow<ViewState> = _viewState.asStateFlow()
 
     init {
         loginStatusService.isViewingOffer = shouldShowOnNextAppStart
@@ -203,8 +195,7 @@ class OfferViewModelImpl(
                         ViewState.Content(
                             offerModel = offerModel,
                             loginStatus = loginStatusService.getLoginStatus(),
-                            paymentMethods = offerModel.paymentApiResponseOrNull()
-                                ?: adyenRepository.paymentMethodsResponse(),
+                            paymentMethods = offerModel.paymentMethodsApiResponse,
                             externalProvider = externalProvider
                         )
                     }
@@ -214,8 +205,7 @@ class OfferViewModelImpl(
                         ViewState.Content(
                             offerModel = offerModel,
                             loginStatus = loginStatusService.getLoginStatus(),
-                            paymentMethods = offerModel.paymentApiResponseOrNull()
-                                ?: adyenRepository.paymentMethodsResponse(),
+                            paymentMethods = offerModel.paymentMethodsApiResponse,
                             externalProvider = null
                         )
                     )
@@ -240,7 +230,8 @@ class OfferViewModelImpl(
                     val event = Event.ApproveSuccessful(
                         startDate = result.date,
                         postSignScreen = result.postSignScreen,
-                        bundleDisplayName = result.bundleName
+                        bundleDisplayName = result.bundleName,
+                        payinType = featureManager.getPaymentType(),
                     )
                     _events.trySend(event)
                 }

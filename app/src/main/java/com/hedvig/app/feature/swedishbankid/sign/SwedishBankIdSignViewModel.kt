@@ -17,6 +17,7 @@ import com.hedvig.app.util.extensions.mapEitherRight
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.app.util.featureflags.flags.Feature
 import com.hedvig.hanalytics.HAnalytics
+import com.hedvig.hanalytics.PaymentType
 import e
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -28,9 +29,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalTime::class)
 class SwedishBankIdSignViewModel(
     autoStartToken: String?,
     subscribeToSwedishBankIdSignStatusUseCase: SubscribeToSwedishBankIdSignStatusUseCase,
@@ -56,7 +55,7 @@ class SwedishBankIdSignViewModel(
 
     sealed class Event {
         data class StartBankID(val autoStartToken: String?) : Event()
-        object StartDirectDebit : Event()
+        data class StartDirectDebit(val payinType: PaymentType) : Event()
     }
 
     private val _events = Channel<Event>(Channel.UNLIMITED)
@@ -129,7 +128,7 @@ class SwedishBankIdSignViewModel(
         loginStatusService.isLoggedIn = true
         viewModelScope.launch {
             delay(1.seconds)
-            _events.trySend(Event.StartDirectDebit)
+            _events.trySend(Event.StartDirectDebit(featureManager.getPaymentType()))
         }
     }
 

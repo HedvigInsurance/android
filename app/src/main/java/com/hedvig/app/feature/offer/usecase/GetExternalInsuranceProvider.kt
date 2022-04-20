@@ -18,7 +18,7 @@ class GetExternalInsuranceProviderUseCase(
 
     fun observeExternalProviderOrNull(id: String?): Flow<ExternalProvider?> {
         return if (id == null) {
-            flow<ExternalProvider?> { emit(null) }
+            flow { emit(null) }
         } else {
             subscribeToDataCollectionStatusUseCase.invoke(id)
                 .mapLatest { dataCollectionStatus ->
@@ -51,7 +51,7 @@ class GetExternalInsuranceProviderUseCase(
 }
 
 data class ExternalProvider(
-    val dataCollectionStatus: SubscribeToDataCollectionStatusUseCase.Status?,
+    val dataCollectionStatus: SubscribeToDataCollectionStatusUseCase.Status,
     val dataCollectionResult: DataCollectionResult?,
     val insuranceProviderDisplayName: String?,
 )

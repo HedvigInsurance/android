@@ -148,6 +148,8 @@ import com.hedvig.app.feature.marketpicker.LocaleBroadcastManager
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.offer.OfferViewModelImpl
+import com.hedvig.app.feature.offer.model.OfferQueryDataToOfferModelMapper
+import com.hedvig.app.feature.offer.model.QuoteCartFragmentToOfferModelMapper
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetViewModel
@@ -480,6 +482,7 @@ val insuranceModule = module {
 }
 
 val offerModule = module {
+    single<OfferRepository> { OfferRepository(get(), get(), get(), get(), get()) }
     viewModel<OfferViewModel> { parametersHolder: ParametersHolder ->
         OfferViewModelImpl(
             quoteIds = parametersHolder.get(),
@@ -502,6 +505,8 @@ val offerModule = module {
     single { SubscribeToDataCollectionStatusUseCase(get()) }
     single { GetProviderDisplayNameUseCase(get()) }
     single { GetDataCollectionResultUseCase(get()) }
+    single { OfferQueryDataToOfferModelMapper(get(), get()) }
+    single { QuoteCartFragmentToOfferModelMapper(get()) }
 }
 
 val profileModule = module {
@@ -519,7 +524,7 @@ val keyGearModule = module {
 }
 
 val paymentModule = module {
-    viewModel<PaymentViewModel> { PaymentViewModelImpl(get(), get(), get()) }
+    viewModel<PaymentViewModel> { PaymentViewModelImpl(get(), get(), get(), get()) }
 }
 
 val adyenModule = module {
@@ -647,11 +652,10 @@ val repositoriesModule = module {
     single { UserRepository(get()) }
     single { WhatsNewRepository(get(), get(), get()) }
     single { WelcomeRepository(get(), get()) }
-    single { OfferRepository(get(), get(), get()) }
     single { LanguageRepository(get()) }
     single { KeyGearItemsRepository(get(), get(), get(), get()) }
     single { MarketingRepository(get(), get()) }
-    single { AdyenRepository(get(), get(), get()) }
+    single { AdyenRepository(get(), get()) }
     single { EmbarkRepository(get(), get()) }
     single { ReferralsRepository(get()) }
     single { LoggedInRepository(get(), get()) }
@@ -687,7 +691,7 @@ val marketManagerModule = module {
 }
 
 val notificationModule = module {
-    single { PaymentNotificationSender(get(), get()) } bind NotificationSender::class
+    single { PaymentNotificationSender(get(), get(), get()) } bind NotificationSender::class
     single { CrossSellNotificationSender(get(), get()) } bind NotificationSender::class
     single { ChatNotificationSender(get()) } bind NotificationSender::class
     single { ReferralsNotificationSender(get()) } bind NotificationSender::class

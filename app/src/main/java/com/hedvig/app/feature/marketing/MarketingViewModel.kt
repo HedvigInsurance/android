@@ -76,18 +76,14 @@ class MarketingViewModel(
             }
         )
 
-        when (val initialValues = getInitialMarketPickerValuesUseCase.invoke()) {
-            is Either.Left -> updateMarketPickerState {
-                it.copy(isLoading = false, availableMarkets = availableMarkets)
-            }
-            is Either.Right -> updateMarketPickerState {
-                it.copy(
-                    isLoading = false,
-                    market = initialValues.value.first,
-                    language = initialValues.value.second,
-                    availableMarkets = availableMarkets,
-                )
-            }
+        val initialValues = getInitialMarketPickerValuesUseCase.invoke()
+        updateMarketPickerState {
+            it.copy(
+                isLoading = false,
+                market = initialValues.first,
+                language = initialValues.second,
+                availableMarkets = availableMarkets,
+            )
         }
     }
 
