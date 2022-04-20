@@ -26,10 +26,12 @@ class VariableExtractorTest {
 
         assertThat(json.getString("street")).isEqualTo("Est")
         assertThat(json.getInt("yearOfConstruction")).isEqualTo(1991)
-        assertThat(json.getBoolean("isSubleted")).isEqualTo(false)
 
-        val firstExtraBuilding = (json.get("extraBuildings") as JSONArray)[0] as JSONObject
-        val secondExtraBuilding = (json.get("extraBuildings") as JSONArray)[1] as JSONObject
+        val payload = (json.getJSONObject("input").getJSONArray("payload").get(0) as JSONObject)
+        assertThat(payload.getBoolean("isSubleted")).isEqualTo(false)
+
+        val firstExtraBuilding = (payload.get("extraBuildings") as JSONArray)[0] as JSONObject
+        val secondExtraBuilding = (payload.get("extraBuildings") as JSONArray)[1] as JSONObject
 
         assertThat(firstExtraBuilding.getString("type")).isEqualTo("Carport")
         assertThat(firstExtraBuilding.getBoolean("hasWaterConnected")).isEqualTo(true)
@@ -288,17 +290,18 @@ class VariableExtractorTest {
                 castAs = CastType.INT
             ),
             Variable.Single(
-                key = "numberOfBathrooms",
+                key = "input.payload[0].numberOfBathrooms",
                 from = "numberOfBathrooms",
                 castAs = CastType.INT
             ),
             Variable.Single(
-                key = "isSubleted",
+                key = "input.payload[0].isSubleted",
                 from = "isSubleted",
                 castAs = CastType.BOOLEAN
             ),
             Variable.Multi(
-                key = "extraBuildings",
+                key = "input.payload[0].extraBuildings",
+                from = "extraBuildings",
                 variables = listOf(
                     Variable.Single(
                         key = "type",

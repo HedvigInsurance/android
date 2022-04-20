@@ -43,6 +43,7 @@ data class GraphQLVariableBuilder(
         asEmbarkAPIGraphQLMultiActionVariable = if (kind == VariableKind.MULTI_ACTION) {
             GraphQLVariablesFragment.AsEmbarkAPIGraphQLMultiActionVariable(
                 key = key,
+                from = from,
                 variables = listOf(
                     GraphQLVariablesFragment.Variable(
                         asEmbarkAPIGraphQLGeneratedVariable1 = GraphQLVariablesFragment

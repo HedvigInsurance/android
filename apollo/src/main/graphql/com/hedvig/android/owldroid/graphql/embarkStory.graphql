@@ -392,6 +392,7 @@ fragment GraphQLVariablesFragment on EmbarkAPIGraphQLVariable {
   }
   ... on EmbarkAPIGraphQLMultiActionVariable {
     key
+    from
     variables {
       ... on EmbarkAPIGraphQLSingleVariable {
         key
