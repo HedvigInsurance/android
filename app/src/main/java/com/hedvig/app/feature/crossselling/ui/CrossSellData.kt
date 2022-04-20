@@ -49,11 +49,11 @@ data class CrossSellData(
     }
 
     companion object {
-        fun from(data: CrossSellFragment, quoteCartEnabled: Boolean) = CrossSellData(
+        fun from(data: CrossSellFragment) = CrossSellData(
             title = data.title,
             description = data.description,
             callToAction = data.callToAction,
-            action = data.action.asCrossSellEmbark?.storyName(quoteCartEnabled)?.let { storyName ->
+            action = data.action.asCrossSellEmbark?.embarkStoryV2?.name?.let { storyName ->
                 Action.Embark(storyName, data.title)
             } ?: Action.Chat,
             backgroundUrl = data.imageUrl,
@@ -70,14 +70,5 @@ data class CrossSellData(
                 InsurableLimitItem.InsurableLimit.from(it.fragments.insurableLimitsFragment)
             }
         )
-
-        private fun CrossSellFragment.AsCrossSellEmbark.storyName(quoteCartEnabled: Boolean): String {
-            return if (quoteCartEnabled) {
-                embarkStory.name
-            } else {
-                // embarkStoryV2
-                embarkStory.name
-            }
-        }
     }
 }

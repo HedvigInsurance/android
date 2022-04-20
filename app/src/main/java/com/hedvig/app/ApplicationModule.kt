@@ -386,9 +386,8 @@ val viewModelModule = module {
         )
     }
     viewModel { TerminatedContractsViewModel(get()) }
-    viewModel { (autoStartToken: String, quoteCartId: QuoteCartId) ->
+    viewModel { (quoteCartId: QuoteCartId) ->
         SwedishBankIdSignViewModel(
-            autoStartToken = autoStartToken,
             loginStatusService = get(),
             hAnalytics = get(),
             quoteCartId = quoteCartId,
@@ -437,7 +436,7 @@ val whatsNewModule = module {
 }
 
 val insuranceModule = module {
-    viewModel<InsuranceViewModel> { InsuranceViewModelImpl(get(), get(), get()) }
+    viewModel<InsuranceViewModel> { InsuranceViewModelImpl(get(), get()) }
     viewModel<ContractDetailViewModel> { (contractId: String) ->
         ContractDetailViewModelImpl(contractId, get(), get(), get())
     }
@@ -554,7 +553,6 @@ val checkoutModule = module {
             marketManager = get(),
             loginStatusService = get(),
             hAnalytics = get(),
-            featureManager = get(),
             offerRepository = get(),
             bundleVariantUseCase = get(),
         )
@@ -655,7 +653,7 @@ val localeManagerModule = module {
 
 val useCaseModule = module {
     single { GetUpcomingAgreementUseCase(get(), get()) }
-    single { GetAddressChangeStoryIdUseCase(get(), get()) }
+    single { GetAddressChangeStoryIdUseCase(get()) }
     single { StartDanishAuthUseCase(get()) }
     single { StartNorwegianAuthUseCase(get()) }
     single { SubscribeToAuthStatusUseCase(get()) }

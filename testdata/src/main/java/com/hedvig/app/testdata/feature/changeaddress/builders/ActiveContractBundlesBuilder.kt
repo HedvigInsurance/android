@@ -8,7 +8,7 @@ class ActiveContractBundlesBuilder(
 
     fun build() = ActiveContractBundlesQuery.ActiveContractBundle(
         angelStories = ActiveContractBundlesQuery.AngelStories(
-            addressChange = embarkStoryId
+            addressChangeV2 = embarkStoryId
         )
     )
 }

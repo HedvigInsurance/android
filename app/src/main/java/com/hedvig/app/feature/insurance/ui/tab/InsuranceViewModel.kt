@@ -5,8 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.app.feature.insurance.data.GetContractsUseCase
 import com.hedvig.app.feature.insurance.ui.InsuranceModel
 import com.hedvig.app.service.badge.CrossSellNotificationBadgeService
-import com.hedvig.app.util.featureflags.Feature
-import com.hedvig.app.util.featureflags.FeatureManager
 import e
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,7 +27,6 @@ abstract class InsuranceViewModel : ViewModel() {
 class InsuranceViewModelImpl(
     private val getContractsUseCase: GetContractsUseCase,
     private val crossSellNotificationBadgeService: CrossSellNotificationBadgeService,
-    private val featureManager: FeatureManager,
 ) : InsuranceViewModel() {
 
     override fun load() {
@@ -47,8 +44,7 @@ class InsuranceViewModelImpl(
                         .isNotEmpty()
                     val items = items(
                         data = result.insurance,
-                        showCrossSellNotificationBadge = showNotificationBadge,
-                        quoteCartEnabled = featureManager.isFeatureEnabled(Feature.QUOTE_CART)
+                        showCrossSellNotificationBadge = showNotificationBadge
                     )
                     _viewState.value = ViewState.Success(items)
                 }

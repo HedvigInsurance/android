@@ -207,7 +207,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     is OfferViewModel.Event.ApproveSuccessful -> handlePostSign(event)
                     is OfferViewModel.Event.ApproveError -> handlePostSignError(event)
                     OfferViewModel.Event.DiscardOffer -> startSplashActivity()
-                    is OfferViewModel.Event.StartSwedishBankIdSign -> showSignDialog(event)
+                    OfferViewModel.Event.StartSwedishBankIdSign -> showSignDialog()
                     OfferViewModel.Event.OpenChat -> startChat()
                 }
             }
@@ -226,9 +226,9 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         }
     }
 
-    private fun showSignDialog(event: OfferViewModel.Event.StartSwedishBankIdSign) {
+    private fun showSignDialog() {
         SwedishBankIdSignDialog
-            .newInstance(event.autoStartToken, quoteCartId)
+            .newInstance(quoteCartId)
             .show(supportFragmentManager, SwedishBankIdSignDialog.TAG)
     }
 

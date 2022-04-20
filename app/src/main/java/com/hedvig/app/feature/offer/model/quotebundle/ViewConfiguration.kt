@@ -50,4 +50,5 @@ private fun TypeOfContractGradientOption.toGradient() = when (this) {
     TypeOfContractGradientOption.GRADIENT_TWO -> GradientType.SPRING_FOG
     TypeOfContractGradientOption.GRADIENT_THREE -> GradientType.SUMMER_SKY
     TypeOfContractGradientOption.UNKNOWN__ -> GradientType.SPRING_FOG
+    TypeOfContractGradientOption.GRADIENT_FOUR -> GradientType.SPRING_FOG
 }

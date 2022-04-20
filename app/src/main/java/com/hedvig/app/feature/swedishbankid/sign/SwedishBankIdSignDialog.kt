@@ -46,7 +46,6 @@ import org.koin.core.parameter.parametersOf
 class SwedishBankIdSignDialog : DialogFragment() {
     private val model: SwedishBankIdSignViewModel by viewModel {
         parametersOf(
-            requireArguments().getString(AUTO_START_TOKEN),
             requireArguments().getParcelable(QUOTE_CART_ID)
         )
     }
@@ -82,8 +81,8 @@ class SwedishBankIdSignDialog : DialogFragment() {
             .flowWithLifecycle(viewLifecycle)
             .onEach { event ->
                 when (event) {
-                    is SwedishBankIdSignViewModel.Event.StartBankID -> {
-                        val bankIdUri = bankIdUri(event.autoStartToken)
+                    SwedishBankIdSignViewModel.Event.StartBankID -> {
+                        val bankIdUri = bankIdUri()
                         if (requireActivity().canOpenUri(bankIdUri)) {
                             startActivity(
                                 Intent(
@@ -122,24 +121,15 @@ class SwedishBankIdSignDialog : DialogFragment() {
     }
 
     companion object {
-        private fun bankIdUri(autoStartToken: String?): Uri {
-            return if (autoStartToken != null) {
-                Uri.parse("bankid:///?autostarttoken=$autoStartToken&redirect=null")
-            } else {
-                Uri.parse("bankid:///?redirect=hedvig://")
-            }
-        }
+        private fun bankIdUri() = Uri.parse("bankid:///?redirect=hedvig://")
 
-        private const val AUTO_START_TOKEN = "AUTO_START_TOKEN"
         private const val QUOTE_CART_ID = "QUOTE_CART_ID"
         const val TAG = "OfferSignDialog"
         fun newInstance(
-            autoStartToken: String?,
             quoteCartId: QuoteCartId?
         ) =
             SwedishBankIdSignDialog().apply {
                 arguments = bundleOf(
-                    AUTO_START_TOKEN to autoStartToken,
                     QUOTE_CART_ID to quoteCartId
                 )
             }

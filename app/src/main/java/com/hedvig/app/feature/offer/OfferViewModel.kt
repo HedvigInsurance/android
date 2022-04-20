@@ -18,6 +18,7 @@ import com.hedvig.app.feature.offer.model.OfferModel
 import com.hedvig.app.feature.offer.model.QuoteBundleVariant
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.model.paymentApiResponseOrNull
+import com.hedvig.app.feature.offer.model.quotebundle.OfferStartDate
 import com.hedvig.app.feature.offer.model.quotebundle.PostSignScreen
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
 import com.hedvig.app.feature.offer.usecase.AddPaymentTokenUseCase
@@ -70,7 +71,7 @@ abstract class OfferViewModel : ViewModel() {
             val bundleDisplayName: String,
         ) : Event()
 
-        data class StartSwedishBankIdSign(val autoStartToken: String?) : Event()
+        object StartSwedishBankIdSign : Event()
 
         object DiscardOffer : Event()
     }
@@ -297,38 +298,42 @@ class OfferViewModelImpl(
 
     override fun approveOffer() {
         getQuoteIdsAndStartSign {
-            offerRepository.queryAndEmitOffer(quoteCartId)
+            getBundleVariantUseCase.bundleVariantFlow
+                .first()
+                .map { it.second }
+                .fold(
+                    ifLeft = { _viewState.value = ViewState.Error(it.message) },
+                    ifRight = {
+                        val event = Event.ApproveSuccessful(
+                            startDate = (it.bundle.inception.startDate as? OfferStartDate.AtDate)?.date,
+                            postSignScreen = it.bundle.viewConfiguration.postSignScreen,
+                            bundleDisplayName = it.bundle.name
+                        )
+                        _events.trySend(event)
+                    }
+                )
         }
     }
 
     override fun onSwedishBankIdSign() {
-        getQuoteIdsAndStartSign(::handleSignQuoteResult)
+        getQuoteIdsAndStartSign {
+            _events.trySend(Event.StartSwedishBankIdSign)
+        }
     }
 
-    private fun getQuoteIdsAndStartSign(onComplete: suspend (SignQuotesUseCase.SignQuoteResult) -> Unit) {
+    private fun getQuoteIdsAndStartSign(onComplete: suspend (SignQuotesUseCase.Success) -> Unit) {
         viewModelScope.launch {
-            either<ErrorMessage, SignQuotesUseCase.SignQuoteResult> {
+            either<ErrorMessage, SignQuotesUseCase.Success> {
                 val quoteIds = getBundleVariantUseCase.bundleVariantFlow
                     .first()
                     .map { it.second.bundle.quotes.map { it.id } }
                     .bind()
 
-                signQuotesUseCase.signQuotesAndClearCache(quoteIds, quoteCartId).bind()
+                signQuotesUseCase.signQuotesAndClearCache(quoteCartId, quoteIds).bind()
             }.fold(
                 ifLeft = { _viewState.value = ViewState.Error(it.message) },
                 ifRight = { result -> onComplete(result) }
             )
-        }
-    }
-
-    private fun handleSignQuoteResult(result: SignQuotesUseCase.SignQuoteResult) {
-        when (result) {
-            is SignQuotesUseCase.SignQuoteResult.StartSwedishBankId -> {
-                _events.trySend(Event.StartSwedishBankIdSign(result.autoStartToken))
-            }
-            SignQuotesUseCase.SignQuoteResult.StartSimpleSign -> {
-                _viewState.value = ViewState.Error("Invalid offer state")
-            }
         }
     }
 
