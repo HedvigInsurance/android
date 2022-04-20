@@ -72,14 +72,18 @@ class PreviousInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle(getString(R.string.EXTERNAL_INSURANCE_PROVIDER_ALERT_TITLE))
                 .setMessage(getString(R.string.EXTERNAL_INSURANCE_PROVIDER_ALERT_MESSAGE))
-                .setPositiveButton(getString(R.string.ALERT_OK)) { dialog, _ -> dialog.dismiss() }
+                .setPositiveButton(getString(R.string.ALERT_OK)) { dialog, _ -> continueEmbark() }
                 .show()
         } else {
             insurerId?.let {
                 model.putInStore(insurerData.storeKey, it)
-                model.submitAction(insurerData.next)
+                continueEmbark()
             } ?: d { "insurerId was null when continuing from PreviousInsurerFragment" }
         }
+    }
+
+    private fun continueEmbark() {
+        model.submitAction(insurerData.next)
     }
 
     private fun onShowInsurers() {
