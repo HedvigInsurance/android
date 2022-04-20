@@ -38,7 +38,10 @@ class HomeItemsBuilder(
         }
         add(HomeModel.HowClaimsWork(homeData.howClaimsWork))
         addAll(listOfNotNull(*upcomingRenewals(homeData.contracts).toTypedArray()))
-        if (homeData.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP) {
+        if (
+            homeData.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP &&
+            featureManager.isFeatureEnabled(Feature.CONNECT_PAYIN_REMINDER)
+        ) {
             add(HomeModel.ConnectPayin(featureManager.getPaymentType()))
         }
         add(HomeModel.Header(R.string.home_tab_common_claims_title))

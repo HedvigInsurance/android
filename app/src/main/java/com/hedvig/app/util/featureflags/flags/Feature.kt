@@ -15,4 +15,5 @@ enum class Feature(
     ),
     REFERRAL_CAMPAIGN("Used to show banner in referral view"),
     QUOTE_CART("Use new APIs for onboarding"),
+    CONNECT_PAYIN_REMINDER("Show a reminder to connect payin on the home tab"),
 }
