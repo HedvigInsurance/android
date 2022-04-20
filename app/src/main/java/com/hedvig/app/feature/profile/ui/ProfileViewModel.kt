@@ -40,7 +40,7 @@ class ProfileViewModel(
     private val _events = Channel<Event>(Channel.UNLIMITED)
     val events = _events.receiveAsFlow()
 
-    private val dirty: MutableLiveData<Boolean> = MutableLiveData(false)
+    val dirty: MutableLiveData<Boolean> = MutableLiveData(false)
 
     private val observeProfileRetryChannel = RetryChannel()
     val data: StateFlow<ViewState> = observeProfileRetryChannel
