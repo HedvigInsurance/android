@@ -38,7 +38,7 @@ class ErrorTest : TestCase() {
 
     @Test
     fun whenGraphQLErrorOccursShouldShowError() = run {
-        activityRule.launch(OfferActivity.newInstance(context(), listOf("123")))
+        activityRule.launch(OfferActivity.newInstance(context()))
 
         OfferScreen {
             scroll {

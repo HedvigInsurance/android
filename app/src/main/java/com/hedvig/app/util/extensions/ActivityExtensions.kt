@@ -150,7 +150,6 @@ fun AppCompatActivity.handleSingleSelectLink(value: String) = when (value) {
         startActivity(
             OfferActivity.newInstance(
                 context = this,
-                quoteIds = emptyList(),
                 shouldShowOnNextAppStart = true
             ).also {
                 it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

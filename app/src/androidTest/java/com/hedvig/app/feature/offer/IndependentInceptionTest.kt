@@ -31,7 +31,7 @@ class IndependentInceptionTest : TestCase() {
 
     @Test
     fun shouldSetDateLabel() = run {
-        activityRule.launch(OfferActivity.newInstance(context(), listOf("123")))
+        activityRule.launch(OfferActivity.newInstance(context()))
         OfferScreen {
             scroll {
                 childAt<OfferScreen.HeaderItem>(0) {
@@ -48,7 +48,7 @@ class IndependentInceptionTest : TestCase() {
 
     @Test
     fun shouldHaveMultipleDateViews() = run {
-        activityRule.launch(OfferActivity.newInstance(context(), listOf("123")))
+        activityRule.launch(OfferActivity.newInstance(context()))
         OfferScreen {
             scroll {
                 childAt<OfferScreen.HeaderItem>(0) {

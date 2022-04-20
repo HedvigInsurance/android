@@ -39,3 +39,20 @@ private fun EmbarkStoryQuery.Passage.getQuoteCartRedirectKeysOrNull(valueStore: 
             listOf(it)
         } ?: emptyList()
 }
+
+fun EmbarkStoryQuery.Passage.getSelectedContractTypes(valueStore: ValueStore): List<SelectedContractType> {
+    return quoteCartOfferRedirects
+        .takeIf { it.isNotEmpty() }
+        ?.firstOrNull {
+            evaluateExpression(
+                it.data.expression.fragments.expressionFragment,
+                valueStore
+            ) is ExpressionResult.True
+        }
+        ?.data
+        ?.selectedInsuranceTypes
+        ?.map { SelectedContractType(it) } ?: emptyList()
+}
+
+@JvmInline
+value class SelectedContractType(val id: String)

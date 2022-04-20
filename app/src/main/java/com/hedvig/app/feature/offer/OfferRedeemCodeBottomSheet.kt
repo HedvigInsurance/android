@@ -14,7 +14,6 @@ class OfferRedeemCodeBottomSheet : RedeemCodeBottomSheet() {
     private val offerViewModel: OfferViewModel by sharedViewModel()
 
     override fun onRedeemSuccess(data: RedeemReferralCodeMutation.Data) {
-        offerViewModel.writeDiscountToCache(data)
         dismiss()
     }
 

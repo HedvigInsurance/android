@@ -14,7 +14,7 @@ data class Inception(
 
 fun QuoteBundleFragment.Inception1.toInception(
     startDateTerminology: QuoteBundleAppConfigurationStartDateTerminology,
-    quoteCartId: QuoteCartId?,
+    quoteCartId: QuoteCartId,
     quoteNames: List<String>
 ) = Inception(
     startDate = getStartDate(),

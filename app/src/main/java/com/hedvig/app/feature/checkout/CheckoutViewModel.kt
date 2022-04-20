@@ -8,15 +8,16 @@ import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.model.Checkout
 import com.hedvig.app.feature.offer.model.OfferModel
+import com.hedvig.app.feature.offer.model.QuoteBundleVariant
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
 import com.hedvig.app.feature.offer.usecase.CreateAccessTokenUseCase
+import com.hedvig.app.feature.offer.usecase.GetBundleVariantUseCase
 import com.hedvig.app.feature.offer.usecase.SignQuotesUseCase
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.ValidationResult
-import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.app.util.validateEmail
 import com.hedvig.app.util.validateNationalIdentityNumber
@@ -35,7 +36,7 @@ import kotlin.time.Duration.Companion.seconds
 
 class CheckoutViewModel(
     private val quoteIds: List<String>,
-    private val quoteCartId: QuoteCartId?,
+    private val quoteCartId: QuoteCartId,
     private val signQuotesUseCase: SignQuotesUseCase,
     private val editQuotesUseCase: EditCheckoutUseCase,
     private val createAccessTokenUseCase: CreateAccessTokenUseCase,
@@ -44,6 +45,7 @@ class CheckoutViewModel(
     private val hAnalytics: HAnalytics,
     private val featureManager: FeatureManager,
     private val offerRepository: OfferRepository,
+    private val bundleVariantUseCase: GetBundleVariantUseCase,
 ) : ViewModel() {
 
     private val _titleViewState = MutableStateFlow<TitleViewState>(TitleViewState.Loading)
@@ -62,24 +64,20 @@ class CheckoutViewModel(
     private var identityNumberInput: String = ""
 
     init {
-        offerRepository.offerFlow(quoteIds)
+        bundleVariantUseCase.bundleVariantFlow
             .onEach { handleOfferResult(it) }
-            .onStart { offerRepository.queryAndEmitOffer(quoteCartId, quoteIds) }
+            .onStart { offerRepository.queryAndEmitOffer(quoteCartId) }
             .launchIn(viewModelScope)
     }
 
-    private suspend fun handleOfferResult(result: Either<ErrorMessage, OfferModel>) {
+    private suspend fun handleOfferResult(result: Either<ErrorMessage, Pair<OfferModel, QuoteBundleVariant>>) {
         result.fold(
             ifLeft = { _events.trySend(Event.Error(it.message)) },
-            ifRight = { handleOfferModel(it) }
+            ifRight = {
+                handleCheckoutStatus(it.first)
+                _titleViewState.value = it.second.mapToViewState()
+            }
         )
-    }
-
-    private suspend fun handleOfferModel(model: OfferModel) {
-        if (featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
-            handleCheckoutStatus(model)
-        }
-        _titleViewState.value = model.mapToViewState()
     }
 
     private suspend fun handleCheckoutStatus(model: OfferModel) {
@@ -95,21 +93,17 @@ class CheckoutViewModel(
     }
 
     private suspend fun createAccessToken() {
-        if (quoteCartId == null) {
-            _events.trySend(Event.Error("No quote cart id found"))
-        } else {
-            createAccessTokenUseCase.invoke(quoteCartId)
-                .tapLeft { _events.trySend(Event.Error(it.message)) }
-                .tap { offerRepository.queryAndEmitOffer(quoteCartId, quoteIds) }
-        }
+        createAccessTokenUseCase.invoke(quoteCartId)
+            .tapLeft { _events.trySend(Event.Error(it.message)) }
+            .tap { offerRepository.queryAndEmitOffer(quoteCartId) }
     }
 
-    private fun OfferModel.mapToViewState() = TitleViewState.Loaded(
-        bundleName = quoteBundle.name,
-        netAmount = quoteBundle.cost.netMonthlyCost,
-        grossAmount = quoteBundle.cost.grossMonthlyCost,
+    private fun QuoteBundleVariant.mapToViewState() = TitleViewState.Loaded(
+        bundleName = bundle.name,
+        netAmount = bundle.cost.netMonthlyCost,
+        grossAmount = bundle.cost.grossMonthlyCost,
         market = marketManager.market,
-        email = quoteBundle.quotes.firstNotNullOfOrNull(QuoteBundle.Quote::email)
+        email = bundle.quotes.firstNotNullOfOrNull(QuoteBundle.Quote::email)
     )
 
     fun validateInput() {
@@ -170,13 +164,7 @@ class CheckoutViewModel(
                 signQuotesUseCase.signQuotesAndClearCache(quoteIds, quoteCartId).bind()
             }.fold(
                 ifLeft = { _events.trySend(Event.Error(it.message)) },
-                ifRight = {
-                    if (!featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
-                        _events.trySend(it.toEvent())
-                    } else {
-                        offerRepository.queryAndEmitOffer(quoteCartId, quoteIds)
-                    }
-                }
+                ifRight = { offerRepository.queryAndEmitOffer(quoteCartId) }
             )
         }
     }

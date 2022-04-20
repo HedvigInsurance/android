@@ -32,7 +32,7 @@ class MultipleMixedSwitchableSwitcherTest : TestCase() {
 
     @Test
     fun givenQuoteBundleMultipleMixedSwitchablePreviousInsurersShouldShowPreviousInsurerSection() = run {
-        activityRule.launch(OfferActivity.newInstance(context(), listOf("123", "234")))
+        activityRule.launch(OfferActivity.newInstance(context()))
 
         OfferScreen {
             scroll {
