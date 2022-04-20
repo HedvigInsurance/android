@@ -12,6 +12,7 @@ import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 import com.hedvig.app.feature.onboarding.MemberIdViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewDialog
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
+import com.hedvig.app.isDebug
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.setupToolbar
@@ -67,8 +68,14 @@ class AboutAppActivity : BaseActivity(R.layout.activity_about_app) {
                 }
             }
 
-            versionNumber.text =
-                resources.getString(R.string.PROFILE_ABOUT_APP_VERSION, BuildConfig.VERSION_NAME)
+            versionNumber.text = buildString {
+                append(resources.getString(R.string.PROFILE_ABOUT_APP_VERSION, BuildConfig.VERSION_NAME))
+                if (isDebug()) {
+                    append(" (")
+                    append(BuildConfig.VERSION_CODE)
+                    append(")")
+                }
+            }
 
             memberIdViewModel
                 .state
