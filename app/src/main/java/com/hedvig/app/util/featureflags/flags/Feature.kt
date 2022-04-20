@@ -15,4 +15,5 @@ enum class Feature(
     ),
     REFERRAL_CAMPAIGN("Used to show banner in referral view"),
     QUOTE_CART("Use new APIs for onboarding"),
+    CROSS_SELLS("Show Cross-Sells that the user can buy"),
 }

@@ -7,6 +7,7 @@ import com.hedvig.app.feature.insurance.ui.detail.toContractCardViewState
 
 fun items(
     data: InsuranceQuery.Data,
+    showCrossSells: Boolean,
     showCrossSellNotificationBadge: Boolean = false
 ): List<InsuranceModel> = ArrayList<InsuranceModel>().apply {
     add(InsuranceModel.Header)
@@ -26,7 +27,7 @@ fun items(
     addAll(contracts)
 
     val potentialCrossSells = data.activeContractBundles.flatMap { it.potentialCrossSells }
-    if (potentialCrossSells.isNotEmpty()) {
+    if (potentialCrossSells.isNotEmpty() && showCrossSells) {
         add(InsuranceModel.CrossSellHeader(showCrossSellNotificationBadge))
         addAll(potentialCrossSells.map(::crossSell))
     }

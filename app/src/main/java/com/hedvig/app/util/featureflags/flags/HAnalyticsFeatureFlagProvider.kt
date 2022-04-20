@@ -17,5 +17,6 @@ class HAnalyticsFeatureFlagProvider(
         Feature.UPDATE_NECESSARY -> hAnalytics.updateNecessary()
         Feature.REFERRAL_CAMPAIGN -> hAnalytics.foreverFebruaryCampaign()
         Feature.QUOTE_CART -> hAnalytics.useQuoteCart()
+        Feature.CROSS_SELLS -> TODO()
     }
 }

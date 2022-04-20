@@ -16,5 +16,6 @@ class DevFeatureFlagProvider(
         Feature.UPDATE_NECESSARY -> false
         Feature.REFERRAL_CAMPAIGN -> false
         Feature.QUOTE_CART -> false
+        Feature.CROSS_SELLS -> true
     }
 }

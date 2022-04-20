@@ -11,7 +11,10 @@ import org.junit.Test
 class ItemsTest {
     @Test
     fun `when no cross-sells are available, should not contain any items referencing cross-sells`() {
-        val result = items(INSURANCE_DATA)
+        val result = items(
+            data = INSURANCE_DATA,
+            showCrossSells = true,
+        )
 
         assertThat(result).containsNoneOfType<InsuranceModel.CrossSellHeader>()
         assertThat(result).containsNoneOfType<InsuranceModel.CrossSellCard>()
@@ -19,9 +22,23 @@ class ItemsTest {
 
     @Test
     fun `when cross-sell are available, should contain cross-sell header and cross-sell`() {
-        val result = items(INSURANCE_DATA_WITH_CROSS_SELL)
+        val result = items(
+            INSURANCE_DATA_WITH_CROSS_SELL,
+            showCrossSells = true,
+        )
 
         assertThat(result).containsOfType<InsuranceModel.CrossSellHeader>()
         assertThat(result).containsOfType<InsuranceModel.CrossSellCard>()
+    }
+
+    @Test
+    fun `when cross-sells are available but cross-sells are flagged off, should not contain any cross-sell items `() {
+        val result = items(
+            data = INSURANCE_DATA_WITH_CROSS_SELL,
+            showCrossSells = false,
+        )
+
+        assertThat(result).containsNoneOfType<InsuranceModel.CrossSellHeader>()
+        assertThat(result).containsNoneOfType<InsuranceModel.CrossSellCard>()
     }
 }
