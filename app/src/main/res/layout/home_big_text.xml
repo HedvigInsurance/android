@@ -8,4 +8,5 @@
     android:layout_marginEnd="@dimen/base_margin_triple"
     android:layout_marginBottom="@dimen/base_margin_triple"
     android:textAppearance="?textAppearanceHeadline4"
-    tools:text="Welcome Zak, we’re contacting your old insurer to find out your start date" />
+    android:textAlignment="center"
+    tools:text="Hello and welcome Zak, we’re contacting your old insurer to find out your start date" />
