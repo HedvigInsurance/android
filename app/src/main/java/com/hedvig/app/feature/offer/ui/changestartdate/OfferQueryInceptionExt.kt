@@ -4,7 +4,7 @@ import com.hedvig.android.owldroid.fragment.QuoteBundleFragment
 import com.hedvig.app.feature.offer.model.QuoteCartId
 
 fun QuoteBundleFragment.Inception1.toChangeDateBottomSheetData(
-    quoteCartId: QuoteCartId?,
+    quoteCartId: QuoteCartId,
     quoteNames: List<String>
 ) = ChangeDateBottomSheetData(
     quoteCartId = quoteCartId,
@@ -18,8 +18,7 @@ fun QuoteBundleFragment.Inception1.toChangeDateBottomSheetData(
                     ChangeDateBottomSheetData.CurrentInsurer(
                         id = it.id
                             ?: throw IllegalArgumentException("Current insurer id not found"),
-                        displayName = it.displayName
-                            ?: throw IllegalArgumentException("Current insurer display name not found"),
+                        displayName = it.displayName ?: "",
                         switchable = it.switchable
                             ?: throw IllegalArgumentException("Current insurer switchable not found"),
                     )
@@ -37,8 +36,7 @@ fun QuoteBundleFragment.Inception1.toChangeDateBottomSheetData(
                     ChangeDateBottomSheetData.CurrentInsurer(
                         id = it.id
                             ?: throw IllegalArgumentException("Current insurer id not found"),
-                        displayName = it.displayName
-                            ?: throw IllegalArgumentException("Current insurer display name not found"),
+                        displayName = it.displayName ?: "",
                         switchable = it.switchable
                             ?: throw IllegalArgumentException("Current insurer switchable not found"),
                     )

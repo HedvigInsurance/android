@@ -17,16 +17,16 @@ import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.embark.extensions.api
 import com.hedvig.app.feature.embark.extensions.getComputedValues
 import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
+import com.hedvig.app.feature.embark.util.SelectedContractType
 import com.hedvig.app.feature.embark.util.evaluateExpression
 import com.hedvig.app.feature.embark.util.getFileVariables
-import com.hedvig.app.feature.embark.util.getOfferKeysOrNull
+import com.hedvig.app.feature.embark.util.getOfferKeyOrNull
+import com.hedvig.app.feature.embark.util.getSelectedContractTypes
 import com.hedvig.app.feature.embark.util.getVariables
 import com.hedvig.app.feature.embark.util.toExpressionFragment
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ProgressPercentage
 import com.hedvig.app.util.asMap
-import com.hedvig.app.util.featureflags.Feature
-import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.app.util.safeLet
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.channels.Channel
@@ -44,7 +44,6 @@ import java.util.Stack
 import kotlin.math.max
 
 private const val QUOTE_CART_ID_KEY = "quoteCartId"
-private const val QUOTE_ID_KEY = "quoteId"
 
 abstract class EmbarkViewModel(
     private val valueStore: ValueStore,
@@ -53,7 +52,6 @@ abstract class EmbarkViewModel(
     private val hAnalytics: HAnalytics,
     private val storyName: String,
     loginStatusService: LoginStatusService,
-    private val featureManager: FeatureManager,
 ) : ViewModel() {
     private val _passageState = MutableLiveData<PassageState>()
     val passageState: LiveData<PassageState> = _passageState
@@ -66,15 +64,14 @@ abstract class EmbarkViewModel(
             initialValue = null
         )
 
-    val viewState: LiveData<ViewState> =
-        passageState.asFlow()
-            .combine(loginStatus.filterNotNull()) { passageState, loginStatus ->
-                ViewState(
-                    passageState,
-                    loginStatus == LoginStatus.LoggedIn
-                )
-            }
-            .asLiveData()
+    val viewState: LiveData<ViewState> = passageState.asFlow()
+        .combine(loginStatus.filterNotNull()) { passageState, loginStatus ->
+            ViewState(
+                passageState,
+                loginStatus == LoginStatus.LoggedIn
+            )
+        }
+        .asLiveData()
     protected val _events = Channel<Event>(Channel.UNLIMITED)
 
     val events = _events.receiveAsFlow()
@@ -96,8 +93,8 @@ abstract class EmbarkViewModel(
 
     sealed class Event {
         data class Offer(
-            val quoteIds: List<String>,
             val quoteCartId: QuoteCartId?,
+            val selectedContractTypes: List<SelectedContractType>,
         ) : Event()
 
         data class Error(val message: String? = null) : Event()
@@ -151,18 +148,18 @@ abstract class EmbarkViewModel(
         val location = nextPassage?.externalRedirect?.data?.location
         val api = nextPassage?.api?.fragments?.apiFragment
 
-        val keys = nextPassage?.getOfferKeysOrNull(valueStore, featureManager)
+        val key = nextPassage?.getOfferKeyOrNull(valueStore)
 
         when {
             storyData.embarkStory == null || nextPassage == null -> _events.trySend(Event.Error())
             redirectPassage != null -> navigateToPassage(redirectPassage)
-            keys != null && keys.isNotEmpty() -> {
+            key != null && key.isNotEmpty() -> {
                 // For offers, there is a problem with the Offer screen not committing before this stage is reached,
                 //  meaning that the old values were returned from getList/get.
                 valueStore.withCommittedVersion {
-                    val ids = keys.flatMap { this.getList(it) ?: listOfNotNull(this.get(it)) }
                     val quoteCartId = this.get(QUOTE_CART_ID_KEY)?.let { QuoteCartId(it) }
-                    _events.trySend(Event.Offer(ids, quoteCartId))
+                    val selectedContractTypes = nextPassage.getSelectedContractTypes(valueStore)
+                    _events.trySend(Event.Offer(quoteCartId, selectedContractTypes))
                 }
             }
             location != null -> handleRedirectLocation(location)
@@ -257,16 +254,11 @@ abstract class EmbarkViewModel(
     }
 
     private fun createOfferEvent(): Event {
-        val id = valueStore.get(QUOTE_ID_KEY)
         val quoteCartId = valueStore.get(QUOTE_CART_ID_KEY)
-        return if (id == null) {
-            Event.Error()
-        } else {
-            Event.Offer(
-                quoteIds = listOf(id),
-                quoteCartId = quoteCartId?.let { QuoteCartId(it) },
-            )
-        }
+        return Event.Offer(
+            quoteCartId = quoteCartId?.let { QuoteCartId(it) },
+            selectedContractTypes = emptyList(),
+        )
     }
 
     private suspend fun createChatEvent(): Event = when (chatRepository.triggerFreeTextChat()) {
@@ -505,7 +497,6 @@ class EmbarkViewModelImpl(
     hAnalytics: HAnalytics,
     storyName: String,
     private val createQuoteCartUseCase: CreateQuoteCartUseCase,
-    private val featureManager: FeatureManager,
 ) : EmbarkViewModel(
     valueStore,
     graphQLQueryUseCase,
@@ -513,7 +504,6 @@ class EmbarkViewModelImpl(
     hAnalytics,
     storyName,
     loginStatusService,
-    featureManager,
 ) {
 
     init {
@@ -522,12 +512,10 @@ class EmbarkViewModelImpl(
 
     override fun fetchStory(name: String) {
         viewModelScope.launch {
-            if (featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
-                createQuoteCartUseCase.invoke().fold(
-                    ifLeft = { _events.trySend(Event.Error(it.message)) },
-                    ifRight = { putInStore(QUOTE_CART_ID_KEY, it.id) }
-                )
-            }
+            createQuoteCartUseCase.invoke().fold(
+                ifLeft = { _events.trySend(Event.Error(it.message)) },
+                ifRight = { putInStore(QUOTE_CART_ID_KEY, it.id) }
+            )
 
             embarkRepository.embarkStory(name).fold(
                 ifLeft = { _events.trySend(Event.Error(it.message)) },

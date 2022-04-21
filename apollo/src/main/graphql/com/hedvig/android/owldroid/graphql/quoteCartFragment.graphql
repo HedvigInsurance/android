@@ -1,7 +1,13 @@
 fragment QuoteCartFragment on QuoteCart {
   id
   bundle {
-    ...QuoteBundleFragment
+    possibleVariations {
+      id
+      tag(locale: $locale)
+      bundle {
+        ...QuoteBundleFragment
+      }
+    }
   }
   checkoutMethods
   checkout {

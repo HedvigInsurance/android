@@ -29,12 +29,6 @@ enum class Feature(
         "Used to show banner in referral view",
         false
     ),
-    QUOTE_CART(
-        "quote_Cart",
-        "Quote Cart APIs",
-        "Use new APIs for onboarding",
-        false
-    ),
     CONNECT_PAYMENT_AT_SIGN(
         "CONNECT_PAYMENT_AT_SIGN",
         "Connect payment at sign",

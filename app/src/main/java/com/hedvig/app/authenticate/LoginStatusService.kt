@@ -22,7 +22,7 @@ interface LoginStatusService {
     var isLoggedIn: Boolean
     suspend fun getLoginStatus(): LoginStatus
     fun getLoginStatusAsFlow(): Flow<LoginStatus>
-    fun persistOfferIds(quoteCartId: QuoteCartId?, quoteIds: List<String>)
+    fun persistOfferIds(quoteCartId: QuoteCartId)
 }
 
 class SharedPreferencesLoginStatusService(
@@ -48,8 +48,7 @@ class SharedPreferencesLoginStatusService(
         return when {
             isLoggedIn -> LoginStatus.LoggedIn
             isViewingOffer -> LoginStatus.InOffer(
-                quoteCartId = sharedPreferences.getString("quoteCartId", null)?.let { QuoteCartId(it) },
-                quoteIds = sharedPreferences.getStringSet("quoteIds", emptySet()) ?: emptySet()
+                quoteCartId = sharedPreferences.getString("quoteCartId", null)?.let { QuoteCartId(it) }
             )
             authenticationTokenManager.authenticationToken == null -> LoginStatus.Onboarding
             hasNoContracts() -> LoginStatus.Onboarding
@@ -60,10 +59,9 @@ class SharedPreferencesLoginStatusService(
         }
     }
 
-    override fun persistOfferIds(quoteCartId: QuoteCartId?, quoteIds: List<String>) {
+    override fun persistOfferIds(quoteCartId: QuoteCartId) {
         sharedPreferences.edit {
-            putString("quoteCartId", quoteCartId?.id)
-            putStringSet("quoteIds", quoteIds.toSet())
+            putString("quoteCartId", quoteCartId.id)
         }
     }
 

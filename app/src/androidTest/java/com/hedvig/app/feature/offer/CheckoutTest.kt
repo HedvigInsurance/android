@@ -12,12 +12,10 @@ import com.hedvig.app.testdata.feature.offer.BUNDLE_NET_COST
 import com.hedvig.app.testdata.feature.offer.BUNDLE_WITH_SIMPLE_SIGN
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
-import com.hedvig.app.util.FeatureFlagRule
 import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
-import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.market
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.javamoney.moneta.Money
@@ -35,9 +33,6 @@ class CheckoutTest : TestCase() {
 
     @get:Rule
     val apolloCacheClearRule = ApolloCacheClearRule()
-
-    @get:Rule
-    val featureFlagRule = FeatureFlagRule(Feature.QUOTE_CART to false)
 
     @Test
     fun shouldDisplayCostAndBundleName() = run {
