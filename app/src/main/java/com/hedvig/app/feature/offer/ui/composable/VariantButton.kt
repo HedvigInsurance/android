@@ -1,18 +1,18 @@
 package com.hedvig.app.feature.offer.ui.composable
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.Card
 import androidx.compose.material.ContentAlpha
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.RadioButton
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -26,7 +26,9 @@ import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.ui.compose.theme.hedvigBlack
 import com.hedvig.app.ui.compose.theme.hedvigBlack12percent
 import com.hedvig.app.util.compose.HorizontalTextsWithMaximumSpaceTaken
+import com.hedvig.app.util.compose.RadioButton
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun VariantButton(
     id: String,
@@ -37,6 +39,7 @@ fun VariantButton(
     onClick: (id: String) -> Unit,
 ) {
     Card(
+        onClick = { onClick(id) },
         border = if (selected) {
             BorderStroke(3.dp, hedvigBlack)
         } else {
@@ -44,13 +47,11 @@ fun VariantButton(
         },
         modifier = Modifier
             .padding(top = 8.dp, start = 16.dp, end = 16.dp)
-            .heightIn(min = 110.dp)
-            .clickable {
-                onClick(id)
-            },
+            .heightIn(min = 110.dp),
     ) {
         Row(modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 12.dp, bottom = 16.dp)) {
-            RadioButton(selected = selected, onClick = { onClick(id) }, modifier = Modifier.padding(top = 4.dp))
+            RadioButton(selected = selected, size = 24.dp)
+            Spacer(Modifier.width(12.dp))
             Column {
                 HorizontalTextsWithMaximumSpaceTaken(
                     startText = {
