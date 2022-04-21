@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:app="http://schemas.android.com/apk/res-auto">
+<resources>
 
     <style name="AppTheme" parent="Hedvig.Theme.V23" />
 
