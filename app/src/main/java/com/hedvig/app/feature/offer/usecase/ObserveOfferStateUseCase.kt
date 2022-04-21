@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
 
-class GetBundleVariantUseCase(
+class ObserveOfferStateUseCase(
     private val offerRepository: OfferRepository
 ) {
 

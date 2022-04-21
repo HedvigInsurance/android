@@ -146,8 +146,8 @@ import com.hedvig.app.feature.offer.ui.changestartdate.QuoteCartEditStartDateUse
 import com.hedvig.app.feature.offer.usecase.AddPaymentTokenUseCase
 import com.hedvig.app.feature.offer.usecase.CreateAccessTokenUseCase
 import com.hedvig.app.feature.offer.usecase.EditCampaignUseCase
-import com.hedvig.app.feature.offer.usecase.GetBundleVariantUseCase
 import com.hedvig.app.feature.offer.usecase.GetExternalInsuranceProviderUseCase
+import com.hedvig.app.feature.offer.usecase.ObserveOfferStateUseCase
 import com.hedvig.app.feature.offer.usecase.SignQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.datacollectionresult.GetDataCollectionResultUseCase
 import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToDataCollectionStatusUseCase
@@ -683,7 +683,7 @@ val useCaseModule = module {
     single<ConnectPaymentUseCase> { ConnectPaymentUseCase(get(), get(), get()) }
     single<ConnectPayoutUseCase> { ConnectPayoutUseCase(get(), get()) }
     single<GetExternalInsuranceProviderUseCase> { GetExternalInsuranceProviderUseCase(get(), get(), get()) }
-    single<GetBundleVariantUseCase> { GetBundleVariantUseCase(get()) }
+    single<ObserveOfferStateUseCase> { ObserveOfferStateUseCase(get()) }
 }
 
 val cacheManagerModule = module {

@@ -6,6 +6,7 @@ import com.hedvig.app.feature.offer.model.Campaign
 import com.hedvig.app.feature.offer.model.CheckoutLabel
 import com.hedvig.app.feature.offer.model.CheckoutMethod
 import com.hedvig.app.feature.offer.model.OfferModel
+import com.hedvig.app.feature.offer.model.QuoteBundleVariant
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.model.quotebundle.BundleCost
 import com.hedvig.app.feature.offer.model.quotebundle.GradientType
@@ -69,7 +70,7 @@ class TestOfferModelBuilder(
     private val inception: Inception = Inception(
         startDate = OfferStartDate.AtDate(LocalDate.of(2022, 2, 21)),
         startDateLabel = StartDateLabel.SINGLE_START_DATE,
-        changeDateData = ChangeDateBottomSheetData(null, emptyList())
+        changeDateData = ChangeDateBottomSheetData(QuoteCartId("123"), emptyList())
     ),
     private val viewConfiguration: ViewConfiguration = ViewConfiguration(
         showCampaignManagement = true,
@@ -88,35 +89,42 @@ class TestOfferModelBuilder(
 
     fun build() = OfferModel(
         id = QuoteCartId("123"),
-        quoteBundle = QuoteBundle(
-            name = bundleName,
-            quotes = listOf(
-                QuoteBundle.Quote(
-                    dataCollectionId = null,
-                    displayName = quoteName,
-                    startDate = startDate,
-                    email = email,
-                    id = id,
-                    currentInsurer = null,
-                    detailsTable = table,
-                    perils = perils,
-                    insurableLimits = insurableLimits,
-                    insuranceTerms = documents
+        variants = listOf(
+            QuoteBundleVariant(
+                id = "1234",
+                title = "Test variant",
+                tag = "Test tag",
+                bundle = QuoteBundle(
+                    name = bundleName,
+                    quotes = listOf(
+                        QuoteBundle.Quote(
+                            dataCollectionId = null,
+                            displayName = quoteName,
+                            startDate = startDate,
+                            email = email,
+                            id = id,
+                            currentInsurer = null,
+                            detailsTable = table,
+                            perils = perils,
+                            insurableLimits = insurableLimits,
+                            insuranceTerms = documents
+                        )
+                    ),
+                    cost = BundleCost(
+                        grossMonthlyCost = grossMonthlyCost,
+                        netMonthlyCost = netMonthlyCost,
+                        ignoreCampaigns = ignoreCampaigns
+                    ),
+                    frequentlyAskedQuestions = frequentlyAskedQuestions,
+                    inception = inception,
+                    viewConfiguration = viewConfiguration,
+                    checkoutLabel = checkoutLabel
                 )
-            ),
-            cost = BundleCost(
-                grossMonthlyCost = grossMonthlyCost,
-                netMonthlyCost = netMonthlyCost,
-                ignoreCampaigns = ignoreCampaigns
-            ),
-            frequentlyAskedQuestions = frequentlyAskedQuestions,
-            inception = inception,
-            viewConfiguration = viewConfiguration
+            )
         ),
         checkoutMethod = checkoutMethod,
-        checkoutLabel = checkoutLabel,
         campaign = campaign,
         checkout = null,
-        null,
+        paymentConnection = null
     )
 }

@@ -24,8 +24,8 @@ import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
 import com.hedvig.app.feature.offer.usecase.AddPaymentTokenUseCase
 import com.hedvig.app.feature.offer.usecase.EditCampaignUseCase
 import com.hedvig.app.feature.offer.usecase.ExternalProvider
-import com.hedvig.app.feature.offer.usecase.GetBundleVariantUseCase
 import com.hedvig.app.feature.offer.usecase.GetExternalInsuranceProviderUseCase
+import com.hedvig.app.feature.offer.usecase.ObserveOfferStateUseCase
 import com.hedvig.app.feature.offer.usecase.OfferState
 import com.hedvig.app.feature.offer.usecase.SignQuotesUseCase
 import com.hedvig.app.feature.perils.PerilItem
@@ -165,7 +165,7 @@ class OfferViewModelImpl(
     private val editCampaignUseCase: EditCampaignUseCase,
     private val addPaymentTokenUseCase: AddPaymentTokenUseCase,
     private val getExternalInsuranceProviderUseCase: GetExternalInsuranceProviderUseCase,
-    private val getBundleVariantUseCase: GetBundleVariantUseCase,
+    private val getBundleVariantUseCase: ObserveOfferStateUseCase,
 ) : OfferViewModel() {
 
     private val _viewState: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.Loading)

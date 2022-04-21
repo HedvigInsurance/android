@@ -12,7 +12,7 @@ import com.hedvig.app.feature.offer.model.QuoteBundleVariant
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
 import com.hedvig.app.feature.offer.usecase.CreateAccessTokenUseCase
-import com.hedvig.app.feature.offer.usecase.GetBundleVariantUseCase
+import com.hedvig.app.feature.offer.usecase.ObserveOfferStateUseCase
 import com.hedvig.app.feature.offer.usecase.OfferState
 import com.hedvig.app.feature.offer.usecase.SignQuotesUseCase
 import com.hedvig.app.feature.settings.Market
@@ -43,7 +43,7 @@ class CheckoutViewModel(
     private val loginStatusService: LoginStatusService,
     private val hAnalytics: HAnalytics,
     private val offerRepository: OfferRepository,
-    bundleVariantUseCase: GetBundleVariantUseCase,
+    bundleVariantUseCase: ObserveOfferStateUseCase,
 ) : ViewModel() {
 
     private val _titleViewState = MutableStateFlow<TitleViewState>(TitleViewState.Loading)
