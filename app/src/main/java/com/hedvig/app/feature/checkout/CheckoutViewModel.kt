@@ -13,6 +13,7 @@ import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
 import com.hedvig.app.feature.offer.usecase.CreateAccessTokenUseCase
 import com.hedvig.app.feature.offer.usecase.GetBundleVariantUseCase
+import com.hedvig.app.feature.offer.usecase.OfferState
 import com.hedvig.app.feature.offer.usecase.SignQuotesUseCase
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
@@ -27,7 +28,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.money.MonetaryAmount
@@ -61,19 +61,20 @@ class CheckoutViewModel(
     private var emailInput: String = ""
     private var identityNumberInput: String = ""
 
+    private val offerState = bundleVariantUseCase.observeOfferState(quoteCartId)
+
     init {
-        bundleVariantUseCase.bundleVariantFlow
-            .onEach { handleOfferResult(it) }
-            .onStart { offerRepository.queryAndEmitOffer(quoteCartId) }
+        offerState
+            .onEach(::handleOfferResult)
             .launchIn(viewModelScope)
     }
 
-    private suspend fun handleOfferResult(result: Either<ErrorMessage, Pair<OfferModel, QuoteBundleVariant>>) {
+    private suspend fun handleOfferResult(result: Either<ErrorMessage, OfferState>) {
         result.fold(
             ifLeft = { _events.trySend(Event.Error(it.message)) },
             ifRight = {
-                handleCheckoutStatus(it.first)
-                _titleViewState.value = it.second.mapToViewState()
+                handleCheckoutStatus(it.offerModel)
+                _titleViewState.value = it.selectedVariant.mapToViewState()
             }
         )
     }

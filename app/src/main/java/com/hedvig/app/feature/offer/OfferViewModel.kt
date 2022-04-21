@@ -26,6 +26,7 @@ import com.hedvig.app.feature.offer.usecase.EditCampaignUseCase
 import com.hedvig.app.feature.offer.usecase.ExternalProvider
 import com.hedvig.app.feature.offer.usecase.GetBundleVariantUseCase
 import com.hedvig.app.feature.offer.usecase.GetExternalInsuranceProviderUseCase
+import com.hedvig.app.feature.offer.usecase.OfferState
 import com.hedvig.app.feature.offer.usecase.SignQuotesUseCase
 import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.util.ErrorMessage
@@ -169,6 +170,8 @@ class OfferViewModelImpl(
 
     private val _viewState: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.Loading)
 
+    private val offerState = getBundleVariantUseCase.observeOfferState(quoteCartId)
+
     @OptIn(ExperimentalCoroutinesApi::class)
     override val viewState: StateFlow<ViewState> = _viewState
         .stateIn(
@@ -181,24 +184,20 @@ class OfferViewModelImpl(
         loginStatusService.isViewingOffer = shouldShowOnNextAppStart
         loginStatusService.persistOfferIds(quoteCartId)
 
-        getBundleVariantUseCase.bundleVariantFlow
+        offerState
             .flatMapLatest(::toViewState)
             .onEach { viewState: ViewState ->
                 _viewState.value = viewState
             }
             .launchIn(viewModelScope)
-
-        viewModelScope.launch {
-            offerRepository.queryAndEmitOffer(quoteCartId)
-        }
     }
 
-    private fun toViewState(offerResult: Either<ErrorMessage, Pair<OfferModel, QuoteBundleVariant>>): Flow<ViewState> =
+    private fun toViewState(offerResult: Either<ErrorMessage, OfferState>): Flow<ViewState> =
         offerResult.fold(
             ifLeft = { flowOf(ViewState.Error(it.message)) },
-            ifRight = { pair ->
-                val offerModel = pair.first
-                val bundle = pair.second
+            ifRight = { offerWithVariant ->
+                val offerModel = offerWithVariant.offerModel
+                val bundle = offerWithVariant.selectedVariant
                 if (bundle.externalProviderId != null) {
                     getExternalInsuranceProviderUseCase
                         .observeExternalProviderOrNull(bundle.externalProviderId)
@@ -237,9 +236,9 @@ class OfferViewModelImpl(
 
     override fun onOpenCheckout() {
         viewModelScope.launch {
-            getBundleVariantUseCase.bundleVariantFlow
+            offerState
                 .first()
-                .map { it.second.bundle.quotes.map { it.id } }
+                .map { it.selectedQuoteIds }
                 .fold(
                     ifLeft = { _viewState.value = ViewState.Error(it.message) },
                     ifRight = { quoteIds ->
@@ -267,16 +266,17 @@ class OfferViewModelImpl(
 
     override fun onOpenQuoteDetails(id: String) {
         viewModelScope.launch {
-            getBundleVariantUseCase.bundleVariantFlow.first().map {
-                it.second.bundle.quotes.first { it.id == id }
-            }.fold(
-                ifLeft = { _viewState.value = ViewState.Error(it.message) },
-                ifRight = { quote ->
-                    val quoteDetailItems = QuoteDetailItems(quote)
-                    val event = Event.OpenQuoteDetails(quoteDetailItems)
-                    _events.trySend(event)
-                }
-            )
+            offerState
+                .first()
+                .map { it.findQuote(id) }
+                .fold(
+                    ifLeft = { _viewState.value = ViewState.Error(it.message) },
+                    ifRight = { quote ->
+                        val quoteDetailItems = QuoteDetailItems(quote)
+                        val event = Event.OpenQuoteDetails(quoteDetailItems)
+                        _events.trySend(event)
+                    }
+                )
         }
     }
 
@@ -298,9 +298,9 @@ class OfferViewModelImpl(
 
     override fun approveOffer() {
         getQuoteIdsAndStartSign {
-            getBundleVariantUseCase.bundleVariantFlow
+            offerState
                 .first()
-                .map { it.second }
+                .map { it.selectedVariant }
                 .fold(
                     ifLeft = { _viewState.value = ViewState.Error(it.message) },
                     ifRight = {
@@ -324,9 +324,9 @@ class OfferViewModelImpl(
     private fun getQuoteIdsAndStartSign(onComplete: suspend (SignQuotesUseCase.Success) -> Unit) {
         viewModelScope.launch {
             either<ErrorMessage, SignQuotesUseCase.Success> {
-                val quoteIds = getBundleVariantUseCase.bundleVariantFlow
+                val quoteIds = offerState
                     .first()
-                    .map { it.second.bundle.quotes.map { it.id } }
+                    .map { it.selectedQuoteIds }
                     .bind()
 
                 signQuotesUseCase.signQuotesAndClearCache(quoteCartId, quoteIds).bind()
