@@ -51,5 +51,4 @@ private fun TypeOfContractGradientOption.toGradient() = when (this) {
     TypeOfContractGradientOption.GRADIENT_THREE -> GradientType.SUMMER_SKY
     TypeOfContractGradientOption.GRADIENT_FOUR -> GradientType.SPRING_FOG // todo map the new gradient to another type?
     TypeOfContractGradientOption.UNKNOWN__ -> GradientType.SPRING_FOG
-    TypeOfContractGradientOption.GRADIENT_FOUR -> GradientType.SPRING_FOG
 }
