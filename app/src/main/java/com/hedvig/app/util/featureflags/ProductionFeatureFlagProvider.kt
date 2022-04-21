@@ -22,7 +22,6 @@ class ProductionFeatureFlagProvider(
         Feature.FRANCE_MARKET -> true
         Feature.ADDRESS_AUTO_COMPLETE -> true
         Feature.REFERRAL_CAMPAIGN -> false
-        Feature.QUOTE_CART -> false
         Feature.CONNECT_PAYMENT_AT_SIGN -> true
     }
 }

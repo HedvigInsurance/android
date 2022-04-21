@@ -20,14 +20,13 @@ import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.embark.util.SelectedContractType
 import com.hedvig.app.feature.embark.util.evaluateExpression
 import com.hedvig.app.feature.embark.util.getFileVariables
-import com.hedvig.app.feature.embark.util.getOfferKeysOrNull
+import com.hedvig.app.feature.embark.util.getOfferKeyOrNull
 import com.hedvig.app.feature.embark.util.getSelectedContractTypes
 import com.hedvig.app.feature.embark.util.getVariables
 import com.hedvig.app.feature.embark.util.toExpressionFragment
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ProgressPercentage
 import com.hedvig.app.util.asMap
-import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.app.util.safeLet
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.channels.Channel
@@ -45,7 +44,6 @@ import java.util.Stack
 import kotlin.math.max
 
 private const val QUOTE_CART_ID_KEY = "quoteCartId"
-private const val QUOTE_ID_KEY = "quoteId"
 
 abstract class EmbarkViewModel(
     private val valueStore: ValueStore,
@@ -54,7 +52,6 @@ abstract class EmbarkViewModel(
     private val hAnalytics: HAnalytics,
     private val storyName: String,
     loginStatusService: LoginStatusService,
-    private val featureManager: FeatureManager,
 ) : ViewModel() {
     private val _passageState = MutableLiveData<PassageState>()
     val passageState: LiveData<PassageState> = _passageState
@@ -151,12 +148,12 @@ abstract class EmbarkViewModel(
         val location = nextPassage?.externalRedirect?.data?.location
         val api = nextPassage?.api?.fragments?.apiFragment
 
-        val keys = nextPassage?.getOfferKeysOrNull(valueStore, featureManager)
+        val key = nextPassage?.getOfferKeyOrNull(valueStore)
 
         when {
             storyData.embarkStory == null || nextPassage == null -> _events.trySend(Event.Error())
             redirectPassage != null -> navigateToPassage(redirectPassage)
-            keys != null && keys.isNotEmpty() -> {
+            key != null && key.isNotEmpty() -> {
                 // For offers, there is a problem with the Offer screen not committing before this stage is reached,
                 //  meaning that the old values were returned from getList/get.
                 valueStore.withCommittedVersion {
@@ -500,7 +497,6 @@ class EmbarkViewModelImpl(
     hAnalytics: HAnalytics,
     storyName: String,
     private val createQuoteCartUseCase: CreateQuoteCartUseCase,
-    private val featureManager: FeatureManager,
 ) : EmbarkViewModel(
     valueStore,
     graphQLQueryUseCase,
@@ -508,7 +504,6 @@ class EmbarkViewModelImpl(
     hAnalytics,
     storyName,
     loginStatusService,
-    featureManager,
 ) {
 
     init {

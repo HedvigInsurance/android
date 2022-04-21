@@ -490,15 +490,14 @@ val adyenModule = module {
 val embarkModule = module {
     viewModel<EmbarkViewModel> { (storyName: String) ->
         EmbarkViewModelImpl(
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            storyName,
-            get(),
-            get(),
+            embarkRepository = get(),
+            loginStatusService = get(),
+            graphQLQueryUseCase = get(),
+            chatRepository = get(),
+            valueStore = get(),
+            hAnalytics = get(),
+            storyName = storyName,
+            createQuoteCartUseCase = get(),
         )
     }
 }
@@ -615,7 +614,7 @@ val repositoriesModule = module {
     single { TrustlyRepository(get()) }
     single { GetMemberIdUseCase(get()) }
     single { PaymentRepository(get(), get()) }
-    single { GetBundlesUseCase(get(), get(), get()) }
+    single { GetBundlesUseCase(get(), get()) }
 }
 
 val trackerModule = module {

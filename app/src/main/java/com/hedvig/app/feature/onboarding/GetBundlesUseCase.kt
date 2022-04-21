@@ -6,26 +6,18 @@ import com.hedvig.android.owldroid.type.EmbarkStoryType
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
-import com.hedvig.app.util.featureflags.Feature
-import com.hedvig.app.util.featureflags.FeatureManager
 
 class GetBundlesUseCase(
     private val apolloClient: ApolloClient,
     private val localeManager: LocaleManager,
-    featureManager: FeatureManager,
 ) {
-    private val storyType = if (featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
-        EmbarkStoryType.APP_ONBOARDING_QUOTE_CART
-    } else {
-        EmbarkStoryType.APP_ONBOARDING
-    }
 
     suspend operator fun invoke(): BundlesResult {
         val locale = localeManager.defaultLocale().rawValue
         val choosePlanQuery = ChoosePlanQuery(locale)
         return when (val result = apolloClient.query(choosePlanQuery).safeQuery()) {
             is QueryResult.Error -> BundlesResult.Error
-            is QueryResult.Success -> result.data.mapToSuccess(storyType)
+            is QueryResult.Success -> result.data.mapToSuccess(EmbarkStoryType.APP_ONBOARDING_QUOTE_CART)
         }
     }
 }
