@@ -47,7 +47,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         scroll = 0
 
-        val adapter = HomeAdapter(
+        val homeAdapter = HomeAdapter(
             fragmentManager = parentFragmentManager,
             retry = model::reload,
             startIntentForResult = ::startEmbarkForResult,
@@ -67,7 +67,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
             applyStatusBarInsets()
 
             itemAnimator = ViewHolderReusingDefaultItemAnimator()
-            this.adapter = adapter
+            adapter = homeAdapter
             (layoutManager as? GridLayoutManager)?.spanSizeLookup =
                 object : GridLayoutManager.SpanSizeLookup() {
                     override fun getSpanSize(position: Int): Int {
@@ -91,7 +91,6 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                     viewLifecycleOwner
                 )
             )
-            this.adapter = adapter
         }
 
         model.viewState
@@ -100,9 +99,9 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                 binding.swipeToRefresh.isRefreshing = viewState is HomeViewModel.ViewState.Loading
 
                 when (viewState) {
-                    is HomeViewModel.ViewState.Error -> adapter.submitList(listOf(HomeModel.Error))
+                    is HomeViewModel.ViewState.Error -> homeAdapter.submitList(listOf(HomeModel.Error))
                     HomeViewModel.ViewState.Loading -> binding.swipeToRefresh.isRefreshing = true
-                    is HomeViewModel.ViewState.Success -> adapter.submitList(viewState.homeItems)
+                    is HomeViewModel.ViewState.Success -> homeAdapter.submitList(viewState.homeItems)
                 }
             }
             .launchIn(lifecycleScope)
