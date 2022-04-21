@@ -4,9 +4,10 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.Card
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.LocalContentAlpha
@@ -17,12 +18,14 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.ui.compose.theme.hedvigBlack
 import com.hedvig.app.ui.compose.theme.hedvigBlack12percent
+import com.hedvig.app.util.compose.HorizontalTextsWithMaximumSpaceTaken
 
 @Composable
 fun VariantButton(
@@ -31,7 +34,7 @@ fun VariantButton(
     subTitle: String?,
     cost: String,
     selected: Boolean,
-    onClick: (id: String) -> Unit
+    onClick: (id: String) -> Unit,
 ) {
     Card(
         border = if (selected) {
@@ -41,30 +44,38 @@ fun VariantButton(
         },
         modifier = Modifier
             .padding(top = 8.dp, start = 16.dp, end = 16.dp)
+            .heightIn(min = 110.dp)
             .clickable {
                 onClick(id)
-            }
+            },
     ) {
-        Row(
-            Modifier
-                .height(106.dp)
-        ) {
+        Row(modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 12.dp, bottom = 16.dp)) {
             RadioButton(selected = selected, onClick = { onClick(id) }, modifier = Modifier.padding(top = 4.dp))
-            Column(modifier = Modifier.padding(top = 16.dp).width(200.dp)) {
-                Text(text = title, style = MaterialTheme.typography.h6)
+            Column {
+                HorizontalTextsWithMaximumSpaceTaken(
+                    startText = {
+                        Text(
+                            text = title,
+                            style = MaterialTheme.typography.h6,
+                        )
+                    },
+                    endText = { textAlign ->
+                        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                            Text(
+                                text = cost,
+                                style = MaterialTheme.typography.h6,
+                                textAlign = textAlign,
+                            )
+                        }
+                    },
+                    spaceBetween = 10.dp,
+                )
                 if (subTitle != null) {
+                    Spacer(modifier = Modifier.height(10.dp))
                     CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                         Text(text = subTitle, style = MaterialTheme.typography.subtitle1)
                     }
                 }
-            }
-            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                Text(
-                    text = cost,
-                    style = MaterialTheme.typography.h6,
-                    modifier = Modifier.padding(top = 16.dp, end = 12.dp),
-                    textAlign = TextAlign.End
-                )
             }
         }
     }
@@ -72,19 +83,31 @@ fun VariantButton(
 
 @Preview
 @Composable
-fun VariantButtonPreview() {
+fun VariantButtonPreview(
+    @PreviewParameter(VariantButtonInputsProvider::class) inputs: Triple<String, String, Boolean>,
+) {
+    val (title, subtitle, selected) = inputs
     HedvigTheme {
         Surface(
             color = MaterialTheme.colors.background,
         ) {
             VariantButton(
                 id = "id",
-                title = "Hemförsäkring och Olyckssf",
-                subTitle = "Test subtitle",
+                title = title,
+                subTitle = subtitle,
                 cost = "12923 NOK",
-                selected = false,
+                selected = selected,
                 onClick = {}
             )
         }
     }
 }
+
+class VariantButtonInputsProvider : CollectionPreviewParameterProvider<Triple<String, String, Boolean>>(
+    listOf(
+        Triple("Hemförsäkring och Olyckssfall", "Test subtitle", true),
+        Triple("Title".repeat(5), "Subtitle", false),
+        Triple("Title", "Subtitle".repeat(5), false),
+        Triple("Title".repeat(10), "Subtitle".repeat(10), true),
+    )
+)
