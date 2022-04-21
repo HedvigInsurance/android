@@ -13,14 +13,15 @@ class GetBundleVariantUseCase(
     offerRepository: OfferRepository
 ) {
 
-    val selectedVariantId = MutableStateFlow("")
+    private val selectedVariantId = MutableStateFlow<String?>(null)
+
     val bundleVariantFlow: Flow<Either<ErrorMessage, Pair<OfferModel, QuoteBundleVariant>>> = offerRepository
         .offerFlow
-        .combine(selectedVariantId) { offer: Either<ErrorMessage, OfferModel>, variantId: String ->
+        .combine(selectedVariantId) { offer: Either<ErrorMessage, OfferModel>, variantId: String? ->
             offer.map { offerModel ->
 
                 val bundleVariant = offerModel.variants
-                    .takeIf { variantId.isNotEmpty() }
+                    .takeIf { variantId != null }
                     ?.find { it.id == variantId }
                     ?: offerModel.variants.first()
 
@@ -28,7 +29,7 @@ class GetBundleVariantUseCase(
             }
         }
 
-    fun invoke(variantId: String) {
+    fun selectedVariant(variantId: String) {
         selectedVariantId.value = variantId
     }
 }

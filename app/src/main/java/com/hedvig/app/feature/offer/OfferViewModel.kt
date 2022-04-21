@@ -211,7 +211,7 @@ class OfferViewModelImpl(
                                     ?: adyenRepository.paymentMethodsResponse(),
                                 externalProvider = externalProvider,
                                 onVariantSelected = { variantId ->
-                                    getBundleVariantUseCase.invoke(variantId)
+                                    getBundleVariantUseCase.selectedVariant(variantId)
                                 }
                             )
                         }
@@ -226,7 +226,7 @@ class OfferViewModelImpl(
                                     ?: adyenRepository.paymentMethodsResponse(),
                                 externalProvider = null,
                                 onVariantSelected = { variantId ->
-                                    getBundleVariantUseCase.invoke(variantId)
+                                    getBundleVariantUseCase.selectedVariant(variantId)
                                 }
                             )
                         )
