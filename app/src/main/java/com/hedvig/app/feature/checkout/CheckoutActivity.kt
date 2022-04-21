@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.offer.ui.checkout
+package com.hedvig.app.feature.checkout
 
 import android.content.Context
 import android.content.Intent

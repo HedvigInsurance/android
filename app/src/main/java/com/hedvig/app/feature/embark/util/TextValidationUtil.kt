@@ -25,7 +25,8 @@ fun TextInputEditText.setInputType(mask: MaskType) {
             when (mask) {
                 MaskType.PERSONAL_NUMBER,
                 MaskType.BIRTH_DATE,
-                MaskType.BIRTH_DATE_REVERSE -> "0123456789-"
+                MaskType.BIRTH_DATE_REVERSE,
+                -> "0123456789-"
                 MaskType.NORWEGIAN_POSTAL_CODE -> "0123456789"
                 MaskType.POSTAL_CODE -> "0123456789 "
                 else -> "0123456789- "
@@ -47,7 +48,7 @@ fun TextInputEditText.setValidationFormatter(mask: MaskType) {
                 charSequence: CharSequence,
                 i: Int,
                 i1: Int,
-                i2: Int
+                i2: Int,
             ) {
                 prevLength = text.toString().length
             }
@@ -56,7 +57,7 @@ fun TextInputEditText.setValidationFormatter(mask: MaskType) {
                 charSequence: CharSequence,
                 i: Int,
                 i1: Int,
-                i2: Int
+                i2: Int,
             ) {
             }
 
@@ -82,6 +83,14 @@ fun TextInputEditText.setValidationFormatter(mask: MaskType) {
                         if (prevLength < length && (length == 2 || length == 5)) {
                             editable.append("-")
                         }
+                    }
+                    MaskType.NORWEGIAN_PERSONAL_NUMBER,
+                    MaskType.DANISH_PERSONAL_NUMBER,
+                    MaskType.EMAIL,
+                    MaskType.NORWEGIAN_POSTAL_CODE,
+                    MaskType.DIGITS,
+                    MaskType.UNKNOWN,
+                    -> {
                     }
                 }
             }

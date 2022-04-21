@@ -39,11 +39,12 @@ class TooltipBottomSheet : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         getViewModel<TooltipViewModel>()
-        val tooltips = requireArguments().getParcelableArrayList<Tooltip>(TOOLTIPS)
-        if (tooltips == null) {
+        val tooltipsParcel = requireArguments().getParcelable<TooltipsParcel>(TOOLTIPS)
+        if (tooltipsParcel == null) {
             e { "Programmer error: no tooltips passed to ${this::class.java.name}" }
             return
         }
+        val tooltips = tooltipsParcel.tooltips
         binding.apply {
             recycler.adapter = TooltipBottomSheetAdapter().also { adapter ->
                 adapter.submitList(
@@ -157,16 +158,17 @@ class TooltipBottomSheet : BottomSheetDialogFragment() {
         val TAG: String = TooltipBottomSheet::class.java.name
         fun newInstance(tooltips: List<EmbarkStoryQuery.Tooltip>) =
             TooltipBottomSheet().apply {
-                val parcelableTooltips = mutableListOf<Tooltip>()
-                tooltips.forEach {
-                    parcelableTooltips.add(
-                        Tooltip(
-                            title = it.title,
-                            description = it.description
+                val parcelableTooltips: List<Tooltip> = buildList {
+                    tooltips.forEach {
+                        add(
+                            Tooltip(
+                                title = it.title,
+                                description = it.description
+                            )
                         )
-                    )
+                    }
                 }
-                arguments = bundleOf(TOOLTIPS to parcelableTooltips)
+                arguments = bundleOf(TOOLTIPS to TooltipsParcel(parcelableTooltips))
             }
 
         fun getTooltipsWithTitles(list: List<Tooltip>) =

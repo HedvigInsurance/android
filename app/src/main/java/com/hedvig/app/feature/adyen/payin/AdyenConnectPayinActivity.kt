@@ -106,12 +106,14 @@ class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activ
 
         when (DropIn.handleActivityResult(requestCode, resultCode, data)) {
             is DropInResult.CancelledByUser -> finish()
-            is DropInResult.Error -> connectPaymentViewModel.navigateTo(
-                ConnectPaymentScreenState.Result(success = false)
-            )
             is DropInResult.Finished -> {
                 connectPaymentViewModel.navigateTo(ConnectPaymentScreenState.Result(success = true))
             }
+            is DropInResult.Error,
+            null,
+            -> connectPaymentViewModel.navigateTo(
+                ConnectPaymentScreenState.Result(success = false)
+            )
         }
     }
 

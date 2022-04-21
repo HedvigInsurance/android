@@ -5,9 +5,12 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.genericauth.otpinput.OtpInputActivity
@@ -24,13 +27,16 @@ class GenericAuthActivity : BaseActivity() {
 
         setContent {
             val viewState by model.viewState.collectAsState()
-            val events = model.eventsFlow.collectAsState(initial = null)
-
-            HedvigTheme {
-                when (val value = events.value) {
-                    is GenericAuthViewModel.Event.SubmitEmailSuccess -> startOtpInputActivity(value)
+            LaunchedEffect(model.eventsFlow) {
+                repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    model.eventsFlow.collect { event ->
+                        when (event) {
+                            is GenericAuthViewModel.Event.SubmitEmailSuccess -> startOtpInputActivity(event)
+                        }
+                    }
                 }
-
+            }
+            HedvigTheme {
                 EmailInputScreen(
                     onUpClick = ::finish,
                     onInputChanged = model::setInput,

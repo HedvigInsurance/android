@@ -2,8 +2,8 @@ package com.hedvig.app.feature.embark.variables
 
 import com.hedvig.android.owldroid.fragment.GraphQLVariablesFragment
 import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLSingleVariableCasting
-import com.hedvig.app.feature.embark.FileVariable
 import com.hedvig.app.feature.embark.ValueStore
+import com.hedvig.app.util.apollo.FileVariable
 import com.hedvig.app.util.createAndAddWithLodashNotation
 import org.json.JSONArray
 import org.json.JSONObject
@@ -55,15 +55,23 @@ object VariableExtractor {
                     )
                 }
                 is Variable.Multi -> {
-                    acc.put(variable.key, JSONArray())
-                    getMultiActionItems(variable.key).mapIndexed { index, map ->
-                        val multiActionJson = reduceVariables(
-                            variable.variables,
-                            map::get,
-                            setValue,
-                            getMultiActionItems
+                    val multiActionItems = getMultiActionItems(variable.from)
+                    if (multiActionItems.isNotEmpty()) {
+                        val multiActionArray = JSONArray()
+                        multiActionItems.mapIndexed { index, map ->
+                            val multiActionJson = reduceVariables(
+                                variable.variables,
+                                map::get,
+                                setValue,
+                                getMultiActionItems
+                            )
+                            multiActionArray.put(index, multiActionJson)
+                        }
+                        acc.createAndAddWithLodashNotation(
+                            value = multiActionArray,
+                            key = variable.key,
+                            currentKey = variable.key.substringBefore(".")
                         )
-                        acc.getJSONArray(variable.key).put(index, multiActionJson)
                     }
                 }
             }

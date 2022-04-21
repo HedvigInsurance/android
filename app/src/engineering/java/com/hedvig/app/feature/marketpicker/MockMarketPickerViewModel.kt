@@ -25,9 +25,8 @@ class MockMarketPickerViewModel(context: Context, marketManager: MarketManager) 
 
     init {
         if (marketManager.market == null) {
-            val market: Market
             try {
-                market = if (AVAILABLE_GEO_MARKET) {
+                val market: Market = if (AVAILABLE_GEO_MARKET) {
                     Market.valueOf(GEO_DATA_SE.geo.countryISOCode)
                 } else {
                     Market.valueOf(GEO_DATA_FI.geo.countryISOCode)
@@ -36,6 +35,7 @@ class MockMarketPickerViewModel(context: Context, marketManager: MarketManager) 
                     Market.SE -> _pickerState.postValue(PickerState(market, Language.EN_SE))
                     Market.NO -> _pickerState.postValue(PickerState(market, Language.EN_NO))
                     Market.DK -> _pickerState.postValue(PickerState(market, Language.EN_DK))
+                    Market.FR -> {}
                 }
             } catch (e: Exception) {
                 _pickerState.postValue(

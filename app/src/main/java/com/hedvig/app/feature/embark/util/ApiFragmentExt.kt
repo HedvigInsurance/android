@@ -3,11 +3,11 @@ package com.hedvig.app.feature.embark.util
 import com.hedvig.android.owldroid.fragment.ApiFragment
 import com.hedvig.android.owldroid.fragment.GraphQLVariablesFragment
 import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLSingleVariableCasting
-import com.hedvig.app.feature.embark.FileVariable
 import com.hedvig.app.feature.embark.ValueStore
 import com.hedvig.app.feature.embark.variables.CastType
 import com.hedvig.app.feature.embark.variables.Variable
 import com.hedvig.app.feature.embark.variables.VariableExtractor
+import com.hedvig.app.util.apollo.FileVariable
 import org.json.JSONObject
 
 fun ApiFragment.AsEmbarkApiGraphQLQuery.getVariables(valueStore: ValueStore): JSONObject? {
@@ -52,19 +52,20 @@ private fun GraphQLVariablesFragment.toVariable(): Variable? {
         asEmbarkAPIGraphQLMultiActionVariable != null -> {
             Variable.Multi(
                 asEmbarkAPIGraphQLMultiActionVariable!!.key,
+                asEmbarkAPIGraphQLMultiActionVariable!!.from,
                 asEmbarkAPIGraphQLMultiActionVariable!!.variables.mapNotNull {
                     when {
                         it.asEmbarkAPIGraphQLGeneratedVariable1 != null -> {
                             Variable.Generated(
-                                asEmbarkAPIGraphQLGeneratedVariable!!.key,
-                                asEmbarkAPIGraphQLGeneratedVariable!!.storeAs
+                                it.asEmbarkAPIGraphQLGeneratedVariable1!!.key,
+                                it.asEmbarkAPIGraphQLGeneratedVariable1!!.storeAs
                             )
                         }
                         it.asEmbarkAPIGraphQLSingleVariable1 != null -> {
                             Variable.Single(
-                                asEmbarkAPIGraphQLSingleVariable!!.key,
-                                asEmbarkAPIGraphQLSingleVariable!!.from,
-                                asEmbarkAPIGraphQLSingleVariable!!.as_.toCast()
+                                it.asEmbarkAPIGraphQLSingleVariable1!!.key,
+                                it.asEmbarkAPIGraphQLSingleVariable1!!.from,
+                                it.asEmbarkAPIGraphQLSingleVariable1!!.as_.toCast()
                             )
                         }
                         else -> {

@@ -1,7 +1,7 @@
-package com.hedvig.app.feature.offer.model.quotebundle
+package com.hedvig.app.feature.offer.model
 
 import com.hedvig.android.owldroid.fragment.IncentiveFragment
-import com.hedvig.android.owldroid.graphql.QuoteCartSubscription
+import com.hedvig.android.owldroid.fragment.QuoteCartFragment
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import org.javamoney.moneta.Money
 import javax.money.MonetaryAmount
@@ -36,7 +36,7 @@ data class Campaign(
     }
 }
 
-fun QuoteCartSubscription.Campaign.toCampaign() = Campaign(
+fun QuoteCartFragment.Campaign.toCampaign() = Campaign(
     displayValue = displayValue,
     incentive = incentive?.toIncentive() ?: Campaign.Incentive.NoDiscount
 )
@@ -60,7 +60,7 @@ fun IncentiveFragment.Incentive?.toIncentive(): Campaign.Incentive {
     } ?: Campaign.Incentive.NoDiscount
 }
 
-private fun QuoteCartSubscription.Incentive?.toIncentive(): Campaign.Incentive {
+private fun QuoteCartFragment.Incentive?.toIncentive(): Campaign.Incentive {
     return this?.asIndefinitePercentageDiscount?.let {
         Campaign.Incentive.IndefinitePercentageDiscount(
             percentage = it.indefinitePercentageDiscount

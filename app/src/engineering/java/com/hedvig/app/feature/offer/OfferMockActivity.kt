@@ -29,6 +29,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
+import kotlin.time.Duration.Companion.seconds
 
 class OfferMockActivity : MockActivity() {
     override val original = listOf(offerModule)
@@ -198,7 +199,7 @@ class OfferMockActivity : MockActivity() {
                         ),
                     ).forEach {
                         MockOfferViewModel.mockData = it
-                        delay(2000)
+                        delay(2.seconds)
                     }
                 }
             }.invokeOnCompletion { MockOfferViewModel.mockRefreshEvery2Seconds = false }

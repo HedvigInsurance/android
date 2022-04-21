@@ -2,6 +2,8 @@ package com.hedvig.app.feature.embark
 
 import com.adyen.checkout.core.model.getStringOrNull
 import com.hedvig.android.owldroid.fragment.ApiFragment
+import com.hedvig.app.util.apollo.FileVariable
+import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.getWithDotNotation
 import com.hedvig.app.util.toStringArray
@@ -22,7 +24,7 @@ sealed class GraphQLQueryResult {
 }
 
 class GraphQLQueryUseCase(
-    private val embarkRepository: EmbarkRepository
+    private val graphQLQueryHandler: GraphQLQueryHandler
 ) {
 
     suspend fun executeQuery(
@@ -32,7 +34,7 @@ class GraphQLQueryUseCase(
     ): GraphQLQueryResult {
         return when (
             val result =
-                embarkRepository.graphQLQuery(graphQLQuery.queryData.query, variables, fileVariables)
+                graphQLQueryHandler.graphQLQuery(graphQLQuery.queryData.query, variables, fileVariables)
         ) {
             is QueryResult.Error -> GraphQLQueryResult.Error(result.message, graphQLQuery.getErrorPassageName())
             is QueryResult.Success -> handleQueryCallSuccess(graphQLQuery, result)
@@ -57,7 +59,7 @@ class GraphQLQueryUseCase(
     ): GraphQLQueryResult {
         return when (
             val result =
-                embarkRepository.graphQLQuery(graphQLMutation.mutationData.mutation, variables, fileVariables)
+                graphQLQueryHandler.graphQLQuery(graphQLMutation.mutationData.mutation, variables, fileVariables)
         ) {
             is QueryResult.Error -> GraphQLQueryResult.Error(result.message, graphQLMutation.getErrorPassageName())
             is QueryResult.Success -> handleMutationCallSuccess(graphQLMutation, result)

@@ -19,10 +19,10 @@ data class FeatureManager(
 
     init {
         if (isDebug()) {
-            addProvider(DebugFeatureFlagProvider(dataStore))
+            addProvider(DebugFeatureFlagProvider(dataStore, marketManager))
         } else {
             addProvider(RemoteFeatureFlagProvider(marketManager, remoteConfig))
-            addProvider(ProductionFeatureFlagProvider())
+            addProvider(ProductionFeatureFlagProvider(marketManager))
         }
     }
 

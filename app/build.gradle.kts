@@ -9,6 +9,7 @@ plugins {
     id("kotlin-parcelize")
     id("kotlin-kapt")
     id("com.hedvig.android.lokalise")
+    kotlin("plugin.serialization") version "1.6.10"
 }
 
 apply(plugin = "com.jaredsburrows.license")
@@ -40,7 +41,7 @@ android {
         applicationId = "com.hedvig"
 
         versionCode = 43
-        versionName = "6.4.3"
+        versionName = "6.5.3"
 
         vectorDrawables.useSupportLibrary = true
 
@@ -273,12 +274,15 @@ dependencies {
     implementation(libs.androidx.compose.material)
     implementation(libs.androidx.compose.materialIconsExtended)
     implementation(libs.androidx.compose.animation)
+    implementation(libs.androidx.compose.runtime)
+    implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.mdcAdapter)
     implementation(libs.androidx.compose.uiTooling)
     implementation(libs.androidx.compose.uiViewBinding)
     implementation(libs.androidx.lifecycle.compose)
     androidTestImplementation(libs.androidx.compose.uiTestJunit)
     debugImplementation(libs.androidx.compose.uiTestManifest)
+    implementation(libs.serialization.json)
 
     implementation(libs.showkase.annotation)
     debugImplementation(libs.showkase.showkase)

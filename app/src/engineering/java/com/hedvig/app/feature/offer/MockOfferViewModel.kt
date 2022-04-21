@@ -5,8 +5,13 @@ import com.hedvig.android.owldroid.graphql.DataCollectionResultQuery
 import com.hedvig.android.owldroid.graphql.DataCollectionStatusSubscription
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
+import com.hedvig.app.authenticate.LoginStatus
+import com.hedvig.app.feature.adyen.PaymentTokenId
+import com.hedvig.app.feature.checkout.CheckoutParameter
+import com.hedvig.app.feature.offer.model.paymentApiResponseOrNull
 import com.hedvig.app.feature.offer.model.quotebundle.PostSignScreen
-import com.hedvig.app.feature.offer.ui.checkout.CheckoutParameter
+import com.hedvig.app.feature.offer.model.toOfferModel
+import com.hedvig.app.feature.offer.usecase.ExternalProvider
 import com.hedvig.app.feature.offer.usecase.datacollectionresult.DataCollectionResult
 import com.hedvig.app.feature.offer.usecase.datacollectionresult.GetDataCollectionResultUseCase
 import com.hedvig.app.feature.offer.usecase.datacollectionstatus.DataCollectionStatus
@@ -18,6 +23,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 class MockOfferViewModel : OfferViewModel() {
     init {
@@ -69,17 +76,30 @@ class MockOfferViewModel : OfferViewModel() {
 
     override fun onGoToDirectDebit() {}
     override fun onSwedishBankIdSign() {}
+    override fun onPaymentTokenIdReceived(id: PaymentTokenId) {}
 
     private fun load() {
         viewModelScope.launch {
-            delay(650)
+            delay(650.milliseconds)
             do {
                 if (shouldError) {
-                    _viewState.value = ViewState.Error
+                    _viewState.value = ViewState.Error()
                     return@launch
                 }
-
-                delay(2000)
+                val offerModel = mockData.offer!!.toOfferModel()
+                _viewState.value = ViewState.Content(
+                    offerModel = offerModel,
+                    loginStatus = LoginStatus.LoggedIn,
+                    paymentMethods = offerModel.paymentApiResponseOrNull(),
+                    externalProvider = ExternalProvider(
+                        dataCollectionStatus = mockData.dataCollectionStatus,
+                        dataCollectionResult = mockData.dataCollectionResult?.data,
+                        insuranceProviderDisplayName =
+                        (mockData.dataCollectionResult?.data as? DataCollectionResult.Content)?.collectedList
+                            ?.first()?.name,
+                    ),
+                )
+                delay(2.seconds)
             } while (mockRefreshEvery2Seconds)
         }
     }

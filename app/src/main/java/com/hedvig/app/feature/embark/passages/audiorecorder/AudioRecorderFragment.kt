@@ -42,6 +42,7 @@ class AudioRecorderFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ) = ComposeView(requireContext()).apply {
+        isTransitionGroup = true // https://issuetracker.google.com/issues/206947893
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         val parameters = requireArguments().getParcelable<AudioRecorderParameters>(PARAMETERS)
             ?: throw IllegalArgumentException("Programmer error: Missing PARAMETERS in ${this.javaClass.name}")
