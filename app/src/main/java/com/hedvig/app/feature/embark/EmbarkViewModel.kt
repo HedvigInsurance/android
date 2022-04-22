@@ -158,7 +158,7 @@ abstract class EmbarkViewModel(
                 //  meaning that the old values were returned from getList/get.
                 valueStore.withCommittedVersion {
                     val quoteCartId = this.get(QUOTE_CART_ID_KEY)?.let { QuoteCartId(it) }
-                    val selectedContractTypes = nextPassage.getSelectedContractTypes(valueStore)
+                    val selectedContractTypes = nextPassage.getSelectedContractTypes(this)
                     _events.trySend(Event.Offer(quoteCartId, selectedContractTypes))
                 }
             }
