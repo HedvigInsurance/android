@@ -52,8 +52,13 @@ class ValueStoreImpl : ValueStore {
     }
 
     override fun put(key: String, value: String?) {
-        stage[key] = value
-        prefillValues[key] = value
+        val nullableValue = if (value.equals("null")) {
+            null
+        } else {
+            value
+        }
+        stage[key] = nullableValue
+        prefillValues[key] = nullableValue
     }
 
     /**
