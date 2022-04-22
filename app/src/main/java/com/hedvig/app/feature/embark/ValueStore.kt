@@ -64,9 +64,15 @@ class ValueStoreImpl : ValueStore {
     }
 
     override fun get(key: String): String? {
-        return computedValues?.get(key)?.let {
+        val value = computedValues?.get(key)?.let {
             TemplateExpressionCalculator.evaluateTemplateExpression(it, storedValues.peek() + stage)
         } ?: storedValues.peek()[key] ?: stage[key]
+
+        return if (value.equals("null")) {
+            null
+        } else {
+            value
+        }
     }
 
     override fun getList(key: String): List<String>? {
@@ -74,7 +80,15 @@ class ValueStoreImpl : ValueStore {
     }
 
     override val prefill = object : ValueStoreView {
-        override fun get(key: String) = this@ValueStoreImpl.get(key) ?: prefillValues[key]
+        override fun get(key: String): String? {
+            val value = this@ValueStoreImpl.get(key) ?: prefillValues[key]
+
+            return if (value.equals("null")) {
+                null
+            } else {
+                value
+            }
+        }
         override fun getList(key: String): List<String>? = null
     }
 
