@@ -14,7 +14,7 @@
         android:layout_marginBottom="@dimen/base_margin_septuple"
         android:text="@string/market_language_screen.title"
         android:textAlignment="center"
-        android:textAppearance="?textAppearanceHeadline4" />
+        android:textAppearance="?textAppearanceHeadline5" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/picker"
