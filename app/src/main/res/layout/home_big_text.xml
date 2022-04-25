@@ -7,6 +7,7 @@
     android:layout_marginTop="@dimen/base_margin_sextuple"
     android:layout_marginEnd="@dimen/base_margin_triple"
     android:layout_marginBottom="@dimen/base_margin_triple"
-    android:textAppearance="?textAppearanceHeadline4"
+    android:fontFamily="@font/hedvig_letters_small"
     android:textAlignment="center"
+    android:textAppearance="?textAppearanceHeadline4"
     tools:text="Hello and welcome Zak, we’re contacting your old insurer to find out your start date" />
