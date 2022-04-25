@@ -203,8 +203,11 @@ abstract class EmbarkViewModel(
 
     private fun handleGraphQLQuery(graphQLQuery: ApiFragment.AsEmbarkApiGraphQLQuery) {
         viewModelScope.launch {
-            val variables = graphQLQuery.getVariables(valueStore)
-            val fileVariables = graphQLQuery.getFileVariables(valueStore)
+            val (variables, fileVariables) = valueStore.withCommittedVersion {
+                val variables = graphQLQuery.getVariables(valueStore)
+                val fileVariables = graphQLQuery.getFileVariables(valueStore)
+                variables to fileVariables
+            }
             val result = graphQLQueryUseCase.executeQuery(graphQLQuery, variables, fileVariables)
             handleQueryResult(result)
         }
@@ -212,8 +215,11 @@ abstract class EmbarkViewModel(
 
     private fun handleGraphQLMutation(graphQLMutation: ApiFragment.AsEmbarkApiGraphQLMutation) {
         viewModelScope.launch {
-            val variables = graphQLMutation.getVariables(valueStore)
-            val fileVariables = graphQLMutation.getFileVariables(valueStore)
+            val (variables, fileVariables) = valueStore.withCommittedVersion {
+                val variables = graphQLMutation.getVariables(this)
+                val fileVariables = graphQLMutation.getFileVariables(this)
+                variables to fileVariables
+            }
             val result = graphQLQueryUseCase.executeMutation(graphQLMutation, variables, fileVariables)
             handleQueryResult(result)
         }
