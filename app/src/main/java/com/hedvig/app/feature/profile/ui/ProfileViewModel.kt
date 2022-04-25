@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import com.hedvig.app.authenticate.LogoutUseCase
-import com.hedvig.app.feature.profile.data.ObserveProfileUiStateUseCase
 import com.hedvig.app.feature.profile.data.ProfileRepository
+import com.hedvig.app.feature.profile.ui.tab.ProfileQueryDataToProfileUiStateMapper
 import com.hedvig.app.feature.profile.ui.tab.ProfileUiState
 import com.hedvig.app.util.coroutines.RetryChannel
 import e
@@ -23,8 +23,8 @@ import kotlin.time.Duration.Companion.seconds
 
 class ProfileViewModel(
     private val profileRepository: ProfileRepository,
-    private val observeProfileUiStateUseCase: ObserveProfileUiStateUseCase,
     private val logoutUseCase: LogoutUseCase,
+    private val profileQueryDataToProfileUiStateMapper: ProfileQueryDataToProfileUiStateMapper,
 ) : ViewModel() {
     sealed interface ViewState {
         data class Success(val profileUiState: ProfileUiState) : ViewState
@@ -45,8 +45,11 @@ class ProfileViewModel(
     private val observeProfileRetryChannel = RetryChannel()
     val data: StateFlow<ViewState> = observeProfileRetryChannel
         .flatMapLatest {
-            observeProfileUiStateUseCase
-                .invoke()
+            profileRepository
+                .profile()
+                .mapLatest { profileQueryDataResult ->
+                    profileQueryDataResult.map { profileQueryDataToProfileUiStateMapper.map(it) }
+                }
                 .mapLatest { profileUiStateResult ->
                     when (profileUiStateResult) {
                         is Either.Left -> {
