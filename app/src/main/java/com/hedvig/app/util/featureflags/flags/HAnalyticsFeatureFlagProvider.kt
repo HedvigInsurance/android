@@ -15,9 +15,12 @@ class HAnalyticsFeatureFlagProvider(
         Feature.KEY_GEAR -> hAnalytics.keyGear()
         Feature.MOVING_FLOW -> hAnalytics.movingFlow()
         Feature.QUOTE_CART -> hAnalytics.useQuoteCart()
+        Feature.CONNECT_PAYIN_REMINDER -> hAnalytics.connectPaymentReminder()
+        Feature.COMMON_CLAIMS -> hAnalytics.homeCommonClaim()
+        Feature.PAYMENT_SCREEN -> hAnalytics.paymentScreen()
         Feature.REFERRAL_CAMPAIGN -> hAnalytics.foreverFebruaryCampaign()
-        Feature.SHOW_CHARITY -> TODO("hAnalytics.qasa() or whatever the name will be")
+        Feature.REFERRALS -> hAnalytics.forever()
+        Feature.SHOW_CHARITY -> hAnalytics.showCharity()
         Feature.UPDATE_NECESSARY -> hAnalytics.updateNecessary()
-        Feature.PAYMENT_SCREEN -> TODO("Implement when added to upstream hAnalytics")
     }
 }
