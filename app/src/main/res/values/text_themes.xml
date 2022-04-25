@@ -33,12 +33,12 @@
     <dimen name="subtitle_1_placeholder_height">16sp</dimen>
 
     <style name="Hedvig.TextAppearance.Headline3" parent="TextAppearance.MaterialComponents.Headline3">
-        <item name="fontFamily">@font/hedvig_letters_small</item>
+        <item name="fontFamily">@font/hedvig_letters_standard</item>
         <item name="android:letterSpacing">-0.05</item>
     </style>
 
     <style name="Hedvig.TextAppearance.Headline4" parent="TextAppearance.MaterialComponents.Headline4">
-        <item name="fontFamily">@font/hedvig_letters_small</item>
+        <item name="fontFamily">@font/hedvig_letters_standard</item>
         <item name="lineHeight">46sp</item>
         <item name="android:letterSpacing">-0.025</item>
     </style>
