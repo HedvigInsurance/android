@@ -325,7 +325,18 @@ abstract class EmbarkViewModel(
         return false
     }
 
-    fun preProcessResponse(passageName: String): Response? {
+    fun preProcessResponseWithCommittedValueStore(
+        passageName: String,
+    ): Response? {
+        return valueStore.withCommittedVersion {
+            preProcessResponse(passageName, this)
+        }
+    }
+
+    fun preProcessResponse(
+        passageName: String,
+        valueStore: ValueStore = this.valueStore,
+    ): Response? {
         val response = storyData
             .embarkStory
             ?.passages
@@ -334,7 +345,7 @@ abstract class EmbarkViewModel(
             ?: return null
 
         response.fragments.messageFragment?.let { message ->
-            preProcessMessage(message)?.let { return Response.SingleResponse(it.text) }
+            preProcessMessage(message, valueStore)?.let { return Response.SingleResponse(it.text) }
         }
 
         response.fragments.responseExpressionFragment?.let { exp ->
@@ -346,7 +357,8 @@ abstract class EmbarkViewModel(
                             fragments = MessageFragment.Expression.Fragments(it.fragments.expressionFragment)
                         )
                     }
-                )
+                ),
+                valueStore,
             )?.let { return Response.SingleResponse(it.text) }
         }
 
@@ -360,11 +372,12 @@ abstract class EmbarkViewModel(
                             fragments = MessageFragment.Expression.Fragments(it.fragments.expressionFragment)
                         )
                     }
-                )
+                ),
+                valueStore,
             )?.text
 
             val items = groupedResponse.items.mapNotNull { item ->
-                preProcessMessage(item.fragments.messageFragment)?.text
+                preProcessMessage(item.fragments.messageFragment, valueStore)?.text
             }.toMutableList()
 
             groupedResponse.each?.let { each ->
@@ -394,7 +407,7 @@ abstract class EmbarkViewModel(
         return passage.copy(
             messages = passage.messages.mapNotNull { message ->
                 val messageFragment =
-                    preProcessMessage(message.fragments.messageFragment) ?: return@mapNotNull null
+                    preProcessMessage(message.fragments.messageFragment, valueStore) ?: return@mapNotNull null
                 message.copy(
                     fragments = EmbarkStoryQuery.Message.Fragments(messageFragment)
                 )
@@ -421,7 +434,7 @@ abstract class EmbarkViewModel(
 
     private fun preProcessMessage(
         message: MessageFragment,
-        valueStoreView: ValueStoreView = valueStore,
+        valueStoreView: ValueStoreView,
     ): MessageFragment? {
         if (message.expressions.isEmpty()) {
             return message.copy(
