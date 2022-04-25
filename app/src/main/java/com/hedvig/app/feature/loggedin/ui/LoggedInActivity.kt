@@ -97,7 +97,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 if (isDarkTheme) {
                     gradient.drawable?.alpha = boundedLerp(127, 255, positionInSpan / 5)
                 } else {
-                    gradient.drawable?.alpha = boundedLerp(255, 0, positionInSpan / 5)
+                    gradient.drawable?.alpha = boundedLerp(255 * 0.6f, 0f, positionInSpan / 5).toInt()
                 }
             }
 

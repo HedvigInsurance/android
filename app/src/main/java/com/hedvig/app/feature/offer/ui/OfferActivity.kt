@@ -71,8 +71,6 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     private lateinit var concatAdapter: ConcatAdapter
     override val screenName = "offer"
 
-    private val quoteIds: List<String>
-        get() = intent.getStringArrayExtra(QUOTE_IDS)?.toList() ?: emptyList()
     private val quoteCartId: QuoteCartId?
         get() = intent.getParcelableExtra(QUOTE_CART_ID)
             ?: intent.getStringExtra(QUOTE_CART_ID)?.let { QuoteCartId(it) }
@@ -80,7 +78,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         get() = intent.getBooleanExtra(SHOULD_SHOW_ON_NEXT_APP_START, false)
 
     private val model: OfferViewModel by viewModel {
-        parametersOf(quoteIds, quoteCartId, shouldShowOnNextAppStart)
+        parametersOf(quoteCartId, shouldShowOnNextAppStart)
     }
     private val binding by viewBinding(ActivityOfferBinding::bind)
     private val imageLoader: ImageLoader by inject()
@@ -184,7 +182,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                         bottomOfferAdapter.submitList(viewState.createBottomOfferItems())
                         setSignButtonState(
                             viewState.offerModel.checkoutMethod,
-                            viewState.offerModel.checkoutLabel,
+                            viewState.bundleVariant.bundle.checkoutLabel,
                             viewState.paymentMethods
                         )
 
@@ -210,7 +208,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     is OfferViewModel.Event.ApproveSuccessful -> handlePostSign(event)
                     is OfferViewModel.Event.ApproveError -> handlePostSignError(event)
                     OfferViewModel.Event.DiscardOffer -> startSplashActivity()
-                    is OfferViewModel.Event.StartSwedishBankIdSign -> showSignDialog(event)
+                    OfferViewModel.Event.StartSwedishBankIdSign -> showSignDialog()
                     OfferViewModel.Event.OpenChat -> startChat()
                 }
             }
@@ -229,9 +227,9 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         }
     }
 
-    private fun showSignDialog(event: OfferViewModel.Event.StartSwedishBankIdSign) {
+    private fun showSignDialog() {
         SwedishBankIdSignDialog
-            .newInstance(event.autoStartToken, quoteIds, quoteCartId)
+            .newInstance(quoteCartId)
             .show(supportFragmentManager, SwedishBankIdSignDialog.TAG)
     }
 
@@ -311,7 +309,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     }
 
     private fun setTitleVisibility(viewState: OfferViewModel.ViewState.Content) {
-        when (viewState.offerModel.quoteBundle.viewConfiguration.title) {
+        when (viewState.bundleVariant.bundle.viewConfiguration.title) {
             ViewConfiguration.Title.LOGO -> {
                 binding.toolbarLogo.isVisible = true
                 binding.toolbarTitle.isVisible = false
@@ -422,13 +420,11 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
         fun newInstance(
             context: Context,
-            quoteIds: List<String> = emptyList(),
             quoteCartId: QuoteCartId? = null,
             shouldShowOnNextAppStart: Boolean = false,
         ) = Intent(
             context, OfferActivity::class.java
         ).apply {
-            putExtra(QUOTE_IDS, quoteIds.toTypedArray())
             putExtra(QUOTE_CART_ID, quoteCartId)
             putExtra(SHOULD_SHOW_ON_NEXT_APP_START, shouldShowOnNextAppStart)
         }

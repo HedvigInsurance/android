@@ -50,7 +50,6 @@ import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.feature.chat.service.ChatNotificationSender
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
-import com.hedvig.app.feature.checkout.ApproveQuotesUseCase
 import com.hedvig.app.feature.checkout.CheckoutViewModel
 import com.hedvig.app.feature.checkout.EditCheckoutUseCase
 import com.hedvig.app.feature.claimdetail.data.GetClaimDetailUiStateFlowUseCase
@@ -148,17 +147,16 @@ import com.hedvig.app.feature.marketpicker.LocaleBroadcastManager
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.offer.OfferViewModelImpl
-import com.hedvig.app.feature.offer.model.OfferQueryDataToOfferModelMapper
 import com.hedvig.app.feature.offer.model.QuoteCartFragmentToOfferModelMapper
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetViewModel
-import com.hedvig.app.feature.offer.ui.changestartdate.EditStartDateUseCase
 import com.hedvig.app.feature.offer.ui.changestartdate.QuoteCartEditStartDateUseCase
 import com.hedvig.app.feature.offer.usecase.AddPaymentTokenUseCase
 import com.hedvig.app.feature.offer.usecase.CreateAccessTokenUseCase
 import com.hedvig.app.feature.offer.usecase.EditCampaignUseCase
 import com.hedvig.app.feature.offer.usecase.GetExternalInsuranceProviderUseCase
+import com.hedvig.app.feature.offer.usecase.ObserveOfferStateUseCase
 import com.hedvig.app.feature.offer.usecase.SignQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.datacollectionresult.GetDataCollectionResultUseCase
 import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToDataCollectionStatusUseCase
@@ -194,8 +192,6 @@ import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.MarketManagerImpl
 import com.hedvig.app.feature.settings.SettingsViewModel
 import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignViewModel
-import com.hedvig.app.feature.swedishbankid.sign.usecase.ManuallyRecheckSwedishBankIdSignStatusUseCase
-import com.hedvig.app.feature.swedishbankid.sign.usecase.SubscribeToSwedishBankIdSignStatusUseCase
 import com.hedvig.app.feature.tracking.ApplicationLifecycleTracker
 import com.hedvig.app.feature.trustly.TrustlyRepository
 import com.hedvig.app.feature.trustly.TrustlyViewModel
@@ -390,18 +386,14 @@ val viewModelModule = module {
         )
     }
     viewModel { TerminatedContractsViewModel(get()) }
-    viewModel { (autoStartToken: String, quoteIds: List<String>, quoteCartId: QuoteCartId?) ->
+    viewModel { (quoteCartId: QuoteCartId) ->
         SwedishBankIdSignViewModel(
-            autoStartToken = autoStartToken,
-            subscribeToSwedishBankIdSignStatusUseCase = get(),
-            manuallyRecheckSwedishBankIdSignStatusUseCase = get(),
             loginStatusService = get(),
             hAnalytics = get(),
-            quoteIds = quoteIds,
             quoteCartId = quoteCartId,
             offerRepository = get(),
+            createAccessTokenUseCase = get(),
             featureManager = get(),
-            createAccessTokenUseCase = get()
         )
     }
     viewModel { AudioRecorderViewModel(get()) }
@@ -467,31 +459,27 @@ val insuranceModule = module {
 }
 
 val offerModule = module {
-    single<OfferRepository> { OfferRepository(get(), get(), get(), get(), get()) }
+    single<OfferRepository> { OfferRepository(get(), get(), get()) }
     viewModel<OfferViewModel> { parametersHolder: ParametersHolder ->
         OfferViewModelImpl(
-            quoteIds = parametersHolder.get(),
-            quoteCartId = parametersHolder.getOrNull(),
+            quoteCartId = parametersHolder.get(),
             offerRepository = get(),
             loginStatusService = get(),
-            approveQuotesUseCase = get(),
             signQuotesUseCase = get(),
             shouldShowOnNextAppStart = parametersHolder.get(),
             adyenRepository = get(),
             chatRepository = get(),
-            hAnalytics = get(),
             editCampaignUseCase = get(),
             featureManager = get(),
             addPaymentTokenUseCase = get(),
             getExternalInsuranceProviderUseCase = get(),
+            getBundleVariantUseCase = get(),
         )
     }
-    single { ApproveQuotesUseCase(get(), get(), get()) }
     single { SubscribeToDataCollectionStatusUseCase(get()) }
     single { GetProviderDisplayNameUseCase(get()) }
     single { GetDataCollectionResultUseCase(get()) }
-    single { OfferQueryDataToOfferModelMapper(get(), get()) }
-    single { QuoteCartFragmentToOfferModelMapper(get()) }
+    single { QuoteCartFragmentToOfferModelMapper() }
 }
 
 val profileModule = module {
@@ -520,15 +508,14 @@ val adyenModule = module {
 val embarkModule = module {
     viewModel<EmbarkViewModel> { (storyName: String) ->
         EmbarkViewModelImpl(
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            storyName,
-            get(),
-            get(),
+            embarkRepository = get(),
+            loginStatusService = get(),
+            graphQLQueryUseCase = get(),
+            chatRepository = get(),
+            valueStore = get(),
+            hAnalytics = get(),
+            storyName = storyName,
+            createQuoteCartUseCase = get(),
         )
     }
 }
@@ -569,11 +556,11 @@ val changeAddressModule = module {
 }
 
 val changeDateBottomSheetModule = module {
-    viewModel { (data: ChangeDateBottomSheetData) -> ChangeDateBottomSheetViewModel(get(), get(), data, get()) }
+    viewModel { (data: ChangeDateBottomSheetData) -> ChangeDateBottomSheetViewModel(get(), data, get()) }
 }
 
 val checkoutModule = module {
-    viewModel { (ids: List<String>, quoteCartId: QuoteCartId?) ->
+    viewModel { (ids: List<String>, quoteCartId: QuoteCartId) ->
         CheckoutViewModel(
             quoteIds = ids,
             quoteCartId = quoteCartId,
@@ -583,8 +570,8 @@ val checkoutModule = module {
             marketManager = get(),
             loginStatusService = get(),
             hAnalytics = get(),
-            featureManager = get(),
-            offerRepository = get()
+            offerRepository = get(),
+            bundleVariantUseCase = get(),
         )
     }
 }
@@ -638,6 +625,7 @@ val repositoriesModule = module {
     single { WhatsNewRepository(get(), get(), get()) }
     single { WelcomeRepository(get(), get()) }
     single { LanguageRepository(get()) }
+    single { OfferRepository(get(), get(), get()) }
     single { KeyGearItemsRepository(get(), get(), get(), get()) }
     single { MarketingRepository(get(), get()) }
     single { AdyenRepository(get(), get()) }
@@ -648,7 +636,7 @@ val repositoriesModule = module {
     single { TrustlyRepository(get()) }
     single { GetMemberIdUseCase(get()) }
     single { PaymentRepository(get(), get()) }
-    single { GetBundlesUseCase(get(), get(), get()) }
+    single { GetBundlesUseCase(get(), get()) }
 }
 
 val trackerModule = module {
@@ -695,16 +683,12 @@ val useCaseModule = module {
     single { StartDanishAuthUseCase(get()) }
     single { StartNorwegianAuthUseCase(get()) }
     single { SubscribeToAuthStatusUseCase(get()) }
-    single { EditStartDateUseCase(get(), get()) }
-    single { SignQuotesUseCase(get(), get(), get(), get()) }
-    single { ApproveQuotesUseCase(get(), get(), get()) }
+    single { SignQuotesUseCase(get()) }
     single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get()) }
     single { GetContractsUseCase(get(), get()) }
-    single { ManuallyRecheckSwedishBankIdSignStatusUseCase(get()) }
-    single { SubscribeToSwedishBankIdSignStatusUseCase(get()) }
     single { GetCrossSellsContractTypesUseCase(get(), get()) }
     single { GraphQLQueryUseCase(get()) }
-    single { GetCrossSellsUseCase(get(), get()) }
+    single { GetCrossSellsUseCase(get(), get(), get()) }
     single { StartDataCollectionUseCase(get(), get()) }
     single { GetInsuranceProvidersUseCase(get(), get()) }
     single { CreateOtpAttemptUseCase(get()) }
@@ -721,14 +705,15 @@ val useCaseModule = module {
     single { GetMarketingBackgroundUseCase(get(), get()) }
     single { UpdateApplicationLanguageUseCase(get(), get(), get()) }
     single { GetInitialMarketPickerValuesUseCase(get(), get(), get(), get()) }
-    single<EditCheckoutUseCase> { EditCheckoutUseCase(get(), get(), get(), get(), get()) }
+    single<EditCheckoutUseCase> { EditCheckoutUseCase(get(), get()) }
     single<QuoteCartEditStartDateUseCase> { QuoteCartEditStartDateUseCase(get(), get()) }
     single<CreateAccessTokenUseCase> { CreateAccessTokenUseCase(get(), get()) }
     single<EditCampaignUseCase> { EditCampaignUseCase(get(), get()) }
     single<AddPaymentTokenUseCase> { AddPaymentTokenUseCase(get()) }
-    single<ConnectPaymentUseCase> { ConnectPaymentUseCase(get(), get(), get(), get(), get()) }
+    single<ConnectPaymentUseCase> { ConnectPaymentUseCase(get(), get(), get()) }
     single<ConnectPayoutUseCase> { ConnectPayoutUseCase(get(), get()) }
     single<GetExternalInsuranceProviderUseCase> { GetExternalInsuranceProviderUseCase(get(), get(), get()) }
+    single<ObserveOfferStateUseCase> { ObserveOfferStateUseCase(get()) }
 }
 
 val cacheManagerModule = module {

@@ -31,7 +31,7 @@ class OneNonSwitchableSwitcherTest : TestCase() {
 
     @Test
     fun givenQuoteBundleWithOneNonSwitchablePreviousInsurerShouldShowPreviousInsurerSection() = run {
-        activityRule.launch(OfferActivity.newInstance(context(), listOf("123")))
+        activityRule.launch(OfferActivity.newInstance(context()))
 
         OfferScreen {
             scroll {

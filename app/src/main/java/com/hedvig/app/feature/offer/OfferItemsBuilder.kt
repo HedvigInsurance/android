@@ -3,6 +3,7 @@ package com.hedvig.app.feature.offer
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.hedvig.app.feature.faq.FAQItem
 import com.hedvig.app.feature.offer.model.OfferModel
+import com.hedvig.app.feature.offer.model.QuoteBundleVariant
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
 import com.hedvig.app.feature.offer.ui.OfferItems
 import com.hedvig.app.feature.offer.usecase.ExternalProvider
@@ -17,17 +18,18 @@ import javax.money.MonetaryAmount
 
 object OfferItemsBuilder {
     fun createTopOfferItems(
-        offerModel: OfferModel,
+        quoteBundleVariant: QuoteBundleVariant,
         externalProvider: ExternalProvider?,
         paymentMethods: PaymentMethodsApiResponse?,
+        onVariantSelected: (id: String) -> Unit,
+        offerModel: OfferModel,
     ): List<OfferItems> = buildList {
-        val bundle = offerModel.quoteBundle
+        val bundle = quoteBundleVariant.bundle
         add(
             OfferItems.Header(
                 title = bundle.name,
                 startDate = bundle.inception.startDate,
                 startDateLabel = bundle.inception.startDateLabel,
-                checkoutLabel = offerModel.checkoutLabel,
                 premium = bundle.cost.finalPremium,
                 hasDiscountedPrice = !bundle.cost.grossMonthlyCost.isEqualTo(bundle.cost.netMonthlyCost) &&
                     !bundle.viewConfiguration.ignoreCampaigns,
@@ -35,6 +37,7 @@ object OfferItemsBuilder {
                 incentiveDisplayValue = offerModel.campaign?.displayValue,
                 hasCampaigns = offerModel.campaign?.shouldShowIncentive == true,
                 changeDateBottomSheetData = bundle.inception.changeDateData,
+                checkoutLabel = bundle.checkoutLabel,
                 checkoutMethod = offerModel.checkoutMethod,
                 showCampaignManagement = bundle.viewConfiguration.showCampaignManagement,
                 ignoreCampaigns = bundle.viewConfiguration.showCampaignManagement,
@@ -43,6 +46,20 @@ object OfferItemsBuilder {
                 quoteCartId = offerModel.id,
             ),
         )
+
+        offerModel.variants.takeIf { it.size > 1 }?.map {
+            add(
+                OfferItems.VariantButton(
+                    id = it.id,
+                    title = it.title,
+                    subTitle = it.tag,
+                    price = it.bundle.cost.finalPremium,
+                    isSelected = it.id == quoteBundleVariant.id,
+                    onVariantSelected = onVariantSelected
+                )
+            )
+        }
+
         if (externalProvider != null) {
             add(OfferItems.PriceComparisonHeader)
             when (externalProvider.dataCollectionStatus) {
@@ -59,7 +76,7 @@ object OfferItemsBuilder {
                         mapContentToInsurelyCard(
                             externalProvider.dataCollectionStatus,
                             externalProvider.dataCollectionResult,
-                            offerModel,
+                            bundle.cost.finalPremium,
                             externalProvider.insuranceProviderDisplayName,
                         )
                     )
@@ -81,7 +98,7 @@ object OfferItemsBuilder {
     private fun mapContentToInsurelyCard(
         dataCollectionStatusContent: Content,
         dataCollectionResult: DataCollectionResult?,
-        offerModel: OfferModel,
+        ourPremium: MonetaryAmount,
         insuranceProviderDisplayName: String?,
     ): OfferItems.InsurelyCard {
         val referenceUuid = dataCollectionStatusContent.referenceUuid
@@ -106,7 +123,6 @@ object OfferItemsBuilder {
                                 if (name == null || finalPremium == null) return@mapNotNull null
                                 OfferItems.InsurelyCard.Retrieved.CurrentInsurance(name, finalPremium)
                             }
-                        val ourPremium = offerModel.quoteBundle.cost.finalPremium
                         val otherPremium = collectionResult
                             .mapNotNull { it.netPremium }
                             .reduceOrNull(MonetaryAmount::add)
@@ -124,10 +140,9 @@ object OfferItemsBuilder {
     }
 
     fun createBottomOfferItems(
-        offerData: OfferModel,
+        bundleVariant: QuoteBundleVariant
     ): List<OfferItems> = buildList {
-        val bundle = offerData.quoteBundle
-
+        val bundle = bundleVariant.bundle
         if (bundle.hasCurrentInsurer()) {
             add(OfferItems.Subheading.Switcher(bundle.numberOfCurrentInsurers()))
             addAll(currentInsuranceSwitchableStates(bundle.quotes))
@@ -135,13 +150,9 @@ object OfferItemsBuilder {
         if (bundle.frequentlyAskedQuestions.isNotEmpty() &&
             bundle.viewConfiguration.showFAQ
         ) {
-            add(
-                OfferItems.FAQ(
-                    bundle.frequentlyAskedQuestions.mapNotNull { FAQItem.from(it) }
-                )
-            )
+            add(OfferItems.FAQ(bundle.frequentlyAskedQuestions.mapNotNull { FAQItem.from(it) }))
         }
-        add(OfferItems.Footer(offerData.checkoutLabel))
+        add(OfferItems.Footer(bundleVariant.bundle.checkoutLabel))
     }
 
     private fun currentInsuranceSwitchableStates(

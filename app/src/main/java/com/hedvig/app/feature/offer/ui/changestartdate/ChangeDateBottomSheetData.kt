@@ -8,7 +8,7 @@ import java.time.LocalDate
 
 @Parcelize
 data class ChangeDateBottomSheetData(
-    val quoteCartId: QuoteCartId?,
+    val quoteCartId: QuoteCartId,
     val inceptions: List<Inception>
 ) : Parcelable {
 

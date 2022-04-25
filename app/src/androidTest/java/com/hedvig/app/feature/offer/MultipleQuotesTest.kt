@@ -30,7 +30,7 @@ class MultipleQuotesTest : TestCase() {
 
     @Test
     fun givenAnyQuoteBundleWithFAQItemsShouldShowFAQSection() = run {
-        activityRule.launch(OfferActivity.newInstance(context(), listOf("123", "234")))
+        activityRule.launch(OfferActivity.newInstance(context()))
 
         OfferScreen {
             scroll {
@@ -67,7 +67,7 @@ class MultipleQuotesTest : TestCase() {
 
     @Test
     fun givenBundleWithMultipleQuotesShouldShowQuoteDetailScreens() = run {
-        activityRule.launch(OfferActivity.newInstance(context(), listOf("123", "234")))
+        activityRule.launch(OfferActivity.newInstance(context()))
 
         OfferScreen {
             scroll {

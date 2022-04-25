@@ -19,7 +19,7 @@ class GetAddressChangeStoryIdUseCase(
                     .activeContractBundles
                     .firstOrNull()
                     ?.angelStories
-                    ?.addressChange
+                    ?.addressChangeV2
                     ?.let(::Eligible)
                     ?: Blocked
             is QueryResult.Error -> Error(result.message)

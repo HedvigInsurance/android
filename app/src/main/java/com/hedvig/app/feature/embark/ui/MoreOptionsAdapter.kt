@@ -8,6 +8,7 @@ import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.databinding.MoreOptionsRowBinding
 import com.hedvig.app.feature.onboarding.MemberIdViewModel
+import com.hedvig.app.isDebug
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.dp
 import com.hedvig.app.util.extensions.inflate
@@ -101,7 +102,14 @@ class MoreOptionsAdapter(private val viewModel: MemberIdViewModel) :
                         compoundDrawablePadding = 16.dp
                         putCompoundDrawablesRelativeWithIntrinsicBounds(start = R.drawable.ic_info_more_options)
                     }
-                    info.text = BuildConfig.VERSION_NAME
+                    info.text = buildString {
+                        append(BuildConfig.VERSION_NAME)
+                        if (isDebug()) {
+                            append(" (")
+                            append(BuildConfig.VERSION_CODE)
+                            append(")")
+                        }
+                    }
                 }
             }
         }

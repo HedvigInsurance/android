@@ -49,7 +49,7 @@ val INSURANCE_DATA_WITH_CROSS_SELL = InsuranceDataBuilder(
                     action = CrossSellFragment.Action(
                         __typename = "CrossSellEmbark",
                         asCrossSellEmbark = CrossSellFragment.AsCrossSellEmbark(
-                            embarkStory = CrossSellFragment.EmbarkStory(
+                            embarkStoryV2 = CrossSellFragment.EmbarkStoryV2(
                                 name = "123",
                             ),
                         )

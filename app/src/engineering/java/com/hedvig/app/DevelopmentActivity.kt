@@ -9,14 +9,12 @@ import com.hedvig.app.databinding.ActivityDevelopmentBinding
 import com.hedvig.app.feature.adyen.AdyenMockActivity
 import com.hedvig.app.feature.changeaddress.ChangeAddressMockActivity
 import com.hedvig.app.feature.chat.ChatMockActivity
-import com.hedvig.app.feature.checkout.CheckoutMockActivity
 import com.hedvig.app.feature.embark.EmbarkMockActivity
 import com.hedvig.app.feature.genericauth.GenericAuthMockActivity
 import com.hedvig.app.feature.home.HomeMockActivity
 import com.hedvig.app.feature.insurance.InsuranceMockActivity
 import com.hedvig.app.feature.loggedin.LoggedInMockActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.feature.offer.OfferMockActivity
 import com.hedvig.app.feature.onboarding.OnboardingMockActivity
 import com.hedvig.app.feature.referrals.ReferralsMockActivity
 import com.hedvig.app.feature.sunsetting.ForceUpgradeActivity
@@ -55,9 +53,6 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Logged in without welcome-screen") {
                         startActivity(LoggedInActivity.newInstance(this))
                     },
-                    DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Offer") {
-                        startActivity(Intent(this, OfferMockActivity::class.java))
-                    },
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Embark") {
                         startActivity(Intent(this, EmbarkMockActivity::class.java))
                     },
@@ -69,9 +64,6 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
                     },
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Chat") {
                         startActivity(Intent(this, ChatMockActivity::class.java))
-                    },
-                    DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Checkout") {
-                        startActivity(Intent(this, CheckoutMockActivity::class.java))
                     },
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Home") {
                         startActivity(Intent(this, HomeMockActivity::class.java))

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <style name="AppTheme" parent="Hedvig.Theme.V23" />
 
@@ -23,8 +23,6 @@
         <item name="android:textColorPrimary">@color/textColorPrimary</item>
         <item name="android:textColorSecondary">@color/colorPrimary</item>
         <item name="android:textColorTertiary">@color/textColorThird</item>
-        <item name="fontFamily">@font/favorit_book</item>
-        <item name="android:fontFamily">@font/favorit_book</item>
 
         <item name="android:windowActivityTransitions">true</item>
 

@@ -254,6 +254,7 @@ query EmbarkStory($name: String!, $locale: String!) {
           expression {
             ...ExpressionFragment
           }
+          selectedInsuranceTypes
         }
       }
       variantedOfferRedirects {
@@ -392,6 +393,7 @@ fragment GraphQLVariablesFragment on EmbarkAPIGraphQLVariable {
   }
   ... on EmbarkAPIGraphQLMultiActionVariable {
     key
+    from
     variables {
       ... on EmbarkAPIGraphQLSingleVariable {
         key
