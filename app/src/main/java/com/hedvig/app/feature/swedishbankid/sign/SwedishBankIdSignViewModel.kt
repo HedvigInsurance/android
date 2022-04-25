@@ -10,9 +10,8 @@ import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.usecase.CreateAccessTokenUseCase
 import com.hedvig.app.util.extensions.mapEitherRight
 import com.hedvig.app.util.featureflags.FeatureManager
-import com.hedvig.hanalytics.PaymentType
-import e
 import com.hedvig.hanalytics.HAnalytics
+import com.hedvig.hanalytics.PaymentType
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
