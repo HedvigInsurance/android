@@ -2,7 +2,7 @@ package com.hedvig.app.feature.home.model
 
 import assertk.assertThat
 import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE
-import com.hedvig.app.testdata.feature.home.HOME_DATA_CONNECT_PAYIN
+import com.hedvig.app.testdata.feature.home.HOME_DATA_PAYIN_NEEDS_SETUP
 import com.hedvig.app.util.containsNoneOfType
 import com.hedvig.app.util.containsOfType
 import com.hedvig.app.util.featureflags.FeatureManager
@@ -26,7 +26,7 @@ class HomeItemsBuilderTest {
             coEvery { featureManager.isFeatureEnabled(Feature.CONNECT_PAYIN_REMINDER) } returns false
             val builder = sut(featureManager)
 
-            val result = builder.buildItems(HOME_DATA_CONNECT_PAYIN)
+            val result = builder.buildItems(HOME_DATA_PAYIN_NEEDS_SETUP)
 
             assertThat(result).containsNoneOfType<HomeModel.ConnectPayin>()
         }
@@ -38,7 +38,7 @@ class HomeItemsBuilderTest {
             coEvery { featureManager.isFeatureEnabled(Feature.CONNECT_PAYIN_REMINDER) } returns true
             val builder = sut(featureManager)
 
-            val result = builder.buildItems(HOME_DATA_CONNECT_PAYIN)
+            val result = builder.buildItems(HOME_DATA_PAYIN_NEEDS_SETUP)
 
             assertThat(result).containsOfType<HomeModel.ConnectPayin>()
         }
