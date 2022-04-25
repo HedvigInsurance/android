@@ -17,6 +17,7 @@ class HAnalyticsFeatureFlagProvider(
         Feature.QUOTE_CART -> hAnalytics.useQuoteCart()
         Feature.CONNECT_PAYIN_REMINDER -> hAnalytics.connectPaymentReminder()
         Feature.COMMON_CLAIMS -> hAnalytics.homeCommonClaim()
+        Feature.PAYMENT_SCREEN -> hAnalytics.paymentScreen()
         Feature.REFERRAL_CAMPAIGN -> hAnalytics.foreverFebruaryCampaign()
         Feature.REFERRALS -> hAnalytics.forever()
         Feature.SHOW_CHARITY -> hAnalytics.showCharity()

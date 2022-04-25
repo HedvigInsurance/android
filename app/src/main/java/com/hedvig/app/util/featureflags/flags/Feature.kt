@@ -17,6 +17,7 @@ enum class Feature(
     UPDATE_NECESSARY(
         "Defines the lowest supported app version. Should prompt a user to update if it uses an outdated version."
     ),
+    PAYMENT_SCREEN("Controls whether the payment screen should be accessible from the profile tab"),
     CONNECT_PAYIN_REMINDER("Show a reminder to connect payin on the home tab"),
     COMMON_CLAIMS("Show common claims on the home tab"),
 }
