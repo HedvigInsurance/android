@@ -2,21 +2,23 @@ package com.hedvig.app.feature.profile.data
 
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.coroutines.await
-import com.apollographql.apollo.coroutines.toFlow
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.graphql.SelectCashbackMutation
 import com.hedvig.android.owldroid.graphql.UpdateEmailMutation
 import com.hedvig.android.owldroid.graphql.UpdatePhoneNumberMutation
+import com.hedvig.app.util.apollo.QueryResult
+import com.hedvig.app.util.apollo.safeFlow
+import kotlinx.coroutines.flow.Flow
 
 class ProfileRepository(
     private val apolloClient: ApolloClient,
 ) {
     private val profileQuery = ProfileQuery()
 
-    fun profile() = apolloClient
+    fun profile(): Flow<QueryResult<ProfileQuery.Data>> = apolloClient
         .query(profileQuery)
         .watcher()
-        .toFlow()
+        .safeFlow()
 
     suspend fun updateEmail(input: String) =
         apolloClient.mutate(UpdateEmailMutation(input)).await()

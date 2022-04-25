@@ -18,6 +18,7 @@ class DevFeatureFlagProvider(
             Feature.QUOTE_CART -> false
             Feature.REFERRAL_CAMPAIGN -> false
             Feature.REFERRALS -> !isQasaMember
+            Feature.SHOW_CHARITY -> !isQasaMember
             Feature.UPDATE_NECESSARY -> false
         }
     }

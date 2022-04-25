@@ -16,7 +16,8 @@ class HAnalyticsFeatureFlagProvider(
         Feature.MOVING_FLOW -> hAnalytics.movingFlow()
         Feature.QUOTE_CART -> hAnalytics.useQuoteCart()
         Feature.REFERRAL_CAMPAIGN -> hAnalytics.foreverFebruaryCampaign()
-        Feature.REFERRALS -> TODO("Impl hAnalytics way of saying if forever tab should be shown")
+        Feature.REFERRALS -> hAnalytics.forever()
+        Feature.SHOW_CHARITY -> hAnalytics.showCharity()
         Feature.UPDATE_NECESSARY -> hAnalytics.updateNecessary()
     }
 }

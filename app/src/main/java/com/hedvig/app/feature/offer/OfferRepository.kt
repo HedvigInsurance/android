@@ -3,8 +3,6 @@ package com.hedvig.app.feature.offer
 import arrow.core.Either
 import arrow.core.computations.either
 import arrow.core.computations.ensureNotNull
-import arrow.core.left
-import arrow.core.right
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.api.cache.http.HttpCachePolicy
@@ -18,16 +16,18 @@ import com.hedvig.android.owldroid.graphql.QuoteCartQuery
 import com.hedvig.android.owldroid.graphql.RedeemReferralCodeMutation
 import com.hedvig.android.owldroid.graphql.RemoveDiscountCodeMutation
 import com.hedvig.app.feature.offer.model.OfferModel
+import com.hedvig.app.feature.offer.model.OfferQueryDataToOfferModelMapper
+import com.hedvig.app.feature.offer.model.QuoteCartFragmentToOfferModelMapper
 import com.hedvig.app.feature.offer.model.QuoteCartId
-import com.hedvig.app.feature.offer.model.toOfferModel
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.apollo.toQueryResult
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.app.util.featureflags.flags.Feature
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -36,9 +36,14 @@ class OfferRepository(
     private val apolloClient: ApolloClient,
     private val localeManager: LocaleManager,
     private val featureManager: FeatureManager,
+    private val offerQueryDataToOfferModelMapper: OfferQueryDataToOfferModelMapper,
+    private val quoteCartFragmentToOfferModelMapper: QuoteCartFragmentToOfferModelMapper,
 ) {
 
-    private val offerFlow = MutableSharedFlow<Either<ErrorMessage, OfferModel>>(1)
+    private val offerFlow: MutableSharedFlow<Either<ErrorMessage, OfferModel>> = MutableSharedFlow(
+        replay = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
 
     fun offerQuery(ids: List<String>) = OfferQuery(localeManager.defaultLocale(), ids)
 
@@ -49,23 +54,24 @@ class OfferRepository(
     fun offerFlow(ids: List<String>): Flow<Either<ErrorMessage, OfferModel>> {
         return flow {
             if (featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
-                emitAll(offerFlow.asSharedFlow())
+                emitAll(offerFlow)
             } else {
                 emitAll(
                     apolloClient
                         .query(offerQuery(ids))
                         .watcher()
                         .toFlow()
-                        .map { it.toResult() }
+                        .map(Response<OfferQuery.Data>::toQueryResult)
+                        .map { queryResult ->
+                            queryResult
+                                .toEither(::ErrorMessage)
+                                .map {
+                                    offerQueryDataToOfferModelMapper.map(it)
+                                }
+                        }
                 )
             }
         }
-    }
-
-    private fun Response<OfferQuery.Data>.toResult(): Either<ErrorMessage, OfferModel> = when {
-        errors != null -> ErrorMessage(errors!!.firstOrNull()?.message).left()
-        data == null -> ErrorMessage().left()
-        else -> data!!.toOfferModel().right()
     }
 
     suspend fun queryAndEmitOffer(quoteCartId: QuoteCartId?, quoteIds: List<String>) {
@@ -94,13 +100,13 @@ class OfferRepository(
             ErrorMessage("No quotes in offer, please try again")
         }
 
-        result.quoteCart.fragments.quoteCartFragment.toOfferModel()
+        quoteCartFragmentToOfferModelMapper.map(result.quoteCart.fragments.quoteCartFragment)
     }
 
     private suspend fun queryOffer(ids: List<String>): Either<ErrorMessage, OfferModel> = either {
         ensure(ids.isNotEmpty()) { ErrorMessage("No quote ids found") }
 
-        apolloClient
+        val offerQueryData = apolloClient
             .query(offerQuery(ids))
             .toBuilder()
             .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
@@ -109,7 +115,7 @@ class OfferRepository(
             .safeQuery()
             .toEither { ErrorMessage(it) }
             .bind()
-            .toOfferModel()
+        offerQueryDataToOfferModelMapper.map(offerQueryData)
     }
 
     fun writeDiscountToCache(ids: List<String>, data: RedeemReferralCodeMutation.Data) {

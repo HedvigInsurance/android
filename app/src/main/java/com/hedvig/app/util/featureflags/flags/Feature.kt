@@ -13,6 +13,7 @@ enum class Feature(
     QUOTE_CART("Use new APIs for onboarding"),
     REFERRALS("Whether the referrals feature is enabled. Shows/Hides the forever tab. Used for Qasa."),
     REFERRAL_CAMPAIGN("Used to show banner in referral view"),
+    SHOW_CHARITY("Show anything related to the charity options or hide it all completely. Used for Qasa."),
     UPDATE_NECESSARY(
         "Defines the lowest supported app version. Should prompt a user to update if it uses an outdated version."
     ),

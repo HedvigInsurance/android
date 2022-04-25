@@ -65,6 +65,7 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
                     dynamicLink.startActivity(
                         context = this@SplashActivity,
                         marketManager = marketManager,
+                        featureManager = featureManager,
                         onDefault = { startDefaultActivity(loginStatus) }
                     )
                 }

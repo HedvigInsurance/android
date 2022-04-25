@@ -8,14 +8,11 @@ import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
 import com.hedvig.app.feature.keygear.ui.tab.KeyGearViewModel
 import com.hedvig.app.feature.offer.MockOfferViewModel
 import com.hedvig.app.feature.offer.OfferViewModel
-import com.hedvig.app.feature.profile.MockProfileViewModel
-import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val mockModule = module {
-    viewModel<OfferViewModel> { MockOfferViewModel() }
-    viewModel<ProfileViewModel> { MockProfileViewModel() }
+    viewModel<OfferViewModel> { MockOfferViewModel(get()) }
     viewModel<KeyGearViewModel> { MockKeyGearViewModel() }
     viewModel<KeyGearItemDetailViewModel> { MockKeyGearItemDetailViewModel() }
     viewModel<CreateKeyGearItemViewModel> { MockCreateKeyGearItemViewModel() }

@@ -6,6 +6,7 @@ import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.type.DirectDebitStatus
 import com.hedvig.app.testdata.common.builders.CostBuilder
+import java.util.UUID
 
 data class ProfileDataBuilder(
     private val memberId: String = "123",
@@ -34,6 +35,7 @@ data class ProfileDataBuilder(
         cashback = ProfileQuery.Cashback(
             fragments = ProfileQuery.Cashback.Fragments(
                 CashbackFragment(
+                    id = UUID.randomUUID().toString(),
                     name = "Example Charity",
                     imageUrl = null,
                     description = null

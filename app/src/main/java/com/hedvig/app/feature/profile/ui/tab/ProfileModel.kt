@@ -6,9 +6,9 @@ sealed class ProfileModel {
     object Title : ProfileModel()
     data class Row(
         val title: String,
-        val caption: String,
+        val caption: String?,
         @DrawableRes val icon: Int,
-        val action: () -> Unit
+        val onClick: () -> Unit
     ) : ProfileModel()
 
     object Subtitle : ProfileModel()
