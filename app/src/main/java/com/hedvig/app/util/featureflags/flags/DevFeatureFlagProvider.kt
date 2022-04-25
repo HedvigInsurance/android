@@ -11,6 +11,8 @@ class DevFeatureFlagProvider(
         val isQasaMember = true
         return when (feature) {
             Feature.CONNECT_PAYMENT_AT_SIGN -> marketManager.market == Market.NO || marketManager.market == Market.DK
+            Feature.COMMON_CLAIMS -> !isQasaMember
+            Feature.CONNECT_PAYIN_REMINDER -> !isQasaMember
             Feature.EXTERNAL_DATA_COLLECTION -> marketManager.market == Market.SE
             Feature.FRANCE_MARKET -> true
             Feature.KEY_GEAR -> false

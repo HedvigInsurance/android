@@ -17,4 +17,6 @@ enum class Feature(
     UPDATE_NECESSARY(
         "Defines the lowest supported app version. Should prompt a user to update if it uses an outdated version."
     ),
+    CONNECT_PAYIN_REMINDER("Show a reminder to connect payin on the home tab"),
+    COMMON_CLAIMS("Show common claims on the home tab"),
 }

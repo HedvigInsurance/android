@@ -15,6 +15,8 @@ class HAnalyticsFeatureFlagProvider(
         Feature.KEY_GEAR -> hAnalytics.keyGear()
         Feature.MOVING_FLOW -> hAnalytics.movingFlow()
         Feature.QUOTE_CART -> hAnalytics.useQuoteCart()
+        Feature.CONNECT_PAYIN_REMINDER -> hAnalytics.connectPaymentReminder()
+        Feature.COMMON_CLAIMS -> hAnalytics.homeCommonClaim()
         Feature.REFERRAL_CAMPAIGN -> hAnalytics.foreverFebruaryCampaign()
         Feature.REFERRALS -> hAnalytics.forever()
         Feature.SHOW_CHARITY -> hAnalytics.showCharity()
