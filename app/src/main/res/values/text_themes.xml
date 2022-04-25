@@ -39,7 +39,8 @@
 
     <style name="Hedvig.TextAppearance.Headline4" parent="TextAppearance.MaterialComponents.Headline4">
         <item name="fontFamily">@font/hedvig_letters_standard</item>
-        <item name="lineHeight">46sp</item>
+        <item name="lineHeight">40sp</item>
+        <item name="android:textSize">32sp</item>
         <item name="android:letterSpacing">-0.025</item>
     </style>
 
