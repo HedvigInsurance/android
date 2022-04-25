@@ -110,7 +110,6 @@ class DevelopmentScreenAdapter(
                     listOf(
                         insuranceModule,
                         offerModule,
-                        profileModule,
                         paymentModule,
                         keyGearModule,
                         adyenModule

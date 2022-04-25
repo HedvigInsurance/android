@@ -11,44 +11,29 @@ import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.app.util.featureflags.flags.Feature
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 
 data class LoggedInViewState(
-    val loggedInQueryData: LoggedInQuery.Data,
+    val loggedInQueryData: LoggedInQuery.Data?,
     val isKeyGearEnabled: Boolean,
+    val isReferralsEnabled: Boolean,
     val unseenTabNotifications: Set<LoggedInTabs>,
 )
 
 abstract class LoggedInViewModel : ViewModel() {
-    protected val loggedInQueryData: MutableStateFlow<LoggedInQuery.Data?> = MutableStateFlow(null)
-    protected val isKeyGearEnabled: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    protected val unseenTabNotifications: MutableStateFlow<Set<LoggedInTabs>> = MutableStateFlow(emptySet())
-
-    val viewState: StateFlow<LoggedInViewState?> = combine(
-        loggedInQueryData.filterNotNull(),
-        isKeyGearEnabled,
-        unseenTabNotifications
-    ) { loggedInQueryData, isKeyGearEnabled, unseenTabNotifications ->
-        LoggedInViewState(loggedInQueryData, isKeyGearEnabled, unseenTabNotifications)
-    }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5.seconds),
-            initialValue = null,
-        )
+    abstract val viewState: StateFlow<LoggedInViewState?>
 
     private val _scroll = MutableLiveData<Int>()
     val scroll: LiveData<Int> = _scroll
@@ -82,25 +67,27 @@ class LoggedInViewModelImpl(
                 .map { it == 3 }
                 .collect(_shouldOpenReviewDialog::tryEmit)
         }
-        viewModelScope.launch {
-            isKeyGearEnabled.update { featureManager.isFeatureEnabled(Feature.KEY_GEAR) }
-        }
-        viewModelScope.launch {
-            val response = runCatching {
-                loggedInRepository.loggedInData()
-            }
-            response.getOrNull()?.data?.let { loggedInQueryData ->
-                this@LoggedInViewModelImpl.loggedInQueryData.update { loggedInQueryData }
-            }
-        }
-        viewModelScope.launch {
-            tabNotificationService
-                .unseenTabNotifications()
-                .collect { unseenTabNotificationSet ->
-                    unseenTabNotifications.value = unseenTabNotificationSet
-                }
-        }
     }
+
+    private val loggedInQueryData: Flow<LoggedInQuery.Data?> = flow {
+        val loggedInQueryData = loggedInRepository.loggedInData().orNull()
+        emit(loggedInQueryData)
+    }
+    private val isKeyGearEnabled: Flow<Boolean> = flow { emit(featureManager.isFeatureEnabled(Feature.KEY_GEAR)) }
+    private val isReferralsEnabled: Flow<Boolean> = flow { emit(featureManager.isFeatureEnabled(Feature.REFERRALS)) }
+    override val viewState: StateFlow<LoggedInViewState?> = combine(
+        loggedInQueryData,
+        isKeyGearEnabled,
+        isReferralsEnabled,
+        tabNotificationService.unseenTabNotifications()
+    ) { loggedInQueryData, isKeyGearEnabled, isReferralsEnabled, unseenTabNotifications ->
+        LoggedInViewState(loggedInQueryData, isKeyGearEnabled, isReferralsEnabled, unseenTabNotifications)
+    }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5.seconds),
+            initialValue = null,
+        )
 
     override fun onReviewByChatComplete() {
         viewModelScope.launch {

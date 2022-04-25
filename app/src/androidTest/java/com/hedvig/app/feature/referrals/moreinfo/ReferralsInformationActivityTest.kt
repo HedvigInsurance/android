@@ -6,7 +6,7 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
 import com.hedvig.app.feature.referrals.tab.ReferralTabScreen
-import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_KEY_GEAR_FEATURE_ENABLED
+import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyIntentsActivityScenarioRule
@@ -33,9 +33,7 @@ class ReferralsInformationActivityTest : TestCase() {
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
         LoggedInQuery.QUERY_DOCUMENT to apolloResponse {
-            success(
-                LOGGED_IN_DATA_WITH_KEY_GEAR_FEATURE_ENABLED
-            )
+            success(LOGGED_IN_DATA)
         }
     )
 
