@@ -5,12 +5,12 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import coil.load
-import com.hedvig.android.owldroid.fragment.CashbackFragment
-import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityCharityBinding
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
+import com.hedvig.app.feature.profile.ui.tab.CashbackUiState
+import com.hedvig.app.feature.profile.ui.tab.CharityOption
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.setupToolbar
 import com.hedvig.app.util.extensions.view.remove
@@ -36,10 +36,6 @@ class CharityActivity : BaseActivity(R.layout.activity_charity) {
             onBackPressed()
         }
 
-        loadData()
-    }
-
-    private fun loadData() {
         profileViewModel
             .data
             .flowWithLifecycle(lifecycle)
@@ -48,11 +44,10 @@ class CharityActivity : BaseActivity(R.layout.activity_charity) {
 
                 when (viewState) {
                     is ProfileViewModel.ViewState.Success -> {
-                        val selectedCharity = viewState.data.cashback?.fragments?.cashbackFragment
-                        if (selectedCharity != null) {
-                            showSelectedCharity(selectedCharity)
+                        if (viewState.profileUiState.cashbackUiState != null) {
+                            showSelectedCharity(viewState.profileUiState.cashbackUiState)
                         } else {
-                            showCharityPicker(viewState.data.cashbackOptions.filterNotNull())
+                            showCharityPicker(viewState.profileUiState.charityOptions)
                         }
                     }
                     else -> {
@@ -62,7 +57,7 @@ class CharityActivity : BaseActivity(R.layout.activity_charity) {
             .launchIn(lifecycleScope)
     }
 
-    private fun showSelectedCharity(cashback: CashbackFragment) {
+    private fun showSelectedCharity(cashback: CashbackUiState) {
         binding.apply {
             selectedCharityContainer.show()
             selectCharityContainer.remove()
@@ -80,13 +75,15 @@ class CharityActivity : BaseActivity(R.layout.activity_charity) {
         }
     }
 
-    private fun showCharityPicker(options: List<ProfileQuery.CashbackOption>) {
+    private fun showCharityPicker(options: List<CharityOption>) {
         binding.apply {
             selectCharityContainer.show()
-            cashbackOptions.adapter =
-                CharityAdapter(this@CharityActivity) { id -> profileViewModel.selectCashback(id) }.also {
-                    it.submitList(options)
-                }
+            cashbackOptions.adapter = CharityAdapter(
+                context = this@CharityActivity,
+                clickListener = { id -> profileViewModel.selectCashback(id) }
+            ).also {
+                it.submitList(options)
+            }
             selectCharityHowDoesItWorkButton.setHapticClickListener {
                 ExplanationBottomSheet.newInstance(
                     title = getString(R.string.CHARITY_INFO_DIALOG_TITLE),
