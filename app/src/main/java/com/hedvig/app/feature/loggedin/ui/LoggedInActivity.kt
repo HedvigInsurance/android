@@ -16,11 +16,8 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.github.florent37.viewtooltip.ViewTooltip
-import com.hedvig.android.owldroid.graphql.LoggedInQuery
-import com.hedvig.android.owldroid.type.Feature
 import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.BaseActivity
-import com.hedvig.app.HedvigApplication
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityLoggedInBinding
 import com.hedvig.app.feature.claims.ui.ClaimsViewModel
@@ -30,7 +27,6 @@ import com.hedvig.app.feature.welcome.WelcomeDialog
 import com.hedvig.app.feature.welcome.WelcomeViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewDialog
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
-import com.hedvig.app.shouldOverrideFeatureFlags
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import com.hedvig.app.util.boundedLerp
@@ -329,15 +325,21 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                     .filterNotNull() // Emulate LiveData behavior of doing nothing until we get valid data
                     .collectLatest { viewState: LoggedInViewState ->
                         val loggedInQueryData = viewState.loggedInQueryData
-                        setupBottomNav(loggedInQueryData, viewState.isKeyGearEnabled, viewState.unseenTabNotifications)
+                        setupBottomNav(
+                            isKeyGearEnabled = viewState.isKeyGearEnabled,
+                            isReferralsEnabled = viewState.isReferralsEnabled,
+                            unseenTabNotifications = viewState.unseenTabNotifications
+                        )
                         setupToolBar()
                         binding.loggedInRoot.show()
 
-                        referralTermsUrl = loggedInQueryData.referralTerms.url
+                        loggedInQueryData?.referralTerms?.url?.let {
+                            referralTermsUrl = it
+                        }
                         loggedInQueryData
-                            .referralInformation
-                            .campaign
-                            .incentive
+                            ?.referralInformation
+                            ?.campaign
+                            ?.incentive
                             ?.asMonthlyCostDeduction
                             ?.amount
                             ?.fragments
@@ -352,21 +354,16 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     }
 
     private fun setupBottomNav(
-        loggedInQueryData: LoggedInQuery.Data,
         isKeyGearEnabled: Boolean,
+        isReferralsEnabled: Boolean,
         unseenTabNotifications: Set<LoggedInTabs>,
     ) {
-        val referralsEnabled =
-            if (shouldOverrideFeatureFlags(application as HedvigApplication)) {
-                true
-            } else {
-                loggedInQueryData.member.features.contains(Feature.REFERRALS)
-            }
         val menuId = when {
-            isKeyGearEnabled && referralsEnabled -> R.menu.logged_in_menu_key_gear
-            referralsEnabled -> R.menu.logged_in_menu
-            !isKeyGearEnabled && !referralsEnabled -> R.menu.logged_in_menu_no_referrals
-            else -> R.menu.logged_in_menu
+            isKeyGearEnabled && isReferralsEnabled -> R.menu.logged_in_menu_referrals_key_gear
+            !isKeyGearEnabled && !isReferralsEnabled -> R.menu.logged_in_menu_no_referrals_no_key_gear
+            isReferralsEnabled -> R.menu.logged_in_menu_referrals
+            isKeyGearEnabled -> R.menu.logged_in_menu_key_gear
+            else -> R.menu.logged_in_menu_referrals
         }
         // `inflateMenu` on the bottom nav isn't idempotent therefore we need to guard against doing it many times
         if (lastMenuIdInflated != null && lastMenuIdInflated == menuId) return

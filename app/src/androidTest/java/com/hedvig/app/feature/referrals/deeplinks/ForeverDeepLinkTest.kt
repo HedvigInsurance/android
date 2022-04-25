@@ -8,7 +8,7 @@ import com.hedvig.app.R
 import com.hedvig.app.SplashActivity
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.referrals.tab.ReferralTabScreen
-import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_ENABLED
+import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_NO_DISCOUNTS
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
@@ -34,9 +34,7 @@ class ForeverDeepLinkTest : TestCase() {
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
         LoggedInQuery.QUERY_DOCUMENT to apolloResponse {
-            success(
-                LOGGED_IN_DATA_WITH_REFERRALS_ENABLED
-            )
+            success(LOGGED_IN_DATA)
         },
         ReferralsQuery.QUERY_DOCUMENT to apolloResponse { success(REFERRALS_DATA_WITH_NO_DISCOUNTS) }
     )
