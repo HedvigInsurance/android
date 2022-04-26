@@ -331,15 +331,13 @@ abstract class EmbarkViewModel(
         return false
     }
 
-    fun preProcessResponseWithCommittedValueStore(
-        passageName: String,
-    ): Response? {
+    fun preProcessResponse(passageName: String): Response? {
         return valueStore.withCommittedVersion {
             preProcessResponse(passageName, this)
         }
     }
 
-    fun preProcessResponse(
+    private fun preProcessResponse(
         passageName: String,
         valueStore: ValueStore = this.valueStore,
     ): Response? {
