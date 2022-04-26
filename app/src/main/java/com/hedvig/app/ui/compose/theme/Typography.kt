@@ -8,6 +8,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.hedvig.app.R
 
+/**
+ * Used in specific places instead of setting it to a particular font size.
+ * Particularly, now used in the Home screen as the big header.
+ */
+@Suppress("unused")
 private val SerifBookSmall = FontFamily(
     Font(R.font.hedvig_letters_small),
 )
@@ -23,21 +28,18 @@ val HedvigTypography = Typography(
         fontSize = 34.sp,
         letterSpacing = (-0.025).sp,
         lineHeight = 41.sp,
-        fontFamily = SerifBookSmall,
     ),
     h5 = TextStyle(
         fontWeight = FontWeight.Normal,
         fontSize = 24.sp,
         letterSpacing = 0.sp,
         lineHeight = 32.sp,
-        fontFamily = SerifBookSmall,
     ),
     h6 = TextStyle(
         fontWeight = FontWeight.Medium,
         fontSize = 20.sp,
         letterSpacing = 0.sp,
         lineHeight = 26.sp,
-        fontFamily = SerifBookSmall,
     ),
     subtitle1 = TextStyle(
         fontWeight = FontWeight.Normal,
