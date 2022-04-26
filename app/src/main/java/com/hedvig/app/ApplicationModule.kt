@@ -167,7 +167,6 @@ import com.hedvig.app.feature.onboarding.GetBundlesUseCase
 import com.hedvig.app.feature.onboarding.GetMemberIdUseCase
 import com.hedvig.app.feature.onboarding.MemberIdViewModel
 import com.hedvig.app.feature.onboarding.MemberIdViewModelImpl
-import com.hedvig.app.feature.profile.data.ObserveProfileUiStateUseCase
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppViewModel
@@ -485,7 +484,6 @@ val offerModule = module {
 val profileModule = module {
     single<ProfileQueryDataToProfileUiStateMapper> { ProfileQueryDataToProfileUiStateMapper(get(), get(), get()) }
     single<ProfileRepository> { ProfileRepository(get()) }
-    single<ObserveProfileUiStateUseCase> { ObserveProfileUiStateUseCase(get(), get()) }
     viewModel<ProfileViewModel> { ProfileViewModel(get(), get(), get()) }
 }
 
