@@ -8,7 +8,6 @@ import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.authenticate.LoginStatusService
-import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.app.feature.adyen.PaymentTokenId
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.checkout.CheckoutParameter
@@ -17,7 +16,6 @@ import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.offer.model.OfferModel
 import com.hedvig.app.feature.offer.model.QuoteBundleVariant
 import com.hedvig.app.feature.offer.model.QuoteCartId
-import com.hedvig.app.feature.offer.model.paymentApiResponseOrNull
 import com.hedvig.app.feature.offer.model.quotebundle.OfferStartDate
 import com.hedvig.app.feature.offer.model.quotebundle.PostSignScreen
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
@@ -161,7 +159,6 @@ class OfferViewModelImpl(
     private val loginStatusService: LoginStatusService,
     private val signQuotesUseCase: SignQuotesUseCase,
     shouldShowOnNextAppStart: Boolean,
-    private val adyenRepository: AdyenRepository,
     private val chatRepository: ChatRepository,
     private val editCampaignUseCase: EditCampaignUseCase,
     private val featureManager: FeatureManager,
@@ -201,8 +198,7 @@ class OfferViewModelImpl(
                                 offerModel = offerModel,
                                 bundleVariant = bundle,
                                 loginStatus = loginStatusService.getLoginStatus(),
-                                paymentMethods = offerModel.paymentApiResponseOrNull()
-                                    ?: adyenRepository.paymentMethodsResponse(),
+                                paymentMethods = offerModel.paymentMethodsApiResponse,
                                 externalProvider = externalProvider,
                                 onVariantSelected = { variantId ->
                                     getBundleVariantUseCase.selectedVariant(variantId)
@@ -216,8 +212,7 @@ class OfferViewModelImpl(
                                 offerModel = offerModel,
                                 bundleVariant = bundle,
                                 loginStatus = loginStatusService.getLoginStatus(),
-                                paymentMethods = offerModel.paymentApiResponseOrNull()
-                                    ?: adyenRepository.paymentMethodsResponse(),
+                                paymentMethods = offerModel.paymentMethodsApiResponse,
                                 externalProvider = null,
                                 onVariantSelected = { variantId ->
                                     getBundleVariantUseCase.selectedVariant(variantId)

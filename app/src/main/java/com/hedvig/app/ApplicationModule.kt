@@ -466,7 +466,6 @@ val offerModule = module {
             loginStatusService = get(),
             signQuotesUseCase = get(),
             shouldShowOnNextAppStart = parametersHolder.get(),
-            adyenRepository = get(),
             chatRepository = get(),
             editCampaignUseCase = get(),
             featureManager = get(),
@@ -478,7 +477,7 @@ val offerModule = module {
     single { SubscribeToDataCollectionStatusUseCase(get()) }
     single { GetProviderDisplayNameUseCase(get()) }
     single { GetDataCollectionResultUseCase(get()) }
-    single { QuoteCartFragmentToOfferModelMapper() }
+    single { QuoteCartFragmentToOfferModelMapper(get()) }
 }
 
 val profileModule = module {
