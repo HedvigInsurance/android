@@ -112,7 +112,7 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
             model.putInStore(key, value)
         }
         model.putInStore("${data.passageName}Result", selectAction.label)
-        val response = model.preProcessResponseWithCommittedValueStore(data.passageName)
+        val response = model.preProcessResponse(data.passageName)
             ?: Response.SingleResponse(selectAction.label)
         animateResponse(responseBinding, response)
         delay(PASSAGE_ANIMATION_DELAY_DURATION)
