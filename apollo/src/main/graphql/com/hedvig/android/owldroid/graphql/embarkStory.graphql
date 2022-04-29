@@ -85,6 +85,7 @@ query EmbarkStory($name: String!, $locale: String!) {
             key
             placeholder
             mask
+            subtitle
             link {
               ...EmbarkLinkFragment
             }

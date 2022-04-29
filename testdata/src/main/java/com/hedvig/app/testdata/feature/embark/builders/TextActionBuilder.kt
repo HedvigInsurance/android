@@ -26,6 +26,7 @@ data class TextActionBuilder(
                     )
                 ),
                 api = api?.let { EmbarkStoryQuery.Api1(fragments = EmbarkStoryQuery.Api1.Fragments(it)) },
+                subtitle = "Test subtitle",
             )
         ),
         asEmbarkTextActionSet = null,
