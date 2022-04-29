@@ -539,6 +539,12 @@ class OfferAdapter(
                     // Should only display 1 PriceComparisonHeader ever
                     true
                 }
+                oldItem is OfferItems.Header && newItem is OfferItems.Header -> {
+                    true
+                }
+                oldItem is OfferItems.VariantButton && newItem is OfferItems.VariantButton -> {
+                    oldItem.id == newItem.id
+                }
                 else -> {
                     oldItem == newItem
                 }
