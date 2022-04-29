@@ -3,11 +3,13 @@ package com.hedvig.app.testdata.feature.offer.builders
 import com.hedvig.android.owldroid.fragment.CostFragment
 import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.fragment.QuoteBundleFragment
+import com.hedvig.android.owldroid.fragment.QuoteCartFragment
 import com.hedvig.android.owldroid.fragment.TableFragment
 import com.hedvig.android.owldroid.graphql.DataCollectionResultQuery
 import com.hedvig.android.owldroid.graphql.DataCollectionResultQuery.AsHouseInsuranceCollection
 import com.hedvig.android.owldroid.graphql.DataCollectionStatusSubscription
 import com.hedvig.android.owldroid.graphql.OfferQuery
+import com.hedvig.android.owldroid.type.CheckoutMethod
 import com.hedvig.android.owldroid.type.DataCollectionStatus
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationApproveButtonTerminology
 import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationPostSignStep
@@ -20,6 +22,53 @@ import com.hedvig.app.testdata.common.builders.CostBuilder
 import com.hedvig.app.testdata.common.builders.TableFragmentBuilder
 import com.hedvig.app.testdata.feature.insurance.builders.PerilBuilder
 import java.time.LocalDate
+import java.util.UUID
+
+data class QuoteCartOfferDataBuilder(
+    private val bundleDisplayName: String = "Bundle Display Name",
+    private val quotes: List<QuoteBundleFragment.Quote> = listOf(QuoteBuilder().build()),
+    private val insuranceCost: CostFragment = CostBuilder()
+        .build(),
+    private val redeemedCampaigns: List<OfferQuery.RedeemedCampaign> = emptyList(),
+    private val frequentlyAskedQuestions: List<QuoteBundleFragment.FrequentlyAskedQuestion> = emptyList(),
+    private val inceptions: QuoteBundleFragment.Inception1 = ConcurrentInceptionBuilder().build(),
+    private val signMethod: SignMethod = SignMethod.SWEDISH_BANK_ID,
+    private val postSignStep: QuoteBundleAppConfigurationPostSignStep =
+        QuoteBundleAppConfigurationPostSignStep.CONNECT_PAYIN,
+    private val appConfiguration: QuoteBundleFragment.AppConfiguration = AppConfigurationBuilder().build(),
+) {
+    fun build(): QuoteCartFragment {
+        return QuoteCartFragment(
+            id = UUID.randomUUID().toString(),
+            bundle = QuoteCartFragment.Bundle(
+                possibleVariations = List(3) { index ->
+                    QuoteCartFragment.PossibleVariation(
+                        id = index.toString(),
+                        tag = "test tag $index",
+                        bundle = QuoteCartFragment.Bundle1(
+                            fragments = QuoteCartFragment.Bundle1.Fragments(
+                                quoteBundleFragment = QuoteBundleFragment(
+                                    displayName = "$bundleDisplayName:$index",
+                                    quotes = quotes,
+                                    bundleCost = QuoteBundleFragment.BundleCost(
+                                        fragments = QuoteBundleFragment.BundleCost.Fragments(insuranceCost)
+                                    ),
+                                    frequentlyAskedQuestions = frequentlyAskedQuestions,
+                                    inception = inceptions,
+                                    appConfiguration = appConfiguration
+                                )
+                            )
+                        )
+                    )
+                },
+            ),
+            checkoutMethods = listOf(CheckoutMethod.UNKNOWN__),
+            checkout = null,
+            paymentConnection = null,
+            campaign = null,
+        )
+    }
+}
 
 data class OfferDataBuilder(
     private val bundleDisplayName: String = "Bundle Display Name",

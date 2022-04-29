@@ -22,8 +22,10 @@ import com.hedvig.app.testdata.feature.offer.builders.FaqBuilder
 import com.hedvig.app.testdata.feature.offer.builders.IndependentInceptionBuilder
 import com.hedvig.app.testdata.feature.offer.builders.OfferDataBuilder
 import com.hedvig.app.testdata.feature.offer.builders.QuoteBuilder
+import com.hedvig.app.testdata.feature.offer.builders.QuoteCartOfferDataBuilder
 import java.time.LocalDate
 
+val QUOTE_CART_OFFER_DATA_SWEDISH_APARTMENT = QuoteCartOfferDataBuilder().build()
 val OFFER_DATA_SWEDISH_APARTMENT = OfferDataBuilder().build()
 
 val OFFER_DATA_SWEDISH_APARTMENT_WITH_CURRENT_INSURER_SWITCHABLE = OfferDataBuilder(
@@ -578,7 +580,7 @@ val OFFER_DATA_NORWAY_BUNDLE_HOME_CONTENTS_TRAVEL_MULTIPLE_PREVIOUS_INSURERS_MIX
 ).build()
 
 val OFFER_DATA_DENMARK_BUNDLE_HOME_CONTENTS_TRAVEL_ACCIDENT_MULTIPLE_PREVIOUS_INSURERS_MIXED_SWITCHABLE =
-    OfferDataBuilder(
+    QuoteCartOfferDataBuilder(
         quotes = listOf(
             QuoteBuilder(
                 displayName = "Home Contents Insurance",

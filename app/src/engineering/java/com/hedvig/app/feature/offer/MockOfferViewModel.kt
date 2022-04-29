@@ -1,12 +1,14 @@
 package com.hedvig.app.feature.offer
 
 import androidx.lifecycle.viewModelScope
+import com.hedvig.android.owldroid.fragment.QuoteCartFragment
 import com.hedvig.android.owldroid.graphql.DataCollectionResultQuery
 import com.hedvig.android.owldroid.graphql.DataCollectionStatusSubscription
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.feature.adyen.PaymentTokenId
 import com.hedvig.app.feature.checkout.CheckoutParameter
+import com.hedvig.app.feature.offer.model.OfferModel
 import com.hedvig.app.feature.offer.model.paymentApiResponseOrNull
 import com.hedvig.app.feature.offer.model.quotebundle.PostSignScreen
 import com.hedvig.app.feature.offer.model.toOfferModel
@@ -15,7 +17,7 @@ import com.hedvig.app.feature.offer.usecase.datacollectionresult.DataCollectionR
 import com.hedvig.app.feature.offer.usecase.datacollectionresult.GetDataCollectionResultUseCase
 import com.hedvig.app.feature.offer.usecase.datacollectionstatus.DataCollectionStatus
 import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToDataCollectionStatusUseCase
-import com.hedvig.app.testdata.feature.offer.OFFER_DATA_SWEDISH_APARTMENT
+import com.hedvig.app.testdata.feature.offer.QUOTE_CART_OFFER_DATA_SWEDISH_APARTMENT
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -84,7 +86,7 @@ class MockOfferViewModel : OfferViewModel() {
                     _viewState.value = ViewState.Error()
                     return@launch
                 }
-                val offerModel = mockData.offer!!.toOfferModel()
+                val offerModel: OfferModel = mockData.offerModel!!
                 _viewState.value = ViewState.Content(
                     offerModel = offerModel,
                     bundleVariant = offerModel.variants.first(),
@@ -110,17 +112,25 @@ class MockOfferViewModel : OfferViewModel() {
         var mockRefreshEvery2Seconds = false
 
         data class OfferMockData(
-            val offer: OfferQuery.Data?,
+            val offerModel: OfferModel?,
             val dataCollectionStatus: SubscribeToDataCollectionStatusUseCase.Status? = null,
             val dataCollectionResult: GetDataCollectionResultUseCase.Result.Success? = null,
         ) {
             constructor(
+                data: QuoteCartFragment = QUOTE_CART_OFFER_DATA_SWEDISH_APARTMENT,
+            ) : this(data.toOfferModel(), null, null)
+
+            constructor(
+                data: OfferQuery.Data,
+            ) : this(data.toOfferModel(), null, null)
+
+            constructor(
                 id: String = "id",
-                offer: OfferQuery.Data = OFFER_DATA_SWEDISH_APARTMENT,
+                offer: QuoteCartFragment = QUOTE_CART_OFFER_DATA_SWEDISH_APARTMENT,
                 dataCollectionValue: DataCollectionStatusSubscription.Data,
                 dataCollectionResult: DataCollectionResultQuery.Data? = null,
             ) : this(
-                offer = offer,
+                offerModel = offer.toOfferModel(),
                 dataCollectionStatus = SubscribeToDataCollectionStatusUseCase.Status.Content(
                     id,
                     DataCollectionStatus.fromDto(dataCollectionValue)

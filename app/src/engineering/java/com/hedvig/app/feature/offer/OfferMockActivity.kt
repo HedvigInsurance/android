@@ -41,6 +41,13 @@ class OfferMockActivity : MockActivity() {
 
     override fun adapter() = genericDevelopmentAdapter {
         header("Offer Screen")
+        clickableItem("Swedish Apartment with two possible variations") {
+            MockOfferViewModel.apply {
+                mockData = OfferMockData()
+                shouldError = false
+            }
+            startActivity(OfferActivity.newInstance(context))
+        }
         clickableItem("Swedish Apartment") {
             MockOfferViewModel.apply {
                 mockData = OfferMockData(OFFER_DATA_SWEDISH_APARTMENT)
