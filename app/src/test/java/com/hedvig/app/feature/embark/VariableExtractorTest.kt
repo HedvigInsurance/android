@@ -42,6 +42,51 @@ class VariableExtractorTest {
         assertThat(secondExtraBuilding.getInt("area")).isEqualTo(5)
     }
 
+    /**
+     * Context: When there is a multi action field defined, it needs to be there for the Offer query to work.
+     * For example, if there is a "extraBuildings" field specified, if the VariableExtractor skips it entirely the
+     * offer query fails as it's expecting to find it, even as an empty array.
+     */
+    @Test
+    fun `should put an empty list if there are no multi action variables`() {
+        val valueStore: ValueStore = ValueStoreImpl()
+        val variables: List<Variable> = listOf(
+            Variable.Multi(
+                key = "input.payload[0].data.extraBuildings",
+                from = "extraBuildings",
+                variables = listOf(
+                    Variable.Single(
+                        key = "type",
+                        from = "type",
+                        castAs = CastType.STRING
+                    ),
+                    Variable.Single(
+                        key = "area",
+                        from = "area",
+                        castAs = CastType.INT
+                    ),
+                    Variable.Single(
+                        key = "hasWaterConnected",
+                        from = "hasWaterConnected",
+                        castAs = CastType.BOOLEAN
+                    )
+                )
+            ),
+        )
+
+        val json = VariableExtractor.reduceVariables(
+            variables,
+            valueStore::get,
+            valueStore::put,
+            valueStore::getMultiActionItems
+        )
+
+        val payload = (json.getJSONObject("input").getJSONArray("payload").get(0) as JSONObject)
+        val extraBuilding = payload.getJSONObject("data").getJSONArray("extraBuildings")
+
+        assertThat(extraBuilding.length()).isEqualTo(0)
+    }
+
     @Test
     fun `should compose variables into a nested object`() {
         val variables = listOf(

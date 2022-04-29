@@ -31,7 +31,7 @@ object VariableExtractor {
         variables: List<Variable>,
         getValue: (key: String) -> String?,
         setValue: (key: String, value: String?) -> Unit,
-        getMultiActionItems: (String) -> List<Map<String, String>>
+        getMultiActionItems: (String) -> List<Map<String, String>>,
     ): JSONObject {
         return variables.fold(JSONObject("{}")) { acc, variable ->
             when (variable) {
@@ -56,23 +56,21 @@ object VariableExtractor {
                 }
                 is Variable.Multi -> {
                     val multiActionItems = getMultiActionItems(variable.from)
-                    if (multiActionItems.isNotEmpty()) {
-                        val multiActionArray = JSONArray()
-                        multiActionItems.mapIndexed { index, map ->
-                            val multiActionJson = reduceVariables(
-                                variable.variables,
-                                map::get,
-                                setValue,
-                                getMultiActionItems
-                            )
-                            multiActionArray.put(index, multiActionJson)
-                        }
-                        acc.createAndAddWithLodashNotation(
-                            value = multiActionArray,
-                            key = variable.key,
-                            currentKey = variable.key.substringBefore(".")
+                    val multiActionArray = JSONArray()
+                    multiActionItems.mapIndexed { index, map ->
+                        val multiActionJson = reduceVariables(
+                            variable.variables,
+                            map::get,
+                            setValue,
+                            getMultiActionItems
                         )
+                        multiActionArray.put(index, multiActionJson)
                     }
+                    acc.createAndAddWithLodashNotation(
+                        value = multiActionArray,
+                        key = variable.key,
+                        currentKey = variable.key.substringBefore(".")
+                    )
                 }
             }
 
