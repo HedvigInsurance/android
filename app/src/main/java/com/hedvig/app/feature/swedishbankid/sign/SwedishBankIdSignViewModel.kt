@@ -101,7 +101,7 @@ class SwedishBankIdSignViewModel(
             Checkout.CheckoutStatus.PENDING -> ViewState.InProgress
             Checkout.CheckoutStatus.FAILED -> ViewState.Error
             Checkout.CheckoutStatus.UNKNOWN -> ViewState.Error
-            null -> ViewState.Error
+            null -> ViewState.InProgress
         }
     }
 }
