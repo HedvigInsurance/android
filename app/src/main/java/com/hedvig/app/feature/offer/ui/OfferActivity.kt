@@ -24,6 +24,7 @@ import com.hedvig.app.R
 import com.hedvig.app.SplashActivity
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.databinding.ActivityOfferBinding
+import com.hedvig.app.feature.adyen.PaymentTokenId
 import com.hedvig.app.feature.adyen.payin.startAdyenPayment
 import com.hedvig.app.feature.checkout.CheckoutActivity
 import com.hedvig.app.feature.crossselling.ui.CrossSellingResult
@@ -33,10 +34,12 @@ import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
 import com.hedvig.app.feature.home.ui.changeaddress.result.ChangeAddressResultActivity
 import com.hedvig.app.feature.insurablelimits.InsurableLimitsAdapter
 import com.hedvig.app.feature.offer.OfferViewModel
-import com.hedvig.app.feature.offer.model.quotebundle.CheckoutMethod
+import com.hedvig.app.feature.offer.model.CheckoutLabel
+import com.hedvig.app.feature.offer.model.CheckoutMethod
+import com.hedvig.app.feature.offer.model.QuoteCartId
+import com.hedvig.app.feature.offer.model.checkoutIconRes
 import com.hedvig.app.feature.offer.model.quotebundle.PostSignScreen
 import com.hedvig.app.feature.offer.model.quotebundle.ViewConfiguration
-import com.hedvig.app.feature.offer.model.quotebundle.checkoutIconRes
 import com.hedvig.app.feature.offer.quotedetail.QuoteDetailActivity
 import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.feature.settings.MarketManager
@@ -67,15 +70,14 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     private lateinit var concatAdapter: ConcatAdapter
     override val screenName = "offer"
 
-    private val quoteIds: List<String>
-        get() = intent.getStringArrayExtra(QUOTE_IDS)?.toList() ?: emptyList()
-    private val quoteCartId: String?
-        get() = intent.getStringExtra(QUOTE_CART_ID)
+    private val quoteCartId: QuoteCartId?
+        get() = intent.getParcelableExtra(QUOTE_CART_ID)
+            ?: intent.getStringExtra(QUOTE_CART_ID)?.let { QuoteCartId(it) }
     private val shouldShowOnNextAppStart: Boolean
         get() = intent.getBooleanExtra(SHOULD_SHOW_ON_NEXT_APP_START, false)
 
     private val model: OfferViewModel by viewModel {
-        parametersOf(quoteIds, quoteCartId, shouldShowOnNextAppStart)
+        parametersOf(quoteCartId, shouldShowOnNextAppStart)
     }
     private val binding by viewBinding(ActivityOfferBinding::bind)
     private val imageLoader: ImageLoader by inject()
@@ -168,26 +170,20 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 binding.offerScroll.isVisible = viewState !is OfferViewModel.ViewState.Loading
                 when (viewState) {
                     is OfferViewModel.ViewState.Loading -> {}
-                    is OfferViewModel.ViewState.Error -> {
-                        perilsAdapter.submitList(emptyList())
-                        insurableLimitsAdapter.submitList(emptyList())
-                        documentAdapter.submitList(emptyList())
-                        bottomOfferAdapter.submitList(emptyList())
-                        topOfferAdapter.submitList(listOf(OfferItems.Error))
-                        binding.progressBar.isVisible = false
-                        binding.offerScroll.isVisible = true
-                    }
+                    is OfferViewModel.ViewState.Error -> showErrorDialog(
+                        viewState.message ?: getString(R.string.NETWORK_ERROR_ALERT_MESSAGE)
+                    ) {}
                     is OfferViewModel.ViewState.Content -> {
-                        topOfferAdapter.submitList(viewState.topOfferItems)
-                        perilsAdapter.submitList(viewState.perils)
-                        insurableLimitsAdapter.submitList(viewState.insurableLimitsItems)
-                        documentAdapter.submitList(viewState.documents)
-                        bottomOfferAdapter.submitList(viewState.bottomOfferItems)
-                        binding.signButton.text = viewState.checkoutLabel.toString(this)
-                        binding.signButton.icon = viewState.checkoutMethod.checkoutIconRes()?.let(::compatDrawable)
-                        binding.signButton.setHapticClickListener {
-                            onSign(viewState.checkoutMethod, viewState.paymentMethods)
-                        }
+                        topOfferAdapter.submitList(viewState.createTopOfferItems())
+                        perilsAdapter.submitList(viewState.createPerilItems())
+                        insurableLimitsAdapter.submitList(viewState.createInsurableLimitItems())
+                        documentAdapter.submitList(viewState.createDocumentItems())
+                        bottomOfferAdapter.submitList(viewState.createBottomOfferItems())
+                        setSignButtonState(
+                            viewState.offerModel.checkoutMethod,
+                            viewState.bundleVariant.bundle.checkoutLabel,
+                            viewState.paymentMethods
+                        )
 
                         TransitionManager.beginDelayedTransition(binding.offerToolbar)
                         setTitleVisibility(viewState)
@@ -211,19 +207,28 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     is OfferViewModel.Event.ApproveSuccessful -> handlePostSign(event)
                     is OfferViewModel.Event.ApproveError -> handlePostSignError(event)
                     OfferViewModel.Event.DiscardOffer -> startSplashActivity()
-                    is OfferViewModel.Event.StartSwedishBankIdSign -> showSignDialog(event)
-                    OfferViewModel.Event.Error -> showErrorDialog(
-                        getString(R.string.NETWORK_ERROR_ALERT_MESSAGE)
-                    ) {}
+                    OfferViewModel.Event.StartSwedishBankIdSign -> showSignDialog()
                     OfferViewModel.Event.OpenChat -> startChat()
                 }
             }
             .launchIn(lifecycleScope)
     }
 
-    private fun showSignDialog(event: OfferViewModel.Event.StartSwedishBankIdSign) {
+    private fun setSignButtonState(
+        checkoutMethod: CheckoutMethod,
+        checkoutLabel: CheckoutLabel,
+        paymentMethods: PaymentMethodsApiResponse?
+    ) {
+        binding.signButton.text = checkoutLabel.toString(this)
+        binding.signButton.icon = checkoutMethod.checkoutIconRes()?.let(::compatDrawable)
+        binding.signButton.setHapticClickListener {
+            onSign(checkoutMethod, paymentMethods)
+        }
+    }
+
+    private fun showSignDialog() {
         SwedishBankIdSignDialog
-            .newInstance(event.autoStartToken, quoteIds)
+            .newInstance(quoteCartId)
             .show(supportFragmentManager, SwedishBankIdSignDialog.TAG)
     }
 
@@ -297,16 +302,17 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         )
     }
 
-    private fun setTitleVisibility(viewState: OfferViewModel.ViewState.Content) = when (viewState.title) {
-        ViewConfiguration.Title.LOGO -> {
-            binding.toolbarLogo.isVisible = true
-            binding.toolbarTitle.isVisible = false
-        }
-        ViewConfiguration.Title.UPDATE,
-        ViewConfiguration.Title.UNKNOWN,
-        -> {
-            binding.toolbarTitle.isVisible = true
-            binding.toolbarLogo.isVisible = false
+    private fun setTitleVisibility(viewState: OfferViewModel.ViewState.Content) {
+        when (viewState.bundleVariant.bundle.viewConfiguration.title) {
+            ViewConfiguration.Title.LOGO -> {
+                binding.toolbarLogo.isVisible = true
+                binding.toolbarTitle.isVisible = false
+            }
+            ViewConfiguration.Title.UPDATE,
+            ViewConfiguration.Title.UNKNOWN -> {
+                binding.toolbarTitle.isVisible = true
+                binding.toolbarLogo.isVisible = false
+            }
         }
     }
 
@@ -361,11 +367,12 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         @Suppress("DEPRECATION") // Replace with new result API when adyens handleActivityResult is updated
         super.onActivityResult(requestCode, resultCode, data)
 
-        when (DropIn.handleActivityResult(requestCode, resultCode, data)) {
+        when (val result = DropIn.handleActivityResult(requestCode, resultCode, data)) {
             is DropInResult.CancelledByUser -> {}
             is DropInResult.Error -> showErrorDialog("Could not connect payment") {}
-            is DropInResult.Finished -> model.onOpenCheckout()
-            null -> {}
+            is DropInResult.Finished -> {
+                model.onPaymentTokenIdReceived(PaymentTokenId(result.result))
+            }
         }
     }
 
@@ -407,11 +414,11 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
         fun newInstance(
             context: Context,
-            quoteIds: List<String> = emptyList(),
-            quoteCartId: String? = null,
+            quoteCartId: QuoteCartId? = null,
             shouldShowOnNextAppStart: Boolean = false,
-        ) = Intent(context, OfferActivity::class.java).apply {
-            putExtra(QUOTE_IDS, quoteIds.toTypedArray())
+        ) = Intent(
+            context, OfferActivity::class.java
+        ).apply {
             putExtra(QUOTE_CART_ID, quoteCartId)
             putExtra(SHOULD_SHOW_ON_NEXT_APP_START, shouldShowOnNextAppStart)
         }

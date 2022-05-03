@@ -409,12 +409,7 @@ val BUNDLE_WITH_START_DATE_FROM_PREVIOUS_INSURER = OfferDataBuilder(
         asIndependentInceptions = QuoteBundleFragment.AsIndependentInceptions(
             inceptions = listOf(
                 QuoteBundleFragment.Inception(
-                    correspondingQuote = QuoteBundleFragment.CorrespondingQuote1(
-                        asCompleteQuote1 = QuoteBundleFragment.AsCompleteQuote1(
-                            displayName = "Test Insurance",
-                            id = "ea656f5f-40b2-4953-85d9-752b33e69e38"
-                        )
-                    ),
+                    correspondingQuoteId = "ea656f5f-40b2-4953-85d9-752b33e69e38",
                     startDate = null,
                     currentInsurer = QuoteBundleFragment.CurrentInsurer2(
                         fragments = QuoteBundleFragment.CurrentInsurer2.Fragments(

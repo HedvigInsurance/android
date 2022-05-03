@@ -43,8 +43,7 @@ fun evaluateExpression(expression: ExpressionFragment, valueStore: ValueStore): 
                         ExpressionResult.True(binaryExpression.text)
                     }
                 }
-                val stored = valueStore.get(binaryExpression.key)
-                    ?: return ExpressionResult.False
+                val stored = valueStore.get(binaryExpression.key) ?: return ExpressionResult.True(binaryExpression.text)
                 if (stored != binaryExpression.value) {
                     return ExpressionResult.True(binaryExpression.text)
                 }

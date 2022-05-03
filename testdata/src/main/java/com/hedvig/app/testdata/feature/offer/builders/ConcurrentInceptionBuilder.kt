@@ -19,14 +19,7 @@ class ConcurrentInceptionBuilder(
 ) {
     fun build() = QuoteBundleFragment.Inception1(
         asConcurrentInception = QuoteBundleFragment.AsConcurrentInception(
-            correspondingQuotes = quoteIds.map {
-                QuoteBundleFragment.CorrespondingQuote(
-                    asCompleteQuote = QuoteBundleFragment.AsCompleteQuote(
-                        displayName = "Test insurance",
-                        id = it
-                    )
-                )
-            },
+            correspondingQuoteIds = quoteIds,
             startDate = startDate,
             currentInsurer = currentInsurer
         ),

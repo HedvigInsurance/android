@@ -19,7 +19,6 @@ class MockEmbarkViewModel(
     hAnalytics,
     "",
     loginStatusService,
-    featureManager
 ) {
     init {
         fetchStory("")

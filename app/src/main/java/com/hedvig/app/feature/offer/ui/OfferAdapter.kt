@@ -37,12 +37,13 @@ import com.hedvig.app.databinding.TextSubtitle1Binding
 import com.hedvig.app.databinding.WarningCardBinding
 import com.hedvig.app.feature.faq.FAQBottomSheet
 import com.hedvig.app.feature.offer.OfferRedeemCodeBottomSheet
-import com.hedvig.app.feature.offer.model.quotebundle.CheckoutMethod
-import com.hedvig.app.feature.offer.model.quotebundle.checkoutIconRes
+import com.hedvig.app.feature.offer.model.CheckoutMethod
+import com.hedvig.app.feature.offer.model.checkoutIconRes
 import com.hedvig.app.feature.offer.model.quotebundle.getString
 import com.hedvig.app.feature.offer.model.quotebundle.toDrawable
 import com.hedvig.app.feature.offer.model.quotebundle.toString
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheet
+import com.hedvig.app.feature.offer.ui.composable.VariantButton
 import com.hedvig.app.feature.offer.ui.composable.insurely.InsurelyCard
 import com.hedvig.app.feature.table.generateTable
 import com.hedvig.app.ui.compose.theme.HedvigTheme
@@ -78,6 +79,7 @@ class OfferAdapter(
             onSign,
             onRemoveDiscount
         )
+        VARIANT_BUTTON -> ViewHolder.VariantButton(ComposeView(parent.context), locale)
         R.layout.offer_fact_area -> ViewHolder.Facts(parent)
         R.layout.offer_switch -> ViewHolder.Switch(parent)
         R.layout.offer_footer -> ViewHolder.Footer(parent, openChat)
@@ -96,6 +98,7 @@ class OfferAdapter(
 
     override fun getItemViewType(position: Int): Int = when (getItem(position)) {
         is OfferItems.Header -> R.layout.offer_header
+        is OfferItems.VariantButton -> VARIANT_BUTTON
         is OfferItems.Facts -> R.layout.offer_fact_area
         is OfferItems.CurrentInsurer -> R.layout.offer_switch
         is OfferItems.Footer -> R.layout.offer_footer
@@ -186,7 +189,7 @@ class OfferAdapter(
                             setTextColor(context.getColor(R.color.textColorSecondary))
                             icon = context.compatDrawable(R.drawable.ic_add_circle)
                             setHapticClickListener {
-                                OfferRedeemCodeBottomSheet.newInstance()
+                                OfferRedeemCodeBottomSheet.newInstance(data.quoteCartId)
                                     .show(
                                         fragmentManager,
                                         OfferRedeemCodeBottomSheet.TAG
@@ -205,6 +208,34 @@ class OfferAdapter(
                         }
                     }
                     root.background = data.gradientType.toDrawable(itemView.context)
+                }
+            }
+        }
+
+        class VariantButton(
+            private val composeView: ComposeView,
+            private val locale: Locale,
+        ) : ViewHolder(composeView) {
+            init {
+                composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            }
+
+            override fun bind(data: OfferItems) {
+                if (data !is OfferItems.VariantButton) {
+                    return invalid(data)
+                }
+
+                composeView.setContent {
+                    HedvigTheme {
+                        VariantButton(
+                            id = data.id,
+                            title = data.title,
+                            subTitle = data.subTitle,
+                            cost = data.price.format(locale),
+                            selected = data.isSelected,
+                            onClick = data.onVariantSelected
+                        )
+                    }
                 }
             }
         }
@@ -497,6 +528,7 @@ class OfferAdapter(
         const val INSURELY_CARD = 1
         const val PRICE_COMPARISON_HEADER = 2
         const val INSURELY_DIVIDER = 3
+        const val VARIANT_BUTTON = 4
 
         class OfferDiffUtilCallback : DiffUtil.ItemCallback<OfferItems>() {
             override fun areItemsTheSame(oldItem: OfferItems, newItem: OfferItems): Boolean = when {
@@ -506,6 +538,12 @@ class OfferAdapter(
                 oldItem is OfferItems.PriceComparisonHeader && newItem is OfferItems.PriceComparisonHeader -> {
                     // Should only display 1 PriceComparisonHeader ever
                     true
+                }
+                oldItem is OfferItems.Header && newItem is OfferItems.Header -> {
+                    true
+                }
+                oldItem is OfferItems.VariantButton && newItem is OfferItems.VariantButton -> {
+                    oldItem.id == newItem.id
                 }
                 else -> {
                     oldItem == newItem

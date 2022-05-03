@@ -73,4 +73,14 @@ class ValueStoreImplTest {
 
         assertThat(store.get("foo")).isEqualTo(null)
     }
+
+    @Test
+    fun `null string value should result in null literal`() {
+        val store = ValueStoreImpl()
+
+        store.put("key[0]foo", "null")
+        store.commitVersion()
+
+        assertThat(store.get("key[0]foo")).isEqualTo(null)
+    }
 }

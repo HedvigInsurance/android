@@ -3,6 +3,7 @@ package com.hedvig.app.feature.embark.passages.selectaction
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.core.view.doOnNextLayout
 import androidx.core.view.isVisible
@@ -14,17 +15,22 @@ import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.feature.embark.Response
 import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.animateResponse
+import com.hedvig.app.feature.embark.passages.selectaction.ui.SelectActionView
 import com.hedvig.app.feature.embark.ui.EmbarkActivity.Companion.PASSAGE_ANIMATION_DELAY_DURATION
+import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.hedvig.app.util.whenApiVersion
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import e
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.yield
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
@@ -43,16 +49,13 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
 
         binding.apply {
             whenApiVersion(Build.VERSION_CODES.R) {
-                actions.setupInsetsForIme(
-                    root = root,
-                    actions,
-                )
+                actionsComposeView.setupInsetsForIme(root, actionsComposeView)
             }
 
             if (data.actions.size == 1) {
                 bindSingleButton(data.actions.first(), data)
             } else {
-                bindAdapter(data)
+                bindButtonGrid(data)
             }
 
             messages.adapter = MessageAdapter(data.messages)
@@ -64,7 +67,7 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
 
     private fun FragmentEmbarkSelectActionBinding.bindSingleButton(
         action: SelectActionParameter.SelectAction,
-        data: SelectActionParameter
+        data: SelectActionParameter,
     ) {
         with(singleActionButton) {
             isVisible = true
@@ -76,20 +79,27 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
         }
     }
 
-    private fun FragmentEmbarkSelectActionBinding.bindAdapter(data: SelectActionParameter) {
-        with(actions) {
+    private fun FragmentEmbarkSelectActionBinding.bindButtonGrid(data: SelectActionParameter) {
+        with(actionsComposeView) {
             isVisible = true
-            adapter = SelectActionAdapter { selectAction: SelectActionParameter.SelectAction,
-                view: View,
-                position: Int ->
-                view.hapticClicks()
-                    .mapLatest { onActionSelected(selectAction, data, responseContainer) }
-                    .onEach { model.submitAction(selectAction.link, position) }
-                    .launchIn(viewLifecycleScope)
-            }.apply {
-                submitList(data.actions)
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            var actionJob: Job? = null
+            setContent {
+                isTransitionGroup = true // https://issuetracker.google.com/issues/206947893
+                HedvigTheme {
+                    SelectActionView(
+                        selectActions = data.actions,
+                        onActionClick = { selectAction: SelectActionParameter.SelectAction, position: Int ->
+                            actionJob?.cancel()
+                            actionJob = viewLifecycleScope.launch {
+                                onActionSelected(selectAction, data, responseContainer)
+                                yield()
+                                model.submitAction(selectAction.link, position)
+                            }
+                        }
+                    )
+                }
             }
-            addItemDecoration(SelectActionDecoration())
         }
     }
 
@@ -98,12 +108,12 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
         data: SelectActionParameter,
         responseBinding: EmbarkResponseBinding,
     ) {
-        selectAction.keys.zip(selectAction.values).forEach { (key, value) ->
+        (selectAction.keys zip selectAction.values).forEach { (key, value) ->
             model.putInStore(key, value)
         }
         model.putInStore("${data.passageName}Result", selectAction.label)
-        val response =
-            model.preProcessResponse(data.passageName) ?: Response.SingleResponse(selectAction.label)
+        val response = model.preProcessResponse(data.passageName)
+            ?: Response.SingleResponse(selectAction.label)
         animateResponse(responseBinding, response)
         delay(PASSAGE_ANIMATION_DELAY_DURATION)
     }

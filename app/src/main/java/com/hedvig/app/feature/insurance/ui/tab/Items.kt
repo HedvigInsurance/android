@@ -28,7 +28,11 @@ fun items(
     val potentialCrossSells = data.activeContractBundles.flatMap { it.potentialCrossSells }
     if (potentialCrossSells.isNotEmpty()) {
         add(InsuranceModel.CrossSellHeader(showCrossSellNotificationBadge))
-        addAll(potentialCrossSells.map(::crossSell))
+        addAll(
+            potentialCrossSells.map {
+                crossSell(it)
+            }
+        )
     }
 
     if (hasNotOnlyTerminatedContracts(data.contracts)) {
@@ -47,4 +51,8 @@ private fun amountOfTerminatedContracts(contracts: List<InsuranceQuery.Contract>
     contracts.filter { it.status.fragments.contractStatusFragment.asTerminatedStatus != null }.size
 
 private fun crossSell(potentialCrossSell: InsuranceQuery.PotentialCrossSell) =
-    InsuranceModel.CrossSellCard(CrossSellData.from(potentialCrossSell.fragments.crossSellFragment))
+    InsuranceModel.CrossSellCard(
+        CrossSellData.from(
+            potentialCrossSell.fragments.crossSellFragment,
+        )
+    )

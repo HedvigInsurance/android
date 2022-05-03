@@ -2,13 +2,22 @@ package com.hedvig.app.feature.checkout
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import arrow.core.Either
+import arrow.core.computations.either
 import com.hedvig.app.authenticate.LoginStatusService
+import com.hedvig.app.feature.offer.OfferRepository
+import com.hedvig.app.feature.offer.model.Checkout
 import com.hedvig.app.feature.offer.model.OfferModel
+import com.hedvig.app.feature.offer.model.QuoteBundleVariant
+import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
+import com.hedvig.app.feature.offer.usecase.CreateAccessTokenUseCase
+import com.hedvig.app.feature.offer.usecase.ObserveOfferStateUseCase
+import com.hedvig.app.feature.offer.usecase.OfferState
 import com.hedvig.app.feature.offer.usecase.SignQuotesUseCase
-import com.hedvig.app.feature.offer.usecase.getquote.GetQuotesUseCase
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.ValidationResult
 import com.hedvig.app.util.validateEmail
 import com.hedvig.app.util.validateNationalIdentityNumber
@@ -26,33 +35,16 @@ import kotlin.time.Duration.Companion.seconds
 
 class CheckoutViewModel(
     private val quoteIds: List<String>,
-    private val quoteCartId: String?,
-    private val getQuotesUseCase: GetQuotesUseCase,
+    private val quoteCartId: QuoteCartId,
     private val signQuotesUseCase: SignQuotesUseCase,
-    private val editQuotesUseCase: EditQuotesUseCase,
+    private val editQuotesUseCase: EditCheckoutUseCase,
+    private val createAccessTokenUseCase: CreateAccessTokenUseCase,
     private val marketManager: MarketManager,
     private val loginStatusService: LoginStatusService,
     private val hAnalytics: HAnalytics,
+    private val offerRepository: OfferRepository,
+    bundleVariantUseCase: ObserveOfferStateUseCase,
 ) : ViewModel() {
-
-    init {
-        viewModelScope.launch {
-            getQuotesUseCase.invoke(quoteIds, quoteCartId).onEach { result ->
-                when (result) {
-                    is GetQuotesUseCase.Result.Success -> _titleViewState.value = result.data.mapToViewState()
-                    is GetQuotesUseCase.Result.Error -> _events.trySend(Event.Error(result.message))
-                }
-            }.launchIn(viewModelScope)
-        }
-    }
-
-    private fun OfferModel.mapToViewState() = TitleViewState.Loaded(
-        bundleName = quoteBundle.name,
-        netAmount = quoteBundle.cost.netMonthlyCost,
-        grossAmount = quoteBundle.cost.grossMonthlyCost,
-        market = marketManager.market,
-        email = quoteBundle.quotes.firstNotNullOfOrNull(QuoteBundle.Quote::email)
-    )
 
     private val _titleViewState = MutableStateFlow<TitleViewState>(TitleViewState.Loading)
     val titleViewState: StateFlow<TitleViewState> = _titleViewState
@@ -68,6 +60,50 @@ class CheckoutViewModel(
 
     private var emailInput: String = ""
     private var identityNumberInput: String = ""
+
+    private val offerState = bundleVariantUseCase.observeOfferState(quoteCartId)
+
+    init {
+        offerState
+            .onEach(::handleOfferResult)
+            .launchIn(viewModelScope)
+    }
+
+    private suspend fun handleOfferResult(result: Either<ErrorMessage, OfferState>) {
+        result.fold(
+            ifLeft = { _events.trySend(Event.Error(it.message)) },
+            ifRight = {
+                handleCheckoutStatus(it.offerModel)
+                _titleViewState.value = it.selectedVariant.mapToViewState()
+            }
+        )
+    }
+
+    private suspend fun handleCheckoutStatus(model: OfferModel) {
+        val checkout = model.checkout
+        when (checkout?.status) {
+            Checkout.CheckoutStatus.PENDING -> _events.trySend(Event.Loading)
+            Checkout.CheckoutStatus.SIGNED -> createAccessToken()
+            Checkout.CheckoutStatus.COMPLETED -> _events.trySend(onSignSuccess())
+            Checkout.CheckoutStatus.FAILED,
+            Checkout.CheckoutStatus.UNKNOWN -> _events.trySend(Event.Error(checkout.statusText))
+            null -> {}
+        }
+    }
+
+    private suspend fun createAccessToken() {
+        createAccessTokenUseCase.invoke(quoteCartId)
+            .tapLeft { _events.trySend(Event.Error(it.message)) }
+            .tap { offerRepository.queryAndEmitOffer(quoteCartId) }
+    }
+
+    private fun QuoteBundleVariant.mapToViewState() = TitleViewState.Loaded(
+        bundleName = bundle.name,
+        netAmount = bundle.cost.netMonthlyCost,
+        grossAmount = bundle.cost.grossMonthlyCost,
+        market = marketManager.market,
+        email = bundle.quotes.firstNotNullOfOrNull(QuoteBundle.Quote::email)
+    )
 
     fun validateInput() {
         _inputViewState.value = _inputViewState.value.copy(
@@ -122,14 +158,13 @@ class CheckoutViewModel(
 
     private fun signQuotes(parameter: EditAndSignParameter) {
         viewModelScope.launch {
-            val result = editQuotesUseCase.editQuotes(parameter)
-                .map { signQuotesUseCase.signQuotesAndClearCache(quoteIds, quoteCartId) }
-                .mapLeft { it.message }
-                .fold(
-                    ifLeft = Event::Error,
-                    ifRight = { it.toEvent() }
-                )
-            _events.trySend(result)
+            either<ErrorMessage, SignQuotesUseCase.Success> {
+                editQuotesUseCase.editQuotes(parameter).bind()
+                signQuotesUseCase.signQuotesAndClearCache(quoteCartId, quoteIds).bind()
+            }.fold(
+                ifLeft = { _events.trySend(Event.Error(it.message)) },
+                ifRight = { offerRepository.queryAndEmitOffer(quoteCartId) }
+            )
         }
     }
 
@@ -143,19 +178,15 @@ class CheckoutViewModel(
         email = emailInput
     )
 
-    private suspend fun SignQuotesUseCase.SignQuoteResult.toEvent(): Event = when (this) {
-        is SignQuotesUseCase.SignQuoteResult.Error -> Event.Error(message)
-        SignQuotesUseCase.SignQuoteResult.Success -> {
-            hAnalytics.quotesSigned(quoteIds)
-            loginStatusService.isLoggedIn = true
-            loginStatusService.isViewingOffer = false
-            // Delay sending success in order for the signed quotes to be added on the member
-            // Sending success instantly will start HomeFragment, but the member will not have
-            // updated contracts.
-            delay(5.seconds)
-            Event.CheckoutSuccess
-        }
-        else -> Event.Error()
+    private suspend fun onSignSuccess(): Event.CheckoutSuccess {
+        hAnalytics.quotesSigned(quoteIds)
+        loginStatusService.isLoggedIn = true
+        loginStatusService.isViewingOffer = false
+        // Delay sending success in order for the signed quotes to be added on the member
+        // Sending success instantly will start HomeFragment, but the member will not have
+        // updated contracts.
+        delay(5.seconds)
+        return Event.CheckoutSuccess
     }
 
     sealed class TitleViewState {

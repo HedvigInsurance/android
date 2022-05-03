@@ -11,7 +11,6 @@ import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusCardUiState
 import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
 
-@OptIn(ExperimentalStdlibApi::class)
 class HomeItemsBuilder(
     private val featureManager: FeatureManager
 ) {

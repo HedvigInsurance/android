@@ -42,7 +42,10 @@ class InsuranceViewModelImpl(
                         .getUnseenCrossSells(CrossSellNotificationBadgeService.CrossSellBadgeType.InsuranceFragmentCard)
                         .first()
                         .isNotEmpty()
-                    val items = items(result.insurance, showNotificationBadge)
+                    val items = items(
+                        data = result.insurance,
+                        showCrossSellNotificationBadge = showNotificationBadge
+                    )
                     _viewState.value = ViewState.Success(items)
                 }
             }

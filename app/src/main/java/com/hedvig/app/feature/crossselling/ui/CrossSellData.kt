@@ -53,8 +53,8 @@ data class CrossSellData(
             title = data.title,
             description = data.description,
             callToAction = data.callToAction,
-            action = data.action.asCrossSellEmbark?.embarkStory?.let { story ->
-                Action.Embark(story.name, data.title)
+            action = data.action.asCrossSellEmbark?.embarkStoryV2?.name?.let { storyName ->
+                Action.Embark(storyName, data.title)
             } ?: Action.Chat,
             backgroundUrl = data.imageUrl,
             backgroundBlurHash = data.blurHash,

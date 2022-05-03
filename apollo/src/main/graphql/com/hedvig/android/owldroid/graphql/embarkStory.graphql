@@ -85,6 +85,7 @@ query EmbarkStory($name: String!, $locale: String!) {
             key
             placeholder
             mask
+            subtitle
             link {
               ...EmbarkLinkFragment
             }
@@ -254,6 +255,7 @@ query EmbarkStory($name: String!, $locale: String!) {
           expression {
             ...ExpressionFragment
           }
+          selectedInsuranceTypes
         }
       }
       variantedOfferRedirects {
@@ -392,6 +394,7 @@ fragment GraphQLVariablesFragment on EmbarkAPIGraphQLVariable {
   }
   ... on EmbarkAPIGraphQLMultiActionVariable {
     key
+    from
     variables {
       ... on EmbarkAPIGraphQLSingleVariable {
         key

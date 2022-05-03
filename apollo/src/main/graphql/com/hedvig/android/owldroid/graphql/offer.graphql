@@ -4,7 +4,13 @@ query Offer($locale: Locale!, $ids: [ID!]!) {
   }
 
   quoteBundle(input: { ids: $ids }) {
-    ...QuoteBundleFragment
+    possibleVariations {
+      id
+      tag(locale: $locale)
+      bundle {
+        ...QuoteBundleFragment
+      }
+    }
   }
 
   signMethodForQuotes(input: $ids)

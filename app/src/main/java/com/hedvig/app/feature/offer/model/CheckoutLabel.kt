@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.offer.ui
+package com.hedvig.app.feature.offer.model
 
 import android.content.Context
 import androidx.annotation.StringRes

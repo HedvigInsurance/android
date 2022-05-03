@@ -2,10 +2,13 @@ package com.hedvig.app.feature.offer
 
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
+import com.hedvig.app.feature.offer.model.Campaign
+import com.hedvig.app.feature.offer.model.CheckoutLabel
+import com.hedvig.app.feature.offer.model.CheckoutMethod
 import com.hedvig.app.feature.offer.model.OfferModel
+import com.hedvig.app.feature.offer.model.QuoteBundleVariant
+import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.model.quotebundle.BundleCost
-import com.hedvig.app.feature.offer.model.quotebundle.Campaign
-import com.hedvig.app.feature.offer.model.quotebundle.CheckoutMethod
 import com.hedvig.app.feature.offer.model.quotebundle.GradientType
 import com.hedvig.app.feature.offer.model.quotebundle.Inception
 import com.hedvig.app.feature.offer.model.quotebundle.OfferStartDate
@@ -13,7 +16,6 @@ import com.hedvig.app.feature.offer.model.quotebundle.PostSignScreen
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
 import com.hedvig.app.feature.offer.model.quotebundle.StartDateLabel
 import com.hedvig.app.feature.offer.model.quotebundle.ViewConfiguration
-import com.hedvig.app.feature.offer.ui.CheckoutLabel
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
 import com.hedvig.app.feature.perils.Peril
 import com.hedvig.app.feature.table.Table
@@ -68,7 +70,7 @@ class TestOfferModelBuilder(
     private val inception: Inception = Inception(
         startDate = OfferStartDate.AtDate(LocalDate.of(2022, 2, 21)),
         startDateLabel = StartDateLabel.SINGLE_START_DATE,
-        changeDateData = ChangeDateBottomSheetData(emptyList())
+        changeDateData = ChangeDateBottomSheetData(QuoteCartId("123"), emptyList())
     ),
     private val viewConfiguration: ViewConfiguration = ViewConfiguration(
         showCampaignManagement = true,
@@ -86,33 +88,43 @@ class TestOfferModelBuilder(
 ) {
 
     fun build() = OfferModel(
-        quoteBundle = QuoteBundle(
-            name = bundleName,
-            quotes = listOf(
-                QuoteBundle.Quote(
-                    dataCollectionId = null,
-                    displayName = quoteName,
-                    startDate = startDate,
-                    email = email,
-                    id = id,
-                    currentInsurer = null,
-                    detailsTable = table,
-                    perils = perils,
-                    insurableLimits = insurableLimits,
-                    insuranceTerms = documents
+        id = QuoteCartId("123"),
+        variants = listOf(
+            QuoteBundleVariant(
+                id = "1234",
+                title = "Test variant",
+                tag = "Test tag",
+                bundle = QuoteBundle(
+                    name = bundleName,
+                    quotes = listOf(
+                        QuoteBundle.Quote(
+                            dataCollectionId = null,
+                            displayName = quoteName,
+                            startDate = startDate,
+                            email = email,
+                            id = id,
+                            currentInsurer = null,
+                            detailsTable = table,
+                            perils = perils,
+                            insurableLimits = insurableLimits,
+                            insuranceTerms = documents
+                        )
+                    ),
+                    cost = BundleCost(
+                        grossMonthlyCost = grossMonthlyCost,
+                        netMonthlyCost = netMonthlyCost,
+                        ignoreCampaigns = ignoreCampaigns
+                    ),
+                    frequentlyAskedQuestions = frequentlyAskedQuestions,
+                    inception = inception,
+                    viewConfiguration = viewConfiguration,
+                    checkoutLabel = checkoutLabel
                 )
-            ),
-            cost = BundleCost(
-                grossMonthlyCost = grossMonthlyCost,
-                netMonthlyCost = netMonthlyCost,
-                ignoreCampaigns = ignoreCampaigns
-            ),
-            frequentlyAskedQuestions = frequentlyAskedQuestions,
-            inception = inception,
-            viewConfiguration = viewConfiguration
+            )
         ),
         checkoutMethod = checkoutMethod,
-        checkoutLabel = checkoutLabel,
-        campaign = campaign
+        campaign = campaign,
+        checkout = null,
+        paymentConnection = null
     )
 }

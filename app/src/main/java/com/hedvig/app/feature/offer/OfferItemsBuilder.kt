@@ -3,13 +3,14 @@ package com.hedvig.app.feature.offer
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.hedvig.app.feature.faq.FAQItem
 import com.hedvig.app.feature.offer.model.OfferModel
+import com.hedvig.app.feature.offer.model.QuoteBundleVariant
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
 import com.hedvig.app.feature.offer.ui.OfferItems
+import com.hedvig.app.feature.offer.usecase.ExternalProvider
 import com.hedvig.app.feature.offer.usecase.datacollectionresult.DataCollectionResult
 import com.hedvig.app.feature.offer.usecase.datacollectionstatus.DataCollectionStatus.DataCollectionSubscriptionStatus.COMPLETE
 import com.hedvig.app.feature.offer.usecase.datacollectionstatus.DataCollectionStatus.DataCollectionSubscriptionStatus.FAILED
 import com.hedvig.app.feature.offer.usecase.datacollectionstatus.DataCollectionStatus.DataCollectionSubscriptionStatus.IN_PROGRESS
-import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToDataCollectionStatusUseCase
 import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToDataCollectionStatusUseCase.Status.Content
 import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToDataCollectionStatusUseCase.Status.Error
 import com.hedvig.app.util.minus
@@ -17,36 +18,16 @@ import javax.money.MonetaryAmount
 
 object OfferItemsBuilder {
     fun createTopOfferItems(
-        offerData: OfferModel,
-        dataCollectionStatus: SubscribeToDataCollectionStatusUseCase.Status? = null,
-        dataCollectionResult: DataCollectionResult? = null,
-        insuranceProviderDisplayName: String? = null,
-        paymentMethods: PaymentMethodsApiResponse? = null,
-    ): List<OfferItems> = TopOfferItemsBuilder.createTopOfferItems(
-        offerData,
-        dataCollectionStatus,
-        dataCollectionResult,
-        insuranceProviderDisplayName,
-        paymentMethods,
-    )
-
-    fun createBottomOfferItems(
-        data: OfferModel,
-    ): List<OfferItems> = BottomOfferItemsBuilder.createBottomOfferItems(data)
-}
-
-@OptIn(ExperimentalStdlibApi::class)
-object TopOfferItemsBuilder {
-    fun createTopOfferItems(
-        offerModel: OfferModel,
-        dataCollectionStatus: SubscribeToDataCollectionStatusUseCase.Status? = null,
-        dataCollectionResult: DataCollectionResult? = null,
-        insuranceProviderDisplayName: String?,
+        quoteBundleVariant: QuoteBundleVariant,
+        externalProvider: ExternalProvider?,
         paymentMethods: PaymentMethodsApiResponse?,
+        onVariantSelected: (id: String) -> Unit,
+        offerModel: OfferModel,
     ): List<OfferItems> = buildList {
-        val bundle = offerModel.quoteBundle
+        val bundle = quoteBundleVariant.bundle
         add(
             OfferItems.Header(
+                quoteCartId = offerModel.id,
                 title = bundle.name,
                 startDate = bundle.inception.startDate,
                 startDateLabel = bundle.inception.startDateLabel,
@@ -57,7 +38,7 @@ object TopOfferItemsBuilder {
                 incentiveDisplayValue = offerModel.campaign?.displayValue,
                 hasCampaigns = offerModel.campaign?.shouldShowIncentive == true,
                 changeDateBottomSheetData = bundle.inception.changeDateData,
-                checkoutLabel = offerModel.checkoutLabel,
+                checkoutLabel = bundle.checkoutLabel,
                 checkoutMethod = offerModel.checkoutMethod,
                 showCampaignManagement = bundle.viewConfiguration.showCampaignManagement,
                 ignoreCampaigns = bundle.viewConfiguration.showCampaignManagement,
@@ -65,26 +46,38 @@ object TopOfferItemsBuilder {
                 paymentMethodsApiResponse = paymentMethods
             ),
         )
-        val showInsurelyInformation = dataCollectionStatus != null
-        if (showInsurelyInformation) {
+
+        offerModel.variants.takeIf { it.size > 1 }?.map {
+            add(
+                OfferItems.VariantButton(
+                    id = it.id,
+                    title = it.title,
+                    subTitle = it.tag,
+                    price = it.bundle.cost.finalPremium,
+                    isSelected = it.id == quoteBundleVariant.id,
+                    onVariantSelected = onVariantSelected
+                )
+            )
+        }
+
+        if (externalProvider != null) {
             add(OfferItems.PriceComparisonHeader)
-            @Suppress("NON_EXHAUSTIVE_WHEN_STATEMENT") // https://youtrack.jetbrains.com/issue/KT-51541
-            when (dataCollectionStatus) {
+            when (externalProvider.dataCollectionStatus) {
                 is Error -> {
                     add(
                         OfferItems.InsurelyCard.FailedToRetrieve(
-                            id = dataCollectionStatus.referenceUuid,
-                            insuranceProviderDisplayName = insuranceProviderDisplayName
+                            id = externalProvider.dataCollectionStatus.referenceUuid,
+                            insuranceProviderDisplayName = externalProvider.insuranceProviderDisplayName
                         )
                     )
                 }
                 is Content -> {
                     add(
                         mapContentToInsurelyCard(
-                            dataCollectionStatus,
-                            dataCollectionResult,
-                            offerModel,
-                            insuranceProviderDisplayName,
+                            externalProvider.dataCollectionStatus,
+                            externalProvider.dataCollectionResult,
+                            bundle.cost.finalPremium,
+                            externalProvider.insuranceProviderDisplayName,
                         )
                     )
                 }
@@ -105,7 +98,7 @@ object TopOfferItemsBuilder {
     private fun mapContentToInsurelyCard(
         dataCollectionStatusContent: Content,
         dataCollectionResult: DataCollectionResult?,
-        offerModel: OfferModel,
+        ourPremium: MonetaryAmount,
         insuranceProviderDisplayName: String?,
     ): OfferItems.InsurelyCard {
         val referenceUuid = dataCollectionStatusContent.referenceUuid
@@ -130,7 +123,6 @@ object TopOfferItemsBuilder {
                                 if (name == null || finalPremium == null) return@mapNotNull null
                                 OfferItems.InsurelyCard.Retrieved.CurrentInsurance(name, finalPremium)
                             }
-                        val ourPremium = offerModel.quoteBundle.cost.finalPremium
                         val otherPremium = collectionResult
                             .mapNotNull { it.netPremium }
                             .reduceOrNull(MonetaryAmount::add)
@@ -146,15 +138,11 @@ object TopOfferItemsBuilder {
             }
         }
     }
-}
 
-@OptIn(ExperimentalStdlibApi::class)
-object BottomOfferItemsBuilder {
     fun createBottomOfferItems(
-        offerData: OfferModel,
+        bundleVariant: QuoteBundleVariant
     ): List<OfferItems> = buildList {
-        val bundle = offerData.quoteBundle
-
+        val bundle = bundleVariant.bundle
         if (bundle.hasCurrentInsurer()) {
             add(OfferItems.Subheading.Switcher(bundle.numberOfCurrentInsurers()))
             addAll(currentInsuranceSwitchableStates(bundle.quotes))
@@ -162,13 +150,9 @@ object BottomOfferItemsBuilder {
         if (bundle.frequentlyAskedQuestions.isNotEmpty() &&
             bundle.viewConfiguration.showFAQ
         ) {
-            add(
-                OfferItems.FAQ(
-                    bundle.frequentlyAskedQuestions.mapNotNull { FAQItem.from(it) }
-                )
-            )
+            add(OfferItems.FAQ(bundle.frequentlyAskedQuestions.mapNotNull { FAQItem.from(it) }))
         }
-        add(OfferItems.Footer(offerData.checkoutLabel))
+        add(OfferItems.Footer(bundleVariant.bundle.checkoutLabel))
     }
 
     private fun currentInsuranceSwitchableStates(

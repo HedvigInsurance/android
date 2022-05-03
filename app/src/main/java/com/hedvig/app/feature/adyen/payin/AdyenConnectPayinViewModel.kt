@@ -24,8 +24,7 @@ class AdyenConnectPayinViewModelImpl(
         hAnalytics.screenViewConnectPaymentAdyen()
         viewModelScope.launch {
             val response = runCatching {
-                adyenRepository
-                    .paymentMethods()
+                adyenRepository.paymentMethods()
             }
 
             if (response.isFailure) {
