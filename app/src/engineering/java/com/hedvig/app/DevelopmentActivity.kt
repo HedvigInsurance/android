@@ -44,7 +44,6 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
                 listOf(
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Header,
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Embark Story Tester") {
-                        loadKoinModules(embarkStoryTesterModule)
                         startActivity(Intent(this, EmbarkStoryTesterActivity::class.java))
                     },
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Tracking") {

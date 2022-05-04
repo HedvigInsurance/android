@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.embark
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
@@ -25,45 +26,57 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import arrow.core.Either
+import com.apollographql.apollo.ApolloClient
 import com.google.accompanist.insets.systemBarsPadding
+import com.hedvig.android.owldroid.graphql.ExchangeTokenMutation
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.onboarding.BundlesResult
 import com.hedvig.app.feature.onboarding.GetBundlesUseCase
+import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.ui.compose.theme.HedvigTheme
+import com.hedvig.app.util.apollo.safeQuery
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.context.loadKoinModules
+import org.koin.core.context.unloadKoinModules
 import org.koin.dsl.module
 
 class EmbarkStoryTesterActivity : AppCompatActivity() {
 
     val model: EmbarkStoryTesterViewModel by viewModel()
 
-    override fun onResume() {
-        super.onResume()
-        model.onStorySelected(null)
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        loadKoinModules(embarkStoryTesterModule)
 
         setContent {
             val viewState by model.viewState.collectAsState()
 
-            viewState.selectedStoryName?.let {
-                startActivity(EmbarkActivity.newInstance(this, it, it))
+            LaunchedEffect(viewState.selectedStoryName) {
+                val selectedStoryName = viewState.selectedStoryName ?: return@LaunchedEffect
+                model.onStorySelected(null)
+                startActivity(
+                    EmbarkActivity.newInstance(
+                        this@EmbarkStoryTesterActivity,
+                        selectedStoryName,
+                        selectedStoryName,
+                    )
+                )
             }
 
             HedvigTheme {
@@ -84,7 +97,7 @@ class EmbarkStoryTesterActivity : AppCompatActivity() {
                         elevation = 0.dp,
                         modifier = Modifier.systemBarsPadding(top = true)
                     )
-                    Text(text = "Optional auth token")
+                    Text(text = "Optional auth token or payments url")
                     TextField(value = viewState.authTokenInput ?: "", onValueChange = {
                         model.onAuthToken(it)
                     })
@@ -96,6 +109,15 @@ class EmbarkStoryTesterActivity : AppCompatActivity() {
                         }
                     ) {
                         Text("Set token")
+                    }
+                    Button(
+                        onClick = {
+                            viewState.authTokenInput?.let {
+                                model.generateAuthTokenFromPaymentsLink(it)
+                            }
+                        }
+                    ) {
+                        Text("Generate and set token from payments url")
                     }
                     Text(text = "Custom Story")
                     TextField(value = viewState.storyNameInput ?: "", onValueChange = {
@@ -188,20 +210,26 @@ class EmbarkStoryTesterActivity : AppCompatActivity() {
             }
         }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unloadKoinModules(embarkStoryTesterModule)
+    }
 }
 
 val embarkStoryTesterModule = module {
-    viewModel { EmbarkStoryTesterViewModel(get(), get(), get()) }
+    viewModel { EmbarkStoryTesterViewModel(get(), get(), get(), get(), get()) }
 }
 
 class EmbarkStoryTesterViewModel(
     private val getBundlesUseCase: GetBundlesUseCase,
     private val marketManager: MarketManager,
     private val authenticationTokenService: AuthenticationTokenService,
+    private val apolloClient: ApolloClient,
+    private val context: Context,
 ) : ViewModel() {
 
     data class ViewState(
-        val loading: Boolean = true,
         val bundles: List<BundlesResult.Success.Bundle> = emptyList(),
         val selectedStoryName: String? = null,
         val storyNameInput: String? = null,
@@ -236,6 +264,8 @@ class EmbarkStoryTesterViewModel(
 
     fun onMarketClick(market: Market) {
         marketManager.market = market
+        val language = Language.getAvailableLanguages(market).first()
+        Language.persist(context, language)
         viewModelScope.launch {
             fetchEmbarkStories()
         }
@@ -255,5 +285,34 @@ class EmbarkStoryTesterViewModel(
 
     fun setAuthToken(authToken: String) {
         authenticationTokenService.authenticationToken = authToken
+    }
+
+    fun generateAuthTokenFromPaymentsLink(paymentsUrl: String) {
+        val exchangeToken = paymentsUrl.split("=")[1]
+
+        viewModelScope.launch {
+            if (authenticationTokenService.authenticationToken == null) {
+                authenticationTokenService.authenticationToken = "123"
+            }
+            when (
+                val result = apolloClient
+                    .mutate(ExchangeTokenMutation(exchangeToken))
+                    .safeQuery()
+                    .toEither()
+            ) {
+                is Either.Left -> _viewState.update {
+                    it.copy(errorMessage = result.value.message)
+                }
+                is Either.Right -> {
+                    val newToken = result.value.exchangeToken.asExchangeTokenSuccessResponse?.token
+                    if (newToken == null) {
+                        _viewState.update {
+                            it.copy(errorMessage = "Did not receive token")
+                        }
+                    }
+                    authenticationTokenService.authenticationToken = newToken
+                }
+            }
+        }
     }
 }
