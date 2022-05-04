@@ -15,6 +15,10 @@ class HAnalyticsImpl(
         return experiment
     }
 
+    override fun identify() {
+        sendHAnalyticsEventUseCase.identify()
+    }
+
     override suspend fun invalidateExperiments() {
         HAnalyticsExperimentManager.invalidateExperiments()
     }

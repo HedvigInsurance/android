@@ -13,4 +13,8 @@ class DebugLogTrackerSink : HAnalyticsSink {
     override fun send(event: HAnalyticsEvent) {
         d { "Track ${event.name}, properties: ${event.properties.toJsonObject().toString(2)}" }
     }
+
+    override fun identify() {
+        d { "Identify" }
+    }
 }
