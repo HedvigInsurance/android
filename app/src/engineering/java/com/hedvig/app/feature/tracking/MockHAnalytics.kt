@@ -10,6 +10,8 @@ class MockHAnalytics : HAnalytics() {
         "mock",
     )
 
+    override fun identify() = Unit
+
     override suspend fun invalidateExperiments() = Unit
 
     override fun send(event: HAnalyticsEvent) = Unit

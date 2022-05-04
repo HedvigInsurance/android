@@ -13,4 +13,10 @@ class NetworkHAnalyticsSink(
             hAnalyticsService.sendEvent(event)
         }
     }
+
+    override fun identify() {
+        CoroutineScope(Dispatchers.IO).launch {
+            hAnalyticsService.identify()
+        }
+    }
 }

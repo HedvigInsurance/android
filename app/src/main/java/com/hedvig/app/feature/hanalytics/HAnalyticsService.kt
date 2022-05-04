@@ -25,6 +25,7 @@ import java.util.UUID
 interface HAnalyticsService {
     suspend fun sendEvent(event: HAnalyticsEvent)
     suspend fun getExperiments(): List<Experiment>?
+    suspend fun identify()
 }
 
 class HAnalyticsServiceImpl(
@@ -73,6 +74,24 @@ class HAnalyticsServiceImpl(
                 Json.decodeFromString<List<Experiment>>(responseString)
             } catch (ignored: IOException) {
                 null
+            }
+        }
+    }
+
+    @Suppress("BlockingMethodInNonBlockingContext")
+    override suspend fun identify() {
+        val requestJsonObject = jsonObjectOf("trackingId" to deviceId())
+
+        val request = Request.Builder()
+            .url("$baseUrl/identify")
+            .header("Content-Type", "application/json")
+            .post(requestJsonObject.toString().toRequestBody())
+            .build()
+
+        withContext(Dispatchers.IO) {
+            try {
+                okHttpClient.newCall(request).await()
+            } catch (ignored: IOException) {
             }
         }
     }

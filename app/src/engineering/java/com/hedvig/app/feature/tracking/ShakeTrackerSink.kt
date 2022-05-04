@@ -9,4 +9,6 @@ class ShakeTrackerSink : HAnalyticsSink {
     override fun send(event: HAnalyticsEvent) {
         Shake.log(LogLevel.INFO, "Track: ${event.name}, properties: ${event.properties}")
     }
+
+    override fun identify() {}
 }

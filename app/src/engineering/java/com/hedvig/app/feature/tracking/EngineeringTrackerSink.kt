@@ -20,6 +20,12 @@ class EngineeringTrackerSink : HAnalyticsSink {
         }
     }
 
+    override fun identify() {
+        _tracks.update {
+            listOf(TrackEvent("identify", null, LocalDateTime.now())) + it
+        }
+    }
+
     fun clear() {
         _tracks.update { listOf() }
     }
