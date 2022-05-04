@@ -24,6 +24,7 @@ import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.featureflags.FeatureManager
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -86,7 +87,7 @@ class ImpersonationReceiverActivity : AppCompatActivity() {
     companion object {
         val module = module {
             viewModel { params ->
-                ImpersonationReceiverViewModel(params.get(), get(), get(), get())
+                ImpersonationReceiverViewModel(params.get(), get(), get(), get(), get())
             }
         }
     }
@@ -97,6 +98,7 @@ class ImpersonationReceiverViewModel(
     apolloClient: ApolloClient,
     authenticationTokenService: AuthenticationTokenService,
     loginStatusService: LoginStatusService,
+    featureManager: FeatureManager,
 ) : ViewModel() {
     sealed class ViewState {
         object Loading : ViewState()
@@ -134,6 +136,7 @@ class ImpersonationReceiverViewModel(
                     }
                     authenticationTokenService.authenticationToken = newToken
                     loginStatusService.isLoggedIn = true
+                    featureManager.invalidateExperiments()
                     _state.value = ViewState.Success
                     delay(500.milliseconds)
                     _events.send(Event)
