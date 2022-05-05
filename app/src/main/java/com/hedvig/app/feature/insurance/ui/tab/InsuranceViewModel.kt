@@ -2,6 +2,7 @@ package com.hedvig.app.feature.insurance.ui.tab
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import arrow.core.Either
 import com.hedvig.app.feature.insurance.data.GetContractsUseCase
 import com.hedvig.app.feature.insurance.ui.InsuranceModel
 import com.hedvig.app.service.badge.CrossSellNotificationBadgeService
@@ -33,17 +34,17 @@ class InsuranceViewModelImpl(
         viewModelScope.launch {
             _viewState.value = ViewState.Loading
             when (val result = getContractsUseCase.invoke()) {
-                is GetContractsUseCase.InsuranceResult.Error -> {
-                    result.message?.let { e { it } }
+                is Either.Left -> {
+                    result.value.message?.let { e { it } }
                     _viewState.value = ViewState.Error
                 }
-                is GetContractsUseCase.InsuranceResult.Insurance -> {
+                is Either.Right -> {
                     val showNotificationBadge = crossSellNotificationBadgeService
                         .getUnseenCrossSells(CrossSellNotificationBadgeService.CrossSellBadgeType.InsuranceFragmentCard)
                         .first()
                         .isNotEmpty()
                     val items = items(
-                        data = result.insurance,
+                        data = result.value,
                         showCrossSellNotificationBadge = showNotificationBadge
                     )
                     _viewState.value = ViewState.Success(items)
