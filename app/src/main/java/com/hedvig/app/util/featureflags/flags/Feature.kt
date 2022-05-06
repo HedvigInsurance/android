@@ -3,8 +3,8 @@ package com.hedvig.app.util.featureflags.flags
 enum class Feature(
     @Suppress("unused") val explanation: String, // Used to easier get a context of what it's for.
 ) {
-    CONNECT_PAYMENT_AT_SIGN(
-        "Connecting payment at sign, to avoid missing payments. Show payment step in PostOnboarding"
+    CONNECT_PAYMENT_POST_ONBOARDING(
+        "Connecting payment post onboarding. Having this OFF means that it must happen in the offer page"
     ),
     EXTERNAL_DATA_COLLECTION("Enables external data collection for offers, from eg. Insurely"),
     FRANCE_MARKET("Used to select french market in app"),
