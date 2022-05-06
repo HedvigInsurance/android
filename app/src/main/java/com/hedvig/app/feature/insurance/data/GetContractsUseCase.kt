@@ -17,9 +17,6 @@ class GetContractsUseCase(
         return either {
             val insuranceQueryData = apolloClient
                 .query(InsuranceQuery(localeManager.defaultLocale()))
-                .toBuilder()
-                .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
-                .build()
                 .safeQuery()
                 .toEither(::ErrorMessage)
                 .bind()

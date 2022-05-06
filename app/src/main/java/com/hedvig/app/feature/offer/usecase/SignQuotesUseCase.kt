@@ -7,12 +7,13 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.SignQuoteCartMutation
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ErrorMessage
+import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.apollo.safeQuery
 
 class SignQuotesUseCase(
     private val apolloClient: ApolloClient,
+    private val cacheManager: CacheManager,
 ) {
-
     object Success
 
     suspend fun signQuotesAndClearCache(
@@ -25,7 +26,7 @@ class SignQuotesUseCase(
         val errorMessage = result.quoteCartStartCheckout.asBasicError?.message
 
         ensure(errorMessage == null) { ErrorMessage(errorMessage) }
-
+        cacheManager.clearCache()
         Success
     }
 
