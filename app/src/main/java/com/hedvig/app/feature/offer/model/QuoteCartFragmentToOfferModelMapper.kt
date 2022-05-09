@@ -10,7 +10,7 @@ class QuoteCartFragmentToOfferModelMapper(
     private val featureManager: FeatureManager,
 ) : Mapper<QuoteCartFragment, OfferModel> {
     override suspend fun map(from: QuoteCartFragment): OfferModel {
-        val connectPaymentAtSign = featureManager.isFeatureEnabled(Feature.CONNECT_PAYMENT_AT_SIGN)
+        val connectPaymentPostOnboarding = featureManager.isFeatureEnabled(Feature.CONNECT_PAYMENT_POST_ONBOARDING)
         return with(from) {
             OfferModel(
                 id = QuoteCartId(id),
@@ -20,7 +20,7 @@ class QuoteCartFragmentToOfferModelMapper(
                 campaign = campaign?.toCampaign(),
                 checkout = checkout?.toCheckout(),
                 paymentMethodsApiResponse = run {
-                    if (connectPaymentAtSign.not()) return@run null
+                    if (connectPaymentPostOnboarding) return@run null
                     paymentConnection?.toPaymentConnection()?.toPaymentApiResponseOrNull()
                 },
             )

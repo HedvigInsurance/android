@@ -10,7 +10,7 @@ class DevFeatureFlagProvider(
     override suspend fun isFeatureEnabled(feature: Feature): Boolean {
         val isQasaMember = true
         return when (feature) {
-            Feature.CONNECT_PAYMENT_AT_SIGN -> marketManager.market == Market.NO || marketManager.market == Market.DK
+            Feature.CONNECT_PAYMENT_POST_ONBOARDING -> marketManager.market == Market.SE
             Feature.COMMON_CLAIMS -> !isQasaMember
             Feature.CONNECT_PAYIN_REMINDER -> !isQasaMember
             Feature.EXTERNAL_DATA_COLLECTION -> marketManager.market == Market.SE
