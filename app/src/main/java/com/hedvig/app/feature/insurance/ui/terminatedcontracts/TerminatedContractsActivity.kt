@@ -48,7 +48,7 @@ class TerminatedContractsActivity : BaseActivity(R.layout.terminated_contracts_a
             toolbar.applyStatusBarInsets()
             recycler.applyNavigationBarInsets()
             toolbar.setNavigationOnClickListener { onBackPressed() }
-            val adapter = InsuranceAdapter(marketManager, model::load)
+            val adapter = InsuranceAdapter(marketManager, model::load, {})
             recycler.adapter = adapter
             model
                 .viewState

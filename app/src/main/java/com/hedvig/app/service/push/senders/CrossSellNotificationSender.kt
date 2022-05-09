@@ -10,7 +10,6 @@ import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.app.R
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.feature.crossselling.ui.detail.CrossSellDetailActivity
-import com.hedvig.app.feature.crossselling.ui.detail.CrossSellNotificationMetadata
 import com.hedvig.app.feature.crossselling.usecase.GetCrossSellsUseCase
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
@@ -42,13 +41,9 @@ class CrossSellNotificationSender(
 
         CoroutineScope(Dispatchers.IO).launch {
             val crossSell = getCrossSell(type)
-            val metadata = CrossSellNotificationMetadata(
-                title = title,
-                body = body,
-            )
 
             val intent = if (crossSell != null) {
-                createCrossSellIntent(context, crossSell, metadata)
+                createCrossSellIntent(context, crossSell)
             } else {
                 createInsuranceTabIntent(context)
             }
@@ -68,13 +63,11 @@ class CrossSellNotificationSender(
     private fun createCrossSellIntent(
         context: Context,
         crossSell: CrossSellData,
-        notificationMetadata: CrossSellNotificationMetadata,
     ): PendingIntent? {
         val builder = TaskStackBuilder.create(context)
         val intent = CrossSellDetailActivity.newInstance(
             context = context,
             crossSell = crossSell,
-            notificationMetadata = notificationMetadata,
         )
         builder.addNextIntentWithParentStack(intent)
         builder.addNextIntentWithParentStack(
