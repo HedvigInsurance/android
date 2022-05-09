@@ -74,18 +74,23 @@ class InsuranceViewModel(
             }
             is CrossSellData.Action.Embark -> {
                 viewModelScope.launch {
-                    createQuoteCartUseCase.invoke().tap { quoteCartId ->
-                        _viewState.update { viewState ->
-                            when (viewState) {
-                                ViewState.Error, ViewState.Loading -> viewState
-                                is ViewState.Success -> viewState.copy(
-                                    action = action.copy(
-                                        embarkStoryId = appendQuoteCartId(action.embarkStoryId, quoteCartId.id)
+                    createQuoteCartUseCase.invoke().fold(
+                        ifLeft = {
+                            _viewState.update { ViewState.Error }
+                        },
+                        ifRight = { quoteCartId ->
+                            _viewState.update { viewState ->
+                                when (viewState) {
+                                    ViewState.Error, ViewState.Loading -> viewState
+                                    is ViewState.Success -> viewState.copy(
+                                        action = action.copy(
+                                            embarkStoryId = appendQuoteCartId(action.embarkStoryId, quoteCartId.id)
+                                        )
                                     )
-                                )
+                                }
                             }
                         }
-                    }
+                    )
                 }
             }
         }
