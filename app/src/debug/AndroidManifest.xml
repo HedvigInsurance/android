@@ -105,6 +105,9 @@
                     android:host="impersonate" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".feature.embark.EmbarkStoryTesterActivity" />
+
         <meta-data
             android:name="com.mixpanel.android.MPConfig.DisableEmulatorBindingUI"
             android:value="true" />
