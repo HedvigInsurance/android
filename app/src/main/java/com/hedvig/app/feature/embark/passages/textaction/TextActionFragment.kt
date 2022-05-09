@@ -33,11 +33,9 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
-import java.time.Clock
 import java.time.LocalDate
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -45,13 +43,12 @@ import kotlin.time.Duration.Companion.milliseconds
  * Used for Embark actions TextAction and TextActionSet
  */
 class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
-    private val model: EmbarkViewModel by sharedViewModel()
     private val data: TextActionParameter
         get() = requireArguments().getParcelable(DATA)
             ?: throw Error("Programmer error: DATA is null in ${this.javaClass.name}")
-    private val textActionSetViewModel: TextActionViewModel by viewModel { parametersOf(data) }
+    private val textActionViewModel: TextActionViewModel by viewModel { parametersOf(data) }
+    private val embarkViewModel: EmbarkViewModel by sharedViewModel()
     private val binding by viewBinding(FragmentTextActionSetBinding::bind)
-    private val clock: Clock by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -78,12 +75,12 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
             messages.adapter = MessageAdapter(data.messages)
 
             textActionSubmit.text = data.submitLabel
-            textActionSetViewModel.isValid.observe(viewLifecycleOwner) { textActionSubmit.isEnabled = it }
+            textActionViewModel.isValid.observe(viewLifecycleOwner) { textActionSubmit.isEnabled = it }
 
             textActionSubmit
                 .hapticClicks()
                 .mapLatest { saveAndAnimate(data) }
-                .onEach { model.submitAction(data.link) }
+                .onEach { embarkViewModel.submitAction(data.link) }
                 .launchIn(viewLifecycleScope)
 
             // We need to wait for all input views to be laid out before starting enter transition.
@@ -101,21 +98,21 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
             delayDuration = KEYBOARD_HIDE_DELAY_DURATION
         )
 
-        textActionSetViewModel.inputs.value?.let { inputs ->
+        textActionViewModel.inputs.value?.let { inputs ->
             data.keys.zip(inputs.values).forEachIndexed { index, (key, input) ->
                 key?.let {
                     val mask = data.masks.getOrNull(index)
                     val unmasked = mask?.unMask(input) ?: input
-                    model.putInStore(key, unmasked)
+                    embarkViewModel.putInStore(key, unmasked)
                     mask?.derivedValues(unmasked, key, LocalDate.now())?.forEach { (key, value) ->
-                        model.putInStore(key, value)
+                        embarkViewModel.putInStore(key, value)
                     }
                 }
             }
             val allInput = inputs.values.joinToString(" ")
-            model.putInStore("${data.passageName}Result", allInput)
+            embarkViewModel.putInStore("${data.passageName}Result", allInput)
             val response =
-                model.preProcessResponse(data.passageName) ?: Response.SingleResponse(allInput)
+                embarkViewModel.preProcessResponse(data.passageName) ?: Response.SingleResponse(allInput)
             animateResponse(binding.responseContainer, response)
         }
         delay(PASSAGE_ANIMATION_DELAY_DURATION)
@@ -126,6 +123,7 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
 
         inputView.textField.isExpandedHintEnabled = false
         data.hints.getOrNull(index)?.let { inputView.textField.hint = it }
+        data.subtitles.getOrNull(index)?.let { inputView.textField.hint = it }
         data.placeholders.getOrNull(index)?.let { inputView.textField.placeholderText = it }
         val mask = data.masks.getOrNull(index)
         mask?.let {
@@ -137,18 +135,18 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
         inputView.input.onChange { text ->
             if (mask == null) {
                 if (text.isBlank()) {
-                    textActionSetViewModel.updateIsValid(index, false)
+                    textActionViewModel.updateIsValid(index, false)
                 } else {
-                    textActionSetViewModel.updateIsValid(index, true)
+                    textActionViewModel.updateIsValid(index, true)
                 }
             } else {
                 if (text.isNotBlank() && mask.isValid(text)) {
-                    textActionSetViewModel.updateIsValid(index, true)
+                    textActionViewModel.updateIsValid(index, true)
                 } else {
-                    textActionSetViewModel.updateIsValid(index, false)
+                    textActionViewModel.updateIsValid(index, false)
                 }
             }
-            textActionSetViewModel.setInputValue(index, text)
+            textActionViewModel.setInputValue(index, text)
         }
 
         val imeOptions = if (index < data.keys.size - 1) {
@@ -161,16 +159,16 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
 
         if (imeOptions == EditorInfo.IME_ACTION_DONE) {
             inputView.input.onImeAction(imeActionId = imeOptions) {
-                if (textActionSetViewModel.isValid.value == true) {
+                if (textActionViewModel.isValid.value == true) {
                     viewLifecycleScope.launch {
                         saveAndAnimate(data)
-                        model.submitAction(data.link)
+                        embarkViewModel.submitAction(data.link)
                     }
                 }
             }
         }
 
-        key?.let(model::getPrefillFromStore)
+        key?.let(embarkViewModel::getPrefillFromStore)
             ?.let { mask?.mask(it) ?: it }
             ?.let(inputView.input::setText)
         inputView.root

@@ -680,12 +680,12 @@ val useCaseModule = module {
     single { StartDanishAuthUseCase(get()) }
     single { StartNorwegianAuthUseCase(get()) }
     single { SubscribeToAuthStatusUseCase(get()) }
-    single { SignQuotesUseCase(get()) }
+    single { SignQuotesUseCase(get(), get()) }
     single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get()) }
     single { GetContractsUseCase(get(), get()) }
     single { GetCrossSellsContractTypesUseCase(get(), get()) }
     single { GraphQLQueryUseCase(get()) }
-    single { GetCrossSellsUseCase(get(), get(), get()) }
+    single { GetCrossSellsUseCase(get(), get()) }
     single { StartDataCollectionUseCase(get(), get()) }
     single { GetInsuranceProvidersUseCase(get(), get()) }
     single { CreateOtpAttemptUseCase(get()) }

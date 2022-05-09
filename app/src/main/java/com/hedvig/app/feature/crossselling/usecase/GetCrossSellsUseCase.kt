@@ -6,13 +6,11 @@ import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
-import com.hedvig.app.util.featureflags.FeatureManager
 import e
 
 class GetCrossSellsUseCase(
     private val apolloClient: ApolloClient,
     private val localeManager: LocaleManager,
-    private val featureManager: FeatureManager,
 ) {
     suspend operator fun invoke() = when (
         val result = apolloClient

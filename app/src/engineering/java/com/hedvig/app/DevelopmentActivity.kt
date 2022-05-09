@@ -10,6 +10,8 @@ import com.hedvig.app.feature.adyen.AdyenMockActivity
 import com.hedvig.app.feature.changeaddress.ChangeAddressMockActivity
 import com.hedvig.app.feature.chat.ChatMockActivity
 import com.hedvig.app.feature.embark.EmbarkMockActivity
+import com.hedvig.app.feature.embark.EmbarkStoryTesterActivity
+import com.hedvig.app.feature.embark.embarkStoryTesterModule
 import com.hedvig.app.feature.genericauth.GenericAuthMockActivity
 import com.hedvig.app.feature.home.HomeMockActivity
 import com.hedvig.app.feature.insurance.InsuranceMockActivity
@@ -23,6 +25,7 @@ import com.hedvig.app.feature.trustly.TrustlyMockActivity
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.viewgallery.ViewGalleryActivity
 import org.koin.android.ext.android.inject
+import org.koin.core.context.loadKoinModules
 
 class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
     private val binding by viewBinding(ActivityDevelopmentBinding::bind)
@@ -35,6 +38,9 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
             it.submitList(
                 listOf(
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Header,
+                    DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Embark Story Tester") {
+                        startActivity(Intent(this, EmbarkStoryTesterActivity::class.java))
+                    },
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Tracking") {
                         startActivity(TrackingLogActivity.newInstance(this))
                     },

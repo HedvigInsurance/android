@@ -41,7 +41,7 @@ fun VariantButton(
     Card(
         onClick = { onClick(id) },
         border = if (selected) {
-            BorderStroke(3.dp, hedvigBlack)
+            BorderStroke(2.dp, hedvigBlack)
         } else {
             BorderStroke(1.dp, hedvigBlack12percent)
         },

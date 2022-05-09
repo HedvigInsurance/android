@@ -20,8 +20,8 @@ class ValueStoreRule(
         unloadKoinModules(valueStoreModule)
         loadKoinModules(module { single { valueStore } })
         every { valueStore.get(key) } returns value
-        every { valueStore.withCommittedVersion(any()) } answers {
-            firstArg<ValueStore.() -> Unit>().invoke(valueStore)
+        every { valueStore.withCommittedVersion<Any>(any()) } answers {
+            firstArg<ValueStore.() -> Any>().invoke(valueStore)
         }
     }
 

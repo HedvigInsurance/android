@@ -12,18 +12,25 @@ class GetBundlesUseCase(
     private val localeManager: LocaleManager,
 ) {
 
-    suspend operator fun invoke(): BundlesResult {
+    suspend operator fun invoke(
+        filterOnType: EmbarkStoryType? = EmbarkStoryType.APP_ONBOARDING_QUOTE_CART
+    ): BundlesResult {
         val locale = localeManager.defaultLocale().rawValue
         val choosePlanQuery = ChoosePlanQuery(locale)
         return when (val result = apolloClient.query(choosePlanQuery).safeQuery()) {
             is QueryResult.Error -> BundlesResult.Error
-            is QueryResult.Success -> result.data.mapToSuccess(EmbarkStoryType.APP_ONBOARDING_QUOTE_CART)
+            is QueryResult.Success -> result.data.mapToSuccess(filterOnType)
         }
     }
 }
 
-fun ChoosePlanQuery.Data.mapToSuccess(storyType: EmbarkStoryType): BundlesResult.Success {
-    val appStories = embarkStories.filter { it.type == storyType }
+fun ChoosePlanQuery.Data.mapToSuccess(storyType: EmbarkStoryType?): BundlesResult.Success {
+    val appStories = if (storyType != null) {
+        embarkStories.filter { it.type == storyType }
+    } else {
+        embarkStories
+    }
+
     val bundles = appStories.map {
         BundlesResult.Success.Bundle(
             storyName = it.name,

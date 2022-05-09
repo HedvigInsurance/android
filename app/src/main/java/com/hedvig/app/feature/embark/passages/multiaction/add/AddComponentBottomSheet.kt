@@ -107,7 +107,7 @@ class AddComponentBottomSheet : BottomSheetDialogFragment() {
             binding.componentContainer,
             false
         ).apply {
-            numberLayout.hint = number.label
+            numberLayout.hint = number.unit
             numberLayout.placeholderText = number.placeholder
 
             numberInput.onImeAction {

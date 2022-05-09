@@ -208,8 +208,11 @@ abstract class EmbarkViewModel(
 
     private fun handleGraphQLQuery(graphQLQuery: ApiFragment.AsEmbarkApiGraphQLQuery) {
         viewModelScope.launch {
-            val variables = graphQLQuery.getVariables(valueStore)
-            val fileVariables = graphQLQuery.getFileVariables(valueStore)
+            val (variables, fileVariables) = valueStore.withCommittedVersion {
+                val variables = graphQLQuery.getVariables(valueStore)
+                val fileVariables = graphQLQuery.getFileVariables(valueStore)
+                variables to fileVariables
+            }
             val result = graphQLQueryUseCase.executeQuery(graphQLQuery, variables, fileVariables)
             handleQueryResult(result)
         }
@@ -217,8 +220,11 @@ abstract class EmbarkViewModel(
 
     private fun handleGraphQLMutation(graphQLMutation: ApiFragment.AsEmbarkApiGraphQLMutation) {
         viewModelScope.launch {
-            val variables = graphQLMutation.getVariables(valueStore)
-            val fileVariables = graphQLMutation.getFileVariables(valueStore)
+            val (variables, fileVariables) = valueStore.withCommittedVersion {
+                val variables = graphQLMutation.getVariables(this)
+                val fileVariables = graphQLMutation.getFileVariables(this)
+                variables to fileVariables
+            }
             val result = graphQLQueryUseCase.executeMutation(graphQLMutation, variables, fileVariables)
             handleQueryResult(result)
         }
@@ -335,6 +341,15 @@ abstract class EmbarkViewModel(
     }
 
     fun preProcessResponse(passageName: String): Response? {
+        return valueStore.withCommittedVersion {
+            preProcessResponse(passageName, this)
+        }
+    }
+
+    private fun preProcessResponse(
+        passageName: String,
+        valueStore: ValueStore = this.valueStore,
+    ): Response? {
         val response = storyData
             .embarkStory
             ?.passages
@@ -343,7 +358,7 @@ abstract class EmbarkViewModel(
             ?: return null
 
         response.fragments.messageFragment?.let { message ->
-            preProcessMessage(message)?.let { return Response.SingleResponse(it.text) }
+            preProcessMessage(message, valueStore)?.let { return Response.SingleResponse(it.text) }
         }
 
         response.fragments.responseExpressionFragment?.let { exp ->
@@ -355,7 +370,8 @@ abstract class EmbarkViewModel(
                             fragments = MessageFragment.Expression.Fragments(it.fragments.expressionFragment)
                         )
                     }
-                )
+                ),
+                valueStore,
             )?.let { return Response.SingleResponse(it.text) }
         }
 
@@ -369,11 +385,12 @@ abstract class EmbarkViewModel(
                             fragments = MessageFragment.Expression.Fragments(it.fragments.expressionFragment)
                         )
                     }
-                )
+                ),
+                valueStore,
             )?.text
 
             val items = groupedResponse.items.mapNotNull { item ->
-                preProcessMessage(item.fragments.messageFragment)?.text
+                preProcessMessage(item.fragments.messageFragment, valueStore)?.text
             }.toMutableList()
 
             groupedResponse.each?.let { each ->
@@ -403,7 +420,7 @@ abstract class EmbarkViewModel(
         return passage.copy(
             messages = passage.messages.mapNotNull { message ->
                 val messageFragment =
-                    preProcessMessage(message.fragments.messageFragment) ?: return@mapNotNull null
+                    preProcessMessage(message.fragments.messageFragment, valueStore) ?: return@mapNotNull null
                 message.copy(
                     fragments = EmbarkStoryQuery.Message.Fragments(messageFragment)
                 )
@@ -430,7 +447,7 @@ abstract class EmbarkViewModel(
 
     private fun preProcessMessage(
         message: MessageFragment,
-        valueStoreView: ValueStoreView = valueStore,
+        valueStoreView: ValueStoreView,
     ): MessageFragment? {
         if (message.expressions.isEmpty()) {
             return message.copy(
