@@ -10,13 +10,13 @@ import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.apollo.safeQuery
 
-class SignQuotesUseCase(
+class StartCheckoutUseCase(
     private val apolloClient: ApolloClient,
     private val cacheManager: CacheManager,
 ) {
     object Success
 
-    suspend fun signQuotesAndClearCache(
+    suspend fun startCheckoutAndClearCache(
         quoteCartId: QuoteCartId?,
         quoteIds: List<String>
     ): Either<ErrorMessage, Success> = either {
