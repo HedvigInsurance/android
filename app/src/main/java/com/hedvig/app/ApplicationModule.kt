@@ -63,7 +63,6 @@ import com.hedvig.app.feature.connectpayin.ConnectPaymentViewModel
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.feature.crossselling.ui.detail.CrossSellDetailViewModel
 import com.hedvig.app.feature.crossselling.ui.detail.CrossSellFaqViewModel
-import com.hedvig.app.feature.crossselling.ui.detail.CrossSellNotificationMetadata
 import com.hedvig.app.feature.crossselling.usecase.GetCrossSellsContractTypesUseCase
 import com.hedvig.app.feature.crossselling.usecase.GetCrossSellsUseCase
 import com.hedvig.app.feature.embark.EmbarkRepository
@@ -111,7 +110,6 @@ import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModel
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailViewModelImpl
 import com.hedvig.app.feature.insurance.ui.detail.GetContractDetailsUseCase
 import com.hedvig.app.feature.insurance.ui.tab.InsuranceViewModel
-import com.hedvig.app.feature.insurance.ui.tab.InsuranceViewModelImpl
 import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsViewModel
 import com.hedvig.app.feature.keygear.KeyGearValuationViewModel
 import com.hedvig.app.feature.keygear.KeyGearValuationViewModelImpl
@@ -153,7 +151,6 @@ import com.hedvig.app.feature.offer.usecase.datacollectionresult.GetDataCollecti
 import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToDataCollectionStatusUseCase
 import com.hedvig.app.feature.offer.usecase.providerstatus.GetProviderDisplayNameUseCase
 import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
-import com.hedvig.app.feature.onboarding.ChoosePlanViewModelImpl
 import com.hedvig.app.feature.onboarding.GetBundlesUseCase
 import com.hedvig.app.feature.onboarding.GetMemberIdUseCase
 import com.hedvig.app.feature.onboarding.MemberIdViewModel
@@ -397,8 +394,8 @@ val viewModelModule = module {
     }
     viewModel { AudioRecorderViewModel(get()) }
     viewModel { CrossSellFaqViewModel(get()) }
-    viewModel { (notificationMetadata: CrossSellNotificationMetadata?, crossSell: CrossSellData) ->
-        CrossSellDetailViewModel(notificationMetadata, crossSell, get())
+    viewModel { (crossSell: CrossSellData) ->
+        CrossSellDetailViewModel(crossSell, get(), get())
     }
     viewModel { GenericAuthViewModel(get()) }
     viewModel { (otpId: String, credential: String) -> OtpInputViewModel(otpId, credential, get(), get(), get()) }
@@ -416,7 +413,7 @@ val viewModelModule = module {
 }
 
 val choosePlanModule = module {
-    viewModel<ChoosePlanViewModel> { ChoosePlanViewModelImpl(get(), get()) }
+    viewModel { ChoosePlanViewModel(get(), get(), get()) }
 }
 
 val onboardingModule = module {
@@ -436,7 +433,7 @@ val whatsNewModule = module {
 }
 
 val insuranceModule = module {
-    viewModel<InsuranceViewModel> { InsuranceViewModelImpl(get(), get()) }
+    viewModel { InsuranceViewModel(get(), get(), get()) }
     viewModel<ContractDetailViewModel> { (contractId: String) ->
         ContractDetailViewModelImpl(contractId, get(), get(), get())
     }
@@ -652,7 +649,7 @@ val localeManagerModule = module {
 
 val useCaseModule = module {
     single { GetUpcomingAgreementUseCase(get(), get()) }
-    single { GetAddressChangeStoryIdUseCase(get(), get()) }
+    single { GetAddressChangeStoryIdUseCase(get(), get(), get()) }
     single { StartDanishAuthUseCase(get()) }
     single { StartNorwegianAuthUseCase(get()) }
     single { SubscribeToAuthStatusUseCase(get()) }

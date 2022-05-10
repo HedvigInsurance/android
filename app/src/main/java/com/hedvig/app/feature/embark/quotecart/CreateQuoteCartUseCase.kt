@@ -11,19 +11,19 @@ import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.safeQuery
 
 class CreateQuoteCartUseCase(
-    val apolloClient: ApolloClient,
-    localeManager: LocaleManager,
-    marketManager: MarketManager,
+    private val apolloClient: ApolloClient,
+    private val localeManager: LocaleManager,
+    private val marketManager: MarketManager,
 ) {
 
-    private val mutation = CreateOnboardingQuoteCartMutation(
+    private fun mutation() = CreateOnboardingQuoteCartMutation(
         localeManager.defaultLocale().toString(),
         marketManager.market?.toGraphQLMarket() ?: Market.SWEDEN
     )
 
-    suspend operator fun invoke(): Either<ErrorMessage, QuoteCartId> {
+    suspend fun invoke(): Either<ErrorMessage, QuoteCartId> {
         return apolloClient
-            .mutate(mutation)
+            .mutate(mutation())
             .safeQuery()
             .toEither { ErrorMessage(it) }
             .map { QuoteCartId(it.onboardingQuoteCart_create.id) }
