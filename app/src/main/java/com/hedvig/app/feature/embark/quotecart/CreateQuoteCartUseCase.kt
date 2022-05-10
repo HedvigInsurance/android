@@ -21,7 +21,7 @@ class CreateQuoteCartUseCase(
         marketManager.market?.toGraphQLMarket() ?: Market.SWEDEN
     )
 
-    suspend operator fun invoke(): Either<ErrorMessage, QuoteCartId> {
+    suspend fun invoke(): Either<ErrorMessage, QuoteCartId> {
         return apolloClient
             .mutate(mutation())
             .safeQuery()
