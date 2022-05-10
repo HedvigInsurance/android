@@ -667,7 +667,7 @@ val useCaseModule = module {
     single { GetDataCollectionUseCase(get(), get()) }
     single { GetClaimDetailUseCase(get(), get()) }
     single { GetClaimDetailUiStateFlowUseCase(get()) }
-    single { GetContractDetailsUseCase(get(), get(), get()) }
+    single { GetContractDetailsUseCase(get(), get()) }
     single<GetDanishAddressAutoCompletionUseCase> { GetDanishAddressAutoCompletionUseCase(get()) }
     single<GetFinalDanishAddressSelectionUseCase> { GetFinalDanishAddressSelectionUseCase(get()) }
     single { CreateQuoteCartUseCase(get(), get(), get()) }
