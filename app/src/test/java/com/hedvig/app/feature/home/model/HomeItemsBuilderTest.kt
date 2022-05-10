@@ -64,26 +64,4 @@ class HomeItemsBuilderTest {
 
         assertThat(result).containsOfType<HomeModel.CommonClaim>()
     }
-
-    @Test
-    fun `when moving flow is disabled, should not show moving flow`() = runTest {
-        val featureManager = mockk<FeatureManager>(relaxed = true)
-        coEvery { featureManager.isFeatureEnabled(Feature.MOVING_FLOW) } returns false
-        val builder = sut(featureManager)
-
-        val result = builder.buildItems(HOME_DATA_ACTIVE)
-
-        assertThat(result).containsNoneOfType<HomeModel.ChangeAddress>()
-    }
-
-    @Test
-    fun `when moving flow is enabled, should show moving flow`() = runTest {
-        val featureManager = mockk<FeatureManager>(relaxed = true)
-        coEvery { featureManager.isFeatureEnabled(Feature.MOVING_FLOW) } returns true
-        val builder = sut(featureManager)
-
-        val result = builder.buildItems(HOME_DATA_ACTIVE)
-
-        assertThat(result).containsOfType<HomeModel.ChangeAddress>()
-    }
 }

@@ -54,7 +54,7 @@ class HomeItemsBuilder(
                     ).toTypedArray()
                 )
             )
-        )
+        }
 
         add(HomeModel.Header(R.string.home_tab_editing_section_title))
         add(HomeModel.ChangeAddress)
