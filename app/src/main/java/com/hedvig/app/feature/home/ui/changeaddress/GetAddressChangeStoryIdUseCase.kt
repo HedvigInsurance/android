@@ -7,12 +7,19 @@ import com.hedvig.app.feature.home.ui.changeaddress.GetAddressChangeStoryIdUseCa
 import com.hedvig.app.feature.home.ui.changeaddress.GetAddressChangeStoryIdUseCase.SelfChangeEligibilityResult.Error
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.featureflags.Feature
+import com.hedvig.app.util.featureflags.FeatureManager
 
 class GetAddressChangeStoryIdUseCase(
     private val apolloClient: ApolloClient,
+    private val featureManager: FeatureManager,
 ) {
 
     suspend operator fun invoke(): SelfChangeEligibilityResult {
+        if (!featureManager.isFeatureEnabled(Feature.MOVING_FLOW)) {
+            return Blocked
+        }
+
         return when (val result = apolloClient.query(ActiveContractBundlesQuery()).safeQuery()) {
             is QueryResult.Success ->
                 result.data

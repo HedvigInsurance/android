@@ -7,13 +7,10 @@ import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.safeQuery
-import com.hedvig.app.util.featureflags.FeatureManager
-import com.hedvig.app.util.featureflags.flags.Feature
 
 class GetContractDetailsUseCase(
     private val apolloClient: ApolloClient,
     private val localeManager: LocaleManager,
-    private val featureManager: FeatureManager,
 ) {
 
     suspend operator fun invoke(contractId: String): Either<ContractDetailError, ContractDetailViewState> {
@@ -25,7 +22,7 @@ class GetContractDetailsUseCase(
                 data.contracts
                     .firstOrNone { it.id == contractId }
                     .toEither { ContractDetailError.ContractNotFoundError }
-                    .map { it.toContractDetailViewState(featureManager.isFeatureEnabled(Feature.MOVING_FLOW)) }
+                    .map { it.toContractDetailViewState() }
             }
     }
 
