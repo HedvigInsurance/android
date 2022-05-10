@@ -7,8 +7,8 @@ import com.hedvig.app.feature.home.ui.changeaddress.GetAddressChangeStoryIdUseCa
 import com.hedvig.app.feature.home.ui.changeaddress.GetAddressChangeStoryIdUseCase.SelfChangeEligibilityResult.Error
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
-import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
+import com.hedvig.app.util.featureflags.flags.Feature
 
 class GetAddressChangeStoryIdUseCase(
     private val apolloClient: ApolloClient,

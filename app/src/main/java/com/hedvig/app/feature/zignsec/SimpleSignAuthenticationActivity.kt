@@ -8,7 +8,6 @@ import androidx.fragment.app.commit
 import com.hedvig.android.owldroid.type.AuthState
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
-import com.hedvig.app.authenticate.UserViewModel
 import com.hedvig.app.databinding.SimpleSignAuthenticationActivityBinding
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.settings.Market
@@ -26,7 +25,6 @@ import org.koin.core.parameter.parametersOf
 class SimpleSignAuthenticationActivity : BaseActivity(R.layout.simple_sign_authentication_activity) {
     private val binding by viewBinding(SimpleSignAuthenticationActivityBinding::bind)
     private val model: SimpleSignAuthenticationViewModel by viewModel { parametersOf(data) }
-    private val userViewModel: UserViewModel by viewModel()
 
     private val data by lazy {
         intent.getParcelableExtra<SimpleSignAuthenticationData>(DATA)
@@ -60,7 +58,6 @@ class SimpleSignAuthenticationActivity : BaseActivity(R.layout.simple_sign_authe
             when (it) {
                 SimpleSignAuthenticationViewModel.Event.LoadWebView -> showWebView()
                 SimpleSignAuthenticationViewModel.Event.Success -> {
-                    userViewModel.onAuthSuccess()
                     goToLoggedIn()
                 }
                 SimpleSignAuthenticationViewModel.Event.Error -> showError()

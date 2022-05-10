@@ -24,6 +24,7 @@ data class HomeDataBuilder(
     private val withClaimStatusCards: Boolean = false,
     private val importantMessages: List<HomeQuery.ImportantMessage> = emptyList(),
     private val renewalDate: LocalDate? = null,
+    private val payinMethodStatus: PayinMethodStatus = PayinMethodStatus.ACTIVE,
 ) {
     fun build() = HomeQuery.Data(
         member = HomeQuery.Member(
@@ -157,7 +158,7 @@ data class HomeDataBuilder(
                 body = "3"
             )
         ),
-        payinMethodStatus = PayinMethodStatus.ACTIVE,
+        payinMethodStatus = payinMethodStatus,
         insuranceProviders = emptyList()
     )
 
