@@ -90,6 +90,7 @@ class SwedishBankIdSignViewModel(
         loginStatusService.isViewingOffer = false
         loginStatusService.isLoggedIn = true
         viewModelScope.launch {
+            featureManager.invalidateExperiments()
             delay(1.seconds)
             _events.trySend(Event.StartDirectDebit(featureManager.getPaymentType()))
         }
