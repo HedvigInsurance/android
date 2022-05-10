@@ -294,13 +294,16 @@ class OfferViewModelImpl(
                 .fold(
                     ifLeft = { _viewState.value = ViewState.Error(it.message) },
                     ifRight = {
-                        val event = Event.ApproveSuccessful(
-                            startDate = (it.bundle.inception.startDate as? OfferStartDate.AtDate)?.date,
-                            postSignScreen = it.bundle.viewConfiguration.postSignScreen,
-                            bundleDisplayName = it.bundle.name,
-                            payinType = featureManager.getPaymentType()
-                        )
-                        _events.trySend(event)
+                        viewModelScope.launch {
+                            featureManager.invalidateExperiments()
+                            val event = Event.ApproveSuccessful(
+                                startDate = (it.bundle.inception.startDate as? OfferStartDate.AtDate)?.date,
+                                postSignScreen = it.bundle.viewConfiguration.postSignScreen,
+                                bundleDisplayName = it.bundle.name,
+                                payinType = featureManager.getPaymentType()
+                            )
+                            _events.send(event)
+                        }
                     }
                 )
         }

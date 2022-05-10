@@ -568,6 +568,7 @@ val checkoutModule = module {
             loginStatusService = get(),
             hAnalytics = get(),
             offerRepository = get(),
+            featureManager = get(),
             bundleVariantUseCase = get(),
         )
     }
