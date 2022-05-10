@@ -123,10 +123,6 @@ class ValueStoreImpl : ValueStore {
             .map { (_, v) -> v }
     }
 
-    override fun toString(): String {
-        return "ValueStoreImpl(storedListValues=$storedListValues, storedValues=$storedValues, stage=$stage, prefillValues=$prefillValues, computedValues=$computedValues, prefill=$prefill)"
-    }
-
     companion object {
         private val MULTI_ACTION_KEY = Regex("\\[([0-9]+)\\]([a-zA-Z.]+)\$")
     }
