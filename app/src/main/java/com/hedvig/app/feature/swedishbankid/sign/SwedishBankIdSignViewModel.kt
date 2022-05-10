@@ -9,7 +9,9 @@ import com.hedvig.app.feature.offer.model.Checkout
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.usecase.CreateAccessTokenUseCase
 import com.hedvig.app.util.extensions.mapEitherRight
+import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.hanalytics.HAnalytics
+import com.hedvig.hanalytics.PaymentType
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,15 +21,14 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalTime::class)
 class SwedishBankIdSignViewModel(
     private val loginStatusService: LoginStatusService,
     private val hAnalytics: HAnalytics,
     private val quoteCartId: QuoteCartId,
     private val offerRepository: OfferRepository,
     private val createAccessTokenUseCase: CreateAccessTokenUseCase,
+    private val featureManager: FeatureManager,
 ) : ViewModel() {
     sealed class ViewState {
         object StartClient : ViewState()
@@ -41,8 +42,8 @@ class SwedishBankIdSignViewModel(
     val viewState = _viewState.asStateFlow()
 
     sealed class Event {
+        data class StartDirectDebit(val payinType: PaymentType) : Event()
         object StartBankID : Event()
-        object StartDirectDebit : Event()
     }
 
     private val _events = Channel<Event>(Channel.UNLIMITED)
@@ -89,8 +90,9 @@ class SwedishBankIdSignViewModel(
         loginStatusService.isViewingOffer = false
         loginStatusService.isLoggedIn = true
         viewModelScope.launch {
+            featureManager.invalidateExperiments()
             delay(1.seconds)
-            _events.trySend(Event.StartDirectDebit)
+            _events.trySend(Event.StartDirectDebit(featureManager.getPaymentType()))
         }
     }
 

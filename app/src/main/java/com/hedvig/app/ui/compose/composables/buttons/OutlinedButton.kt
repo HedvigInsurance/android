@@ -9,6 +9,7 @@ import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,6 +35,7 @@ fun LargeOutlinedTextButton(
 fun LargeOutlinedButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    backgroundColor: Color = Color.Transparent,
     content: @Composable RowScope.() -> Unit,
 ) {
     OutlinedButton(
@@ -42,6 +44,7 @@ fun LargeOutlinedButton(
             .fillMaxWidth()
             .then(modifier),
         border = ButtonDefaults.outlinedBorder.copy(brush = SolidColor(MaterialTheme.colors.primary)),
+        colors = ButtonDefaults.outlinedButtonColors(backgroundColor = backgroundColor),
         shape = MaterialTheme.shapes.large,
         contentPadding = PaddingValues(dimensionResource(R.dimen.base_margin_double)),
         content = content,
@@ -51,6 +54,7 @@ fun LargeOutlinedButton(
 @Preview(
     name = "Outlined Button (Large)",
     group = "Buttons",
+    showBackground = true,
 )
 @Composable
 fun LargeOutlinedButtonPreview() {

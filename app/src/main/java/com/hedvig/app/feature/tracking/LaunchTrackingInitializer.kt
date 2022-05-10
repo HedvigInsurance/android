@@ -11,6 +11,7 @@ import org.koin.core.component.inject
 class LaunchTrackingInitializer : Initializer<Unit>, KoinComponent {
     private val hAnalytics: HAnalytics by inject()
     override fun create(context: Context) {
+        hAnalytics.identify()
         hAnalytics.notificationPermission(
             NotificationManagerCompat.from(context).areNotificationsEnabled()
         )

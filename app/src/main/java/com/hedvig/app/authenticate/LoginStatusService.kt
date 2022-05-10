@@ -8,7 +8,6 @@ import com.hedvig.android.owldroid.graphql.ContractStatusQuery
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.apollo.safeQuery
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
@@ -65,7 +64,6 @@ class SharedPreferencesLoginStatusService(
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun getLoginStatusAsFlow(): Flow<LoginStatus> {
         return channelFlow {
             // Trigger the first emission manually since the sharedPreferences callback doesn't trigger on registration
