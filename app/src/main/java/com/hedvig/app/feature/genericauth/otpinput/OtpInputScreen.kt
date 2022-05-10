@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.genericauth.otpinput
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -49,7 +48,7 @@ import com.hedvig.app.ui.compose.composables.FullScreenProgressOverlay
 import com.hedvig.app.ui.compose.composables.buttons.LargeContainedButton
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 
-@OptIn(ExperimentalUnitApi::class, ExperimentalAnimationApi::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalUnitApi::class, ExperimentalComposeUiApi::class)
 @Composable
 fun OtpInputScreen(
     onInputChanged: (String) -> Unit,

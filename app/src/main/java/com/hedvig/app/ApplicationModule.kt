@@ -97,6 +97,15 @@ import com.hedvig.app.feature.genericauth.otpinput.ReSendOtpCodeUseCase
 import com.hedvig.app.feature.genericauth.otpinput.ReSendOtpCodeUseCaseImpl
 import com.hedvig.app.feature.genericauth.otpinput.SendOtpCodeUseCase
 import com.hedvig.app.feature.genericauth.otpinput.SendOtpCodeUseCaseImpl
+import com.hedvig.app.feature.hanalytics.HAnalyticsExperimentManager
+import com.hedvig.app.feature.hanalytics.HAnalyticsExperimentManagerImpl
+import com.hedvig.app.feature.hanalytics.HAnalyticsImpl
+import com.hedvig.app.feature.hanalytics.HAnalyticsService
+import com.hedvig.app.feature.hanalytics.HAnalyticsServiceImpl
+import com.hedvig.app.feature.hanalytics.HAnalyticsSink
+import com.hedvig.app.feature.hanalytics.NetworkHAnalyticsSink
+import com.hedvig.app.feature.hanalytics.SendHAnalyticsEventUseCase
+import com.hedvig.app.feature.hanalytics.SendHAnalyticsEventUseCaseImpl
 import com.hedvig.app.feature.home.data.GetHomeUseCase
 import com.hedvig.app.feature.home.model.HomeItemsBuilder
 import com.hedvig.app.feature.home.ui.HomeViewModel
@@ -125,18 +134,18 @@ import com.hedvig.app.feature.loggedin.service.TabNotificationService
 import com.hedvig.app.feature.loggedin.ui.LoggedInRepository
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModelImpl
+import com.hedvig.app.feature.marketing.MarketingViewModel
+import com.hedvig.app.feature.marketing.data.GetInitialMarketPickerValuesUseCase
+import com.hedvig.app.feature.marketing.data.GetMarketingBackgroundUseCase
 import com.hedvig.app.feature.marketing.data.MarketingRepository
-import com.hedvig.app.feature.marketing.ui.MarketingViewModel
-import com.hedvig.app.feature.marketing.ui.MarketingViewModelImpl
+import com.hedvig.app.feature.marketing.data.SubmitMarketAndLanguagePreferencesUseCase
+import com.hedvig.app.feature.marketing.data.UpdateApplicationLanguageUseCase
 import com.hedvig.app.feature.marketpicker.LanguageRepository
 import com.hedvig.app.feature.marketpicker.LocaleBroadcastManager
-import com.hedvig.app.feature.marketpicker.LocaleBroadcastManagerImpl
-import com.hedvig.app.feature.marketpicker.MarketPickerViewModel
-import com.hedvig.app.feature.marketpicker.MarketPickerViewModelImpl
-import com.hedvig.app.feature.marketpicker.MarketRepository
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.OfferViewModel
 import com.hedvig.app.feature.offer.OfferViewModelImpl
+import com.hedvig.app.feature.offer.model.QuoteCartFragmentToOfferModelMapper
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetData
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheetViewModel
@@ -157,13 +166,13 @@ import com.hedvig.app.feature.onboarding.MemberIdViewModel
 import com.hedvig.app.feature.onboarding.MemberIdViewModelImpl
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
-import com.hedvig.app.feature.profile.ui.ProfileViewModelImpl
 import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppViewModel
 import com.hedvig.app.feature.profile.ui.charity.CharityViewModel
 import com.hedvig.app.feature.profile.ui.myinfo.MyInfoViewModel
 import com.hedvig.app.feature.profile.ui.payment.PaymentRepository
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModel
 import com.hedvig.app.feature.profile.ui.payment.PaymentViewModelImpl
+import com.hedvig.app.feature.profile.ui.tab.ProfileQueryDataToProfileUiStateMapper
 import com.hedvig.app.feature.referrals.data.RedeemReferralCodeRepository
 import com.hedvig.app.feature.referrals.data.ReferralsRepository
 import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedViewModel
@@ -180,9 +189,6 @@ import com.hedvig.app.feature.settings.MarketManagerImpl
 import com.hedvig.app.feature.settings.SettingsViewModel
 import com.hedvig.app.feature.swedishbankid.sign.SwedishBankIdSignViewModel
 import com.hedvig.app.feature.tracking.ApplicationLifecycleTracker
-import com.hedvig.app.feature.tracking.HAnalyticsFacade
-import com.hedvig.app.feature.tracking.HAnalyticsSink
-import com.hedvig.app.feature.tracking.NetworkHAnalyticsSink
 import com.hedvig.app.feature.trustly.TrustlyRepository
 import com.hedvig.app.feature.trustly.TrustlyViewModel
 import com.hedvig.app.feature.trustly.TrustlyViewModelImpl
@@ -195,9 +201,7 @@ import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
 import com.hedvig.app.feature.zignsec.usecase.StartDanishAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.StartNorwegianAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthStatusUseCase
-import com.hedvig.app.featureflags.FeatureFlagEntryProvider
 import com.hedvig.app.service.FileService
-import com.hedvig.app.service.RemoteConfig
 import com.hedvig.app.service.badge.CrossSellNotificationBadgeService
 import com.hedvig.app.service.badge.NotificationBadgeService
 import com.hedvig.app.service.badge.ReferralsNotificationBadgeService
@@ -213,7 +217,15 @@ import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.apollo.DeviceIdInterceptor
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import com.hedvig.app.util.apollo.SunsettingInterceptor
+import com.hedvig.app.util.featureflags.ClearHAnalyticsExperimentsCacheUseCase
 import com.hedvig.app.util.featureflags.FeatureManager
+import com.hedvig.app.util.featureflags.FeatureManagerImpl
+import com.hedvig.app.util.featureflags.flags.DevFeatureFlagProvider
+import com.hedvig.app.util.featureflags.flags.HAnalyticsFeatureFlagProvider
+import com.hedvig.app.util.featureflags.loginmethod.DevLoginMethodProvider
+import com.hedvig.app.util.featureflags.loginmethod.HAnalyticsLoginMethodProvider
+import com.hedvig.app.util.featureflags.paymenttype.DevPaymentTypeProvider
+import com.hedvig.app.util.featureflags.paymenttype.HAnalyticsPaymentTypeProvider
 import com.hedvig.hanalytics.HAnalytics
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -228,20 +240,6 @@ import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APPLICATION_ID == "com.hedvig.test.app"
-
-fun shouldOverrideFeatureFlags(app: HedvigApplication): Boolean {
-    if (app.isTestBuild) {
-        return false
-    }
-    if (BuildConfig.DEBUG) {
-        return true
-    }
-    if (BuildConfig.APPLICATION_ID == "com.hedvig.test.app") {
-        return true
-    }
-
-    return false
-}
 
 val applicationModule = module {
     single { androidApplication() as HedvigApplication }
@@ -349,7 +347,8 @@ fun makeUserAgent(context: Context, market: Market?) =
     getLocale(context, market).language
     })"
 
-fun makeLocaleString(context: Context, market: Market?): String = getLocale(context, market).toLanguageTag()
+fun makeLocaleString(context: Context, market: Market?): String =
+    getLocale(context, market).toLanguageTag()
 
 fun getLocale(context: Context, market: Market?): Locale {
     val locale = if (market == null) {
@@ -369,12 +368,12 @@ fun getLocale(context: Context, market: Market?): Locale {
 val viewModelModule = module {
     viewModel { ClaimsViewModel(get(), get()) }
     viewModel { ChatViewModel(get(), get(), get(), get(), get(), get()) }
-    viewModel { UserViewModel(get(), get(), get(), get()) }
     viewModel { (quoteCartId: QuoteCartId?) -> RedeemCodeViewModel(quoteCartId, get(), get()) }
+    viewModel { UserViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel { WelcomeViewModel(get()) }
-    viewModel { SettingsViewModel(get(), get()) }
+    viewModel { SettingsViewModel(get(), get(), get()) }
     viewModel { DatePickerViewModel() }
-    viewModel { params -> SimpleSignAuthenticationViewModel(params.get(), get(), get(), get()) }
+    viewModel { params -> SimpleSignAuthenticationViewModel(params.get(), get(), get(), get(), get(), get(), get()) }
     viewModel { (data: MultiActionParams) -> MultiActionViewModel(data) }
     viewModel { (componentState: MultiActionItem.Component?, multiActionParams: MultiActionParams) ->
         AddComponentViewModel(
@@ -390,7 +389,7 @@ val viewModelModule = module {
             quoteCartId = quoteCartId,
             offerRepository = get(),
             createAccessTokenUseCase = get(),
-            featureManager = get()
+            featureManager = get(),
         )
     }
     viewModel { AudioRecorderViewModel(get()) }
@@ -399,9 +398,27 @@ val viewModelModule = module {
         CrossSellDetailViewModel(crossSell, get(), get())
     }
     viewModel { GenericAuthViewModel(get()) }
-    viewModel { (otpId: String, credential: String) -> OtpInputViewModel(otpId, credential, get(), get(), get()) }
-    viewModel { parametersHolder: ParametersHolder -> EmbarkAddressAutoCompleteViewModel(parametersHolder.getOrNull()) }
-    viewModel { parametersHolder -> AddressAutoCompleteViewModel(parametersHolder.getOrNull(), get(), get()) }
+    viewModel { (otpId: String, credential: String) ->
+        OtpInputViewModel(
+            otpId,
+            credential,
+            get(),
+            get(),
+            get()
+        )
+    }
+    viewModel { parametersHolder: ParametersHolder ->
+        EmbarkAddressAutoCompleteViewModel(
+            parametersHolder.getOrNull()
+        )
+    }
+    viewModel { parametersHolder ->
+        AddressAutoCompleteViewModel(
+            parametersHolder.getOrNull(),
+            get(),
+            get()
+        )
+    }
     viewModel { (claimId: String) -> ClaimDetailViewModel(claimId, get(), get(), get(), get()) }
     viewModel { HonestyPledgeViewModel(get()) }
     viewModel { (commonClaimId: String) -> CommonClaimViewModel(commonClaimId, get()) }
@@ -411,6 +428,7 @@ val viewModelModule = module {
     viewModel { CharityViewModel(get()) }
     viewModel { MyInfoViewModel(get()) }
     viewModel { AboutAppViewModel(get()) }
+    viewModel { MarketingViewModel(get(), get(), get(), get(), get(), get(), get()) }
 }
 
 val choosePlanModule = module {
@@ -421,12 +439,8 @@ val onboardingModule = module {
     viewModel<MemberIdViewModel> { MemberIdViewModelImpl(get()) }
 }
 
-val marketPickerModule = module {
-    viewModel<MarketPickerViewModel> { MarketPickerViewModelImpl(get(), get(), get(), get(), get(), get()) }
-}
-
 val loggedInModule = module {
-    viewModel<LoggedInViewModel> { LoggedInViewModelImpl(get(), get(), get(), get()) }
+    viewModel<LoggedInViewModel> { LoggedInViewModelImpl(get(), get(), get(), get(), get()) }
 }
 
 val whatsNewModule = module {
@@ -440,11 +454,8 @@ val insuranceModule = module {
     }
 }
 
-val marketingModule = module {
-    viewModel<MarketingViewModel> { MarketingViewModelImpl(get(), get(), get()) }
-}
-
 val offerModule = module {
+    single<OfferRepository> { OfferRepository(get(), get(), get()) }
     viewModel<OfferViewModel> { parametersHolder: ParametersHolder ->
         OfferViewModelImpl(
             quoteCartId = parametersHolder.get(),
@@ -452,9 +463,9 @@ val offerModule = module {
             loginStatusService = get(),
             startCheckoutUseCase = get(),
             shouldShowOnNextAppStart = parametersHolder.get(),
-            adyenRepository = get(),
             chatRepository = get(),
             editCampaignUseCase = get(),
+            featureManager = get(),
             addPaymentTokenUseCase = get(),
             getExternalInsuranceProviderUseCase = get(),
             getBundleVariantUseCase = get(),
@@ -463,10 +474,13 @@ val offerModule = module {
     single { SubscribeToDataCollectionStatusUseCase(get()) }
     single { GetProviderDisplayNameUseCase(get()) }
     single { GetDataCollectionResultUseCase(get()) }
+    single { QuoteCartFragmentToOfferModelMapper(get()) }
 }
 
 val profileModule = module {
-    viewModel<ProfileViewModel> { ProfileViewModelImpl(get(), get()) }
+    single<ProfileQueryDataToProfileUiStateMapper> { ProfileQueryDataToProfileUiStateMapper(get(), get(), get()) }
+    single<ProfileRepository> { ProfileRepository(get()) }
+    viewModel<ProfileViewModel> { ProfileViewModel(get(), get(), get()) }
 }
 
 val keyGearModule = module {
@@ -477,7 +491,7 @@ val keyGearModule = module {
 }
 
 val paymentModule = module {
-    viewModel<PaymentViewModel> { PaymentViewModelImpl(get(), get(), get()) }
+    viewModel<PaymentViewModel> { PaymentViewModelImpl(get(), get(), get(), get()) }
 }
 
 val adyenModule = module {
@@ -513,7 +527,7 @@ val numberActionSetModule = module {
 }
 
 val referralsModule = module {
-    viewModel<ReferralsViewModel> { ReferralsViewModelImpl(get(), get()) }
+    viewModel<ReferralsViewModel> { ReferralsViewModelImpl(get()) }
     viewModel<ReferralsActivatedViewModel> { ReferralsActivatedViewModelImpl(get()) }
     viewModel<ReferralsEditCodeViewModel> { ReferralsEditCodeViewModelImpl(get()) }
 }
@@ -551,6 +565,7 @@ val checkoutModule = module {
             loginStatusService = get(),
             hAnalytics = get(),
             offerRepository = get(),
+            featureManager = get(),
             bundleVariantUseCase = get(),
         )
     }
@@ -569,11 +584,18 @@ val retrievePriceModule = module {
 }
 
 val externalInsuranceModule = module {
-    viewModel { ExternalInsurerViewModel(get()) }
+    viewModel { ExternalInsurerViewModel(get(), get()) }
 }
 
 val insurelyAuthModule = module {
-    viewModel { (reference: String, providerId: String) -> InsurelyAuthViewModel(reference, get(), providerId, get()) }
+    viewModel { (reference: String, providerId: String) ->
+        InsurelyAuthViewModel(
+            reference,
+            get(),
+            providerId,
+            get()
+        )
+    }
 }
 
 val serviceModule = module {
@@ -587,24 +609,21 @@ val serviceModule = module {
     single { NotificationBadgeService(get()) }
 
     single { DeviceInformationService(get()) }
-    single { RemoteConfig() }
 }
 
 val repositoriesModule = module {
     single { ChatRepository(get(), get(), get()) }
     single { PayinStatusRepository(get()) }
     single { ClaimsRepository(get(), get()) }
-    single { ProfileRepository(get()) }
     single { RedeemReferralCodeRepository(get(), get()) }
     single { UserRepository(get()) }
     single { WhatsNewRepository(get(), get(), get()) }
     single { WelcomeRepository(get(), get()) }
-    single { OfferRepository(get(), get()) }
-    single { LanguageRepository(get(), get(), get(), get()) }
+    single { LanguageRepository(get()) }
+    single { OfferRepository(get(), get(), get()) }
     single { KeyGearItemsRepository(get(), get(), get(), get()) }
-    single { MarketRepository(get(), get(), get()) }
     single { MarketingRepository(get(), get()) }
-    single { AdyenRepository(get(), get(), get()) }
+    single { AdyenRepository(get(), get()) }
     single { EmbarkRepository(get(), get()) }
     single { ReferralsRepository(get()) }
     single { LoggedInRepository(get(), get()) }
@@ -616,18 +635,23 @@ val repositoriesModule = module {
 }
 
 val trackerModule = module {
-    single<HAnalytics> {
+    single<HAnalytics> { HAnalyticsImpl(get(), get()) }
+    single<SendHAnalyticsEventUseCase> {
         // Workaround for https://github.com/InsertKoinIO/koin/issues/1146
-        HAnalyticsFacade(getAll<HAnalyticsSink>().distinct())
+        val allAnalyticsSinks = getAll<HAnalyticsSink>().distinct()
+        SendHAnalyticsEventUseCaseImpl(allAnalyticsSinks)
     }
-    single {
-        NetworkHAnalyticsSink(get(), get(), get(), get<Context>().getString(R.string.HANALYTICS_URL))
-    } bind HAnalyticsSink::class
-    single { ApplicationLifecycleTracker(get()) }
+    single<HAnalyticsExperimentManager> { HAnalyticsExperimentManagerImpl(get(), get()) }
+    single<NetworkHAnalyticsSink> { NetworkHAnalyticsSink(get()) } bind HAnalyticsSink::class
+    single<HAnalyticsService> {
+        HAnalyticsServiceImpl(get(), get(), get(), get<Context>().getString(R.string.HANALYTICS_URL))
+    }
+    single<ApplicationLifecycleTracker> { ApplicationLifecycleTracker(get()) }
+    single<ClearHAnalyticsExperimentsCacheUseCase> { ClearHAnalyticsExperimentsCacheUseCase(get()) }
 }
 
 val localeBroadcastManagerModule = module {
-    single<LocaleBroadcastManager> { LocaleBroadcastManagerImpl(get()) }
+    single<LocaleBroadcastManager> { LocaleBroadcastManager(get()) }
 }
 
 val marketManagerModule = module {
@@ -635,7 +659,7 @@ val marketManagerModule = module {
 }
 
 val notificationModule = module {
-    single { PaymentNotificationSender(get(), get()) } bind NotificationSender::class
+    single { PaymentNotificationSender(get(), get(), get()) } bind NotificationSender::class
     single { CrossSellNotificationSender(get(), get()) } bind NotificationSender::class
     single { ChatNotificationSender(get()) } bind NotificationSender::class
     single { ReferralsNotificationSender(get()) } bind NotificationSender::class
@@ -672,6 +696,10 @@ val useCaseModule = module {
     single<GetDanishAddressAutoCompletionUseCase> { GetDanishAddressAutoCompletionUseCase(get()) }
     single<GetFinalDanishAddressSelectionUseCase> { GetFinalDanishAddressSelectionUseCase(get()) }
     single { CreateQuoteCartUseCase(get(), get(), get()) }
+    single { SubmitMarketAndLanguagePreferencesUseCase(get(), get(), get(), get()) }
+    single { GetMarketingBackgroundUseCase(get(), get()) }
+    single { UpdateApplicationLanguageUseCase(get(), get(), get()) }
+    single { GetInitialMarketPickerValuesUseCase(get(), get(), get(), get()) }
     single<EditCheckoutUseCase> { EditCheckoutUseCase(get(), get()) }
     single<QuoteCartEditStartDateUseCase> { QuoteCartEditStartDateUseCase(get(), get()) }
     single<CreateAccessTokenUseCase> { CreateAccessTokenUseCase(get(), get()) }
@@ -692,12 +720,32 @@ val pushTokenManagerModule = module {
 }
 
 val sharedPreferencesModule = module {
-    single<SharedPreferences> { get<Context>().getSharedPreferences("hedvig_shared_preference", MODE_PRIVATE) }
+    single<SharedPreferences> {
+        get<Context>().getSharedPreferences(
+            "hedvig_shared_preference",
+            MODE_PRIVATE
+        )
+    }
 }
 
 val featureManagerModule = module {
-    single { FeatureManager(get(), get(), get()) }
-    single { FeatureFlagEntryProvider() }
+    single<FeatureManager> {
+        if (BuildConfig.DEBUG) {
+            FeatureManagerImpl(
+                DevFeatureFlagProvider(get()),
+                DevLoginMethodProvider(get()),
+                DevPaymentTypeProvider(get()),
+                get(),
+            )
+        } else {
+            FeatureManagerImpl(
+                HAnalyticsFeatureFlagProvider(get()),
+                HAnalyticsLoginMethodProvider(get()),
+                HAnalyticsPaymentTypeProvider(get()),
+                get(),
+            )
+        }
+    }
 }
 
 val coilModule = module {
@@ -720,7 +768,6 @@ val chatEventModule = module {
 }
 
 val dataStoreModule = module {
-    @Suppress("RemoveExplicitTypeArguments")
     single<DataStore<Preferences>> {
         PreferenceDataStoreFactory.create(
             produceFile = {

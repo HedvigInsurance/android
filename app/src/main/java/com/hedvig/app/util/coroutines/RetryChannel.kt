@@ -1,6 +1,5 @@
 package com.hedvig.app.util.coroutines
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
@@ -33,7 +32,7 @@ import kotlin.experimental.ExperimentalTypeInference
  * ```
  *
  */
-@OptIn(ExperimentalTypeInference::class, ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalTypeInference::class)
 class RetryChannel {
 
     /**

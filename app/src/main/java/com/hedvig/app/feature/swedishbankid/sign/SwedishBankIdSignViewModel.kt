@@ -11,6 +11,7 @@ import com.hedvig.app.feature.offer.usecase.CreateAccessTokenUseCase
 import com.hedvig.app.util.extensions.mapEitherRight
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.hanalytics.HAnalytics
+import com.hedvig.hanalytics.PaymentType
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -44,7 +45,7 @@ class SwedishBankIdSignViewModel(
     private var signStatusJob: Job? = null
 
     sealed class Event {
-        object StartDirectDebit : Event()
+        data class StartDirectDebit(val payinType: PaymentType) : Event()
         object StartBankID : Event()
     }
 
@@ -96,8 +97,9 @@ class SwedishBankIdSignViewModel(
         loginStatusService.isViewingOffer = false
         loginStatusService.isLoggedIn = true
         viewModelScope.launch {
+            featureManager.invalidateExperiments()
             delay(1.seconds)
-            _events.trySend(Event.StartDirectDebit)
+            _events.trySend(Event.StartDirectDebit(featureManager.getPaymentType()))
         }
     }
 
