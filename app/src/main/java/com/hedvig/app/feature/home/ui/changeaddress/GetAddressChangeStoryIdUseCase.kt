@@ -1,10 +1,7 @@
 package com.hedvig.app.feature.home.ui.changeaddress
 
 import arrow.core.Either
-import arrow.core.computations.either
-import arrow.core.computations.ensureNotNull
 import arrow.core.getOrHandle
-import arrow.core.identity
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.ActiveContractBundlesQuery
 import com.hedvig.app.feature.embark.QUOTE_CART_ID_KEY
