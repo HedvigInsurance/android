@@ -24,7 +24,7 @@ class ValueStoreImpl : ValueStore {
     private val storedListValues = HashMap<String, List<String>>()
 
     private val storedValues = Stack<HashMap<String, String?>>().apply { push(hashMapOf()) }
-    private val stage = HashMap<String, String?>()
+    private val stage = Stack<HashMap<String, String?>>().apply { push(hashMapOf()) }
 
     private val prefillValues = HashMap<String, String?>()
 
@@ -35,25 +35,25 @@ class ValueStoreImpl : ValueStore {
      * state after the [block] scope.
      */
     override fun <T> withCommittedVersion(block: ValueStore.() -> T): T {
-        val oldStage = HashMap(stage)
         commitVersion()
         val result = this.block()
         rollbackVersion()
-        stage.putAll(oldStage)
         return result
     }
 
     override fun commitVersion() {
-        storedValues.push(HashMap(storedValues.peek() + stage))
-        stage.clear()
+        val newHead = storedValues.peek() + stage.peek()
+        storedValues.push(HashMap(newHead))
+        stage.push(hashMapOf())
     }
 
     override fun rollbackVersion() {
         storedValues.pop()
+        stage.pop()
     }
 
     override fun put(key: String, value: String?) {
-        stage[key] = value
+        stage.peek()[key] = value
         prefillValues[key] = value
     }
 
@@ -66,8 +66,8 @@ class ValueStoreImpl : ValueStore {
 
     override fun get(key: String): String? {
         val value = computedValues?.get(key)?.let {
-            TemplateExpressionCalculator.evaluateTemplateExpression(it, storedValues.peek() + stage)
-        } ?: storedValues.peek()[key] ?: stage[key]
+            TemplateExpressionCalculator.evaluateTemplateExpression(it, storedValues.peek() + stage.peek())
+        } ?: storedValues.peek()[key] ?: stage.peek()[key]
 
         return if (value.equals("null")) {
             null
@@ -95,11 +95,11 @@ class ValueStoreImpl : ValueStore {
     }
 
     override fun toMap(): Map<String, String?> {
-        return storedValues.peek().toMap() + stage
+        return storedValues.peek() + stage.peek()
     }
 
     override fun getMultiActionItems(key: String): List<Map<String, String>> {
-        val source = storedValues.peek() + stage
+        val source = storedValues.peek() + stage.peek()
         return source
             .keys
             .filter { it.contains(key) }
@@ -121,6 +121,10 @@ class ValueStoreImpl : ValueStore {
             .entries
             .sortedBy { (k, _) -> k.toInt() }
             .map { (_, v) -> v }
+    }
+
+    override fun toString(): String {
+        return "ValueStoreImpl(storedListValues=$storedListValues, storedValues=$storedValues, stage=$stage, prefillValues=$prefillValues, computedValues=$computedValues, prefill=$prefill)"
     }
 
     companion object {
