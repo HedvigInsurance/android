@@ -43,7 +43,7 @@ import kotlinx.coroutines.launch
 import java.util.Stack
 import kotlin.math.max
 
-private const val QUOTE_CART_ID_KEY = "quoteCartId"
+const val QUOTE_CART_ID_KEY = "quoteCartId"
 
 abstract class EmbarkViewModel(
     private val valueStore: ValueStore,
@@ -538,11 +538,6 @@ class EmbarkViewModelImpl(
 
     override fun fetchStory(name: String) {
         viewModelScope.launch {
-            createQuoteCartUseCase.invoke().fold(
-                ifLeft = { _events.trySend(Event.Error(it.message)) },
-                ifRight = { putInStore(QUOTE_CART_ID_KEY, it.id) }
-            )
-
             embarkRepository.embarkStory(name).fold(
                 ifLeft = { _events.trySend(Event.Error(it.message)) },
                 ifRight = {
