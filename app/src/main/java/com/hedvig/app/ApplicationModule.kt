@@ -554,16 +554,15 @@ val changeDateBottomSheetModule = module {
 }
 
 val checkoutModule = module {
-    viewModel { (ids: List<String>, quoteCartId: QuoteCartId) ->
+    viewModel { (selectedVariantId: String, quoteCartId: QuoteCartId) ->
         CheckoutViewModel(
-            quoteIds = ids,
+            selectedVariantId = selectedVariantId,
             quoteCartId = quoteCartId,
             signQuotesUseCase = get(),
             editQuotesUseCase = get(),
             createAccessTokenUseCase = get(),
             marketManager = get(),
             loginStatusService = get(),
-            hAnalytics = get(),
             offerRepository = get(),
             featureManager = get(),
             bundleVariantUseCase = get(),

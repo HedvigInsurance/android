@@ -231,11 +231,11 @@ class OfferViewModelImpl(
         viewModelScope.launch {
             offerState
                 .first()
-                .map { it.selectedQuoteIds }
+                .map { it.selectedVariant.id }
                 .fold(
                     ifLeft = { _viewState.value = ViewState.Error(it.message) },
-                    ifRight = { quoteIds ->
-                        val parameter = CheckoutParameter(quoteIds, quoteCartId)
+                    ifRight = { selectedVariantId ->
+                        val parameter = CheckoutParameter(selectedVariantId, quoteCartId)
                         val event = Event.OpenCheckout(parameter)
                         _events.trySend(event)
                     }
