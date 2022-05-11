@@ -7,19 +7,33 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
+import com.hedvig.app.util.featureflags.FeatureManager
+import com.hedvig.app.util.featureflags.flags.Feature
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
+
+data class LoggedInViewState(
+    val loggedInQueryData: LoggedInQuery.Data?,
+    val isKeyGearEnabled: Boolean,
+    val isReferralsEnabled: Boolean,
+    val unseenTabNotifications: Set<LoggedInTabs>,
+)
 
 abstract class LoggedInViewModel : ViewModel() {
-    protected val _data = MutableLiveData<LoggedInQuery.Data>()
-    val data: LiveData<LoggedInQuery.Data> = _data
+    abstract val viewState: StateFlow<LoggedInViewState?>
 
     private val _scroll = MutableLiveData<Int>()
     val scroll: LiveData<Int> = _scroll
@@ -29,9 +43,6 @@ abstract class LoggedInViewModel : ViewModel() {
         onBufferOverflow = BufferOverflow.DROP_OLDEST,
     )
     val shouldOpenReviewDialog: SharedFlow<Boolean> = _shouldOpenReviewDialog.asSharedFlow()
-
-    protected val _unseenTabNotifications = MutableStateFlow<Set<LoggedInTabs>>(emptySet())
-    val unseenTabNotifications = _unseenTabNotifications.asStateFlow()
 
     fun onScroll(scroll: Int) {
         _scroll.postValue(scroll)
@@ -46,6 +57,7 @@ class LoggedInViewModelImpl(
     private val loggedInRepository: LoggedInRepository,
     private val chatEventStore: ChatEventStore,
     private val tabNotificationService: TabNotificationService,
+    private val featureManager: FeatureManager,
     private val hAnalytics: HAnalytics,
 ) : LoggedInViewModel() {
 
@@ -55,22 +67,27 @@ class LoggedInViewModelImpl(
                 .map { it == 3 }
                 .collect(_shouldOpenReviewDialog::tryEmit)
         }
-
-        viewModelScope.launch {
-            val response = runCatching {
-                loggedInRepository.loggedInData()
-            }
-
-            response.getOrNull()?.data?.let { _data.postValue(it) }
-        }
-        viewModelScope.launch {
-            tabNotificationService
-                .unseenTabNotifications()
-                .collect { unseenTabNotificationSet ->
-                    _unseenTabNotifications.value = unseenTabNotificationSet
-                }
-        }
     }
+
+    private val loggedInQueryData: Flow<LoggedInQuery.Data?> = flow {
+        val loggedInQueryData = loggedInRepository.loggedInData().orNull()
+        emit(loggedInQueryData)
+    }
+    private val isKeyGearEnabled: Flow<Boolean> = flow { emit(featureManager.isFeatureEnabled(Feature.KEY_GEAR)) }
+    private val isReferralsEnabled: Flow<Boolean> = flow { emit(featureManager.isFeatureEnabled(Feature.REFERRALS)) }
+    override val viewState: StateFlow<LoggedInViewState?> = combine(
+        loggedInQueryData,
+        isKeyGearEnabled,
+        isReferralsEnabled,
+        tabNotificationService.unseenTabNotifications()
+    ) { loggedInQueryData, isKeyGearEnabled, isReferralsEnabled, unseenTabNotifications ->
+        LoggedInViewState(loggedInQueryData, isKeyGearEnabled, isReferralsEnabled, unseenTabNotifications)
+    }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5.seconds),
+            initialValue = null,
+        )
 
     override fun onReviewByChatComplete() {
         viewModelScope.launch {

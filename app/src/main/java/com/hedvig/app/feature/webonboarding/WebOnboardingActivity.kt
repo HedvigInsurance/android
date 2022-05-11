@@ -10,6 +10,7 @@ import android.webkit.HttpAuthHandler
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import androidx.transition.TransitionManager
 import com.google.android.material.transition.MaterialFadeThrough
 import com.hedvig.android.owldroid.type.Locale
@@ -18,6 +19,7 @@ import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.databinding.ActivityWebOnboardingBinding
+import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.makeUserAgent
@@ -25,6 +27,8 @@ import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.extensions.startChat
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
+import com.hedvig.app.util.featureflags.FeatureManager
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import java.net.URLEncoder
 
@@ -34,6 +38,7 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
     private val localeManager: LocaleManager by inject()
     private val loginStatusService: LoginStatusService by inject()
     private val authenticationTokenService: AuthenticationTokenService by inject()
+    private val featureManager: FeatureManager by inject()
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,10 +70,17 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
                     if (url?.contains("connect-payment") == true) {
                         view?.stopLoading()
                         loginStatusService.isLoggedIn = true
-                        marketManager.market?.connectPayin(
-                            this@WebOnboardingActivity,
-                            isPostSign = true
-                        )?.let { startActivity(it) }
+                        val market = marketManager.market ?: return
+                        lifecycleScope.launch {
+                            startActivity(
+                                connectPayinIntent(
+                                    this@WebOnboardingActivity,
+                                    featureManager.getPaymentType(),
+                                    market,
+                                    true,
+                                )
+                            )
+                        }
                         return
                     }
                     super.doUpdateVisitedHistory(view, url, isReload)

@@ -6,7 +6,6 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
@@ -84,19 +83,18 @@ class AskForPriceInfoActivity : BaseActivity() {
 
         fun createIntent(
             context: Context,
-            parameter: InsuranceProviderParameter
+            parameter: InsuranceProviderParameter,
         ) = Intent(context, AskForPriceInfoActivity::class.java).apply {
             putExtra(PARAMETER, parameter)
         }
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AskForPriceScreen(
     selectedInsurance: String,
     onSkipRetrievePriceInfo: () -> Unit,
-    onNavigateToRetrievePrice: () -> Unit
+    onNavigateToRetrievePrice: () -> Unit,
 ) {
     IntroContent(
         selectedInsurance = selectedInsurance,

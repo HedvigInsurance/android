@@ -5,11 +5,13 @@ import arrow.core.None
 import arrow.core.Option
 import arrow.core.Some
 import com.apollographql.apollo.ApolloCall
+import com.apollographql.apollo.ApolloQueryWatcher
 import com.apollographql.apollo.ApolloSubscriptionCall
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.coroutines.toFlow
 import com.apollographql.apollo.exception.ApolloException
+import com.hedvig.app.util.coroutines.await
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -17,7 +19,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import okhttp3.Call
 import org.json.JSONObject
-import ru.gildor.coroutines.okhttp.await
 import java.io.IOException
 
 suspend fun <T> ApolloCall<T>.safeQuery(): QueryResult<T> {
@@ -31,6 +32,16 @@ suspend fun <T> ApolloCall<T>.safeQuery(): QueryResult<T> {
 }
 
 fun <T> ApolloSubscriptionCall<T>.safeSubscription(): Flow<QueryResult<T>> {
+    return try {
+        toFlow().map(Response<T>::toQueryResult)
+    } catch (apolloException: ApolloException) {
+        flowOf(QueryResult.Error.NetworkError(apolloException.localizedMessage))
+    } catch (throwable: Throwable) {
+        flowOf(QueryResult.Error.GeneralError(throwable.localizedMessage))
+    }
+}
+
+fun <T> ApolloQueryWatcher<T>.safeFlow(): Flow<QueryResult<T>> {
     return try {
         toFlow().map(Response<T>::toQueryResult)
     } catch (apolloException: ApolloException) {
