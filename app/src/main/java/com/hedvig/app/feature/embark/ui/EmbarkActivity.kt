@@ -123,6 +123,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                                 OfferActivity.newInstance(
                                     context = this@EmbarkActivity,
                                     quoteCartId = event.quoteCartId,
+                                    selectedContractTypes = event.selectedContractTypes,
                                     shouldShowOnNextAppStart = true
                                 )
                             )

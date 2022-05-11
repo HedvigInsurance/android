@@ -31,7 +31,8 @@ data class QuoteBundle(
         val detailsTable: Table,
         val perils: List<Peril>,
         val insurableLimits: List<InsurableLimitItem.InsurableLimit>,
-        val insuranceTerms: List<DocumentItems.Document>
+        val insuranceTerms: List<DocumentItems.Document>,
+        val insuranceType: String,
     ) {
         data class CurrentInsurer(
             val switchable: Boolean,
@@ -76,7 +77,8 @@ private fun QuoteBundleFragment.Quote.toQuote() = QuoteBundle.Quote(
     },
     insuranceTerms = insuranceTerms.map {
         DocumentItems.Document.from(it.fragments.insuranceTermFragment)
-    }
+    },
+    insuranceType = insuranceType
 )
 
 private fun QuoteBundleFragment.FrequentlyAskedQuestion.toFrequentlyAskedQuestion() =

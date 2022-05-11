@@ -63,7 +63,7 @@ class CheckoutViewModel(
     private var emailInput: String = ""
     private var identityNumberInput: String = ""
 
-    private val offerState = bundleVariantUseCase.observeOfferState(quoteCartId)
+    private val offerState = bundleVariantUseCase.observeOfferState(quoteCartId, emptyList())
 
     init {
         offerState

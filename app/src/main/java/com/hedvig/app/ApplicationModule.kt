@@ -458,6 +458,7 @@ val offerModule = module {
     viewModel<OfferViewModel> { parametersHolder: ParametersHolder ->
         OfferViewModelImpl(
             quoteCartId = parametersHolder.get(),
+            selectedContractTypes = parametersHolder.get(),
             offerRepository = get(),
             loginStatusService = get(),
             startCheckoutUseCase = get(),
