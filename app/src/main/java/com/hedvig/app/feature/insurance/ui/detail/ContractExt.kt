@@ -29,7 +29,7 @@ fun InsuranceQuery.Contract.toContractCardViewState() = ContractCardViewState(
     gradientOption = gradientOption,
     displayName = displayName,
     detailPills = detailPills,
-    logoUrls = ThemedIconUrls.from(logo.variants.fragments.iconVariantsFragment)
+    logoUrls = logo?.variants?.fragments?.iconVariantsFragment?.let { ThemedIconUrls.from(it) }
 )
 
 fun InsuranceQuery.Contract.toMemberDetailsViewState() =

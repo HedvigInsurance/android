@@ -10,5 +10,5 @@ data class ContractCardViewState(
     val gradientOption: TypeOfContractGradientOption?,
     val displayName: String,
     val detailPills: List<String>,
-    val logoUrls: ThemedIconUrls,
+    val logoUrls: ThemedIconUrls?,
 )

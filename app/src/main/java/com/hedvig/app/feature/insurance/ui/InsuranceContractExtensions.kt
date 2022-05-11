@@ -22,9 +22,11 @@ fun ContractCardViewState.bindTo(
         secondStatusPill.text = secondStatusPillText
 
         logo.load(
-            Uri.parse(logoUrls.iconByTheme(root.context)),
+            logoUrls?.iconByTheme(root.context)?.let { Uri.parse(it) },
             imageLoader,
-        )
+        ) {
+            fallback(R.drawable.ic_hedvig_h)
+        }
 
         bindBackgroundColor(gradientOption)
 
