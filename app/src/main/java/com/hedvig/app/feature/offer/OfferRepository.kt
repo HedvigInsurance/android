@@ -6,7 +6,6 @@ import arrow.core.computations.ensureNotNull
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.cache.http.HttpCachePolicy
 import com.apollographql.apollo.fetcher.ApolloResponseFetchers
-import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.QuoteCartQuery
 import com.hedvig.app.feature.offer.model.OfferModel
 import com.hedvig.app.feature.offer.model.QuoteCartFragmentToOfferModelMapper
@@ -27,8 +26,6 @@ class OfferRepository(
         replay = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
-
-    fun offerQuery(ids: List<String>) = OfferQuery(localeManager.defaultLocale(), ids)
 
     suspend fun queryAndEmitOffer(quoteCartId: QuoteCartId) {
         val offer = queryQuoteCart(quoteCartId)
