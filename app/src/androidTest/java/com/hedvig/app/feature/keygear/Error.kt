@@ -11,8 +11,10 @@ import com.hedvig.app.testdata.feature.keygear.KEY_GEAR_DATA
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_KEY_GEAR_AND_REFERRAL_FEATURE_ENABLED
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
+import com.hedvig.app.util.FeatureFlagRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
+import com.hedvig.app.util.featureflags.flags.Feature
 import com.hedvig.app.util.jsonObjectOf
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
@@ -46,6 +48,12 @@ class Error : TestCase() {
 
     @get:Rule
     val apolloCacheClearRule = ApolloCacheClearRule()
+
+    @get:Rule
+    val featureFlagRule = FeatureFlagRule(
+        Feature.KEY_GEAR to true,
+        Feature.REFERRALS to false,
+    )
 
     @Test
     fun shouldReload() = run {

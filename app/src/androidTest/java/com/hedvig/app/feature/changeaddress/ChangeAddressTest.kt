@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.changeaddress
 
 import com.hedvig.android.owldroid.graphql.ActiveContractBundlesQuery
+import com.hedvig.android.owldroid.graphql.CreateOnboardingQuoteCartMutation
 import com.hedvig.android.owldroid.graphql.UpcomingAgreementQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
@@ -23,7 +24,16 @@ class ChangeAddressTest : TestCase() {
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
         UpcomingAgreementQuery.QUERY_DOCUMENT to apolloResponse { success(UPCOMING_AGREEMENT_NONE) },
-        ActiveContractBundlesQuery.QUERY_DOCUMENT to apolloResponse { success(SELF_CHANGE_ELIGIBILITY) }
+        ActiveContractBundlesQuery.QUERY_DOCUMENT to apolloResponse { success(SELF_CHANGE_ELIGIBILITY) },
+        CreateOnboardingQuoteCartMutation.QUERY_DOCUMENT to apolloResponse {
+            success(
+                CreateOnboardingQuoteCartMutation.Data(
+                    onboardingQuoteCart_create = CreateOnboardingQuoteCartMutation.OnboardingQuoteCart_create(
+                        id = "123",
+                    )
+                )
+            )
+        }
     )
 
     @get:Rule
