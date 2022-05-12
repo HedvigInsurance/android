@@ -320,13 +320,13 @@ class OfferViewModelImpl(
     private fun getQuoteIdsAndStartSign(onComplete: suspend (StartCheckoutUseCase.Success) -> Unit) {
         viewModelScope.launch {
             either<ErrorMessage, StartCheckoutUseCase.Success> {
-                val offer = offerState.first()
-                val isPending = offer.map { it.offerModel.checkout?.status == Checkout.CheckoutStatus.PENDING }.bind()
+                val offer = offerState.first().bind()
+                val isPending = offer.offerModel.checkout?.status == Checkout.CheckoutStatus.PENDING
 
                 if (isPending) {
                     StartCheckoutUseCase.Success
                 } else {
-                    val quoteIds = offer.map { it.selectedQuoteIds }.bind()
+                    val quoteIds = offer.selectedQuoteIds
                     startCheckoutUseCase.startCheckoutAndClearCache(quoteCartId, quoteIds).bind()
                 }
             }.fold(

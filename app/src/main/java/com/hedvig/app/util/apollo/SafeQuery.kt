@@ -30,9 +30,9 @@ suspend fun <T> ApolloCall<T>.safeQuery(): QueryResult<T> {
     } catch (throwable: Throwable) {
         if (throwable is CancellationException) {
             throw throwable
-        } else {
-            QueryResult.Error.GeneralError(throwable.localizedMessage)
         }
+
+        QueryResult.Error.GeneralError(throwable.localizedMessage)
     }
 }
 
@@ -44,9 +44,9 @@ fun <T> ApolloSubscriptionCall<T>.safeSubscription(): Flow<QueryResult<T>> {
     } catch (throwable: Throwable) {
         if (throwable is CancellationException) {
             throw throwable
-        } else {
-            flowOf(QueryResult.Error.GeneralError(throwable.localizedMessage))
         }
+
+        flowOf(QueryResult.Error.GeneralError(throwable.localizedMessage))
     }
 }
 

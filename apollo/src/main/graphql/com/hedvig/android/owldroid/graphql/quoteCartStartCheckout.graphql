@@ -1,4 +1,4 @@
-mutation SignQuoteCart($quoteCartId: ID!, $quoteIds: [ID!]!) {
+mutation QuoteCartStartCheckout($quoteCartId: ID!, $quoteIds: [ID!]!) {
   quoteCartStartCheckout: quoteCart_startCheckout(id: $quoteCartId, quoteIds: $quoteIds) {
     ... on BasicError {
       message
