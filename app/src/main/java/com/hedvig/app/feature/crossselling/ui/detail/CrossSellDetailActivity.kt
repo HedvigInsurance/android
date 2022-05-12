@@ -4,9 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
@@ -29,8 +26,9 @@ class CrossSellDetailActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val viewModel = getViewModel<CrossSellDetailViewModel> {
+        getViewModel<CrossSellDetailViewModel> {
             parametersOf(
+                intent.getParcelableExtra<CrossSellNotificationMetadata>(NOTIFICATION_METADATA),
                 crossSell,
             )
         }
@@ -38,17 +36,9 @@ class CrossSellDetailActivity : BaseActivity() {
         window.compatSetDecorFitsSystemWindows(false)
 
         setContent {
-            val action by viewModel.action.collectAsState()
-            LaunchedEffect(action) {
-                val act = action
-                if (act != null) {
-                    viewModel.actionOpened()
-                    handleAction(this@CrossSellDetailActivity, act)
-                }
-            }
             HedvigTheme {
                 CrossSellDetailScreen(
-                    onCtaClick = viewModel::onCtaClick,
+                    onCtaClick = { handleAction(this, crossSell.action) },
                     onUpClick = { finish() },
                     onCoverageClick = { openCoverage(crossSell) },
                     onFaqClick = { openFaq(crossSell) },
@@ -81,14 +71,19 @@ class CrossSellDetailActivity : BaseActivity() {
 
     companion object {
         private const val CROSS_SELL = "CROSS_SELL"
+        private const val NOTIFICATION_METADATA = "NOTIFICATION_METADATA"
         fun newInstance(
             context: Context,
             crossSell: CrossSellData,
+            notificationMetadata: CrossSellNotificationMetadata? = null,
         ) = Intent(
             context,
             CrossSellDetailActivity::class.java,
         ).apply {
             putExtra(CROSS_SELL, crossSell)
+            if (notificationMetadata != null) {
+                putExtra(NOTIFICATION_METADATA, notificationMetadata)
+            }
         }
     }
 }

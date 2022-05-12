@@ -18,8 +18,8 @@ import com.hedvig.app.R
 import com.hedvig.app.databinding.GenericErrorBinding
 import com.hedvig.app.databinding.InsuranceContractCardBinding
 import com.hedvig.app.databinding.InsuranceTerminatedContractsBinding
-import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.feature.crossselling.ui.detail.CrossSellDetailActivity
+import com.hedvig.app.feature.crossselling.ui.detail.handleAction
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
 import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
@@ -33,13 +33,12 @@ import com.hedvig.app.util.extensions.viewBinding
 
 class InsuranceAdapter(
     private val marketManager: MarketManager,
-    private val retry: () -> Unit,
-    private val onClickCrossSell: (CrossSellData.Action) -> Unit,
+    private val retry: () -> Unit
 ) : ListAdapter<InsuranceModel, InsuranceAdapter.ViewHolder>(InsuranceAdapterDiffUtilItemCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.insurance_contract_card -> ViewHolder.ContractViewHolder(parent)
-        CROSS_SELL -> ViewHolder.CrossSellViewHolder(ComposeView(parent.context), onClickCrossSell)
+        CROSS_SELL -> ViewHolder.CrossSellViewHolder(ComposeView(parent.context))
         R.layout.insurance_header -> ViewHolder.TitleViewHolder(parent)
         R.layout.generic_error -> ViewHolder.Error(parent)
         SUBHEADING -> ViewHolder.SubheadingViewHolder(ComposeView(parent.context))
@@ -80,7 +79,6 @@ class InsuranceAdapter(
 
         class CrossSellViewHolder(
             private val composeView: ComposeView,
-            private val onClickCrossSell: (CrossSellData.Action) -> Unit,
         ) : ViewHolder(composeView) {
             init {
                 composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
@@ -103,8 +101,8 @@ class InsuranceAdapter(
                             onCardClick = {
                                 context.startActivity(CrossSellDetailActivity.newInstance(context, data.inner))
                             },
-                            onCtaClick = {
-                                onClickCrossSell(data.inner.action)
+                            onCtaClick = { label ->
+                                handleAction(context, data.inner.action)
                             }
                         )
                     }

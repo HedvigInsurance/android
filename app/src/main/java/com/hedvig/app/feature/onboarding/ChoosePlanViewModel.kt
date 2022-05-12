@@ -2,8 +2,6 @@ package com.hedvig.app.feature.onboarding
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
-import com.hedvig.app.feature.home.ui.changeaddress.appendQuoteCartId
 import com.hedvig.app.util.extensions.replace
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.channels.Channel
@@ -12,10 +10,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
-class ChoosePlanViewModel(
+abstract class ChoosePlanViewModel(
     private val hAnalytics: HAnalytics,
-    private val getBundlesUseCase: GetBundlesUseCase,
-    private val createQuoteCartUseCase: CreateQuoteCartUseCase,
 ) : ViewModel() {
 
     sealed class ViewState {
@@ -34,19 +30,7 @@ class ChoosePlanViewModel(
     protected val _events = Channel<Event>(Channel.UNLIMITED)
     val events = _events.receiveAsFlow()
 
-    init {
-        load()
-    }
-
-    fun load() {
-        viewModelScope.launch {
-            val state = when (val result = getBundlesUseCase.invoke()) {
-                BundlesResult.Error -> ViewState.Error
-                is BundlesResult.Success -> ViewState.Success(result.toModel())
-            }
-            _viewState.value = state
-        }
-    }
+    abstract fun load()
 
     fun onBundleSelected(bundleItem: OnboardingModel.BundleItem) {
         (_viewState.value as? ViewState.Success)?.let { viewState ->
@@ -63,16 +47,32 @@ class ChoosePlanViewModel(
         val selectedBundle = (_viewState.value as? ViewState.Success)?.bundleItems?.firstOrNull { it.selected }?.bundle
         if (selectedBundle != null) {
             hAnalytics.onboardingChooseEmbarkFlow((selectedBundle.storyName))
-            viewModelScope.launch {
-                createQuoteCartUseCase.invoke().tap { quoteCartId ->
-                    _events.send(
-                        Event.Continue(
-                            storyName = appendQuoteCartId(selectedBundle.storyName, quoteCartId.id),
-                            storyTitle = selectedBundle.storyTitle
-                        )
-                    )
-                }
+            _events.trySend(
+                Event.Continue(
+                    storyName = selectedBundle.storyName,
+                    storyTitle = selectedBundle.storyTitle
+                )
+            )
+        }
+    }
+}
+
+class ChoosePlanViewModelImpl(
+    private val getBundlesUseCase: GetBundlesUseCase,
+    hAnalytics: HAnalytics,
+) : ChoosePlanViewModel(hAnalytics) {
+
+    init {
+        load()
+    }
+
+    override fun load() {
+        viewModelScope.launch {
+            val state = when (val result = getBundlesUseCase.invoke()) {
+                BundlesResult.Error -> ViewState.Error
+                is BundlesResult.Success -> ViewState.Success(result.toModel())
             }
+            _viewState.value = state
         }
     }
 }

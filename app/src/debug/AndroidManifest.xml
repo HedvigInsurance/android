@@ -36,6 +36,7 @@
             android:label="Referrals Mock Screen"
             android:theme="@style/Hedvig.Theme" />
 
+        <activity android:name=".feature.onboarding.OnboardingMockActivity" />
         <activity android:name=".feature.genericauth.GenericAuthMockActivity" />
 
         <activity
@@ -49,6 +50,11 @@
             android:theme="@style/Hedvig.Theme" />
 
         <activity android:name=".feature.embark.RecorderScaffoldActivity" />
+
+        <activity
+            android:name=".feature.offer.OfferMockActivity"
+            android:label="Offer Mock Screen"
+            android:theme="@style/Hedvig.Theme" />
 
         <activity
             android:name=".feature.home.HomeMockActivity"
