@@ -50,6 +50,6 @@
         android:id="@+id/login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Login with email" />
+        android:text="@string/bankid_missing_login.email_button" />
 
 </LinearLayout>
