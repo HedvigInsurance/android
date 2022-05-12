@@ -1,6 +1,9 @@
 package com.hedvig.app.feature.insurance.ui
 
+import android.net.Uri
 import androidx.core.view.isVisible
+import coil.ImageLoader
+import coil.load
 import com.hedvig.android.owldroid.type.TypeOfContractGradientOption
 import com.hedvig.app.R
 import com.hedvig.app.databinding.InsuranceContractCardBinding
@@ -9,13 +12,19 @@ import com.hedvig.app.util.extensions.compatColor
 
 fun ContractCardViewState.bindTo(
     binding: InsuranceContractCardBinding,
-    marketManager: MarketManager
+    marketManager: MarketManager,
+    imageLoader: ImageLoader,
 ) =
     binding.apply {
         firstStatusPill.isVisible = firstStatusPillText != null
         firstStatusPill.text = firstStatusPillText
         secondStatusPill.isVisible = secondStatusPillText != null
         secondStatusPill.text = secondStatusPillText
+
+        logo.load(
+            Uri.parse(logoUrls.iconByTheme(root.context)),
+            imageLoader,
+        )
 
         bindBackgroundColor(gradientOption)
 

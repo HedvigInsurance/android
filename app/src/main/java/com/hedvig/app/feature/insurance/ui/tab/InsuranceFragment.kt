@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.flowWithLifecycle
+import coil.ImageLoader
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentInsuranceBinding
 import com.hedvig.app.feature.crossselling.ui.detail.handleAction
@@ -25,6 +26,7 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
     private val insuranceViewModel: InsuranceViewModel by sharedViewModel()
     private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
     private val marketManager: MarketManager by inject()
+    private val imageLoader: ImageLoader by inject()
     private val binding by viewBinding(FragmentInsuranceBinding::bind)
     private var scroll = 0
 
@@ -43,7 +45,7 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
                 )
             )
             itemAnimator = ViewHolderReusingDefaultItemAnimator()
-            adapter = InsuranceAdapter(marketManager, insuranceViewModel::load, insuranceViewModel::onClickCrossSell)
+            adapter = InsuranceAdapter(marketManager, insuranceViewModel::load, insuranceViewModel::onClickCrossSell, imageLoader)
         }
 
         binding.swipeToRefresh.setOnRefreshListener {

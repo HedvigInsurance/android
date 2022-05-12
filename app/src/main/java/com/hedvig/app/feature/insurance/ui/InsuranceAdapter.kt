@@ -13,6 +13,7 @@ import androidx.core.app.ActivityOptionsCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import coil.ImageLoader
 import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.hedvig.app.R
 import com.hedvig.app.databinding.GenericErrorBinding
@@ -35,10 +36,11 @@ class InsuranceAdapter(
     private val marketManager: MarketManager,
     private val retry: () -> Unit,
     private val onClickCrossSell: (CrossSellData.Action) -> Unit,
+    private val imageLoader: ImageLoader,
 ) : ListAdapter<InsuranceModel, InsuranceAdapter.ViewHolder>(InsuranceAdapterDiffUtilItemCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
-        R.layout.insurance_contract_card -> ViewHolder.ContractViewHolder(parent)
+        R.layout.insurance_contract_card -> ViewHolder.ContractViewHolder(parent, imageLoader)
         CROSS_SELL -> ViewHolder.CrossSellViewHolder(ComposeView(parent.context), onClickCrossSell)
         R.layout.insurance_header -> ViewHolder.TitleViewHolder(parent)
         R.layout.generic_error -> ViewHolder.Error(parent)
@@ -112,7 +114,7 @@ class InsuranceAdapter(
             }
         }
 
-        class ContractViewHolder(parent: ViewGroup) : ViewHolder(
+        class ContractViewHolder(parent: ViewGroup, private val imageLoader: ImageLoader) : ViewHolder(
             parent.inflate(R.layout.insurance_contract_card)
         ) {
             private val binding by viewBinding(InsuranceContractCardBinding::bind)
@@ -125,7 +127,7 @@ class InsuranceAdapter(
                 if (data !is InsuranceModel.Contract) {
                     return invalid(data)
                 }
-                data.contractCardViewState.bindTo(binding, marketManager)
+                data.contractCardViewState.bindTo(binding, marketManager, imageLoader)
                 card.setHapticClickListener {
                     card.transitionName = TRANSITION_NAME
                     card.context.getActivity()?.let { activity ->
