@@ -7,7 +7,7 @@ import com.hedvig.app.feature.home.screens.HomeTabScreen
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.testdata.feature.home.HOME_DATA_UPCOMING_RENEWAL
 import com.hedvig.app.testdata.feature.home.builders.HomeDataBuilder
-import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA
+import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_REFERRALS_ENABLED
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyIntentsActivityScenarioRule
@@ -27,7 +27,9 @@ class UpcomingRenewalTest : TestCase() {
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
         LoggedInQuery.QUERY_DOCUMENT to apolloResponse {
-            success(LOGGED_IN_DATA)
+            success(
+                LOGGED_IN_DATA_WITH_REFERRALS_ENABLED
+            )
         },
         HomeQuery.QUERY_DOCUMENT to apolloResponse {
             success(HOME_DATA_UPCOMING_RENEWAL)

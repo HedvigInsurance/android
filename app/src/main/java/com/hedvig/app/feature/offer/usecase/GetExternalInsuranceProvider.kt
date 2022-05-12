@@ -51,7 +51,7 @@ class GetExternalInsuranceProviderUseCase(
 }
 
 data class ExternalProvider(
-    val dataCollectionStatus: SubscribeToDataCollectionStatusUseCase.Status,
+    val dataCollectionStatus: SubscribeToDataCollectionStatusUseCase.Status?,
     val dataCollectionResult: DataCollectionResult?,
     val insuranceProviderDisplayName: String?,
 )

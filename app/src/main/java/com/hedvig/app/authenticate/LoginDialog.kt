@@ -6,10 +6,18 @@ import com.hedvig.android.owldroid.type.AuthState
 import com.hedvig.app.R
 import com.hedvig.app.feature.genericauth.GenericAuthActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
+import com.hedvig.app.service.push.PushTokenManager
+import com.hedvig.app.util.extensions.viewLifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LoginDialog : AuthenticateDialog() {
+
     private val model: UserViewModel by viewModel()
+    private val pushTokenManager: PushTokenManager by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -39,10 +47,20 @@ class LoginDialog : AuthenticateDialog() {
         }
         AuthState.SUCCESS -> {
             binding.authTitle.setText(R.string.BANK_ID_LOG_IN_TITLE_SUCCESS)
-            dismissAllowingStateLoss()
-            startActivity(
-                LoggedInActivity.newInstance(requireContext(), withoutHistory = true)
-            )
+            model.onAuthSuccess()
+            viewLifecycleScope.launch {
+                withContext(Dispatchers.IO) {
+                    runCatching {
+                        pushTokenManager.refreshToken()
+                    }
+                    withContext(Dispatchers.Main) {
+                        dismissAllowingStateLoss()
+                        startActivity(
+                            LoggedInActivity.newInstance(requireContext(), withoutHistory = true)
+                        )
+                    }
+                }
+            }
         }
     }
 

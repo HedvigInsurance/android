@@ -61,6 +61,16 @@
             android:theme="@style/Hedvig.Theme" />
 
         <activity
+            android:name=".feature.profile.ProfileMockActivity"
+            android:label="Home Mock Screen"
+            android:theme="@style/Hedvig.Theme" />
+
+        <activity
+            android:name=".feature.marketpicker.MarketPickerMockActivity"
+            android:label="Home Mock Screen"
+            android:theme="@style/Hedvig.Theme" />
+
+        <activity
             android:name=".feature.loggedin.LoggedInMockActivity"
             android:label="Logged In Mock Screen"
             android:theme="@style/Hedvig.Theme" />
@@ -78,6 +88,8 @@
         <activity
             android:name=".feature.checkout.CheckoutMockActivity"
             android:label="Checkout Mock Screen" />
+
+        <activity android:name=".feature.payment.PaymentMockActivity" />
 
         <activity android:name=".feature.changeaddress.ChangeAddressMockActivity" />
 
@@ -99,6 +111,8 @@
                     android:host="impersonate" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".featureflags.FeatureFlagActivity" />
 
         <activity android:name=".feature.embark.EmbarkStoryTesterActivity" />
 

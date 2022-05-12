@@ -119,10 +119,7 @@ abstract class EmbarkViewModel(
             val firstPassage = story.passages.first { it.id == story.startPassage }
 
             totalSteps = getPassagesLeft(firstPassage)
-
-            viewModelScope.launch {
-                navigateToPassage(firstPassage.name)
-            }
+            navigateToPassage(firstPassage.name)
         }
     }
 
@@ -141,13 +138,11 @@ abstract class EmbarkViewModel(
         if (apiFromAction != null) {
             callApi(apiFromAction)
         } else {
-            viewModelScope.launch {
-                navigateToPassage(nextPassageName)
-            }
+            navigateToPassage(nextPassageName)
         }
     }
 
-    private suspend fun navigateToPassage(passageName: String) {
+    private fun navigateToPassage(passageName: String) {
         val nextPassage = storyData.embarkStory?.passages?.find { it.name == passageName }
         val redirectPassage = getRedirectPassageAndPutInStore(nextPassage?.redirects)
         val location = nextPassage?.externalRedirect?.data?.location
@@ -235,9 +230,7 @@ abstract class EmbarkViewModel(
 
         when (result) {
             // TODO Handle errors
-            is GraphQLQueryResult.Error -> viewModelScope.launch {
-                navigateToPassage(result.passageName)
-            }
+            is GraphQLQueryResult.Error -> navigateToPassage(result.passageName)
             is GraphQLQueryResult.ValuesFromResponse -> {
                 result.arrayValues.forEach {
                     valueStore.put(it.first, it.second)
@@ -247,9 +240,7 @@ abstract class EmbarkViewModel(
                 }
 
                 if (result.passageName != null) {
-                    viewModelScope.launch {
-                        navigateToPassage(result.passageName)
-                    }
+                    navigateToPassage(result.passageName)
                 }
             }
         }
@@ -293,7 +284,7 @@ abstract class EmbarkViewModel(
         return null
     }
 
-    private fun trackingData(track: EmbarkStoryQuery.Track) = when {
+    private fun trackingData(track: EmbarkStoryQuery.Track): Map<String, String> = when {
         track.includeAllKeys -> valueStore.toMap()
         track.eventKeys.filterNotNull().isNotEmpty() ->
             track

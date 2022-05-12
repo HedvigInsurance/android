@@ -5,7 +5,7 @@ import android.os.Looper.getMainLooper
 import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedViewModel
-import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA
+import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA_WITH_KEY_GEAR_FEATURE_ENABLED
 
 class MockReferralsActivatedViewModel : ReferralsActivatedViewModel() {
     override val data = MutableLiveData<LoggedInQuery.Data>()
@@ -13,7 +13,7 @@ class MockReferralsActivatedViewModel : ReferralsActivatedViewModel() {
     init {
         Handler(getMainLooper()).postDelayed(
             {
-                data.postValue(LOGGED_IN_DATA)
+                data.postValue(LOGGED_IN_DATA_WITH_KEY_GEAR_FEATURE_ENABLED)
             },
             loadDelay
         )

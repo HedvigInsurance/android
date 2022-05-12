@@ -3,7 +3,6 @@ package com.hedvig.app.feature.profile.ui.payment
 import com.hedvig.android.owldroid.graphql.PaymentQuery
 import com.hedvig.android.owldroid.type.PayinMethodStatus
 import com.hedvig.android.owldroid.type.PayoutMethodStatus
-import com.hedvig.hanalytics.PaymentType
 import java.time.LocalDate
 
 sealed class PaymentModel {
@@ -17,7 +16,7 @@ sealed class PaymentModel {
         val inner: PaymentQuery.Data,
     ) : PaymentModel()
 
-    data class ConnectPayment(val payinType: PaymentType) : PaymentModel()
+    object ConnectPayment : PaymentModel()
 
     data class CampaignInformation(val inner: PaymentQuery.Data) : PaymentModel()
 
@@ -41,20 +40,9 @@ sealed class PaymentModel {
 
     sealed class Link : PaymentModel() {
         object RedeemDiscountCode : Link()
-        data class TrustlyChangePayin(
-            override val payinType: PaymentType,
-        ) : Link(), PayinLink
-
-        data class AdyenChangePayin(
-            override val payinType: PaymentType,
-        ) : Link(), PayinLink
-
+        object TrustlyChangePayin : Link()
+        object AdyenChangePayin : Link()
         object AdyenAddPayout : Link()
-
         object AdyenChangePayout : Link()
-
-        interface PayinLink {
-            val payinType: PaymentType
-        }
     }
 }

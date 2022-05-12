@@ -9,13 +9,12 @@ import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusCardUiState
 import com.hedvig.app.util.featureflags.FeatureManager
-import com.hedvig.app.util.featureflags.flags.Feature
 
 class HomeItemsBuilder(
     private val featureManager: FeatureManager
 ) {
 
-    suspend fun buildItems(
+    fun buildItems(
         homeData: HomeQuery.Data
     ): List<HomeModel> = when {
         homeData.isActive() -> buildActiveItems(homeData)
@@ -26,7 +25,7 @@ class HomeItemsBuilder(
         else -> listOf(HomeModel.Error)
     }
 
-    private suspend fun buildActiveItems(homeData: HomeQuery.Data): List<HomeModel> = buildList {
+    private fun buildActiveItems(homeData: HomeQuery.Data): List<HomeModel> = buildList {
         addAll(listOfNotNull(*psaItems(homeData.importantMessages).toTypedArray()))
         add(HomeModel.BigText.Active(homeData.member.firstName ?: ""))
         val claimStatusCard: HomeModel.ClaimStatus? = claimStatusCardOrNull(homeData)
@@ -38,23 +37,18 @@ class HomeItemsBuilder(
         }
         add(HomeModel.HowClaimsWork(homeData.howClaimsWork))
         addAll(listOfNotNull(*upcomingRenewals(homeData.contracts).toTypedArray()))
-        if (
-            homeData.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP &&
-            featureManager.isFeatureEnabled(Feature.CONNECT_PAYIN_REMINDER)
-        ) {
-            add(HomeModel.ConnectPayin(featureManager.getPaymentType()))
+        if (homeData.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP) {
+            add(HomeModel.ConnectPayin)
         }
-        if (featureManager.isFeatureEnabled(Feature.COMMON_CLAIMS)) {
-            add(HomeModel.Header(R.string.home_tab_common_claims_title))
-            addAll(
-                listOfNotNull(
-                    *commonClaimsItems(
-                        homeData.commonClaims,
-                        homeData.isEligibleToCreateClaim
-                    ).toTypedArray()
-                )
+        add(HomeModel.Header(R.string.home_tab_common_claims_title))
+        addAll(
+            listOfNotNull(
+                *commonClaimsItems(
+                    homeData.commonClaims,
+                    homeData.isEligibleToCreateClaim
+                ).toTypedArray()
             )
-        }
+        )
 
         add(HomeModel.Header(R.string.home_tab_editing_section_title))
         add(HomeModel.ChangeAddress)
@@ -76,7 +70,7 @@ class HomeItemsBuilder(
         claimStatusCardOrNull(homeData)?.let(::add)
     }
 
-    private suspend fun buildTerminatedItems(homeData: HomeQuery.Data): List<HomeModel> = buildList {
+    private fun buildTerminatedItems(homeData: HomeQuery.Data): List<HomeModel> = buildList {
         add(HomeModel.BigText.Terminated(homeData.member.firstName ?: ""))
         add(HomeModel.BodyText.Terminated)
         val claimStatusCard: HomeModel.ClaimStatus? = claimStatusCardOrNull(homeData)

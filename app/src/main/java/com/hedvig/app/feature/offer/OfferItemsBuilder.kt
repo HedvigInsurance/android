@@ -27,13 +27,14 @@ object OfferItemsBuilder {
         val bundle = quoteBundleVariant.bundle
         add(
             OfferItems.Header(
+                quoteCartId = offerModel.id,
                 title = bundle.name,
                 startDate = bundle.inception.startDate,
                 startDateLabel = bundle.inception.startDateLabel,
                 premium = bundle.cost.finalPremium,
+                originalPremium = bundle.cost.grossMonthlyCost,
                 hasDiscountedPrice = !bundle.cost.grossMonthlyCost.isEqualTo(bundle.cost.netMonthlyCost) &&
                     !bundle.viewConfiguration.ignoreCampaigns,
-                originalPremium = bundle.cost.grossMonthlyCost,
                 incentiveDisplayValue = offerModel.campaign?.displayValue,
                 hasCampaigns = offerModel.campaign?.shouldShowIncentive == true,
                 changeDateBottomSheetData = bundle.inception.changeDateData,
@@ -42,8 +43,7 @@ object OfferItemsBuilder {
                 showCampaignManagement = bundle.viewConfiguration.showCampaignManagement,
                 ignoreCampaigns = bundle.viewConfiguration.showCampaignManagement,
                 gradientType = bundle.viewConfiguration.gradient,
-                paymentMethodsApiResponse = paymentMethods,
-                quoteCartId = offerModel.id,
+                paymentMethodsApiResponse = paymentMethods
             ),
         )
 

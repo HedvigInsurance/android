@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.app.feature.referrals.data.ReferralsRepository
+import com.hedvig.app.util.featureflags.Feature
+import com.hedvig.app.util.featureflags.FeatureManager
 import e
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,6 +19,7 @@ import kotlinx.coroutines.launch
 abstract class ReferralsViewModel : ViewModel() {
     sealed class ViewState {
         data class Success(
+            val showCampaignBar: Boolean,
             val data: ReferralsQuery.Data,
         ) : ViewState()
 
@@ -44,6 +47,7 @@ abstract class ReferralsViewModel : ViewModel() {
 
 class ReferralsViewModelImpl(
     private val referralsRepository: ReferralsRepository,
+    private val featureManager: FeatureManager
 ) : ReferralsViewModel() {
     init {
         viewModelScope.launch {
@@ -58,6 +62,7 @@ class ReferralsViewModelImpl(
                     response.data?.let {
                         _data.value = ViewState.Success(
                             data = it,
+                            showCampaignBar = featureManager.isFeatureEnabled(Feature.REFERRAL_CAMPAIGN)
                         )
                     }
                 }

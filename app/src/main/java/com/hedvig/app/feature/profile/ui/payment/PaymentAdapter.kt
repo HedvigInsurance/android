@@ -21,7 +21,6 @@ import com.hedvig.app.databinding.PaymentRedeemCodeBinding
 import com.hedvig.app.databinding.PayoutConnectionStatusBinding
 import com.hedvig.app.databinding.PayoutDetailsParagraphBinding
 import com.hedvig.app.databinding.TrustlyPayinDetailsBinding
-import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.feature.referrals.ui.redeemcode.RefetchingRedeemCodeBottomSheet
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.GenericDiffUtilItemCallback
@@ -50,7 +49,7 @@ class PaymentAdapter(
         PaymentModel.Header -> R.layout.payment_header
         is PaymentModel.FailedPayments -> R.layout.failed_payments_card
         is PaymentModel.NextPayment -> R.layout.next_payment_card
-        is PaymentModel.ConnectPayment -> R.layout.connect_payin_card
+        PaymentModel.ConnectPayment -> R.layout.connect_payin_card
         is PaymentModel.CampaignInformation -> R.layout.campaign_information_section
         PaymentModel.PaymentHistoryHeader -> R.layout.payment_history_header
         is PaymentModel.Charge -> R.layout.payment_history_item
@@ -202,19 +201,9 @@ class PaymentAdapter(
                 marketManager: MarketManager,
                 fragmentManager: FragmentManager,
             ) = with(binding) {
-                if (data !is PaymentModel.ConnectPayment) {
-                    return
-                }
                 connect.setHapticClickListener {
-                    val market = marketManager.market ?: return@setHapticClickListener
-                    connect.context.startActivity(
-                        connectPayinIntent(
-                            connect.context,
-                            data.payinType,
-                            market,
-                            false,
-                        )
-                    )
+                    marketManager.market?.connectPayin(connect.context)
+                        ?.let { connect.context.startActivity(it) }
                 }
             }
         }
@@ -451,9 +440,9 @@ class PaymentAdapter(
                 root.setText(
                     when (data) {
                         PaymentModel.Link.RedeemDiscountCode -> R.string.REFERRAL_ADDCOUPON_HEADLINE
-                        is PaymentModel.Link.TrustlyChangePayin -> R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT
-                        is PaymentModel.Link.AdyenChangePayin -> R.string.MY_PAYMENT_CHANGE_CREDIT_CARD_BUTTON
-                        is PaymentModel.Link.AdyenAddPayout ->
+                        PaymentModel.Link.TrustlyChangePayin -> R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT
+                        PaymentModel.Link.AdyenChangePayin -> R.string.MY_PAYMENT_CHANGE_CREDIT_CARD_BUTTON
+                        PaymentModel.Link.AdyenAddPayout ->
                             R.string.payment_screen_connect_pay_out_connect_payout_button
                         PaymentModel.Link.AdyenChangePayout -> R.string.payment_screen_pay_out_change_payout_button
                     }
@@ -462,44 +451,39 @@ class PaymentAdapter(
                 root.putCompoundDrawablesRelativeWithIntrinsicBounds(
                     end = when (data) {
                         PaymentModel.Link.RedeemDiscountCode,
-                        is PaymentModel.Link.AdyenAddPayout,
+                        PaymentModel.Link.AdyenAddPayout,
                         -> R.drawable.ic_add_circle
-                        is PaymentModel.Link.TrustlyChangePayin,
-                        is PaymentModel.Link.AdyenChangePayin,
+                        PaymentModel.Link.TrustlyChangePayin,
+                        PaymentModel.Link.AdyenChangePayin,
                         PaymentModel.Link.AdyenChangePayout,
                         -> R.drawable.ic_edit
                     }
                 )
 
-                root.setHapticClickListener {
+                root.setHapticClickListener(
                     when (data) {
-                        is PaymentModel.Link.PayinLink -> {
-                            val market = marketManager.market ?: return@setHapticClickListener
-                            root.context.startActivity(
-                                connectPayinIntent(
-                                    root.context,
-                                    data.payinType,
-                                    market,
-                                    false,
-                                )
-                            )
+                        PaymentModel.Link.TrustlyChangePayin,
+                        PaymentModel.Link.AdyenChangePayin,
+                        -> { _ ->
+                            marketManager.market?.connectPayin(
+                                root.context
+                            )?.let { root.context.startActivity(it) }
                         }
-                        PaymentModel.Link.RedeemDiscountCode -> {
+                        PaymentModel.Link.RedeemDiscountCode -> { _ ->
                             RefetchingRedeemCodeBottomSheet.newInstance()
                                 .show(
                                     fragmentManager,
                                     RefetchingRedeemCodeBottomSheet.TAG
                                 )
                         }
-                        is PaymentModel.Link.AdyenAddPayout,
+                        PaymentModel.Link.AdyenAddPayout,
                         PaymentModel.Link.AdyenChangePayout,
-                        -> {
+                        -> { _ ->
                             marketManager.market?.connectPayout(root.context)
                                 ?.let { root.context.startActivity(it) }
                         }
-                        else -> {}
                     }
-                }
+                )
             }
         }
     }

@@ -10,6 +10,8 @@ import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddressInput
 import com.hedvig.app.util.coroutines.ItemWithHistory
 import com.hedvig.app.util.coroutines.withHistoryOfLastValue
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -26,6 +28,7 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.time.Duration.Companion.seconds
 
+@OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 class AddressAutoCompleteViewModel(
     initialAddress: DanishAddress?,
     getDanishAddressAutoCompletionUseCase: GetDanishAddressAutoCompletionUseCase,

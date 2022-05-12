@@ -2,7 +2,6 @@ package com.hedvig.app.feature.profile.ui.tab
 
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isGone
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -20,7 +19,7 @@ import i
 class ProfileAdapter(
     private val lifecycleOwner: LifecycleOwner,
     private val retry: () -> Unit,
-    private val onLogoutListener: () -> Unit,
+    private val onLogoutListener: () -> Unit
 ) : ListAdapter<ProfileModel, ProfileAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
@@ -28,7 +27,7 @@ class ProfileAdapter(
         R.layout.profile_row -> ViewHolder.Row(parent)
         R.layout.profile_subtitle -> ViewHolder.Subtitle(parent)
         R.layout.profile_logout -> ViewHolder.Logout(parent, onLogoutListener)
-        R.layout.generic_error -> ViewHolder.Error(parent, retry)
+        R.layout.generic_error -> ViewHolder.Error(parent)
         else -> throw Error("Invalid viewType")
     }
 
@@ -41,38 +40,37 @@ class ProfileAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position), lifecycleOwner)
+        holder.bind(getItem(position), lifecycleOwner, retry)
     }
 
     sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        abstract fun bind(data: ProfileModel, lifecycleOwner: LifecycleOwner): Any?
+        abstract fun bind(data: ProfileModel, lifecycleOwner: LifecycleOwner, retry: () -> Unit): Any?
 
         fun invalid(data: ProfileModel) {
             e { "Invalid data passed to ${this.javaClass.name}::bind - type is ${data.javaClass.name}" }
         }
 
         class Title(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.profile_title)) {
-            override fun bind(data: ProfileModel, lifecycleOwner: LifecycleOwner) = Unit
+            override fun bind(data: ProfileModel, lifecycleOwner: LifecycleOwner, retry: () -> Unit) = Unit
         }
 
         class Row(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.profile_row)) {
             private val binding by viewBinding(ProfileRowBinding::bind)
-            override fun bind(data: ProfileModel, lifecycleOwner: LifecycleOwner) = with(binding) {
+            override fun bind(data: ProfileModel, lifecycleOwner: LifecycleOwner, retry: () -> Unit) = with(binding) {
                 if (data !is ProfileModel.Row) {
                     return invalid(data)
                 }
 
                 title.text = data.title
-                caption.isGone = data.caption == null
                 caption.text = data.caption
 
                 icon.setImageResource(data.icon)
-                root.setHapticClickListener { data.onClick() }
+                root.setHapticClickListener { data.action() }
             }
         }
 
         class Subtitle(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.profile_subtitle)) {
-            override fun bind(data: ProfileModel, lifecycleOwner: LifecycleOwner) = Unit
+            override fun bind(data: ProfileModel, lifecycleOwner: LifecycleOwner, retry: () -> Unit) = Unit
         }
 
         class Logout(
@@ -80,20 +78,17 @@ class ProfileAdapter(
             private val onLogoutListener: () -> Unit,
         ) : ViewHolder(parent.inflate(R.layout.profile_logout)) {
             private val binding by viewBinding(ProfileLogoutBinding::bind)
-            override fun bind(data: ProfileModel, lifecycleOwner: LifecycleOwner) = with(binding) {
+            override fun bind(data: ProfileModel, lifecycleOwner: LifecycleOwner, retry: () -> Unit) = with(binding) {
                 root.setHapticClickListener {
                     onLogoutListener()
                 }
             }
         }
 
-        class Error(
-            parent: ViewGroup,
-            private val retry: () -> Unit,
-        ) : ViewHolder(parent.inflate(R.layout.generic_error)) {
+        class Error(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.generic_error)) {
             private val binding by viewBinding(GenericErrorBinding::bind)
-            override fun bind(data: ProfileModel, lifecycleOwner: LifecycleOwner) = with(binding) {
-                retry.setHapticClickListener {
+            override fun bind(data: ProfileModel, lifecycleOwner: LifecycleOwner, retry: () -> Unit) = with(binding) {
+                this.retry.setHapticClickListener {
                     i { "Attempting retry" }
                     retry()
                 }

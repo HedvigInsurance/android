@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.provider.Settings
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
@@ -16,7 +17,7 @@ import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.UserViewModel
 import com.hedvig.app.databinding.ActivitySettingsBinding
-import com.hedvig.app.feature.marketing.MarketingActivity
+import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.makeLocaleString
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.extensions.compatDrawable
@@ -126,8 +127,7 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
                     }
                     Market.FR,
                     null,
-                    -> {
-                    }
+                    -> {}
                 }
                 lp.setOnPreferenceChangeListener { _, newValue ->
                     (newValue as? String)?.let { v ->
@@ -136,6 +136,9 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
                             .apply(requireContext()).let { ctx ->
                                 model.save(makeLocaleString(ctx, marketManager.market), localeManager.defaultLocale())
                             }
+                        LocalBroadcastManager
+                            .getInstance(requireContext())
+                            .sendBroadcast(Intent(LOCALE_BROADCAST))
                     }
                     true
                 }

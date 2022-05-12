@@ -8,6 +8,7 @@ import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.authenticate.LoginStatusService
+import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.app.feature.adyen.PaymentTokenId
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.checkout.CheckoutParameter
@@ -17,6 +18,7 @@ import com.hedvig.app.feature.offer.model.Checkout
 import com.hedvig.app.feature.offer.model.OfferModel
 import com.hedvig.app.feature.offer.model.QuoteBundleVariant
 import com.hedvig.app.feature.offer.model.QuoteCartId
+import com.hedvig.app.feature.offer.model.paymentApiResponseOrNull
 import com.hedvig.app.feature.offer.model.quotebundle.OfferStartDate
 import com.hedvig.app.feature.offer.model.quotebundle.PostSignScreen
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
@@ -29,13 +31,12 @@ import com.hedvig.app.feature.offer.usecase.OfferState
 import com.hedvig.app.feature.offer.usecase.StartCheckoutUseCase
 import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.util.ErrorMessage
-import com.hedvig.app.util.featureflags.FeatureManager
-import com.hedvig.hanalytics.PaymentType
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
@@ -44,6 +45,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
@@ -69,7 +71,6 @@ abstract class OfferViewModel : ViewModel() {
             val startDate: LocalDate?,
             val postSignScreen: PostSignScreen,
             val bundleDisplayName: String,
-            val payinType: PaymentType,
         ) : Event()
 
         object StartSwedishBankIdSign : Event()
@@ -160,18 +161,25 @@ class OfferViewModelImpl(
     private val loginStatusService: LoginStatusService,
     private val startCheckoutUseCase: StartCheckoutUseCase,
     shouldShowOnNextAppStart: Boolean,
+    private val adyenRepository: AdyenRepository,
     private val chatRepository: ChatRepository,
     private val editCampaignUseCase: EditCampaignUseCase,
-    private val featureManager: FeatureManager,
     private val addPaymentTokenUseCase: AddPaymentTokenUseCase,
     private val getExternalInsuranceProviderUseCase: GetExternalInsuranceProviderUseCase,
     private val getBundleVariantUseCase: ObserveOfferStateUseCase,
 ) : OfferViewModel() {
 
     private val _viewState: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.Loading)
-    override val viewState: StateFlow<ViewState> = _viewState.asStateFlow()
 
     private val offerState = getBundleVariantUseCase.observeOfferState(quoteCartId)
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override val viewState: StateFlow<ViewState> = _viewState
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = ViewState.Loading,
+        )
 
     init {
         loginStatusService.isViewingOffer = shouldShowOnNextAppStart
@@ -199,7 +207,8 @@ class OfferViewModelImpl(
                                 offerModel = offerModel,
                                 bundleVariant = bundle,
                                 loginStatus = loginStatusService.getLoginStatus(),
-                                paymentMethods = offerModel.paymentMethodsApiResponse,
+                                paymentMethods = offerModel.paymentApiResponseOrNull()
+                                    ?: adyenRepository.paymentMethodsResponse(),
                                 externalProvider = externalProvider,
                                 onVariantSelected = { variantId ->
                                     getBundleVariantUseCase.selectedVariant(variantId)
@@ -213,7 +222,8 @@ class OfferViewModelImpl(
                                 offerModel = offerModel,
                                 bundleVariant = bundle,
                                 loginStatus = loginStatusService.getLoginStatus(),
-                                paymentMethods = offerModel.paymentMethodsApiResponse,
+                                paymentMethods = offerModel.paymentApiResponseOrNull()
+                                    ?: adyenRepository.paymentMethodsResponse(),
                                 externalProvider = null,
                                 onVariantSelected = { variantId ->
                                     getBundleVariantUseCase.selectedVariant(variantId)
@@ -295,16 +305,12 @@ class OfferViewModelImpl(
                 .fold(
                     ifLeft = { _viewState.value = ViewState.Error(it.message) },
                     ifRight = {
-                        viewModelScope.launch {
-                            featureManager.invalidateExperiments()
-                            val event = Event.ApproveSuccessful(
-                                startDate = (it.bundle.inception.startDate as? OfferStartDate.AtDate)?.date,
-                                postSignScreen = it.bundle.viewConfiguration.postSignScreen,
-                                bundleDisplayName = it.bundle.name,
-                                payinType = featureManager.getPaymentType()
-                            )
-                            _events.send(event)
-                        }
+                        val event = Event.ApproveSuccessful(
+                            startDate = (it.bundle.inception.startDate as? OfferStartDate.AtDate)?.date,
+                            postSignScreen = it.bundle.viewConfiguration.postSignScreen,
+                            bundleDisplayName = it.bundle.name
+                        )
+                        _events.trySend(event)
                     }
                 )
         }

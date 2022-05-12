@@ -37,7 +37,6 @@ import com.hedvig.app.feature.home.model.HomeModel
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
 import com.hedvig.app.feature.home.ui.claimstatus.composables.ClaimStatusCards
 import com.hedvig.app.feature.home.ui.connectpayincard.ConnectPayinCard
-import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.apollo.ThemedIconUrls
@@ -346,15 +345,8 @@ class HomeAdapter(
                     HedvigTheme {
                         ConnectPayinCard(
                             onActionClick = {
-                                val market = marketManager.market ?: return@ConnectPayinCard
-                                composeView.context.startActivity(
-                                    connectPayinIntent(
-                                        composeView.context,
-                                        data.payinType,
-                                        market,
-                                        false,
-                                    )
-                                )
+                                marketManager.market?.connectPayin(composeView.context)
+                                    ?.let { composeView.context.startActivity(it) }
                             },
                             onShown = onPaymentCardShown,
                         )

@@ -5,6 +5,10 @@ import com.hedvig.android.owldroid.graphql.ReferralsQuery
 
 sealed class ReferralsModel {
 
+    data class ReferralTopBar(
+        val description: String
+    ) : ReferralsModel()
+
     object Title : ReferralsModel()
 
     sealed class Header : ReferralsModel() {

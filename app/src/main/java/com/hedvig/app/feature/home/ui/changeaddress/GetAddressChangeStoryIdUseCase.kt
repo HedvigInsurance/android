@@ -8,8 +8,8 @@ import com.hedvig.app.feature.embark.QUOTE_CART_ID_KEY
 import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
-import com.hedvig.app.util.featureflags.flags.Feature
 
 class GetAddressChangeStoryIdUseCase(
     private val createQuoteCartUseCase: CreateQuoteCartUseCase,

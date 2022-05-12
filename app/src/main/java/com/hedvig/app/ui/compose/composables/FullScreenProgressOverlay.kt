@@ -25,11 +25,12 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.dp
 import com.hedvig.app.R
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 
-@OptIn(ExperimentalAnimationApi::class)
+@OptIn(ExperimentalUnitApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun FullScreenProgressOverlay(show: Boolean) {
     AnimatedVisibility(

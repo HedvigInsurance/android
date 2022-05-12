@@ -22,9 +22,9 @@ fun QuoteCartFragment.PaymentConnection.toPaymentConnection() = PaymentConnectio
         emptyList()
     } else {
         providers.mapNotNull {
-            it.asAdyen?.let {
+            it?.asAdyen?.let {
                 PaymentProvider.Adyen(availablePaymentOptions = it.availablePaymentMethods)
-            } ?: it.asTrustly?.let {
+            } ?: it?.asTrustly?.let {
                 PaymentProvider.Trustly
             }
         }
