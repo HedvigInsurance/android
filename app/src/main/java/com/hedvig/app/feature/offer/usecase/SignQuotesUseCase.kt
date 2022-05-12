@@ -4,19 +4,19 @@ import arrow.core.Either
 import arrow.core.computations.either
 import arrow.core.computations.ensureNotNull
 import com.apollographql.apollo.ApolloClient
-import com.hedvig.android.owldroid.graphql.QuoteCartStartCheckoutMutation
+import com.hedvig.android.owldroid.graphql.SignQuoteCartMutation
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.apollo.safeQuery
 
-class StartCheckoutUseCase(
+class SignQuotesUseCase(
     private val apolloClient: ApolloClient,
     private val cacheManager: CacheManager,
 ) {
     object Success
 
-    suspend fun startCheckoutAndClearCache(
+    suspend fun signQuotesAndClearCache(
         quoteCartId: QuoteCartId?,
         quoteIds: List<String>
     ): Either<ErrorMessage, Success> = either {
@@ -33,8 +33,8 @@ class StartCheckoutUseCase(
     private suspend fun mutateQuoteCart(
         quoteCartId: QuoteCartId,
         quoteIds: List<String>
-    ): Either<ErrorMessage, QuoteCartStartCheckoutMutation.Data> = apolloClient
-        .mutate(QuoteCartStartCheckoutMutation(quoteCartId.id, quoteIds))
+    ): Either<ErrorMessage, SignQuoteCartMutation.Data> = apolloClient
+        .mutate(SignQuoteCartMutation(quoteCartId.id, quoteIds))
         .safeQuery()
         .toEither()
         .mapLeft { ErrorMessage(it.message) }

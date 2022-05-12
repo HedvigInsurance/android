@@ -155,7 +155,7 @@ import com.hedvig.app.feature.offer.usecase.CreateAccessTokenUseCase
 import com.hedvig.app.feature.offer.usecase.EditCampaignUseCase
 import com.hedvig.app.feature.offer.usecase.GetExternalInsuranceProviderUseCase
 import com.hedvig.app.feature.offer.usecase.ObserveOfferStateUseCase
-import com.hedvig.app.feature.offer.usecase.StartCheckoutUseCase
+import com.hedvig.app.feature.offer.usecase.SignQuotesUseCase
 import com.hedvig.app.feature.offer.usecase.datacollectionresult.GetDataCollectionResultUseCase
 import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToDataCollectionStatusUseCase
 import com.hedvig.app.feature.offer.usecase.providerstatus.GetProviderDisplayNameUseCase
@@ -461,7 +461,7 @@ val offerModule = module {
             quoteCartId = parametersHolder.get(),
             offerRepository = get(),
             loginStatusService = get(),
-            startCheckoutUseCase = get(),
+            signQuotesUseCase = get(),
             shouldShowOnNextAppStart = parametersHolder.get(),
             chatRepository = get(),
             editCampaignUseCase = get(),
@@ -678,7 +678,7 @@ val useCaseModule = module {
     single { StartDanishAuthUseCase(get()) }
     single { StartNorwegianAuthUseCase(get()) }
     single { SubscribeToAuthStatusUseCase(get()) }
-    single { StartCheckoutUseCase(get(), get()) }
+    single { SignQuotesUseCase(get(), get()) }
     single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get()) }
     single { GetContractsUseCase(get(), get()) }
     single { GetCrossSellsContractTypesUseCase(get(), get()) }
