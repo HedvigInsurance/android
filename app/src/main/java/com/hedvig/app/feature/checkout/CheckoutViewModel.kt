@@ -14,7 +14,7 @@ import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
 import com.hedvig.app.feature.offer.usecase.CreateAccessTokenUseCase
 import com.hedvig.app.feature.offer.usecase.ObserveOfferStateUseCase
 import com.hedvig.app.feature.offer.usecase.OfferState
-import com.hedvig.app.feature.offer.usecase.SignQuotesUseCase
+import com.hedvig.app.feature.offer.usecase.StartCheckoutUseCase
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.ErrorMessage
@@ -36,7 +36,7 @@ import kotlin.time.Duration.Companion.seconds
 class CheckoutViewModel(
     private val quoteIds: List<String>,
     private val quoteCartId: QuoteCartId,
-    private val signQuotesUseCase: SignQuotesUseCase,
+    private val signQuotesUseCase: StartCheckoutUseCase,
     private val editQuotesUseCase: EditCheckoutUseCase,
     private val createAccessTokenUseCase: CreateAccessTokenUseCase,
     private val marketManager: MarketManager,
@@ -158,9 +158,9 @@ class CheckoutViewModel(
 
     private fun signQuotes(parameter: EditAndSignParameter) {
         viewModelScope.launch {
-            either<ErrorMessage, SignQuotesUseCase.Success> {
+            either<ErrorMessage, StartCheckoutUseCase.Success> {
                 editQuotesUseCase.editQuotes(parameter).bind()
-                signQuotesUseCase.signQuotesAndClearCache(quoteCartId, quoteIds).bind()
+                signQuotesUseCase.startCheckoutAndClearCache(quoteCartId, quoteIds).bind()
             }.fold(
                 ifLeft = { _events.trySend(Event.Error(it.message)) },
                 ifRight = { offerRepository.queryAndEmitOffer(quoteCartId) }
