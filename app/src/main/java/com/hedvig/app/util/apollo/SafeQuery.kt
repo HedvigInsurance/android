@@ -12,6 +12,7 @@ import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.coroutines.toFlow
 import com.apollographql.apollo.exception.ApolloException
 import com.hedvig.app.util.coroutines.await
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -27,6 +28,10 @@ suspend fun <T> ApolloCall<T>.safeQuery(): QueryResult<T> {
     } catch (apolloException: ApolloException) {
         QueryResult.Error.NetworkError(apolloException.localizedMessage)
     } catch (throwable: Throwable) {
+        if (throwable is CancellationException) {
+            throw throwable
+        }
+
         QueryResult.Error.GeneralError(throwable.localizedMessage)
     }
 }
@@ -37,6 +42,10 @@ fun <T> ApolloSubscriptionCall<T>.safeSubscription(): Flow<QueryResult<T>> {
     } catch (apolloException: ApolloException) {
         flowOf(QueryResult.Error.NetworkError(apolloException.localizedMessage))
     } catch (throwable: Throwable) {
+        if (throwable is CancellationException) {
+            throw throwable
+        }
+
         flowOf(QueryResult.Error.GeneralError(throwable.localizedMessage))
     }
 }

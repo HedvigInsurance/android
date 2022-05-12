@@ -13,6 +13,7 @@ import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.checkout.CheckoutParameter
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
+import com.hedvig.app.feature.offer.model.Checkout
 import com.hedvig.app.feature.offer.model.OfferModel
 import com.hedvig.app.feature.offer.model.QuoteBundleVariant
 import com.hedvig.app.feature.offer.model.QuoteCartId
@@ -25,7 +26,7 @@ import com.hedvig.app.feature.offer.usecase.ExternalProvider
 import com.hedvig.app.feature.offer.usecase.GetExternalInsuranceProviderUseCase
 import com.hedvig.app.feature.offer.usecase.ObserveOfferStateUseCase
 import com.hedvig.app.feature.offer.usecase.OfferState
-import com.hedvig.app.feature.offer.usecase.SignQuotesUseCase
+import com.hedvig.app.feature.offer.usecase.StartCheckoutUseCase
 import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.featureflags.FeatureManager
@@ -157,7 +158,7 @@ class OfferViewModelImpl(
     private val quoteCartId: QuoteCartId,
     private val offerRepository: OfferRepository,
     private val loginStatusService: LoginStatusService,
-    private val signQuotesUseCase: SignQuotesUseCase,
+    private val startCheckoutUseCase: StartCheckoutUseCase,
     shouldShowOnNextAppStart: Boolean,
     private val chatRepository: ChatRepository,
     private val editCampaignUseCase: EditCampaignUseCase,
@@ -311,19 +312,23 @@ class OfferViewModelImpl(
 
     override fun onSwedishBankIdSign() {
         getQuoteIdsAndStartSign {
+            offerRepository.queryAndEmitOffer(quoteCartId)
             _events.trySend(Event.StartSwedishBankIdSign)
         }
     }
 
-    private fun getQuoteIdsAndStartSign(onComplete: suspend (SignQuotesUseCase.Success) -> Unit) {
+    private fun getQuoteIdsAndStartSign(onComplete: suspend (StartCheckoutUseCase.Success) -> Unit) {
         viewModelScope.launch {
-            either<ErrorMessage, SignQuotesUseCase.Success> {
-                val quoteIds = offerState
-                    .first()
-                    .map { it.selectedQuoteIds }
-                    .bind()
+            either<ErrorMessage, StartCheckoutUseCase.Success> {
+                val offer = offerState.first().bind()
+                val isPending = offer.offerModel.checkout?.status == Checkout.CheckoutStatus.PENDING
 
-                signQuotesUseCase.signQuotesAndClearCache(quoteCartId, quoteIds).bind()
+                if (isPending) {
+                    StartCheckoutUseCase.Success
+                } else {
+                    val quoteIds = offer.selectedQuoteIds
+                    startCheckoutUseCase.startCheckoutAndClearCache(quoteCartId, quoteIds).bind()
+                }
             }.fold(
                 ifLeft = { _viewState.value = ViewState.Error(it.message) },
                 ifRight = { result -> onComplete(result) }

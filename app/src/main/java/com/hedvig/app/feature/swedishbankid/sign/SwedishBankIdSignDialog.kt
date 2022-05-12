@@ -126,6 +126,11 @@ class SwedishBankIdSignDialog : DialogFragment() {
         model.manuallyRecheckSignStatus()
     }
 
+    override fun onPause() {
+        super.onPause()
+        model.cancelSignStatusPolling()
+    }
+
     companion object {
         private fun bankIdUri() = Uri.parse("bankid:///?redirect=hedvig://")
 

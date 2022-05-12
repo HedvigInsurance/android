@@ -12,6 +12,7 @@ import com.hedvig.app.util.extensions.mapEitherRight
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.hanalytics.HAnalytics
 import com.hedvig.hanalytics.PaymentType
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,6 +42,8 @@ class SwedishBankIdSignViewModel(
     private val _viewState = MutableStateFlow<ViewState>(ViewState.StartClient)
     val viewState = _viewState.asStateFlow()
 
+    private var signStatusJob: Job? = null
+
     sealed class Event {
         data class StartDirectDebit(val payinType: PaymentType) : Event()
         object StartBankID : Event()
@@ -57,12 +60,16 @@ class SwedishBankIdSignViewModel(
     }
 
     fun manuallyRecheckSignStatus() {
-        viewModelScope.launch {
+        signStatusJob = viewModelScope.launch {
             while (!hasCompletedSign) {
                 offerRepository.queryAndEmitOffer(quoteCartId)
                 delay(500)
             }
         }
+    }
+
+    fun cancelSignStatusPolling() {
+        signStatusJob?.cancel()
     }
 
     private fun observeOfferSignState(quoteCartId: QuoteCartId) {
