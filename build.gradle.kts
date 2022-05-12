@@ -28,10 +28,6 @@ buildscript {
     }
 
     dependencies {
-        val libs = project
-            .extensions
-            .getByType<VersionCatalogsExtension>()
-            .named("libs") as org.gradle.accessors.dm.LibrariesForLibs
         classpath(libs.android.gradlePlugin)
         classpath(libs.apollo.gradlePlugin)
         classpath(libs.crashlytics.gradlePlugin)
