@@ -45,7 +45,12 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
                 )
             )
             itemAnimator = ViewHolderReusingDefaultItemAnimator()
-            adapter = InsuranceAdapter(marketManager, insuranceViewModel::load, insuranceViewModel::onClickCrossSell, imageLoader)
+            adapter = InsuranceAdapter(
+                marketManager,
+                insuranceViewModel::load,
+                insuranceViewModel::onClickCrossSell,
+                imageLoader
+            )
         }
 
         binding.swipeToRefresh.setOnRefreshListener {
