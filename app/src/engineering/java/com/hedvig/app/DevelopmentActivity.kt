@@ -15,7 +15,6 @@ import com.hedvig.app.feature.genericauth.GenericAuthMockActivity
 import com.hedvig.app.feature.home.HomeMockActivity
 import com.hedvig.app.feature.loggedin.LoggedInMockActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.feature.onboarding.OnboardingMockActivity
 import com.hedvig.app.feature.referrals.ReferralsMockActivity
 import com.hedvig.app.feature.sunsetting.ForceUpgradeActivity
 import com.hedvig.app.feature.tracking.TrackingLogActivity
@@ -67,9 +66,6 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
                     },
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Home") {
                         startActivity(Intent(this, HomeMockActivity::class.java))
-                    },
-                    DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Insurance") {
-                        startActivity(Intent(this, InsuranceMockActivity::class.java))
                     },
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Logged in") {
                         startActivity(Intent(this, LoggedInMockActivity::class.java))

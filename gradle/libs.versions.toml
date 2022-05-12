@@ -76,7 +76,6 @@ svg = "1.4"
 timber = "5.0.1"
 tooltip = "1.2.2"
 zXing = "3.4.1"
-serialization = "1.3.2"
 
 [libraries]
 # Plugins
