@@ -284,7 +284,7 @@ abstract class EmbarkViewModel(
         return null
     }
 
-    private fun trackingData(track: EmbarkStoryQuery.Track) = when {
+    private fun trackingData(track: EmbarkStoryQuery.Track): Map<String, String> = when {
         track.includeAllKeys -> valueStore.toMap()
         track.eventKeys.filterNotNull().isNotEmpty() ->
             track
@@ -294,7 +294,7 @@ abstract class EmbarkViewModel(
         else -> emptyMap()
     }.let { data ->
         track.customData?.let { data + it.asMap() } ?: data
-    }
+    }.map { it.key to it.value.toString() }.toMap()
 
     private fun currentProgress(passage: EmbarkStoryQuery.Passage?): ProgressPercentage {
         if (passage == null) {

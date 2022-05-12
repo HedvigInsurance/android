@@ -389,7 +389,8 @@ val viewModelModule = module {
             hAnalytics = get(),
             quoteCartId = quoteCartId,
             offerRepository = get(),
-            createAccessTokenUseCase = get()
+            createAccessTokenUseCase = get(),
+            featureManager = get()
         )
     }
     viewModel { AudioRecorderViewModel(get()) }
