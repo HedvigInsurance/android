@@ -9,13 +9,11 @@ import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_PENDING
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_TRUSTLY_CONNECTED
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
-import com.hedvig.app.util.FeatureFlagRule
 import com.hedvig.app.util.LazyIntentsActivityScenarioRule
 import com.hedvig.app.util.MarketRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.stub
-import com.hedvig.hanalytics.PaymentType
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.kakao.screen.Screen.Companion.onScreen
 import org.junit.Rule
@@ -37,12 +35,6 @@ class TrustlyPendingTest : TestCase() {
 
     @get:Rule
     val marketRule = MarketRule(Market.SE)
-
-    @get:Rule
-    val featureFlagRule = FeatureFlagRule(
-        paymentType = PaymentType.TRUSTLY,
-    )
-
     @Test
     fun shouldShowPendingStatusWhenUserHasRecentlyChangedBankAccount() = run {
         activityRule.launch(PaymentActivity.newInstance(context()))

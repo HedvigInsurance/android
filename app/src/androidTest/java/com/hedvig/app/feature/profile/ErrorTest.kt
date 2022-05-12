@@ -1,13 +1,13 @@
-package com.hedvig.app.feature.keygear
+package com.hedvig.app.feature.profile
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule
-import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
+import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.app.R
-import com.hedvig.app.feature.keygear.screens.KeyGearScreen
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInTabs
-import com.hedvig.app.testdata.feature.keygear.KEY_GEAR_DATA
+import com.hedvig.app.feature.profile.screens.ProfileScreen
+import com.hedvig.app.testdata.feature.profile.PROFILE_DATA
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
@@ -18,10 +18,10 @@ import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
 
-class Error : TestCase() {
+class ErrorTest : TestCase() {
     val intent = LoggedInActivity.newInstance(
         context(),
-        initialTab = LoggedInTabs.KEY_GEAR
+        initialTab = LoggedInTabs.PROFILE
     )
 
     @get:Rule
@@ -34,12 +34,12 @@ class Error : TestCase() {
         LoggedInQuery.QUERY_DOCUMENT to apolloResponse {
             success(LOGGED_IN_DATA)
         },
-        KeyGearItemsQuery.QUERY_DOCUMENT to apolloResponse {
+        ProfileQuery.QUERY_DOCUMENT to apolloResponse {
             if (shouldFail) {
                 shouldFail = false
                 graphQLError(jsonObjectOf("message" to "error"))
             } else {
-                success(KEY_GEAR_DATA)
+                success(PROFILE_DATA)
             }
         }
     )
@@ -49,13 +49,18 @@ class Error : TestCase() {
 
     @Test
     fun shouldReload() = run {
-        KeyGearScreen {
-            reload {
-                click()
+        ProfileScreen {
+            recycler {
+                childAt<ProfileScreen.Error>(0) {
+                    retry { click() }
+                }
             }
-            header {
-                isVisible()
-                hasText(R.string.KEY_GEAR_TAB_TITLE)
+            recycler {
+                childAt<ProfileScreen.Title>(0) {
+                    header {
+                        hasText(R.string.PROFILE_TITLE)
+                    }
+                }
             }
         }
     }

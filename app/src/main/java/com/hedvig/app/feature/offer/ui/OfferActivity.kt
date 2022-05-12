@@ -414,6 +414,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     }
 
     companion object {
+        private const val QUOTE_IDS = "QUOTE_IDS"
         private const val QUOTE_CART_ID = "QUOTE_CART_ID"
         private const val SHOULD_SHOW_ON_NEXT_APP_START = "SHOULD_SHOW_ON_NEXT_APP_START"
 
