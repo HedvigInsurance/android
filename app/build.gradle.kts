@@ -161,8 +161,6 @@ dependencies {
     implementation(libs.coroutines.android)
     testImplementation(libs.coroutines.test)
 
-    implementation(libs.serialization)
-
     implementation(libs.androidx.other.appCompat)
     implementation(libs.androidx.other.media)
     implementation(libs.androidx.other.constraintLayout)
@@ -197,7 +195,6 @@ dependencies {
     implementation(libs.accompanist.pagerIndicators)
     implementation(libs.accompanist.insets)
     implementation(libs.accompanist.insetsUi)
-    implementation(libs.accompanist.systemUiController)
 
     implementation(libs.arrowKt.core)
 
@@ -209,8 +206,8 @@ dependencies {
     implementation(libs.combineTuple)
     implementation(libs.fragmentViewBindingDelegate)
 
-    implementation(libs.okhttp.core)
     implementation(libs.okhttp.loggingInterceptor)
+    implementation(libs.okhttp.coroutines)
     androidTestImplementation(libs.okhttp.mockWebServer)
 
     // Todo: Look into if this is the proper way to use boms with version catalogs
@@ -285,6 +282,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.compose)
     androidTestImplementation(libs.androidx.compose.uiTestJunit)
     debugImplementation(libs.androidx.compose.uiTestManifest)
+    implementation(libs.serialization.json)
 
     implementation(libs.showkase.annotation)
     debugImplementation(libs.showkase.showkase)

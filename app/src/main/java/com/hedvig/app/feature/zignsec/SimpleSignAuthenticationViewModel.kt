@@ -6,15 +6,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.type.AuthState
-import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.zignsec.usecase.SimpleSignStartAuthResult
 import com.hedvig.app.feature.zignsec.usecase.StartDanishAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.StartNorwegianAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthStatusUseCase
 import com.hedvig.app.util.LiveEvent
-import com.hedvig.app.util.featureflags.FeatureManager
-import com.hedvig.hanalytics.HAnalytics
 import e
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
@@ -25,9 +22,6 @@ class SimpleSignAuthenticationViewModel(
     private val data: SimpleSignAuthenticationData,
     private val startDanishAuthUseCase: StartDanishAuthUseCase,
     private val startNorwegianAuthUseCase: StartNorwegianAuthUseCase,
-    private val hAnalytics: HAnalytics,
-    private val featureManager: FeatureManager,
-    private val loginStatusService: LoginStatusService,
     subscribeToAuthStatusUseCase: SubscribeToAuthStatusUseCase,
 ) : ViewModel() {
     private val _input = MutableLiveData("")
@@ -63,7 +57,6 @@ class SimpleSignAuthenticationViewModel(
         subscribeToAuthStatusUseCase().onEach { response ->
             when (response.data?.authStatus?.status) {
                 AuthState.SUCCESS -> {
-                    onAuthSuccess()
                     _events.postValue(Event.Success)
                 }
                 AuthState.FAILED -> {
@@ -131,12 +124,6 @@ class SimpleSignAuthenticationViewModel(
 
     fun restart() {
         _events.value = Event.Restart
-    }
-
-    private suspend fun onAuthSuccess() {
-        hAnalytics.loggedIn()
-        featureManager.invalidateExperiments()
-        loginStatusService.isLoggedIn = true
     }
 
     companion object {

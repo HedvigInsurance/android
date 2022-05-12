@@ -125,6 +125,6 @@ class TestOfferModelBuilder(
         checkoutMethod = checkoutMethod,
         campaign = campaign,
         checkout = null,
-        paymentMethodsApiResponse = null
+        paymentConnection = null
     )
 }

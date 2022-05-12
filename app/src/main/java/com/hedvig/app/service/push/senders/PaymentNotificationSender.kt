@@ -8,21 +8,15 @@ import androidx.core.app.TaskStackBuilder
 import com.google.firebase.messaging.RemoteMessage
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
-import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.feature.profile.ui.payment.PaymentActivity
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.tracking.NotificationOpenedTrackingActivity
 import com.hedvig.app.service.push.getImmutablePendingIntentFlags
 import com.hedvig.app.service.push.setupNotificationChannel
-import com.hedvig.app.util.featureflags.FeatureManager
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class PaymentNotificationSender(
     private val context: Context,
-    private val marketManager: MarketManager,
-    private val featureManager: FeatureManager,
+    private val marketManager: MarketManager
 ) : NotificationSender {
     override fun createChannel() {
         setupNotificationChannel(
@@ -42,48 +36,41 @@ class PaymentNotificationSender(
 
     private fun sendConnectDirectDebitNotification() {
         val market = marketManager.market ?: return
-        CoroutineScope(Dispatchers.IO).launch {
-            val pendingIntent = TaskStackBuilder
-                .create(context)
-                .run {
-                    addNextIntentWithParentStack(
-                        Intent(
-                            context,
-                            LoggedInActivity::class.java
-                        )
+        val pendingIntent = TaskStackBuilder
+            .create(context)
+            .run {
+                addNextIntentWithParentStack(
+                    Intent(
+                        context,
+                        LoggedInActivity::class.java
                     )
-                    addNextIntentWithParentStack(
-                        connectPayinIntent(
-                            context,
-                            featureManager.getPaymentType(),
-                            market,
-                            false,
-                        )
-                    )
-                    addNextIntentWithParentStack(
-                        NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_TYPE_CONNECT_DIRECT_DEBIT)
-                    )
-                    getPendingIntent(0, getImmutablePendingIntentFlags())
-                }
-
-            val notification = NotificationCompat
-                .Builder(
-                    context,
-                    PAYMENTS_CHANNEL_ID
                 )
-                .setSmallIcon(R.drawable.ic_hedvig_h)
-                .setContentTitle(context.getString(R.string.NOTIFICATION_CONNECT_DD_TITLE))
-                .setContentText(context.getString(R.string.NOTIFICATION_CONNECT_DD_BODY))
-                .setPriority(NotificationCompat.PRIORITY_MAX)
-                .setAutoCancel(true)
-                .setChannelId(PAYMENTS_CHANNEL_ID)
-                .setContentIntent(pendingIntent)
-                .build()
+                addNextIntentWithParentStack(
+                    market.connectPayin(context)
+                )
+                addNextIntentWithParentStack(
+                    NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_TYPE_CONNECT_DIRECT_DEBIT)
+                )
+                getPendingIntent(0, getImmutablePendingIntentFlags())
+            }
 
-            NotificationManagerCompat
-                .from(context)
-                .notify(CONNECT_DIRECT_DEBIT_NOTIFICATION_ID, notification)
-        }
+        val notification = NotificationCompat
+            .Builder(
+                context,
+                PAYMENTS_CHANNEL_ID
+            )
+            .setSmallIcon(R.drawable.ic_hedvig_h)
+            .setContentTitle(context.getString(R.string.NOTIFICATION_CONNECT_DD_TITLE))
+            .setContentText(context.getString(R.string.NOTIFICATION_CONNECT_DD_BODY))
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setAutoCancel(true)
+            .setChannelId(PAYMENTS_CHANNEL_ID)
+            .setContentIntent(pendingIntent)
+            .build()
+
+        NotificationManagerCompat
+            .from(context)
+            .notify(CONNECT_DIRECT_DEBIT_NOTIFICATION_ID, notification)
     }
 
     private fun sendPaymentFailedNotification() {

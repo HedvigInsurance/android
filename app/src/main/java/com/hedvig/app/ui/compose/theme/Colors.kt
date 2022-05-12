@@ -48,10 +48,3 @@ val Colors.onWarning: Color
     @Composable
     @ReadOnlyComposable
     get() = colorResource(R.color.hedvig_black)
-
-val Colors.separator: Color
-    get() = if (isLight) {
-        hedvigBlack.copy(alpha = 0.12f)
-    } else {
-        hedvigOffWhite.copy(alpha = 0.12f)
-    }

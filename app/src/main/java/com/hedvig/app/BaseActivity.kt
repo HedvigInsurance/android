@@ -8,7 +8,6 @@ import android.os.Bundle
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.hedvig.app.feature.marketpicker.LocaleBroadcastManager
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.MarketManager
 import org.koin.android.ext.android.inject
@@ -52,9 +51,7 @@ abstract class BaseActivity : AppCompatActivity {
     inner class LocaleListener : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (!preventRecreation) {
-                if (intent?.getBooleanExtra(LocaleBroadcastManager.RECREATE, false) == true) {
-                    viewModelStore.clear()
-                }
+                viewModelStore.clear()
                 recreate()
             }
         }

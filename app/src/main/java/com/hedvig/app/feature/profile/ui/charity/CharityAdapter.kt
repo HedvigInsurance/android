@@ -8,17 +8,17 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.app.R
 import com.hedvig.app.databinding.CashbackOptionBinding
-import com.hedvig.app.feature.profile.ui.tab.CharityOption
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 
 class CharityAdapter(
     val context: Context,
-    private val clickListener: (id: String) -> Unit,
-) : ListAdapter<CharityOption, CharityAdapter.CashbackOptionViewHolder>(
+    private val clickListener: (String) -> Unit
+) : ListAdapter<ProfileQuery.CashbackOption, CharityAdapter.CashbackOptionViewHolder>(
     GenericDiffUtilItemCallback()
 ) {
 
@@ -40,18 +40,18 @@ class CharityAdapter(
         val title: TextView = binding.cashbackOptionTitle
         val paragraph: TextView = binding.cashbackOptionParagraph
         val button: Button = binding.cashbackSelect
-
-        fun bind(charityOption: CharityOption, clickListener: (id: String) -> Unit) {
+        fun bind(item: ProfileQuery.CashbackOption, clickListener: (String) -> Unit) {
             binding.apply {
-                cashbackOptionTitle.text = charityOption.name
-                cashbackOptionParagraph.text = charityOption.description
+                cashbackOptionTitle.text = item.name
+                cashbackOptionParagraph.text = item.paragraph
 
-                cashbackSelect.text = cashbackSelect.resources.getString(
-                    R.string.PROFILE_CHARITY_SELECT_BUTTON,
-                    charityOption.name
-                )
+                cashbackSelect.text =
+                    cashbackSelect.resources.getString(
+                        R.string.PROFILE_CHARITY_SELECT_BUTTON,
+                        item.name
+                    )
                 cashbackSelect.setHapticClickListener {
-                    charityOption.id?.let { id ->
+                    item.id?.let { id ->
                         clickListener(id)
                     }
                 }

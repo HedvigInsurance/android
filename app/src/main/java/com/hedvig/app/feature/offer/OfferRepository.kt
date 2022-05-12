@@ -9,24 +9,19 @@ import com.apollographql.apollo.fetcher.ApolloResponseFetchers
 import com.hedvig.android.owldroid.graphql.OfferQuery
 import com.hedvig.android.owldroid.graphql.QuoteCartQuery
 import com.hedvig.app.feature.offer.model.OfferModel
-import com.hedvig.app.feature.offer.model.QuoteCartFragmentToOfferModelMapper
 import com.hedvig.app.feature.offer.model.QuoteCartId
+import com.hedvig.app.feature.offer.model.toOfferModel
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.safeQuery
-import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 
 class OfferRepository(
     private val apolloClient: ApolloClient,
     private val localeManager: LocaleManager,
-    private val quoteCartFragmentToOfferModelMapper: QuoteCartFragmentToOfferModelMapper,
 ) {
 
-    val offerFlow: MutableSharedFlow<Either<ErrorMessage, OfferModel>> = MutableSharedFlow(
-        replay = 1,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST
-    )
+    val offerFlow = MutableSharedFlow<Either<ErrorMessage, OfferModel>>(1)
 
     fun offerQuery(ids: List<String>) = OfferQuery(localeManager.defaultLocale(), ids)
 
@@ -36,7 +31,7 @@ class OfferRepository(
     }
 
     private suspend fun queryQuoteCart(
-        id: QuoteCartId,
+        id: QuoteCartId
     ): Either<ErrorMessage, OfferModel> = either {
         val result = apolloClient
             .query(QuoteCartQuery(localeManager.defaultLocale(), id.id))
@@ -52,6 +47,6 @@ class OfferRepository(
             ErrorMessage("No quotes in offer, please try again")
         }
 
-        quoteCartFragmentToOfferModelMapper.map(result.quoteCart.fragments.quoteCartFragment)
+        result.quoteCart.fragments.quoteCartFragment.toOfferModel()
     }
 }

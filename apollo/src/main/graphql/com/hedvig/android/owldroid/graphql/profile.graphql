@@ -16,7 +16,7 @@ query Profile {
   cashbackOptions {
     id
     name
-    description
+    paragraph
   }
   bankAccount {
     directDebitStatus

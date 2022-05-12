@@ -8,7 +8,6 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.claims.ui.commonclaim.CommonClaimsData
 import com.hedvig.app.feature.claims.ui.commonclaim.EmergencyData
 import com.hedvig.app.feature.home.ui.claimstatus.data.ClaimStatusCardUiState
-import com.hedvig.hanalytics.PaymentType
 import java.time.LocalDate
 
 sealed class HomeModel {
@@ -83,9 +82,7 @@ sealed class HomeModel {
         }
     }
 
-    data class ConnectPayin(
-        val payinType: PaymentType,
-    ) : HomeModel()
+    object ConnectPayin : HomeModel()
 
     data class PSA(val inner: HomeQuery.ImportantMessage) : HomeModel()
 

@@ -2,146 +2,37 @@ package com.hedvig.app.feature.profile.ui
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import arrow.core.Either
-import com.hedvig.app.authenticate.LogoutUseCase
-import com.hedvig.app.feature.profile.data.ProfileRepository
-import com.hedvig.app.feature.profile.ui.tab.ProfileQueryDataToProfileUiStateMapper
-import com.hedvig.app.feature.profile.ui.tab.ProfileUiState
-import com.hedvig.app.util.coroutines.RetryChannel
-import e
+import com.hedvig.android.owldroid.graphql.ProfileQuery
+import com.hedvig.app.util.LiveEvent
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.WhileSubscribed
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.seconds
 
-class ProfileViewModel(
-    private val profileRepository: ProfileRepository,
-    private val logoutUseCase: LogoutUseCase,
-    private val profileQueryDataToProfileUiStateMapper: ProfileQueryDataToProfileUiStateMapper,
-) : ViewModel() {
-    sealed interface ViewState {
-        data class Success(val profileUiState: ProfileUiState) : ViewState
-        object Error : ViewState
-        object Loading : ViewState
+abstract class ProfileViewModel : ViewModel() {
+    sealed class ViewState {
+        data class Success(val data: ProfileQuery.Data) : ViewState()
+        object Error : ViewState()
+        object Loading : ViewState()
     }
 
-    sealed interface Event {
-        object Logout : Event
-        data class Error(val message: String?) : Event
-    }
+    protected val _data = MutableStateFlow<ViewState>(ViewState.Loading)
+    val data = _data.asStateFlow()
+    abstract val dirty: MutableLiveData<Boolean>
+    abstract val trustlyUrl: LiveEvent<String>
 
-    private val _events = Channel<Event>(Channel.UNLIMITED)
+    abstract fun load()
+    abstract fun selectCashback(id: String)
+    abstract fun saveInputs(emailInput: String, phoneNumberInput: String)
+    abstract fun emailChanged(newEmail: String)
+    abstract fun phoneNumberChanged(newPhoneNumber: String)
+    abstract fun onLogout()
+
+    protected val _events = Channel<Event>(Channel.UNLIMITED)
     val events = _events.receiveAsFlow()
 
-    val dirty: MutableLiveData<Boolean> = MutableLiveData(false)
-
-    private val observeProfileRetryChannel = RetryChannel()
-    val data: StateFlow<ViewState> = observeProfileRetryChannel
-        .flatMapLatest {
-            profileRepository
-                .profile()
-                .mapLatest { profileQueryDataResult ->
-                    profileQueryDataResult.map { profileQueryDataToProfileUiStateMapper.map(it) }
-                }
-                .mapLatest { profileUiStateResult ->
-                    when (profileUiStateResult) {
-                        is Either.Left -> {
-                            ViewState.Error
-                        }
-                        is Either.Right -> {
-                            ViewState.Success(profileUiStateResult.value)
-                        }
-                    }
-                }
-                .catch { exception ->
-                    e(exception)
-                    ViewState.Error
-                }
-        }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5.seconds),
-            initialValue = ViewState.Loading
-        )
-
-    fun saveInputs(emailInput: String, phoneNumberInput: String) {
-        var (email, phoneNumber) =
-            (data.value as? ViewState.Success)?.profileUiState?.member?.let { Pair(it.email, it.phoneNumber) }
-                ?: Pair(null, null)
-        viewModelScope.launch {
-            if (email != emailInput) {
-                val response =
-                    runCatching { profileRepository.updateEmail(emailInput) }
-                if (response.isFailure) {
-                    response.exceptionOrNull()?.let { e { "$it error updating email" } }
-                    return@launch
-                }
-                response.getOrNull()?.let {
-                    email = it.data?.updateEmail?.email
-                }
-            }
-
-            if (phoneNumber != phoneNumberInput) {
-                val response = runCatching {
-                    profileRepository.updatePhoneNumber(phoneNumberInput)
-                }
-                if (response.isFailure) {
-                    response.exceptionOrNull()?.let { e { "$it error updating phone number" } }
-                    return@launch
-                }
-                response.getOrNull()?.let {
-                    phoneNumber = it.data?.updatePhoneNumber?.phoneNumber
-                }
-            }
-
-            profileRepository.writeEmailAndPhoneNumberInCache(email, phoneNumber)
-        }
-    }
-
-    fun reload() {
-        observeProfileRetryChannel.retry()
-    }
-
-    fun emailChanged(newEmail: String) {
-        if (currentEmailOrEmpty() != newEmail && dirty.value != true) {
-            dirty.value = true
-        }
-    }
-
-    private fun currentEmailOrEmpty() = (data.value as? ViewState.Success)?.profileUiState?.member?.email ?: ""
-
-    private fun currentPhoneNumberOrEmpty(): String {
-        return (data.value as? ViewState.Success)?.profileUiState?.member?.phoneNumber ?: ""
-    }
-
-    fun phoneNumberChanged(newPhoneNumber: String) {
-        if (currentPhoneNumberOrEmpty() != newPhoneNumber && dirty.value != true) {
-            dirty.value = true
-        }
-    }
-
-    fun selectCashback(id: String) {
-        viewModelScope.launch {
-            val response = runCatching { profileRepository.selectCashback(id) }
-            response.getOrNull()?.data?.selectCashbackOption?.let { cashback ->
-                profileRepository.writeCashbackToCache(cashback)
-            }
-        }
-    }
-
-    fun onLogout() {
-        viewModelScope.launch {
-            when (val result = logoutUseCase.logout()) {
-                is LogoutUseCase.LogoutResult.Error -> _events.trySend(Event.Error(result.message))
-                LogoutUseCase.LogoutResult.Success -> _events.trySend(Event.Logout)
-            }
-        }
+    sealed class Event {
+        object Logout : Event()
+        data class Error(val message: String?) : Event()
     }
 }

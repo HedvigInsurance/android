@@ -1,9 +1,9 @@
 package com.hedvig.app.util
 
 import com.hedvig.app.featureManagerModule
+import com.hedvig.app.util.featureflags.Feature
 import com.hedvig.app.util.featureflags.FeatureManager
-import com.hedvig.app.util.featureflags.flags.Feature
-import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
 import org.junit.rules.ExternalResource
 import org.koin.core.context.loadKoinModules
@@ -11,24 +11,23 @@ import org.koin.core.context.unloadKoinModules
 import org.koin.dsl.module
 
 class FeatureFlagRule(
-    vararg flags: Pair<Feature, Boolean>,
+    vararg flags: Pair<Feature, Boolean>
 ) : ExternalResource() {
-    @Suppress("RemoveExplicitTypeArguments")
-    private val mockFeatureManagerModule = module {
-        single<FeatureManager> {
+    private val mockModule = module {
+        single {
             val mock = mockk<FeatureManager>()
-            flags.forEach { coEvery { mock.isFeatureEnabled(it.first) } returns it.second }
+            flags.forEach { every { mock.isFeatureEnabled(it.first) } returns it.second }
             mock
         }
     }
 
     override fun before() {
         unloadKoinModules(featureManagerModule)
-        loadKoinModules(mockFeatureManagerModule)
+        loadKoinModules(mockModule)
     }
 
     override fun after() {
-        unloadKoinModules(mockFeatureManagerModule)
+        unloadKoinModules(mockModule)
         loadKoinModules(featureManagerModule)
     }
 }
