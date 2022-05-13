@@ -181,7 +181,6 @@ class CheckoutViewModel(
     )
 
     private suspend fun onSignSuccess(): Event.CheckoutSuccess {
-        hAnalytics.quotesSigned(quoteIds)
         featureManager.invalidateExperiments()
         loginStatusService.isLoggedIn = true
         loginStatusService.isViewingOffer = false
