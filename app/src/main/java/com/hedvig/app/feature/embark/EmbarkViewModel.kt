@@ -293,7 +293,7 @@ abstract class EmbarkViewModel(
         return null
     }
 
-    private fun trackingData(track: EmbarkStoryQuery.Track) = when {
+    private fun trackingData(track: EmbarkStoryQuery.Track): Map<String, String> = when {
         track.includeAllKeys -> valueStore.toMap()
         track.eventKeys.filterNotNull().isNotEmpty() ->
             track

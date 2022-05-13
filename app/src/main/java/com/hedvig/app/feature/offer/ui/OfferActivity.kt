@@ -379,6 +379,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             is DropInResult.Finished -> {
                 model.onPaymentTokenIdReceived(PaymentTokenId(result.result))
             }
+            else -> {}
         }
     }
 
