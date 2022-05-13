@@ -1,8 +1,12 @@
 package com.hedvig.app.feature.offer.model.quotebundle
 
 import com.hedvig.android.owldroid.fragment.QuoteBundleFragment
+import com.hedvig.android.owldroid.type.CheckoutMethod
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
+import com.hedvig.app.feature.offer.model.CheckoutLabel
+import com.hedvig.app.feature.offer.model.QuoteCartId
+import com.hedvig.app.feature.offer.ui.checkoutLabel
 import com.hedvig.app.feature.perils.Peril
 import com.hedvig.app.feature.table.Table
 import com.hedvig.app.feature.table.intoTable
@@ -14,14 +18,15 @@ data class QuoteBundle(
     val cost: BundleCost,
     val frequentlyAskedQuestions: List<FrequentlyAskedQuestion>,
     val inception: Inception,
-    val viewConfiguration: ViewConfiguration
+    val viewConfiguration: ViewConfiguration,
+    val checkoutLabel: CheckoutLabel,
 ) {
     data class Quote(
+        val id: String,
         val dataCollectionId: String?,
         val displayName: String,
         val startDate: LocalDate?,
         val email: String?,
-        val id: String,
         val currentInsurer: CurrentInsurer?,
         val detailsTable: Table,
         val perils: List<Peril>,
@@ -43,13 +48,18 @@ data class QuoteBundle(
     fun numberOfCurrentInsurers() = quotes.count { it.currentInsurer?.name != null }
 }
 
-fun QuoteBundleFragment.toQuoteBundle() = QuoteBundle(
+fun QuoteBundleFragment.toQuoteBundle(quoteCartId: QuoteCartId, checkoutMethods: List<CheckoutMethod>) = QuoteBundle(
     name = displayName,
     quotes = quotes.map { it.toQuote() },
     cost = toBundleCost(),
     frequentlyAskedQuestions = frequentlyAskedQuestions.map { it.toFrequentlyAskedQuestion() },
-    inception = inception.toInception(appConfiguration.startDateTerminology),
-    viewConfiguration = appConfiguration.toViewConfiguration()
+    inception = inception.toInception(
+        startDateTerminology = appConfiguration.startDateTerminology,
+        quoteCartId = quoteCartId,
+        quoteNames = quotes.map { it.displayName }
+    ),
+    viewConfiguration = appConfiguration.toViewConfiguration(),
+    checkoutLabel = checkoutLabel(checkoutMethods),
 )
 
 private fun QuoteBundleFragment.Quote.toQuote() = QuoteBundle.Quote(

@@ -48,7 +48,7 @@ class TerminatedContractsActivity : BaseActivity(R.layout.terminated_contracts_a
             toolbar.applyStatusBarInsets()
             recycler.applyNavigationBarInsets()
             toolbar.setNavigationOnClickListener { onBackPressed() }
-            val adapter = InsuranceAdapter(marketManager, model::load)
+            val adapter = InsuranceAdapter(marketManager, model::load, {})
             recycler.adapter = adapter
             model
                 .viewState
@@ -93,12 +93,11 @@ class TerminatedContractsViewModel(
 
     fun load() {
         viewModelScope.launch {
-            when (val result = getContractsUseCase.invoke()) {
-                is GetContractsUseCase.InsuranceResult.Error -> _viewState.value = ViewState.Error
-                is GetContractsUseCase.InsuranceResult.Insurance -> {
-                    _viewState.value = ViewState.Success(items(result.insurance))
-                }
-            }
+            _viewState.value = getContractsUseCase.invoke()
+                .fold(
+                    ifLeft = { ViewState.Error },
+                    ifRight = { insuranceQueryData -> ViewState.Success(items(insuranceQueryData)) }
+                )
         }
     }
 

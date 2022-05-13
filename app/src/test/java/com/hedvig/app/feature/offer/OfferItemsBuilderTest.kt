@@ -2,8 +2,8 @@ package com.hedvig.app.feature.offer
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import com.hedvig.app.feature.offer.model.quotebundle.CheckoutMethod
-import com.hedvig.app.feature.offer.ui.CheckoutLabel
+import com.hedvig.app.feature.offer.model.CheckoutLabel
+import com.hedvig.app.feature.offer.model.CheckoutMethod
 import com.hedvig.app.feature.offer.ui.OfferItems
 import com.hedvig.app.util.containsOfType
 import org.javamoney.moneta.Money
@@ -19,7 +19,13 @@ class OfferItemsBuilderTest {
             ignoreCampaigns = true
         ).build()
 
-        val items = OfferItemsBuilder.createTopOfferItems(testData)
+        val items = OfferItemsBuilder.createTopOfferItems(
+            testData.variants.first(),
+            null,
+            null,
+            {},
+            testData
+        )
 
         assertThat(items).containsOfType<OfferItems.Header>()
         val header = items.first { it is OfferItems.Header } as OfferItems.Header
@@ -34,7 +40,13 @@ class OfferItemsBuilderTest {
             ignoreCampaigns = false
         ).build()
 
-        val items = OfferItemsBuilder.createTopOfferItems(testData)
+        val items = OfferItemsBuilder.createTopOfferItems(
+            testData.variants.first(),
+            null,
+            null,
+            {},
+            testData
+        )
 
         assertThat(items).containsOfType<OfferItems.Header>()
         val header = items.first { it is OfferItems.Header } as OfferItems.Header
@@ -48,13 +60,19 @@ class OfferItemsBuilderTest {
             checkoutLabel = CheckoutLabel.APPROVE
         ).build()
 
-        val items = OfferItemsBuilder.createTopOfferItems(testData)
+        val items = OfferItemsBuilder.createTopOfferItems(
+            testData.variants.first(),
+            null,
+            null,
+            {},
+            testData
+        )
 
         assertThat(items).containsOfType<OfferItems.Header>()
         val header = items.first { it is OfferItems.Header } as OfferItems.Header
         assertThat(header.checkoutLabel).isEqualTo(CheckoutLabel.APPROVE)
 
-        val bottomItems = OfferItemsBuilder.createBottomOfferItems(testData)
+        val bottomItems = OfferItemsBuilder.createBottomOfferItems(testData.variants.first())
 
         assertThat(bottomItems).containsOfType<OfferItems.Footer>()
         val footer = bottomItems.first { it is OfferItems.Footer } as OfferItems.Footer
@@ -68,13 +86,19 @@ class OfferItemsBuilderTest {
             checkoutLabel = CheckoutLabel.CONFIRM
         ).build()
 
-        val topItems = OfferItemsBuilder.createTopOfferItems(testData)
+        val topItems = OfferItemsBuilder.createTopOfferItems(
+            testData.variants.first(),
+            null,
+            null,
+            {},
+            testData
+        )
 
         assertThat(topItems).containsOfType<OfferItems.Header>()
         val header = topItems.first { it is OfferItems.Header } as OfferItems.Header
         assertThat(header.checkoutLabel).isEqualTo(CheckoutLabel.CONFIRM)
 
-        val bottomItems = OfferItemsBuilder.createBottomOfferItems(testData)
+        val bottomItems = OfferItemsBuilder.createBottomOfferItems(testData.variants.first())
 
         assertThat(bottomItems).containsOfType<OfferItems.Footer>()
         val footer = bottomItems.first { it is OfferItems.Footer } as OfferItems.Footer

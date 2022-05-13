@@ -120,7 +120,6 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                             startActivity(
                                 OfferActivity.newInstance(
                                     context = this@EmbarkActivity,
-                                    quoteIds = event.quoteIds,
                                     quoteCartId = event.quoteCartId,
                                     shouldShowOnNextAppStart = true
                                 )

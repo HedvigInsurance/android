@@ -22,6 +22,7 @@ sealed class Variable {
 
     data class Multi(
         override val key: String,
+        val from: String,
         val variables: List<Variable>,
     ) : Variable()
 }

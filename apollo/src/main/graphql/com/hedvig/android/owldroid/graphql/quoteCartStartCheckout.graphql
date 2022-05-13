@@ -1,4 +1,4 @@
-mutation SignQuoteCart($quoteCartId: ID!, $quoteIds: [ID!]!, $locale: Locale!) {
+mutation QuoteCartStartCheckout($quoteCartId: ID!, $quoteIds: [ID!]!) {
   quoteCartStartCheckout: quoteCart_startCheckout(id: $quoteCartId, quoteIds: $quoteIds) {
     ... on BasicError {
       message
@@ -6,9 +6,6 @@ mutation SignQuoteCart($quoteCartId: ID!, $quoteIds: [ID!]!, $locale: Locale!) {
     ... on QuoteCart {
       paymentConnection {
         id
-      }
-      bundle {
-        ...QuoteBundleFragment
       }
     }
   }

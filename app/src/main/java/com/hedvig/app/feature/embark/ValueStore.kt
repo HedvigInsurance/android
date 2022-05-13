@@ -5,7 +5,7 @@ import java.util.Stack
 
 interface ValueStore : ValueStoreView {
     var computedValues: Map<String, String>?
-    fun withCommittedVersion(block: ValueStore.() -> Unit)
+    fun <T> withCommittedVersion(block: ValueStore.() -> T): T
     fun commitVersion()
     fun rollbackVersion()
     fun put(key: String, value: String?)
@@ -34,12 +34,13 @@ class ValueStoreImpl : ValueStore {
      * Runs [block] on the committed version of the current [ValueStore]. Makes sure to revert the store to its previous
      * state after the [block] scope.
      */
-    override fun withCommittedVersion(block: ValueStore.() -> Unit) {
+    override fun <T> withCommittedVersion(block: ValueStore.() -> T): T {
         val oldStage = HashMap(stage)
         commitVersion()
-        this.block()
+        val result = this.block()
         rollbackVersion()
         stage.putAll(oldStage)
+        return result
     }
 
     override fun commitVersion() {
@@ -64,9 +65,15 @@ class ValueStoreImpl : ValueStore {
     }
 
     override fun get(key: String): String? {
-        return computedValues?.get(key)?.let {
+        val value = computedValues?.get(key)?.let {
             TemplateExpressionCalculator.evaluateTemplateExpression(it, storedValues.peek() + stage)
         } ?: storedValues.peek()[key] ?: stage[key]
+
+        return if (value.equals("null")) {
+            null
+        } else {
+            value
+        }
     }
 
     override fun getList(key: String): List<String>? {
@@ -74,7 +81,16 @@ class ValueStoreImpl : ValueStore {
     }
 
     override val prefill = object : ValueStoreView {
-        override fun get(key: String) = this@ValueStoreImpl.get(key) ?: prefillValues[key]
+        override fun get(key: String): String? {
+            val value = this@ValueStoreImpl.get(key) ?: prefillValues[key]
+
+            return if (value.equals("null")) {
+                null
+            } else {
+                value
+            }
+        }
+
         override fun getList(key: String): List<String>? = null
     }
 

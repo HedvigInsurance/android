@@ -1,22 +1,24 @@
 package com.hedvig.app.feature.offer.ui.changestartdate
 
 import com.hedvig.android.owldroid.fragment.QuoteBundleFragment
+import com.hedvig.app.feature.offer.model.QuoteCartId
 
-fun QuoteBundleFragment.Inception1.toChangeDateBottomSheetData() = ChangeDateBottomSheetData(
+fun QuoteBundleFragment.Inception1.toChangeDateBottomSheetData(
+    quoteCartId: QuoteCartId,
+    quoteNames: List<String>
+) = ChangeDateBottomSheetData(
+    quoteCartId = quoteCartId,
     inceptions = asConcurrentInception?.let { concurrentInception ->
-        concurrentInception.correspondingQuotes.map { quote ->
+        concurrentInception.correspondingQuoteIds.mapIndexed { index, quoteId ->
             ChangeDateBottomSheetData.Inception(
-                title = quote.asCompleteQuote?.displayName
-                    ?: throw IllegalArgumentException("Quote displayName not found"),
-                quoteId = quote.asCompleteQuote?.id
-                    ?: throw IllegalArgumentException("Quote id not found"),
+                title = quoteNames.getOrElse(index) { "Insurance #$index" },
+                quoteId = quoteId,
                 startDate = concurrentInception.startDate,
                 currentInsurer = concurrentInception.currentInsurer?.fragments?.currentInsurerFragment?.let {
                     ChangeDateBottomSheetData.CurrentInsurer(
                         id = it.id
                             ?: throw IllegalArgumentException("Current insurer id not found"),
-                        displayName = it.displayName
-                            ?: throw IllegalArgumentException("Current insurer display name not found"),
+                        displayName = it.displayName ?: "",
                         switchable = it.switchable
                             ?: throw IllegalArgumentException("Current insurer switchable not found"),
                     )
@@ -25,19 +27,16 @@ fun QuoteBundleFragment.Inception1.toChangeDateBottomSheetData() = ChangeDateBot
             )
         }
     } ?: asIndependentInceptions?.let { independentInceptions ->
-        independentInceptions.inceptions.map { inception ->
+        independentInceptions.inceptions.mapIndexed { index, inception ->
             ChangeDateBottomSheetData.Inception(
-                title = inception.correspondingQuote.asCompleteQuote1?.displayName
-                    ?: throw IllegalArgumentException("Quote displayName not found"),
-                quoteId = inception.correspondingQuote.asCompleteQuote1?.id
-                    ?: throw IllegalArgumentException("Quote id not found"),
+                title = quoteNames.getOrElse(index) { "Insurance #$index" },
+                quoteId = inception.correspondingQuoteId,
                 startDate = inception.startDate,
                 currentInsurer = inception.currentInsurer?.fragments?.currentInsurerFragment?.let {
                     ChangeDateBottomSheetData.CurrentInsurer(
                         id = it.id
                             ?: throw IllegalArgumentException("Current insurer id not found"),
-                        displayName = it.displayName
-                            ?: throw IllegalArgumentException("Current insurer display name not found"),
+                        displayName = it.displayName ?: "",
                         switchable = it.switchable
                             ?: throw IllegalArgumentException("Current insurer switchable not found"),
                     )

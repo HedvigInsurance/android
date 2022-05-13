@@ -65,7 +65,7 @@ class ChangeAddressViewModelImpl(
             is UpcomingAgreementResult.Error -> ViewState.UpcomingAgreementError(upcomingAgreement)
         }
 
-    private suspend fun getSelfChangeState() = when (val selfChangeEligibility = addressChangeStoryId()) {
+    private suspend fun getSelfChangeState() = when (val selfChangeEligibility = addressChangeStoryId.invoke()) {
         is SelfChangeEligibilityResult.Eligible -> ViewState.SelfChangeAddress(selfChangeEligibility.embarkStoryId)
         is SelfChangeEligibilityResult.Blocked -> ViewState.ManualChangeAddress
         is SelfChangeEligibilityResult.Error -> ViewState.SelfChangeError(selfChangeEligibility)

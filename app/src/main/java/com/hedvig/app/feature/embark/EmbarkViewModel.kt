@@ -17,16 +17,16 @@ import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.embark.extensions.api
 import com.hedvig.app.feature.embark.extensions.getComputedValues
 import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
+import com.hedvig.app.feature.embark.util.SelectedContractType
 import com.hedvig.app.feature.embark.util.evaluateExpression
 import com.hedvig.app.feature.embark.util.getFileVariables
-import com.hedvig.app.feature.embark.util.getOfferKeysOrNull
+import com.hedvig.app.feature.embark.util.getOfferKeyOrNull
+import com.hedvig.app.feature.embark.util.getSelectedContractTypes
 import com.hedvig.app.feature.embark.util.getVariables
 import com.hedvig.app.feature.embark.util.toExpressionFragment
+import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ProgressPercentage
-import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.asMap
-import com.hedvig.app.util.featureflags.Feature
-import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.app.util.safeLet
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.channels.Channel
@@ -43,8 +43,7 @@ import kotlinx.coroutines.launch
 import java.util.Stack
 import kotlin.math.max
 
-private const val QUOTE_CART_ID_KEY = "quoteCartId"
-private const val QUOTE_ID_KEY = "quoteId"
+const val QUOTE_CART_ID_KEY = "quoteCartId"
 
 abstract class EmbarkViewModel(
     private val valueStore: ValueStore,
@@ -53,7 +52,6 @@ abstract class EmbarkViewModel(
     private val hAnalytics: HAnalytics,
     private val storyName: String,
     loginStatusService: LoginStatusService,
-    private val featureManager: FeatureManager,
 ) : ViewModel() {
     private val _passageState = MutableLiveData<PassageState>()
     val passageState: LiveData<PassageState> = _passageState
@@ -66,15 +64,14 @@ abstract class EmbarkViewModel(
             initialValue = null
         )
 
-    val viewState: LiveData<ViewState> =
-        passageState.asFlow()
-            .combine(loginStatus.filterNotNull()) { passageState, loginStatus ->
-                ViewState(
-                    passageState,
-                    loginStatus == LoginStatus.LoggedIn
-                )
-            }
-            .asLiveData()
+    val viewState: LiveData<ViewState> = passageState.asFlow()
+        .combine(loginStatus.filterNotNull()) { passageState, loginStatus ->
+            ViewState(
+                passageState,
+                loginStatus == LoginStatus.LoggedIn
+            )
+        }
+        .asLiveData()
     protected val _events = Channel<Event>(Channel.UNLIMITED)
 
     val events = _events.receiveAsFlow()
@@ -96,8 +93,8 @@ abstract class EmbarkViewModel(
 
     sealed class Event {
         data class Offer(
-            val quoteIds: List<String>,
-            val quoteCartId: String?,
+            val quoteCartId: QuoteCartId?,
+            val selectedContractTypes: List<SelectedContractType>,
         ) : Event()
 
         data class Error(val message: String? = null) : Event()
@@ -151,18 +148,18 @@ abstract class EmbarkViewModel(
         val location = nextPassage?.externalRedirect?.data?.location
         val api = nextPassage?.api?.fragments?.apiFragment
 
-        val keys = nextPassage?.getOfferKeysOrNull(valueStore, featureManager)
+        val key = nextPassage?.getOfferKeyOrNull(valueStore)
 
         when {
             storyData.embarkStory == null || nextPassage == null -> _events.trySend(Event.Error())
             redirectPassage != null -> navigateToPassage(redirectPassage)
-            keys != null && keys.isNotEmpty() -> {
+            key != null && key.isNotEmpty() -> {
                 // For offers, there is a problem with the Offer screen not committing before this stage is reached,
                 //  meaning that the old values were returned from getList/get.
                 valueStore.withCommittedVersion {
-                    val ids = keys.flatMap { this.getList(it) ?: listOfNotNull(this.get(it)) }
-                    val quoteCartId = this.get(QUOTE_CART_ID_KEY)
-                    _events.trySend(Event.Offer(ids, quoteCartId))
+                    val quoteCartId = this.get(QUOTE_CART_ID_KEY)?.let { QuoteCartId(it) }
+                    val selectedContractTypes = nextPassage.getSelectedContractTypes(this)
+                    _events.trySend(Event.Offer(quoteCartId, selectedContractTypes))
                 }
             }
             location != null -> handleRedirectLocation(location)
@@ -206,8 +203,11 @@ abstract class EmbarkViewModel(
 
     private fun handleGraphQLQuery(graphQLQuery: ApiFragment.AsEmbarkApiGraphQLQuery) {
         viewModelScope.launch {
-            val variables = graphQLQuery.getVariables(valueStore)
-            val fileVariables = graphQLQuery.getFileVariables(valueStore)
+            val (variables, fileVariables) = valueStore.withCommittedVersion {
+                val variables = graphQLQuery.getVariables(valueStore)
+                val fileVariables = graphQLQuery.getFileVariables(valueStore)
+                variables to fileVariables
+            }
             val result = graphQLQueryUseCase.executeQuery(graphQLQuery, variables, fileVariables)
             handleQueryResult(result)
         }
@@ -215,8 +215,11 @@ abstract class EmbarkViewModel(
 
     private fun handleGraphQLMutation(graphQLMutation: ApiFragment.AsEmbarkApiGraphQLMutation) {
         viewModelScope.launch {
-            val variables = graphQLMutation.getVariables(valueStore)
-            val fileVariables = graphQLMutation.getFileVariables(valueStore)
+            val (variables, fileVariables) = valueStore.withCommittedVersion {
+                val variables = graphQLMutation.getVariables(this)
+                val fileVariables = graphQLMutation.getFileVariables(this)
+                variables to fileVariables
+            }
             val result = graphQLQueryUseCase.executeMutation(graphQLMutation, variables, fileVariables)
             handleQueryResult(result)
         }
@@ -245,38 +248,28 @@ abstract class EmbarkViewModel(
 
     private fun handleRedirectLocation(location: EmbarkExternalRedirectLocation) {
         hAnalytics.embarkExternalRedirect(location.rawValue)
-        when (location) {
-            EmbarkExternalRedirectLocation.OFFER -> sendOfferId()
-            EmbarkExternalRedirectLocation.CLOSE -> _events.trySend(Event.Close)
-            EmbarkExternalRedirectLocation.CHAT -> triggerChat()
-            else -> {
-                // Do nothing
-            }
-        }
-    }
-
-    private fun sendOfferId() {
-        val id = valueStore.get(QUOTE_ID_KEY)
-        val quoteCartId = valueStore.get(QUOTE_CART_ID_KEY)
-        val event = if (id == null) {
-            Event.Error()
-        } else {
-            Event.Offer(
-                quoteIds = listOf(id),
-                quoteCartId = quoteCartId,
-            )
-        }
-        _events.trySend(event)
-    }
-
-    private fun triggerChat() {
         viewModelScope.launch {
-            val event = when (chatRepository.triggerFreeTextChat()) {
-                is Either.Left -> Event.Error()
-                is Either.Right -> Event.Chat
+            val event = when (location) {
+                EmbarkExternalRedirectLocation.OFFER -> createOfferEvent()
+                EmbarkExternalRedirectLocation.CHAT -> createChatEvent()
+                EmbarkExternalRedirectLocation.CLOSE -> Event.Close
+                else -> null
             }
-            _events.trySend(event)
+            event?.let(_events::trySend)
         }
+    }
+
+    private fun createOfferEvent(): Event {
+        val quoteCartId = valueStore.get(QUOTE_CART_ID_KEY)
+        return Event.Offer(
+            quoteCartId = quoteCartId?.let { QuoteCartId(it) },
+            selectedContractTypes = emptyList(),
+        )
+    }
+
+    private suspend fun createChatEvent(): Event = when (chatRepository.triggerFreeTextChat()) {
+        is Either.Left -> Event.Error()
+        is Either.Right -> Event.Chat
     }
 
     private fun getRedirectPassageAndPutInStore(redirects: List<EmbarkStoryQuery.Redirect>?): String? {
@@ -291,7 +284,7 @@ abstract class EmbarkViewModel(
         return null
     }
 
-    private fun trackingData(track: EmbarkStoryQuery.Track) = when {
+    private fun trackingData(track: EmbarkStoryQuery.Track): Map<String, String> = when {
         track.includeAllKeys -> valueStore.toMap()
         track.eventKeys.filterNotNull().isNotEmpty() ->
             track
@@ -301,7 +294,7 @@ abstract class EmbarkViewModel(
         else -> emptyMap()
     }.let { data ->
         track.customData?.let { data + it.asMap() } ?: data
-    }
+    }.map { it.key to it.value.toString() }.toMap()
 
     private fun currentProgress(passage: EmbarkStoryQuery.Passage?): ProgressPercentage {
         if (passage == null) {
@@ -339,6 +332,15 @@ abstract class EmbarkViewModel(
     }
 
     fun preProcessResponse(passageName: String): Response? {
+        return valueStore.withCommittedVersion {
+            preProcessResponse(passageName, this)
+        }
+    }
+
+    private fun preProcessResponse(
+        passageName: String,
+        valueStore: ValueStore = this.valueStore,
+    ): Response? {
         val response = storyData
             .embarkStory
             ?.passages
@@ -347,7 +349,7 @@ abstract class EmbarkViewModel(
             ?: return null
 
         response.fragments.messageFragment?.let { message ->
-            preProcessMessage(message)?.let { return Response.SingleResponse(it.text) }
+            preProcessMessage(message, valueStore)?.let { return Response.SingleResponse(it.text) }
         }
 
         response.fragments.responseExpressionFragment?.let { exp ->
@@ -359,7 +361,8 @@ abstract class EmbarkViewModel(
                             fragments = MessageFragment.Expression.Fragments(it.fragments.expressionFragment)
                         )
                     }
-                )
+                ),
+                valueStore,
             )?.let { return Response.SingleResponse(it.text) }
         }
 
@@ -373,11 +376,12 @@ abstract class EmbarkViewModel(
                             fragments = MessageFragment.Expression.Fragments(it.fragments.expressionFragment)
                         )
                     }
-                )
+                ),
+                valueStore,
             )?.text
 
             val items = groupedResponse.items.mapNotNull { item ->
-                preProcessMessage(item.fragments.messageFragment)?.text
+                preProcessMessage(item.fragments.messageFragment, valueStore)?.text
             }.toMutableList()
 
             groupedResponse.each?.let { each ->
@@ -407,7 +411,7 @@ abstract class EmbarkViewModel(
         return passage.copy(
             messages = passage.messages.mapNotNull { message ->
                 val messageFragment =
-                    preProcessMessage(message.fragments.messageFragment) ?: return@mapNotNull null
+                    preProcessMessage(message.fragments.messageFragment, valueStore) ?: return@mapNotNull null
                 message.copy(
                     fragments = EmbarkStoryQuery.Message.Fragments(messageFragment)
                 )
@@ -434,7 +438,7 @@ abstract class EmbarkViewModel(
 
     private fun preProcessMessage(
         message: MessageFragment,
-        valueStoreView: ValueStoreView = valueStore,
+        valueStoreView: ValueStoreView,
     ): MessageFragment? {
         if (message.expressions.isEmpty()) {
             return message.copy(
@@ -510,7 +514,6 @@ class EmbarkViewModelImpl(
     hAnalytics: HAnalytics,
     storyName: String,
     private val createQuoteCartUseCase: CreateQuoteCartUseCase,
-    private val featureManager: FeatureManager,
 ) : EmbarkViewModel(
     valueStore,
     graphQLQueryUseCase,
@@ -518,7 +521,6 @@ class EmbarkViewModelImpl(
     hAnalytics,
     storyName,
     loginStatusService,
-    featureManager,
 ) {
 
     init {
@@ -527,20 +529,13 @@ class EmbarkViewModelImpl(
 
     override fun fetchStory(name: String) {
         viewModelScope.launch {
-            if (featureManager.isFeatureEnabled(Feature.QUOTE_CART)) {
-                when (val quoteCartResult = createQuoteCartUseCase.invoke()) {
-                    is Either.Left -> _events.trySend(Event.Error(quoteCartResult.value.message))
-                    is Either.Right -> putInStore(QUOTE_CART_ID_KEY, quoteCartResult.value.id)
-                }
-            }
-
-            when (val result = embarkRepository.embarkStory(name)) {
-                is QueryResult.Error -> _events.trySend(Event.Error(result.message))
-                is QueryResult.Success -> {
-                    storyData = result.data
+            embarkRepository.embarkStory(name).fold(
+                ifLeft = { _events.trySend(Event.Error(it.message)) },
+                ifRight = {
+                    storyData = it
                     setInitialState()
                 }
-            }
+            )
         }
     }
 }

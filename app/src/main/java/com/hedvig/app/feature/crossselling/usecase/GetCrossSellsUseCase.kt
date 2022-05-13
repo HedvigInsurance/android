@@ -10,7 +10,7 @@ import e
 
 class GetCrossSellsUseCase(
     private val apolloClient: ApolloClient,
-    private val localeManager: LocaleManager
+    private val localeManager: LocaleManager,
 ) {
     suspend operator fun invoke() = when (
         val result = apolloClient

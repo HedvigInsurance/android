@@ -44,7 +44,11 @@ class OtherDiscountTest : TestCase() {
     val apolloCacheClearRule = ApolloCacheClearRule()
 
     @get:Rule
-    val featureFlagRule = FeatureFlagRule(Feature.REFERRAL_CAMPAIGN to false)
+    val featureFlagRule = FeatureFlagRule(
+        Feature.REFERRAL_CAMPAIGN to false,
+        Feature.KEY_GEAR to false,
+        Feature.REFERRALS to true,
+    )
 
     @Test
     fun shouldShowOtherDiscountWhenUserHasNonReferralDiscounts() = run {

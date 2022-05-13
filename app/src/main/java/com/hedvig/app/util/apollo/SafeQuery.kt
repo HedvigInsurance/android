@@ -5,11 +5,13 @@ import arrow.core.None
 import arrow.core.Option
 import arrow.core.Some
 import com.apollographql.apollo.ApolloCall
+import com.apollographql.apollo.ApolloQueryWatcher
 import com.apollographql.apollo.ApolloSubscriptionCall
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.coroutines.await
 import com.apollographql.apollo.coroutines.toFlow
 import com.apollographql.apollo.exception.ApolloException
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -26,6 +28,9 @@ suspend fun <T> ApolloCall<T>.safeQuery(): QueryResult<T> {
     } catch (apolloException: ApolloException) {
         QueryResult.Error.NetworkError(apolloException.localizedMessage)
     } catch (throwable: Throwable) {
+        if (throwable is CancellationException) {
+            throw throwable
+        }
         QueryResult.Error.GeneralError(throwable.localizedMessage)
     }
 }
@@ -36,6 +41,22 @@ fun <T> ApolloSubscriptionCall<T>.safeSubscription(): Flow<QueryResult<T>> {
     } catch (apolloException: ApolloException) {
         flowOf(QueryResult.Error.NetworkError(apolloException.localizedMessage))
     } catch (throwable: Throwable) {
+        if (throwable is CancellationException) {
+            throw throwable
+        }
+        flowOf(QueryResult.Error.GeneralError(throwable.localizedMessage))
+    }
+}
+
+fun <T> ApolloQueryWatcher<T>.safeFlow(): Flow<QueryResult<T>> {
+    return try {
+        toFlow().map(Response<T>::toQueryResult)
+    } catch (apolloException: ApolloException) {
+        flowOf(QueryResult.Error.NetworkError(apolloException.localizedMessage))
+    } catch (throwable: Throwable) {
+        if (throwable is CancellationException) {
+            throw throwable
+        }
         flowOf(QueryResult.Error.GeneralError(throwable.localizedMessage))
     }
 }

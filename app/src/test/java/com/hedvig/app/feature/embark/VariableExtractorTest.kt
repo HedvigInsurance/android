@@ -26,10 +26,12 @@ class VariableExtractorTest {
 
         assertThat(json.getString("street")).isEqualTo("Est")
         assertThat(json.getInt("yearOfConstruction")).isEqualTo(1991)
-        assertThat(json.getBoolean("isSubleted")).isEqualTo(false)
 
-        val firstExtraBuilding = (json.get("extraBuildings") as JSONArray)[0] as JSONObject
-        val secondExtraBuilding = (json.get("extraBuildings") as JSONArray)[1] as JSONObject
+        val payload = (json.getJSONObject("input").getJSONArray("payload").get(0) as JSONObject)
+        assertThat(payload.getBoolean("isSubleted")).isEqualTo(false)
+
+        val firstExtraBuilding = (payload.get("extraBuildings") as JSONArray)[0] as JSONObject
+        val secondExtraBuilding = (payload.get("extraBuildings") as JSONArray)[1] as JSONObject
 
         assertThat(firstExtraBuilding.getString("type")).isEqualTo("Carport")
         assertThat(firstExtraBuilding.getBoolean("hasWaterConnected")).isEqualTo(true)
@@ -38,6 +40,51 @@ class VariableExtractorTest {
         assertThat(secondExtraBuilding.getString("type")).isEqualTo("Guest house")
         assertThat(secondExtraBuilding.getBoolean("hasWaterConnected")).isEqualTo(false)
         assertThat(secondExtraBuilding.getInt("area")).isEqualTo(5)
+    }
+
+    /**
+     * Context: When there is a multi action field defined, it needs to be there for the Offer query to work.
+     * For example, if there is a "extraBuildings" field specified, if the VariableExtractor skips it entirely the
+     * offer query fails as it's expecting to find it, even as an empty array.
+     */
+    @Test
+    fun `should put an empty list if there are no multi action variables`() {
+        val valueStore: ValueStore = ValueStoreImpl()
+        val variables: List<Variable> = listOf(
+            Variable.Multi(
+                key = "input.payload[0].data.extraBuildings",
+                from = "extraBuildings",
+                variables = listOf(
+                    Variable.Single(
+                        key = "type",
+                        from = "type",
+                        castAs = CastType.STRING
+                    ),
+                    Variable.Single(
+                        key = "area",
+                        from = "area",
+                        castAs = CastType.INT
+                    ),
+                    Variable.Single(
+                        key = "hasWaterConnected",
+                        from = "hasWaterConnected",
+                        castAs = CastType.BOOLEAN
+                    )
+                )
+            ),
+        )
+
+        val json = VariableExtractor.reduceVariables(
+            variables,
+            valueStore::get,
+            valueStore::put,
+            valueStore::getMultiActionItems
+        )
+
+        val payload = (json.getJSONObject("input").getJSONArray("payload").get(0) as JSONObject)
+        val extraBuilding = payload.getJSONObject("data").getJSONArray("extraBuildings")
+
+        assertThat(extraBuilding.length()).isEqualTo(0)
     }
 
     @Test
@@ -288,17 +335,18 @@ class VariableExtractorTest {
                 castAs = CastType.INT
             ),
             Variable.Single(
-                key = "numberOfBathrooms",
+                key = "input.payload[0].numberOfBathrooms",
                 from = "numberOfBathrooms",
                 castAs = CastType.INT
             ),
             Variable.Single(
-                key = "isSubleted",
+                key = "input.payload[0].isSubleted",
                 from = "isSubleted",
                 castAs = CastType.BOOLEAN
             ),
             Variable.Multi(
-                key = "extraBuildings",
+                key = "input.payload[0].extraBuildings",
+                from = "extraBuildings",
                 variables = listOf(
                     Variable.Single(
                         key = "type",

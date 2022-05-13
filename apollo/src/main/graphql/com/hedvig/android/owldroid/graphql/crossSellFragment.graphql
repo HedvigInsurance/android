@@ -6,7 +6,7 @@ fragment CrossSellFragment on CrossSell {
   contractType
   action {
     ... on CrossSellEmbark {
-      embarkStory(locale: $locale) {
+      embarkStoryV2 {
         name
       }
     }

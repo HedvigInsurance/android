@@ -12,12 +12,7 @@ class IndependentInceptionBuilder(
         asIndependentInceptions = QuoteBundleFragment.AsIndependentInceptions(
             inceptions = listOf(
                 QuoteBundleFragment.Inception(
-                    correspondingQuote = QuoteBundleFragment.CorrespondingQuote1(
-                        asCompleteQuote1 = QuoteBundleFragment.AsCompleteQuote1(
-                            displayName = "Test Insurance",
-                            id = "ea656f5f-40b2-4953-85d9-752b33e69e38"
-                        )
-                    ),
+                    correspondingQuoteId = "ea656f5f-40b2-4953-85d9-752b33e69e38",
                     startDate = if (startDateFromPreviousInsurer) null else LocalDate.now(),
                     currentInsurer = if (withCurrentInsurer) {
                         QuoteBundleFragment.CurrentInsurer2(
@@ -32,12 +27,7 @@ class IndependentInceptionBuilder(
                     } else null
                 ),
                 QuoteBundleFragment.Inception(
-                    correspondingQuote = QuoteBundleFragment.CorrespondingQuote1(
-                        asCompleteQuote1 = QuoteBundleFragment.AsCompleteQuote1(
-                            displayName = "Test Insurance 2",
-                            id = "ea656f5f-40b2-4953-85d9-752b33e69e37"
-                        )
-                    ),
+                    correspondingQuoteId = "ea656f5f-40b2-4953-85d9-752b33e69e37",
                     startDate = if (startDateFromPreviousInsurer) null else LocalDate.now().plusDays(3),
                     currentInsurer = if (withCurrentInsurer) {
                         QuoteBundleFragment.CurrentInsurer2(
@@ -52,12 +42,7 @@ class IndependentInceptionBuilder(
                     } else null
                 ),
                 QuoteBundleFragment.Inception(
-                    correspondingQuote = QuoteBundleFragment.CorrespondingQuote1(
-                        asCompleteQuote1 = QuoteBundleFragment.AsCompleteQuote1(
-                            displayName = "Test Insurance 3",
-                            id = "ea656f5f-40b2-4953-85d9-752b33e69e36"
-                        )
-                    ),
+                    correspondingQuoteId = "ea656f5f-40b2-4953-85d9-752b33e69e36",
                     startDate = if (startDateFromPreviousInsurer) null else LocalDate.now().plusDays(5),
                     currentInsurer = if (withCurrentInsurer) {
                         QuoteBundleFragment.CurrentInsurer2(
