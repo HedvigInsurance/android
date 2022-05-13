@@ -11,8 +11,7 @@ class LocaleManager(
     private val context: Context
 ) {
     fun defaultLocale(): Locale {
-        val localeFromSettings = Language.fromSettings(context, marketManager.market).apply(context)
-        val locale = getLocale(localeFromSettings, marketManager.market)
+        val locale = getJavaUtilLocale()
         return when (locale.toString()) {
             "en_NO" -> Locale.EN_NO
             "nb_NO" -> Locale.NB_NO
@@ -22,5 +21,10 @@ class LocaleManager(
             "en_DK" -> Locale.EN_DK
             else -> Locale.EN_SE
         }
+    }
+
+    fun getJavaUtilLocale(): java.util.Locale {
+        val localeFromSettings = Language.fromSettings(context, marketManager.market).apply(context)
+        return getLocale(localeFromSettings, marketManager.market)
     }
 }
