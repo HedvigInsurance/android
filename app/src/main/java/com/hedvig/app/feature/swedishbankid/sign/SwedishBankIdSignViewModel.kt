@@ -9,8 +9,6 @@ import com.hedvig.app.feature.offer.model.Checkout
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.offer.usecase.CreateAccessTokenUseCase
 import com.hedvig.app.util.extensions.mapEitherRight
-import com.hedvig.app.util.featureflags.FeatureManager
-import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -24,11 +22,9 @@ import kotlin.time.Duration.Companion.seconds
 
 class SwedishBankIdSignViewModel(
     private val loginStatusService: LoginStatusService,
-    private val hAnalytics: HAnalytics,
     private val quoteCartId: QuoteCartId,
     private val offerRepository: OfferRepository,
     private val createAccessTokenUseCase: CreateAccessTokenUseCase,
-    private val featureManager: FeatureManager,
 ) : ViewModel() {
     sealed class ViewState {
         object StartClient : ViewState()
@@ -92,7 +88,6 @@ class SwedishBankIdSignViewModel(
 
     private fun completeSign() {
         hasCompletedSign = true
-        hAnalytics.quotesSigned(listOf(quoteCartId.id))
         loginStatusService.isViewingOffer = false
         loginStatusService.isLoggedIn = true
         viewModelScope.launch {
