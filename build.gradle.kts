@@ -1,10 +1,11 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
-    id("com.dipien.releaseshub.gradle.plugin") version "2.0.2"
     id("net.rdrei.android.buildtimetracker") version "0.11.0"
     id("com.github.konifar.gradle.unused-resources-remover") version "0.3.3"
-    id("org.gradle.android.cache-fix") version "2.4.4" apply false
-    id("com.osacky.doctor") version "0.7.3"
+    id("org.gradle.android.cache-fix") version "2.5.3" apply false
+    id("com.osacky.doctor") version "0.8.0"
+    id("com.github.ben-manes.versions") version "0.41.0"
+    id("nl.littlerobots.version-catalog-update") version "0.3.1"
 }
 
 subprojects {
@@ -47,6 +48,13 @@ allprojects {
             "https://jitpack.io"
         )
     }
+}
+
+val betaAlphaRc = Regex("""(alpha|beta|rc)""")
+fun notStableVersion(version: String) = version.contains(betaAlphaRc)
+
+tasks.withType<com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask> {
+    rejectVersionIf { notStableVersion(candidate.version) }
 }
 
 buildtimetracker {
