@@ -9,10 +9,12 @@ import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.hanalytics.HAnalytics
 
 class StartCheckoutUseCase(
     private val apolloClient: ApolloClient,
     private val cacheManager: CacheManager,
+    private val hAnalytics: HAnalytics,
 ) {
     object Success
 
@@ -27,6 +29,7 @@ class StartCheckoutUseCase(
 
         ensure(errorMessage == null) { ErrorMessage(errorMessage) }
         cacheManager.clearCache()
+        hAnalytics.quotesSigned(quoteIds)
         Success
     }
 

@@ -179,7 +179,6 @@ class CheckoutViewModel(
     )
 
     private suspend fun onSignSuccess(): Event.CheckoutSuccess {
-        hAnalytics.quotesSigned(quoteIds)
         loginStatusService.isLoggedIn = true
         loginStatusService.isViewingOffer = false
         // Delay sending success in order for the signed quotes to be added on the member

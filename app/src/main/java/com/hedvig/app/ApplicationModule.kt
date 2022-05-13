@@ -386,11 +386,9 @@ val viewModelModule = module {
     viewModel { (quoteCartId: QuoteCartId) ->
         SwedishBankIdSignViewModel(
             loginStatusService = get(),
-            hAnalytics = get(),
             quoteCartId = quoteCartId,
             offerRepository = get(),
             createAccessTokenUseCase = get(),
-            featureManager = get()
         )
     }
     viewModel { AudioRecorderViewModel(get()) }
@@ -654,7 +652,7 @@ val useCaseModule = module {
     single { StartDanishAuthUseCase(get()) }
     single { StartNorwegianAuthUseCase(get()) }
     single { SubscribeToAuthStatusUseCase(get()) }
-    single { StartCheckoutUseCase(get(), get()) }
+    single { StartCheckoutUseCase(get(), get(), get()) }
     single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get()) }
     single { GetContractsUseCase(get(), get()) }
     single { GetCrossSellsContractTypesUseCase(get(), get()) }
