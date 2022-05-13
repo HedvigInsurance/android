@@ -107,7 +107,8 @@ class TestOfferModelBuilder(
                             detailsTable = table,
                             perils = perils,
                             insurableLimits = insurableLimits,
-                            insuranceTerms = documents
+                            insuranceTerms = documents,
+                            insuranceType = "TEST",
                         )
                     ),
                     cost = BundleCost(
