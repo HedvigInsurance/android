@@ -234,13 +234,6 @@
             android:theme="@style/Hedvig.Theme"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".feature.marketing.ui.MarketingActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/Hedvig.Theme.Marketing"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
             android:name=".feature.referrals.ui.activated.ReferralsActivatedActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:launchMode="singleTask"
@@ -324,6 +317,9 @@
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".feature.claimdetail.ClaimDetailActivity" />
         <activity android:name=".feature.tracking.NotificationOpenedTrackingActivity" />
+        <activity
+            android:name=".feature.marketing.MarketingActivity"
+            android:theme="@style/Hedvig.Theme.Marketing" />
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"

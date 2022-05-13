@@ -41,6 +41,7 @@ import com.hedvig.app.feature.offer.model.checkoutIconRes
 import com.hedvig.app.feature.offer.model.quotebundle.PostSignScreen
 import com.hedvig.app.feature.offer.model.quotebundle.ViewConfiguration
 import com.hedvig.app.feature.offer.quotedetail.QuoteDetailActivity
+import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.settings.SettingsActivity
@@ -262,10 +263,15 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     private fun handlePostSign(event: OfferViewModel.Event.ApproveSuccessful) {
         when (event.postSignScreen) {
             PostSignScreen.CONNECT_PAYIN -> {
-                marketManager
-                    .market
-                    ?.connectPayin(this@OfferActivity, true)
-                    ?.let { startActivity(it) }
+                val market = marketManager.market ?: return
+                startActivity(
+                    connectPayinIntent(
+                        this,
+                        event.payinType,
+                        market,
+                        true
+                    )
+                )
             }
             PostSignScreen.MOVE -> {
                 startActivity(
@@ -373,6 +379,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             is DropInResult.Finished -> {
                 model.onPaymentTokenIdReceived(PaymentTokenId(result.result))
             }
+            else -> {}
         }
     }
 

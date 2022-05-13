@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.tracking
 
+import com.hedvig.app.feature.hanalytics.HAnalyticsSink
 import com.hedvig.app.util.toJsonObject
 import com.hedvig.hanalytics.HAnalyticsEvent
 import d
@@ -11,5 +12,9 @@ import d
 class DebugLogTrackerSink : HAnalyticsSink {
     override fun send(event: HAnalyticsEvent) {
         d { "Track ${event.name}, properties: ${event.properties.toJsonObject().toString(2)}" }
+    }
+
+    override fun identify() {
+        d { "Identify" }
     }
 }

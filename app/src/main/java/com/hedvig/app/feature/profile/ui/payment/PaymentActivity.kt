@@ -3,6 +3,8 @@ package com.hedvig.app.feature.profile.ui.payment
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.graphql.PaymentQuery
 import com.hedvig.android.owldroid.type.PayinMethodStatus
@@ -16,7 +18,10 @@ import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.viewBinding
 import com.hedvig.app.util.safeLet
+import com.hedvig.hanalytics.PaymentType
 import e
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.time.format.DateTimeFormatter
@@ -38,25 +43,30 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
             recycler.applyNavigationBarInsets()
             recycler.adapter = PaymentAdapter(marketManager, supportFragmentManager)
 
-            model.data.observe(this@PaymentActivity) { (paymentData, payinStatusData) ->
-                if (paymentData == null || payinStatusData == null) {
-                    return@observe
-                }
-
-                (recycler.adapter as? PaymentAdapter)?.submitList(
-                    listOfNotNull(
-                        PaymentModel.Header,
-                        failedPayments(paymentData),
-                        connectPayment(payinStatusData),
-                        PaymentModel.NextPayment(paymentData),
-                        campaign(paymentData),
-                        *paymentHistory(paymentData),
-                        redeemCampaign(paymentData),
-                        *payinDetails(paymentData, payinStatusData),
-                        *paymentData.toPayoutDetails()
+            model
+                .data
+                .flowWithLifecycle(lifecycle)
+                .onEach { data ->
+                    val (paymentData, payinStatus) = data
+                    val (payinStatusData, payinType) = payinStatus ?: return@onEach
+                    if (paymentData == null || payinStatusData == null) {
+                        return@onEach
+                    }
+                    (recycler.adapter as? PaymentAdapter)?.submitList(
+                        listOfNotNull(
+                            PaymentModel.Header,
+                            failedPayments(paymentData),
+                            connectPayment(payinStatusData, payinType),
+                            PaymentModel.NextPayment(paymentData),
+                            campaign(paymentData),
+                            *paymentHistory(paymentData),
+                            redeemCampaign(paymentData),
+                            *payinDetails(paymentData, payinStatusData, payinType),
+                            *paymentData.toPayoutDetails()
+                        )
                     )
-                )
-            }
+                }
+                .launchIn(lifecycleScope)
         }
     }
 
@@ -83,9 +93,9 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
         }
     }
 
-    private fun connectPayment(data: PayinStatusQuery.Data) =
+    private fun connectPayment(data: PayinStatusQuery.Data, payinType: PaymentType) =
         if (data.payinMethodStatus == PayinMethodStatus.NEEDS_SETUP) {
-            PaymentModel.ConnectPayment
+            PaymentModel.ConnectPayment(payinType)
         } else {
             null
         }
@@ -104,17 +114,18 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
     private fun payinDetails(
         paymentData: PaymentQuery.Data,
         payinStatusData: PayinStatusQuery.Data,
+        payinType: PaymentType,
     ): Array<PaymentModel> {
         paymentData.bankAccount?.let { bankAccount ->
             return arrayOf(
                 PaymentModel.TrustlyPayinDetails(bankAccount, payinStatusData.payinMethodStatus),
-                PaymentModel.Link.TrustlyChangePayin,
+                PaymentModel.Link.TrustlyChangePayin(payinType),
             )
         }
         paymentData.activePaymentMethodsV2?.let { activePaymentMethods ->
             return arrayOf(
                 PaymentModel.AdyenPayinDetails(activePaymentMethods),
-                PaymentModel.Link.AdyenChangePayin,
+                PaymentModel.Link.AdyenChangePayin(payinType),
             )
         }
         return emptyArray()
