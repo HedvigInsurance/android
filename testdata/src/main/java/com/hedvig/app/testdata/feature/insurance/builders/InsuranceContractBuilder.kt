@@ -1,6 +1,7 @@
 package com.hedvig.app.testdata.feature.insurance.builders
 
 import com.hedvig.android.owldroid.fragment.ContractStatusFragment
+import com.hedvig.android.owldroid.fragment.IconVariantsFragment
 import com.hedvig.android.owldroid.fragment.InsurableLimitsFragment
 import com.hedvig.android.owldroid.fragment.TableFragment
 import com.hedvig.android.owldroid.fragment.UpcomingAgreementFragment
@@ -90,6 +91,16 @@ class InsuranceContractBuilder(
                 upcomingAgreementDetailsTable = UpcomingAgreementFragment.UpcomingAgreementDetailsTable(
                     fragments = UpcomingAgreementFragment.UpcomingAgreementDetailsTable.Fragments(
                         TableFragmentBuilder().build()
+                    )
+                )
+            )
+        ),
+        logo = InsuranceQuery.Logo(
+            variants = InsuranceQuery.Variants(
+                fragments = InsuranceQuery.Variants.Fragments(
+                    IconVariantsFragment(
+                        dark = IconVariantsFragment.Dark(svgUrl = "https://www.example.com"),
+                        light = IconVariantsFragment.Light(svgUrl = "https://www.example.com")
                     )
                 )
             )

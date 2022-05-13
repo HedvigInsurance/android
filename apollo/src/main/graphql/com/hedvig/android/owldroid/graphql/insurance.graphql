@@ -1,6 +1,11 @@
 query InsuranceQuery($locale: Locale!) {
   contracts {
     id
+    logo(locale: $locale) {
+      variants {
+        ...IconVariantsFragment
+      }
+    }
     status {
       ...ContractStatusFragment
     }

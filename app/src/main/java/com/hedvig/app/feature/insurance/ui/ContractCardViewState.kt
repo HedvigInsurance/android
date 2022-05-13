@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.insurance.ui
 
 import com.hedvig.android.owldroid.type.TypeOfContractGradientOption
+import com.hedvig.app.util.apollo.ThemedIconUrls
 
 data class ContractCardViewState(
     val id: String,
@@ -9,4 +10,5 @@ data class ContractCardViewState(
     val gradientOption: TypeOfContractGradientOption?,
     val displayName: String,
     val detailPills: List<String>,
+    val logoUrls: ThemedIconUrls?,
 )
