@@ -15,7 +15,7 @@ apollo {
         schemaFile.set(file("src/main/graphql/com/hedvig/android/owldroid/schema.graphqls"))
         srcDir(file("src/main/graphql/com/hedvig/android/owldroid/graphql"))
 
-        packageName.set("com.hedvig.android.owldroid.type")
+        packageName.set("com.hedvig.android.owldroid.graphql")
         codegenModels.set(MODELS_COMPAT)
 
         // Test builders setup
