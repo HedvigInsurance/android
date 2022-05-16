@@ -28,18 +28,16 @@ apollo {
 
         // https://www.apollographql.com/docs/android/advanced/operation-variables/#make-nullable-variables-non-optional
         generateOptionalOperationVariables.set(false)
-        customScalarsMapping.set(
-            mapOf(
-                "URL" to "kotlin.String",
-                "LocalDate" to "java.time.LocalDate",
-                "Upload" to "com.apollographql.apollo3.api.FileUpload",
-                "PaymentMethodsResponse" to "com.adyen.checkout.components.model.PaymentMethodsApiResponse",
-                "CheckoutPaymentsAction" to "kotlin.String",
-                "CheckoutPaymentAction" to "kotlin.String",
-                "JSONString" to "org.json.JSONObject",
-                "Instant" to "java.time.Instant",
-            )
-        )
+
+        mapScalarToKotlinString("URL")
+        mapScalar("LocalDate", "java.time.LocalDate")
+        mapScalarToUpload("Upload")
+        mapScalar("PaymentMethodsResponse", "com.adyen.checkout.components.model.PaymentMethodsApiResponse")
+        mapScalarToKotlinString("CheckoutPaymentsAction")
+        mapScalarToKotlinString("CheckoutPaymentAction")
+        mapScalar("JSONString", "org.json.JSONObject")
+        mapScalar("Instant", "java.time.Instant")
+
         sealedClassesForEnumsMatching.set(
             listOf(
                 "TypeOfContract",
