@@ -300,8 +300,7 @@ val applicationModule = module {
     }
     single { SunsettingInterceptor.Factory(get()) } bind ApolloInterceptorFactory::class
     single {
-        val builder = ApolloClient
-            .builder()
+        val builder = ApolloClient.Builder()
             .serverUrl(get<HedvigApplication>().graphqlUrl)
             .okHttpClient(get())
             .subscriptionConnectionParams {
