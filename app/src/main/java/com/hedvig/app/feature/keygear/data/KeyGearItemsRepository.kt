@@ -69,7 +69,7 @@ class KeyGearItemsRepository(
     ): KeyGearItemQuery.Data? {
         val response = apolloClient
             .mutate(UpdateKeyGearPriceAndDateMutation(id, date, price))
-            .await()
+            .execute()
 
         val newPrice =
             response.data?.updatePurchasePriceForKeyGearItem?.purchasePrice?.amount
@@ -138,7 +138,7 @@ class KeyGearItemsRepository(
         }
 
         return@withContext apolloClient.mutate(UploadFilesMutation(files))
-            .await()
+            .execute()
     }
 
     suspend fun createKeyGearItemAsync(
@@ -157,7 +157,7 @@ class KeyGearItemsRepository(
 
         val result = apolloClient
             .mutate(mutation)
-            .await()
+            .execute()
 
         val data = result.data
         if (data == null) {
@@ -209,7 +209,7 @@ class KeyGearItemsRepository(
         }
         val uploadResult = apolloClient
             .mutate(UploadFileMutation(FileUpload(mimeType, uploadFile.path)))
-            .await()
+            .execute()
 
         val uploadData = uploadResult.data
         if (uploadData == null) {
@@ -232,7 +232,7 @@ class KeyGearItemsRepository(
                     locale
                 )
             )
-            .await()
+            .execute()
 
         val addReceiptData = addReceiptResult.data
         if (addReceiptData == null) {
@@ -269,7 +269,7 @@ class KeyGearItemsRepository(
                 id = itemId,
                 updatedName = Input.fromNullable(name)
             )
-        val response = apolloClient.mutate(mutation).await()
+        val response = apolloClient.mutate(mutation).execute()
 
         val newName = response.data?.updateKeyGearItemName?.name
 
@@ -327,7 +327,7 @@ class KeyGearItemsRepository(
     suspend fun deleteItem(id: String) {
         val response = apolloClient
             .mutate(DeleteKeyGearItemMutation(id))
-            .await()
+            .execute()
 
         if (response.hasErrors() || response.data?.deleteKeyGearItem?.deleted == false) {
             e { "Failed to delete item" }

@@ -12,7 +12,7 @@ class UserRepository(
     private val apolloClient: ApolloClient,
 ) {
     suspend fun fetchAutoStartToken() =
-        apolloClient.mutate(SwedishBankIdAuthMutation()).await()
+        apolloClient.mutate(SwedishBankIdAuthMutation()).execute()
 
     fun subscribeAuthStatus() =
         apolloClient.subscribe(AuthStatusSubscription()).toFlow()

@@ -25,12 +25,12 @@ class ReferralsRepository(
         .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
         .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
         .build()
-        .await()
+        .execute()
 
     suspend fun updateCode(newCode: String): Response<UpdateReferralCampaignCodeMutation.Data> {
         val response = apolloClient
             .mutate(UpdateReferralCampaignCodeMutation(newCode))
-            .await()
+            .execute()
 
         response.data?.updateReferralCampaignCode?.asSuccessfullyUpdatedCode?.code?.let { updatedCode ->
             val oldData = apolloClient

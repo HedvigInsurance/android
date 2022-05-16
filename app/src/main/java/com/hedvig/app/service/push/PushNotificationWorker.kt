@@ -48,7 +48,7 @@ class PushNotificationWorker(
         val response = runCatching {
             apolloClient
                 .mutate(RegisterPushTokenMutation(pushToken))
-                .await()
+                .execute()
         }
         if (response.isFailure) {
             response.exceptionOrNull()

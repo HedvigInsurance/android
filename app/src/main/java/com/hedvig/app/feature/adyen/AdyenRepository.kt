@@ -4,6 +4,7 @@ import android.content.Context
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.adyen.checkout.redirect.RedirectComponent
 import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.coroutines.await
 import com.hedvig.android.owldroid.graphql.AdyenPaymentMethodsQuery
 import com.hedvig.android.owldroid.graphql.AdyenPayoutMethodsQuery
@@ -15,13 +16,13 @@ class AdyenRepository(
     private val context: Context,
 ) {
 
-    suspend fun paymentMethods() = apolloClient
+    suspend fun paymentMethods(): ApolloResponse<AdyenPaymentMethodsQuery.Data> = apolloClient
         .query(AdyenPaymentMethodsQuery())
-        .await()
+        .execute()
 
-    suspend fun payoutMethods() = apolloClient
+    suspend fun payoutMethods(): ApolloResponse<AdyenPayoutMethodsQuery.Data> = apolloClient
         .query(AdyenPayoutMethodsQuery())
-        .await()
+        .execute()
 
     suspend fun tokenizePayoutDetails(data: JSONObject) = apolloClient
         .mutate(
@@ -30,7 +31,7 @@ class AdyenRepository(
                 RedirectComponent.getReturnUrl(context)
             )
         )
-        .await()
+        .execute()
 
     suspend fun paymentMethodsResponse(): PaymentMethodsApiResponse? {
         return paymentMethods()

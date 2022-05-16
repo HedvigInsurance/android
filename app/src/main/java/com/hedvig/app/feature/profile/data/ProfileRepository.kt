@@ -24,10 +24,10 @@ class ProfileRepository(
         .map(QueryResult<ProfileQuery.Data>::toEither)
 
     suspend fun updateEmail(input: String) =
-        apolloClient.mutate(UpdateEmailMutation(input)).await()
+        apolloClient.mutate(UpdateEmailMutation(input)).execute()
 
     suspend fun updatePhoneNumber(input: String) =
-        apolloClient.mutate(UpdatePhoneNumberMutation(input)).await()
+        apolloClient.mutate(UpdatePhoneNumberMutation(input)).execute()
 
     fun writeEmailAndPhoneNumberInCache(email: String?, phoneNumber: String?) {
         val cachedData = apolloClient
@@ -51,7 +51,7 @@ class ProfileRepository(
     }
 
     suspend fun selectCashback(id: String) =
-        apolloClient.mutate(SelectCashbackMutation(id)).await()
+        apolloClient.mutate(SelectCashbackMutation(id)).execute()
 
     fun writeCashbackToCache(cashback: SelectCashbackMutation.SelectCashbackOption) {
         val cachedData = apolloClient

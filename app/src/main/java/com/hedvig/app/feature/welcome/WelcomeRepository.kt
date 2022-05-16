@@ -11,5 +11,5 @@ class WelcomeRepository(
 ) {
     suspend fun fetchWelcomeScreens() = apolloClient
         .query(WelcomeQuery(localeManager.defaultLocale()))
-        .await()
+        .execute()
 }

@@ -11,5 +11,5 @@ class ClaimsRepository(
 ) {
 
     suspend fun fetchCommonClaims() = apolloClient
-        .query(CommonClaimQuery(localeManager.defaultLocale())).await()
+        .query(CommonClaimQuery(localeManager.defaultLocale())).execute()
 }

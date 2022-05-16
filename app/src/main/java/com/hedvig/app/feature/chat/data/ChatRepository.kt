@@ -63,7 +63,7 @@ class ChatRepository(
             .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
             .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
             .build()
-            .await()
+            .execute()
 
     fun subscribeToChatMessages() =
         apolloClient.subscribe(ChatMessageSubscription()).toFlow()
@@ -78,7 +78,7 @@ class ChatRepository(
                 ChatResponseBodyTextInput(message)
             )
         )
-    ).await()
+    ).execute()
 
     suspend fun sendSingleSelect(
         id: String,
@@ -87,7 +87,7 @@ class ChatRepository(
         SendChatSingleSelectResponseMutation(
             ChatResponseSingleSelectInput(id, ChatResponseBodySingleSelectInput(value))
         )
-    ).await()
+    ).execute()
 
     fun writeNewMessage(message: ChatMessageFragment) {
         val cachedData = apolloClient
@@ -142,7 +142,7 @@ class ChatRepository(
             file = FileUpload(mimeType, path)
         )
 
-        return apolloClient.mutate(uploadFileMutation).await()
+        return apolloClient.mutate(uploadFileMutation).execute()
     }
 
     suspend fun sendFileResponse(
@@ -162,11 +162,11 @@ class ChatRepository(
 
         val chatFileResponse = SendChatFileResponseMutation(input)
 
-        return apolloClient.mutate(chatFileResponse).await()
+        return apolloClient.mutate(chatFileResponse).execute()
     }
 
     suspend fun editLastResponse(): Response<EditLastResponseMutation.Data> =
-        apolloClient.mutate(EditLastResponseMutation()).await()
+        apolloClient.mutate(EditLastResponseMutation()).execute()
 
     suspend fun triggerFreeTextChat(): Either<FreeTextError, FreeTextSuccess> =
         apolloClient.mutate(TriggerFreeTextChatMutation())
@@ -183,7 +183,7 @@ class ChatRepository(
             }
 
     suspend fun searchGifs(query: String): Response<GifQuery.Data> =
-        apolloClient.query(GifQuery(query)).await()
+        apolloClient.query(GifQuery(query)).execute()
 }
 
 sealed class FreeTextError {

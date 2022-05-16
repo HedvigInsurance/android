@@ -1,6 +1,7 @@
 package com.hedvig.app.data.debit
 
 import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.api.Response
 import com.apollographql.apollo3.coroutines.await
 import com.apollographql.apollo3.coroutines.toFlow
@@ -13,7 +14,7 @@ class PayinStatusRepository(
 ) {
     private val payinStatusQuery = PayinStatusQuery()
 
-    fun payinStatusFlow(): Flow<Response<PayinStatusQuery.Data>> = apolloClient
+    fun payinStatusFlow(): Flow<ApolloResponse<PayinStatusQuery.Data>> = apolloClient
         .query(payinStatusQuery)
         .watcher()
         .toFlow()
@@ -24,7 +25,7 @@ class PayinStatusRepository(
             .toBuilder()
             .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
             .build()
-            .await()
+            .execute()
 
         response.data?.let { data ->
             val cachedData = apolloClient

@@ -25,7 +25,7 @@ class PaymentRepository(
         .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
         .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
         .build()
-        .await()
+        .execute()
 
     fun writeActivePayoutMethodStatus(status: PayoutMethodStatus) {
         val cachedData = apolloClient

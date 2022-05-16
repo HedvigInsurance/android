@@ -82,7 +82,7 @@ open class HedvigApplication : Application() {
 
     private suspend fun acquireHedvigToken() {
         val response = runCatching {
-            apolloClient.mutate(NewSessionMutation()).await()
+            apolloClient.mutate(NewSessionMutation()).execute()
         }
         if (response.isFailure) {
             response.exceptionOrNull()?.let { e { "Failed to register a hedvig token: $it" } }

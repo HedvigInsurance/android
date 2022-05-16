@@ -18,7 +18,7 @@ class WhatsNewRepository(
                 locale = localeManager.defaultLocale(),
                 sinceVersion = sinceVersion ?: latestSeenNews()
             )
-        ).await()
+        ).execute()
 
     fun removeNewsForNewUser() {
         if (latestSeenNews() == NEWS_BASELINE_VERSION) {

@@ -11,5 +11,5 @@ class MarketingRepository(
 ) {
     suspend fun marketingBackground() = apolloClient
         .query(MarketingBackgroundQuery(localeManager.defaultLocale().rawValue))
-        .await()
+        .execute()
 }
