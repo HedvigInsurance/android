@@ -70,9 +70,10 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     private lateinit var concatAdapter: ConcatAdapter
     override val screenName = "offer"
 
-    private val quoteCartId: QuoteCartId?
+    private val quoteCartId: QuoteCartId
         get() = intent.getParcelableExtra(QUOTE_CART_ID)
             ?: intent.getStringExtra(QUOTE_CART_ID)?.let { QuoteCartId(it) }
+            ?: error("A quote cart ID must be passed into OfferActivity")
     private val shouldShowOnNextAppStart: Boolean
         get() = intent.getBooleanExtra(SHOULD_SHOW_ON_NEXT_APP_START, false)
 
@@ -413,7 +414,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
         fun newInstance(
             context: Context,
-            quoteCartId: QuoteCartId? = null,
+            quoteCartId: QuoteCartId,
             shouldShowOnNextAppStart: Boolean = false,
         ) = Intent(
             context, OfferActivity::class.java
