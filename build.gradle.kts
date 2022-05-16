@@ -1,10 +1,9 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
-    id("com.dipien.releaseshub.gradle.plugin") version "2.0.2"
     id("net.rdrei.android.buildtimetracker") version "0.11.0"
     id("com.github.konifar.gradle.unused-resources-remover") version "0.3.3"
-    id("org.gradle.android.cache-fix") version "2.4.4" apply false
-    id("com.osacky.doctor") version "0.7.3"
+    id("org.gradle.android.cache-fix") version "2.5.3" apply false
+    id("com.osacky.doctor") version "0.8.0"
 }
 
 subprojects {
@@ -28,10 +27,6 @@ buildscript {
     }
 
     dependencies {
-        val libs = project
-            .extensions
-            .getByType<VersionCatalogsExtension>()
-            .named("libs") as org.gradle.accessors.dm.LibrariesForLibs
         classpath(libs.android.gradlePlugin)
         classpath(libs.apollo.gradlePlugin)
         classpath(libs.crashlytics.gradlePlugin)
