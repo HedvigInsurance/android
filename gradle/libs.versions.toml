@@ -7,7 +7,7 @@ minSdkVersion = "23"
 # gradlePlugin versions
 androidBuildTools = "7.2.0"
 apollo = "2.5.9"
-crashlytics = "2.7.1"
+crashlytics = "2.8.1"
 googleServices = "4.3.10"
 kotlin = "1.6.10"
 license = "0.9.0"
