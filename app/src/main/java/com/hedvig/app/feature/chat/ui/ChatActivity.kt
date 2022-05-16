@@ -19,10 +19,12 @@ import coil.ImageLoader
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
+import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.databinding.ActivityChatBinding
 import com.hedvig.app.feature.chat.ChatInputType
 import com.hedvig.app.feature.chat.ParagraphInput
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
+import com.hedvig.app.feature.marketing.ui.MarketingActivity
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.extensions.askForPermissions
 import com.hedvig.app.util.extensions.calculateNonFullscreenHeightDiff
@@ -53,6 +55,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
     private val binding by viewBinding(ActivityChatBinding::bind)
 
     private val imageLoader: ImageLoader by inject()
+    private val authenticationTokenService: AuthenticationTokenService by inject()
 
     private var keyboardHeight = 0
     private var systemNavHeight = 0
@@ -140,7 +143,13 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             },
             sendSingleSelectLink = { value ->
                 scrollToBottom(true)
-                handleSingleSelectLink(value)
+                handleSingleSelectLink(
+                    value = value,
+                    onLinkHandleFailure = {
+                        authenticationTokenService.authenticationToken = null
+                        startActivity(MarketingActivity.newInstance(this, true))
+                    }
+                )
             },
             openAttachFile = {
                 scrollToBottom(true)

@@ -5,7 +5,5 @@ import com.hedvig.app.feature.offer.model.QuoteCartId
 sealed class LoginStatus {
     object Onboarding : LoginStatus()
     object LoggedIn : LoginStatus()
-    data class InOffer(
-        val quoteCartId: QuoteCartId?
-    ) : LoginStatus()
+    data class InOffer(val quoteCartId: QuoteCartId) : LoginStatus()
 }
