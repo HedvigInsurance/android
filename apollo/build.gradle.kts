@@ -28,7 +28,7 @@ apollo {
 
         // https://www.apollographql.com/docs/android/advanced/operation-variables/#make-nullable-variables-non-optional
         generateOptionalOperationVariables.set(false)
-        customTypeMapping.set(
+        customScalarsMapping.set(
             mapOf(
                 "URL" to "kotlin.String",
                 "LocalDate" to "java.time.LocalDate",
