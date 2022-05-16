@@ -52,11 +52,7 @@ dependencies {
     implementation(libs.kotlin.stdlib)
     coreLibraryDesugaring(libs.coreLibraryDesugaring)
 
-    implementation(libs.androidx.other.constraintLayout)
-
     api(libs.apollo.runtime)
-    api(libs.apollo.android)
-    api(libs.apollo.coroutines)
 
     implementation(libs.adyen)
 }

@@ -143,7 +143,6 @@ androidx-test-junit = { module = "androidx.test.ext:junit", version.ref = "andro
 
 apollo-runtime = { module = "com.apollographql.apollo:apollo-runtime", version.ref = "apollo" }
 apollo-android = { module = "com.apollographql.apollo:apollo-android-support", version.ref = "apollo" }
-apollo-coroutines = { module = "com.apollographql.apollo:apollo-coroutines-support", version.ref = "apollo" }
 apollo-idlingResource = { module = "com.apollographql.apollo:apollo-idling-resource", version.ref = "apollo" }
 
 arrowKt-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrowKt" }
