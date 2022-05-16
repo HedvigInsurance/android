@@ -66,7 +66,7 @@ class ChatRepository(
             .execute()
 
     fun subscribeToChatMessages() =
-        apolloClient.subscribe(ChatMessageSubscription()).toFlow()
+        apolloClient.subscription(ChatMessageSubscription()).toFlow()
 
     suspend fun sendChatMessage(
         id: String,

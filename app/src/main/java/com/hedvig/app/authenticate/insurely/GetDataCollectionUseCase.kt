@@ -18,7 +18,7 @@ class GetDataCollectionUseCase(
         reference: String
     ): Flow<DataCollectionResult> {
         val subscription = ExternalInsuranceProviderV2Subscription(reference)
-        return apolloClient.subscribe(subscription).safeSubscription().map { result ->
+        return apolloClient.subscription(subscription).safeSubscription().map { result ->
             when (result) {
                 is QueryResult.Success -> {
                     val extraInfo = result.data?.dataCollectionStatusV2?.extraInformation

@@ -23,7 +23,7 @@ class SubscribeToDataCollectionStatusUseCase(
 
     operator fun invoke(referenceUuid: String): Flow<Status> {
         return apolloClient
-            .subscribe(DataCollectionStatusSubscription(referenceUuid))
+            .subscription(DataCollectionStatusSubscription(referenceUuid))
             .safeSubscription()
             .map { queryResult ->
                 when (queryResult) {

@@ -15,7 +15,7 @@ class UserRepository(
         apolloClient.mutation(SwedishBankIdAuthMutation()).execute()
 
     fun subscribeAuthStatus() =
-        apolloClient.subscribe(AuthStatusSubscription()).toFlow()
+        apolloClient.subscription(AuthStatusSubscription()).toFlow()
 
     suspend fun logout() = apolloClient.mutation(LogoutMutation()).safeQuery()
 }
