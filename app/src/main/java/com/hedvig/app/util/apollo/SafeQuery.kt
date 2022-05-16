@@ -7,7 +7,7 @@ import arrow.core.Some
 import com.apollographql.apollo3.ApolloCall
 import com.apollographql.apollo3.ApolloQueryWatcher
 import com.apollographql.apollo3.ApolloSubscriptionCall
-import com.apollographql.apollo3.api.Response
+import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.coroutines.await
 import com.apollographql.apollo3.coroutines.toFlow
 import com.apollographql.apollo3.exception.ApolloException
@@ -37,7 +37,7 @@ suspend fun <T> ApolloCall<T>.safeQuery(): QueryResult<T> {
 
 fun <T> ApolloSubscriptionCall<T>.safeSubscription(): Flow<QueryResult<T>> {
     return try {
-        toFlow().map(Response<T>::toQueryResult)
+        toFlow().map(ApolloResponse<T>::toQueryResult)
     } catch (apolloException: ApolloException) {
         flowOf(QueryResult.Error.NetworkError(apolloException.localizedMessage))
     } catch (throwable: Throwable) {
@@ -50,7 +50,7 @@ fun <T> ApolloSubscriptionCall<T>.safeSubscription(): Flow<QueryResult<T>> {
 
 fun <T> ApolloQueryWatcher<T>.safeFlow(): Flow<QueryResult<T>> {
     return try {
-        toFlow().map(Response<T>::toQueryResult)
+        toFlow().map(ApolloResponse<T>::toQueryResult)
     } catch (apolloException: ApolloException) {
         flowOf(QueryResult.Error.NetworkError(apolloException.localizedMessage))
     } catch (throwable: Throwable) {
@@ -61,7 +61,7 @@ fun <T> ApolloQueryWatcher<T>.safeFlow(): Flow<QueryResult<T>> {
     }
 }
 
-fun <T> Response<T>.toQueryResult(): QueryResult<T> {
+fun <T> ApolloResponse<T>.toQueryResult(): QueryResult<T> {
     val data = data
     return when {
         hasErrors() -> QueryResult.Error.QueryError(errors?.first()?.message)

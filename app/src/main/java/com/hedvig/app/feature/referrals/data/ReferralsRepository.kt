@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.referrals.data
 
 import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.api.Response
+import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.api.cache.http.HttpCachePolicy
 import com.apollographql.apollo3.coroutines.await
 import com.apollographql.apollo3.coroutines.toFlow
@@ -27,7 +27,7 @@ class ReferralsRepository(
         .build()
         .execute()
 
-    suspend fun updateCode(newCode: String): Response<UpdateReferralCampaignCodeMutation.Data> {
+    suspend fun updateCode(newCode: String): ApolloResponse<UpdateReferralCampaignCodeMutation.Data> {
         val response = apolloClient
             .mutation(UpdateReferralCampaignCodeMutation(newCode))
             .execute()

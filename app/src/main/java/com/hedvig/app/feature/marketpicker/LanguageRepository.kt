@@ -2,7 +2,7 @@ package com.hedvig.app.feature.marketpicker
 
 import com.apollographql.apollo3.ApolloCall
 import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.api.Response
+import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.exception.ApolloException
 import com.hedvig.android.owldroid.graphql.UpdateLanguageMutation
 import com.hedvig.android.owldroid.type.Locale
@@ -21,7 +21,7 @@ class LanguageRepository(
                     e { "$e Failed to update language" }
                 }
 
-                override fun onResponse(response: Response<UpdateLanguageMutation.Data>) {
+                override fun onResponse(response: ApolloResponse<UpdateLanguageMutation.Data>) {
                     i { "Successfully updated language" }
                 }
             })

@@ -6,7 +6,7 @@ import arrow.core.Either
 import arrow.core.flatMap
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.FileUpload
-import com.apollographql.apollo3.api.Response
+import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.api.cache.http.HttpCachePolicy
 import com.apollographql.apollo3.coroutines.await
 import com.apollographql.apollo3.coroutines.toFlow
@@ -44,7 +44,7 @@ class ChatRepository(
 ) {
     private lateinit var messagesQuery: ChatMessagesQuery
 
-    fun fetchChatMessages(): Flow<Response<ChatMessagesQuery.Data>> {
+    fun fetchChatMessages(): Flow<ApolloResponse<ChatMessagesQuery.Data>> {
         messagesQuery = ChatMessagesQuery()
         return apolloClient
             .query(messagesQuery)
@@ -118,7 +118,7 @@ class ChatRepository(
             .execute()
     }
 
-    suspend fun uploadFileFromProvider(uri: Uri): Response<UploadFileMutation.Data> {
+    suspend fun uploadFileFromProvider(uri: Uri): ApolloResponse<UploadFileMutation.Data> {
         val mimeType = fileService.getMimeType(uri)
         val file = File(
             context.cacheDir,
@@ -131,13 +131,13 @@ class ChatRepository(
         }
     }
 
-    suspend fun uploadFile(uri: Uri): Response<UploadFileMutation.Data> =
+    suspend fun uploadFile(uri: Uri): ApolloResponse<UploadFileMutation.Data> =
         uploadFile(uri.path!!, fileService.getMimeType(uri))
 
     private suspend fun uploadFile(
         path: String,
         mimeType: String,
-    ): Response<UploadFileMutation.Data> {
+    ): ApolloResponse<UploadFileMutation.Data> {
         val uploadFileMutation = UploadFileMutation(
             file = FileUpload(mimeType, path)
         )
@@ -149,7 +149,7 @@ class ChatRepository(
         id: String,
         key: String,
         uri: Uri,
-    ): Response<SendChatFileResponseMutation.Data> {
+    ): ApolloResponse<SendChatFileResponseMutation.Data> {
         val mimeType = fileService.getMimeType(uri)
 
         val input = ChatResponseFileInput(
@@ -165,7 +165,7 @@ class ChatRepository(
         return apolloClient.mutation(chatFileResponse).execute()
     }
 
-    suspend fun editLastResponse(): Response<EditLastResponseMutation.Data> =
+    suspend fun editLastResponse(): ApolloResponse<EditLastResponseMutation.Data> =
         apolloClient.mutation(EditLastResponseMutation()).execute()
 
     suspend fun triggerFreeTextChat(): Either<FreeTextError, FreeTextSuccess> =
@@ -182,7 +182,7 @@ class ChatRepository(
                 )
             }
 
-    suspend fun searchGifs(query: String): Response<GifQuery.Data> =
+    suspend fun searchGifs(query: String): ApolloResponse<GifQuery.Data> =
         apolloClient.query(GifQuery(query)).execute()
 }
 

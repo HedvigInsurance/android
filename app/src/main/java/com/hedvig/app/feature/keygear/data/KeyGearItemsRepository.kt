@@ -5,7 +5,7 @@ import android.net.Uri
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.FileUpload
 import com.apollographql.apollo3.api.Input
-import com.apollographql.apollo3.api.Response
+import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.coroutines.await
 import com.apollographql.apollo3.coroutines.toFlow
 import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
@@ -44,7 +44,7 @@ class KeyGearItemsRepository(
 
     private val locale = localeManager.defaultLocale().rawValue
 
-    fun keyGearItems(): Flow<Response<KeyGearItemsQuery.Data>> {
+    fun keyGearItems(): Flow<ApolloResponse<KeyGearItemsQuery.Data>> {
         keyGearItemsQuery = KeyGearItemsQuery(locale)
 
         return apolloClient
@@ -53,7 +53,7 @@ class KeyGearItemsRepository(
             .toFlow()
     }
 
-    fun keyGearItem(id: String): Flow<Response<KeyGearItemQuery.Data>> {
+    fun keyGearItem(id: String): Flow<ApolloResponse<KeyGearItemQuery.Data>> {
         keyGearItemQuery = KeyGearItemQuery(id, locale)
 
         return apolloClient
@@ -146,7 +146,7 @@ class KeyGearItemsRepository(
         files: List<S3FileInput>,
         physicalReferenceHash: String? = null,
         name: String? = null,
-    ): Response<CreateKeyGearItemMutation.Data> {
+    ): ApolloResponse<CreateKeyGearItemMutation.Data> {
         val mutation = CreateKeyGearItemMutation(
             category = category,
             photos = files,
