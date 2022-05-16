@@ -25,11 +25,10 @@ class AdyenRepository(
         .execute()
 
     suspend fun tokenizePayoutDetails(data: JSONObject) = apolloClient
-        .mutate(
-            TokenizePayoutDetailsMutation(
-                data.getJSONObject("paymentMethod").toString(),
-                RedirectComponent.getReturnUrl(context)
-            )
+        .mutation(TokenizePayoutDetailsMutation(
+            data.getJSONObject("paymentMethod").toString(),
+            RedirectComponent.getReturnUrl(context)
+        )
         )
         .execute()
 

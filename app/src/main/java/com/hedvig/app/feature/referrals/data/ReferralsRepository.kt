@@ -29,7 +29,7 @@ class ReferralsRepository(
 
     suspend fun updateCode(newCode: String): Response<UpdateReferralCampaignCodeMutation.Data> {
         val response = apolloClient
-            .mutate(UpdateReferralCampaignCodeMutation(newCode))
+            .mutation(UpdateReferralCampaignCodeMutation(newCode))
             .execute()
 
         response.data?.updateReferralCampaignCode?.asSuccessfullyUpdatedCode?.code?.let { updatedCode ->

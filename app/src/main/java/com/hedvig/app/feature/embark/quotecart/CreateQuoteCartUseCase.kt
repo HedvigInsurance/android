@@ -23,7 +23,7 @@ class CreateQuoteCartUseCase(
 
     suspend fun invoke(): Either<ErrorMessage, QuoteCartId> {
         return apolloClient
-            .mutate(mutation())
+            .mutation(mutation())
             .safeQuery()
             .toEither { ErrorMessage(it) }
             .map { QuoteCartId(it.onboardingQuoteCart_create.id) }

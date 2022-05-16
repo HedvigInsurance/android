@@ -68,7 +68,7 @@ class KeyGearItemsRepository(
         price: MonetaryAmountV2Input,
     ): KeyGearItemQuery.Data? {
         val response = apolloClient
-            .mutate(UpdateKeyGearPriceAndDateMutation(id, date, price))
+            .mutation(UpdateKeyGearPriceAndDateMutation(id, date, price))
             .execute()
 
         val newPrice =
@@ -137,7 +137,7 @@ class KeyGearItemsRepository(
             FileUpload(mimeType, file.path)
         }
 
-        return@withContext apolloClient.mutate(UploadFilesMutation(files))
+        return@withContext apolloClient.mutation(UploadFilesMutation(files))
             .execute()
     }
 
@@ -156,7 +156,7 @@ class KeyGearItemsRepository(
         )
 
         val result = apolloClient
-            .mutate(mutation)
+            .mutation(mutation)
             .execute()
 
         val data = result.data
@@ -208,7 +208,7 @@ class KeyGearItemsRepository(
             context.contentResolver.openInputStream(file)?.into(uploadFile)
         }
         val uploadResult = apolloClient
-            .mutate(UploadFileMutation(FileUpload(mimeType, uploadFile.path)))
+            .mutation(UploadFileMutation(FileUpload(mimeType, uploadFile.path)))
             .execute()
 
         val uploadData = uploadResult.data
@@ -223,14 +223,13 @@ class KeyGearItemsRepository(
         )
 
         val addReceiptResult = apolloClient
-            .mutate(
-                AddReceiptToKeyGearItemMutation(
-                    AddReceiptToKeyGearItemInput(
-                        itemId = itemId,
-                        file = s3file
-                    ),
-                    locale
-                )
+            .mutation(AddReceiptToKeyGearItemMutation(
+                AddReceiptToKeyGearItemInput(
+                    itemId = itemId,
+                    file = s3file
+                ),
+                locale
+            )
             )
             .execute()
 
@@ -269,7 +268,7 @@ class KeyGearItemsRepository(
                 id = itemId,
                 updatedName = Input.fromNullable(name)
             )
-        val response = apolloClient.mutate(mutation).execute()
+        val response = apolloClient.mutation(mutation).execute()
 
         val newName = response.data?.updateKeyGearItemName?.name
 
@@ -326,7 +325,7 @@ class KeyGearItemsRepository(
 
     suspend fun deleteItem(id: String) {
         val response = apolloClient
-            .mutate(DeleteKeyGearItemMutation(id))
+            .mutation(DeleteKeyGearItemMutation(id))
             .execute()
 
         if (response.hasErrors() || response.data?.deleteKeyGearItem?.deleted == false) {

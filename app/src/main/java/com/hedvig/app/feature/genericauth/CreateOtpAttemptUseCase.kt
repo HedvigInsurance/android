@@ -19,7 +19,7 @@ class CreateOtpAttemptUseCase(
 
     suspend operator fun invoke(email: String) = when (
         val result = apolloClient
-            .mutate(CreateOtpAttemptMutation(email = email))
+            .mutation(CreateOtpAttemptMutation(email = email))
             .safeQuery()
     ) {
         is QueryResult.Success -> {

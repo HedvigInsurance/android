@@ -24,7 +24,7 @@ class SubmitAdditionalPaymentDetailsUseCase(
     }
 
     suspend fun submitAdditionalPaymentDetails(data: JSONObject) = apolloClient
-        .mutate(SubmitAdditionalPaymentDetailsMutation(data.toString()))
+        .mutation(SubmitAdditionalPaymentDetailsMutation(data.toString()))
         .safeQuery()
         .toEither()
         .mapLeft { Error.ErrorMessage(it.message) }

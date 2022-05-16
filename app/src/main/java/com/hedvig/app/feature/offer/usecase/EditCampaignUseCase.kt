@@ -22,7 +22,7 @@ class EditCampaignUseCase(
         campaignCode: CampaignCode,
         quoteCartId: QuoteCartId
     ): Either<ErrorMessage, QuoteCartId> = apolloClient
-        .mutate(QuoteCartAddCampaignMutation(campaignCode.code, quoteCartId.id))
+        .mutation(QuoteCartAddCampaignMutation(campaignCode.code, quoteCartId.id))
         .safeQuery()
         .toEither(::ErrorMessage)
         .map { it.quoteCart_addCampaign }
@@ -37,7 +37,7 @@ class EditCampaignUseCase(
     suspend fun removeCampaignFromQuoteCart(
         quoteCartId: QuoteCartId
     ): Either<ErrorMessage, QuoteCartId> = apolloClient
-        .mutate(QuoteCartRemoveCampaignMutation(quoteCartId.id))
+        .mutation(QuoteCartRemoveCampaignMutation(quoteCartId.id))
         .safeQuery()
         .toEither(::ErrorMessage)
         .map { it.quoteCart_removeCampaign }

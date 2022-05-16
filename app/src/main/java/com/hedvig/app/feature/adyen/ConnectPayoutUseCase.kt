@@ -27,7 +27,7 @@ class ConnectPayoutUseCase(
     }
 
     suspend fun connectPayout(data: JSONObject) = apolloClient
-        .mutate(createTokenizePayoutDetailsMutation(data))
+        .mutation(createTokenizePayoutDetailsMutation(data))
         .safeQuery()
         .toEither { Error.ErrorMessage(it) }
         .flatMap {

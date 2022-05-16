@@ -8,6 +8,6 @@ class TrustlyRepository(
     private val apolloClient: ApolloClient,
 ) {
     suspend fun startTrustlySession() = apolloClient
-        .mutate(StartDirectDebitRegistrationMutation())
+        .mutation(StartDirectDebitRegistrationMutation())
         .await()
 }

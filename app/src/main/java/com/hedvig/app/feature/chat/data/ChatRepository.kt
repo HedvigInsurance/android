@@ -71,7 +71,7 @@ class ChatRepository(
     suspend fun sendChatMessage(
         id: String,
         message: String,
-    ) = apolloClient.mutate(
+    ) = apolloClient.mutation(
         SendChatTextResponseMutation(
             ChatResponseTextInput(
                 id,
@@ -83,7 +83,7 @@ class ChatRepository(
     suspend fun sendSingleSelect(
         id: String,
         value: String,
-    ) = apolloClient.mutate(
+    ) = apolloClient.mutation(
         SendChatSingleSelectResponseMutation(
             ChatResponseSingleSelectInput(id, ChatResponseBodySingleSelectInput(value))
         )
@@ -142,7 +142,7 @@ class ChatRepository(
             file = FileUpload(mimeType, path)
         )
 
-        return apolloClient.mutate(uploadFileMutation).execute()
+        return apolloClient.mutation(uploadFileMutation).execute()
     }
 
     suspend fun sendFileResponse(
@@ -162,14 +162,14 @@ class ChatRepository(
 
         val chatFileResponse = SendChatFileResponseMutation(input)
 
-        return apolloClient.mutate(chatFileResponse).execute()
+        return apolloClient.mutation(chatFileResponse).execute()
     }
 
     suspend fun editLastResponse(): Response<EditLastResponseMutation.Data> =
-        apolloClient.mutate(EditLastResponseMutation()).execute()
+        apolloClient.mutation(EditLastResponseMutation()).execute()
 
     suspend fun triggerFreeTextChat(): Either<FreeTextError, FreeTextSuccess> =
-        apolloClient.mutate(TriggerFreeTextChatMutation())
+        apolloClient.mutation(TriggerFreeTextChatMutation())
             .safeQuery()
             .toEither { FreeTextError.NetworkError }
             .flatMap { data ->

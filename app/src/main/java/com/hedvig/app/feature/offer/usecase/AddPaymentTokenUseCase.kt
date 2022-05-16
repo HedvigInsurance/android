@@ -29,7 +29,7 @@ class AddPaymentTokenUseCase(
             quoteCartId = quoteCartId.id,
             paymentTokenId = paymentTokenId.id
         )
-        return apolloClient.mutate(mutation)
+        return apolloClient.mutation(mutation)
             .safeQuery()
             .toEither()
             .mapLeft { Error.ErrorMessage(it.message) }

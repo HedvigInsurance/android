@@ -15,7 +15,7 @@ class LanguageRepository(
 
     fun uploadLanguage(acceptLanguage: String, locale: Locale) {
         apolloClient
-            .mutate(UpdateLanguageMutation(acceptLanguage, locale))
+            .mutation(UpdateLanguageMutation(acceptLanguage, locale))
             .enqueue(object : ApolloCall.Callback<UpdateLanguageMutation.Data>() {
                 override fun onFailure(e: ApolloException) {
                     e { "$e Failed to update language" }
