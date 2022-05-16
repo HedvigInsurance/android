@@ -12,6 +12,7 @@ import com.hedvig.app.feature.adyen.PaymentTokenId
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.checkout.CheckoutParameter
 import com.hedvig.app.feature.documents.DocumentItems
+import com.hedvig.app.feature.embark.util.SelectedContractType
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.offer.model.Checkout
 import com.hedvig.app.feature.offer.model.OfferModel
@@ -156,6 +157,7 @@ abstract class OfferViewModel : ViewModel() {
 
 class OfferViewModelImpl(
     private val quoteCartId: QuoteCartId,
+    selectedContractTypes: List<SelectedContractType>,
     private val offerRepository: OfferRepository,
     private val loginStatusService: LoginStatusService,
     private val startCheckoutUseCase: StartCheckoutUseCase,
@@ -171,7 +173,7 @@ class OfferViewModelImpl(
     private val _viewState: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.Loading)
     override val viewState: StateFlow<ViewState> = _viewState.asStateFlow()
 
-    private val offerState = getBundleVariantUseCase.observeOfferState(quoteCartId)
+    private val offerState = getBundleVariantUseCase.observeOfferState(quoteCartId, selectedContractTypes)
 
     init {
         loginStatusService.isViewingOffer = shouldShowOnNextAppStart
@@ -229,11 +231,11 @@ class OfferViewModelImpl(
         viewModelScope.launch {
             offerState
                 .first()
-                .map { it.selectedQuoteIds }
+                .map { it.selectedVariant.id }
                 .fold(
                     ifLeft = { _viewState.value = ViewState.Error(it.message) },
-                    ifRight = { quoteIds ->
-                        val parameter = CheckoutParameter(quoteIds, quoteCartId)
+                    ifRight = { selectedVariantId ->
+                        val parameter = CheckoutParameter(selectedVariantId, quoteCartId)
                         val event = Event.OpenCheckout(parameter)
                         _events.trySend(event)
                     }

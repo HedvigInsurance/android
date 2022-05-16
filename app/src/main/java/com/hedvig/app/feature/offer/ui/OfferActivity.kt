@@ -31,6 +31,7 @@ import com.hedvig.app.feature.crossselling.ui.CrossSellingResult
 import com.hedvig.app.feature.crossselling.ui.CrossSellingResultActivity
 import com.hedvig.app.feature.documents.DocumentAdapter
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
+import com.hedvig.app.feature.embark.util.SelectedContractType
 import com.hedvig.app.feature.home.ui.changeaddress.result.ChangeAddressResultActivity
 import com.hedvig.app.feature.insurablelimits.InsurableLimitsAdapter
 import com.hedvig.app.feature.offer.OfferViewModel
@@ -53,6 +54,7 @@ import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.showAlert
 import com.hedvig.app.util.extensions.showErrorDialog
 import com.hedvig.app.util.extensions.startChat
+import com.hedvig.app.util.extensions.toArrayList
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsetsMargin
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.hide
@@ -74,11 +76,13 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     private val quoteCartId: QuoteCartId?
         get() = intent.getParcelableExtra(QUOTE_CART_ID)
             ?: intent.getStringExtra(QUOTE_CART_ID)?.let { QuoteCartId(it) }
+    private val selectedContractTypes: List<SelectedContractType>
+        get() = intent.getParcelableArrayListExtra(SELECTED_CONTRACT_TYPES) ?: emptyList()
     private val shouldShowOnNextAppStart: Boolean
         get() = intent.getBooleanExtra(SHOULD_SHOW_ON_NEXT_APP_START, false)
 
     private val model: OfferViewModel by viewModel {
-        parametersOf(quoteCartId, shouldShowOnNextAppStart)
+        parametersOf(quoteCartId, selectedContractTypes, shouldShowOnNextAppStart)
     }
     private val binding by viewBinding(ActivityOfferBinding::bind)
     private val imageLoader: ImageLoader by inject()
@@ -416,16 +420,19 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
 
     companion object {
         private const val QUOTE_CART_ID = "QUOTE_CART_ID"
+        private const val SELECTED_CONTRACT_TYPES = "SELECTED_TYPES"
         private const val SHOULD_SHOW_ON_NEXT_APP_START = "SHOULD_SHOW_ON_NEXT_APP_START"
 
         fun newInstance(
             context: Context,
             quoteCartId: QuoteCartId? = null,
+            selectedContractTypes: List<SelectedContractType> = emptyList(),
             shouldShowOnNextAppStart: Boolean = false,
         ) = Intent(
             context, OfferActivity::class.java
         ).apply {
             putExtra(QUOTE_CART_ID, quoteCartId)
+            putExtra(SELECTED_CONTRACT_TYPES, selectedContractTypes.toArrayList())
             putExtra(SHOULD_SHOW_ON_NEXT_APP_START, shouldShowOnNextAppStart)
         }
     }

@@ -22,11 +22,11 @@ import com.hedvig.app.util.ValidationResult
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.app.util.validateEmail
 import com.hedvig.app.util.validateNationalIdentityNumber
-import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -35,14 +35,13 @@ import javax.money.MonetaryAmount
 import kotlin.time.Duration.Companion.seconds
 
 class CheckoutViewModel(
-    private val quoteIds: List<String>,
+    private val selectedVariantId: String,
     private val quoteCartId: QuoteCartId,
     private val signQuotesUseCase: StartCheckoutUseCase,
     private val editQuotesUseCase: EditCheckoutUseCase,
     private val createAccessTokenUseCase: CreateAccessTokenUseCase,
     private val marketManager: MarketManager,
     private val loginStatusService: LoginStatusService,
-    private val hAnalytics: HAnalytics,
     private val offerRepository: OfferRepository,
     private val featureManager: FeatureManager,
     bundleVariantUseCase: ObserveOfferStateUseCase,
@@ -63,7 +62,9 @@ class CheckoutViewModel(
     private var emailInput: String = ""
     private var identityNumberInput: String = ""
 
-    private val offerState = bundleVariantUseCase.observeOfferState(quoteCartId)
+    private val offerState = bundleVariantUseCase.observeOfferState(quoteCartId, emptyList()).also {
+        bundleVariantUseCase.selectedVariant(selectedVariantId)
+    }
 
     init {
         offerState
@@ -150,17 +151,23 @@ class CheckoutViewModel(
         )
     }
 
-    fun onTrySign(emailInput: String, identityNumberInput: String) {
+    fun onTrySign() {
         if (inputViewState.value.canSign()) {
             _events.trySend(Event.Loading)
-            val parameter = createEditAndSignParameter(identityNumberInput, emailInput)
-            signQuotes(parameter)
+            signQuotes()
         }
     }
 
-    private fun signQuotes(parameter: EditAndSignParameter) {
+    private fun signQuotes() {
         viewModelScope.launch {
             either<ErrorMessage, StartCheckoutUseCase.Success> {
+                val quoteIds = offerState.first().map { it.selectedQuoteIds }.bind()
+                val parameter = EditAndSignParameter(
+                    quoteIds = quoteIds,
+                    quoteCartId = quoteCartId,
+                    ssn = identityNumberInput,
+                    email = emailInput
+                )
                 editQuotesUseCase.editQuotes(parameter).bind()
                 signQuotesUseCase.startCheckoutAndClearCache(quoteCartId, quoteIds).bind()
             }.fold(
@@ -169,16 +176,6 @@ class CheckoutViewModel(
             )
         }
     }
-
-    private fun createEditAndSignParameter(
-        identityNumberInput: String,
-        emailInput: String
-    ) = EditAndSignParameter(
-        quoteIds = quoteIds,
-        quoteCartId = quoteCartId,
-        ssn = identityNumberInput,
-        email = emailInput
-    )
 
     private suspend fun onSignSuccess(): Event.CheckoutSuccess {
         featureManager.invalidateExperiments()
