@@ -1,8 +1,8 @@
 package com.hedvig.app.util.apollo
 
-import com.apollographql.apollo.api.internal.json.JsonWriter
-import com.apollographql.apollo.api.internal.network.ContentType
-import com.apollographql.apollo.internal.interceptor.ApolloServerInterceptor
+import com.apollographql.apollo3.api.internal.json.JsonWriter
+import com.apollographql.apollo3.api.internal.network.ContentType
+import com.apollographql.apollo3.internal.interceptor.ApolloServerInterceptor
 import com.hedvig.app.HedvigApplication
 import com.hedvig.app.service.FileService
 import com.hedvig.app.util.jsonObjectOfNotNull

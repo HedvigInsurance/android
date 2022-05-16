@@ -1,13 +1,13 @@
 package com.hedvig.app.util.apollo
 
 import android.content.Context
-import com.apollographql.apollo.api.Error
-import com.apollographql.apollo.api.Operation
-import com.apollographql.apollo.api.internal.ApolloLogger
-import com.apollographql.apollo.exception.ApolloException
-import com.apollographql.apollo.interceptor.ApolloInterceptor
-import com.apollographql.apollo.interceptor.ApolloInterceptorChain
-import com.apollographql.apollo.interceptor.ApolloInterceptorFactory
+import com.apollographql.apollo3.api.Error
+import com.apollographql.apollo3.api.Operation
+import com.apollographql.apollo3.api.internal.ApolloLogger
+import com.apollographql.apollo3.exception.ApolloException
+import com.apollographql.apollo3.interceptor.ApolloInterceptor
+import com.apollographql.apollo3.interceptor.ApolloInterceptorChain
+import com.apollographql.apollo3.interceptor.ApolloInterceptorFactory
 import com.hedvig.app.feature.sunsetting.ForceUpgradeActivity
 import java.util.concurrent.Executor
 

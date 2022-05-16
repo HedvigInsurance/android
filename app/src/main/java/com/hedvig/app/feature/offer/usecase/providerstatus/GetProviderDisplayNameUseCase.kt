@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.offer.usecase.providerstatus
 
-import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.api.cache.http.HttpCachePolicy
+import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.api.cache.http.HttpCachePolicy
 import com.hedvig.android.owldroid.graphql.ProviderStatusQuery
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery

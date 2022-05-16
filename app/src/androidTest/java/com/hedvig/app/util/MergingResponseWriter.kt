@@ -1,13 +1,13 @@
 package com.hedvig.app.util
 
-import com.apollographql.apollo.api.ResponseField
-import com.apollographql.apollo.api.ScalarType
-import com.apollographql.apollo.api.ScalarTypeAdapters
-import com.apollographql.apollo.api.internal.ResponseFieldMarshaller
-import com.apollographql.apollo.api.internal.ResponseWriter
-import com.apollographql.apollo.api.internal.json.JsonWriter
-import com.apollographql.apollo.api.internal.json.Utils
-import com.apollographql.apollo.api.internal.json.use
+import com.apollographql.apollo3.api.ResponseField
+import com.apollographql.apollo3.api.ScalarType
+import com.apollographql.apollo3.api.ScalarTypeAdapters
+import com.apollographql.apollo3.api.internal.ResponseFieldMarshaller
+import com.apollographql.apollo3.api.internal.ResponseWriter
+import com.apollographql.apollo3.api.internal.json.JsonWriter
+import com.apollographql.apollo3.api.internal.json.Utils
+import com.apollographql.apollo3.api.internal.json.use
 import okio.Buffer
 import okio.IOException
 

@@ -1,6 +1,6 @@
 package com.hedvig.app.authenticate
 
-import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo3.ApolloClient
 import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.feature.settings.MarketManager

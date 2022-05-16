@@ -3,8 +3,8 @@ package com.hedvig.app.service.push
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.coroutines.await
+import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.coroutines.await
 import com.hedvig.android.owldroid.graphql.RegisterPushTokenMutation
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import e

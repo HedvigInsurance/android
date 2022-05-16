@@ -2,12 +2,12 @@ package com.hedvig.app.feature.keygear.data
 
 import android.content.Context
 import android.net.Uri
-import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.api.FileUpload
-import com.apollographql.apollo.api.Input
-import com.apollographql.apollo.api.Response
-import com.apollographql.apollo.coroutines.await
-import com.apollographql.apollo.coroutines.toFlow
+import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.api.FileUpload
+import com.apollographql.apollo3.api.Input
+import com.apollographql.apollo3.api.Response
+import com.apollographql.apollo3.coroutines.await
+import com.apollographql.apollo3.coroutines.toFlow
 import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
 import com.hedvig.android.owldroid.graphql.AddReceiptToKeyGearItemMutation
 import com.hedvig.android.owldroid.graphql.CreateKeyGearItemMutation

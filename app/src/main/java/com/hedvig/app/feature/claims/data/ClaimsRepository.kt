@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.claims.data
 
-import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.coroutines.await
+import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.coroutines.await
 import com.hedvig.android.owldroid.graphql.CommonClaimQuery
 import com.hedvig.app.util.LocaleManager
 

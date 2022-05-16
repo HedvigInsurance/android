@@ -1,7 +1,7 @@
 package com.hedvig.app.util.apollo
 
-import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.cache.normalized.ApolloStoreOperation
+import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.cache.normalized.ApolloStoreOperation
 import timber.log.Timber
 
 class CacheManager(

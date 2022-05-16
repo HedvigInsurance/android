@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.profile.data
 
 import arrow.core.Either
-import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.coroutines.await
+import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.coroutines.await
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.graphql.SelectCashbackMutation
 import com.hedvig.android.owldroid.graphql.UpdateEmailMutation

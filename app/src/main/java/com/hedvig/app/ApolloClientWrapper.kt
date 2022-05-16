@@ -1,6 +1,6 @@
 package com.hedvig.app
 
-import com.apollographql.apollo.api.ScalarTypeAdapters
+import com.apollographql.apollo3.api.ScalarTypeAdapters
 import com.hedvig.android.owldroid.type.CustomType
 import com.hedvig.app.util.apollo.InstantAdapter
 import com.hedvig.app.util.apollo.JSONStringAdapter

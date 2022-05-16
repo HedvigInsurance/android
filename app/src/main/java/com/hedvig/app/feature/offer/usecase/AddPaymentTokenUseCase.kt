@@ -4,7 +4,7 @@ import arrow.core.Either
 import arrow.core.flatMap
 import arrow.core.left
 import arrow.core.right
-import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.owldroid.graphql.AddPaymentTokenIdMutation
 import com.hedvig.app.feature.adyen.PaymentTokenId
 import com.hedvig.app.feature.offer.model.QuoteCartId

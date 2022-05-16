@@ -3,7 +3,7 @@ package com.hedvig.app.feature.offer.usecase
 import arrow.core.Either
 import arrow.core.computations.either
 import arrow.core.computations.ensureNotNull
-import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.owldroid.graphql.QuoteCartStartCheckoutMutation
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ErrorMessage

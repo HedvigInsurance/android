@@ -2,7 +2,7 @@ package com.hedvig.app.feature.marketing.data
 
 import android.content.Context
 import arrow.core.identity
-import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.owldroid.graphql.GeoQuery
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.Market

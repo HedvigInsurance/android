@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.whatsnew
 
 import android.content.Context
-import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.coroutines.await
+import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.coroutines.await
 import com.hedvig.android.owldroid.graphql.WhatsNewQuery
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.util.LocaleManager

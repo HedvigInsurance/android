@@ -1,7 +1,7 @@
 package com.hedvig.app.util
 
-import com.apollographql.apollo.api.Operation
-import com.apollographql.apollo.api.ScalarTypeAdapters
+import com.apollographql.apollo3.api.Operation
+import com.apollographql.apollo3.api.ScalarTypeAdapters
 import com.hedvig.app.CUSTOM_TYPE_ADAPTERS
 import com.hedvig.app.TestApplication
 import okhttp3.WebSocket

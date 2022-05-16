@@ -5,7 +5,7 @@ import arrow.core.flatMap
 import arrow.core.left
 import arrow.core.right
 import com.adyen.checkout.redirect.RedirectComponent
-import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.owldroid.graphql.TokenizePayoutDetailsMutation
 import com.hedvig.android.owldroid.type.TokenizationResultType
 import com.hedvig.app.util.apollo.safeQuery

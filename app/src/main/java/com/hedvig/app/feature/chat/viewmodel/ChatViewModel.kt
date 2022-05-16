@@ -4,8 +4,8 @@ import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.api.Response
+import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.api.Response
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
 import com.hedvig.android.owldroid.graphql.GifQuery
 import com.hedvig.android.owldroid.graphql.UploadFileMutation

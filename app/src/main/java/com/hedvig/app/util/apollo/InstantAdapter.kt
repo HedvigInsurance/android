@@ -1,7 +1,7 @@
 package com.hedvig.app.util.apollo
 
-import com.apollographql.apollo.api.CustomTypeAdapter
-import com.apollographql.apollo.api.CustomTypeValue
+import com.apollographql.apollo3.api.CustomTypeAdapter
+import com.apollographql.apollo3.api.CustomTypeValue
 import java.time.Instant
 
 class InstantAdapter : CustomTypeAdapter<Instant> {

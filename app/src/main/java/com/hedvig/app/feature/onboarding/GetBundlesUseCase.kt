@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.onboarding
 
-import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.owldroid.graphql.ChoosePlanQuery
 import com.hedvig.android.owldroid.type.EmbarkStoryType
 import com.hedvig.app.util.LocaleManager

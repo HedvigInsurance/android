@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.marketing.data
 
 import android.content.Context
-import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.owldroid.graphql.UpdateLanguageMutation
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.Market

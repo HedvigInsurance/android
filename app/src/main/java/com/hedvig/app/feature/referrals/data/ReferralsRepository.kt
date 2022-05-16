@@ -1,11 +1,11 @@
 package com.hedvig.app.feature.referrals.data
 
-import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.api.Response
-import com.apollographql.apollo.api.cache.http.HttpCachePolicy
-import com.apollographql.apollo.coroutines.await
-import com.apollographql.apollo.coroutines.toFlow
-import com.apollographql.apollo.fetcher.ApolloResponseFetchers
+import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.api.Response
+import com.apollographql.apollo3.api.cache.http.HttpCachePolicy
+import com.apollographql.apollo3.coroutines.await
+import com.apollographql.apollo3.coroutines.toFlow
+import com.apollographql.apollo3.fetcher.ApolloResponseFetchers
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.android.owldroid.graphql.UpdateReferralCampaignCodeMutation
 

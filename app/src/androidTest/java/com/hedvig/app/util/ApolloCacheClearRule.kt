@@ -1,6 +1,6 @@
 package com.hedvig.app.util
 
-import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo3.ApolloClient
 import org.junit.rules.ExternalResource
 import org.koin.test.KoinTest
 import org.koin.test.inject

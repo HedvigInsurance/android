@@ -2,7 +2,7 @@ package com.hedvig.app.feature.offer.usecase
 
 import arrow.core.Either
 import arrow.core.computations.either
-import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.owldroid.graphql.CreateAccessTokenMutation
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.feature.offer.model.QuoteCartId

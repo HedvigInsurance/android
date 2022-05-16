@@ -1,7 +1,7 @@
 plugins {
     id("com.android.library")
     id("kotlin-android")
-    id("com.apollographql.apollo")
+    id("com.apollographql.apollo3")
 }
 
 apollo {
@@ -10,7 +10,7 @@ apollo {
         mapOf(
             "URL" to "kotlin.String",
             "LocalDate" to "java.time.LocalDate",
-            "Upload" to "com.apollographql.apollo.api.FileUpload",
+            "Upload" to "com.apollographql.apollo3.api.FileUpload",
             "PaymentMethodsResponse" to "com.adyen.checkout.components.model.PaymentMethodsApiResponse",
             "CheckoutPaymentsAction" to "kotlin.String",
             "CheckoutPaymentAction" to "kotlin.String",

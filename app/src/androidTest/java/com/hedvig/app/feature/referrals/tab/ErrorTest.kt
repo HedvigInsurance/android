@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.referrals.tab
 
-import com.apollographql.apollo.api.toJson
+import com.apollographql.apollo3.api.toJson
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity

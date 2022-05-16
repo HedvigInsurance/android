@@ -1,10 +1,10 @@
 package com.hedvig.app.data.debit
 
-import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.api.Response
-import com.apollographql.apollo.coroutines.await
-import com.apollographql.apollo.coroutines.toFlow
-import com.apollographql.apollo.fetcher.ApolloResponseFetchers
+import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.api.Response
+import com.apollographql.apollo3.coroutines.await
+import com.apollographql.apollo3.coroutines.toFlow
+import com.apollographql.apollo3.fetcher.ApolloResponseFetchers
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import kotlinx.coroutines.flow.Flow
 

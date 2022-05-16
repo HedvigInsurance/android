@@ -1,6 +1,6 @@
 package com.hedvig.app.util.apollo
 
-import com.apollographql.apollo.Logger
+import com.apollographql.apollo3.Logger
 import d
 import e
 import w

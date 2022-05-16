@@ -2,7 +2,7 @@ package com.hedvig.app.feature.offer.usecase
 
 import assertk.assertThat
 import assertk.assertions.isNull
-import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.owldroid.graphql.ProviderStatusQuery
 import com.hedvig.app.feature.offer.usecase.providerstatus.GetProviderDisplayNameUseCase
 import com.hedvig.app.util.apollo.QueryResult

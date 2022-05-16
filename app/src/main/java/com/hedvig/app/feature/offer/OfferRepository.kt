@@ -3,9 +3,9 @@ package com.hedvig.app.feature.offer
 import arrow.core.Either
 import arrow.core.computations.either
 import arrow.core.computations.ensureNotNull
-import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.api.cache.http.HttpCachePolicy
-import com.apollographql.apollo.fetcher.ApolloResponseFetchers
+import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.api.cache.http.HttpCachePolicy
+import com.apollographql.apollo3.fetcher.ApolloResponseFetchers
 import com.hedvig.android.owldroid.graphql.QuoteCartQuery
 import com.hedvig.app.feature.offer.model.OfferModel
 import com.hedvig.app.feature.offer.model.QuoteCartFragmentToOfferModelMapper

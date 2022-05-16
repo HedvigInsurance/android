@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
-import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo3.ApolloClient
 import com.google.accompanist.insets.systemBarsPadding
 import com.hedvig.android.owldroid.graphql.ExchangeTokenMutation
 import com.hedvig.app.authenticate.AuthenticationTokenService

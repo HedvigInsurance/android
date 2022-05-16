@@ -1,9 +1,9 @@
 package com.hedvig.app.util
 
-import com.apollographql.apollo.ApolloCall
-import com.apollographql.apollo.api.Operation
-import com.apollographql.apollo.api.Response
-import com.apollographql.apollo.cache.CacheHeaders
+import com.apollographql.apollo3.ApolloCall
+import com.apollographql.apollo3.api.Operation
+import com.apollographql.apollo3.api.Response
+import com.apollographql.apollo3.cache.CacheHeaders
 
 class MockedApolloCall<T>(
     private val response: T,

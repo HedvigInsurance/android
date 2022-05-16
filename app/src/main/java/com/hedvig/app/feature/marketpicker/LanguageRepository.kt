@@ -1,9 +1,9 @@
 package com.hedvig.app.feature.marketpicker
 
-import com.apollographql.apollo.ApolloCall
-import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.api.Response
-import com.apollographql.apollo.exception.ApolloException
+import com.apollographql.apollo3.ApolloCall
+import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.api.Response
+import com.apollographql.apollo3.exception.ApolloException
 import com.hedvig.android.owldroid.graphql.UpdateLanguageMutation
 import com.hedvig.android.owldroid.type.Locale
 import e

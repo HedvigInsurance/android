@@ -1,10 +1,10 @@
 package com.hedvig.app.util
 
-import com.apollographql.apollo.api.Operation
-import com.apollographql.apollo.api.OperationName
-import com.apollographql.apollo.api.Response
-import com.apollographql.apollo.api.ScalarTypeAdapters
-import com.apollographql.apollo.api.internal.ResponseFieldMapper
+import com.apollographql.apollo3.api.Operation
+import com.apollographql.apollo3.api.OperationName
+import com.apollographql.apollo3.api.Response
+import com.apollographql.apollo3.api.ScalarTypeAdapters
+import com.apollographql.apollo3.api.internal.ResponseFieldMapper
 import okio.BufferedSource
 import okio.ByteString
 
