@@ -93,7 +93,7 @@ abstract class EmbarkViewModel(
 
     sealed class Event {
         data class Offer(
-            val quoteCartId: QuoteCartId?,
+            val quoteCartId: QuoteCartId,
             val selectedContractTypes: List<SelectedContractType>,
         ) : Event()
 
@@ -163,8 +163,12 @@ abstract class EmbarkViewModel(
                 //  meaning that the old values were returned from getList/get.
                 valueStore.withCommittedVersion {
                     val quoteCartId = this.get(QUOTE_CART_ID_KEY)?.let { QuoteCartId(it) }
-                    val selectedContractTypes = nextPassage.getSelectedContractTypes(this)
-                    _events.trySend(Event.Offer(quoteCartId, selectedContractTypes))
+                    if (quoteCartId == null) {
+                        _events.trySend(Event.Error())
+                    } else {
+                        val selectedContractTypes = nextPassage.getSelectedContractTypes(this)
+                        _events.trySend(Event.Offer(quoteCartId, selectedContractTypes))
+                    }
                 }
             }
             location != null -> handleRedirectLocation(location)
@@ -269,11 +273,15 @@ abstract class EmbarkViewModel(
     }
 
     private fun createOfferEvent(): Event {
-        val quoteCartId = valueStore.get(QUOTE_CART_ID_KEY)
-        return Event.Offer(
-            quoteCartId = quoteCartId?.let { QuoteCartId(it) },
-            selectedContractTypes = emptyList(),
-        )
+        val quoteCartId = valueStore.get(QUOTE_CART_ID_KEY)?.let(::QuoteCartId)
+        return if (quoteCartId != null) {
+            Event.Offer(
+                quoteCartId = quoteCartId,
+                selectedContractTypes = emptyList(),
+            )
+        } else {
+            Event.Error()
+        }
     }
 
     private suspend fun createChatEvent(): Event = when (chatRepository.triggerFreeTextChat()) {

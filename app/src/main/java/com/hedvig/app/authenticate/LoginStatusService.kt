@@ -46,9 +46,14 @@ class SharedPreferencesLoginStatusService(
         yield()
         return when {
             isLoggedIn -> LoginStatus.LoggedIn
-            isViewingOffer -> LoginStatus.InOffer(
-                quoteCartId = sharedPreferences.getString("quoteCartId", null)?.let { QuoteCartId(it) }
-            )
+            isViewingOffer -> {
+                val quoteCartId = sharedPreferences.getString("quoteCartId", null)?.let(::QuoteCartId)
+                if (quoteCartId != null) {
+                    LoginStatus.InOffer(quoteCartId)
+                } else {
+                    LoginStatus.Onboarding
+                }
+            }
             authenticationTokenManager.authenticationToken == null -> LoginStatus.Onboarding
             hasNoContracts() -> LoginStatus.Onboarding
             else -> {
