@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.preference.PreferenceManager
 import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.coroutines.await
 import com.hedvig.android.owldroid.graphql.NewSessionMutation
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.feature.settings.Language
