@@ -18,6 +18,7 @@ import com.hedvig.android.owldroid.graphql.UpdateKeyGearItemNameMutation
 import com.hedvig.android.owldroid.graphql.UpdateKeyGearPriceAndDateMutation
 import com.hedvig.android.owldroid.graphql.UploadFileMutation
 import com.hedvig.android.owldroid.graphql.UploadFilesMutation
+import com.hedvig.android.owldroid.graphql.fragment.KeyGearItemFragment
 import com.hedvig.android.owldroid.graphql.type.MonetaryAmountV2Input
 import com.hedvig.android.owldroid.type.AddReceiptToKeyGearItemInput
 import com.hedvig.android.owldroid.type.KeyGearItemCategory
@@ -82,8 +83,7 @@ class KeyGearItemsRepository(
 
         val cachedData = apolloClient
             .apolloStore
-            .read(keyGearItemQuery)
-            .execute()
+            .readOperation(keyGearItemQuery)
 
         cachedData.keyGearItem?.let { keyGearItem ->
             val newData = cachedData
@@ -115,8 +115,7 @@ class KeyGearItemsRepository(
 
             apolloClient
                 .apolloStore
-                .writeAndPublish(keyGearItemQuery, newData)
-                .execute()
+                .writeOperation(keyGearItemQuery, newData)
 
             return newData
         }
@@ -165,8 +164,7 @@ class KeyGearItemsRepository(
 
         val cachedData = apolloClient
             .apolloStore
-            .read(keyGearItemsQuery)
-            .execute()
+            .readOperation(keyGearItemsQuery)
 
         val newKeyGearItems = cachedData.keyGearItems.toMutableList()
         if (
@@ -189,8 +187,7 @@ class KeyGearItemsRepository(
 
         apolloClient
             .apolloStore
-            .writeAndPublish(keyGearItemsQuery, newData)
-            .execute()
+            .writeOperation(keyGearItemsQuery, newData)
 
         return result
     }
