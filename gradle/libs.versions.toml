@@ -84,10 +84,7 @@ zXing = "3.5.0"
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "androidBuildTools" }
 apollo-gradlePlugin = { module = "com.apollographql.apollo:apollo-gradle-plugin", version.ref = "apollo" }
 crashlytics-gradlePlugin = { module = "com.google.firebase:firebase-crashlytics-gradle", version.ref = "crashlytics" }
-googleServices-gradlePlugin = { module = "com.google.gms:google-services", version.ref = "googleServices" }
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-licenses-gradlePlugin = { module = "com.jaredsburrows:gradle-license-plugin", version.ref = "license" }
-lokalise-gradlePlugin = { module = "com.hedvig.android:lokalise-plugin", version.ref = "lokalise" }
 
 # Libraries listed alphabetically
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk7", version.ref = "kotlin" }
@@ -239,7 +236,11 @@ buildTimeTracker = { id = "net.rdrei.android.buildtimetracker", version.ref = "b
 
 cacheFix = { id = "org.gradle.android.cache-fix", version.ref = "cacheFix" }
 
+crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }
+
 doctor = { id = "com.osacky.doctor", version.ref = "doctor" }
+
+googleServices = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 
 license = { id = "com.jaredsburrows.license", version.ref = "license" }
 
