@@ -202,6 +202,7 @@ dependencies {
     implementation(libs.accompanist.systemUiController)
 
     implementation(libs.apollo.adapters)
+    implementation(libs.apollo.normalizedCache)
     androidTestImplementation(libs.apollo.idlingResource)
 
     implementation(libs.arrowKt.core)

@@ -15,11 +15,11 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.decode.SvgDecoder
 import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.cache.normalized.NormalizedCacheFactory
-import com.apollographql.apollo3.cache.normalized.lru.EvictionPolicy
-import com.apollographql.apollo3.cache.normalized.lru.LruNormalizedCache
-import com.apollographql.apollo3.cache.normalized.lru.LruNormalizedCacheFactory
+import com.apollographql.apollo3.cache.normalized.api.MemoryCacheFactory
+import com.apollographql.apollo3.cache.normalized.api.NormalizedCacheFactory
+import com.apollographql.apollo3.cache.normalized.normalizedCache
 import com.apollographql.apollo3.interceptor.ApolloInterceptorFactory
+import com.apollographql.apollo3.network.okHttpClient
 import com.apollographql.apollo3.subscription.SubscriptionConnectionParams
 import com.apollographql.apollo3.subscription.WebSocketSubscriptionTransport
 import com.google.firebase.messaging.FirebaseMessaging
@@ -243,14 +243,10 @@ fun isDebug() = BuildConfig.DEBUG || BuildConfig.APPLICATION_ID == "com.hedvig.t
 
 val applicationModule = module {
     single { androidApplication() as HedvigApplication }
-    single<NormalizedCacheFactory<LruNormalizedCache>> {
-        LruNormalizedCacheFactory(
-            EvictionPolicy.builder().maxSizeBytes(
-                (1000 * 1024).toLong()
-            ).build()
-        )
+    single<MemoryCacheFactory> {
+        MemoryCacheFactory(maxSizeBytes = 10 * 1024 * 1024)
     }
-    single {
+    single<OkHttpClient> {
         val marketManager = get<MarketManager>()
         val context = get<Context>()
         val builder = OkHttpClient.Builder()
@@ -299,10 +295,10 @@ val applicationModule = module {
         builder.build()
     }
     single { SunsettingInterceptor.Factory(get()) } bind ApolloInterceptorFactory::class
-    single {
+    single<ApolloClient> {
         val builder: ApolloClient.Builder = ApolloClient.Builder()
             .serverUrl(get<HedvigApplication>().graphqlUrl)
-            .okHttpClient(get())
+            .okHttpClient(get<OkHttpClient>())
             .subscriptionConnectionParams {
                 SubscriptionConnectionParams(
                     mapOf("Authorization" to get<AuthenticationTokenService>().authenticationToken)
@@ -314,7 +310,7 @@ val applicationModule = module {
                     get<OkHttpClient>()
                 )
             )
-            .normalizedCache(get())
+        builder.normalizedCache(get<NormalizedCacheFactory>())
 
         builder.customScalarAdapters(CUSTOM_SCALAR_ADAPTERS)
 
