@@ -21,7 +21,6 @@ import com.hedvig.android.owldroid.graphql.SendChatFileResponseMutation
 import com.hedvig.android.owldroid.graphql.SendChatSingleSelectResponseMutation
 import com.hedvig.android.owldroid.graphql.SendChatTextResponseMutation
 import com.hedvig.android.owldroid.graphql.TriggerFreeTextChatMutation
-import com.hedvig.android.owldroid.graphql.UploadClaimMutation
 import com.hedvig.android.owldroid.graphql.UploadFileMutation
 import com.hedvig.android.owldroid.type.ChatResponseBodyFileInput
 import com.hedvig.android.owldroid.type.ChatResponseBodySingleSelectInput
@@ -89,15 +88,6 @@ class ChatRepository(
             ChatResponseSingleSelectInput(id, ChatResponseBodySingleSelectInput(value))
         )
     ).await()
-
-    suspend fun uploadClaim(id: String, path: String): Response<UploadClaimMutation.Data> {
-        val mutation = UploadClaimMutation(
-            id = id,
-            claim = FileUpload(fileService.getMimeType(path), path)
-        )
-
-        return apolloClient.mutate(mutation).await()
-    }
 
     fun writeNewMessage(message: ChatMessageFragment) {
         val cachedData = apolloClient

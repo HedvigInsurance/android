@@ -228,8 +228,6 @@ dependencies {
     implementation(libs.timber)
     implementation(libs.slimber)
 
-    implementation(libs.lottie)
-
     implementation(libs.reactiveX.kotlin)
     implementation(libs.reactiveX.android)
 

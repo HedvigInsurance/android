@@ -66,11 +66,7 @@ class ChatInputView : FrameLayout {
                 is TextInput -> bindTextInput(value)
                 is SingleSelect -> bindSingleSelect(value)
                 is ParagraphInput -> bindParagraphInput()
-                is Audio -> bindAudio()
-                NullInput,
-                null,
-                -> {
-                }
+                is Audio, NullInput, null -> {}
             }
         }
 
@@ -114,7 +110,6 @@ class ChatInputView : FrameLayout {
             textInputContainer.remove()
             singleSelectContainer.remove()
             paragraphView.remove()
-            audioRecorder.remove()
         }
     }
 
@@ -123,8 +118,6 @@ class ChatInputView : FrameLayout {
         sendSingleSelect: (String) -> Unit,
         sendSingleSelectLink: (String) -> Unit,
         openAttachFile: () -> Unit,
-        requestAudioPermission: () -> Unit,
-        uploadRecording: (String) -> Unit,
         openSendGif: () -> Unit,
         chatRecyclerView: RecyclerView,
     ) {
@@ -132,7 +125,6 @@ class ChatInputView : FrameLayout {
         this.sendSingleSelect = sendSingleSelect
         this.singleSelectLink = sendSingleSelectLink
         this.openAttachFile = openAttachFile
-        binding.audioRecorder.initialize(requestAudioPermission, uploadRecording)
         this.openSendGif = openSendGif
         this.chatRecyclerView = chatRecyclerView
     }
@@ -140,8 +132,6 @@ class ChatInputView : FrameLayout {
     fun clearInput() {
         binding.inputText.text?.clear()
     }
-
-    fun audioRecorderPermissionGranted() = binding.audioRecorder.permissionGranted()
 
     private fun fadeOutCurrent(fadeIn: () -> Unit) {
         binding.apply {
@@ -158,8 +148,7 @@ class ChatInputView : FrameLayout {
                         }
                     )
                 }
-                is Audio -> audioRecorder.fadeOut(fadeIn)
-                is NullInput -> fadeIn()
+                is Audio, is NullInput -> fadeIn()
             }
         }
     }
@@ -172,8 +161,7 @@ class ChatInputView : FrameLayout {
                         is TextInput -> textInputContainer.fadeIn()
                         is SingleSelect -> singleSelectContainer.fadeIn()
                         is ParagraphInput -> paragraphView.fadeIn()
-                        is Audio -> audioRecorder.fadeIn()
-                        NullInput -> {}
+                        is Audio, NullInput -> {}
                     }
                 }
                 currentlyDisplaying = value
@@ -252,15 +240,6 @@ class ChatInputView : FrameLayout {
 
         binding.singleSelectContainer.addView(singleSelectButton)
         binding.singleSelectContainer.measure(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-    }
-
-    private fun bindAudio() {
-        if (binding.audioRecorder.measuredHeight == 0) {
-            binding.audioRecorder.measure(
-                MeasureSpec.makeMeasureSpec(binding.root.width, MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(binding.root.height, MeasureSpec.UNSPECIFIED),
-            )
-        }
     }
 
     private fun disableSingleButtons() {
