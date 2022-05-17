@@ -3,14 +3,12 @@ package com.hedvig.app.feature.profile.data
 import arrow.core.Either
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.cache.normalized.apolloStore
-import com.apollographql.apollo3.cache.normalized.watch
-import com.apollographql.apollo3.coroutines.await
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.graphql.SelectCashbackMutation
 import com.hedvig.android.owldroid.graphql.UpdateEmailMutation
 import com.hedvig.android.owldroid.graphql.UpdatePhoneNumberMutation
 import com.hedvig.app.util.apollo.QueryResult
-import com.hedvig.app.util.apollo.safeFlow
+import com.hedvig.app.util.apollo.safeWatch
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -21,8 +19,7 @@ class ProfileRepository(
 
     fun profile(): Flow<Either<QueryResult.Error, ProfileQuery.Data>> = apolloClient
         .query(profileQuery)
-        .watch()
-        .safeFlow()
+        .safeWatch()
         .map(QueryResult<ProfileQuery.Data>::toEither)
 
     suspend fun updateEmail(input: String) =

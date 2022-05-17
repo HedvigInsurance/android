@@ -10,17 +10,18 @@ import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.apollographql.apollo3.cache.normalized.watch
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.android.owldroid.graphql.UpdateReferralCampaignCodeMutation
+import kotlinx.coroutines.flow.Flow
 
 class ReferralsRepository(
     private val apolloClient: ApolloClient,
 ) {
     private val referralsQuery = ReferralsQuery()
 
-    fun referrals() = apolloClient
+    fun referrals(): Flow<ApolloResponse<ReferralsQuery.Data>> = apolloClient
         .query(referralsQuery)
         .watch()
 
-    suspend fun reloadReferrals() = apolloClient
+    suspend fun reloadReferrals(): ApolloResponse<ReferralsQuery.Data> = apolloClient
         .query(referralsQuery)
         .httpFetchPolicy(HttpFetchPolicy.NetworkOnly)
         .fetchPolicy(FetchPolicy.NetworkOnly)
