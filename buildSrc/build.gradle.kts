@@ -9,5 +9,5 @@ repositories {
 
 dependencies {
     implementation(libs.android.gradlePlugin)
-    implementation(kotlin("gradle-plugin", version = "1.6.10"))
+    implementation(libs.kotlin.gradlePlugin)
 }
