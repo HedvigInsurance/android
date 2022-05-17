@@ -2,7 +2,7 @@ package com.hedvig.app.util
 
 import com.apollographql.apollo3.api.Operation
 import com.apollographql.apollo3.api.ScalarTypeAdapters
-import com.hedvig.app.CUSTOM_TYPE_ADAPTERS
+import com.hedvig.app.CUSTOM_SCALAR_ADAPTERS
 import com.hedvig.app.TestApplication
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
@@ -94,7 +94,7 @@ class ApolloMockServerResponseBuilder(
     fun success(data: Operation.Data) =
         ApolloMockServerResult.GraphQLResponse(
             data.toJson(
-                scalarTypeAdapters = CUSTOM_TYPE_ADAPTERS
+                scalarTypeAdapters = CUSTOM_SCALAR_ADAPTERS
             )
         )
 

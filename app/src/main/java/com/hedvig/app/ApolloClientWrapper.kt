@@ -1,17 +1,12 @@
 package com.hedvig.app
 
-import com.apollographql.apollo3.api.ScalarTypeAdapters
-import com.hedvig.android.owldroid.type.CustomType
-import com.hedvig.app.util.apollo.InstantAdapter
+import com.apollographql.apollo3.api.CustomScalarAdapters
+import com.hedvig.android.owldroid.graphql.type.JSONString
+import com.hedvig.android.owldroid.graphql.type.PaymentMethodsResponse
 import com.hedvig.app.util.apollo.JSONStringAdapter
 import com.hedvig.app.util.apollo.PaymentMethodsApiResponseAdapter
-import com.hedvig.app.util.apollo.PromiscuousLocalDateAdapter
 
-val CUSTOM_TYPE_ADAPTERS = ScalarTypeAdapters(
-    mapOf(
-        CustomType.LOCALDATE to PromiscuousLocalDateAdapter(),
-        CustomType.PAYMENTMETHODSRESPONSE to PaymentMethodsApiResponseAdapter(),
-        CustomType.JSONSTRING to JSONStringAdapter(),
-        CustomType.INSTANT to InstantAdapter(),
-    )
-)
+val CUSTOM_SCALAR_ADAPTERS: CustomScalarAdapters = CustomScalarAdapters.Builder()
+    .add(JSONString.type, JSONStringAdapter())
+    .add(PaymentMethodsResponse.type, PaymentMethodsApiResponseAdapter())
+    .build()

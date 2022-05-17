@@ -300,7 +300,7 @@ val applicationModule = module {
     }
     single { SunsettingInterceptor.Factory(get()) } bind ApolloInterceptorFactory::class
     single {
-        val builder = ApolloClient.Builder()
+        val builder: ApolloClient.Builder = ApolloClient.Builder()
             .serverUrl(get<HedvigApplication>().graphqlUrl)
             .okHttpClient(get())
             .subscriptionConnectionParams {
@@ -316,7 +316,7 @@ val applicationModule = module {
             )
             .normalizedCache(get())
 
-        CUSTOM_TYPE_ADAPTERS.customAdapters.forEach { (t, a) -> builder.addCustomTypeAdapter(t, a) }
+        builder.customScalarAdapters(CUSTOM_SCALAR_ADAPTERS)
 
         getAll<ApolloInterceptorFactory>().distinct().forEach {
             builder.addApplicationInterceptorFactory(it)
