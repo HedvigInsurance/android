@@ -206,7 +206,6 @@ dependencies {
 
     implementation(libs.playKtx)
 
-    implementation(libs.combineTuple)
     implementation(libs.fragmentViewBindingDelegate)
 
     implementation(libs.okhttp.core)
