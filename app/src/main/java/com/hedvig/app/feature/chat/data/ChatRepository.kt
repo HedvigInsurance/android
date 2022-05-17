@@ -8,6 +8,11 @@ import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.FileUpload
 import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.api.cache.http.HttpCachePolicy
+import com.apollographql.apollo3.cache.http.HttpFetchPolicy
+import com.apollographql.apollo3.cache.http.httpFetchPolicy
+import com.apollographql.apollo3.cache.normalized.FetchPolicy
+import com.apollographql.apollo3.cache.normalized.fetchPolicy
+import com.apollographql.apollo3.cache.normalized.refetchPolicy
 import com.apollographql.apollo3.coroutines.await
 import com.apollographql.apollo3.coroutines.toFlow
 import com.apollographql.apollo3.fetcher.ApolloResponseFetchers
@@ -48,10 +53,8 @@ class ChatRepository(
         messagesQuery = ChatMessagesQuery()
         return apolloClient
             .query(messagesQuery)
-            .toBuilder()
-            .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
-            .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
-            .build()
+            .httpFetchPolicy(HttpFetchPolicy.NetworkOnly)
+            .fetchPolicy(FetchPolicy.NetworkOnly)
             .watcher()
             .toFlow()
     }
@@ -59,10 +62,8 @@ class ChatRepository(
     suspend fun messageIds() =
         apolloClient
             .query(ChatMessageIdQuery())
-            .toBuilder()
-            .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
-            .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
-            .build()
+            .httpFetchPolicy(HttpFetchPolicy.NetworkOnly)
+            .fetchPolicy(FetchPolicy.NetworkOnly)
             .execute()
 
     fun subscribeToChatMessages() =

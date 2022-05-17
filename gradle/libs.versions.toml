@@ -140,6 +140,7 @@ androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidx-
 androidx-test-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-test-junit" }
 
 apollo-adapters = { module = "com.apollographql.apollo3:apollo-adapters", version.ref = "apollo" }
+apollo-httpCache = { module = "com.apollographql.apollo3:apollo-http-cache", version.ref = "apollo" }
 apollo-idlingResource = { module = "com.apollographql.apollo3:apollo-idling-resource", version.ref = "apollo" }
 apollo-normalizedCache = { module = "com.apollographql.apollo3:apollo-normalized-cache", version.ref = "apollo" }
 apollo-runtime = { module = "com.apollographql.apollo3:apollo-runtime", version.ref = "apollo" }

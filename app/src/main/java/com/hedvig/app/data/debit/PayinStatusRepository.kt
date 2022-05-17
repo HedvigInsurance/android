@@ -2,6 +2,8 @@ package com.hedvig.app.data.debit
 
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
+import com.apollographql.apollo3.cache.normalized.FetchPolicy
+import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.apollographql.apollo3.coroutines.await
 import com.apollographql.apollo3.coroutines.toFlow
 import com.apollographql.apollo3.fetcher.ApolloResponseFetchers
@@ -21,9 +23,7 @@ class PayinStatusRepository(
     suspend fun refreshPayinStatus() {
         val response = apolloClient
             .query(payinStatusQuery)
-            .toBuilder()
-            .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
-            .build()
+            .fetchPolicy(FetchPolicy.NetworkOnly)
             .execute()
 
         response.data?.let { data ->
