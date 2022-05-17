@@ -10,6 +10,7 @@ apollo = "2.5.9"
 buildTimeTracker = "0.11.0"
 cacheFix = "2.5.3"
 crashlytics = "2.8.1"
+doctor = "0.8.0"
 googleServices = "4.3.10"
 kotlin = "1.6.10"
 license = "0.9.0"
@@ -239,3 +240,5 @@ buildTimeTracker = { id = "net.rdrei.android.buildtimetracker", version.ref = "b
 unusedResourcesRemover = { id = "com.github.konifar.gradle.unused-resources-remover", version.ref = "unusedResourcesRemover" }
 
 cacheFix = { id = "org.gradle.android.cache-fix", version.ref = "cacheFix" }
+
+doctor = { id = "com.osacky.doctor", version.ref = "doctor" }

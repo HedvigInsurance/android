@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.buildTimeTracker)
     alias(libs.plugins.unusedResourcesRemover)
     alias(libs.plugins.cacheFix) apply false
-    id("com.osacky.doctor") version "0.8.0"
+    alias(libs.plugins.doctor)
 }
 
 subprojects {
