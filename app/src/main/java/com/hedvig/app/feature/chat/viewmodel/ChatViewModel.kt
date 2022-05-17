@@ -294,18 +294,6 @@ class ChatViewModel(
         disposables.clear()
     }
 
-    fun uploadClaim(path: String) {
-        isSubscriptionAllowedToWrite = false
-        viewModelScope.launch {
-            val response = runCatching { chatRepository.uploadClaim(getLastId(), path) }
-            if (response.isFailure) {
-                response.exceptionOrNull()?.let { e(it) }
-                return@launch
-            }
-            load()
-        }
-    }
-
     fun editLastResponse() {
         viewModelScope.launch {
             val response = runCatching { chatRepository.editLastResponse() }

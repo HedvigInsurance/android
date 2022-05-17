@@ -173,16 +173,6 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
                 scrollToBottom(true)
                 openGifPicker()
             },
-            requestAudioPermission = {
-                askForPermissions(
-                    arrayOf(Manifest.permission.RECORD_AUDIO),
-                    REQUEST_AUDIO_PERMISSION
-                )
-            },
-            uploadRecording = { path ->
-                scrollToBottom(true)
-                chatViewModel.uploadClaim(path)
-            },
             chatRecyclerView = binding.messages,
         )
     }
@@ -471,9 +461,6 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             REQUEST_CAMERA_PERMISSION ->
                 if ((grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }))
                     startTakePicture()
-            REQUEST_AUDIO_PERMISSION ->
-                if ((grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }))
-                    binding.input.audioRecorderPermissionGranted()
             else -> {
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults)
             }
@@ -497,7 +484,6 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
 
         private const val REQUEST_WRITE_PERMISSION = 35134
         private const val REQUEST_CAMERA_PERMISSION = 54332
-        private const val REQUEST_AUDIO_PERMISSION = 12994
 
         private const val TAKE_PICTURE_REQUEST_CODE = 2371
 

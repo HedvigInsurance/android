@@ -56,7 +56,6 @@ jsonTest = "20220320"
 kaspresso = "1.4.1"
 koin = "3.2.0"
 leakCanary = "2.9.1"
-lottie = "5.1.1"
 markwon = "4.6.2"
 materialComponents = "1.6.0"
 mixpanel = "5.9.4"
@@ -188,8 +187,6 @@ koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin" }
 
 leakCanary = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakCanary" }
-
-lottie = { module = "com.airbnb.android:lottie", version.ref = "lottie" }
 
 markwon-core = { module = "io.noties.markwon:core", version.ref = "markwon" }
 markwon-linkify = { module = "io.noties.markwon:linkify", version.ref = "markwon" }

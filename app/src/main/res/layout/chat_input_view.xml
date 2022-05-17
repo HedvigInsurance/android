@@ -99,12 +99,4 @@
         app:srcCompat="@drawable/animation_typing"
         tools:visibility="gone" />
 
-    <com.hedvig.app.feature.chat.ui.AudioRecorderView
-        android:id="@+id/audioRecorder"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/base_margin_double"
-        android:visibility="gone"
-        tools:visibility="gone" />
-
 </FrameLayout>
