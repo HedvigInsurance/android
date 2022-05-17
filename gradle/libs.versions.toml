@@ -237,8 +237,12 @@ zXing = { module = "com.google.zxing:core", version.ref = "zXing" }
 
 buildTimeTracker = { id = "net.rdrei.android.buildtimetracker", version.ref = "buildTimeTracker" }
 
-unusedResourcesRemover = { id = "com.github.konifar.gradle.unused-resources-remover", version.ref = "unusedResourcesRemover" }
-
 cacheFix = { id = "org.gradle.android.cache-fix", version.ref = "cacheFix" }
 
 doctor = { id = "com.osacky.doctor", version.ref = "doctor" }
+
+license = { id = "com.jaredsburrows.license", version.ref = "license" }
+
+lokalise = { id = "com.hedvig.android.lokalise", version.ref = "lokalise" }
+
+unusedResourcesRemover = { id = "com.github.konifar.gradle.unused-resources-remover", version.ref = "unusedResourcesRemover" }

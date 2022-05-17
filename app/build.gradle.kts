@@ -8,12 +8,12 @@ plugins {
     id("kotlin-android")
     id("kotlin-parcelize")
     id("kotlin-kapt")
-    id("com.hedvig.android.lokalise")
+    alias(libs.plugins.lokalise)
+    alias(libs.plugins.license)
     kotlin("plugin.serialization") version "1.6.10"
 }
 
-apply(plugin = "com.jaredsburrows.license")
-configure<com.jaredsburrows.license.LicenseReportExtension> {
+licenseReport {
     copyHtmlReportToAssets = true
 }
 

@@ -32,8 +32,6 @@ buildscript {
         classpath(libs.crashlytics.gradlePlugin)
         classpath(libs.googleServices.gradlePlugin)
         classpath(libs.kotlin.gradlePlugin)
-        classpath(libs.licenses.gradlePlugin)
-        classpath(libs.lokalise.gradlePlugin)
     }
 }
 
