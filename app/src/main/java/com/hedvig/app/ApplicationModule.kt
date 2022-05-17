@@ -18,7 +18,7 @@ import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.cache.normalized.api.MemoryCacheFactory
 import com.apollographql.apollo3.cache.normalized.api.NormalizedCacheFactory
 import com.apollographql.apollo3.cache.normalized.normalizedCache
-import com.apollographql.apollo3.interceptor.ApolloInterceptorFactory
+import com.apollographql.apollo3.interceptor.ApolloInterceptor
 import com.apollographql.apollo3.network.okHttpClient
 import com.apollographql.apollo3.subscription.SubscriptionConnectionParams
 import com.apollographql.apollo3.subscription.WebSocketSubscriptionTransport
@@ -294,7 +294,7 @@ val applicationModule = module {
         }
         builder.build()
     }
-    single { SunsettingInterceptor.Factory(get()) } bind ApolloInterceptorFactory::class
+    single<SunsettingInterceptor> { SunsettingInterceptor(get()) } bind ApolloInterceptor::class
     single<ApolloClient> {
         val builder: ApolloClient.Builder = ApolloClient.Builder()
             .serverUrl(get<HedvigApplication>().graphqlUrl)
@@ -314,9 +314,8 @@ val applicationModule = module {
 
         builder.customScalarAdapters(CUSTOM_SCALAR_ADAPTERS)
 
-        getAll<ApolloInterceptorFactory>().distinct().forEach {
-            builder.addApplicationInterceptorFactory(it)
-        }
+        val interceptors = getAll<ApolloInterceptor>().distinct()
+        builder.addInterceptors(interceptors)
 
         if (isDebug()) {
             builder.logger(ApolloTimberLogger())
