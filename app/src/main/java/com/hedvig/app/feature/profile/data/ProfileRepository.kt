@@ -2,6 +2,8 @@ package com.hedvig.app.feature.profile.data
 
 import arrow.core.Either
 import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.cache.normalized.apolloStore
+import com.apollographql.apollo3.cache.normalized.watch
 import com.apollographql.apollo3.coroutines.await
 import com.hedvig.android.owldroid.graphql.ProfileQuery
 import com.hedvig.android.owldroid.graphql.SelectCashbackMutation
@@ -19,7 +21,7 @@ class ProfileRepository(
 
     fun profile(): Flow<Either<QueryResult.Error, ProfileQuery.Data>> = apolloClient
         .query(profileQuery)
-        .watcher()
+        .watch()
         .safeFlow()
         .map(QueryResult<ProfileQuery.Data>::toEither)
 
@@ -29,11 +31,10 @@ class ProfileRepository(
     suspend fun updatePhoneNumber(input: String) =
         apolloClient.mutation(UpdatePhoneNumberMutation(input)).execute()
 
-    fun writeEmailAndPhoneNumberInCache(email: String?, phoneNumber: String?) {
+    suspend fun writeEmailAndPhoneNumberInCache(email: String?, phoneNumber: String?) {
         val cachedData = apolloClient
             .apolloStore
-            .read(profileQuery)
-            .execute()
+            .readOperation(profileQuery)
         val newMember = cachedData
             .member
             .copy(
@@ -46,29 +47,27 @@ class ProfileRepository(
 
         apolloClient
             .apolloStore
-            .writeAndPublish(profileQuery, newData)
-            .execute()
+            .writeOperation(profileQuery, newData)
     }
 
     suspend fun selectCashback(id: String) =
         apolloClient.mutation(SelectCashbackMutation(id)).execute()
 
-    fun writeCashbackToCache(cashback: SelectCashbackMutation.SelectCashbackOption) {
+    suspend fun writeCashbackToCache(cashback: SelectCashbackMutation.SelectCashbackOption) {
         val cachedData = apolloClient
             .apolloStore
-            .read(profileQuery)
-            .execute()
+            .readOperation(profileQuery)
 
         val newData = cachedData
             .copy(
                 cashback = ProfileQuery.Cashback(
+                    __typename = "Cashback",
                     fragments = ProfileQuery.Cashback.Fragments(cashback.fragments.cashbackFragment)
                 )
             )
 
         apolloClient
             .apolloStore
-            .writeAndPublish(profileQuery, newData)
-            .execute()
+            .writeOperation(profileQuery, newData)
     }
 }

@@ -6,6 +6,7 @@ import com.apollographql.apollo3.cache.http.httpFetchPolicy
 import com.apollographql.apollo3.cache.normalized.FetchPolicy
 import com.apollographql.apollo3.cache.normalized.apolloStore
 import com.apollographql.apollo3.cache.normalized.fetchPolicy
+import com.apollographql.apollo3.cache.normalized.watch
 import com.hedvig.android.owldroid.graphql.PaymentQuery
 import com.hedvig.android.owldroid.graphql.type.PayoutMethodStatus
 import com.hedvig.app.util.LocaleManager
@@ -17,8 +18,7 @@ class PaymentRepository(
     private val paymentQuery = PaymentQuery(localeManager.defaultLocale())
     fun payment() = apolloClient
         .query(PaymentQuery(localeManager.defaultLocale()))
-        .watcher()
-        .toFlow()
+        .watch()
 
     suspend fun refresh() = apolloClient
         .query(paymentQuery)
@@ -26,20 +26,18 @@ class PaymentRepository(
         .fetchPolicy(FetchPolicy.NetworkOnly)
         .execute()
 
-    fun writeActivePayoutMethodStatus(status: PayoutMethodStatus) {
+    suspend fun writeActivePayoutMethodStatus(status: PayoutMethodStatus) {
         val cachedData = apolloClient
             .apolloStore
-            .read(paymentQuery)
-            .execute()
+            .readOperation(paymentQuery)
 
         apolloClient
             .apolloStore
-            .writeAndPublish(
+            .writeOperation(
                 paymentQuery,
                 cachedData.copy(
                     activePayoutMethods = PaymentQuery.ActivePayoutMethods(status = status)
                 )
             )
-            .execute()
     }
 }

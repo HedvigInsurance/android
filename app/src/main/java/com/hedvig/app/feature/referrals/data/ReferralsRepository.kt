@@ -7,6 +7,7 @@ import com.apollographql.apollo3.cache.http.httpFetchPolicy
 import com.apollographql.apollo3.cache.normalized.FetchPolicy
 import com.apollographql.apollo3.cache.normalized.apolloStore
 import com.apollographql.apollo3.cache.normalized.fetchPolicy
+import com.apollographql.apollo3.cache.normalized.watch
 import com.apollographql.apollo3.coroutines.toFlow
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.android.owldroid.graphql.UpdateReferralCampaignCodeMutation
@@ -18,8 +19,7 @@ class ReferralsRepository(
 
     fun referrals() = apolloClient
         .query(referralsQuery)
-        .watcher()
-        .toFlow()
+        .watch()
 
     suspend fun reloadReferrals() = apolloClient
         .query(referralsQuery)
@@ -35,8 +35,7 @@ class ReferralsRepository(
         response.data?.updateReferralCampaignCode?.asSuccessfullyUpdatedCode?.code?.let { updatedCode ->
             val oldData = apolloClient
                 .apolloStore
-                .read(referralsQuery)
-                .execute()
+                .readOperation(referralsQuery)
 
             val newData = oldData.copy(
                 referralInformation = oldData.referralInformation.copy(
@@ -48,8 +47,7 @@ class ReferralsRepository(
 
             apolloClient
                 .apolloStore
-                .writeAndPublish(referralsQuery, newData)
-                .execute()
+                .writeOperation(referralsQuery, newData)
         }
 
         return response

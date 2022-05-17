@@ -3,10 +3,9 @@ package com.hedvig.app.data.debit
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.cache.normalized.FetchPolicy
+import com.apollographql.apollo3.cache.normalized.apolloStore
 import com.apollographql.apollo3.cache.normalized.fetchPolicy
-import com.apollographql.apollo3.coroutines.await
-import com.apollographql.apollo3.coroutines.toFlow
-import com.apollographql.apollo3.fetcher.ApolloResponseFetchers
+import com.apollographql.apollo3.cache.normalized.watch
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import kotlinx.coroutines.flow.Flow
 
@@ -17,8 +16,7 @@ class PayinStatusRepository(
 
     fun payinStatusFlow(): Flow<ApolloResponse<PayinStatusQuery.Data>> = apolloClient
         .query(payinStatusQuery)
-        .watcher()
-        .toFlow()
+        .watch()
 
     suspend fun refreshPayinStatus() {
         val response = apolloClient
@@ -29,14 +27,12 @@ class PayinStatusRepository(
         response.data?.let { data ->
             val cachedData = apolloClient
                 .apolloStore
-                .read(payinStatusQuery)
-                .execute()
+                .readOperation(payinStatusQuery)
 
             val newData = cachedData.copy(payinMethodStatus = data.payinMethodStatus)
             apolloClient
                 .apolloStore
-                .writeAndPublish(payinStatusQuery, newData)
-                .execute()
+                .writeOperation(payinStatusQuery, newData)
         }
     }
 }
