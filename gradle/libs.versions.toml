@@ -7,11 +7,14 @@ minSdkVersion = "23"
 # gradlePlugin versions
 androidBuildTools = "7.2.0"
 apollo = "2.5.9"
+buildTimeTracker = "0.11.0"
+cacheFix = "2.5.3"
 crashlytics = "2.8.1"
 googleServices = "4.3.10"
 kotlin = "1.6.10"
 license = "0.9.0"
 lokalise = "1.4.1"
+unusedResourcesRemover = "0.3.3"
 
 # Other versions sorted alphabetically
 accompanistPager = "0.18.0" # Use 18 until https://github.com/google/accompanist/issues/847 is fixed
@@ -228,3 +231,11 @@ tooltip = { module = "com.github.hansemannn:viewtooltip", version.ref = "tooltip
 zXing = { module = "com.google.zxing:core", version.ref = "zXing" }
 
 [bundles]
+
+[plugins]
+
+buildTimeTracker = { id = "net.rdrei.android.buildtimetracker", version.ref = "buildTimeTracker" }
+
+unusedResourcesRemover = { id = "com.github.konifar.gradle.unused-resources-remover", version.ref = "unusedResourcesRemover" }
+
+cacheFix = { id = "org.gradle.android.cache-fix", version.ref = "cacheFix" }

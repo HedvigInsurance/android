@@ -1,8 +1,8 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
-    id("net.rdrei.android.buildtimetracker") version "0.11.0"
-    id("com.github.konifar.gradle.unused-resources-remover") version "0.3.3"
-    id("org.gradle.android.cache-fix") version "2.5.3" apply false
+    alias(libs.plugins.buildTimeTracker)
+    alias(libs.plugins.unusedResourcesRemover)
+    alias(libs.plugins.cacheFix) apply false
     id("com.osacky.doctor") version "0.8.0"
 }
 
