@@ -17,6 +17,7 @@ import coil.decode.SvgDecoder
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.cache.normalized.api.MemoryCacheFactory
 import com.apollographql.apollo3.cache.normalized.api.NormalizedCacheFactory
+import com.apollographql.apollo3.cache.normalized.logCacheMisses
 import com.apollographql.apollo3.cache.normalized.normalizedCache
 import com.apollographql.apollo3.interceptor.ApolloInterceptor
 import com.apollographql.apollo3.network.okHttpClient
@@ -227,6 +228,7 @@ import com.hedvig.app.util.featureflags.loginmethod.HAnalyticsLoginMethodProvide
 import com.hedvig.app.util.featureflags.paymenttype.DevPaymentTypeProvider
 import com.hedvig.app.util.featureflags.paymenttype.HAnalyticsPaymentTypeProvider
 import com.hedvig.hanalytics.HAnalytics
+import d
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidApplication
@@ -297,6 +299,12 @@ val applicationModule = module {
     single<SunsettingInterceptor> { SunsettingInterceptor(get()) } bind ApolloInterceptor::class
     single<ApolloClient> {
         val builder: ApolloClient.Builder = ApolloClient.Builder()
+        if (isDebug()) {
+            builder.logCacheMisses { log: String ->
+                d { "Apollo::logCacheMisses: $log" }
+            }
+        }
+        builder
             .serverUrl(get<HedvigApplication>().graphqlUrl)
             .okHttpClient(get<OkHttpClient>())
             .subscriptionConnectionParams {
@@ -317,9 +325,6 @@ val applicationModule = module {
         val interceptors = getAll<ApolloInterceptor>().distinct()
         builder.addInterceptors(interceptors)
 
-        if (isDebug()) {
-            builder.logger(ApolloTimberLogger())
-        }
         builder.build()
     }
 }
