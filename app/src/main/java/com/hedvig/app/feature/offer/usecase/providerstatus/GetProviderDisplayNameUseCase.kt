@@ -21,8 +21,6 @@ class GetProviderDisplayNameUseCase(
         if (insuranceCompany == null) return null
         val result = apolloClient
             .query(ProviderStatusQuery())
-            .httpFetchPolicy(HttpFetchPolicy.CacheFirst) // Names aren't going to change often if ever, prefer cache
-            .fetchPolicy(FetchPolicy.CacheFirst)
             .safeQuery()
         if (result is QueryResult.Success) {
             return result.data.externalInsuranceProvider
