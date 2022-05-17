@@ -50,7 +50,6 @@ fun <D : Subscription.Data> ApolloCall<D>.safeSubscription(): Flow<QueryResult<D
 
 fun <D : Query.Data> ApolloCall<D>.safeWatch(): Flow<QueryResult<D>> {
     return try {
-        watch(null)
         watch().map(ApolloResponse<D>::toQueryResult)
     } catch (apolloException: ApolloException) {
         flowOf(QueryResult.Error.NetworkError(apolloException.localizedMessage))
