@@ -34,11 +34,11 @@ import com.hedvig.android.owldroid.graphql.type.ChatResponseTextInput
 import com.hedvig.app.service.FileService
 import com.hedvig.app.util.apollo.safeQuery
 import com.hedvig.app.util.extensions.into
+import java.io.File
+import java.util.UUID
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
-import java.io.File
-import java.util.UUID
 
 class ChatRepository(
     private val apolloClient: ApolloClient,
