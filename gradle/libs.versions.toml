@@ -82,8 +82,6 @@ zXing = "3.5.0"
 [libraries]
 # Plugins
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "androidBuildTools" }
-apollo-gradlePlugin = { module = "com.apollographql.apollo:apollo-gradle-plugin", version.ref = "apollo" }
-crashlytics-gradlePlugin = { module = "com.google.firebase:firebase-crashlytics-gradle", version.ref = "crashlytics" }
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 
 # Libraries listed alphabetically
@@ -231,6 +229,8 @@ zXing = { module = "com.google.zxing:core", version.ref = "zXing" }
 [bundles]
 
 [plugins]
+
+apollo = { id = "com.apollographql.apollo", version.ref = "apollo" }
 
 buildTimeTracker = { id = "net.rdrei.android.buildtimetracker", version.ref = "buildTimeTracker" }
 
