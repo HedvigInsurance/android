@@ -8,7 +8,6 @@ import com.apollographql.apollo3.api.FileUpload
 import com.apollographql.apollo3.api.Input
 import com.apollographql.apollo3.cache.normalized.apolloStore
 import com.apollographql.apollo3.cache.normalized.watch
-import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
 import com.hedvig.android.owldroid.graphql.AddReceiptToKeyGearItemMutation
 import com.hedvig.android.owldroid.graphql.CreateKeyGearItemMutation
 import com.hedvig.android.owldroid.graphql.DeleteKeyGearItemMutation
@@ -19,10 +18,10 @@ import com.hedvig.android.owldroid.graphql.UpdateKeyGearPriceAndDateMutation
 import com.hedvig.android.owldroid.graphql.UploadFileMutation
 import com.hedvig.android.owldroid.graphql.UploadFilesMutation
 import com.hedvig.android.owldroid.graphql.fragment.KeyGearItemFragment
+import com.hedvig.android.owldroid.graphql.type.AddReceiptToKeyGearItemInput
+import com.hedvig.android.owldroid.graphql.type.KeyGearItemCategory
 import com.hedvig.android.owldroid.graphql.type.MonetaryAmountV2Input
-import com.hedvig.android.owldroid.type.AddReceiptToKeyGearItemInput
-import com.hedvig.android.owldroid.type.KeyGearItemCategory
-import com.hedvig.android.owldroid.type.S3FileInput
+import com.hedvig.android.owldroid.graphql.type.S3FileInput
 import com.hedvig.app.service.FileService
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.extensions.into
@@ -148,8 +147,8 @@ class KeyGearItemsRepository(
             category = category,
             photos = files,
             languageCode = locale,
-            physicalReferenceHash = Input.fromNullable(physicalReferenceHash),
-            name = Input.fromNullable(name)
+            physicalReferenceHash = physicalReferenceHash,
+            name = name,
         )
 
         val result = apolloClient
@@ -260,7 +259,7 @@ class KeyGearItemsRepository(
         val mutation =
             UpdateKeyGearItemNameMutation(
                 id = itemId,
-                updatedName = Input.fromNullable(name)
+                updatedName = name
             )
         val response = apolloClient.mutation(mutation).execute()
 
