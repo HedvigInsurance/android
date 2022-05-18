@@ -6,8 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.CreateKeyGearItemMutation
-import com.hedvig.android.owldroid.type.KeyGearItemCategory
-import com.hedvig.android.owldroid.type.S3FileInput
+import com.hedvig.android.owldroid.graphql.type.KeyGearItemCategory
+import com.hedvig.android.owldroid.graphql.type.S3FileInput
 import com.hedvig.app.feature.keygear.data.KeyGearItemsRepository
 import e
 import kotlinx.coroutines.launch

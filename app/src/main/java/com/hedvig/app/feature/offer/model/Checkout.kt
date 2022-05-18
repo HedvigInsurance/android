@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.offer.model
 
-import com.hedvig.android.owldroid.fragment.QuoteCartFragment
-import com.hedvig.android.owldroid.type.CheckoutStatus
+import com.hedvig.android.owldroid.graphql.fragment.QuoteCartFragment
+import com.hedvig.android.owldroid.graphql.type.CheckoutStatus
 
 data class Checkout(
     val status: CheckoutStatus,

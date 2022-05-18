@@ -1,7 +1,7 @@
 package com.hedvig.app.testdata.feature.loggedin.builders
 
-import com.hedvig.android.owldroid.fragment.IconVariantsFragment
 import com.hedvig.android.owldroid.graphql.WhatsNewQuery
+import com.hedvig.android.owldroid.graphql.fragment.IconVariantsFragment
 
 data class WhatsNewDataBuilder(
     val pages: List<WhatsNewQuery.New> = listOf(WhatsNewPageBuilder().build())
@@ -18,6 +18,7 @@ data class WhatsNewPageBuilder(
     fun build() = WhatsNewQuery.New(
         illustration = WhatsNewQuery.Illustration(
             variants = WhatsNewQuery.Variants(
+                __typename = "",
                 fragments = WhatsNewQuery.Variants.Fragments(
                     IconVariantsFragment(
                         dark = IconVariantsFragment.Dark(

@@ -11,7 +11,7 @@ import android.widget.TextView
 import androidx.dynamicanimation.animation.DynamicAnimation
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.recyclerview.widget.RecyclerView
-import com.hedvig.android.owldroid.type.KeyboardType
+import com.hedvig.android.owldroid.graphql.type.KeyboardType
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ChatInputViewBinding
 import com.hedvig.app.feature.chat.Audio

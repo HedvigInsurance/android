@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.offer.model
 
-import com.hedvig.android.owldroid.fragment.QuoteCartFragment
-import com.hedvig.android.owldroid.type.CheckoutMethod
+import com.hedvig.android.owldroid.graphql.fragment.QuoteCartFragment
+import com.hedvig.android.owldroid.graphql.type.CheckoutMethod
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
 import com.hedvig.app.feature.offer.model.quotebundle.toQuoteBundle
 

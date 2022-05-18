@@ -4,10 +4,10 @@ import android.net.Uri
 import android.os.Handler
 import android.os.Looper.getMainLooper
 import androidx.lifecycle.MutableLiveData
-import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
-import com.hedvig.android.owldroid.fragment.KeyGearItemValuationFragment
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
-import com.hedvig.android.owldroid.type.KeyGearItemCategory
+import com.hedvig.android.owldroid.graphql.fragment.KeyGearItemFragment
+import com.hedvig.android.owldroid.graphql.fragment.KeyGearItemValuationFragment
+import com.hedvig.android.owldroid.graphql.type.KeyGearItemCategory
 import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailViewModel
 import com.hedvig.app.util.LiveEvent
 
@@ -64,6 +64,7 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
             {
                 data.postValue(
                     KeyGearItemQuery.KeyGearItem(
+                        __typename = "",
                         fragments = KeyGearItemQuery.KeyGearItem.Fragments(
                             items[id]!!.copy(
                                 receipts = listOf(
@@ -88,6 +89,7 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
         val items = hashMapOf(
             "123" to
                 KeyGearItemFragment(
+                    __typename = "",
                     id = "123",
                     name = "Sak",
                     physicalReferenceHash = null,
@@ -113,9 +115,10 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                     deleted = false,
                     fragments = KeyGearItemFragment.Fragments(
                         KeyGearItemValuationFragment(
-                            "KeyGearItemValuationFixed",
                             KeyGearItemValuationFragment.Valuation1(
+                                __typename = "",
                                 asKeyGearItemValuationFixed = KeyGearItemValuationFragment.AsKeyGearItemValuationFixed(
+                                    __typename = "",
                                     ratio = 90,
                                     valuation = KeyGearItemValuationFragment.Valuation(
                                         amount = "9000.00"
@@ -128,6 +131,7 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                 ),
             "234" to
                 KeyGearItemFragment(
+                    __typename = "",
                     id = "234",
                     name = "Mackapär",
                     physicalReferenceHash = null,
@@ -154,7 +158,9 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                     fragments = KeyGearItemFragment.Fragments(
                         KeyGearItemValuationFragment(
                             valuation = KeyGearItemValuationFragment.Valuation1(
+                                __typename = "",
                                 asKeyGearItemValuationFixed = KeyGearItemValuationFragment.AsKeyGearItemValuationFixed(
+                                    __typename = "",
                                     ratio = 31,
                                     valuation = KeyGearItemValuationFragment.Valuation(
                                         amount = "55000.00"
@@ -167,6 +173,7 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                 ),
             "345" to
                 KeyGearItemFragment(
+                    __typename = "",
                     id = "345",
                     name = null,
                     physicalReferenceHash = null,
