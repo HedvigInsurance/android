@@ -15,7 +15,10 @@ class FileService(
             val cursor = context.contentResolver.query(uri, null, null, null, null)
             cursor.use { c ->
                 if (c?.moveToFirst() == true) {
-                    return c.getString(c.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+                    val columnIndex = c.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                    if (columnIndex >= 0) {
+                        return c.getString(columnIndex)
+                    }
                 }
             }
         }

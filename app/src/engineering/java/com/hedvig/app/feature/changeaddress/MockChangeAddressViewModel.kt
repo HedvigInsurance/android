@@ -20,7 +20,7 @@ class MockChangeAddressViewModel : ChangeAddressViewModel(MockHAnalytics()) {
             val tempValue = mockedState.value
             mockedState.value = ViewState.Loading
             delay(2.seconds)
-            mockedState.value = tempValue
+            mockedState.value = tempValue!!
         }
     }
 

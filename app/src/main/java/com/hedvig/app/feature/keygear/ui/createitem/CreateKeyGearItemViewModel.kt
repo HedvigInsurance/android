@@ -114,7 +114,7 @@ class CreateKeyGearItemViewModelImpl(
             if (result.isFailure) {
                 result.exceptionOrNull()?.let { e(it) }
             }
-            result.getOrNull()?.let { createResult.postValue(it.data) }
+            result.getOrNull()?.data?.let { createResult.postValue(it) }
         }
     }
 }
