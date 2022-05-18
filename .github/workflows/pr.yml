@@ -188,6 +188,7 @@ jobs:
       - uses: yutailang0119/action-android-lint@v3.0.0
         with:
           report-path: app/build/reports/lint-results-debug.xml
+          continue-on-error: true
   ktlint:
     runs-on: ubuntu-latest
     steps:
