@@ -22,8 +22,8 @@ class PercentageDiscountTest : TestCase() {
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        PaymentQuery.QUERY_DOCUMENT to apolloResponse { success(PAYMENT_DATA_PERCENTAGE_CAMPAIGN) },
-        PayinStatusQuery.QUERY_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_ACTIVE) }
+        PaymentQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYMENT_DATA_PERCENTAGE_CAMPAIGN) },
+        PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_ACTIVE) }
     )
 
     @get:Rule

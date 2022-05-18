@@ -22,7 +22,7 @@ class FeatureActivatedNotificationTest : TestCase() {
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.QUERY_DOCUMENT to apolloResponse {
+        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
             success(LOGGED_IN_DATA)
         }
     )

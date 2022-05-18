@@ -22,7 +22,7 @@ class SuccessTest : TestCase() {
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        InsuranceQuery.QUERY_DOCUMENT to apolloResponse {
+        InsuranceQuery.OPERATION_DOCUMENT to apolloResponse {
             success(INSURANCE_DATA_ONE_ACTIVE_ONE_TERMINATED)
         }
     )
