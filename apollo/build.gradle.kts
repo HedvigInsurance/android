@@ -34,7 +34,7 @@ apollo {
         mapScalarToKotlinString("CheckoutPaymentsAction")
         mapScalarToKotlinString("CheckoutPaymentAction")
         mapScalarToUpload("Upload")
-        mapScalar("LocalDate", "java.time.LocalDate", "com.apollographql.apollo3.adapter.JavaLocalDateTimeAdapter")
+        mapScalar("LocalDate", "java.time.LocalDate", "com.apollographql.apollo3.adapter.JavaLocalDateAdapter")
         mapScalar("Instant", "java.time.Instant", "com.apollographql.apollo3.adapter.JavaInstantAdapter")
 
         mapScalar("JSONString", "org.json.JSONObject")
@@ -75,6 +75,7 @@ dependencies {
     coreLibraryDesugaring(libs.coreLibraryDesugaring)
 
     api(libs.apollo.runtime)
+    implementation(libs.apollo.adapters)
 
     implementation(libs.adyen)
 }
