@@ -3,17 +3,17 @@ import java.util.Properties
 
 plugins {
     id("com.android.application")
-    id("com.google.gms.google-services")
-    id("com.google.firebase.crashlytics")
+    alias(libs.plugins.googleServices)
+    alias(libs.plugins.crashlytics)
     id("kotlin-android")
     id("kotlin-parcelize")
     id("kotlin-kapt")
-    id("com.hedvig.android.lokalise")
+    alias(libs.plugins.lokalise)
+    alias(libs.plugins.license)
     kotlin("plugin.serialization") version "1.6.10"
 }
 
-apply(plugin = "com.jaredsburrows.license")
-configure<com.jaredsburrows.license.LicenseReportExtension> {
+licenseReport {
     copyHtmlReportToAssets = true
 }
 

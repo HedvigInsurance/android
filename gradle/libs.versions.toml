@@ -7,11 +7,15 @@ minSdkVersion = "23"
 # gradlePlugin versions
 androidBuildTools = "7.2.0"
 apollo = "2.5.9"
+buildTimeTracker = "0.11.0"
+cacheFix = "2.5.3"
 crashlytics = "2.8.1"
+doctor = "0.8.0"
 googleServices = "4.3.10"
 kotlin = "1.6.10"
 license = "0.9.0"
 lokalise = "1.4.1"
+unusedResourcesRemover = "0.3.3"
 
 # Other versions sorted alphabetically
 accompanistPager = "0.18.0" # Use 18 until https://github.com/google/accompanist/issues/847 is fixed
@@ -78,12 +82,7 @@ zXing = "3.5.0"
 [libraries]
 # Plugins
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "androidBuildTools" }
-apollo-gradlePlugin = { module = "com.apollographql.apollo:apollo-gradle-plugin", version.ref = "apollo" }
-crashlytics-gradlePlugin = { module = "com.google.firebase:firebase-crashlytics-gradle", version.ref = "crashlytics" }
-googleServices-gradlePlugin = { module = "com.google.gms:google-services", version.ref = "googleServices" }
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-licenses-gradlePlugin = { module = "com.jaredsburrows:gradle-license-plugin", version.ref = "license" }
-lokalise-gradlePlugin = { module = "com.hedvig.android:lokalise-plugin", version.ref = "lokalise" }
 
 # Libraries listed alphabetically
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk7", version.ref = "kotlin" }
@@ -228,3 +227,23 @@ tooltip = { module = "com.github.hansemannn:viewtooltip", version.ref = "tooltip
 zXing = { module = "com.google.zxing:core", version.ref = "zXing" }
 
 [bundles]
+
+[plugins]
+
+apollo = { id = "com.apollographql.apollo", version.ref = "apollo" }
+
+buildTimeTracker = { id = "net.rdrei.android.buildtimetracker", version.ref = "buildTimeTracker" }
+
+cacheFix = { id = "org.gradle.android.cache-fix", version.ref = "cacheFix" }
+
+crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }
+
+doctor = { id = "com.osacky.doctor", version.ref = "doctor" }
+
+googleServices = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+
+license = { id = "com.jaredsburrows.license", version.ref = "license" }
+
+lokalise = { id = "com.hedvig.android.lokalise", version.ref = "lokalise" }
+
+unusedResourcesRemover = { id = "com.github.konifar.gradle.unused-resources-remover", version.ref = "unusedResourcesRemover" }
