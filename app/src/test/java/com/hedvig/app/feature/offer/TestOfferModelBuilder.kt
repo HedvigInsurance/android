@@ -93,6 +93,7 @@ class TestOfferModelBuilder(
             QuoteBundleVariant(
                 id = "1234",
                 title = "Test variant",
+                description = "Test description",
                 tag = "Test tag",
                 bundle = QuoteBundle(
                     name = bundleName,
