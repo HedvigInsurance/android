@@ -10,6 +10,7 @@ import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoModel
 import com.hedvig.app.feature.perils.Peril
 import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.feature.table.intoTable
+import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.apollo.toUpcomingAgreementResult
 
 fun InsuranceQuery.Contract.toContractDetailViewState(): ContractDetailViewState {
@@ -28,6 +29,7 @@ fun InsuranceQuery.Contract.toContractCardViewState() = ContractCardViewState(
     gradientOption = gradientOption,
     displayName = displayName,
     detailPills = detailPills,
+    logoUrls = logo?.variants?.fragments?.iconVariantsFragment?.let { ThemedIconUrls.from(it) }
 )
 
 fun InsuranceQuery.Contract.toMemberDetailsViewState() =

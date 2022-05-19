@@ -5,7 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.AuthStatusSubscription
 import com.hedvig.android.owldroid.graphql.SwedishBankIdAuthMutation
+import com.hedvig.android.owldroid.type.AuthState
 import com.hedvig.app.feature.chat.data.UserRepository
+import com.hedvig.app.service.push.PushTokenManager
+import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.hanalytics.HAnalytics
 import e
 import kotlinx.coroutines.channels.Channel
@@ -20,6 +23,8 @@ class UserViewModel(
     private val logoutUserCase: LogoutUseCase,
     private val loginStatusService: LoginStatusService,
     private val hAnalytics: HAnalytics,
+    private val featureManager: FeatureManager,
+    private val pushTokenManager: PushTokenManager,
 ) : ViewModel() {
 
     val autoStartToken = MutableLiveData<SwedishBankIdAuthMutation.Data>()
@@ -38,7 +43,15 @@ class UserViewModel(
             userRepository
                 .subscribeAuthStatus()
                 .onEach { response ->
-                    response.data?.let { authStatus.postValue(it) }
+                    response.data?.let { status ->
+                        if (status.authStatus?.status == AuthState.SUCCESS) {
+                            onAuthSuccess()
+                            runCatching {
+                                pushTokenManager.refreshToken()
+                            }
+                        }
+                        authStatus.postValue(status)
+                    }
                 }
                 .catch { e(it) }
                 .launchIn(this)
@@ -66,8 +79,9 @@ class UserViewModel(
         }
     }
 
-    fun onAuthSuccess() {
+    private suspend fun onAuthSuccess() {
         hAnalytics.loggedIn()
+        featureManager.invalidateExperiments()
         loginStatusService.isLoggedIn = true
     }
 }

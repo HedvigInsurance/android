@@ -24,7 +24,8 @@ import com.hedvig.app.databinding.ActivityChatBinding
 import com.hedvig.app.feature.chat.ChatInputType
 import com.hedvig.app.feature.chat.ParagraphInput
 import com.hedvig.app.feature.chat.viewmodel.ChatViewModel
-import com.hedvig.app.feature.marketing.ui.MarketingActivity
+import com.hedvig.app.feature.hanalytics.HAnalyticsExperimentManager
+import com.hedvig.app.feature.marketing.MarketingActivity
 import com.hedvig.app.feature.settings.SettingsActivity
 import com.hedvig.app.util.extensions.askForPermissions
 import com.hedvig.app.util.extensions.calculateNonFullscreenHeightDiff
@@ -56,6 +57,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
 
     private val imageLoader: ImageLoader by inject()
     private val authenticationTokenService: AuthenticationTokenService by inject()
+    private val experimentManager: HAnalyticsExperimentManager by inject()
 
     private var keyboardHeight = 0
     private var systemNavHeight = 0
@@ -147,6 +149,9 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
                     value = value,
                     onLinkHandleFailure = {
                         authenticationTokenService.authenticationToken = null
+                        lifecycleScope.launch {
+                            experimentManager.invalidateExperiments()
+                        }
                         startActivity(MarketingActivity.newInstance(this, true))
                     }
                 )
@@ -167,16 +172,6 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             openSendGif = {
                 scrollToBottom(true)
                 openGifPicker()
-            },
-            requestAudioPermission = {
-                askForPermissions(
-                    arrayOf(Manifest.permission.RECORD_AUDIO),
-                    REQUEST_AUDIO_PERMISSION
-                )
-            },
-            uploadRecording = { path ->
-                scrollToBottom(true)
-                chatViewModel.uploadClaim(path)
             },
             chatRecyclerView = binding.messages,
         )
@@ -466,9 +461,6 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             REQUEST_CAMERA_PERMISSION ->
                 if ((grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }))
                     startTakePicture()
-            REQUEST_AUDIO_PERMISSION ->
-                if ((grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }))
-                    binding.input.audioRecorderPermissionGranted()
             else -> {
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults)
             }
@@ -492,7 +484,6 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
 
         private const val REQUEST_WRITE_PERMISSION = 35134
         private const val REQUEST_CAMERA_PERMISSION = 54332
-        private const val REQUEST_AUDIO_PERMISSION = 12994
 
         private const val TAKE_PICTURE_REQUEST_CODE = 2371
 

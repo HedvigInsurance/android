@@ -19,7 +19,6 @@ class MockReferralsViewModel : ReferralsViewModel() {
                     if (!hasLoadedOnce) {
                         hasLoadedOnce = true
                         _data.value = ViewState.Success(
-                            showCampaignBar = true,
                             data = referralsData
                         )
                     } else {

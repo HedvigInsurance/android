@@ -1,5 +1,6 @@
 package com.hedvig.app.testdata.feature.home
 
+import com.hedvig.android.owldroid.type.PayinMethodStatus
 import com.hedvig.app.testdata.common.ContractStatus
 import com.hedvig.app.testdata.feature.home.builders.HomeDataBuilder
 import com.hedvig.app.testdata.feature.home.builders.ImportantMessageBuilder
@@ -39,10 +40,10 @@ val HOME_DATA_TERMINATED_WITH_ONGOING_CLAIMS =
         withClaimStatusCards = true
     ).build()
 
-val HOME_DATA_PENDING_NO_FIRST_NAME =
-    HomeDataBuilder(listOf(ContractStatus.PENDING), firstName = null).build()
-
 val HOME_DATA_ACTIVE = HomeDataBuilder(listOf(ContractStatus.ACTIVE)).build()
+
+val HOME_DATA_PAYIN_NEEDS_SETUP =
+    HomeDataBuilder(listOf(ContractStatus.ACTIVE), payinMethodStatus = PayinMethodStatus.NEEDS_SETUP).build()
 
 val HOME_DATA_TERMINATED_TODAY = HomeDataBuilder(listOf(ContractStatus.TERMINATED_TODAY)).build()
 

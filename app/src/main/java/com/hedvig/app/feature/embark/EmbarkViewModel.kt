@@ -119,7 +119,10 @@ abstract class EmbarkViewModel(
             val firstPassage = story.passages.first { it.id == story.startPassage }
 
             totalSteps = getPassagesLeft(firstPassage)
-            navigateToPassage(firstPassage.name)
+
+            viewModelScope.launch {
+                navigateToPassage(firstPassage.name)
+            }
         }
     }
 
@@ -138,11 +141,13 @@ abstract class EmbarkViewModel(
         if (apiFromAction != null) {
             callApi(apiFromAction)
         } else {
-            navigateToPassage(nextPassageName)
+            viewModelScope.launch {
+                navigateToPassage(nextPassageName)
+            }
         }
     }
 
-    private fun navigateToPassage(passageName: String) {
+    private suspend fun navigateToPassage(passageName: String) {
         val nextPassage = storyData.embarkStory?.passages?.find { it.name == passageName }
         val redirectPassage = getRedirectPassageAndPutInStore(nextPassage?.redirects)
         val location = nextPassage?.externalRedirect?.data?.location
@@ -234,7 +239,9 @@ abstract class EmbarkViewModel(
 
         when (result) {
             // TODO Handle errors
-            is GraphQLQueryResult.Error -> navigateToPassage(result.passageName)
+            is GraphQLQueryResult.Error -> viewModelScope.launch {
+                navigateToPassage(result.passageName)
+            }
             is GraphQLQueryResult.ValuesFromResponse -> {
                 result.arrayValues.forEach {
                     valueStore.put(it.first, it.second)
@@ -244,7 +251,9 @@ abstract class EmbarkViewModel(
                 }
 
                 if (result.passageName != null) {
-                    navigateToPassage(result.passageName)
+                    viewModelScope.launch {
+                        navigateToPassage(result.passageName)
+                    }
                 }
             }
         }
