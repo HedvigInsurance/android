@@ -5,7 +5,6 @@ import android.net.Uri
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.api.DefaultUpload
-import com.apollographql.apollo3.api.FileUpload
 import com.apollographql.apollo3.cache.normalized.apolloStore
 import com.apollographql.apollo3.cache.normalized.watch
 import com.hedvig.android.owldroid.graphql.AddReceiptToKeyGearItemMutation

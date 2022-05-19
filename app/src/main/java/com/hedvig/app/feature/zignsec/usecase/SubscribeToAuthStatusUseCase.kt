@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.zignsec.usecase
 
 import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.coroutines.toFlow
 import com.hedvig.android.owldroid.graphql.AuthStatusSubscription
 
 class SubscribeToAuthStatusUseCase(
