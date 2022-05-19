@@ -163,7 +163,7 @@ coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", ve
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 
-firebase-bom = "com.google.firebase:firebase-bom:30.0.1"
+firebase-bom = "com.google.firebase:firebase-bom:30.0.2"
 firebase-playServicesBase = { module = "com.google.android.gms:play-services-base" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 firebase-dynamicLinks = { module = "com.google.firebase:firebase-dynamic-links" }
