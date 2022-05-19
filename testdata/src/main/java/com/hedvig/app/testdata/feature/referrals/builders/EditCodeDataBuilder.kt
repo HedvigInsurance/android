@@ -11,8 +11,10 @@ data class EditCodeDataBuilder(
 ) {
     fun build() = UpdateReferralCampaignCodeMutation.Data(
         updateReferralCampaignCode = UpdateReferralCampaignCodeMutation.UpdateReferralCampaignCode(
+            __typename = "",
             asSuccessfullyUpdatedCode = if (variant == ResultVariant.SUCCESS) {
                 UpdateReferralCampaignCodeMutation.AsSuccessfullyUpdatedCode(
+                    __typename = "",
                     code = code
                 )
             } else {
@@ -20,23 +22,31 @@ data class EditCodeDataBuilder(
             },
             asCodeAlreadyTaken = if (variant == ResultVariant.ALREADY_TAKEN) {
                 UpdateReferralCampaignCodeMutation.AsCodeAlreadyTaken(
+                    __typename = "",
                     code = code
                 )
             } else {
                 null
             },
             asCodeTooLong = if (variant == ResultVariant.TOO_LONG) {
-                UpdateReferralCampaignCodeMutation.AsCodeTooLong(maxCharacters = maxCharacters)
+                UpdateReferralCampaignCodeMutation.AsCodeTooLong(
+                    __typename = "",
+                    maxCharacters = maxCharacters
+                )
             } else {
                 null
             },
             asCodeTooShort = if (variant == ResultVariant.TOO_SHORT) {
-                UpdateReferralCampaignCodeMutation.AsCodeTooShort(minCharacters = minCharacters)
+                UpdateReferralCampaignCodeMutation.AsCodeTooShort(
+                    __typename = "",
+                    minCharacters = minCharacters
+                )
             } else {
                 null
             },
             asExceededMaximumUpdates = if (variant == ResultVariant.EXCEEDED_MAX_UPDATES) {
                 UpdateReferralCampaignCodeMutation.AsExceededMaximumUpdates(
+                    __typename = "",
                     maximumNumberOfUpdates = maximumNumberOfUpdates
                 )
             } else {

@@ -1142,7 +1142,7 @@ val STORY_WITH_GRAPHQL_QUERY_API_AND_SINGLE_VARIABLE = EmbarkStoryDataBuilder(
     )
 ).build()
 
-val STORY_WITH_GRAPHQL_QUERY_API_AND_GENERATED_VARIABLE = EmbarkStoryDataBuilder(
+val STORY_WITH_GRAPHQL_QUERY_API_AND_GENERATED_VARIABLE: EmbarkStoryQuery.Data = EmbarkStoryDataBuilder(
     passages = listOf(
         STANDARD_FIRST_PASSAGE_BUILDER
             .build(),
