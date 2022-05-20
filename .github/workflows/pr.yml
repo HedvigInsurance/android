@@ -72,6 +72,10 @@ jobs:
         with:
           name: test-reports
           path: app/build/reports
+      - uses: test-summary/action@v1
+        with: 
+          paths: "app/build/outputs/androidTest-results/**/TEST-*.xml"
+        if: always()
   unit_test:
     runs-on: ubuntu-latest
     steps:
