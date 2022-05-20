@@ -22,7 +22,9 @@ class SingleVariableTest : TestCase() {
 
     @get:Rule
     val apolloMockServerRule = ApolloMockServerRule(
-        EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse { success(STORY_WITH_GRAPHQL_MUTATION_AND_SINGLE_VARIABLE) },
+        EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse {
+            success(STORY_WITH_GRAPHQL_MUTATION_AND_SINGLE_VARIABLE)
+        },
         VARIABLE_MUTATION to apolloResponse {
             success(jsonObjectOf("hello" to variables.getString("variable")))
         }

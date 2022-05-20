@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.referrals.tab
 
-import com.apollographql.apollo3.api.toJson
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
@@ -12,6 +11,7 @@ import com.hedvig.app.util.FeatureFlagRule
 import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.context
 import com.hedvig.app.util.featureflags.flags.Feature
+import com.hedvig.app.util.toJsonString
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.kakao.screen.Screen.Companion.onScreen
 import okhttp3.mockwebserver.Dispatcher
@@ -47,14 +47,12 @@ class ErrorTest : TestCase() {
                 override fun dispatch(request: RecordedRequest): MockResponse {
                     semaphore.acquire()
                     val body = request.body.peek().readUtf8()
-                    if (body.contains(LoggedInQuery.OPERATION_NAME.name())) {
+                    if (body.contains(LoggedInQuery.OPERATION_NAME)) {
                         semaphore.release()
-                        return MockResponse().setBody(
-                            LOGGED_IN_DATA.toJson()
-                        )
+                        return MockResponse().setBody(LOGGED_IN_DATA.toJsonString())
                     }
 
-                    if (body.contains(ReferralsQuery.OPERATION_NAME.name())) {
+                    if (body.contains(ReferralsQuery.OPERATION_NAME)) {
                         if (shouldFailureSemaphore) {
                             shouldFailureSemaphore = false
                             semaphore.release()
@@ -63,7 +61,7 @@ class ErrorTest : TestCase() {
 
                         semaphore.release()
                         return MockResponse().setBody(
-                            REFERRALS_DATA_WITH_NO_DISCOUNTS.toJson()
+                            REFERRALS_DATA_WITH_NO_DISCOUNTS.toJsonString()
                         )
                     }
 
