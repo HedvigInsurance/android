@@ -129,6 +129,10 @@ jobs:
         run: ./gradlew licenseReleaseReport
       - name: Unit tests
         run: ./gradlew testDebugUnitTest
+      - uses: test-summary/action@v1
+        with:
+          paths: "app/build/test-results/testDebugUnitTest/**/TEST-*.xml"
+        if: always()
   lint:
     runs-on: ubuntu-latest
     steps:
