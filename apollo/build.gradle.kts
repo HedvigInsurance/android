@@ -41,10 +41,10 @@ apollo {
         mapScalar("PaymentMethodsResponse", "com.adyen.checkout.components.model.PaymentMethodsApiResponse")
         sealedClassesForEnumsMatching.set(
             listOf(
-                "TypeOfContract",
-                "CrossSellType",
-                "ClaimStatus",
-                "EmbarkExternalRedirectLocation",
+//                "TypeOfContract",
+//                "CrossSellType",
+//                "ClaimStatus",
+//                "EmbarkExternalRedirectLocation",
             )
         )
     }
