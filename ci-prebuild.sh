@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-set +uexo pipefail
+set +uex
 
 cat <<EOT > lokalise.properties
 id=${LOKALISE_ID}
