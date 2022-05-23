@@ -40,6 +40,7 @@ data class OfferDataBuilder(
                 OfferQuery.PossibleVariation(
                     id = "test",
                     tag = "test tag",
+                    description = "test description",
                     bundle = OfferQuery.Bundle(
                         fragments = OfferQuery.Bundle.Fragments(
                             quoteBundleFragment = QuoteBundleFragment(

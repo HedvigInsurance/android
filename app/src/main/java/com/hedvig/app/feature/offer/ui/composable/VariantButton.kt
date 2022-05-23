@@ -33,7 +33,8 @@ import com.hedvig.app.util.compose.RadioButton
 fun VariantButton(
     id: String,
     title: String,
-    subTitle: String?,
+    tag: String?,
+    description: String?,
     cost: String,
     selected: Boolean,
     onClick: (id: String) -> Unit,
@@ -71,10 +72,16 @@ fun VariantButton(
                     },
                     spaceBetween = 10.dp,
                 )
-                if (subTitle != null) {
-                    Spacer(modifier = Modifier.height(10.dp))
+                if (tag != null) {
+                    Spacer(modifier = Modifier.height(4.dp))
                     CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                        Text(text = subTitle, style = MaterialTheme.typography.subtitle1)
+                        Text(text = tag, style = MaterialTheme.typography.caption)
+                    }
+                }
+                if (description != null) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                        Text(text = description, style = MaterialTheme.typography.subtitle1)
                     }
                 }
             }
@@ -95,7 +102,8 @@ fun VariantButtonPreview(
             VariantButton(
                 id = "id",
                 title = title,
-                subTitle = subtitle,
+                tag = subtitle,
+                description = "Test description",
                 cost = "12923 NOK",
                 selected = selected,
                 onClick = {}

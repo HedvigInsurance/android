@@ -52,7 +52,8 @@ object OfferItemsBuilder {
                 OfferItems.VariantButton(
                     id = it.id,
                     title = it.title,
-                    subTitle = it.tag,
+                    tag = it.tag,
+                    description = it.description,
                     price = it.bundle.cost.finalPremium,
                     isSelected = it.id == quoteBundleVariant.id,
                     onVariantSelected = onVariantSelected
