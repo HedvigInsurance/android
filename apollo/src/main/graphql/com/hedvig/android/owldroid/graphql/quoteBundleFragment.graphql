@@ -20,10 +20,6 @@ fragment QuoteBundleFragment on QuoteBundle {
     contractPerils(locale: $locale) {
       ...PerilFragment
     }
-    termsAndConditions(locale: $locale) {
-      displayName
-      url
-    }
     insurableLimits(locale: $locale) {
       ...InsurableLimitsFragment
     }
