@@ -85,10 +85,6 @@ data class QuoteBuilder(
             fragments = QuoteBundleFragment.DetailsTable.Fragments(detailsTable),
         ),
         contractPerils = perils,
-        termsAndConditions = QuoteBundleFragment.TermsAndConditions(
-            displayName = "Villkor",
-            url = termsAndConditionsUrl,
-        ),
         insurableLimits = insurableLimits,
         insuranceTerms = insuranceTerms,
         typeOfContract = typeOfContract,
