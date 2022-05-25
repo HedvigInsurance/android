@@ -36,11 +36,12 @@ fun ClaimStatusCards(
     onClaimCardShown: (String) -> Unit,
     claimStatusCardsUiState: NonEmptyList<ClaimStatusCardUiState>,
 ) {
-    val pagerState = rememberPagerState(claimStatusCardsUiState.size)
+    val pagerState = rememberPagerState()
     val areCardsClickable = goToDetailScreen != null
     Column {
         val screenWidth = LocalConfiguration.current.screenWidthDp.dp
         HorizontalPager(
+            count = claimStatusCardsUiState.size,
             state = pagerState,
             itemSpacing = 0.dp,
             modifier = Modifier.fillMaxWidth()

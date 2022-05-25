@@ -18,7 +18,7 @@ lokalise = "1.4.1"
 unusedResourcesRemover = "0.3.3"
 
 # Other versions sorted alphabetically
-accompanistPager = "0.18.0" # Use 18 until https://github.com/google/accompanist/issues/847 is fixed
+accompanistPager = "0.23.1" # Use 18 until https://github.com/google/accompanist/issues/847 is fixed
 accompanist = "0.23.1"
 androidx-compose = "1.1.1"
 androidx-composeThemeAdapter = "1.1.10"
