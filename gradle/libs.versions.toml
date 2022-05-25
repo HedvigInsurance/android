@@ -5,7 +5,7 @@ targetSdkVersion = "30"
 minSdkVersion = "23"
 
 # gradlePlugin versions
-androidBuildTools = "7.2.0"
+androidBuildTools = "7.2.1"
 apollo = "2.5.9"
 buildTimeTracker = "0.11.0"
 cacheFix = "2.5.3"
