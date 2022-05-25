@@ -22,17 +22,17 @@ class GetProviderDisplayNameUseCaseTest {
                 ProviderStatusQuery.Data(
                     ProviderStatusQuery.ExternalInsuranceProvider(
                         providerStatusV2 = listOf(
-                            ProviderStatusQuery.ProviderStatusV2("", "se-trygg-hansa", "Trygg-Hansa"),
-                            ProviderStatusQuery.ProviderStatusV2("", "se-folksam", "Folksam"),
-                            ProviderStatusQuery.ProviderStatusV2("", "se-if", "If"),
-                            ProviderStatusQuery.ProviderStatusV2("", "se-lansforsakringar", "Länsförsäkringar"),
-                            ProviderStatusQuery.ProviderStatusV2("", "se-moderna", "Moderna"),
-                            ProviderStatusQuery.ProviderStatusV2("", "se-dina", "Dina"),
-                            ProviderStatusQuery.ProviderStatusV2("", "se-ica", "ICA"),
-                            ProviderStatusQuery.ProviderStatusV2("", "se-gjensidige", "Gjensidige"),
-                            ProviderStatusQuery.ProviderStatusV2("", "se-trekronor", "Trekronor"),
-                            ProviderStatusQuery.ProviderStatusV2("", "no-demo", "Demo"),
-                            ProviderStatusQuery.ProviderStatusV2("", "se-demo", "Demo")
+                            ProviderStatusQuery.ProviderStatusV2("se-trygg-hansa", "Trygg-Hansa"),
+                            ProviderStatusQuery.ProviderStatusV2("se-folksam", "Folksam"),
+                            ProviderStatusQuery.ProviderStatusV2("se-if", "If"),
+                            ProviderStatusQuery.ProviderStatusV2("se-lansforsakringar", "Länsförsäkringar"),
+                            ProviderStatusQuery.ProviderStatusV2("se-moderna", "Moderna"),
+                            ProviderStatusQuery.ProviderStatusV2("se-dina", "Dina"),
+                            ProviderStatusQuery.ProviderStatusV2("se-ica", "ICA"),
+                            ProviderStatusQuery.ProviderStatusV2("se-gjensidige", "Gjensidige"),
+                            ProviderStatusQuery.ProviderStatusV2("se-trekronor", "Trekronor"),
+                            ProviderStatusQuery.ProviderStatusV2("no-demo", "Demo"),
+                            ProviderStatusQuery.ProviderStatusV2("se-demo", "Demo")
                         )
                     )
                 )
