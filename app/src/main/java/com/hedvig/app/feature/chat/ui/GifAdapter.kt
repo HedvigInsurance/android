@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
-import coil.clear
+import coil.dispose
 import coil.load
 import com.hedvig.android.owldroid.graphql.GifQuery
 import com.hedvig.app.R
@@ -37,7 +37,7 @@ class GifAdapter(
     }
 
     override fun onViewRecycled(holder: GifViewHolder) {
-        holder.binding.gifImage.clear()
+        holder.binding.gifImage.dispose()
     }
 
     class GifViewHolder(
