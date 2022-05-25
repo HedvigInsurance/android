@@ -1,6 +1,5 @@
 package com.hedvig.app.feature.offer.model
 
-import com.hedvig.android.owldroid.type.SignMethod
 import com.hedvig.app.R
 
 enum class CheckoutMethod {
@@ -19,15 +18,6 @@ fun CheckoutMethod.checkoutIconRes() = when (this) {
     CheckoutMethod.NORWEGIAN_BANK_ID, // Deprecated
     CheckoutMethod.DANISH_BANK_ID, // Deprecated
     CheckoutMethod.UNKNOWN -> null
-}
-
-fun SignMethod.toCheckoutMethod() = when (this) {
-    SignMethod.SWEDISH_BANK_ID -> CheckoutMethod.SWEDISH_BANK_ID
-    SignMethod.NORWEGIAN_BANK_ID -> CheckoutMethod.NORWEGIAN_BANK_ID
-    SignMethod.DANISH_BANK_ID -> CheckoutMethod.DANISH_BANK_ID
-    SignMethod.SIMPLE_SIGN -> CheckoutMethod.SIMPLE_SIGN
-    SignMethod.APPROVE_ONLY -> CheckoutMethod.APPROVE_ONLY
-    SignMethod.UNKNOWN__ -> CheckoutMethod.UNKNOWN
 }
 
 fun com.hedvig.android.owldroid.type.CheckoutMethod.toCheckoutMethod() = when (this) {
