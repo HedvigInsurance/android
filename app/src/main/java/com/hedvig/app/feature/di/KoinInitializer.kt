@@ -3,6 +3,7 @@ package com.hedvig.app.feature.di
 import android.content.Context
 import androidx.startup.Initializer
 import com.hedvig.app.adyenModule
+import com.hedvig.app.apolloClientModule
 import com.hedvig.app.applicationModule
 import com.hedvig.app.cacheManagerModule
 import com.hedvig.app.changeAddressModule
@@ -59,6 +60,7 @@ class KoinInitializer : Initializer<KoinApplication> {
         modules(
             listOf(
                 applicationModule,
+                apolloClientModule,
                 viewModelModule,
                 loggedInModule,
                 insuranceModule,

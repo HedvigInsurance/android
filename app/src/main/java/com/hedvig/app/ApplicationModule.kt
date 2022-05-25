@@ -243,7 +243,7 @@ fun isDebug() = BuildConfig.DEBUG || BuildConfig.APPLICATION_ID == "com.hedvig.t
 
 val applicationModule = module {
     single { androidApplication() as HedvigApplication }
-    single<MemoryCacheFactory> {
+    single<NormalizedCacheFactory> {
         MemoryCacheFactory(maxSizeBytes = 10 * 1024 * 1024)
     }
     single<OkHttpClient> {
@@ -295,7 +295,7 @@ val applicationModule = module {
         builder.build()
     }
     single<SunsettingInterceptor> { SunsettingInterceptor(get()) } bind ApolloInterceptor::class
-    single<ApolloClient> {
+    single<ApolloClient.Builder> {
         val builder: ApolloClient.Builder = ApolloClient.Builder()
         if (isDebug()) {
             builder.logCacheMisses { log: String ->
@@ -313,12 +313,15 @@ val applicationModule = module {
                 false
             }
         builder.normalizedCache(get<NormalizedCacheFactory>())
-
         builder.customScalarAdapters(CUSTOM_SCALAR_ADAPTERS)
-
         val interceptors = getAll<ApolloInterceptor>().distinct()
         builder.addInterceptors(interceptors)
+    }
+}
 
+val apolloClientModule = module {
+    single<ApolloClient> {
+        val builder: ApolloClient.Builder = get()
         builder.build()
     }
 }
