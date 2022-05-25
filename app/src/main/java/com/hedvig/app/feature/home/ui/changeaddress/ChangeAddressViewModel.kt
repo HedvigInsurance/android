@@ -59,12 +59,13 @@ class ChangeAddressViewModelImpl(
         )
     }
 
-    private suspend fun getUpComingAgreementState(onNoUpcomingChange: suspend () -> ViewState) =
-        when (val upcomingAgreement = getUpcomingAgreement()) {
+    private suspend fun getUpComingAgreementState(onNoUpcomingChange: suspend () -> ViewState): ViewState {
+        return when (val upcomingAgreement = getUpcomingAgreement.invoke()) {
             is UpcomingAgreementResult.NoUpcomingAgreementChange -> onNoUpcomingChange()
             is UpcomingAgreementResult.UpcomingAgreement -> ViewState.ChangeAddressInProgress(upcomingAgreement)
             is UpcomingAgreementResult.Error -> ViewState.UpcomingAgreementError(upcomingAgreement)
         }
+    }
 
     private suspend fun getSelfChangeState() = when (val selfChangeEligibility = addressChangeStoryId.invoke()) {
         is SelfChangeEligibilityResult.Eligible -> ViewState.SelfChangeAddress(selfChangeEligibility.embarkStoryId)
