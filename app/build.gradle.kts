@@ -205,6 +205,8 @@ dependencies {
     implementation(libs.apollo.httpCache)
     implementation(libs.apollo.normalizedCache)
     androidTestImplementation(libs.apollo.idlingResource)
+    testImplementation(libs.apollo.mockServer)
+    testImplementation(libs.apollo.testingSupport)
 
     implementation(libs.arrowKt.core)
 

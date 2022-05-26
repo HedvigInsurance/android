@@ -145,6 +145,9 @@ apollo-idlingResource = { module = "com.apollographql.apollo3:apollo-idling-reso
 apollo-normalizedCache = { module = "com.apollographql.apollo3:apollo-normalized-cache", version.ref = "apollo" }
 apollo-runtime = { module = "com.apollographql.apollo3:apollo-runtime", version.ref = "apollo" }
 
+apollo-mockServer = { module = "com.apollographql.apollo3:apollo-mockserver", version.ref = "apollo" }
+apollo-testingSupport = { module = "com.apollographql.apollo3:apollo-testing-support", version.ref = "apollo" }
+
 arrowKt-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrowKt" }
 
 assertK = { module = "com.willowtreeapps.assertk:assertk-jvm", version.ref = "assertK" }
