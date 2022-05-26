@@ -23,7 +23,7 @@ import org.koin.core.module.Module
 import org.koin.dsl.module
 import org.koin.test.KoinTest
 
-fun interface ApolloResultProvider {
+interface ApolloResultProvider {
     fun provideResult(withVariables: JSONObject): ApolloMockServerResult
 }
 
@@ -74,8 +74,8 @@ fun apolloMockServer(vararg mocks: Pair<String, ApolloResultProvider>): MockWebS
                 }
             }
 
-            private fun handleWebSocket() = MockResponse()
-                .withWebSocketUpgrade(object : WebSocketListener() {
+            private fun handleWebSocket(): MockResponse {
+                return MockResponse().withWebSocketUpgrade(object : WebSocketListener() {
                     override fun onMessage(webSocket: WebSocket, text: String) {
                         val message = JSONObject(text)
                         if (message.getString("type") == "connection_init") {
@@ -94,8 +94,10 @@ fun apolloMockServer(vararg mocks: Pair<String, ApolloResultProvider>): MockWebS
 
 inline fun apolloResponse(
     crossinline build: ApolloMockServerResponseBuilder.() -> ApolloMockServerResult,
-): ApolloResultProvider = ApolloResultProvider { vars ->
-    build(ApolloMockServerResponseBuilder(vars))
+): ApolloResultProvider = object : ApolloResultProvider {
+    override fun provideResult(withVariables: JSONObject): ApolloMockServerResult {
+        return ApolloMockServerResponseBuilder(withVariables).build()
+    }
 }
 
 sealed class ApolloMockServerResult {
@@ -114,19 +116,19 @@ class ApolloMockServerResponseBuilder(
     val variables: JSONObject,
 ) {
     fun internalServerError() = ApolloMockServerResult.InternalServerError
-    fun graphQLError(vararg errors: JSONObject) =
-        ApolloMockServerResult.GraphQLError(errors.toList())
 
-    fun success(operationData: Operation.Data): ApolloMockServerResult.GraphQLResponse {
-        return ApolloMockServerResult.GraphQLResponse(
-            operationData.toJsonString(
-                customScalarAdapters = CUSTOM_SCALAR_ADAPTERS,
-            )
-        )
+    fun graphQLError(vararg errors: JSONObject): ApolloMockServerResult.GraphQLError {
+        return ApolloMockServerResult.GraphQLError(errors.toList())
     }
 
-    fun success(data: JSONObject) =
-        ApolloMockServerResult.GraphQLResponse(jsonObjectOf("data" to data).toString())
+    fun success(operationData: Operation.Data): ApolloMockServerResult.GraphQLResponse {
+        val dataJsonString = operationData.toJsonStringWithData(CUSTOM_SCALAR_ADAPTERS)
+        return ApolloMockServerResult.GraphQLResponse(dataJsonString)
+    }
+
+    fun success(data: JSONObject): ApolloMockServerResult.GraphQLResponse {
+        return ApolloMockServerResult.GraphQLResponse(jsonObjectOf("data" to data).toString())
+    }
 }
 
 class ApolloMockServerRule(
@@ -172,6 +174,17 @@ private fun constructTestApolloModule(
             builder.idlingResource(idlingResource)
             builder.build()
         }
+    }
+}
+
+private fun Operation.Data.toJsonStringWithData(
+    customScalarAdapters: CustomScalarAdapters = CustomScalarAdapters.Empty,
+): String {
+    return buildJsonString {
+        beginObject()
+        name("data")
+        this@toJsonStringWithData.toJson(jsonWriter = this@buildJsonString, customScalarAdapters)
+        endObject()
     }
 }
 
