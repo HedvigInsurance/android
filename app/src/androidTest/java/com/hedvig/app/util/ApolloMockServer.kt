@@ -1,11 +1,16 @@
 package com.hedvig.app.util
 
+import androidx.test.espresso.IdlingRegistry
+import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.android.ApolloIdlingResource
+import com.apollographql.apollo3.android.idlingResource
 import com.apollographql.apollo3.api.CustomScalarAdapters
 import com.apollographql.apollo3.api.Operation
 import com.apollographql.apollo3.api.json.buildJsonString
 import com.apollographql.apollo3.api.toJson
 import com.hedvig.app.CUSTOM_SCALAR_ADAPTERS
 import com.hedvig.app.TestApplication
+import com.hedvig.app.apolloClientModule
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import okhttp3.mockwebserver.Dispatcher
@@ -14,6 +19,9 @@ import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import org.json.JSONObject
 import org.junit.rules.ExternalResource
+import org.koin.core.module.Module
+import org.koin.dsl.module
+import org.koin.test.KoinTest
 
 fun interface ApolloResultProvider {
     fun provideResult(withVariables: JSONObject): ApolloMockServerResult
@@ -55,7 +63,6 @@ fun apolloMockServer(vararg mocks: Pair<String, ApolloResultProvider>): MockWebS
                 val dataProvider =
                     mocks.firstOrNull { it.queryDocument == query }?.apolloResultProvider
                         ?: return super.peek()
-
                 return when (val result = dataProvider.provideResult(withVariables = variables)) {
                     ApolloMockServerResult.InternalServerError -> MockResponse().setResponseCode(500)
                     is ApolloMockServerResult.GraphQLError -> MockResponse().setBody(
@@ -80,6 +87,7 @@ fun apolloMockServer(vararg mocks: Pair<String, ApolloResultProvider>): MockWebS
                         }
                     }
                 })
+            }
         }
     }
 }
@@ -123,15 +131,47 @@ class ApolloMockServerResponseBuilder(
 
 class ApolloMockServerRule(
     vararg mocks: Pair<String, ApolloResultProvider>,
-) : ExternalResource() {
-    val webServer = apolloMockServer(*mocks)
+) : ExternalResource(), KoinTest {
+    private val mockWebServer = apolloMockServer(*mocks)
+    private val idlingResource = ApolloIdlingResource("ApolloIdlingResource")
+
+    private val originalApolloClientModule = apolloClientModule
+
+    private var module: Module? = null
 
     override fun before() {
-        webServer.start(TestApplication.PORT)
+        mockWebServer.start(TestApplication.PORT)
+        IdlingRegistry.getInstance().register(idlingResource)
+        val testApolloModule = constructTestApolloModule(
+            idlingResource,
+        )
+        module = testApolloModule
+        getKoin().apply {
+            unloadModules(listOf(originalApolloClientModule))
+            loadModules(listOf(testApolloModule))
+        }
     }
 
     override fun after() {
-        webServer.close()
+        mockWebServer.close()
+        val module = this@ApolloMockServerRule.module ?: return
+        getKoin().apply {
+            unloadModules(listOf(module))
+            loadModules(listOf(originalApolloClientModule))
+        }
+    }
+}
+
+@Suppress("RemoveExplicitTypeArguments")
+private fun constructTestApolloModule(
+    idlingResource: ApolloIdlingResource,
+): Module {
+    return module {
+        single<ApolloClient> {
+            val builder: ApolloClient.Builder = get()
+            builder.idlingResource(idlingResource)
+            builder.build()
+        }
     }
 }
 
