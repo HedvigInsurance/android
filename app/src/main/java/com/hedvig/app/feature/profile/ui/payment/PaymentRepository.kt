@@ -2,8 +2,6 @@ package com.hedvig.app.feature.profile.ui.payment
 
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
-import com.apollographql.apollo3.cache.http.HttpFetchPolicy
-import com.apollographql.apollo3.cache.http.httpFetchPolicy
 import com.apollographql.apollo3.cache.normalized.FetchPolicy
 import com.apollographql.apollo3.cache.normalized.apolloStore
 import com.apollographql.apollo3.cache.normalized.fetchPolicy
@@ -24,7 +22,6 @@ class PaymentRepository(
 
     suspend fun refresh(): ApolloResponse<PaymentQuery.Data> = apolloClient
         .query(paymentQuery)
-        .httpFetchPolicy(HttpFetchPolicy.NetworkOnly)
         .fetchPolicy(FetchPolicy.NetworkOnly)
         .execute()
 

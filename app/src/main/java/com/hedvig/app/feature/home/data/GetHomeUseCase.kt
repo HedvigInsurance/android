@@ -1,10 +1,7 @@
 package com.hedvig.app.feature.home.data
 
 import arrow.core.Either
-import com.apollographql.apollo3.ApolloCall
 import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.cache.http.HttpFetchPolicy
-import com.apollographql.apollo3.cache.http.httpFetchPolicy
 import com.apollographql.apollo3.cache.normalized.FetchPolicy
 import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.owldroid.graphql.HomeQuery
@@ -18,20 +15,13 @@ class GetHomeUseCase(
 ) {
 
     suspend operator fun invoke(forceReload: Boolean): Either<QueryResult.Error, HomeQuery.Data> {
-        return createHomeCall(forceReload = forceReload)
-            .safeQuery()
-            .toEither()
-    }
-
-    private fun createHomeCall(forceReload: Boolean): ApolloCall<HomeQuery.Data> {
         val apolloCall = apolloClient.query(homeQuery())
-
         if (forceReload) {
-            apolloCall
-                .httpFetchPolicy(HttpFetchPolicy.NetworkOnly)
-                .fetchPolicy(FetchPolicy.NetworkOnly)
+            apolloCall.fetchPolicy(FetchPolicy.NetworkOnly)
         }
         return apolloCall
+            .safeQuery()
+            .toEither()
     }
 
     private fun homeQuery() = HomeQuery(localeManager.defaultLocale(), localeManager.defaultLocale().rawValue)

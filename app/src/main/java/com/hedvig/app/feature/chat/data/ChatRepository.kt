@@ -8,8 +8,6 @@ import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.api.DefaultUpload
 import com.apollographql.apollo3.api.content
-import com.apollographql.apollo3.cache.http.HttpFetchPolicy
-import com.apollographql.apollo3.cache.http.httpFetchPolicy
 import com.apollographql.apollo3.cache.normalized.FetchPolicy
 import com.apollographql.apollo3.cache.normalized.apolloStore
 import com.apollographql.apollo3.cache.normalized.fetchPolicy
@@ -51,7 +49,6 @@ class ChatRepository(
         messagesQuery = ChatMessagesQuery()
         return apolloClient
             .query(messagesQuery)
-            .httpFetchPolicy(HttpFetchPolicy.NetworkOnly)
             .fetchPolicy(FetchPolicy.NetworkOnly)
             .watch()
     }
@@ -59,7 +56,6 @@ class ChatRepository(
     suspend fun messageIds() =
         apolloClient
             .query(ChatMessageIdQuery())
-            .httpFetchPolicy(HttpFetchPolicy.NetworkOnly)
             .fetchPolicy(FetchPolicy.NetworkOnly)
             .execute()
 

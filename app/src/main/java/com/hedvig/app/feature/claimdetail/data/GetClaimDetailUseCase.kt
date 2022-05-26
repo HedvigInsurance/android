@@ -5,8 +5,6 @@ import arrow.core.firstOrNone
 import arrow.core.flatMap
 import com.apollographql.apollo3.ApolloCall
 import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.cache.http.HttpFetchPolicy
-import com.apollographql.apollo3.cache.http.httpFetchPolicy
 import com.apollographql.apollo3.cache.normalized.FetchPolicy
 import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.owldroid.graphql.ClaimDetailsQuery
@@ -25,7 +23,6 @@ class GetClaimDetailUseCase(
     private val queryCall: ApolloCall<ClaimDetailsQuery.Data>
         get() = apolloClient
             .query(ClaimDetailsQuery(localeManager.defaultLocale()))
-            .httpFetchPolicy(HttpFetchPolicy.NetworkOnly)
             .fetchPolicy(FetchPolicy.NetworkOnly)
 
     suspend operator fun invoke(claimId: String): Either<Error, ClaimDetailsQuery.ClaimDetail> {
