@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.offer.ui.composable
+package com.hedvig.app.feature.offer.ui.composable.variants
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column

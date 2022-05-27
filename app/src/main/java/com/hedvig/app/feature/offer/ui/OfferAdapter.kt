@@ -43,8 +43,9 @@ import com.hedvig.app.feature.offer.model.quotebundle.getString
 import com.hedvig.app.feature.offer.model.quotebundle.toDrawable
 import com.hedvig.app.feature.offer.model.quotebundle.toString
 import com.hedvig.app.feature.offer.ui.changestartdate.ChangeDateBottomSheet
-import com.hedvig.app.feature.offer.ui.composable.VariantButton
 import com.hedvig.app.feature.offer.ui.composable.insurely.InsurelyCard
+import com.hedvig.app.feature.offer.ui.composable.variants.VariantButton
+import com.hedvig.app.feature.offer.ui.composable.variants.VariantHeader
 import com.hedvig.app.feature.table.generateTable
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.apollo.format
@@ -80,6 +81,7 @@ class OfferAdapter(
             onRemoveDiscount
         )
         VARIANT_BUTTON -> ViewHolder.VariantButton(ComposeView(parent.context), locale)
+        VARIANT_HEADER -> ViewHolder.VariantHeader(ComposeView(parent.context))
         R.layout.offer_fact_area -> ViewHolder.Facts(parent)
         R.layout.offer_switch -> ViewHolder.Switch(parent)
         R.layout.offer_footer -> ViewHolder.Footer(parent, openChat)
@@ -99,6 +101,7 @@ class OfferAdapter(
     override fun getItemViewType(position: Int): Int = when (getItem(position)) {
         is OfferItems.Header -> R.layout.offer_header
         is OfferItems.VariantButton -> VARIANT_BUTTON
+        is OfferItems.VariantHeader -> VARIANT_HEADER
         is OfferItems.Facts -> R.layout.offer_fact_area
         is OfferItems.CurrentInsurer -> R.layout.offer_switch
         is OfferItems.Footer -> R.layout.offer_footer
@@ -208,6 +211,25 @@ class OfferAdapter(
                         }
                     }
                     root.background = data.gradientType.toDrawable(itemView.context)
+                }
+            }
+        }
+
+        class VariantHeader(
+            private val composeView: ComposeView,
+        ) : ViewHolder(composeView) {
+            init {
+                composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            }
+
+            override fun bind(data: OfferItems) {
+                if (data !is OfferItems.VariantHeader) {
+                    return invalid(data)
+                }
+                composeView.setContent {
+                    HedvigTheme {
+                        VariantHeader()
+                    }
                 }
             }
         }
@@ -530,6 +552,7 @@ class OfferAdapter(
         const val PRICE_COMPARISON_HEADER = 2
         const val INSURELY_DIVIDER = 3
         const val VARIANT_BUTTON = 4
+        const val VARIANT_HEADER = 5
 
         class OfferDiffUtilCallback : DiffUtil.ItemCallback<OfferItems>() {
             override fun areItemsTheSame(oldItem: OfferItems, newItem: OfferItems): Boolean = when {

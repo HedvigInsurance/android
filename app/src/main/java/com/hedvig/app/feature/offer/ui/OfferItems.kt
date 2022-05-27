@@ -34,6 +34,8 @@ sealed class OfferItems {
         val quoteCartId: QuoteCartId?
     ) : OfferItems()
 
+    object VariantHeader : OfferItems()
+
     data class VariantButton(
         val id: String,
         val title: String,
