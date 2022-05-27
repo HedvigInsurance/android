@@ -66,7 +66,8 @@ data class PreviousInsurerActionBuilder(
                     fragments = EmbarkStoryQuery.Skip.Fragments(
                         EmbarkLinkFragment(
                             name = "test_skip",
-                            label = "Skip"
+                            label = "Skip",
+                            hidden = false,
                         )
                     )
                 ),

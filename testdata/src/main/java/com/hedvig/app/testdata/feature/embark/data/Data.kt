@@ -43,22 +43,26 @@ val STANDARD_FOURTH_MESSAGE = MessageBuilder(
 
 val STANDARD_FIRST_LINK = EmbarkLinkFragment(
     name = "TestPassage2",
-    label = "Another test passage"
+    label = "Another test passage",
+    hidden = false,
 )
 
 val STANDARD_SECOND_LINK = EmbarkLinkFragment(
     name = "TestPassage",
-    label = "Yet another test passage"
+    label = "Yet another test passage",
+    hidden = false,
 )
 
 val LINK_TO_THIRD_PASSAGE = EmbarkLinkFragment(
     name = "TestPassage3",
-    label = "A third test passage"
+    label = "A third test passage",
+    hidden = false,
 )
 
 val LINK_TO_FOURTH_PASSAGE = EmbarkLinkFragment(
     name = "TestPassage4",
-    label = "A fourth test passage"
+    label = "A fourth test passage",
+    hidden = false,
 )
 
 val STANDARD_FIRST_PASSAGE_BUILDER =
