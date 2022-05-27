@@ -8,14 +8,11 @@ import com.apollographql.apollo.coroutines.await
 import com.hedvig.android.owldroid.graphql.AdyenPaymentMethodsQuery
 import com.hedvig.android.owldroid.graphql.AdyenPayoutMethodsQuery
 import com.hedvig.android.owldroid.graphql.TokenizePayoutDetailsMutation
-import com.hedvig.app.util.featureflags.Feature
-import com.hedvig.app.util.featureflags.FeatureManager
 import org.json.JSONObject
 
 class AdyenRepository(
     private val apolloClient: ApolloClient,
     private val context: Context,
-    private val featureManager: FeatureManager,
 ) {
 
     suspend fun paymentMethods() = apolloClient
@@ -36,13 +33,9 @@ class AdyenRepository(
         .await()
 
     suspend fun paymentMethodsResponse(): PaymentMethodsApiResponse? {
-        return if (featureManager.isFeatureEnabled(Feature.CONNECT_PAYMENT_AT_SIGN)) {
-            paymentMethods()
-                .data
-                ?.availablePaymentMethods
-                ?.paymentMethodsResponse
-        } else {
-            null
-        }
+        return paymentMethods()
+            .data
+            ?.availablePaymentMethods
+            ?.paymentMethodsResponse
     }
 }

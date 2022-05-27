@@ -8,6 +8,7 @@ import android.os.LocaleList
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import com.hedvig.app.R
+import com.hedvig.app.feature.settings.SettingsActivity.Companion.SETTING_LANGUAGE
 import java.util.Locale
 
 enum class Language {
@@ -117,7 +118,7 @@ enum class Language {
 
         fun persist(context: Context, language: Language) {
             PreferenceManager.getDefaultSharedPreferences(context).edit(commit = true) {
-                putString(SettingsActivity.SETTING_LANGUAGE, language.toString())
+                putString(SETTING_LANGUAGE, language.toString())
             }
         }
 
@@ -129,7 +130,8 @@ enum class Language {
         private fun getLanguageFromSharedPreferences(context: Context, market: Market): Language {
             val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
             val firstAvailableLanguage = getAvailableLanguages(market).first().toString()
-            val selectedLanguage = sharedPref.getString("language", firstAvailableLanguage) ?: firstAvailableLanguage
+            val selectedLanguage =
+                sharedPref.getString(SETTING_LANGUAGE, firstAvailableLanguage) ?: firstAvailableLanguage
 
             return if (selectedLanguage == SETTING_SYSTEM_DEFAULT) {
                 from(firstAvailableLanguage)

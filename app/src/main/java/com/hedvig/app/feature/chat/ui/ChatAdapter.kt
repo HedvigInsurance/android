@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
-import coil.clear
+import coil.dispose
 import coil.load
 import com.hedvig.android.owldroid.fragment.ChatMessageFragment
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
@@ -213,9 +213,9 @@ class ChatAdapter(
 
     override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
         when (holder) {
-            is HedvigGiphyMessage -> holder.binding.messageImage.clear()
-            is GiphyUserMessage -> holder.binding.messageImage.clear()
-            is ImageUploadUserMessage -> holder.binding.uploadedImage.clear()
+            is HedvigGiphyMessage -> holder.binding.messageImage.dispose()
+            is GiphyUserMessage -> holder.binding.messageImage.dispose()
+            is ImageUploadUserMessage -> holder.binding.uploadedImage.dispose()
         }
     }
 

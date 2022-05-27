@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.offer.usecase
 
 import arrow.core.Either
+import com.hedvig.app.feature.embark.util.SelectedContractType
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.model.OfferModel
 import com.hedvig.app.feature.offer.model.QuoteBundleVariant
@@ -17,22 +18,38 @@ class ObserveOfferStateUseCase(
 
     private val selectedVariantId = MutableStateFlow<String?>(null)
 
-    fun observeOfferState(quoteCartId: QuoteCartId): Flow<Either<ErrorMessage, OfferState>> {
-        return offerRepository
-            .offerFlow
-            .combine(selectedVariantId) { offer: Either<ErrorMessage, OfferModel>, variantId: String? ->
-                offer.map { offerModel ->
-
-                    val bundleVariant = offerModel.variants
-                        .takeIf { variantId != null }
-                        ?.find { it.id == variantId }
-                        ?: offerModel.variants.first()
-
-                    OfferState(offerModel, bundleVariant)
-                }
-            }.onStart {
-                offerRepository.queryAndEmitOffer(quoteCartId)
+    fun observeOfferState(
+        quoteCartId: QuoteCartId,
+        selectedContractTypes: List<SelectedContractType>
+    ): Flow<Either<ErrorMessage, OfferState>> = offerRepository
+        .offerFlow
+        .combine(selectedVariantId) { offer: Either<ErrorMessage, OfferModel>, selectedVariantId: String? ->
+            offer.map { offerModel ->
+                val bundleVariant = offerModel.getBundleVariant(selectedVariantId, selectedContractTypes)
+                OfferState(offerModel, bundleVariant)
             }
+        }.onStart {
+            offerRepository.queryAndEmitOffer(quoteCartId)
+        }
+
+    private fun OfferModel.getBundleVariant(
+        selectedVariantId: String?,
+        selectedContractTypes: List<SelectedContractType>
+    ): QuoteBundleVariant {
+        val bundleVariant = if (selectedVariantId != null) {
+            variants.find { it.id == selectedVariantId }
+        } else {
+            getPreselectedBundleVariant(selectedContractTypes)
+        }
+        return bundleVariant ?: variants.first()
+    }
+
+    private fun OfferModel.getPreselectedBundleVariant(
+        selectedContractTypes: List<SelectedContractType>
+    ) = variants.find {
+        val insuranceTypesInBundle = it.bundle.quotes.map { it.insuranceType }.toSet()
+        val selectedContractTypeIds = selectedContractTypes.map { it.id }.toSet()
+        selectedContractTypeIds == insuranceTypesInBundle
     }
 
     fun selectedVariant(variantId: String) {

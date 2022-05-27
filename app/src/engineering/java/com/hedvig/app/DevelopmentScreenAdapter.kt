@@ -109,9 +109,7 @@ class DevelopmentScreenAdapter(
                 private val REAL_MODULES =
                     listOf(
                         insuranceModule,
-                        marketingModule,
                         offerModule,
-                        profileModule,
                         paymentModule,
                         keyGearModule,
                         adyenModule

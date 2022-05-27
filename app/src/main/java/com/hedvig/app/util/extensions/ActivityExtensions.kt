@@ -1,6 +1,7 @@
 package com.hedvig.app.util.extensions
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.LabeledIntent
 import android.content.pm.PackageManager
@@ -20,7 +21,6 @@ import com.google.android.play.core.review.ReviewManagerFactory
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticateDialog
 import com.hedvig.app.authenticate.LoginDialog
-import com.hedvig.app.feature.offer.ui.OfferActivity
 import com.hedvig.app.util.extensions.view.setupToolbar
 import e
 
@@ -145,17 +145,23 @@ private fun List<ResolveInfo>.toLabeledIntentArray(packageManager: PackageManage
     LabeledIntent(intent, packageName, it.loadLabel(packageManager), it.icon)
 }.toTypedArray()
 
-fun AppCompatActivity.handleSingleSelectLink(value: String) = when (value) {
+fun AppCompatActivity.handleSingleSelectLink(
+    value: String,
+    onLinkHandleFailure: () -> Unit,
+) = when (value) {
     "message.forslag.dashboard" -> {
-        startActivity(
-            OfferActivity.newInstance(
-                context = this,
-                shouldShowOnNextAppStart = true
-            ).also {
-                it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                it.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        e { "Can't handle going to the offer page without a QuoteCartId from link: `$value`" }
+        AlertDialog.Builder(this)
+            .setTitle(R.string.error_dialog_title)
+            .setMessage(getString(R.string.NETWORK_ERROR_ALERT_MESSAGE))
+            .setPositiveButton(R.string.error_dialog_button) { _, _ ->
+                // no-op. Action handled by `setOnDismissListener`
             }
-        )
+            .setOnDismissListener {
+                onLinkHandleFailure()
+            }
+            .create()
+            .show()
     }
     "message.bankid.start", "message.bankid.autostart.respond", "message.bankid.autostart.respond.two" -> {
         LoginDialog().show(supportFragmentManager, AuthenticateDialog.TAG)
@@ -179,7 +185,7 @@ fun Activity.makeACall(uri: Uri) {
 }
 
 fun Activity.showReviewDialog(
-    onComplete: () -> Unit
+    onComplete: () -> Unit = {}
 ) {
     val manager = ReviewManagerFactory.create(this)
     val request = manager.requestReviewFlow()

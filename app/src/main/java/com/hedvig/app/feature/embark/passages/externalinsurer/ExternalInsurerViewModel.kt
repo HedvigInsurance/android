@@ -1,7 +1,11 @@
 package com.hedvig.app.feature.embark.passages.externalinsurer
 
+import android.content.res.Resources
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hedvig.app.R
+import com.hedvig.app.util.featureflags.FeatureManager
+import com.hedvig.app.util.featureflags.flags.Feature
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,7 +15,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ExternalInsurerViewModel(
-    private val getInsuranceProvidersUseCase: GetInsuranceProvidersUseCase
+    private val getInsuranceProvidersUseCase: GetInsuranceProvidersUseCase,
+    private val featureManager: FeatureManager,
 ) : ViewModel() {
 
     private val _events = Channel<Event>(Channel.UNLIMITED)
@@ -39,10 +44,27 @@ class ExternalInsurerViewModel(
         _viewState.update { it.copy(selectedProvider = provider) }
     }
 
+    fun continueWithProvider(provider: InsuranceProvider, resources: Resources) {
+        viewModelScope.launch {
+            if (provider.collectionId == null ||
+                provider.collectionId == resources.getString(R.string.EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION)
+            ) {
+                _events.trySend(Event.CantAutomaticallyMoveInsurance)
+                return@launch
+            }
+            if (featureManager.isFeatureEnabled(Feature.EXTERNAL_DATA_COLLECTION).not()) {
+                _events.trySend(Event.SkipDataCollection)
+                return@launch
+            }
+            _events.trySend(Event.AskForPrice(provider.collectionId, provider.name))
+        }
+    }
+
     sealed class Event {
-        data class Error(
-            val errorResult: InsuranceProvidersResult.Error
-        ) : Event()
+        data class Error(val errorResult: InsuranceProvidersResult.Error) : Event()
+        data class AskForPrice(val collectionId: String, val providerName: String) : Event()
+        object CantAutomaticallyMoveInsurance : Event()
+        object SkipDataCollection : Event()
     }
 
     data class ViewState(

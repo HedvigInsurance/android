@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
+import coil.ImageLoader
 import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.BaseActivity
@@ -34,6 +35,7 @@ class TerminatedContractsActivity : BaseActivity(R.layout.terminated_contracts_a
     private val binding by viewBinding(TerminatedContractsActivityBinding::bind)
     private val model: TerminatedContractsViewModel by viewModel()
     private val marketManager: MarketManager by inject()
+    private val imageLoader: ImageLoader by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         window.requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
@@ -48,7 +50,7 @@ class TerminatedContractsActivity : BaseActivity(R.layout.terminated_contracts_a
             toolbar.applyStatusBarInsets()
             recycler.applyNavigationBarInsets()
             toolbar.setNavigationOnClickListener { onBackPressed() }
-            val adapter = InsuranceAdapter(marketManager, model::load)
+            val adapter = InsuranceAdapter(marketManager, model::load, {}, imageLoader)
             recycler.adapter = adapter
             model
                 .viewState
@@ -93,12 +95,11 @@ class TerminatedContractsViewModel(
 
     fun load() {
         viewModelScope.launch {
-            when (val result = getContractsUseCase.invoke()) {
-                is GetContractsUseCase.InsuranceResult.Error -> _viewState.value = ViewState.Error
-                is GetContractsUseCase.InsuranceResult.Insurance -> {
-                    _viewState.value = ViewState.Success(items(result.insurance))
-                }
-            }
+            _viewState.value = getContractsUseCase.invoke()
+                .fold(
+                    ifLeft = { ViewState.Error },
+                    ifRight = { insuranceQueryData -> ViewState.Success(items(insuranceQueryData)) }
+                )
         }
     }
 

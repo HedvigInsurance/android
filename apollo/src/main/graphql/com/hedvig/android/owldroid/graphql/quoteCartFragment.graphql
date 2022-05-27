@@ -3,6 +3,7 @@ fragment QuoteCartFragment on QuoteCart {
   bundle {
     possibleVariations {
       id
+      description(locale: $locale)
       tag(locale: $locale)
       bundle {
         ...QuoteBundleFragment

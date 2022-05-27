@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import coil.ImageLoader
 import com.google.android.material.tabs.TabLayoutMediator
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
@@ -44,6 +45,7 @@ class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
             ?: throw IllegalArgumentException("Programmer error: ID not provided to ${this.javaClass.name}")
     private val model: ContractDetailViewModel by viewModel { parametersOf(contractId) }
     private val marketManager: MarketManager by inject()
+    private val imageLoader: ImageLoader by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         postponeEnterTransition()
@@ -101,7 +103,7 @@ class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
                             content.isVisible = true
                             error.root.isVisible = false
                             val contract = viewState.state.contractCardViewState
-                            contract.bindTo(cardContainer, marketManager)
+                            contract.bindTo(cardContainer, marketManager, imageLoader)
                         }
                     }
                     startPostponedEnterTransition()

@@ -25,7 +25,6 @@ import com.hedvig.app.feature.embark.passages.previousinsurer.InsurerProviderBot
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerParameter
 import com.hedvig.app.util.extensions.showErrorDialog
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
-import com.hedvig.app.util.extensions.viewLifecycle
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.hedvig.app.util.whenApiVersion
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
@@ -63,7 +62,7 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
         postponeEnterTransition()
 
         viewLifecycleScope.launch {
-            viewLifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     viewModel.events.collect { event ->
                         when (event) {
@@ -71,6 +70,17 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
                                 message = getString(event.errorResult.getStringRes()),
                                 positiveAction = {}
                             )
+                            is ExternalInsurerViewModel.Event.AskForPrice -> {
+                                startAskForPrice(event.collectionId, event.providerName)
+                            }
+                            ExternalInsurerViewModel.Event.CantAutomaticallyMoveInsurance -> {
+                                MaterialAlertDialogBuilder(requireContext())
+                                    .setTitle(getString(R.string.EXTERNAL_INSURANCE_PROVIDER_ALERT_TITLE))
+                                    .setMessage(getString(R.string.EXTERNAL_INSURANCE_PROVIDER_ALERT_MESSAGE))
+                                    .setPositiveButton(getString(R.string.ALERT_OK)) { _, _ -> continueEmbark() }
+                                    .show()
+                            }
+                            ExternalInsurerViewModel.Event.SkipDataCollection -> continueEmbark()
                         }
                     }
                 }
@@ -87,8 +97,8 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
 
                     binding.continueButton.isEnabled = viewState.canContinue()
                     binding.continueButton.setOnClickListener {
-                        viewState.selectedProvider?.let {
-                            continueWithProvider(it)
+                        viewState.selectedProvider?.let { selectedInsuranceProvider ->
+                            viewModel.continueWithProvider(selectedInsuranceProvider, resources)
                         }
                     }
                 }
@@ -150,20 +160,6 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
             }
         )
         fragment.show(parentFragmentManager, InsurerProviderBottomSheet.TAG)
-    }
-
-    private fun continueWithProvider(provider: InsuranceProvider) {
-        if (provider.collectionId == getString(R.string.EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION) ||
-            provider.collectionId == null
-        ) {
-            MaterialAlertDialogBuilder(requireContext())
-                .setTitle(getString(R.string.EXTERNAL_INSURANCE_PROVIDER_ALERT_TITLE))
-                .setMessage(getString(R.string.EXTERNAL_INSURANCE_PROVIDER_ALERT_MESSAGE))
-                .setPositiveButton(getString(R.string.ALERT_OK)) { _, _ -> continueEmbark() }
-                .show()
-        } else {
-            startAskForPrice(provider.collectionId, provider.name)
-        }
     }
 
     private fun continueEmbark() {

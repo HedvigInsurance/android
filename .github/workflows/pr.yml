@@ -6,58 +6,29 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Setup JDK 11
-        uses: actions/setup-java@v2.5.0
+        uses: actions/setup-java@v3.3.0
         with:
           java-version: '11'
           distribution: 'zulu'
           cache: 'gradle'
-      - name: Create Lokalise secret
-        run: |
-          cat <<EOT > lokalise.properties
-          id=${LOKALISE_ID}
-          token=${LOKALISE_TOKEN}
-          EOT
-        env:
-          LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
-          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
-      - name: Create Adyen secret
-        run: |
-          cat <<EOT > app/src/debug/res/values/adyen.xml
-          <?xml version="1.0" encoding="utf-8"?>
-          <resources>
-              <string name="ADYEN_CLIENT_KEY" translatable="false">${ADYEN_CLIENT_KEY}</string>
-          </resources>
-          EOT
-        env:
-          ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_CLIENT_KEY_TEST }}
-      - name: Create Shake secret
-        run: |
-          cat <<EOT > app/src/debug/res/values/shake.xml
-          <?xml version="1.0" encoding="utf-8" ?>
-          <resources>
-              <string name="SHAKE_CLIENT_ID" translatable="false">${SHAKE_CLIENT_ID}</string>
-              <string name="SHAKE_CLIENT_SECRET" translatable="false">${SHAKE_CLIENT_SECRET}</string>
-          </resources>
-          EOT
-        env:
-          SHAKE_CLIENT_ID: ${{ secrets.SHAKE_CLIENT_ID }}
-          SHAKE_CLIENT_SECRET: ${{ secrets.SHAKE_CLIENT_SECRET }}
-      - uses: actions/cache@v1
+      - uses: actions/cache@v3
         with:
           path: ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
-      - uses: actions/cache@v1
+      - uses: actions/cache@v3
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
-      - name: Download Apollo Schema
-        run: ./gradlew apollo:downloadApolloSchema
-      - name: Download Translations
-        run: ./gradlew app:downloadStrings
-      - name: Generate License-report
-        run: ./gradlew licenseReleaseReport
+      - name: Prebuild
+        run: ./ci-prebuild.sh
+        env:
+          LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
+          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+          ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_CLIENT_KEY_TEST }}
+          SHAKE_CLIENT_ID: ${{ secrets.SHAKE_CLIENT_ID }}
+          SHAKE_CLIENT_SECRET: ${{ secrets.SHAKE_CLIENT_SECRET }}
       - name: Instrumentation tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -68,130 +39,81 @@ jobs:
           script: ./gradlew connectedDebugAndroidTest
       - name: Upload test reports
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: test-reports
           path: app/build/reports
+      - uses: test-summary/action@v1
+        with: 
+          paths: "app/build/outputs/androidTest-results/**/TEST-*.xml"
+        if: always()
   unit_test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup JDK 11
-        uses: actions/setup-java@v2.5.0
+        uses: actions/setup-java@v3.3.0
         with:
           java-version: '11'
           distribution: 'zulu'
           cache: 'gradle'
-      - name: Create Lokalise secret
-        run: |
-          cat <<EOT > lokalise.properties
-          id=${LOKALISE_ID}
-          token=${LOKALISE_TOKEN}
-          EOT
-        env:
-          LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
-          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
-      - name: Create Adyen secret
-        run: |
-          cat <<EOT > app/src/debug/res/values/adyen.xml
-          <?xml version="1.0" encoding="utf-8"?>
-          <resources>
-              <string name="ADYEN_CLIENT_KEY" translatable="false">${ADYEN_CLIENT_KEY}</string>
-          </resources>
-          EOT
-        env:
-          ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_CLIENT_KEY_TEST }}
-      - name: Create Shake secret
-        run: |
-          cat <<EOT > app/src/debug/res/values/shake.xml
-          <?xml version="1.0" encoding="utf-8" ?>
-          <resources>
-              <string name="SHAKE_CLIENT_ID" translatable="false">${SHAKE_CLIENT_ID}</string>
-              <string name="SHAKE_CLIENT_SECRET" translatable="false">${SHAKE_CLIENT_SECRET}</string>
-          </resources>
-          EOT
-        env:
-          SHAKE_CLIENT_ID: ${{ secrets.SHAKE_CLIENT_ID }}
-          SHAKE_CLIENT_SECRET: ${{ secrets.SHAKE_CLIENT_SECRET }}
-      - uses: actions/cache@v1
+      - uses: actions/cache@v3
         with:
           path: ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
-      - uses: actions/cache@v1
+      - uses: actions/cache@v3
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
-      - name: Download Apollo Schema
-        run: ./gradlew apollo:downloadApolloSchema
-      - name: Download Translations
-        run: ./gradlew app:downloadStrings
-      - name: Generate License-report
-        run: ./gradlew licenseReleaseReport
+      - name: Prebuild
+        run: ./ci-prebuild.sh
+        env:
+          LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
+          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+          ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_CLIENT_KEY_TEST }}
+          SHAKE_CLIENT_ID: ${{ secrets.SHAKE_CLIENT_ID }}
+          SHAKE_CLIENT_SECRET: ${{ secrets.SHAKE_CLIENT_SECRET }}
       - name: Unit tests
         run: ./gradlew testDebugUnitTest
+      - uses: test-summary/action@v1
+        with:
+          paths: "app/build/test-results/testDebugUnitTest/**/TEST-*.xml"
+        if: always()
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup JDK 11
-        uses: actions/setup-java@v2.5.0
+        uses: actions/setup-java@v3.3.0
         with:
           java-version: '11'
           distribution: 'zulu'
           cache: 'gradle'
-      - name: Create Lokalise secret
-        run: |
-          cat <<EOT > lokalise.properties
-          id=${LOKALISE_ID}
-          token=${LOKALISE_TOKEN}
-          EOT
-        env:
-          LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
-          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
-      - name: Create Adyen secret
-        run: |
-          cat <<EOT > app/src/debug/res/values/adyen.xml
-          <?xml version="1.0" encoding="utf-8"?>
-          <resources>
-              <string name="ADYEN_CLIENT_KEY" translatable="false">${ADYEN_CLIENT_KEY}</string>
-          </resources>
-          EOT
-        env:
-          ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_CLIENT_KEY_TEST }}
-      - name: Create Shake secret
-        run: |
-          cat <<EOT > app/src/debug/res/values/shake.xml
-          <?xml version="1.0" encoding="utf-8" ?>
-          <resources>
-              <string name="SHAKE_CLIENT_ID" translatable="false">${SHAKE_CLIENT_ID}</string>
-              <string name="SHAKE_CLIENT_SECRET" translatable="false">${SHAKE_CLIENT_SECRET}</string>
-          </resources>
-          EOT
-        env:
-          SHAKE_CLIENT_ID: ${{ secrets.SHAKE_CLIENT_ID }}
-          SHAKE_CLIENT_SECRET: ${{ secrets.SHAKE_CLIENT_SECRET }}
-      - uses: actions/cache@v1
+      - uses: actions/cache@v3
         with:
           path: ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
-      - uses: actions/cache@v1
+      - uses: actions/cache@v3
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
-      - name: Download Apollo Schema
-        run: ./gradlew apollo:downloadApolloSchema
-      - name: Download Translations
-        run: ./gradlew app:downloadStrings
-      - name: Generate License-report
-        run: ./gradlew licenseReleaseReport
+      - name: Prebuild
+        run: ./ci-prebuild.sh
+        env:
+          LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
+          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+          ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_CLIENT_KEY_TEST }}
+          SHAKE_CLIENT_ID: ${{ secrets.SHAKE_CLIENT_ID }}
+          SHAKE_CLIENT_SECRET: ${{ secrets.SHAKE_CLIENT_SECRET }}
       - run: ./gradlew lintDebug
-      - uses: yutailang0119/action-android-lint@v1.0.2
+      - uses: yutailang0119/action-android-lint@v3.0.0
         with:
-          xml_path: app/build/reports/lint-results-debug.xml
+          report-path: app/build/reports/lint-results-debug.xml
+        continue-on-error: true
   ktlint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: Homebrew/actions/setup-homebrew@master
       - run: sudo apt-get update && sudo apt-get install libxml2-utils
       - run: brew install ktlint --build-from-source ktlint
@@ -199,7 +121,7 @@ jobs:
         continue-on-error: true
         run: |
           ktlint "\!**/generated/**" "**/src/**/*.kt*" --reporter=checkstyle,output=build/ktlint-report-in-checkstyle-format.xml
-      - uses: yutailang0119/action-ktlint@v2.0.0
+      - uses: yutailang0119/action-ktlint@v3.0.0
         with:
           report-path: build/ktlint-report-in-checkstyle-format.xml
       - run: |

@@ -93,6 +93,7 @@ class TestOfferModelBuilder(
             QuoteBundleVariant(
                 id = "1234",
                 title = "Test variant",
+                description = "Test description",
                 tag = "Test tag",
                 bundle = QuoteBundle(
                     name = bundleName,
@@ -107,7 +108,8 @@ class TestOfferModelBuilder(
                             detailsTable = table,
                             perils = perils,
                             insurableLimits = insurableLimits,
-                            insuranceTerms = documents
+                            insuranceTerms = documents,
+                            insuranceType = "TEST",
                         )
                     ),
                     cost = BundleCost(
@@ -125,6 +127,6 @@ class TestOfferModelBuilder(
         checkoutMethod = checkoutMethod,
         campaign = campaign,
         checkout = null,
-        paymentConnection = null
+        paymentMethodsApiResponse = null
     )
 }

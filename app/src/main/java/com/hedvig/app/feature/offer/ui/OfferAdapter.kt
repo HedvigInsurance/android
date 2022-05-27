@@ -252,7 +252,8 @@ class OfferAdapter(
                         VariantButton(
                             id = data.id,
                             title = data.title,
-                            subTitle = data.subTitle,
+                            tag = data.tag,
+                            description = data.description,
                             cost = data.price.format(locale),
                             selected = data.isSelected,
                             onClick = data.onVariantSelected

@@ -4,8 +4,10 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.flowWithLifecycle
+import coil.ImageLoader
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentInsuranceBinding
+import com.hedvig.app.feature.crossselling.ui.detail.handleAction
 import com.hedvig.app.feature.insurance.ui.InsuranceAdapter
 import com.hedvig.app.feature.insurance.ui.InsuranceModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
@@ -24,6 +26,7 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
     private val insuranceViewModel: InsuranceViewModel by sharedViewModel()
     private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
     private val marketManager: MarketManager by inject()
+    private val imageLoader: ImageLoader by inject()
     private val binding by viewBinding(FragmentInsuranceBinding::bind)
     private var scroll = 0
 
@@ -42,7 +45,12 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
                 )
             )
             itemAnimator = ViewHolderReusingDefaultItemAnimator()
-            adapter = InsuranceAdapter(marketManager, insuranceViewModel::load)
+            adapter = InsuranceAdapter(
+                marketManager,
+                insuranceViewModel::load,
+                insuranceViewModel::onClickCrossSell,
+                imageLoader
+            )
         }
 
         binding.swipeToRefresh.setOnRefreshListener {
@@ -52,7 +60,14 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
         insuranceViewModel
             .viewState
             .flowWithLifecycle(viewLifecycle)
-            .onEach { bind(it) }
+            .onEach { viewState ->
+                val action = (viewState as? InsuranceViewModel.ViewState.Success)?.action
+                if (action != null) {
+                    insuranceViewModel.crossSellActionOpened()
+                    handleAction(requireContext(), action)
+                }
+                bind(viewState)
+            }
             .launchIn(viewLifecycleScope)
     }
 

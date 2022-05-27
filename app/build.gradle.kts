@@ -3,17 +3,17 @@ import java.util.Properties
 
 plugins {
     id("com.android.application")
-    id("com.google.gms.google-services")
-    id("com.google.firebase.crashlytics")
+    alias(libs.plugins.googleServices)
+    alias(libs.plugins.crashlytics)
     id("kotlin-android")
     id("kotlin-parcelize")
     id("kotlin-kapt")
-    id("com.hedvig.android.lokalise")
+    alias(libs.plugins.lokalise)
+    alias(libs.plugins.license)
     kotlin("plugin.serialization") version "1.6.10"
 }
 
-apply(plugin = "com.jaredsburrows.license")
-configure<com.jaredsburrows.license.LicenseReportExtension> {
+licenseReport {
     copyHtmlReportToAssets = true
 }
 
@@ -41,7 +41,7 @@ android {
         applicationId = "com.hedvig"
 
         versionCode = 43
-        versionName = "6.5.6"
+        versionName = "6.7.0"
 
         vectorDrawables.useSupportLibrary = true
 
@@ -51,7 +51,7 @@ android {
     }
 
     lint {
-        isAbortOnError = false
+        abortOnError = false
     }
 
     packagingOptions {
@@ -161,6 +161,8 @@ dependencies {
     implementation(libs.coroutines.android)
     testImplementation(libs.coroutines.test)
 
+    implementation(libs.serialization)
+
     implementation(libs.androidx.other.appCompat)
     implementation(libs.androidx.other.media)
     implementation(libs.androidx.other.constraintLayout)
@@ -195,6 +197,7 @@ dependencies {
     implementation(libs.accompanist.pagerIndicators)
     implementation(libs.accompanist.insets)
     implementation(libs.accompanist.insetsUi)
+    implementation(libs.accompanist.systemUiController)
 
     implementation(libs.arrowKt.core)
 
@@ -203,11 +206,10 @@ dependencies {
 
     implementation(libs.playKtx)
 
-    implementation(libs.combineTuple)
     implementation(libs.fragmentViewBindingDelegate)
 
+    implementation(libs.okhttp.core)
     implementation(libs.okhttp.loggingInterceptor)
-    implementation(libs.okhttp.coroutines)
     androidTestImplementation(libs.okhttp.mockWebServer)
 
     // Todo: Look into if this is the proper way to use boms with version catalogs
@@ -225,8 +227,6 @@ dependencies {
 
     implementation(libs.timber)
     implementation(libs.slimber)
-
-    implementation(libs.lottie)
 
     implementation(libs.reactiveX.kotlin)
     implementation(libs.reactiveX.android)
@@ -282,7 +282,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.compose)
     androidTestImplementation(libs.androidx.compose.uiTestJunit)
     debugImplementation(libs.androidx.compose.uiTestManifest)
-    implementation(libs.serialization.json)
 
     implementation(libs.showkase.annotation)
     debugImplementation(libs.showkase.showkase)
