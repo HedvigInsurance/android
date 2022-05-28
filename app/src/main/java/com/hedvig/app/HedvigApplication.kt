@@ -110,4 +110,3 @@ open class HedvigApplication : Application() {
     open val graphqlSubscriptionUrl get() = getString(R.string.WS_GRAPHQL_URL)
     open val isTestBuild = false
 }
-
