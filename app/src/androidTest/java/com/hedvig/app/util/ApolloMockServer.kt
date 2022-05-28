@@ -19,6 +19,8 @@ import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import org.json.JSONObject
 import org.junit.rules.ExternalResource
+import org.koin.core.context.loadKoinModules
+import org.koin.core.context.unloadKoinModules
 import org.koin.core.module.Module
 import org.koin.dsl.module
 import org.koin.test.KoinTest
@@ -139,28 +141,20 @@ class ApolloMockServerRule(
 
     private val originalApolloClientModule = apolloClientModule
 
-    private var module: Module? = null
+    private var testApolloModule: Module = constructTestApolloModule(idlingResource)
 
     override fun before() {
         mockWebServer.start(TestApplication.PORT)
         IdlingRegistry.getInstance().register(idlingResource)
-        val testApolloModule = constructTestApolloModule(
-            idlingResource,
-        )
-        module = testApolloModule
-        getKoin().apply {
-            unloadModules(listOf(originalApolloClientModule))
-            loadModules(listOf(testApolloModule))
-        }
+        unloadKoinModules(originalApolloClientModule)
+        loadKoinModules(testApolloModule)
     }
 
     override fun after() {
         mockWebServer.close()
-        val module = this@ApolloMockServerRule.module ?: return
-        getKoin().apply {
-            unloadModules(listOf(module))
-            loadModules(listOf(originalApolloClientModule))
-        }
+        IdlingRegistry.getInstance().unregister(idlingResource)
+        unloadKoinModules(testApolloModule)
+        loadKoinModules(originalApolloClientModule)
     }
 }
 
