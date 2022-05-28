@@ -69,9 +69,7 @@ val STANDARD_FIRST_PASSAGE_BUILDER =
     PassageBuilder(
         name = "TestPassage",
         id = "1",
-        response = MessageBuilder(
-            text = "{TestPassageResult}"
-        ).buildMessageResponse(),
+        response = MessageBuilder(text = "{TestPassageResult}").buildMessageResponse(),
         messages = listOf(
             STANDARD_FIRST_MESSAGE
         ),

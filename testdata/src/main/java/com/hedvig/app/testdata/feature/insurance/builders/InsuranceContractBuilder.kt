@@ -7,6 +7,7 @@ import com.hedvig.android.owldroid.graphql.fragment.InsurableLimitsFragment
 import com.hedvig.android.owldroid.graphql.fragment.TableFragment
 import com.hedvig.android.owldroid.graphql.fragment.UpcomingAgreementFragment
 import com.hedvig.android.owldroid.graphql.type.AgreementStatus
+import com.hedvig.android.owldroid.graphql.type.NorwegianTravelAgreement
 import com.hedvig.android.owldroid.graphql.type.TypeOfContractGradientOption
 import com.hedvig.app.testdata.common.builders.TableFragmentBuilder
 import java.time.LocalDate
@@ -58,9 +59,9 @@ class InsuranceContractBuilder(
         displayName = "Hemförsäkring",
         upcomingRenewal = renewal,
         currentAgreement = InsuranceQuery.CurrentAgreement(
-            __typename = "",
+            __typename = NorwegianTravelAgreement.type.name,
             asAgreementCore = InsuranceQuery.AsAgreementCore(
-                __typename = "NorwegianTravelAgreement",
+                __typename = NorwegianTravelAgreement.type.name,
                 certificateUrl = "https://www.example.com",
                 status = agreementStatus,
             ),

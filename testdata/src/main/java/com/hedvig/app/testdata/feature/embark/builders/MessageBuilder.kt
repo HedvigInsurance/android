@@ -4,6 +4,8 @@ import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.graphql.fragment.ExpressionFragment
 import com.hedvig.android.owldroid.graphql.fragment.MessageFragment
 import com.hedvig.android.owldroid.graphql.fragment.ResponseExpressionFragment
+import com.hedvig.android.owldroid.graphql.type.EmbarkMessage
+import com.hedvig.android.owldroid.graphql.type.EmbarkResponseExpression
 
 data class MessageBuilder(
     private val text: String,
@@ -12,7 +14,7 @@ data class MessageBuilder(
     fun build() = MessageFragment(
         expressions = expressions.map {
             MessageFragment.Expression(
-                __typename = "",
+                __typename = "", // todo one of EmbarkExpressionUnary|EmbarkExpressionBinary|EmbarkExpressionMultiple
                 fragments = MessageFragment.Expression.Fragments(it)
             )
         },
@@ -20,7 +22,7 @@ data class MessageBuilder(
     )
 
     fun buildMessageResponse() = EmbarkStoryQuery.Response(
-        __typename = "",
+        __typename = EmbarkMessage.type.name,
         fragments = EmbarkStoryQuery.Response.Fragments(
             messageFragment = build(),
             responseExpressionFragment = null,
@@ -29,14 +31,14 @@ data class MessageBuilder(
     )
 
     fun buildExpressionResponse() = EmbarkStoryQuery.Response(
-        __typename = "",
+        __typename = EmbarkResponseExpression.type.name,
         fragments = EmbarkStoryQuery.Response.Fragments(
             messageFragment = null,
             responseExpressionFragment = ResponseExpressionFragment(
                 text = text,
                 expressions = expressions.map {
                     ResponseExpressionFragment.Expression(
-                        __typename = "",
+                        __typename = EmbarkResponseExpression.type.name,
                         fragments = ResponseExpressionFragment.Expression.Fragments(it)
                     )
                 }
