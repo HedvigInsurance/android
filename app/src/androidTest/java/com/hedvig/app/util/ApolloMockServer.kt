@@ -164,7 +164,8 @@ private fun constructTestApolloModule(
 ): Module {
     return module {
         single<ApolloClient> {
-            val builder: ApolloClient.Builder = get()
+            // Copy builder to not accumulate many idlingResource calls which crashes the tests.
+            val builder: ApolloClient.Builder = get<ApolloClient.Builder>().copy()
             builder.idlingResource(idlingResource)
             builder.build()
         }
