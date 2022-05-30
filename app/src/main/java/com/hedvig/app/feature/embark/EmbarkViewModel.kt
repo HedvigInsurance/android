@@ -442,14 +442,15 @@ abstract class EmbarkViewModel(
 
     private fun findMaxDepth(passageName: String, previousDepth: Int = 0): Int {
         val passage = storyData.embarkStory?.passages?.find { it.name == passageName }
-        val links = passage?.allLinks?.map { it.fragments.embarkLinkFragment.name }
+        val links = passage?.allLinks?.map { it.fragments.embarkLinkFragment }
 
         if (links?.size == 0 || links == null) {
             return previousDepth
         }
 
         return links
-            .map { findMaxDepth(it, previousDepth + 1) }
+            .filter { !it.hidden }
+            .map { findMaxDepth(it.name, previousDepth + 1) }
             .fold(0) { acc, i -> max(acc, i) }
     }
 

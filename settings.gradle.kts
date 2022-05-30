@@ -1,4 +1,12 @@
 include(":testdata")
 include(":apollo")
 include(":app")
-enableFeaturePreview("VERSION_CATALOGS")
+
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        mavenLocal()
+        gradlePluginPortal()
+    }
+}

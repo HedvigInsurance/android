@@ -18,6 +18,7 @@
 
         <ImageView
             android:id="@+id/bulletPointIcon"
+            android:contentDescription="@null"
             android:layout_width="@dimen/claim_bullet_point_row_icon"
             android:layout_height="@dimen/claim_bullet_point_row_icon"
             tools:src="@drawable/icon_failure" />

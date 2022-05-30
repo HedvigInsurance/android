@@ -25,7 +25,6 @@ import com.hedvig.app.feature.embark.passages.previousinsurer.InsurerProviderBot
 import com.hedvig.app.feature.embark.passages.previousinsurer.PreviousInsurerParameter
 import com.hedvig.app.util.extensions.showErrorDialog
 import com.hedvig.app.util.extensions.view.setupInsetsForIme
-import com.hedvig.app.util.extensions.viewLifecycle
 import com.hedvig.app.util.extensions.viewLifecycleScope
 import com.hedvig.app.util.whenApiVersion
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
@@ -63,7 +62,7 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
         postponeEnterTransition()
 
         viewLifecycleScope.launch {
-            viewLifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     viewModel.events.collect { event ->
                         when (event) {

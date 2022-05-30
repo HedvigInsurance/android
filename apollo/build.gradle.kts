@@ -1,9 +1,10 @@
 import com.apollographql.apollo3.compiler.MODELS_COMPAT
 
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     id("com.android.library")
     id("kotlin-android")
-    id("com.apollographql.apollo3")
+    alias(libs.plugins.apollo)
 }
 
 apollo {

@@ -9,6 +9,7 @@ data class QuoteBundleVariant(
     val id: String,
     val title: String,
     val tag: String?,
+    val description: String?,
     val bundle: QuoteBundle,
 ) {
     val externalProviderId = bundle
@@ -23,5 +24,6 @@ fun QuoteCartFragment.PossibleVariation.toQuoteBundleVariant(
     id = id,
     title = bundle.fragments.quoteBundleFragment.displayName,
     tag = tag,
+    description = description,
     bundle = bundle.fragments.quoteBundleFragment.toQuoteBundle(quoteCartId, checkoutMethods)
 )
