@@ -246,4 +246,6 @@ license = { id = "com.jaredsburrows.license", version.ref = "license" }
 
 lokalise = { id = "com.hedvig.android.lokalise", version.ref = "lokalise" }
 
+serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+
 unusedResourcesRemover = { id = "com.github.konifar.gradle.unused-resources-remover", version.ref = "unusedResourcesRemover" }
