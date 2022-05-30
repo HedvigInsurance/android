@@ -12,7 +12,7 @@ plugins {
     id("kotlin-kapt")
     alias(libs.plugins.lokalise)
     alias(libs.plugins.license)
-    kotlin("plugin.serialization") version "1.6.10"
+    alias(libs.plugins.serialization)
 }
 
 licenseReport {
