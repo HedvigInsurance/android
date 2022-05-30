@@ -3,7 +3,7 @@ package com.hedvig.app.feature.offer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
-import arrow.core.computations.either
+import arrow.core.continuations.either
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.LoginStatus
