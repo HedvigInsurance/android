@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.checkout
 
 import arrow.core.Either
-import arrow.core.computations.either
-import arrow.core.computations.ensureNotNull
+import arrow.core.continuations.either
+import arrow.core.continuations.ensureNotNull
 import arrow.core.flatMap
 import arrow.core.left
 import arrow.core.right

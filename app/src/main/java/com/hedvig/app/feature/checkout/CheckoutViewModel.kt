@@ -3,7 +3,7 @@ package com.hedvig.app.feature.checkout
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
-import arrow.core.computations.either
+import arrow.core.continuations.either
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.model.Checkout

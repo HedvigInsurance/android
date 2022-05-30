@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.offer.usecase
 
 import arrow.core.Either
-import arrow.core.computations.either
+import arrow.core.continuations.either
 import com.apollographql.apollo.ApolloClient
 import com.hedvig.android.owldroid.graphql.CreateAccessTokenMutation
 import com.hedvig.app.authenticate.AuthenticationTokenService
