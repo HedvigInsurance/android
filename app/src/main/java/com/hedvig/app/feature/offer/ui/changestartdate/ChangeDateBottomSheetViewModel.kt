@@ -2,7 +2,7 @@ package com.hedvig.app.feature.offer.ui.changestartdate
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import arrow.core.sequenceEither
+import arrow.core.sequence
 import com.hedvig.app.feature.offer.OfferRepository
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.extensions.epochMillisToLocalDate
@@ -68,7 +68,7 @@ class ChangeDateBottomSheetViewModel(
                 date = dateMapEntry.value,
             )
         }
-            .sequenceEither()
+            .sequence()
             .fold(
                 ifLeft = { ViewState.Error(it.message) },
                 ifRight = {
