@@ -1,7 +1,8 @@
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     id("com.android.library")
     id("kotlin-android")
-    id("com.apollographql.apollo")
+    alias(libs.plugins.apollo)
 }
 
 apollo {

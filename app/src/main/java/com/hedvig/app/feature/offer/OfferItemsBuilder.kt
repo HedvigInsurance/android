@@ -47,17 +47,21 @@ object OfferItemsBuilder {
             ),
         )
 
-        offerModel.variants.takeIf { it.size > 1 }?.map {
-            add(
-                OfferItems.VariantButton(
-                    id = it.id,
-                    title = it.title,
-                    subTitle = it.tag,
-                    price = it.bundle.cost.finalPremium,
-                    isSelected = it.id == quoteBundleVariant.id,
-                    onVariantSelected = onVariantSelected
+        if (offerModel.variants.size > 1) {
+            add(OfferItems.VariantHeader)
+            offerModel.variants.forEach {
+                add(
+                    OfferItems.VariantButton(
+                        id = it.id,
+                        title = it.title,
+                        tag = it.tag,
+                        description = it.description,
+                        price = it.bundle.cost.finalPremium,
+                        isSelected = it.id == quoteBundleVariant.id,
+                        onVariantSelected = onVariantSelected
+                    )
                 )
-            )
+            }
         }
 
         if (externalProvider != null) {

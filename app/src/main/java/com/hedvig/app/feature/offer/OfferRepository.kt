@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.offer
 
 import arrow.core.Either
-import arrow.core.computations.either
-import arrow.core.computations.ensureNotNull
+import arrow.core.continuations.either
+import arrow.core.continuations.ensureNotNull
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.cache.http.HttpCachePolicy
 import com.apollographql.apollo.fetcher.ApolloResponseFetchers

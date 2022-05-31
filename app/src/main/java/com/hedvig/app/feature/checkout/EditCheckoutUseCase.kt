@@ -1,12 +1,12 @@
 package com.hedvig.app.feature.checkout
 
 import arrow.core.Either
-import arrow.core.computations.either
-import arrow.core.computations.ensureNotNull
+import arrow.core.continuations.either
+import arrow.core.continuations.ensureNotNull
 import arrow.core.flatMap
 import arrow.core.left
 import arrow.core.right
-import arrow.core.sequenceEither
+import arrow.core.sequence
 import com.hedvig.android.owldroid.graphql.QuoteCartEditQuoteMutation
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ErrorMessage
@@ -35,7 +35,8 @@ class EditCheckoutUseCase(
         ensureNotNull(parameter.quoteCartId) { ErrorMessage("No quote cart id found") }
         val results = parameter.quoteIds
             .map { mutateQuoteCart(parameter.quoteCartId, it, parameter.ssn, parameter.email) }
-            .sequenceEither().bind()
+            .sequence()
+            .bind()
         results.first()
     }
 

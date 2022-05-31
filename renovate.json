@@ -1,5 +1,10 @@
 {
   "extends": [
     "config:base"
+  ],
+  "ignoreDeps": [
+    "org.jetbrains.kotlin.plugin.serialization",
+    "org.jetbrains.kotlin:kotlin-stdlib-jdk7",
+    "org.jetbrains.kotlin:kotlin-gradle-plugin"
   ]
 }

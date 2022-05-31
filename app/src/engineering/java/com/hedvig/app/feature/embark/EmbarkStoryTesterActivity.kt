@@ -38,7 +38,10 @@ import com.apollographql.apollo.ApolloClient
 import com.google.accompanist.insets.systemBarsPadding
 import com.hedvig.android.owldroid.graphql.ExchangeTokenMutation
 import com.hedvig.app.authenticate.AuthenticationTokenService
+import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
+import com.hedvig.app.feature.home.ui.changeaddress.appendQuoteCartId
+import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.onboarding.BundlesResult
 import com.hedvig.app.feature.onboarding.GetBundlesUseCase
 import com.hedvig.app.feature.settings.Language
@@ -218,7 +221,7 @@ class EmbarkStoryTesterActivity : AppCompatActivity() {
 }
 
 val embarkStoryTesterModule = module {
-    viewModel { EmbarkStoryTesterViewModel(get(), get(), get(), get(), get()) }
+    viewModel { EmbarkStoryTesterViewModel(get(), get(), get(), get(), get(), get()) }
 }
 
 class EmbarkStoryTesterViewModel(
@@ -227,6 +230,7 @@ class EmbarkStoryTesterViewModel(
     private val authenticationTokenService: AuthenticationTokenService,
     private val apolloClient: ApolloClient,
     private val context: Context,
+    private val createQuoteCartUseCase: CreateQuoteCartUseCase
 ) : ViewModel() {
 
     data class ViewState(
@@ -242,10 +246,13 @@ class EmbarkStoryTesterViewModel(
     private val _viewState = MutableStateFlow(ViewState())
     val viewState: StateFlow<ViewState> = _viewState
 
+    private var quoteCartId: QuoteCartId? = null
+
     init {
         viewModelScope.launch {
             fetchEmbarkStories()
             _viewState.value = viewState.value.copy(availableMarkets = marketManager.enabledMarkets)
+            createQuoteCartUseCase.invoke().tap { quoteCartId = it }
         }
     }
 
@@ -257,8 +264,12 @@ class EmbarkStoryTesterViewModel(
     }
 
     fun onStorySelected(storyName: String?) {
+        if (storyName == null) {
+            return
+        }
+
         _viewState.update {
-            it.copy(selectedStoryName = storyName)
+            it.copy(selectedStoryName = appendQuoteCartId(storyName, quoteCartId!!.id))
         }
     }
 

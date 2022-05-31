@@ -1,19 +1,21 @@
 import java.io.FileInputStream
 import java.util.Properties
 
+// TODO: Remove once https://youtrack.jetbrains.com/issue/KTIJ-19369 is fixed
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     id("com.android.application")
-    id("com.google.gms.google-services")
-    id("com.google.firebase.crashlytics")
+    alias(libs.plugins.googleServices)
+    alias(libs.plugins.crashlytics)
     id("kotlin-android")
     id("kotlin-parcelize")
     id("kotlin-kapt")
-    id("com.hedvig.android.lokalise")
-    kotlin("plugin.serialization") version "1.6.10"
+    alias(libs.plugins.lokalise)
+    alias(libs.plugins.license)
+    alias(libs.plugins.serialization)
 }
 
-apply(plugin = "com.jaredsburrows.license")
-configure<com.jaredsburrows.license.LicenseReportExtension> {
+licenseReport {
     copyHtmlReportToAssets = true
 }
 
@@ -41,7 +43,7 @@ android {
         applicationId = "com.hedvig"
 
         versionCode = 43
-        versionName = "6.7.0"
+        versionName = "6.7.1"
 
         vectorDrawables.useSupportLibrary = true
 

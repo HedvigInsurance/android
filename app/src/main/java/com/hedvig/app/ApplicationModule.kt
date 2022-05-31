@@ -750,12 +750,12 @@ val featureManagerModule = module {
 val coilModule = module {
     single {
         ImageLoader.Builder(get())
-            .componentRegistry {
-                add(SvgDecoder(get()))
+            .components {
+                add(SvgDecoder.Factory())
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                    add(ImageDecoderDecoder(get()))
+                    add(ImageDecoderDecoder.Factory())
                 } else {
-                    add(GifDecoder())
+                    add(GifDecoder.Factory())
                 }
             }
             .build()

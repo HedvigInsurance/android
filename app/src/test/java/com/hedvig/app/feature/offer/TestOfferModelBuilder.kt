@@ -85,44 +85,50 @@ class TestOfferModelBuilder(
     private val checkoutLabel: CheckoutLabel = CheckoutLabel.SIGN_UP,
     private val campaign: Campaign? = null,
     private val ignoreCampaigns: Boolean = false,
+    private val numberOfVariants: Int = 1,
 ) {
 
     fun build() = OfferModel(
         id = QuoteCartId("123"),
-        variants = listOf(
-            QuoteBundleVariant(
-                id = "1234",
-                title = "Test variant",
-                tag = "Test tag",
-                bundle = QuoteBundle(
-                    name = bundleName,
-                    quotes = listOf(
-                        QuoteBundle.Quote(
-                            dataCollectionId = null,
-                            displayName = quoteName,
-                            startDate = startDate,
-                            email = email,
-                            id = id,
-                            currentInsurer = null,
-                            detailsTable = table,
-                            perils = perils,
-                            insurableLimits = insurableLimits,
-                            insuranceTerms = documents,
-                            insuranceType = "TEST",
+        variants = buildList {
+            repeat(numberOfVariants) {
+                add(
+                    QuoteBundleVariant(
+                        id = "1234",
+                        title = "Test variant",
+                        description = "Test description",
+                        tag = "Test tag",
+                        bundle = QuoteBundle(
+                            name = bundleName,
+                            quotes = listOf(
+                                QuoteBundle.Quote(
+                                    dataCollectionId = null,
+                                    displayName = quoteName,
+                                    startDate = startDate,
+                                    email = email,
+                                    id = id,
+                                    currentInsurer = null,
+                                    detailsTable = table,
+                                    perils = perils,
+                                    insurableLimits = insurableLimits,
+                                    insuranceTerms = documents,
+                                    insuranceType = "TEST",
+                                )
+                            ),
+                            cost = BundleCost(
+                                grossMonthlyCost = grossMonthlyCost,
+                                netMonthlyCost = netMonthlyCost,
+                                ignoreCampaigns = ignoreCampaigns
+                            ),
+                            frequentlyAskedQuestions = frequentlyAskedQuestions,
+                            inception = inception,
+                            viewConfiguration = viewConfiguration,
+                            checkoutLabel = checkoutLabel
                         )
-                    ),
-                    cost = BundleCost(
-                        grossMonthlyCost = grossMonthlyCost,
-                        netMonthlyCost = netMonthlyCost,
-                        ignoreCampaigns = ignoreCampaigns
-                    ),
-                    frequentlyAskedQuestions = frequentlyAskedQuestions,
-                    inception = inception,
-                    viewConfiguration = viewConfiguration,
-                    checkoutLabel = checkoutLabel
+                    )
                 )
-            )
-        ),
+            }
+        },
         checkoutMethod = checkoutMethod,
         campaign = campaign,
         checkout = null,

@@ -286,6 +286,7 @@ fragment EmbarkNumberActionFragment on EmbarkNumberActionData {
 fragment EmbarkLinkFragment on EmbarkLink {
   name
   label
+  hidden
 }
 
 fragment MessageFragment on EmbarkMessage {

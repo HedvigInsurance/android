@@ -17,10 +17,18 @@ inline fun <reified T> Assert<Iterable<*>>.containsNoneOfType() = given { actual
     )
 }
 
-inline fun <reified T> Assert<Iterable<*>>.containsOfType() = given { actual ->
+inline fun <reified T> Assert<Iterable<*>>.containsOfType(amount: Int? = null) = given { actual ->
     val expected = actual.filterIsInstance<T>()
 
     if (expected.isNotEmpty()) {
+        if (amount != null) {
+            if (expected.size != amount) {
+                expected(
+                    "to contain $amount of type:${show(T::class)}" +
+                        " but was ${expected.size} of type:${show(actual)}"
+                )
+            }
+        }
         return
     }
 

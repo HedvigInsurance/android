@@ -13,6 +13,7 @@
         android:layout_width="@dimen/peril_bottom_sheet_exception_icon_size"
         android:layout_height="@dimen/peril_bottom_sheet_exception_icon_size"
         android:layout_marginEnd="@dimen/base_margin_double"
+        android:contentDescription="@null"
         tools:srcCompat="@drawable/ic_checkmark_in_circle" />
 
     <TextView

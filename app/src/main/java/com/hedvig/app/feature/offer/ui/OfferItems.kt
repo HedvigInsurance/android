@@ -34,10 +34,13 @@ sealed class OfferItems {
         val quoteCartId: QuoteCartId?
     ) : OfferItems()
 
+    object VariantHeader : OfferItems()
+
     data class VariantButton(
         val id: String,
         val title: String,
-        val subTitle: String?,
+        val tag: String?,
+        val description: String?,
         val price: MonetaryAmount,
         val isSelected: Boolean,
         val onVariantSelected: (id: String) -> Unit

@@ -1,9 +1,10 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    id("net.rdrei.android.buildtimetracker") version "0.11.0"
-    id("com.github.konifar.gradle.unused-resources-remover") version "0.3.3"
-    id("org.gradle.android.cache-fix") version "2.5.3" apply false
-    id("com.osacky.doctor") version "0.8.0"
+    alias(libs.plugins.buildTimeTracker)
+    alias(libs.plugins.unusedResourcesRemover)
+    alias(libs.plugins.cacheFix) apply false
+    alias(libs.plugins.doctor)
 }
 
 subprojects {
@@ -28,12 +29,7 @@ buildscript {
 
     dependencies {
         classpath(libs.android.gradlePlugin)
-        classpath(libs.apollo.gradlePlugin)
-        classpath(libs.crashlytics.gradlePlugin)
-        classpath(libs.googleServices.gradlePlugin)
         classpath(libs.kotlin.gradlePlugin)
-        classpath(libs.licenses.gradlePlugin)
-        classpath(libs.lokalise.gradlePlugin)
     }
 }
 
