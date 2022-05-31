@@ -8,6 +8,7 @@ import com.hedvig.android.owldroid.graphql.fragment.TableFragment
 import com.hedvig.android.owldroid.graphql.fragment.UpcomingAgreementFragment
 import com.hedvig.android.owldroid.graphql.type.AgreementStatus
 import com.hedvig.android.owldroid.graphql.type.NorwegianTravelAgreement
+import com.hedvig.android.owldroid.graphql.type.SwedishApartmentAgreement
 import com.hedvig.android.owldroid.graphql.type.TypeOfContractGradientOption
 import com.hedvig.app.testdata.common.builders.TableFragmentBuilder
 import java.time.LocalDate
@@ -40,9 +41,9 @@ class InsuranceContractBuilder(
                         upcomingAgreementChange = if (showUpcomingAgreement) {
                             ContractStatusFragment.UpcomingAgreementChange(
                                 newAgreement = ContractStatusFragment.NewAgreement(
-                                    __typename = "",
+                                    __typename = SwedishApartmentAgreement.type.name,
                                     asSwedishApartmentAgreement = ContractStatusFragment.AsSwedishApartmentAgreement(
-                                        __typename = "",
+                                        __typename = SwedishApartmentAgreement.type.name,
                                         activeFrom = LocalDate.of(2021, 4, 6)
                                     )
                                 )

@@ -33,12 +33,12 @@ data class PaymentDataBuilder(
     private val payoutConnectionStatus: PayoutMethodStatus? = null,
 ) {
     fun build() = PaymentQuery.Data(
-        contracts = contracts.map {
+        contracts = contracts.map { contractStatus ->
             PaymentQuery.Contract(
                 status = PaymentQuery.Status(
-                    __typename = "",
+                    __typename = contractStatus.typename,
                     fragments = PaymentQuery.Status.Fragments(
-                        ContractStatusFragmentBuilder(it).build()
+                        ContractStatusFragmentBuilder(contractStatus).build()
                     )
                 )
             )

@@ -35,10 +35,10 @@ class InsuranceDataBuilder(
                 __typename = "",
                 id = "120e9ac9-84b1-4e5d-add1-70a9bad340be",
                 status = InsuranceQuery.Status(
-                    __typename = c.toTypename(),
+                    __typename = c.typename,
                     fragments = InsuranceQuery.Status.Fragments(
                         contractStatusFragment = ContractStatusFragment(
-                            __typename = c.toTypename(),
+                            __typename = c.typename,
                             asPendingStatus = if (c == ContractStatus.PENDING) {
                                 ContractStatusFragment.AsPendingStatus(
                                     __typename = "",
@@ -146,7 +146,7 @@ class InsuranceDataBuilder(
                 fragments = InsuranceQuery.Contract.Fragments(
                     upcomingAgreementFragment = UpcomingAgreementFragment(
                         status = UpcomingAgreementFragment.Status(
-                            __typename = c.toTypename(),
+                            __typename = c.typename,
                             asActiveStatus = if (c == ContractStatus.ACTIVE) {
                                 UpcomingAgreementFragment.AsActiveStatus(
                                     __typename = "",
