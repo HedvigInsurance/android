@@ -182,10 +182,3 @@ private fun Operation.Data.toJsonStringWithData(
         endObject()
     }
 }
-
-// todo replace with com.apollographql.apollo3.api.toJsonString when it's stable
-fun Operation.Data.toJsonString(customScalarAdapters: CustomScalarAdapters = CustomScalarAdapters.Empty): String {
-    return buildJsonString {
-        this@toJsonString.toJson(jsonWriter = this@buildJsonString, customScalarAdapters = customScalarAdapters)
-    }
-}
