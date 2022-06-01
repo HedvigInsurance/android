@@ -28,6 +28,7 @@ import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ProgressPercentage
 import com.hedvig.app.util.asMap
 import com.hedvig.app.util.safeLet
+import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -110,7 +111,7 @@ abstract class EmbarkViewModel(
     private var totalSteps: Int = 0
 
     init {
-        hAnalytics.screenViewEmbark(storyName)
+        hAnalytics.screenView(AppScreen.EMBARK)
     }
 
     protected fun setInitialState() {

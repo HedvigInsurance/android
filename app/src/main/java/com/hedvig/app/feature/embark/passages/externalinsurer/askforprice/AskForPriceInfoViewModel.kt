@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.embark.passages.externalinsurer.askforprice
 
 import androidx.lifecycle.ViewModel
+import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 
 class AskForPriceInfoViewModel(
@@ -9,7 +10,7 @@ class AskForPriceInfoViewModel(
 ) : ViewModel() {
 
     init {
-        hAnalytics.screenViewDataCollectionIntro(collectionId)
+        hAnalytics.screenView(AppScreen.DATA_COLLECTION_INTRO)
     }
 
     fun onSkipRetrievePriceInfo() {

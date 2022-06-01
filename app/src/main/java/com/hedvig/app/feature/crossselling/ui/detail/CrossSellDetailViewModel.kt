@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.home.ui.changeaddress.appendQuoteCartId
+import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,7 +20,7 @@ class CrossSellDetailViewModel(
     val action = _action.asStateFlow()
 
     init {
-        hAnalytics.screenViewCrossSellDetail(crossSell.typeOfContract)
+        hAnalytics.screenView(AppScreen.CROSS_SELL_DETAIL)
     }
 
     fun onCtaClick() {
