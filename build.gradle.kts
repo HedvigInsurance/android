@@ -62,4 +62,3 @@ buildtimetracker {
         }
     }
 }
-apply(from = "foo.gradle.kts")
