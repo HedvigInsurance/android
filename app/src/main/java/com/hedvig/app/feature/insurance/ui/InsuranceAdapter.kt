@@ -35,13 +35,18 @@ import com.hedvig.app.util.extensions.viewBinding
 class InsuranceAdapter(
     private val marketManager: MarketManager,
     private val retry: () -> Unit,
-    private val onClickCrossSell: (CrossSellData.Action) -> Unit,
+    private val onClickCrossSellAction: (CrossSellData) -> Unit,
     private val imageLoader: ImageLoader,
+    private val onClickCrossSellCard: (CrossSellData) -> Unit,
 ) : ListAdapter<InsuranceModel, InsuranceAdapter.ViewHolder>(InsuranceAdapterDiffUtilItemCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         R.layout.insurance_contract_card -> ViewHolder.ContractViewHolder(parent, imageLoader)
-        CROSS_SELL -> ViewHolder.CrossSellViewHolder(ComposeView(parent.context), onClickCrossSell)
+        CROSS_SELL -> ViewHolder.CrossSellViewHolder(
+            ComposeView(parent.context),
+            onClickCrossSellAction,
+            onClickCrossSellCard,
+        )
         R.layout.insurance_header -> ViewHolder.TitleViewHolder(parent)
         R.layout.generic_error -> ViewHolder.Error(parent)
         SUBHEADING -> ViewHolder.SubheadingViewHolder(ComposeView(parent.context))
@@ -82,7 +87,8 @@ class InsuranceAdapter(
 
         class CrossSellViewHolder(
             private val composeView: ComposeView,
-            private val onClickCrossSell: (CrossSellData.Action) -> Unit,
+            private val onClickCrossSellAction: (CrossSellData) -> Unit,
+            private val onClickCrossSellCard: (CrossSellData) -> Unit,
         ) : ViewHolder(composeView) {
             init {
                 composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
@@ -103,10 +109,11 @@ class InsuranceAdapter(
                         CrossSell(
                             data = data.inner,
                             onCardClick = {
+                                onClickCrossSellCard(data.inner)
                                 context.startActivity(CrossSellDetailActivity.newInstance(context, data.inner))
                             },
                             onCtaClick = {
-                                onClickCrossSell(data.inner.action)
+                                onClickCrossSellAction(data.inner)
                             }
                         )
                     }

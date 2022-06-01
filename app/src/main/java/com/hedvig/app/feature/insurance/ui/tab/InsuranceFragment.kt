@@ -48,8 +48,9 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
             adapter = InsuranceAdapter(
                 marketManager,
                 insuranceViewModel::load,
-                insuranceViewModel::onClickCrossSell,
-                imageLoader
+                insuranceViewModel::onClickCrossSellAction,
+                imageLoader,
+                insuranceViewModel::onClickCrossSellCard,
             )
         }
 

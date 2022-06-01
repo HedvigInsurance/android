@@ -9,6 +9,7 @@ import com.hedvig.app.feature.home.ui.changeaddress.appendQuoteCartId
 import com.hedvig.app.feature.insurance.data.GetContractsUseCase
 import com.hedvig.app.feature.insurance.ui.InsuranceModel
 import com.hedvig.app.service.badge.CrossSellNotificationBadgeService
+import com.hedvig.hanalytics.HAnalytics
 import e
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,6 +21,7 @@ class InsuranceViewModel(
     private val getContractsUseCase: GetContractsUseCase,
     private val crossSellNotificationBadgeService: CrossSellNotificationBadgeService,
     private val createQuoteCartUseCase: CreateQuoteCartUseCase,
+    private val hAnalytics: HAnalytics,
 ) : ViewModel() {
     sealed class ViewState {
         data class Success(
@@ -64,8 +66,12 @@ class InsuranceViewModel(
         }
     }
 
-    fun onClickCrossSell(action: CrossSellData.Action) {
-        when (action) {
+    fun onClickCrossSellCard(data: CrossSellData) {
+        hAnalytics.cardClickCrossSellDetail(id = data.typeOfContract)
+    }
+
+    fun onClickCrossSellAction(data: CrossSellData) {
+        when (val action = data.action) {
             CrossSellData.Action.Chat -> _viewState.update { viewState ->
                 when (viewState) {
                     ViewState.Error, ViewState.Loading -> viewState
@@ -73,6 +79,10 @@ class InsuranceViewModel(
                 }
             }
             is CrossSellData.Action.Embark -> {
+                hAnalytics.cardClickCrossSellDetail(
+                    id = data.typeOfContract,
+                    storyName = action.embarkStoryId,
+                )
                 viewModelScope.launch {
                     createQuoteCartUseCase.invoke().fold(
                         ifLeft = {
