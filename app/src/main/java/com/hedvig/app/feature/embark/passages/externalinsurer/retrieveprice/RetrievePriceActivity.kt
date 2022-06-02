@@ -4,10 +4,12 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -77,6 +79,7 @@ class RetrievePriceInfoActivity : BaseActivity() {
                     }
                 ) {
                     RetrievePriceScreen(
+                        modifier = Modifier.padding(it),
                         viewModel = viewModel,
                         onContinue = ::onContinue
                     )
@@ -107,6 +110,7 @@ class RetrievePriceInfoActivity : BaseActivity() {
 
 @Composable
 fun RetrievePriceScreen(
+    modifier: Modifier = Modifier,
     viewModel: RetrievePriceViewModel = viewModel(),
     onContinue: (referenceResult: String?, ssn: String?) -> Unit,
 ) {
@@ -123,7 +127,9 @@ fun RetrievePriceScreen(
         )
         else -> {
             FadeWhen(visible = viewState.isLoading) {
-                CenteredProgressIndicator()
+                CenteredProgressIndicator(
+                    modifier = modifier,
+                )
             }
 
             FadeWhen(visible = !viewState.isLoading) {
@@ -136,7 +142,8 @@ fun RetrievePriceScreen(
                     placeholder = viewState.market?.placeHolderRes()?.let { stringResource(it) } ?: "",
                     label = viewState.market?.labelRes()?.let { stringResource(it) } ?: "",
                     inputErrorMessage = viewState.inputError?.errorTextKey?.let { stringResource(it) },
-                    errorMessage = viewState.inputError?.errorTextKey?.let { stringResource(it) }
+                    errorMessage = viewState.inputError?.errorTextKey?.let { stringResource(it) },
+                    modifier = modifier,
                 )
             }
         }
