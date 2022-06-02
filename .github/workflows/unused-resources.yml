@@ -33,3 +33,6 @@ jobs:
       uses: hedviginsurance/gradle-unused-resources-action@v0.1.1
     - name: Create PR
       uses: peter-evans/create-pull-request@v4
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
+      if: always()
