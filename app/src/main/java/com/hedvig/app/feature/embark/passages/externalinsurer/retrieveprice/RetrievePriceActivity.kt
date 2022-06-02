@@ -77,9 +77,9 @@ class RetrievePriceInfoActivity : BaseActivity() {
                             title = stringResource(R.string.insurely_title)
                         )
                     }
-                ) {
+                ) { paddingValues ->
                     RetrievePriceScreen(
-                        modifier = Modifier.padding(it),
+                        modifier = Modifier.padding(paddingValues),
                         viewModel = viewModel,
                         onContinue = ::onContinue
                     )
@@ -110,9 +110,9 @@ class RetrievePriceInfoActivity : BaseActivity() {
 
 @Composable
 fun RetrievePriceScreen(
+    onContinue: (referenceResult: String?, ssn: String?) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: RetrievePriceViewModel = viewModel(),
-    onContinue: (referenceResult: String?, ssn: String?) -> Unit,
 ) {
     val viewState by viewModel.viewState.collectAsState()
 
