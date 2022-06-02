@@ -1,4 +1,4 @@
-on: workflow_dispatch
+on: push
   # schedule:
   #   - cron: "30 9 * * 0-5"
 
