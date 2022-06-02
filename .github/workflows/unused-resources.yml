@@ -30,7 +30,7 @@ jobs:
         SHAKE_CLIENT_ID: ${{ secrets.SHAKE_CLIENT_ID }}
         SHAKE_CLIENT_SECRET: ${{ secrets.SHAKE_CLIENT_SECRET }}
     - name: Unused resources remover
-      uses: hedviginsurance/gradle-unused-resources-action@v0.1.1
+      uses: hedviginsurance/gradle-unused-resources-action@v0.1.2
     - name: Create PR
       uses: peter-evans/create-pull-request@v4
     - name: Setup tmate session
