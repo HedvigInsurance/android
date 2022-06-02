@@ -1,0 +1,35 @@
+on: workflow_dispatch
+  # schedule:
+  #   - cron: "30 9 * * 0-5"
+
+jobs:
+  execute:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup JDK 11
+      uses: actions/setup-java@v3.3.0
+      with:
+        java-version: '11'
+        distribution: 'zulu'
+        cache: 'gradle'
+    - uses: actions/cache@v3
+      with:
+        path: ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+    - uses: actions/cache@v3
+      with:
+        path: ~/.gradle/caches
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+    - name: Prebuild
+      run: ./ci-prebuild.sh
+      env:
+        LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
+        LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+        ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_CLIENT_KEY_TEST }}
+        SHAKE_CLIENT_ID: ${{ secrets.SHAKE_CLIENT_ID }}
+        SHAKE_CLIENT_SECRET: ${{ secrets.SHAKE_CLIENT_SECRET }}
+    - name: Unused resources remover
+      uses: hedviginsurance/gradle-unused-resources-action@v0.1.1
+    - name: Create PR
+      uses: peter-evans/create-pull-request@v4
