@@ -6,7 +6,9 @@ import com.hedvig.android.owldroid.graphql.fragment.IconVariantsFragment
 import com.hedvig.android.owldroid.graphql.fragment.InsurableLimitsFragment
 import com.hedvig.android.owldroid.graphql.fragment.TableFragment
 import com.hedvig.android.owldroid.graphql.fragment.UpcomingAgreementFragment
+import com.hedvig.android.owldroid.graphql.type.ActiveStatus
 import com.hedvig.android.owldroid.graphql.type.AgreementStatus
+import com.hedvig.android.owldroid.graphql.type.Contract
 import com.hedvig.android.owldroid.graphql.type.NorwegianTravelAgreement
 import com.hedvig.android.owldroid.graphql.type.SwedishApartmentAgreement
 import com.hedvig.android.owldroid.graphql.type.TypeOfContractGradientOption
@@ -26,17 +28,17 @@ class InsuranceContractBuilder(
 ) {
 
     fun build() = InsuranceQuery.Contract(
-        __typename = "",
+        __typename = Contract.type.name,
         id = "120e9ac9-84b1-4e5d-add1-70a9bad340be",
         status = InsuranceQuery.Status(
-            __typename = "",
+            __typename = ActiveStatus.type.name,
             fragments = InsuranceQuery.Status.Fragments(
                 contractStatusFragment = ContractStatusFragment(
-                    __typename = "",
+                    __typename = ActiveStatus.type.name,
                     asPendingStatus = null,
                     asActiveInFutureStatus = null,
                     asActiveStatus = ContractStatusFragment.AsActiveStatus(
-                        __typename = "",
+                        __typename = ActiveStatus.type.name,
                         pastInception = LocalDate.of(2020, 2, 1),
                         upcomingAgreementChange = if (showUpcomingAgreement) {
                             ContractStatusFragment.UpcomingAgreementChange(
