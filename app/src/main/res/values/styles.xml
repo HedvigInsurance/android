@@ -60,11 +60,6 @@
         <item name="bottomSheetStyle">@style/BottomSheet</item>
     </style>
 
-    <style name="BottomSheetDialogTheme" parent="BaseBottomSheetDialog">
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:navigationBarColor">?colorSurface</item>
-    </style>
-
     <style name="DialogNoAnimation">
         <item name="android:windowEnterAnimation">@null</item>
         <item name="android:windowExitAnimation">@null</item>
@@ -123,5 +118,4 @@
         <item name="strokeColor">@color/color_divider</item>
         <item name="strokeWidth">1dp</item>
     </style>
-
 </resources>
