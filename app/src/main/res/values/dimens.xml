@@ -58,7 +58,6 @@
     <dimen name="camera_and_misc_button_width">120dp</dimen>
     <dimen name="camera_and_misc_button_background_stroke_width">1dp</dimen>
     <dimen name="attach_file_rounded_corners_radius">20dp</dimen>
-    <dimen name="audio_recorder_button_size">56dp</dimen>
     <dimen name="chat_text_input_vertical_padding">7dp</dimen>
     <dimen name="chat_text_input_send_button_offset">12dp</dimen>
     <dimen name="bottom_sheet_handle_height">4dp</dimen>
@@ -67,8 +66,6 @@
     <dimen name="chat_image_size">240dp</dimen>
     <dimen name="default_qr_code_size">150dp</dimen>
     <dimen name="tab_bar_icon_size">26dp</dimen>
-    <dimen name="expandable_content_view_collapsed_height">400dp</dimen>
-    <dimen name="expandable_content_view_bottom_fade_out_height">100dp</dimen>
     <dimen name="key_gear_card_height">200dp</dimen>
     <dimen name="create_key_gear_add_photo_height">250dp</dimen>
     <dimen name="pick_date_button_corner_radius">6dp</dimen>
