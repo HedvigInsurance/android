@@ -1,6 +1,7 @@
-on: workflow_dispatch
-  # schedule:
-  #   - cron: "30 9 * * 0-5"
+name: remove_unused_resources
+on:
+  schedule:
+    - cron: "30 9 * * 0-5"
 
 jobs:
   execute:
@@ -30,9 +31,17 @@ jobs:
         SHAKE_CLIENT_ID: ${{ secrets.SHAKE_CLIENT_ID }}
         SHAKE_CLIENT_SECRET: ${{ secrets.SHAKE_CLIENT_SECRET }}
     - name: Unused resources remover
-      uses: hedviginsurance/gradle-unused-resources-action@v0.1.2
+      uses: hedviginsurance/gradle-unused-resources-action@v0.1.3
+    - name: Generate Token
+      id: generate_token
+      uses: tibdex/github-app-token@v1
+      with:
+        app_id: ${{ secrets.CI_APP_ID }}
+        private_key: ${{ secrets.PRIVATE_KEY }}
     - name: Create PR
       uses: peter-evans/create-pull-request@v4
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
-      if: always()
+      with:
+        token: ${{ steps.generate_token.outputs.token }}
+        branch: "maintenance/remove-unused-resources"
+        title: "Maintenance: Remove unused resources"
+        body: ""

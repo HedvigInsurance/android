@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import e
 import kotlinx.coroutines.launch
@@ -18,7 +19,7 @@ class TrustlyViewModelImpl(
     hAnalytics: HAnalytics,
 ) : TrustlyViewModel() {
     init {
-        hAnalytics.screenViewConnectPaymentTrustly()
+        hAnalytics.screenView(AppScreen.CONNECT_PAYMENT_TRUSTLY)
         viewModelScope.launch {
             val response = runCatching { repository.startTrustlySession() }
             if (response.isFailure) {

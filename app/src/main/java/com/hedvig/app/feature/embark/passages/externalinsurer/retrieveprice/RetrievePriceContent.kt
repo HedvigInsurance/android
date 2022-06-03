@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -13,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import com.hedvig.app.R
 import com.hedvig.app.ui.compose.composables.ErrorDialog
@@ -29,14 +31,15 @@ fun RetrievePriceContent(
     placeholder: String,
     label: String,
     inputErrorMessage: String?,
-    errorMessage: String?
+    errorMessage: String?,
+    modifier: Modifier = Modifier,
 ) {
     val baseMargin = dimensionResource(R.dimen.base_margin)
     val baseMarginDouble = dimensionResource(R.dimen.base_margin_double)
     val baseMarginQuadruple = dimensionResource(R.dimen.base_margin_quadruple)
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .padding(baseMarginDouble)
             .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(baseMarginDouble)
@@ -64,7 +67,13 @@ fun RetrievePriceContent(
             ),
             isError = inputErrorMessage != null,
             visualTransformation = SwedishSSNVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Send,
+            ),
+            keyboardActions = KeyboardActions(
+                onSend = { onRetrievePriceInfo() },
+            )
         )
         LargeContainedTextButton(
             modifier = Modifier.padding(top = baseMarginQuadruple),
