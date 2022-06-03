@@ -1,11 +1,15 @@
 package com.hedvig.app.feature.crossselling.ui
 
 import android.os.Parcelable
+import arrow.core.continuations.either
 import com.hedvig.android.owldroid.fragment.CrossSellFragment
 import com.hedvig.app.feature.documents.DocumentItems
+import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.faq.FAQItem
+import com.hedvig.app.feature.home.ui.changeaddress.appendQuoteCartId
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.perils.Peril
+import com.hedvig.app.util.ErrorMessage
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -27,8 +31,15 @@ data class CrossSellData(
     val insurableLimits: List<InsurableLimitItem.InsurableLimit>,
 ) : Parcelable {
     sealed class Action : Parcelable {
+
         @Parcelize
-        data class Embark(val embarkStoryId: String, val title: String) : Action()
+        data class Embark(val embarkStoryId: String, val title: String) : Action() {
+            suspend fun createEmbarkStoryIdWithQuoteCart(createQuoteCartUseCase: CreateQuoteCartUseCase) =
+                either<ErrorMessage, String> {
+                    val quoteCartId = createQuoteCartUseCase.invoke().bind()
+                    appendQuoteCartId(embarkStoryId, quoteCartId.id)
+                }
+        }
 
         @Parcelize
         object Chat : Action()

@@ -392,9 +392,11 @@ val viewModelModule = module {
         )
     }
     viewModel { AudioRecorderViewModel(get()) }
-    viewModel { CrossSellFaqViewModel(get()) }
     viewModel { (crossSell: CrossSellData) ->
-        CrossSellDetailViewModel(crossSell, get(), get())
+        CrossSellFaqViewModel(crossSell, get(), get())
+    }
+    viewModel { (crossSell: CrossSellData) ->
+        CrossSellDetailViewModel(crossSell.action, get(), get())
     }
     viewModel { GenericAuthViewModel(get()) }
     viewModel { (otpId: String, credential: String) ->
