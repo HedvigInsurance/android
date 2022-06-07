@@ -1,6 +1,9 @@
 package com.hedvig.app.testdata.feature.embark.builders
 
 import com.hedvig.android.owldroid.graphql.fragment.GraphQLVariablesFragment
+import com.hedvig.android.owldroid.graphql.type.EmbarkAPIGraphQLGeneratedVariable
+import com.hedvig.android.owldroid.graphql.type.EmbarkAPIGraphQLMultiActionVariable
+import com.hedvig.android.owldroid.graphql.type.EmbarkAPIGraphQLSingleVariable
 import com.hedvig.android.owldroid.graphql.type.EmbarkAPIGraphQLSingleVariableCasting
 import com.hedvig.android.owldroid.graphql.type.EmbarkAPIGraphQLVariableGeneratedType
 
@@ -14,10 +17,10 @@ data class GraphQLVariableBuilder(
 ) {
 
     fun build() = GraphQLVariablesFragment(
-        __typename = "",
+        __typename = kind.typename,
         asEmbarkAPIGraphQLSingleVariable = if (kind == VariableKind.SINGLE) {
             GraphQLVariablesFragment.AsEmbarkAPIGraphQLSingleVariable(
-                __typename = "",
+                __typename = kind.typename,
                 key = key,
                 from = from.ifEmpty {
                     throw Error("Programmer error: attempted to build SingleVariable without providing `from`")
@@ -29,7 +32,7 @@ data class GraphQLVariableBuilder(
         },
         asEmbarkAPIGraphQLGeneratedVariable = if (kind == VariableKind.GENERATED) {
             GraphQLVariablesFragment.AsEmbarkAPIGraphQLGeneratedVariable(
-                __typename = "",
+                __typename = kind.typename,
                 key = key,
                 storeAs = storeAs.ifEmpty {
                     throw Error("Programmer error: attempted to build GeneratedVariable without providing `storeAs`")
@@ -41,7 +44,7 @@ data class GraphQLVariableBuilder(
         },
         asEmbarkAPIGraphQLMultiActionVariable = if (kind == VariableKind.MULTI_ACTION) {
             GraphQLVariablesFragment.AsEmbarkAPIGraphQLMultiActionVariable(
-                __typename = "",
+                __typename = kind.typename,
                 key = key,
                 from = from,
                 variables = listOf(
@@ -72,6 +75,14 @@ data class GraphQLVariableBuilder(
     enum class VariableKind {
         SINGLE,
         GENERATED,
-        MULTI_ACTION
+        MULTI_ACTION,
+        ;
+
+        val typename: String
+            get() = when (this) {
+                SINGLE -> EmbarkAPIGraphQLSingleVariable.type.name
+                GENERATED -> EmbarkAPIGraphQLGeneratedVariable.type.name
+                MULTI_ACTION -> EmbarkAPIGraphQLMultiActionVariable.type.name
+            }
     }
 }

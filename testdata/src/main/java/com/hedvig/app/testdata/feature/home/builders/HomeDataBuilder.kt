@@ -40,10 +40,10 @@ data class HomeDataBuilder(
                 displayName = CONTRACT_DISPLAY_NAME,
                 switchedFromInsuranceProvider = null,
                 status = HomeQuery.Status(
-                    __typename = "",
+                    __typename = c.typename,
                     asPendingStatus = if (c == ContractStatus.PENDING) {
                         HomeQuery.AsPendingStatus(
-                            __typename = "",
+                            __typename = c.typename,
                             pendingSince = null
                         )
                     } else {
@@ -51,11 +51,11 @@ data class HomeDataBuilder(
                     },
                     asActiveInFutureStatus = when (c) {
                         ContractStatus.ACTIVE_IN_FUTURE -> HomeQuery.AsActiveInFutureStatus(
-                            __typename = "",
+                            __typename = c.typename,
                             futureInception = LocalDate.of(2025, 1, 1)
                         )
                         ContractStatus.ACTIVE_IN_FUTURE_INVALID -> HomeQuery.AsActiveInFutureStatus(
-                            __typename = "",
+                            __typename = c.typename,
                             futureInception = null
                         )
                         else -> null
@@ -64,7 +64,7 @@ data class HomeDataBuilder(
                         c == ContractStatus.ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE
                     ) {
                         HomeQuery.AsActiveInFutureAndTerminatedInFutureStatus(
-                            __typename = "",
+                            __typename = c.typename,
                             futureInception = LocalDate.of(2024, 1, 1)
                         )
                     } else {
@@ -72,7 +72,7 @@ data class HomeDataBuilder(
                     },
                     asActiveStatus = if (c == ContractStatus.ACTIVE) {
                         HomeQuery.AsActiveStatus(
-                            __typename = "",
+                            __typename = c.typename,
                             pastInception = LocalDate.now()
                         )
                     } else {
@@ -80,7 +80,7 @@ data class HomeDataBuilder(
                     },
                     asTerminatedTodayStatus = if (c == ContractStatus.TERMINATED_TODAY) {
                         HomeQuery.AsTerminatedTodayStatus(
-                            __typename = "",
+                            __typename = c.typename,
                             today = LocalDate.now()
                         )
                     } else {
@@ -88,7 +88,7 @@ data class HomeDataBuilder(
                     },
                     asTerminatedStatus = if (c == ContractStatus.TERMINATED) {
                         HomeQuery.AsTerminatedStatus(
-                            __typename = "",
+                            __typename = c.typename,
                             termination = null
                         )
                     } else {
@@ -96,7 +96,7 @@ data class HomeDataBuilder(
                     },
                     asTerminatedInFutureStatus = if (c == ContractStatus.TERMINATED_IN_FUTURE) {
                         HomeQuery.AsTerminatedInFutureStatus(
-                            __typename = "",
+                            __typename = c.typename,
                             futureTermination = LocalDate.now().plusDays(10)
                         )
                     } else {

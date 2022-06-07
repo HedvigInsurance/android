@@ -18,15 +18,10 @@ data class ExpressionBuilder(
 ) {
     fun build(): ExpressionFragment {
         return ExpressionFragment(
-            __typename = when {
-                type.isUnary -> EmbarkExpressionUnary.type.name
-                type.isBinary -> EmbarkExpressionBinary.type.name
-                type.isMultiple -> EmbarkExpressionMultiple.type.name
-                else -> error("type $type must be mapped to some __typename")
-            },
+            __typename = type.typename,
             fragments = ExpressionFragment.Fragments(
                 BasicExpressionFragment(
-                    __typename = EmbarkExpressionUnary.type.name,
+                    __typename = type.typename,
                     asEmbarkExpressionUnary = if (type.isUnary) {
                         BasicExpressionFragment.AsEmbarkExpressionUnary(
                             __typename = EmbarkExpressionUnary.type.name,
@@ -42,7 +37,7 @@ data class ExpressionBuilder(
                     },
                     asEmbarkExpressionBinary = if (type.isBinary) {
                         BasicExpressionFragment.AsEmbarkExpressionBinary(
-                            __typename = EmbarkExpressionBinary.type.name,
+                            __typename = type.typename,
                             binaryType = when (type) {
                                 ExpressionType.EQUALS -> EmbarkExpressionTypeBinary.EQUALS
                                 ExpressionType.NOT_EQUALS -> EmbarkExpressionTypeBinary.NOT_EQUALS
@@ -63,7 +58,7 @@ data class ExpressionBuilder(
             ),
             asEmbarkExpressionMultiple = if (type.isMultiple) {
                 ExpressionFragment.AsEmbarkExpressionMultiple(
-                    __typename = EmbarkExpressionMultiple.type.name,
+                    __typename = type.typename,
                     multipleType = when (type) {
                         ExpressionType.AND -> EmbarkExpressionTypeMultiple.AND
                         ExpressionType.OR -> EmbarkExpressionTypeMultiple.OR
@@ -72,18 +67,18 @@ data class ExpressionBuilder(
                     text = text,
                     subExpressions = subExpressions.map { subEx ->
                         ExpressionFragment.SubExpression2(
-                            __typename = "",
+                            __typename = type.typename,
                             fragments = ExpressionFragment.SubExpression2.Fragments(
                                 subEx.fragments.basicExpressionFragment
                             ),
                             asEmbarkExpressionMultiple1 = subEx.asEmbarkExpressionMultiple?.let { asMulti ->
                                 ExpressionFragment.AsEmbarkExpressionMultiple1(
-                                    __typename = "",
+                                    __typename = type.typename,
                                     multipleType = asMulti.multipleType,
                                     text = asMulti.text,
                                     subExpressions = asMulti.subExpressions.map { subEx2 ->
                                         ExpressionFragment.SubExpression1(
-                                            __typename = "",
+                                            __typename = type.typename,
                                             fragments = ExpressionFragment.SubExpression1.Fragments(
                                                 subEx2.fragments.basicExpressionFragment
                                             ),
@@ -91,7 +86,7 @@ data class ExpressionBuilder(
                                                 .asEmbarkExpressionMultiple1
                                                 ?.let { asMulti2 ->
                                                     ExpressionFragment.AsEmbarkExpressionMultiple2(
-                                                        __typename = "",
+                                                        __typename = type.typename,
                                                         multipleType = asMulti2.multipleType,
                                                         text = asMulti2.text,
                                                         subExpressions = asMulti2.subExpressions.map { subEx3 ->
@@ -143,5 +138,13 @@ data class ExpressionBuilder(
 
         val isMultiple: Boolean
             get() = this == AND || this == OR
+
+        val typename: String
+            get() = when {
+                isUnary -> EmbarkExpressionUnary.type.name
+                isBinary -> EmbarkExpressionBinary.type.name
+                isMultiple -> EmbarkExpressionMultiple.type.name
+                else -> error("type $this must be mapped to some __typename")
+            }
     }
 }

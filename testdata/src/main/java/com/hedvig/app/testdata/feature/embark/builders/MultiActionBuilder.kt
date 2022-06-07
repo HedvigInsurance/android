@@ -2,13 +2,14 @@ package com.hedvig.app.testdata.feature.embark.builders
 
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.graphql.fragment.EmbarkLinkFragment
+import com.hedvig.android.owldroid.graphql.type.EmbarkMultiAction
 
 data class MultiActionBuilder(
     private val key: String,
     private val link: EmbarkLinkFragment,
 ) {
     fun build() = EmbarkStoryQuery.Action(
-        __typename = "",
+        __typename = EmbarkMultiAction.type.name,
         asEmbarkSelectAction = null,
         asEmbarkTextAction = null,
         asEmbarkTextActionSet = null,
@@ -17,7 +18,7 @@ data class MultiActionBuilder(
         asEmbarkDatePickerAction = null,
         asEmbarkNumberActionSet = null,
         asEmbarkMultiAction = EmbarkStoryQuery.AsEmbarkMultiAction(
-            __typename = "",
+            __typename = EmbarkMultiAction.type.name,
             multiActionData = EmbarkStoryQuery.MultiActionData(
                 key = key,
                 addLabel = "Continue",

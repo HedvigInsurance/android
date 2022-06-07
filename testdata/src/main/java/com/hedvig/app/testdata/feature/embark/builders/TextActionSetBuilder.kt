@@ -3,6 +3,7 @@ package com.hedvig.app.testdata.feature.embark.builders
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.graphql.fragment.ApiFragment
 import com.hedvig.android.owldroid.graphql.fragment.EmbarkLinkFragment
+import com.hedvig.android.owldroid.graphql.type.EmbarkTextActionSet
 
 data class TextActionSetBuilder(
     private val link: EmbarkLinkFragment,
@@ -10,11 +11,11 @@ data class TextActionSetBuilder(
     private val api: ApiFragment? = null,
 ) {
     fun build() = EmbarkStoryQuery.Action(
-        __typename = "",
+        __typename = EmbarkTextActionSet.type.name,
         asEmbarkSelectAction = null,
         asEmbarkTextAction = null,
         asEmbarkTextActionSet = EmbarkStoryQuery.AsEmbarkTextActionSet(
-            __typename = "",
+            __typename = EmbarkTextActionSet.type.name,
             textSetData = EmbarkStoryQuery.TextSetData(
                 link = EmbarkStoryQuery.Link2(
                     __typename = "",
