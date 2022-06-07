@@ -1,6 +1,6 @@
 [versions]
 # androidSdkVersions
-compileSdkVersion = "31"
+compileSdkVersion = "32"
 targetSdkVersion = "30"
 minSdkVersion = "23"
 
@@ -20,7 +20,7 @@ lokalise = "1.4.1"
 accompanistPager = "0.23.1" # Use 18 until https://github.com/google/accompanist/issues/847 is fixed
 accompanist = "0.23.1"
 androidx-compose = "1.1.1"
-androidx-composeThemeAdapter = "1.1.10"
+androidx-composeThemeAdapter = "1.1.11"
 androidx-datastore = "1.0.0"
 androidx-espresso = "3.4.0"
 androidx-lifecycle-common = "2.4.1"
