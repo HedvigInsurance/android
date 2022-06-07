@@ -12,7 +12,7 @@
     - `app/src/${debug|staging}/res/values/shake.xml`
 5. Download the schema (required to consume any changes in schema as well):
 ```bash
-$ ./gradlew apollo:downloadApolloSchema
+$ ./gradlew :apollo:downloadGiraffeApolloSchemaFromIntrospection
 ```
 6. Download lokalise translations (required to consume latest translations as well):
 ```bash
