@@ -158,7 +158,7 @@ jobs:
       - name: Build
         run: "./gradlew app:assemblePullrequest"
       - uses: r0adkll/sign-android-release@v1
-      - name: Sign app APK
+        name: Sign app APK
         id: sign_app
         with:
           releaseDirectory: app/build/outputs/apk/pullrequest
