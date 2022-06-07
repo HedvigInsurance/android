@@ -157,7 +157,7 @@ jobs:
           SHAKE_CLIENT_SECRET: ${{ secrets.SHAKE_CLIENT_SECRET }}
       - name: Build
         run: "./gradlew app:assemblePullrequest"
-        - uses: r0adkll/sign-android-release@v1
+      - uses: r0adkll/sign-android-release@v1
       - name: Sign app APK
         id: sign_app
         with:
