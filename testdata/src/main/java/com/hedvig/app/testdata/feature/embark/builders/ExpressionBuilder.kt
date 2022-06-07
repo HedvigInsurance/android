@@ -24,7 +24,7 @@ data class ExpressionBuilder(
                     __typename = type.typename,
                     asEmbarkExpressionUnary = if (type.isUnary) {
                         BasicExpressionFragment.AsEmbarkExpressionUnary(
-                            __typename = EmbarkExpressionUnary.type.name,
+                            __typename = type.typename,
                             unaryType = when (type) {
                                 ExpressionType.ALWAYS -> EmbarkExpressionTypeUnary.ALWAYS
                                 ExpressionType.NEVER -> EmbarkExpressionTypeUnary.NEVER

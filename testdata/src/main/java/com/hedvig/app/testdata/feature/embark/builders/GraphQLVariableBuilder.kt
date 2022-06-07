@@ -49,10 +49,10 @@ data class GraphQLVariableBuilder(
                 from = from,
                 variables = listOf(
                     GraphQLVariablesFragment.Variable(
-                        __typename = "",
+                        __typename = EmbarkAPIGraphQLGeneratedVariable.type.name,
                         asEmbarkAPIGraphQLGeneratedVariable1 = GraphQLVariablesFragment
                             .AsEmbarkAPIGraphQLGeneratedVariable1(
-                                __typename = "",
+                                __typename = EmbarkAPIGraphQLGeneratedVariable.type.name,
                                 key = key,
                                 storeAs = storeAs.ifEmpty {
                                     throw Error(

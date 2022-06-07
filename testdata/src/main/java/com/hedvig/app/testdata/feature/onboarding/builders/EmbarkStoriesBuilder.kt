@@ -1,8 +1,9 @@
 package com.hedvig.app.testdata.feature.onboarding.builders
 
 import com.hedvig.android.owldroid.graphql.ChoosePlanQuery
+import com.hedvig.android.owldroid.graphql.type.EmbarkStoryMetaDataEntryWebUrlPath
+import com.hedvig.android.owldroid.graphql.type.EmbarkStoryMetadataEntryDiscount
 import com.hedvig.app.testdata.feature.onboarding.builders.EmbarkStoryBuilder.Companion.ENGLISH_COMBO
-import com.hedvig.app.testdata.feature.onboarding.builders.EmbarkStoryBuilder.Companion.ENGLISH_COMBO_WEB_PATH
 import com.hedvig.app.testdata.feature.onboarding.builders.EmbarkStoryBuilder.Companion.ENGLISH_CONTENTS
 import com.hedvig.app.testdata.feature.onboarding.builders.EmbarkStoryBuilder.Companion.ENGLISH_CONTENTS_WEB_PATH
 import com.hedvig.app.testdata.feature.onboarding.builders.EmbarkStoryBuilder.Companion.ENGLISH_TRAVEL
@@ -15,15 +16,17 @@ class EmbarkStoriesBuilder(
             title = "Bundle",
             metadata = listOf(
                 ChoosePlanQuery.Metadatum(
-                    __typename = "",
+                    __typename = EmbarkStoryMetadataEntryDiscount.type.name,
                     asEmbarkStoryMetadataEntryDiscount = ChoosePlanQuery.AsEmbarkStoryMetadataEntryDiscount(
-                        __typename = "",
+                        __typename = EmbarkStoryMetadataEntryDiscount.type.name,
                         discount = "25%"
                     ),
-                    asEmbarkStoryMetaDataEntryWebUrlPath = ChoosePlanQuery.AsEmbarkStoryMetaDataEntryWebUrlPath(
-                        __typename = "",
-                        path = ENGLISH_COMBO_WEB_PATH
-                    )
+                    asEmbarkStoryMetaDataEntryWebUrlPath = null
+//                    Can only be one or the other for the typename to work
+//                    ChoosePlanQuery.AsEmbarkStoryMetaDataEntryWebUrlPath(
+//                        __typename = "",
+//                        path = ENGLISH_COMBO_WEB_PATH
+//                    )
                 )
             )
         ).build(),
@@ -32,10 +35,10 @@ class EmbarkStoriesBuilder(
             title = "Content",
             metadata = listOf(
                 ChoosePlanQuery.Metadatum(
-                    __typename = "",
+                    __typename = EmbarkStoryMetaDataEntryWebUrlPath.type.name,
                     asEmbarkStoryMetadataEntryDiscount = null,
                     asEmbarkStoryMetaDataEntryWebUrlPath = ChoosePlanQuery.AsEmbarkStoryMetaDataEntryWebUrlPath(
-                        __typename = "",
+                        __typename = EmbarkStoryMetaDataEntryWebUrlPath.type.name,
                         path = ENGLISH_CONTENTS_WEB_PATH
                     )
                 )
@@ -46,10 +49,10 @@ class EmbarkStoriesBuilder(
             title = "Travel",
             metadata = listOf(
                 ChoosePlanQuery.Metadatum(
-                    __typename = "",
+                    __typename = EmbarkStoryMetaDataEntryWebUrlPath.type.name,
                     asEmbarkStoryMetadataEntryDiscount = null,
                     asEmbarkStoryMetaDataEntryWebUrlPath = ChoosePlanQuery.AsEmbarkStoryMetaDataEntryWebUrlPath(
-                        __typename = "",
+                        __typename = EmbarkStoryMetaDataEntryWebUrlPath.type.name,
                         path = ENGLISH_TRAVEL_WEB_PATH
                     )
                 )

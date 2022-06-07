@@ -19,7 +19,7 @@ val UPCOMING_AGREEMENT_NONE = UpcomingAgreementQuery.Data(
                             TableFragmentBuilder().build()
                         )
                     ),
-                    status = UpcomingAgreementFragment.Status(
+                    status = UpcomingAgreementFragment.Status( // todo Status is nonnull so I don't think we can do this
                         __typename = "",
                         asActiveStatus = null,
                         asTerminatedInFutureStatus = null,

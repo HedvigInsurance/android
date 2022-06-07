@@ -2,6 +2,7 @@ package com.hedvig.app.testdata.feature.offer.builders
 
 import com.hedvig.android.owldroid.graphql.fragment.CurrentInsurerFragment
 import com.hedvig.android.owldroid.graphql.fragment.QuoteBundleFragment
+import com.hedvig.android.owldroid.graphql.type.ConcurrentInception
 import java.time.LocalDate
 
 class ConcurrentInceptionBuilder(
@@ -19,9 +20,9 @@ class ConcurrentInceptionBuilder(
     ),
 ) {
     fun build() = QuoteBundleFragment.Inception1(
-        __typename = "",
+        __typename = ConcurrentInception.type.name,
         asConcurrentInception = QuoteBundleFragment.AsConcurrentInception(
-            __typename = "",
+            __typename = ConcurrentInception.type.name,
             correspondingQuoteIds = quoteIds,
             startDate = startDate,
             currentInsurer = currentInsurer

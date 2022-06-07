@@ -2,7 +2,10 @@ package com.hedvig.app.testdata.feature.embark.builders
 
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.graphql.fragment.EmbarkLinkFragment
+import com.hedvig.android.owldroid.graphql.type.EmbarkDropdownAction
 import com.hedvig.android.owldroid.graphql.type.EmbarkMultiAction
+import com.hedvig.android.owldroid.graphql.type.EmbarkMultiActionNumberAction
+import com.hedvig.android.owldroid.graphql.type.EmbarkSwitchAction
 
 data class MultiActionBuilder(
     private val key: String,
@@ -31,9 +34,9 @@ data class MultiActionBuilder(
                 ),
                 components = listOf(
                     EmbarkStoryQuery.Component(
-                        __typename = "",
+                        __typename = EmbarkDropdownAction.type.name,
                         asEmbarkDropdownAction = EmbarkStoryQuery.AsEmbarkDropdownAction(
-                            __typename = "",
+                            __typename = EmbarkDropdownAction.type.name,
                             dropDownActionData = EmbarkStoryQuery.DropDownActionData(
                                 label = "Building type",
                                 key = "Building",
@@ -57,9 +60,9 @@ data class MultiActionBuilder(
                         asEmbarkMultiActionNumberAction = null
                     ),
                     EmbarkStoryQuery.Component(
-                        __typename = "",
+                        __typename = EmbarkMultiActionNumberAction.type.name,
                         asEmbarkMultiActionNumberAction = EmbarkStoryQuery.AsEmbarkMultiActionNumberAction(
-                            __typename = "",
+                            __typename = EmbarkMultiActionNumberAction.type.name,
                             numberActionData = EmbarkStoryQuery.NumberActionData1(
                                 key = "size",
                                 placeholder = "52",
@@ -71,9 +74,9 @@ data class MultiActionBuilder(
                         asEmbarkSwitchAction = null
                     ),
                     EmbarkStoryQuery.Component(
-                        __typename = "",
+                        __typename = EmbarkSwitchAction.type.name,
                         asEmbarkSwitchAction = EmbarkStoryQuery.AsEmbarkSwitchAction(
-                            __typename = "",
+                            __typename = EmbarkSwitchAction.type.name,
                             switchActionData = EmbarkStoryQuery.SwitchActionData(
                                 label = "Water connected",
                                 key = "water",

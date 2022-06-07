@@ -5,6 +5,7 @@ import com.hedvig.android.owldroid.graphql.fragment.ActivePaymentMethodsFragment
 import com.hedvig.android.owldroid.graphql.fragment.CashbackFragment
 import com.hedvig.android.owldroid.graphql.fragment.CostFragment
 import com.hedvig.android.owldroid.graphql.type.DirectDebitStatus
+import com.hedvig.android.owldroid.graphql.type.StoredCardDetails
 import com.hedvig.app.testdata.common.builders.CostBuilder
 import java.util.UUID
 
@@ -51,9 +52,9 @@ data class ProfileDataBuilder(
                 __typename = "",
                 fragments = ProfileQuery.ActivePaymentMethodsV2.Fragments(
                     activePaymentMethodsFragment = ActivePaymentMethodsFragment(
-                        __typename = "",
+                        __typename = StoredCardDetails.type.name,
                         asStoredCardDetails = ActivePaymentMethodsFragment.AsStoredCardDetails(
-                            __typename = "",
+                            __typename = StoredCardDetails.type.name,
                             brand = "test",
                             lastFourDigits = "1234",
                             expiryMonth = "1",

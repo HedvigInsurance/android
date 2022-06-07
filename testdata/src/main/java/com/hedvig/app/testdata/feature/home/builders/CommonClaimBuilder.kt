@@ -2,7 +2,9 @@ package com.hedvig.app.testdata.feature.home.builders
 
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.graphql.fragment.IconVariantsFragment
+import com.hedvig.android.owldroid.graphql.type.Emergency
 import com.hedvig.android.owldroid.graphql.type.HedvigColor
+import com.hedvig.android.owldroid.graphql.type.TitleAndBulletPoints
 
 data class CommonClaimBuilder(
     val title: String = "Example",
@@ -28,10 +30,10 @@ data class CommonClaimBuilder(
             )
         ),
         layout = HomeQuery.Layout(
-            __typename = "",
+            __typename = variant.typename,
             asTitleAndBulletPoints = if (variant == Variant.TITLE_AND_BULLET_POINTS) {
                 HomeQuery.AsTitleAndBulletPoints(
-                    __typename = "",
+                    __typename = variant.typename,
                     bulletPoints = emptyList(),
                     buttonTitle = "",
                     color = HedvigColor.Black,
@@ -42,7 +44,7 @@ data class CommonClaimBuilder(
             },
             asEmergency = if (variant == Variant.EMERGENCY) {
                 HomeQuery.AsEmergency(
-                    __typename = "",
+                    __typename = Emergency.type.name,
                     color = HedvigColor.Black,
                     emergencyNumber = emergencyNumber,
                 )
@@ -54,6 +56,13 @@ data class CommonClaimBuilder(
 
     enum class Variant {
         EMERGENCY,
-        TITLE_AND_BULLET_POINTS
+        TITLE_AND_BULLET_POINTS,
+        ;
+
+        val typename: String
+            get() = when (this) {
+                EMERGENCY -> Emergency.type.name
+                TITLE_AND_BULLET_POINTS -> TitleAndBulletPoints.type.name
+            }
     }
 }

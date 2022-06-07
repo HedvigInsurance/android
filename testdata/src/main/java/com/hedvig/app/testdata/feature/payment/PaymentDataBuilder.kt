@@ -6,6 +6,7 @@ import com.hedvig.android.owldroid.graphql.fragment.BankAccountFragment
 import com.hedvig.android.owldroid.graphql.fragment.CostFragment
 import com.hedvig.android.owldroid.graphql.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.graphql.type.PayoutMethodStatus
+import com.hedvig.android.owldroid.graphql.type.StoredCardDetails
 import com.hedvig.app.testdata.common.ContractStatus
 import com.hedvig.app.testdata.common.builders.ContractStatusFragmentBuilder
 import com.hedvig.app.testdata.common.builders.CostBuilder
@@ -103,9 +104,9 @@ data class PaymentDataBuilder(
                 __typename = "",
                 fragments = PaymentQuery.ActivePaymentMethodsV2.Fragments(
                     ActivePaymentMethodsFragment(
-                        __typename = "",
+                        __typename = StoredCardDetails.type.name,
                         asStoredCardDetails = ActivePaymentMethodsFragment.AsStoredCardDetails(
-                            __typename = "",
+                            __typename = StoredCardDetails.type.name,
                             brand = "Testkortet",
                             lastFourDigits = "1234",
                             expiryMonth = "01",
