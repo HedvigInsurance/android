@@ -16,6 +16,7 @@ import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GRAPHQL_QUERY_API_
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_NUMBER_ACTION
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_PASSED_KEY_VALUE
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_SELECT_ACTION_API_MULTIPLE_OPTIONS
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION_API
 import org.junit.Test
 
 @OptIn(ApolloExperimental::class)
@@ -141,6 +142,23 @@ class EmbarkStoryDataAlternativesParsingTest {
         after = { after() }
     ) {
         val originalData = STORY_WITH_SELECT_ACTION_API_MULTIPLE_OPTIONS
+        val jsonData = originalData.toJsonStringWithData()
+        mockServer.enqueue(jsonData)
+
+        val response = apolloClient
+            .query(EmbarkStoryQuery("", "sv_SE"))
+            .execute()
+
+        assertThat(response.data).isNotNull()
+        assertThat(response.data!!).isEqualTo(originalData)
+    }
+
+    @Test
+    fun `apollo parses a story with a graphql query text action api`() = runTest(
+        before = { before() },
+        after = { after() }
+    ) {
+        val originalData = STORY_WITH_TEXT_ACTION_API
         val jsonData = originalData.toJsonStringWithData()
         mockServer.enqueue(jsonData)
 

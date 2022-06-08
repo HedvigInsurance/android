@@ -24,7 +24,7 @@ data class TextActionSetBuilder(
                 textActions = textActions,
                 api = api?.let {
                     EmbarkStoryQuery.Api2(
-                        __typename = "",
+                        __typename = it.__typename,
                         fragments = EmbarkStoryQuery.Api2.Fragments(it)
                     )
                 },

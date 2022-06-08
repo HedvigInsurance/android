@@ -31,7 +31,7 @@ data class TextActionBuilder(
                 ),
                 api = api?.let {
                     EmbarkStoryQuery.Api1(
-                        __typename = "",
+                        __typename = it.__typename,
                         fragments = EmbarkStoryQuery.Api1.Fragments(it)
                     )
                 },
