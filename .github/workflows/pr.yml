@@ -139,10 +139,11 @@ jobs:
           string: ${{ github.event.pull_request.title }}
       - name: Update Jira issue with artifact URL
         if: ${{ steps.find_issue.outputs.issue != null }}
+        env:
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
         run: |
-          cp -R ~/jira/ ~/.jira || true # Hack to config path being less than correct
-          mkdir -p ~/.jira/templates
-          cat << EOF > ~/.jira/templates/edit
+          mkdir -p ~/.jira.d/templates
+          cat << EOF > ~/.jira.d/templates/edit
           {{- if .meta.fields.customfield_10066 }}
           customfield_10066: {{.overrides.artifact_url}}
           {{- end }}
