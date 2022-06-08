@@ -4,6 +4,7 @@ import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.graphql.fragment.ApiFragment
 import com.hedvig.android.owldroid.graphql.fragment.EmbarkLinkFragment
 import com.hedvig.android.owldroid.graphql.fragment.MessageFragment
+import com.hedvig.android.owldroid.graphql.type.EmbarkApiGraphQLMutation
 import com.hedvig.android.owldroid.graphql.type.EmbarkExternalRedirectLocation
 import com.hedvig.android.owldroid.graphql.type.EmbarkMessage
 
@@ -38,7 +39,7 @@ data class PassageBuilder(
         action = action,
         api = api?.let {
             EmbarkStoryQuery.Api4(
-                __typename = "",
+                __typename = EmbarkApiGraphQLMutation.type.name,
                 fragments = EmbarkStoryQuery.Api4.Fragments(it)
             )
         },

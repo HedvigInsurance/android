@@ -1198,7 +1198,6 @@ val STORY_WITH_GRAPHQL_MUTATION = EmbarkStoryDataBuilder(
                     ),
                     errors = listOf(
                         GraphQLErrorsFragment(
-
                             contains = null,
                             next = GraphQLErrorsFragment.Next(
                                 __typename = "",
