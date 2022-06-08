@@ -1,3 +1,5 @@
+@file:OptIn(ApolloExperimental::class)
+
 package com.hedvig.app.apollo
 
 import assertk.assertThat
@@ -19,7 +21,6 @@ import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_SELECT_ACTION_API_
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION_API
 import org.junit.Test
 
-@OptIn(ApolloExperimental::class)
 class EmbarkStoryDataAlternativesParsingTest {
     private lateinit var mockServer: MockServer
     private lateinit var apolloClient: ApolloClient
