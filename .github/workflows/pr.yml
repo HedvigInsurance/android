@@ -146,7 +146,7 @@ jobs:
           customfield_10066: {{.overrides.artifact_url}}
           {{- end }}
           EOF
-          jira edit --issue ${{ steps.find_issue.outputs.issue }} --noedit --override artifact_url=https://github.com/actions/runs/${{ github.run_id }}
+          jira edit ${{ steps.find_issue.outputs.issue }} --noedit --override artifact_url=https://github.com/actions/runs/${{ github.run_id }}
       - uses: mxschmitt/action-tmate@v3
         if: always()
 
