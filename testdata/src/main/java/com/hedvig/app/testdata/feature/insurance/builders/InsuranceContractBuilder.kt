@@ -5,6 +5,7 @@ import com.hedvig.android.owldroid.graphql.fragment.ContractStatusFragment
 import com.hedvig.android.owldroid.graphql.fragment.IconVariantsFragment
 import com.hedvig.android.owldroid.graphql.fragment.InsurableLimitsFragment
 import com.hedvig.android.owldroid.graphql.fragment.TableFragment
+import com.hedvig.android.owldroid.graphql.fragment.UpcomingAgreementChangeFragment
 import com.hedvig.android.owldroid.graphql.fragment.UpcomingAgreementFragment
 import com.hedvig.android.owldroid.graphql.type.ActiveStatus
 import com.hedvig.android.owldroid.graphql.type.AgreementStatus
@@ -97,8 +98,26 @@ class InsuranceContractBuilder(
         fragments = InsuranceQuery.Contract.Fragments(
             upcomingAgreementFragment = UpcomingAgreementFragment(
                 status = UpcomingAgreementFragment.Status(
-                    __typename = "",
-                    asActiveStatus = null,
+                    __typename = ActiveStatus.type.name,
+                    asActiveStatus = UpcomingAgreementFragment.AsActiveStatus(
+                        __typename = ActiveStatus.type.name,
+                        upcomingAgreementChange = if (showUpcomingAgreement) {
+                            UpcomingAgreementFragment.UpcomingAgreementChange(
+                                __typename = "",
+                                fragments = UpcomingAgreementFragment.UpcomingAgreementChange.Fragments(
+                                    upcomingAgreementChangeFragment = UpcomingAgreementChangeFragment(
+                                        newAgreement = UpcomingAgreementChangeFragment.NewAgreement(
+                                            __typename = SwedishApartmentAgreement.type.name,
+                                            asAgreementCore = UpcomingAgreementChangeFragment.AsAgreementCore(
+                                                __typename = SwedishApartmentAgreement.type.name,
+                                                activeFrom = LocalDate.of(2021, 4, 6)
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        } else null
+                    ),
                     asTerminatedTodayStatus = null,
                     asTerminatedInFutureStatus = null
                 ),

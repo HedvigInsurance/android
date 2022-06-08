@@ -17,6 +17,7 @@ import com.hedvig.android.owldroid.graphql.type.AgreementStatus
 import com.hedvig.android.owldroid.graphql.type.SwedishApartmentAgreement
 import com.hedvig.app.CUSTOM_SCALAR_ADAPTERS
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA
+import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_HOUSE
 import org.junit.Test
 import java.time.LocalDate
 
@@ -207,6 +208,23 @@ class InsuranceQueryParsing {
         after = { after() }
     ) {
         val originalData = INSURANCE_DATA
+        val jsonData = originalData.toJsonStringWithData()
+        mockServer.enqueue(jsonData)
+
+        val response = apolloClient
+            .query(InsuranceQuery(locale = com.hedvig.android.owldroid.graphql.type.Locale.sv_SE))
+            .execute()
+
+        assertThat(response.data).isNotNull()
+        assertThat(response.data!!).isEqualTo(originalData)
+    }
+
+    @Test
+    fun `apollo parses an insurance for swedish house`() = runTest(
+        before = { before() },
+        after = { after() }
+    ) {
+        val originalData = INSURANCE_DATA_SWEDISH_HOUSE
         val jsonData = originalData.toJsonStringWithData()
         mockServer.enqueue(jsonData)
 
