@@ -127,5 +127,25 @@ jobs:
         with:
           name: Pull Request-Build
           path: ${{ steps.sign_app.outputs.signedReleaseFile }}
+      - uses: atlassian/gajira-login@v2.0.0
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}        
+      - uses: atlassian/gajira-cli@v2.0.2
+      - uses: atlassian/gajira-find-issue-key@Update
+        id: find_issue
+        with:
+          string: ${{ github.event.pull_request.title }}
+      - name: Update Jira issue with artifact URL
+        if: ${{ steps.find_issue.outputs.issue != null }}
+        run: |
+          mkdir ~/.jira/config.yml;
+          cat << EOF > ~/.jira/templates/edit
+          {{- if .meta.fields.customfield_10066 }}
+          customfield_10066: {{.overrides.artifact_url}}
+          {{- end }}
+          EOF;
+          jira edit --issue ${{ steps.find_issue.outputs.issue }} --noedit --override artifact_url=https://github.com/actions/runs/${{ github.run_id }}
 
   
