@@ -10,6 +10,9 @@ import com.apollographql.apollo3.mockserver.enqueue
 import com.apollographql.apollo3.testing.runTest
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GRAPHQL_MUTATION
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GRAPHQL_MUTATION_AND_SINGLE_VARIABLE
+import com.hedvig.app.testdata.feature.embark.data.VARIABLE_MUTATION
+import com.hedvig.app.util.jsonObjectOf
 import org.junit.Test
 
 @OptIn(ApolloExperimental::class)
@@ -33,6 +36,23 @@ class StoryWithGraphQLMutationParsing {
         after = { after() }
     ) {
         val originalData = STORY_WITH_GRAPHQL_MUTATION
+        val jsonData = originalData.toJsonStringWithData()
+        mockServer.enqueue(jsonData)
+
+        val response = apolloClient
+            .query(EmbarkStoryQuery("", "sv_SE"))
+            .execute()
+
+        assertThat(response.data).isNotNull()
+        assertThat(response.data!!).isEqualTo(originalData)
+    }
+
+    @Test
+    fun `2`() = runTest(
+        before = { before() },
+        after = { after() }
+    ) {
+        val originalData = STORY_WITH_GRAPHQL_MUTATION_AND_SINGLE_VARIABLE
         val jsonData = originalData.toJsonStringWithData()
         mockServer.enqueue(jsonData)
 
