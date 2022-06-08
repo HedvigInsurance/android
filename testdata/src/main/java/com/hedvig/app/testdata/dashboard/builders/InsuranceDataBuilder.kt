@@ -7,7 +7,6 @@ import com.hedvig.android.owldroid.graphql.fragment.InsurableLimitsFragment
 import com.hedvig.android.owldroid.graphql.fragment.TableFragment
 import com.hedvig.android.owldroid.graphql.fragment.UpcomingAgreementChangeFragment
 import com.hedvig.android.owldroid.graphql.fragment.UpcomingAgreementFragment
-import com.hedvig.android.owldroid.graphql.type.ActiveStatus
 import com.hedvig.android.owldroid.graphql.type.AgreementStatus
 import com.hedvig.android.owldroid.graphql.type.Contract
 import com.hedvig.android.owldroid.graphql.type.IconVariants
@@ -157,7 +156,7 @@ class InsuranceDataBuilder(
                 fragments = InsuranceQuery.Contract.Fragments(
                     upcomingAgreementFragment = UpcomingAgreementFragment(
                         status = UpcomingAgreementFragment.Status(
-                            __typename = ActiveStatus.type.name,
+                            __typename = c.typename,
                             asActiveStatus = if (c == ContractStatus.ACTIVE) {
                                 UpcomingAgreementFragment.AsActiveStatus(
                                     __typename = c.typename,
