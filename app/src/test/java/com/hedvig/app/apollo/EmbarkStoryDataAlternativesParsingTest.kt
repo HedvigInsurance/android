@@ -11,12 +11,11 @@ import com.apollographql.apollo3.testing.runTest
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GRAPHQL_MUTATION
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GRAPHQL_MUTATION_AND_SINGLE_VARIABLE
-import com.hedvig.app.testdata.feature.embark.data.VARIABLE_MUTATION
-import com.hedvig.app.util.jsonObjectOf
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GRAPHQL_QUERY_API_AND_GENERATED_VARIABLE
 import org.junit.Test
 
 @OptIn(ApolloExperimental::class)
-class StoryWithGraphQLMutationParsing {
+class EmbarkStoryDataAlternativesParsingTest {
     private lateinit var mockServer: MockServer
     private lateinit var apolloClient: ApolloClient
 
@@ -31,7 +30,7 @@ class StoryWithGraphQLMutationParsing {
     }
 
     @Test
-    fun `apollo handles a Data object constructed with its constructor, providing the necessary typename`() = runTest(
+    fun `apollo parses a story with a graphql mutation`() = runTest(
         before = { before() },
         after = { after() }
     ) {
@@ -48,11 +47,28 @@ class StoryWithGraphQLMutationParsing {
     }
 
     @Test
-    fun `2`() = runTest(
+    fun `apollo parses a story with a graphql mutation with a single variable`() = runTest(
         before = { before() },
         after = { after() }
     ) {
         val originalData = STORY_WITH_GRAPHQL_MUTATION_AND_SINGLE_VARIABLE
+        val jsonData = originalData.toJsonStringWithData()
+        mockServer.enqueue(jsonData)
+
+        val response = apolloClient
+            .query(EmbarkStoryQuery("", "sv_SE"))
+            .execute()
+
+        assertThat(response.data).isNotNull()
+        assertThat(response.data!!).isEqualTo(originalData)
+    }
+
+    @Test
+    fun `apollo parses a story with a graphql query with a generated value`() = runTest(
+        before = { before() },
+        after = { after() }
+    ) {
+        val originalData = STORY_WITH_GRAPHQL_QUERY_API_AND_GENERATED_VARIABLE
         val jsonData = originalData.toJsonStringWithData()
         mockServer.enqueue(jsonData)
 

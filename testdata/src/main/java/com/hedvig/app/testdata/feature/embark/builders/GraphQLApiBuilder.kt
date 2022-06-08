@@ -5,6 +5,7 @@ import com.hedvig.android.owldroid.graphql.fragment.EmbarkLinkFragment
 import com.hedvig.android.owldroid.graphql.fragment.GraphQLErrorsFragment
 import com.hedvig.android.owldroid.graphql.fragment.GraphQLResultsFragment
 import com.hedvig.android.owldroid.graphql.fragment.GraphQLVariablesFragment
+import com.hedvig.android.owldroid.graphql.type.EmbarkAPIGraphQLGeneratedVariable
 import com.hedvig.android.owldroid.graphql.type.EmbarkAPIGraphQLSingleVariable
 import com.hedvig.android.owldroid.graphql.type.EmbarkApiGraphQLMutation
 import com.hedvig.android.owldroid.graphql.type.EmbarkApiGraphQLQuery
@@ -42,7 +43,7 @@ data class GraphQLApiBuilder(
                     },
                     variables = variables.map {
                         ApiFragment.Variable(
-                            __typename = "",
+                            __typename = EmbarkAPIGraphQLGeneratedVariable.type.name,
                             fragments = ApiFragment.Variable.Fragments(
                                 it
                             )
