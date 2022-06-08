@@ -101,7 +101,7 @@ data class PaymentDataBuilder(
         },
         activePaymentMethodsV2 = if (payinType == PayinType.ADYEN && payinConnected) {
             PaymentQuery.ActivePaymentMethodsV2(
-                __typename = "",
+                __typename = StoredCardDetails.type.name,
                 fragments = PaymentQuery.ActivePaymentMethodsV2.Fragments(
                     ActivePaymentMethodsFragment(
                         __typename = StoredCardDetails.type.name,
