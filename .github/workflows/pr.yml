@@ -140,12 +140,12 @@ jobs:
       - name: Update Jira issue with artifact URL
         if: ${{ steps.find_issue.outputs.issue != null }}
         run: |
-          mkdir -p ~/.jira/templates;
+          mkdir -p ~/.jira/templates
           cat << EOF > ~/.jira/templates/edit
           {{- if .meta.fields.customfield_10066 }}
           customfield_10066: {{.overrides.artifact_url}}
           {{- end }}
-          EOF;
+          EOF
           jira edit --issue ${{ steps.find_issue.outputs.issue }} --noedit --override artifact_url=https://github.com/actions/runs/${{ github.run_id }}
       - uses: mxschmitt/action-tmate@v3
         if: always()
