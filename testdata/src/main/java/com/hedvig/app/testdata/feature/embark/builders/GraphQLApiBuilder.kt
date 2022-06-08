@@ -80,7 +80,7 @@ data class GraphQLApiBuilder(
                     },
                     variables = variables.map {
                         ApiFragment.Variable1(
-                            __typename = EmbarkAPIGraphQLSingleVariable.type.name,
+                            __typename = it.__typename,
                             fragments = ApiFragment.Variable1.Fragments(
                                 it
                             )
