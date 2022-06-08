@@ -14,7 +14,7 @@ data class MessageBuilder(
     fun build() = MessageFragment(
         expressions = expressions.map {
             MessageFragment.Expression(
-                __typename = "", // todo one of EmbarkExpressionUnary|EmbarkExpressionBinary|EmbarkExpressionMultiple
+                __typename = it.__typename,
                 fragments = MessageFragment.Expression.Fragments(it)
             )
         },

@@ -3,7 +3,6 @@ package com.hedvig.app.testdata.feature.embark.builders
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.graphql.fragment.ApiFragment
 import com.hedvig.android.owldroid.graphql.fragment.EmbarkLinkFragment
-import com.hedvig.android.owldroid.graphql.type.EmbarkApi
 import com.hedvig.android.owldroid.graphql.type.EmbarkLink
 import com.hedvig.android.owldroid.graphql.type.EmbarkSelectAction
 
@@ -47,7 +46,7 @@ data class SelectOptionBuilder(
         badge = badge,
         api = api?.let {
             EmbarkStoryQuery.Api(
-                __typename = EmbarkApi.type.name,
+                __typename = it.__typename,
                 fragments = EmbarkStoryQuery.Api.Fragments(it)
             )
         },
