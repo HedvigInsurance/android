@@ -141,7 +141,7 @@ jobs:
         if: ${{ steps.find_issue.outputs.issue != null }}
         run: |
           mkdir -p ~/.jira.d/templates
-          cat << EOF > ~/.jira/templates/edit
+          cat << EOF > ~/.jira.d/templates/edit
           {{- if .meta.fields.customfield_10066 }}
           customfield_10066: {{.overrides.artifact_url}}
           {{- end }}
