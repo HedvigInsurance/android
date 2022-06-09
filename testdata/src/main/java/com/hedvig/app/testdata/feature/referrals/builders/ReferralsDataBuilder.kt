@@ -52,7 +52,7 @@ data class ReferralsDataBuilder(
             ),
             referredBy = referredBy?.let {
                 ReferralsQuery.ReferredBy(
-                    __typename = "",
+                    __typename = it.__typename,
                     fragments = ReferralsQuery.ReferredBy.Fragments(
                         it
                     )
@@ -60,7 +60,7 @@ data class ReferralsDataBuilder(
             },
             invitations = invitations.map {
                 ReferralsQuery.Invitation(
-                    __typename = "",
+                    __typename = it.__typename,
                     fragments = ReferralsQuery.Invitation.Fragments(
                         it
                     )
