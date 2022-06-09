@@ -8,6 +8,7 @@ import arrow.core.Either
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.home.ui.changeaddress.GetAddressChangeStoryIdUseCase.SelfChangeEligibilityResult
 import com.hedvig.app.feature.home.ui.changeaddress.GetUpcomingAgreementUseCase.UpcomingAgreementResult
+import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -23,7 +24,7 @@ abstract class ChangeAddressViewModel(
     val events = _events.receiveAsFlow()
 
     init {
-        hAnalytics.screenViewMovingFlowIntro()
+        hAnalytics.screenView(AppScreen.MOVING_FLOW_INTRO)
     }
 
     abstract fun reload()

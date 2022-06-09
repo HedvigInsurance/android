@@ -47,7 +47,9 @@ class ImpersonationReceiverActivity : AppCompatActivity() {
         loadKoinModules(module)
 
         val viewModel = getViewModel<ImpersonationReceiverViewModel> {
-            parametersOf(intent.data!!.getQueryParameter("token")!!.split("=")[1])
+            val token = intent.data?.getQueryParameter("token")?.split("=")?.get(1)
+                ?: intent?.getStringExtra("token")?.split("=")?.get(1)
+            parametersOf(token)
         }
 
         viewModel

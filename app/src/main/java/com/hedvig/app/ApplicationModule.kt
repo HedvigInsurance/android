@@ -418,9 +418,9 @@ val viewModelModule = module {
             get()
         )
     }
-    viewModel { (claimId: String) -> ClaimDetailViewModel(claimId, get(), get(), get(), get()) }
+    viewModel { (claimId: String) -> ClaimDetailViewModel(claimId, get(), get(), get()) }
     viewModel { HonestyPledgeViewModel(get()) }
-    viewModel { (commonClaimId: String) -> CommonClaimViewModel(commonClaimId, get()) }
+    viewModel { CommonClaimViewModel(get()) }
     viewModel { SplashViewModel(get()) }
     viewModel { TooltipViewModel(get()) }
     viewModel { (collectionId: String) -> AskForPriceInfoViewModel(collectionId, get()) }
@@ -447,7 +447,7 @@ val whatsNewModule = module {
 }
 
 val insuranceModule = module {
-    viewModel { InsuranceViewModel(get(), get(), get()) }
+    viewModel { InsuranceViewModel(get(), get(), get(), get()) }
     viewModel<ContractDetailViewModel> { (contractId: String) ->
         ContractDetailViewModelImpl(contractId, get(), get(), get())
     }
@@ -587,11 +587,10 @@ val externalInsuranceModule = module {
 }
 
 val insurelyAuthModule = module {
-    viewModel { (reference: String, providerId: String) ->
+    viewModel { (reference: String) ->
         InsurelyAuthViewModel(
             reference,
             get(),
-            providerId,
             get()
         )
     }

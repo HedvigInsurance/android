@@ -47,7 +47,7 @@ object OfferItemsBuilder {
             ),
         )
 
-        if (offerModel.variants.isNotEmpty()) {
+        if (offerModel.variants.size > 1) {
             add(OfferItems.VariantHeader)
             offerModel.variants.forEach {
                 add(

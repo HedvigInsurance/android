@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.hedvig.app.data.debit.PayinStatusRepository
 import com.hedvig.app.feature.profile.ui.payment.PaymentRepository
 import com.hedvig.app.util.LiveEvent
+import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.launch
 
@@ -27,7 +28,7 @@ class ConnectPaymentViewModel(
         _navigationState.postValue(screen)
         if (screen is ConnectPaymentScreenState.Result) {
             if (screen.success) {
-                hAnalytics.screenViewConnectPaymentSuccess()
+                hAnalytics.screenView(AppScreen.CONNECT_PAYMENT_SUCCESS)
                 viewModelScope.launch {
                     runCatching {
                         payinStatusRepository.refreshPayinStatus()
@@ -35,7 +36,7 @@ class ConnectPaymentViewModel(
                     }
                 }
             } else {
-                hAnalytics.screenViewConnectPaymentFailed()
+                hAnalytics.screenView(AppScreen.CONNECT_PAYMENT_FAILED)
             }
         }
     }

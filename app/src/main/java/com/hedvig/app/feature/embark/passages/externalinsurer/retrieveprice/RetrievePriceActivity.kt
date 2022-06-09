@@ -4,10 +4,12 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -59,7 +61,7 @@ class RetrievePriceInfoActivity : BaseActivity() {
                 when (event) {
                     is RetrievePriceViewModel.Event.AuthInformation -> {
                         InsurelyDialog
-                            .newInstance(event.reference, parameter.selectedInsuranceProviderCollectionId)
+                            .newInstance(event.reference)
                             .show(supportFragmentManager, AuthenticateDialog.TAG)
                     }
                 }
@@ -75,8 +77,9 @@ class RetrievePriceInfoActivity : BaseActivity() {
                             title = stringResource(R.string.insurely_title)
                         )
                     }
-                ) {
+                ) { paddingValues ->
                     RetrievePriceScreen(
+                        modifier = Modifier.padding(paddingValues),
                         viewModel = viewModel,
                         onContinue = ::onContinue
                     )
@@ -107,8 +110,9 @@ class RetrievePriceInfoActivity : BaseActivity() {
 
 @Composable
 fun RetrievePriceScreen(
-    viewModel: RetrievePriceViewModel = viewModel(),
     onContinue: (referenceResult: String?, ssn: String?) -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: RetrievePriceViewModel = viewModel(),
 ) {
     val viewState by viewModel.viewState.collectAsState()
 
@@ -123,7 +127,9 @@ fun RetrievePriceScreen(
         )
         else -> {
             FadeWhen(visible = viewState.isLoading) {
-                CenteredProgressIndicator()
+                CenteredProgressIndicator(
+                    modifier = modifier,
+                )
             }
 
             FadeWhen(visible = !viewState.isLoading) {
@@ -136,7 +142,8 @@ fun RetrievePriceScreen(
                     placeholder = viewState.market?.placeHolderRes()?.let { stringResource(it) } ?: "",
                     label = viewState.market?.labelRes()?.let { stringResource(it) } ?: "",
                     inputErrorMessage = viewState.inputError?.errorTextKey?.let { stringResource(it) },
-                    errorMessage = viewState.inputError?.errorTextKey?.let { stringResource(it) }
+                    errorMessage = viewState.inputError?.errorTextKey?.let { stringResource(it) },
+                    modifier = modifier,
                 )
             }
         }

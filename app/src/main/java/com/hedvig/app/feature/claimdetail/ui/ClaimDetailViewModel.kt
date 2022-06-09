@@ -5,9 +5,9 @@ import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.claimdetail.data.GetClaimDetailUiStateFlowUseCase
-import com.hedvig.app.feature.claimdetail.data.GetClaimDetailUseCase
 import com.hedvig.app.feature.claimdetail.model.ClaimDetailUiState
 import com.hedvig.app.util.coroutines.RetryChannel
+import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
@@ -31,14 +31,9 @@ class ClaimDetailViewModel(
     private val chatRepository: ChatRepository,
     private val getClaimDetailUiStateFlowUseCase: GetClaimDetailUiStateFlowUseCase,
     private val hAnalytics: HAnalytics,
-    getClaimDetailUseCase: GetClaimDetailUseCase,
 ) : ViewModel() {
     init {
-        viewModelScope.launch {
-            getClaimDetailUseCase.invoke(claimId).tap { result ->
-                hAnalytics.screenViewClaimsStatusDetail(claimId, result.claim.status.rawValue)
-            }
-        }
+        hAnalytics.screenView(AppScreen.CLAIMS_STATUS_DETAIL)
     }
 
     sealed class Event {

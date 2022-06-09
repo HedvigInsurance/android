@@ -1,7 +1,6 @@
 package com.hedvig.app.authenticate.insurely
 
 import android.os.Bundle
-import android.os.Parcelable
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.flowWithLifecycle
@@ -12,18 +11,17 @@ import com.hedvig.app.util.extensions.showErrorDialog
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.parcelize.Parcelize
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 class InsurelyDialog : AuthenticateDialog() {
 
-    private val parameter: InsurelyDialogParameter
-        get() = arguments?.getParcelable(PARAMETER)
+    private val reference: String
+        get() = arguments?.getString(REFERENCE)
             ?: throw IllegalArgumentException("Missing PARAMETER in ${this.javaClass.name}")
 
     private val viewModel: InsurelyAuthViewModel by viewModel {
-        parametersOf(parameter.reference, parameter.providerId)
+        parametersOf(reference)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,7 +79,7 @@ class InsurelyDialog : AuthenticateDialog() {
             bundleOf(
                 RESULT_KEY to success,
                 RESULT_REFERENCE to if (success) {
-                    parameter.reference
+                    reference
                 } else {
                     null
                 },
@@ -95,24 +93,14 @@ class InsurelyDialog : AuthenticateDialog() {
         const val REQUEST_KEY = "2452"
         const val RESULT_KEY = "2454"
         const val RESULT_REFERENCE = "2455"
-        private const val PARAMETER = "PARAMETER"
+        private const val REFERENCE = "REFERENCE"
 
         fun newInstance(
             reference: String,
-            providerId: String,
         ) = InsurelyDialog().apply {
             arguments = bundleOf(
-                PARAMETER to InsurelyDialogParameter(
-                    reference,
-                    providerId,
-                )
+                REFERENCE to reference,
             )
         }
     }
 }
-
-@Parcelize
-data class InsurelyDialogParameter(
-    val reference: String,
-    val providerId: String
-) : Parcelable

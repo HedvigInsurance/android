@@ -15,6 +15,7 @@ import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.util.LiveEvent
+import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import e
 import io.reactivex.Observable
@@ -40,7 +41,7 @@ class ChatViewModel(
 ) : ViewModel() {
 
     init {
-        hAnalytics.screenViewChat()
+        hAnalytics.screenView(AppScreen.CHAT)
     }
 
     val messages = MutableLiveData<ChatMessagesQuery.Data>()

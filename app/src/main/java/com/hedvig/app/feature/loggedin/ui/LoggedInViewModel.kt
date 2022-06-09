@@ -9,6 +9,7 @@ import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.loggedin.service.TabNotificationService
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.app.util.featureflags.flags.Feature
+import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
@@ -97,11 +98,11 @@ class LoggedInViewModelImpl(
 
     override fun onTabVisited(tab: LoggedInTabs) {
         when (tab) {
-            LoggedInTabs.HOME -> hAnalytics.screenViewHome()
-            LoggedInTabs.INSURANCE -> hAnalytics.screenViewInsurances()
+            LoggedInTabs.HOME -> hAnalytics.screenView(AppScreen.HOME)
+            LoggedInTabs.INSURANCE -> hAnalytics.screenView(AppScreen.INSURANCES)
             LoggedInTabs.KEY_GEAR -> {}
-            LoggedInTabs.REFERRALS -> hAnalytics.screenViewForever()
-            LoggedInTabs.PROFILE -> hAnalytics.screenViewProfile()
+            LoggedInTabs.REFERRALS -> hAnalytics.screenView(AppScreen.FOREVER)
+            LoggedInTabs.PROFILE -> hAnalytics.screenView(AppScreen.PROFILE)
         }
         viewModelScope.launch { tabNotificationService.visitTab(tab) }
     }
