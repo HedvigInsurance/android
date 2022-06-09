@@ -11,6 +11,7 @@ import com.apollographql.apollo3.mockserver.MockServer
 import com.apollographql.apollo3.mockserver.enqueue
 import com.apollographql.apollo3.testing.runTest
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
+import com.hedvig.app.testdata.feature.embark.data.STANDARD_STORY
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GRAPHQL_MUTATION
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GRAPHQL_MUTATION_AND_SINGLE_VARIABLE
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GRAPHQL_QUERY_API_AND_GENERATED_VARIABLE
@@ -21,7 +22,7 @@ import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_SELECT_ACTION_API_
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION_API
 import org.junit.Test
 
-class EmbarkStoryDataAlternativesParsingTest {
+class EmbarkStoryQueryParsingTest {
     private lateinit var mockServer: MockServer
     private lateinit var apolloClient: ApolloClient
 
@@ -33,6 +34,23 @@ class EmbarkStoryDataAlternativesParsingTest {
     private suspend fun after() {
         apolloClient.dispose()
         mockServer.stop()
+    }
+
+    @Test
+    fun `apollo parses a the standard story`() = runTest(
+        before = { before() },
+        after = { after() }
+    ) {
+        val originalData = STANDARD_STORY
+        val jsonData = originalData.toJsonStringWithData()
+        mockServer.enqueue(jsonData)
+
+        val response = apolloClient
+            .query(EmbarkStoryQuery("", "sv_SE"))
+            .execute()
+
+        assertThat(response.data).isNotNull()
+        assertThat(response.data!!).isEqualTo(originalData)
     }
 
     @Test

@@ -22,7 +22,7 @@ import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_HOUSE
 import org.junit.Test
 import java.time.LocalDate
 
-class InsuranceQueryParsing {
+class InsuranceQueryParsingTest {
     private lateinit var mockServer: MockServer
     private lateinit var apolloClient: ApolloClient
 
