@@ -5,7 +5,6 @@ import com.hedvig.android.owldroid.graphql.fragment.EmbarkLinkFragment
 import com.hedvig.android.owldroid.graphql.fragment.GraphQLErrorsFragment
 import com.hedvig.android.owldroid.graphql.fragment.GraphQLResultsFragment
 import com.hedvig.android.owldroid.graphql.fragment.GraphQLVariablesFragment
-import com.hedvig.android.owldroid.graphql.type.EmbarkAPIGraphQLSingleVariable
 import com.hedvig.android.owldroid.graphql.type.EmbarkApiGraphQLMutation
 import com.hedvig.android.owldroid.graphql.type.EmbarkApiGraphQLQuery
 
