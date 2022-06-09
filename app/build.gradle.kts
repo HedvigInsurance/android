@@ -139,6 +139,7 @@ android {
     }
 
     configurations.all {
+        resolutionStrategy.cacheChangingModulesFor(0, "seconds")
         resolutionStrategy.force(
             "org.hamcrest:hamcrest-core:2.1",
             "org.hamcrest:hamcrest-library:2.1",
@@ -204,7 +205,9 @@ dependencies {
     implementation(libs.apollo.adapters)
     implementation(libs.apollo.normalizedCache)
     androidTestImplementation(libs.apollo.idlingResource)
-    testImplementation(libs.apollo.mockServer)
+    testImplementation(libs.apollo.mockServer) {
+        isChanging = true
+    }
     testImplementation(libs.apollo.testingSupport)
 
     implementation(libs.arrowKt.core)
