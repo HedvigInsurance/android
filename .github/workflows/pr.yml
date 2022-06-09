@@ -153,7 +153,7 @@ jobs:
           EOF
           sudo apt-get install -y jq curl
 
-          jira edit ${{ steps.find_issue.outputs.issue }} --noedit --override artifact_url=$(curl -s https://api.github.com/repos/hedviginsurance/android/actions/runs/${{ github.run_id }} | jq ".artifacts_url" | xargs -n1 curl | jq ".artifacts[0].archive_download_url" -r)
+          jira edit ${{ steps.find_issue.outputs.issue }} --noedit --override artifact_url=$(curl -s https://api.github.com/repos/hedviginsurance/android/actions/runs/${{ github.run_id }} | jq ".html_url" -r)
       - uses: mxschmitt/action-tmate@v3
         if: always()
 
