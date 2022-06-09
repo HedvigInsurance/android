@@ -144,9 +144,11 @@ jobs:
         run: |
           mkdir -p ~/.jira.d/templates
           cat << EOF > ~/.jira.d/templates/edit
+          {{/* edit template */ -}}
+          # issue: {{ .key }} - created: {{ .fields.created | age}} ago
           fields:
           {{- if .meta.fields.customfield_10066 }}
-          customfield_10066: {{.overrides.artifact_url}}
+            customfield_10066: {{.overrides.artifact_url}}
           {{- end }}
           EOF
           sudo apt-get install -y jq curl
