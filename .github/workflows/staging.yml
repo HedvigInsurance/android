@@ -28,7 +28,7 @@ jobs:
       - uses: chkfung/android-version-actions@v1.1
         with:
           gradlePath: app/build.gradle.kts
-          versionCode: ${{ github.run_number + github.run_attempt }}
+          versionCode: ${{ github.run_number }}
       - name: Prebuild
         run: ./ci-prebuild.sh
         env:
