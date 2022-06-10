@@ -31,7 +31,7 @@ class UpcomingAgreementQueryParsing {
     }
 
     private suspend fun after() {
-        apolloClient.dispose()
+        apolloClient.close()
         mockServer.stop()
     }
 

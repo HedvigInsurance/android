@@ -31,7 +31,7 @@ class GetProviderDisplayNameUseCaseTest {
     }
 
     private suspend fun after() {
-        apolloClient.dispose()
+        apolloClient.close()
         mockServer.stop()
     }
 
