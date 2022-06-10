@@ -56,4 +56,4 @@ jobs:
           token: ${{ secrets.FIREBASE_STAGING_TOKEN }}
           appId: ${{ secrets.FIREBASE_STAGING_APP_ID }}
           file: ${{ steps.sign_app.outputs.signedReleaseFile }}
-          groups: Android Testers
+          groups: android-testers
