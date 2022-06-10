@@ -15,7 +15,7 @@ class GetProviderDisplayNameUseCase(
      * of spaces.
      * An example input is "se-demo"
      */
-    suspend operator fun invoke(insuranceCompany: String?): String? {
+    suspend fun invoke(insuranceCompany: String?): String? {
         if (insuranceCompany == null) return null
         val result = apolloClient
             .query(ProviderStatusQuery())
