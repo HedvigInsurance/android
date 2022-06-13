@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
@@ -16,6 +17,7 @@ import com.hedvig.app.feature.crossselling.model.NavigateEmbark
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.faq.FAQBottomSheet
+import com.hedvig.app.feature.home.ui.changeaddress.appendQuoteCartId
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.extensions.showErrorDialog
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,21 +41,10 @@ class CrossSellFaqActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        model.viewState.onEach { viewState ->
-            viewState.errorMessage?.let {
-                showErrorDialog(getString(R.string.component_error)) {
-                    model.dismissError()
-                }
-            }
-
-            viewState.navigateChat
-                ?.navigate(this)
-                ?.also { model.actionOpened() }
-
-            viewState.navigateEmbark
-                ?.navigate(this)
-                ?.also { model.actionOpened() }
-        }.launchIn(lifecycleScope)
+        model.viewState
+            .flowWithLifecycle(lifecycle)
+            .onEach(::handleViewState)
+            .launchIn(lifecycleScope)
 
         setContent {
             HedvigTheme {
@@ -71,6 +62,22 @@ class CrossSellFaqActivity : BaseActivity() {
                 )
             }
         }
+    }
+
+    private fun handleViewState(viewState: CrossSellFaqViewModel.ViewState) = with(viewState) {
+        errorMessage?.let {
+            showErrorDialog(getString(R.string.component_error)) {
+                model.dismissError()
+            }
+        }
+
+        navigateChat
+            ?.navigate(this@CrossSellFaqActivity)
+            ?.also { model.actionOpened() }
+
+        navigateEmbark
+            ?.navigate(this@CrossSellFaqActivity)
+            ?.also { model.actionOpened() }
     }
 
     private fun openChat() {
@@ -120,20 +127,19 @@ class CrossSellFaqViewModel(
         viewModelScope.launch {
             when (val action = crossSell.action) {
                 CrossSellData.Action.Chat -> _viewState.value = ViewState(navigateChat = NavigateChat)
-                is CrossSellData.Action.Embark -> _viewState.value = createQuoteCartViewState(action)
+                is CrossSellData.Action.Embark -> _viewState.value = action.toViewState()
             }
         }
     }
 
-    private suspend fun createQuoteCartViewState(action: CrossSellData.Action.Embark): ViewState {
-        return when (val result = action.createEmbarkStoryIdWithQuoteCart(createQuoteCartUseCase)) {
+    private suspend fun CrossSellData.Action.Embark.toViewState(): ViewState {
+        return when (val result = createQuoteCartUseCase.invoke()) {
             is Either.Left -> ViewState(errorMessage = result.value.message)
-            is Either.Right -> ViewState(
-                navigateEmbark = NavigateEmbark(
-                    result.value,
-                    action.title
-                )
-            )
+            is Either.Right -> {
+                val embarkStoryId = appendQuoteCartId(embarkStoryId, result.value.id)
+                val navigateEmbark = NavigateEmbark(embarkStoryId, title)
+                ViewState(navigateEmbark = navigateEmbark)
+            }
         }
     }
 

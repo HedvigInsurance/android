@@ -7,6 +7,7 @@ import com.hedvig.app.feature.crossselling.model.NavigateChat
 import com.hedvig.app.feature.crossselling.model.NavigateEmbark
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
+import com.hedvig.app.feature.home.ui.changeaddress.appendQuoteCartId
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,20 +39,19 @@ class CrossSellDetailViewModel(
         viewModelScope.launch {
             when (val action = crossSellAction) {
                 CrossSellData.Action.Chat -> _viewState.value = ViewState(navigateChat = NavigateChat)
-                is CrossSellData.Action.Embark -> _viewState.value = createQuoteCartViewState(action)
+                is CrossSellData.Action.Embark -> _viewState.value = action.toViewState()
             }
         }
     }
 
-    private suspend fun createQuoteCartViewState(action: CrossSellData.Action.Embark): ViewState {
-        return when (val result = action.createEmbarkStoryIdWithQuoteCart(createQuoteCartUseCase)) {
+    private suspend fun CrossSellData.Action.Embark.toViewState(): ViewState {
+        return when (val result = createQuoteCartUseCase.invoke()) {
             is Either.Left -> ViewState(errorMessage = result.value.message)
-            is Either.Right -> ViewState(
-                navigateEmbark = NavigateEmbark(
-                    result.value,
-                    action.title
-                )
-            )
+            is Either.Right -> {
+                val embarkStoryId = appendQuoteCartId(embarkStoryId, result.value.id)
+                val navigateEmbark = NavigateEmbark(embarkStoryId, title)
+                ViewState(navigateEmbark = navigateEmbark)
+            }
         }
     }
 
