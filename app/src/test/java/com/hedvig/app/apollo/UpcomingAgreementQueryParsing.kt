@@ -17,6 +17,7 @@ import com.hedvig.android.owldroid.graphql.test.UpcomingAgreementQuery_TestBuild
 import com.hedvig.android.owldroid.graphql.type.ActiveStatus
 import com.hedvig.android.owldroid.graphql.type.Locale
 import com.hedvig.android.owldroid.graphql.type.SwedishHouseAgreement
+import com.hedvig.app.testdata.feature.changeaddress.UPCOMING_AGREEMENT_NONE
 import org.junit.Test
 import java.time.LocalDate
 
@@ -169,5 +170,22 @@ class UpcomingAgreementQueryParsing {
                 .upcomingAgreementChange!!.fragments.upcomingAgreementChangeFragment.newAgreement.asAgreementCore!!
                 .activeFrom
         ).isEqualTo(LocalDate.of(2021, 4, 11))
+    }
+
+    @Test
+    fun `apollo parses an upcoming agreement response with no upcoming agreements`() = runTest(
+        before = { before() },
+        after = { after() }
+    ) {
+        val originalData = UPCOMING_AGREEMENT_NONE
+        val jsonData = originalData.toJsonStringWithData()
+        mockServer.enqueue(jsonData)
+
+        val response = apolloClient
+            .query(UpcomingAgreementQuery(Locale.en_SE))
+            .execute()
+
+        assertThat(response.data).isNotNull()
+        assertThat(response.data!!).isEqualTo(originalData)
     }
 }

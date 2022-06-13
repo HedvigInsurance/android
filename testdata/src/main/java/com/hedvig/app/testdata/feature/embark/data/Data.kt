@@ -458,7 +458,7 @@ val STORY_WITH_INCOMPATIBLE_ACTION = EmbarkStoryDataBuilder(
         STANDARD_FIRST_PASSAGE_BUILDER
             .copy(
                 action = EmbarkStoryQuery.Action(
-                    __typename = "", // todo maybe we need to put a fake typename here to show that it's incompatible
+                    __typename = "",
                     asEmbarkSelectAction = null,
                     asEmbarkTextAction = null,
                     asEmbarkTextActionSet = null,

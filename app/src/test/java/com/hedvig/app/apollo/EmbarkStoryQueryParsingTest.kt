@@ -16,6 +16,7 @@ import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GRAPHQL_MUTATION
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GRAPHQL_MUTATION_AND_SINGLE_VARIABLE
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GRAPHQL_QUERY_API_AND_GENERATED_VARIABLE
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GRAPHQL_QUERY_API_AND_SINGLE_VARIABLE
+import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_INCOMPATIBLE_ACTION
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_NUMBER_ACTION
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_PASSED_KEY_VALUE
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_SELECT_ACTION_API_MULTIPLE_OPTIONS
@@ -196,6 +197,23 @@ class EmbarkStoryQueryParsingTest {
         after = { after() }
     ) {
         val originalData = STORY_WITH_UNARY_EXPRESSIONS
+        val jsonData = originalData.toJsonStringWithData()
+        mockServer.enqueue(jsonData)
+
+        val response = apolloClient
+            .query(EmbarkStoryQuery("", "sv_SE"))
+            .execute()
+
+        assertThat(response.data).isNotNull()
+        assertThat(response.data!!).isEqualTo(originalData)
+    }
+
+    @Test
+    fun `apollo parses a story with an incompatible action`() = runTest(
+        before = { before() },
+        after = { after() }
+    ) {
+        val originalData = STORY_WITH_INCOMPATIBLE_ACTION
         val jsonData = originalData.toJsonStringWithData()
         mockServer.enqueue(jsonData)
 
