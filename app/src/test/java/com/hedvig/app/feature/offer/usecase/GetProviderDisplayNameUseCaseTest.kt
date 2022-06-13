@@ -12,9 +12,9 @@ import com.apollographql.apollo3.mockserver.MockServer
 import com.apollographql.apollo3.mockserver.enqueue
 import com.apollographql.apollo3.testing.runTest
 import com.hedvig.android.owldroid.graphql.ProviderStatusQuery
-import com.hedvig.app.CUSTOM_SCALAR_ADAPTERS
 import com.hedvig.app.apollo.toJsonStringWithData
 import com.hedvig.app.feature.offer.usecase.providerstatus.GetProviderDisplayNameUseCase
+import com.hedvig.app.util.apollo.adapter.CUSTOM_SCALAR_ADAPTERS
 import org.junit.Test
 
 class GetProviderDisplayNameUseCaseTest {

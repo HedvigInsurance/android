@@ -1,4 +1,4 @@
-package com.hedvig.app.util.apollo
+package com.hedvig.app.util.apollo.adapter
 
 import com.apollographql.apollo3.api.Adapter
 import com.apollographql.apollo3.api.CustomScalarAdapters

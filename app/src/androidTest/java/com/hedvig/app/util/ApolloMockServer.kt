@@ -8,9 +8,9 @@ import com.apollographql.apollo3.api.CustomScalarAdapters
 import com.apollographql.apollo3.api.Operation
 import com.apollographql.apollo3.api.json.buildJsonString
 import com.apollographql.apollo3.api.toJson
-import com.hedvig.app.CUSTOM_SCALAR_ADAPTERS
 import com.hedvig.app.TestApplication
 import com.hedvig.app.apolloClientModule
+import com.hedvig.app.util.apollo.adapter.CUSTOM_SCALAR_ADAPTERS
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import okhttp3.mockwebserver.Dispatcher
