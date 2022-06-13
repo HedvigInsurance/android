@@ -11,7 +11,6 @@ import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.graphql.fragment.ApiFragment
 import com.hedvig.android.owldroid.graphql.fragment.MessageFragment
 import com.hedvig.android.owldroid.graphql.type.EmbarkExternalRedirectLocation
-import com.hedvig.android.owldroid.graphql.type.EmbarkMessage
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.chat.data.ChatRepository
@@ -377,7 +376,7 @@ abstract class EmbarkViewModel(
                     text = exp.text,
                     expressions = exp.expressions.map {
                         MessageFragment.Expression(
-                            __typename = EmbarkMessage.type.name, // todo triple check this
+                            __typename = it.__typename,
                             fragments = MessageFragment.Expression.Fragments(it.fragments.expressionFragment)
                         )
                     }
@@ -393,7 +392,7 @@ abstract class EmbarkViewModel(
                     text = titleExpression.text,
                     expressions = titleExpression.expressions.map {
                         MessageFragment.Expression(
-                            __typename = EmbarkMessage.type.name, // todo triple check this
+                            __typename = it.__typename,
                             fragments = MessageFragment.Expression.Fragments(it.fragments.expressionFragment)
                         )
                     }
