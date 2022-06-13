@@ -22,11 +22,6 @@ class EmbarkStoriesBuilder(
                         discount = "25%"
                     ),
                     asEmbarkStoryMetaDataEntryWebUrlPath = null
-//                    Can only be one or the other for the typename to work
-//                    ChoosePlanQuery.AsEmbarkStoryMetaDataEntryWebUrlPath(
-//                        __typename = "",
-//                        path = ENGLISH_COMBO_WEB_PATH
-//                    )
                 )
             )
         ).build(),
