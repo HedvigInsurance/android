@@ -6,7 +6,7 @@ import com.apollographql.apollo3.api.json.JsonReader
 import com.apollographql.apollo3.api.json.JsonWriter
 import org.json.JSONObject
 
-class JSONStringAdapter : Adapter<JSONObject> {
+object JSONStringAdapter : Adapter<JSONObject> {
     override fun fromJson(reader: JsonReader, customScalarAdapters: CustomScalarAdapters): JSONObject {
         return JSONObject(reader.nextString()!!)
     }

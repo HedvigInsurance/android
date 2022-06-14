@@ -11,7 +11,7 @@ import java.time.LocalDate
  *
  * For example, the string "2011-01-02T05:19" will result in `LocalDate.of(2011, Month.JANUARY, 2)`
  */
-class PromiscuousLocalDateAdapter : Adapter<LocalDate> {
+object PromiscuousLocalDateAdapter : Adapter<LocalDate> {
     override fun fromJson(reader: JsonReader, customScalarAdapters: CustomScalarAdapters): LocalDate {
         val date = reader.nextString()!!
         val dateWithoutTimeInformation = date.take(10)
