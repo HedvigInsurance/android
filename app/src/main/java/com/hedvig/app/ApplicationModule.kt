@@ -238,6 +238,8 @@ import timber.log.Timber
 import java.time.Clock
 import java.util.Locale
 import java.util.concurrent.TimeUnit
+import kotlin.math.pow
+import kotlinx.coroutines.delay
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APPLICATION_ID == "com.hedvig.test.app"
 
@@ -301,8 +303,12 @@ val applicationModule = module {
             .httpServerUrl(get<HedvigApplication>().graphqlUrl)
             .webSocketServerUrl(get<HedvigApplication>().graphqlSubscriptionUrl)
             .okHttpClient(get<OkHttpClient>())
-            .webSocketReopenWhen { throwable, _ ->
+            .webSocketReopenWhen { throwable, reconnectAttempt ->
                 if (throwable is ReopenSubscriptionException) {
+                    return@webSocketReopenWhen true
+                }
+                if (reconnectAttempt < 3) {
+                    delay(2.0.pow(reconnectAttempt.toDouble()).toLong()) // Retry after 1 - 2 - 4 seconds
                     return@webSocketReopenWhen true
                 }
                 false
