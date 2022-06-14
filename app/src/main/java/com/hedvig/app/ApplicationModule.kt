@@ -227,6 +227,7 @@ import com.hedvig.app.util.featureflags.loginmethod.HAnalyticsLoginMethodProvide
 import com.hedvig.app.util.featureflags.paymenttype.DevPaymentTypeProvider
 import com.hedvig.app.util.featureflags.paymenttype.HAnalyticsPaymentTypeProvider
 import com.hedvig.hanalytics.HAnalytics
+import kotlinx.coroutines.delay
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidApplication
@@ -239,7 +240,6 @@ import java.time.Clock
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlin.math.pow
-import kotlinx.coroutines.delay
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APPLICATION_ID == "com.hedvig.test.app"
 
@@ -537,7 +537,7 @@ val referralsModule = module {
 
 val homeModule = module {
     single<HomeItemsBuilder> { HomeItemsBuilder(get()) }
-    viewModel<HomeViewModel> { HomeViewModelImpl(get(), get(), get(), get()) }
+    viewModel<HomeViewModel> { HomeViewModelImpl(get(), get(), get()) }
 }
 
 val connectPaymentModule = module {
