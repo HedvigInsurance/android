@@ -18,6 +18,7 @@ import com.hedvig.android.owldroid.graphql.type.ActiveStatus
 import com.hedvig.android.owldroid.graphql.type.Locale
 import com.hedvig.android.owldroid.graphql.type.SwedishHouseAgreement
 import com.hedvig.app.testdata.feature.changeaddress.UPCOMING_AGREEMENT_NONE
+import com.hedvig.app.util.apollo.adapter.CUSTOM_SCALAR_ADAPTERS
 import org.junit.Test
 import java.time.LocalDate
 
@@ -28,7 +29,8 @@ class UpcomingAgreementQueryParsing {
 
     private suspend fun before() {
         mockServer = MockServer()
-        apolloClient = ApolloClient.Builder().serverUrl(mockServer.url()).build()
+        apolloClient =
+            ApolloClient.Builder().customScalarAdapters(CUSTOM_SCALAR_ADAPTERS).serverUrl(mockServer.url()).build()
     }
 
     private suspend fun after() {

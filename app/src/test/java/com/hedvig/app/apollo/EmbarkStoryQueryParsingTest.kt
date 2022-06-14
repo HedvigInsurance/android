@@ -22,6 +22,7 @@ import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_PASSED_KEY_VALUE
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_SELECT_ACTION_API_MULTIPLE_OPTIONS
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION_API
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_UNARY_EXPRESSIONS
+import com.hedvig.app.util.apollo.adapter.CUSTOM_SCALAR_ADAPTERS
 import org.junit.Test
 
 class EmbarkStoryQueryParsingTest {
@@ -30,7 +31,8 @@ class EmbarkStoryQueryParsingTest {
 
     private suspend fun before() {
         mockServer = MockServer()
-        apolloClient = ApolloClient.Builder().serverUrl(mockServer.url()).build()
+        apolloClient =
+            ApolloClient.Builder().customScalarAdapters(CUSTOM_SCALAR_ADAPTERS).serverUrl(mockServer.url()).build()
     }
 
     private suspend fun after() {

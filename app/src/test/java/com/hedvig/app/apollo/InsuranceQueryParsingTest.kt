@@ -28,7 +28,8 @@ class InsuranceQueryParsingTest {
 
     private suspend fun before() {
         mockServer = MockServer()
-        apolloClient = ApolloClient.Builder().serverUrl(mockServer.url()).build()
+        apolloClient =
+            ApolloClient.Builder().customScalarAdapters(CUSTOM_SCALAR_ADAPTERS).serverUrl(mockServer.url()).build()
     }
 
     private suspend fun after() {
@@ -178,8 +179,8 @@ class InsuranceQueryParsingTest {
         val testBuilderData = INSURANCE_DATA_from_test_builder
         val ownBuilderData = INSURANCE_DATA
 
-        val testBuilderJson = testBuilderData.toJsonStringWithData(CUSTOM_SCALAR_ADAPTERS)
-        val ownBuilderJson = ownBuilderData.toJsonStringWithData(CUSTOM_SCALAR_ADAPTERS)
+        val testBuilderJson = testBuilderData.toJsonStringWithData()
+        val ownBuilderJson = ownBuilderData.toJsonStringWithData()
 
         println("testBuilderJson: $testBuilderJson")
         println("ownBuilderJson : $ownBuilderJson")
@@ -192,7 +193,7 @@ class InsuranceQueryParsingTest {
         after = { after() }
     ) {
         val originalData = INSURANCE_DATA_from_test_builder
-        val jsonData = originalData.toJsonStringWithData(CUSTOM_SCALAR_ADAPTERS)
+        val jsonData = originalData.toJsonStringWithData()
         mockServer.enqueue(jsonData)
 
         val response = apolloClient

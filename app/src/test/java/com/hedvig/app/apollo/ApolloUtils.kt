@@ -6,9 +6,10 @@ import com.apollographql.apollo3.api.Operation
 import com.apollographql.apollo3.api.json.buildJsonString
 import com.apollographql.apollo3.api.toJson
 import com.apollographql.apollo3.api.toJsonString
+import com.hedvig.app.util.apollo.adapter.CUSTOM_SCALAR_ADAPTERS
 
 fun Operation.Data.toJsonStringWithData(
-    customScalarAdapters: CustomScalarAdapters = CustomScalarAdapters.Empty,
+    customScalarAdapters: CustomScalarAdapters = CUSTOM_SCALAR_ADAPTERS,
 ): String {
     return buildJsonString {
         beginObject()

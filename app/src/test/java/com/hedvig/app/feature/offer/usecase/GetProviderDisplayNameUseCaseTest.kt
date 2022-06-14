@@ -14,7 +14,6 @@ import com.apollographql.apollo3.testing.runTest
 import com.hedvig.android.owldroid.graphql.ProviderStatusQuery
 import com.hedvig.app.apollo.toJsonStringWithData
 import com.hedvig.app.feature.offer.usecase.providerstatus.GetProviderDisplayNameUseCase
-import com.hedvig.app.util.apollo.adapter.CUSTOM_SCALAR_ADAPTERS
 import org.junit.Test
 
 class GetProviderDisplayNameUseCaseTest {
@@ -59,7 +58,7 @@ class GetProviderDisplayNameUseCaseTest {
         after = { after() },
     ) {
         val useCase = GetProviderDisplayNameUseCase(apolloClient)
-        mockServer.enqueue(mockedResponse.toJsonStringWithData(CUSTOM_SCALAR_ADAPTERS))
+        mockServer.enqueue(mockedResponse.toJsonStringWithData())
 
         assertThat(useCase.invoke("random unrelated text")).isNull()
     }
@@ -70,7 +69,7 @@ class GetProviderDisplayNameUseCaseTest {
         after = { after() },
     ) {
         val useCase = GetProviderDisplayNameUseCase(apolloClient)
-        mockServer.enqueue(mockedResponse.toJsonStringWithData(CUSTOM_SCALAR_ADAPTERS))
+        mockServer.enqueue(mockedResponse.toJsonStringWithData())
 
         assert(useCase.invoke("se-ica") == "ICA")
         assert(useCase.invoke("se-trygg-hansa") == "Trygg-Hansa")

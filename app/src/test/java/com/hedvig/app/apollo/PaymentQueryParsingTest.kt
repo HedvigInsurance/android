@@ -13,6 +13,7 @@ import com.apollographql.apollo3.testing.runTest
 import com.hedvig.android.owldroid.graphql.PaymentQuery
 import com.hedvig.android.owldroid.graphql.type.Locale
 import com.hedvig.app.testdata.feature.payment.PAYMENT_DATA_ADYEN_CONNECTED
+import com.hedvig.app.util.apollo.adapter.CUSTOM_SCALAR_ADAPTERS
 import org.junit.Test
 
 class PaymentQueryParsingTest {
@@ -21,7 +22,8 @@ class PaymentQueryParsingTest {
 
     private suspend fun before() {
         mockServer = MockServer()
-        apolloClient = ApolloClient.Builder().serverUrl(mockServer.url()).build()
+        apolloClient =
+            ApolloClient.Builder().customScalarAdapters(CUSTOM_SCALAR_ADAPTERS).serverUrl(mockServer.url()).build()
     }
 
     private suspend fun after() {

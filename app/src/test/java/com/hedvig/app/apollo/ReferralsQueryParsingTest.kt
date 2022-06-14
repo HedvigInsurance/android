@@ -12,6 +12,7 @@ import com.apollographql.apollo3.mockserver.enqueue
 import com.apollographql.apollo3.testing.runTest
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES
+import com.hedvig.app.util.apollo.adapter.CUSTOM_SCALAR_ADAPTERS
 import org.junit.Test
 
 class ReferralsQueryParsingTest {
@@ -20,7 +21,8 @@ class ReferralsQueryParsingTest {
 
     private suspend fun before() {
         mockServer = MockServer()
-        apolloClient = ApolloClient.Builder().serverUrl(mockServer.url()).build()
+        apolloClient =
+            ApolloClient.Builder().customScalarAdapters(CUSTOM_SCALAR_ADAPTERS).serverUrl(mockServer.url()).build()
     }
 
     private suspend fun after() {

@@ -124,7 +124,7 @@ class ApolloMockServerResponseBuilder(
     }
 
     fun success(operationData: Operation.Data): ApolloMockServerResult.GraphQLResponse {
-        val dataJsonString = operationData.toJsonStringWithData(CUSTOM_SCALAR_ADAPTERS)
+        val dataJsonString = operationData.toJsonStringWithData()
         return ApolloMockServerResult.GraphQLResponse(dataJsonString)
     }
 
@@ -173,7 +173,7 @@ private fun constructTestApolloModule(
 }
 
 private fun Operation.Data.toJsonStringWithData(
-    customScalarAdapters: CustomScalarAdapters = CustomScalarAdapters.Empty,
+    customScalarAdapters: CustomScalarAdapters = CUSTOM_SCALAR_ADAPTERS,
 ): String {
     return buildJsonString {
         beginObject()
