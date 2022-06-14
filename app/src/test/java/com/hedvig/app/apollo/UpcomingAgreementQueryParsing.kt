@@ -4,7 +4,6 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.adapter.JavaLocalDateAdapter
 import com.apollographql.apollo3.annotations.ApolloExperimental
 import com.apollographql.apollo3.mockserver.MockServer
 import com.apollographql.apollo3.mockserver.enqueue
@@ -19,6 +18,7 @@ import com.hedvig.android.owldroid.graphql.type.Locale
 import com.hedvig.android.owldroid.graphql.type.SwedishHouseAgreement
 import com.hedvig.app.testdata.feature.changeaddress.UPCOMING_AGREEMENT_NONE
 import com.hedvig.app.util.apollo.adapter.CUSTOM_SCALAR_ADAPTERS
+import com.hedvig.app.util.apollo.adapter.PromiscuousLocalDateAdapter
 import org.junit.Test
 import java.time.LocalDate
 
@@ -119,7 +119,7 @@ class UpcomingAgreementQueryParsing {
                         this.upcomingAgreementChange = this.upcomingAgreementChange {
                             this.newAgreement = this.agreementCoreNewAgreement {
                                 this.__typename = "SwedishHouseAgreement"
-                                this.activeFrom = JavaLocalDateAdapter.toJsonStringForTestBuilder(
+                                this.activeFrom = PromiscuousLocalDateAdapter.toJsonStringForTestBuilder(
                                     LocalDate.of(2021, 4, 11)
                                 )
                             }

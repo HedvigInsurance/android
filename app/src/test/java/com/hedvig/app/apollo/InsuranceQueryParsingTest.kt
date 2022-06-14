@@ -6,7 +6,6 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.adapter.JavaLocalDateAdapter
 import com.apollographql.apollo3.annotations.ApolloExperimental
 import com.apollographql.apollo3.mockserver.MockServer
 import com.apollographql.apollo3.mockserver.enqueue
@@ -19,6 +18,7 @@ import com.hedvig.app.testdata.dashboard.INSURANCE_DATA
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_TERMINATED
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_HOUSE
 import com.hedvig.app.util.apollo.adapter.CUSTOM_SCALAR_ADAPTERS
+import com.hedvig.app.util.apollo.adapter.PromiscuousLocalDateAdapter
 import org.junit.Test
 import java.time.LocalDate
 
@@ -55,14 +55,14 @@ class InsuranceQueryParsingTest {
                         }
                     }
                     status = activeStatusStatus {
-                        pastInception = JavaLocalDateAdapter.toJsonStringForTestBuilder(
+                        pastInception = PromiscuousLocalDateAdapter.toJsonStringForTestBuilder(
                             LocalDate.of(2021, 1, 6)
                         )
                         upcomingAgreementChange = null
                     }
                     displayName = "Hemförsäkring"
                     upcomingRenewal = upcomingRenewal {
-                        renewalDate = JavaLocalDateAdapter.toJsonStringForTestBuilder(
+                        renewalDate = PromiscuousLocalDateAdapter.toJsonStringForTestBuilder(
                             LocalDate.of(2021, 5, 6)
                         )
                         draftCertificateUrl = "https://www.example.com"
