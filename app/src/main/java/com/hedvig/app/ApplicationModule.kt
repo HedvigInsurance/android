@@ -20,6 +20,7 @@ import com.apollographql.apollo3.cache.normalized.api.NormalizedCacheFactory
 import com.apollographql.apollo3.cache.normalized.normalizedCache
 import com.apollographql.apollo3.interceptor.ApolloInterceptor
 import com.apollographql.apollo3.network.okHttpClient
+import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
 import com.google.firebase.messaging.FirebaseMessaging
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.authenticate.DeviceIdDataStore
@@ -295,8 +296,9 @@ val applicationModule = module {
     }
     single<SunsettingInterceptor> { SunsettingInterceptor(get()) } bind ApolloInterceptor::class
     single<ApolloClient.Builder> {
-        val builder: ApolloClient.Builder = ApolloClient.Builder()
-            .serverUrl(get<HedvigApplication>().graphqlUrl)
+        val interceptors = getAll<ApolloInterceptor>().distinct()
+        ApolloClient.Builder()
+            .httpServerUrl(get<HedvigApplication>().graphqlUrl)
             .webSocketServerUrl(get<HedvigApplication>().graphqlSubscriptionUrl)
             .okHttpClient(get<OkHttpClient>())
             .webSocketReopenWhen { throwable, _ ->
@@ -305,10 +307,16 @@ val applicationModule = module {
                 }
                 false
             }
-        builder.normalizedCache(get<NormalizedCacheFactory>())
-        builder.customScalarAdapters(CUSTOM_SCALAR_ADAPTERS)
-        val interceptors = getAll<ApolloInterceptor>().distinct()
-        builder.addInterceptors(interceptors)
+            .wsProtocol(
+                SubscriptionWsProtocol.Factory(
+                    connectionPayload = {
+                        mapOf("Authorization" to get<AuthenticationTokenService>().authenticationToken)
+                    }
+                )
+            )
+            .normalizedCache(get<NormalizedCacheFactory>())
+            .customScalarAdapters(CUSTOM_SCALAR_ADAPTERS)
+            .addInterceptors(interceptors)
     }
 }
 
@@ -523,7 +531,7 @@ val referralsModule = module {
 
 val homeModule = module {
     single<HomeItemsBuilder> { HomeItemsBuilder(get()) }
-    viewModel<HomeViewModel> { HomeViewModelImpl(get(), get(), get()) }
+    viewModel<HomeViewModel> { HomeViewModelImpl(get(), get(), get(), get()) }
 }
 
 val connectPaymentModule = module {
