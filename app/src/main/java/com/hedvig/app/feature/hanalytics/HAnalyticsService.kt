@@ -49,7 +49,7 @@ class HAnalyticsServiceImpl(
             .build()
         withContext(Dispatchers.IO) {
             try {
-                okHttpClient.newCall(eventRequest).await()
+                okHttpClient.newCall(eventRequest).execute()
             } catch (ignored: IOException) {
             }
         }

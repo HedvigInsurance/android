@@ -28,13 +28,13 @@ class HowClaimsWorkTest : TestCase() {
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.QUERY_DOCUMENT to apolloResponse {
+        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
             success(LOGGED_IN_DATA)
         },
-        HomeQuery.QUERY_DOCUMENT to apolloResponse {
+        HomeQuery.OPERATION_DOCUMENT to apolloResponse {
             success(HOME_DATA_ACTIVE)
         },
-        PayinStatusQuery.QUERY_DOCUMENT to apolloResponse {
+        PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse {
             success(
                 PAYIN_STATUS_DATA_ACTIVE
             )

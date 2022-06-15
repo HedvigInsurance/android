@@ -1,7 +1,7 @@
 package com.hedvig.app.testdata.feature.onboarding.builders
 
 import com.hedvig.android.owldroid.graphql.ChoosePlanQuery
-import com.hedvig.android.owldroid.type.EmbarkStoryType
+import com.hedvig.android.owldroid.graphql.type.EmbarkStoryType
 
 class EmbarkStoryBuilder(
     val name: String = ENGLISH_COMBO,
@@ -9,14 +9,17 @@ class EmbarkStoryBuilder(
     val description: String = "Get your price",
     val metadata: List<ChoosePlanQuery.Metadatum> = listOf(
         ChoosePlanQuery.Metadatum(
+            __typename = "",
             asEmbarkStoryMetadataEntryDiscount = ChoosePlanQuery.AsEmbarkStoryMetadataEntryDiscount(
+                __typename = "",
                 discount = "25%"
             ),
             asEmbarkStoryMetaDataEntryWebUrlPath = ChoosePlanQuery.AsEmbarkStoryMetaDataEntryWebUrlPath(
+                __typename = "",
                 path = ENGLISH_COMBO_WEB_PATH
             )
         )
-    )
+    ),
 ) {
     fun build() = ChoosePlanQuery.EmbarkStory(
         name = name,

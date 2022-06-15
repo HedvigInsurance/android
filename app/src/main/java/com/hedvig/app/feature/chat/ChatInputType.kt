@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.chat
 
-import com.hedvig.android.owldroid.fragment.ChatMessageFragment
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
-import com.hedvig.android.owldroid.type.KeyboardType
+import com.hedvig.android.owldroid.graphql.fragment.ChatMessageFragment
+import com.hedvig.android.owldroid.graphql.type.KeyboardType
 import e
 
 sealed class ChatInputType {

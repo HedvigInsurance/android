@@ -31,14 +31,14 @@ apollo {
         generateOptionalOperationVariables.set(false)
 
         mapScalarToKotlinString("URL")
-        mapScalar("LocalDate", "java.time.LocalDate")
-        mapScalarToUpload("Upload")
-        mapScalar("PaymentMethodsResponse", "com.adyen.checkout.components.model.PaymentMethodsApiResponse")
         mapScalarToKotlinString("CheckoutPaymentsAction")
         mapScalarToKotlinString("CheckoutPaymentAction")
-        mapScalar("JSONString", "org.json.JSONObject")
-        mapScalar("Instant", "java.time.Instant")
+        mapScalarToUpload("Upload")
+        mapScalar("LocalDate", "java.time.LocalDate", "com.apollographql.apollo3.adapter.JavaLocalDateTimeAdapter")
+        mapScalar("Instant", "java.time.Instant", "com.apollographql.apollo3.adapter.JavaInstantAdapter")
 
+        mapScalar("JSONString", "org.json.JSONObject")
+        mapScalar("PaymentMethodsResponse", "com.adyen.checkout.components.model.PaymentMethodsApiResponse")
         sealedClassesForEnumsMatching.set(
             listOf(
                 "TypeOfContract",

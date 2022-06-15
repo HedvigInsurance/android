@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.faq
 
 import android.os.Parcelable
-import com.hedvig.android.owldroid.fragment.CrossSellFragment
-import com.hedvig.android.owldroid.fragment.QuoteBundleFragment
+import com.hedvig.android.owldroid.graphql.fragment.CrossSellFragment
+import com.hedvig.android.owldroid.graphql.fragment.QuoteBundleFragment
 import com.hedvig.app.feature.offer.model.quotebundle.QuoteBundle
 import com.hedvig.app.util.safeLet
 import kotlinx.parcelize.Parcelize

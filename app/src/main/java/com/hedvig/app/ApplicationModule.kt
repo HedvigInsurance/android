@@ -15,13 +15,12 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.decode.SvgDecoder
 import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.cache.normalized.NormalizedCacheFactory
-import com.apollographql.apollo3.cache.normalized.lru.EvictionPolicy
-import com.apollographql.apollo3.cache.normalized.lru.LruNormalizedCache
-import com.apollographql.apollo3.cache.normalized.lru.LruNormalizedCacheFactory
-import com.apollographql.apollo3.interceptor.ApolloInterceptorFactory
-import com.apollographql.apollo3.subscription.SubscriptionConnectionParams
-import com.apollographql.apollo3.subscription.WebSocketSubscriptionTransport
+import com.apollographql.apollo3.cache.normalized.api.MemoryCacheFactory
+import com.apollographql.apollo3.cache.normalized.api.NormalizedCacheFactory
+import com.apollographql.apollo3.cache.normalized.logCacheMisses
+import com.apollographql.apollo3.cache.normalized.normalizedCache
+import com.apollographql.apollo3.interceptor.ApolloInterceptor
+import com.apollographql.apollo3.network.okHttpClient
 import com.google.firebase.messaging.FirebaseMessaging
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.authenticate.DeviceIdDataStore
@@ -212,10 +211,10 @@ import com.hedvig.app.service.push.senders.NotificationSender
 import com.hedvig.app.service.push.senders.PaymentNotificationSender
 import com.hedvig.app.service.push.senders.ReferralsNotificationSender
 import com.hedvig.app.util.LocaleManager
-import com.hedvig.app.util.apollo.ApolloTimberLogger
 import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.apollo.DeviceIdInterceptor
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
+import com.hedvig.app.util.apollo.ReopenSubscriptionException
 import com.hedvig.app.util.apollo.SunsettingInterceptor
 import com.hedvig.app.util.featureflags.ClearHAnalyticsExperimentsCacheUseCase
 import com.hedvig.app.util.featureflags.FeatureManager
@@ -227,6 +226,7 @@ import com.hedvig.app.util.featureflags.loginmethod.HAnalyticsLoginMethodProvide
 import com.hedvig.app.util.featureflags.paymenttype.DevPaymentTypeProvider
 import com.hedvig.app.util.featureflags.paymenttype.HAnalyticsPaymentTypeProvider
 import com.hedvig.hanalytics.HAnalytics
+import d
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidApplication
@@ -243,14 +243,10 @@ fun isDebug() = BuildConfig.DEBUG || BuildConfig.APPLICATION_ID == "com.hedvig.t
 
 val applicationModule = module {
     single { androidApplication() as HedvigApplication }
-    single<NormalizedCacheFactory<LruNormalizedCache>> {
-        LruNormalizedCacheFactory(
-            EvictionPolicy.builder().maxSizeBytes(
-                (1000 * 1024).toLong()
-            ).build()
-        )
+    single<MemoryCacheFactory> {
+        MemoryCacheFactory(maxSizeBytes = 10 * 1024 * 1024)
     }
-    single {
+    single<OkHttpClient> {
         val marketManager = get<MarketManager>()
         val context = get<Context>()
         val builder = OkHttpClient.Builder()
@@ -298,33 +294,31 @@ val applicationModule = module {
         }
         builder.build()
     }
-    single { SunsettingInterceptor.Factory(get()) } bind ApolloInterceptorFactory::class
-    single {
-        val builder = ApolloClient.Builder()
-            .serverUrl(get<HedvigApplication>().graphqlUrl)
-            .okHttpClient(get())
-            .subscriptionConnectionParams {
-                SubscriptionConnectionParams(
-                    mapOf("Authorization" to get<AuthenticationTokenService>().authenticationToken)
-                )
-            }
-            .subscriptionTransportFactory(
-                WebSocketSubscriptionTransport.Factory(
-                    get<HedvigApplication>().graphqlSubscriptionUrl,
-                    get<OkHttpClient>()
-                )
-            )
-            .normalizedCache(get())
-
-        CUSTOM_TYPE_ADAPTERS.customAdapters.forEach { (t, a) -> builder.addCustomTypeAdapter(t, a) }
-
-        getAll<ApolloInterceptorFactory>().distinct().forEach {
-            builder.addApplicationInterceptorFactory(it)
-        }
-
+    single<SunsettingInterceptor> { SunsettingInterceptor(get()) } bind ApolloInterceptor::class
+    single<ApolloClient> {
+        val builder: ApolloClient.Builder = ApolloClient.Builder()
         if (isDebug()) {
-            builder.logger(ApolloTimberLogger())
+            builder.logCacheMisses { log: String ->
+                d { "Apollo::logCacheMisses: $log" }
+            }
         }
+        builder
+            .serverUrl(get<HedvigApplication>().graphqlUrl)
+            .webSocketServerUrl(get<HedvigApplication>().graphqlSubscriptionUrl)
+            .okHttpClient(get<OkHttpClient>())
+            .webSocketReopenWhen { throwable, _ ->
+                if (throwable is ReopenSubscriptionException) {
+                    return@webSocketReopenWhen true
+                }
+                false
+            }
+        builder.normalizedCache(get<NormalizedCacheFactory>())
+
+        builder.customScalarAdapters(CUSTOM_SCALAR_ADAPTERS)
+
+        val interceptors = getAll<ApolloInterceptor>().distinct()
+        builder.addInterceptors(interceptors)
+
         builder.build()
     }
 }

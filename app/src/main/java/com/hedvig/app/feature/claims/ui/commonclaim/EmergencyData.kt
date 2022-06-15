@@ -2,7 +2,7 @@ package com.hedvig.app.feature.claims.ui.commonclaim
 
 import android.os.Parcelable
 import com.hedvig.android.owldroid.graphql.HomeQuery
-import com.hedvig.android.owldroid.type.HedvigColor
+import com.hedvig.android.owldroid.graphql.type.HedvigColor
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import kotlinx.parcelize.Parcelize
 

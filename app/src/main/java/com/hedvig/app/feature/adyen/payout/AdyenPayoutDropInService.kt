@@ -4,8 +4,8 @@ import com.adyen.checkout.components.ActionComponentData
 import com.adyen.checkout.components.PaymentComponentState
 import com.adyen.checkout.dropin.service.DropInService
 import com.adyen.checkout.dropin.service.DropInServiceResult
-import com.hedvig.android.owldroid.type.PayoutMethodStatus
-import com.hedvig.android.owldroid.type.TokenizationResultType
+import com.hedvig.android.owldroid.graphql.type.PayoutMethodStatus
+import com.hedvig.android.owldroid.graphql.type.TokenizationResultType
 import com.hedvig.app.feature.adyen.AdyenRepository
 import com.hedvig.app.feature.adyen.ConnectPayoutUseCase
 import com.hedvig.app.feature.adyen.SubmitAdditionalPaymentDetailsUseCase
@@ -53,7 +53,7 @@ class AdyenPayoutDropInService : DropInService(), CoroutineScope {
 
     override fun onPaymentsCallRequested(
         paymentComponentState: PaymentComponentState<*>,
-        paymentComponentJson: JSONObject
+        paymentComponentJson: JSONObject,
     ) {
         launch(coroutineContext) {
             connectPayoutUseCase.connectPayout(paymentComponentJson)

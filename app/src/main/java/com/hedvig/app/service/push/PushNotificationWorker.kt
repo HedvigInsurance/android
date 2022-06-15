@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.coroutines.await
 import com.hedvig.android.owldroid.graphql.RegisterPushTokenMutation
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import e
@@ -47,8 +46,8 @@ class PushNotificationWorker(
 
         val response = runCatching {
             apolloClient
-                .mutate(RegisterPushTokenMutation(pushToken))
-                .await()
+                .mutation(RegisterPushTokenMutation(pushToken))
+                .execute()
         }
         if (response.isFailure) {
             response.exceptionOrNull()

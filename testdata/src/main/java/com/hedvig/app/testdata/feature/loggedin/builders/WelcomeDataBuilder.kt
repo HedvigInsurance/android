@@ -1,7 +1,7 @@
 package com.hedvig.app.testdata.feature.loggedin.builders
 
-import com.hedvig.android.owldroid.fragment.IconVariantsFragment
 import com.hedvig.android.owldroid.graphql.WelcomeQuery
+import com.hedvig.android.owldroid.graphql.fragment.IconVariantsFragment
 
 data class WelcomeDataBuilder(
     val pages: List<WelcomeQuery.Welcome> = listOf(
@@ -20,6 +20,7 @@ data class WelcomePageBuilder(
     fun build() = WelcomeQuery.Welcome(
         illustration = WelcomeQuery.Illustration(
             variants = WelcomeQuery.Variants(
+                __typename = "",
                 fragments = WelcomeQuery.Variants.Fragments(
                     IconVariantsFragment(
                         dark = IconVariantsFragment.Dark(

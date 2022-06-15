@@ -1,12 +1,11 @@
 package com.hedvig.app.util.apollo
 
-import com.apollographql.apollo3.api.internal.json.JsonWriter
-import com.apollographql.apollo3.api.internal.network.ContentType
-import com.apollographql.apollo3.internal.interceptor.ApolloServerInterceptor
+import com.apollographql.apollo3.api.json.BufferedSinkJsonWriter
 import com.hedvig.app.HedvigApplication
 import com.hedvig.app.service.FileService
 import com.hedvig.app.util.jsonObjectOfNotNull
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -49,7 +48,7 @@ class GraphQLQueryHandler(
             .newCall(
                 Request.Builder()
                     .url(application.graphqlUrl)
-                    .header("Content-Type", ContentType.APPLICATION_JSON)
+                    .header("Content-Type", "application/json")
                     .post(requestBody)
                     .build()
             ).safeGraphqlCall()
@@ -87,7 +86,7 @@ class GraphQLQueryHandler(
             .addFormDataPart(
                 name = "map",
                 filename = null,
-                body = buffer.readByteString().toRequestBody(ApolloServerInterceptor.MEDIA_TYPE)
+                body = buffer.readByteString().toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull()),
             )
 
         variables.forEachIndexed { i, variable ->
@@ -105,7 +104,7 @@ class GraphQLQueryHandler(
 
     private fun createFileMap(fileVariables: List<FileVariable>): Buffer {
         val buffer = Buffer()
-        val jsonWriter = JsonWriter.of(buffer)
+        val jsonWriter = BufferedSinkJsonWriter(buffer)
         jsonWriter.beginObject()
         fileVariables.forEachIndexed { i, variable ->
             jsonWriter.name(i.toString()).beginArray()

@@ -16,7 +16,7 @@ class RedeemReferralCodeRepository(
         campaignCode: CampaignCode
     ): Either<ErrorMessage, RedeemReferralCodeMutation.Data?> {
         return apolloClient
-            .mutate(RedeemReferralCodeMutation(campaignCode.code, localeManager.defaultLocale()))
+            .mutation(RedeemReferralCodeMutation(campaignCode.code, localeManager.defaultLocale()))
             .safeQuery()
             .toEither()
             .mapLeft { ErrorMessage(it.message) }

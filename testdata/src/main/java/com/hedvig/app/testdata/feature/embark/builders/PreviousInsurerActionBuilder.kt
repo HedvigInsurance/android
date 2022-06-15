@@ -1,18 +1,20 @@
 package com.hedvig.app.testdata.feature.embark.builders
 
-import com.hedvig.android.owldroid.fragment.EmbarkLinkFragment
-import com.hedvig.android.owldroid.fragment.IconVariantsFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
+import com.hedvig.android.owldroid.graphql.fragment.EmbarkLinkFragment
+import com.hedvig.android.owldroid.graphql.fragment.IconVariantsFragment
 
 data class PreviousInsurerActionBuilder(
     val storeKey: String = "BAR",
     val next: EmbarkLinkFragment,
 ) {
     fun build() = EmbarkStoryQuery.Action(
+        __typename = "",
         asEmbarkSelectAction = null,
         asEmbarkTextAction = null,
         asEmbarkTextActionSet = null,
         asEmbarkPreviousInsuranceProviderAction = EmbarkStoryQuery.AsEmbarkPreviousInsuranceProviderAction(
+            __typename = "",
             previousInsurerData = EmbarkStoryQuery.PreviousInsurerData(
                 insuranceProviders = listOf(
                     EmbarkStoryQuery.InsuranceProvider(
@@ -20,6 +22,7 @@ data class PreviousInsurerActionBuilder(
                         name = "IF",
                         logo = EmbarkStoryQuery.Logo(
                             variants = EmbarkStoryQuery.Variants(
+                                __typename = "",
                                 fragments = EmbarkStoryQuery.Variants.Fragments(
                                     iconVariantsFragment = IconVariantsFragment(
                                         dark = IconVariantsFragment.Dark(svgUrl = ""),
@@ -34,6 +37,7 @@ data class PreviousInsurerActionBuilder(
                         name = "Trygg-Hansa",
                         logo = EmbarkStoryQuery.Logo(
                             variants = EmbarkStoryQuery.Variants(
+                                __typename = "",
                                 fragments = EmbarkStoryQuery.Variants.Fragments(
                                     iconVariantsFragment = IconVariantsFragment(
                                         dark = IconVariantsFragment.Dark(svgUrl = ""),
@@ -50,6 +54,7 @@ data class PreviousInsurerActionBuilder(
                         name = "Folksam",
                         logo = EmbarkStoryQuery.Logo(
                             variants = EmbarkStoryQuery.Variants(
+                                __typename = "",
                                 fragments = EmbarkStoryQuery.Variants.Fragments(
                                     iconVariantsFragment = IconVariantsFragment(
                                         dark = IconVariantsFragment.Dark(svgUrl = ""),
@@ -61,8 +66,12 @@ data class PreviousInsurerActionBuilder(
                     )
                 ),
                 storeKey = storeKey,
-                next = EmbarkStoryQuery.Next(fragments = EmbarkStoryQuery.Next.Fragments(next)),
+                next = EmbarkStoryQuery.Next(
+                    __typename = "",
+                    fragments = EmbarkStoryQuery.Next.Fragments(next)
+                ),
                 skip = EmbarkStoryQuery.Skip(
+                    __typename = "",
                     fragments = EmbarkStoryQuery.Skip.Fragments(
                         EmbarkLinkFragment(
                             name = "test_skip",

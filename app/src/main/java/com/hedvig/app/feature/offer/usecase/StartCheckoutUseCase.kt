@@ -37,7 +37,7 @@ class StartCheckoutUseCase(
         quoteCartId: QuoteCartId,
         quoteIds: List<String>
     ): Either<ErrorMessage, QuoteCartStartCheckoutMutation.Data> = apolloClient
-        .mutate(QuoteCartStartCheckoutMutation(quoteCartId.id, quoteIds))
+        .mutation(QuoteCartStartCheckoutMutation(quoteCartId.id, quoteIds))
         .safeQuery()
         .toEither()
         .mapLeft { ErrorMessage(it.message) }

@@ -27,7 +27,7 @@ class CreateAccessTokenUseCase(
 
     private suspend fun query(quoteCartId: QuoteCartId): Either<ErrorMessage, AccessToken> =
         apolloClient
-            .mutate(CreateAccessTokenMutation(quoteCartId.id))
+            .mutation(CreateAccessTokenMutation(quoteCartId.id))
             .safeQuery()
             .toEither()
             .mapLeft { ErrorMessage(it.message) }

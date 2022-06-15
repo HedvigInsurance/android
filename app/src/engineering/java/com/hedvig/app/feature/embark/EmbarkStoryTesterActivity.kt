@@ -307,7 +307,7 @@ class EmbarkStoryTesterViewModel(
             }
             when (
                 val result = apolloClient
-                    .mutate(ExchangeTokenMutation(exchangeToken))
+                    .mutation(ExchangeTokenMutation(exchangeToken))
                     .safeQuery()
                     .toEither()
             ) {

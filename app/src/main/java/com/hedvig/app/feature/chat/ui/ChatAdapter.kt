@@ -10,8 +10,8 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
 import coil.dispose
 import coil.load
-import com.hedvig.android.owldroid.fragment.ChatMessageFragment
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
+import com.hedvig.android.owldroid.graphql.fragment.ChatMessageFragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ChatMessageFileUploadBinding
 import com.hedvig.app.databinding.ChatMessageHedvigBinding

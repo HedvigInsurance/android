@@ -3,8 +3,8 @@ package com.hedvig.app.feature.settings
 import android.content.Context
 import androidx.annotation.StringRes
 import androidx.fragment.app.FragmentManager
-import com.hedvig.android.owldroid.fragment.ActivePaymentMethodsFragment
-import com.hedvig.android.owldroid.type.DirectDebitStatus
+import com.hedvig.android.owldroid.graphql.fragment.ActivePaymentMethodsFragment
+import com.hedvig.android.owldroid.graphql.type.DirectDebitStatus
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticateDialog
 import com.hedvig.app.authenticate.LoginDialog
