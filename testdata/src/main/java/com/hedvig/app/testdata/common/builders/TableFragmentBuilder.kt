@@ -1,6 +1,6 @@
 package com.hedvig.app.testdata.common.builders
 
-import com.hedvig.android.owldroid.fragment.TableFragment
+import com.hedvig.android.owldroid.graphql.fragment.TableFragment
 
 data class TableFragmentBuilder(
     private val title: String = "Title",

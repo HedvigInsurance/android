@@ -6,6 +6,8 @@ import com.apollographql.apollo3.api.CustomTypeValue
 import com.hedvig.app.util.toJsonObject
 import org.json.JSONObject
 
+// TODO: Not sure why we're doing the LinkedHashMap check and how to migrate this to apollo3 Adapter. We can use the
+//  compat Version2CustomTypeAdapterToAdapter for now.
 class PaymentMethodsApiResponseAdapter : CustomTypeAdapter<PaymentMethodsApiResponse> {
     override fun encode(value: PaymentMethodsApiResponse) = CustomTypeValue.fromRawValue(
         PaymentMethodsApiResponse.SERIALIZER.serialize(value).toString()

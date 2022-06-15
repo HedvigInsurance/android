@@ -1,46 +1,45 @@
 package com.hedvig.app.feature.profile.ui.payment
 
 import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.api.cache.http.HttpCachePolicy
-import com.apollographql.apollo3.coroutines.await
-import com.apollographql.apollo3.coroutines.toFlow
-import com.apollographql.apollo3.fetcher.ApolloResponseFetchers
+import com.apollographql.apollo3.api.ApolloResponse
+import com.apollographql.apollo3.cache.http.HttpFetchPolicy
+import com.apollographql.apollo3.cache.http.httpFetchPolicy
+import com.apollographql.apollo3.cache.normalized.FetchPolicy
+import com.apollographql.apollo3.cache.normalized.apolloStore
+import com.apollographql.apollo3.cache.normalized.fetchPolicy
+import com.apollographql.apollo3.cache.normalized.watch
 import com.hedvig.android.owldroid.graphql.PaymentQuery
-import com.hedvig.android.owldroid.type.PayoutMethodStatus
+import com.hedvig.android.owldroid.graphql.type.PayoutMethodStatus
 import com.hedvig.app.util.LocaleManager
+import kotlinx.coroutines.flow.Flow
 
 class PaymentRepository(
     private val apolloClient: ApolloClient,
-    private val localeManager: LocaleManager
+    private val localeManager: LocaleManager,
 ) {
     private val paymentQuery = PaymentQuery(localeManager.defaultLocale())
-    fun payment() = apolloClient
+    fun payment(): Flow<ApolloResponse<PaymentQuery.Data>> = apolloClient
         .query(PaymentQuery(localeManager.defaultLocale()))
-        .watcher()
-        .toFlow()
+        .watch()
 
-    suspend fun refresh() = apolloClient
+    suspend fun refresh(): ApolloResponse<PaymentQuery.Data> = apolloClient
         .query(paymentQuery)
-        .toBuilder()
-        .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
-        .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
-        .build()
+        .httpFetchPolicy(HttpFetchPolicy.NetworkOnly)
+        .fetchPolicy(FetchPolicy.NetworkOnly)
         .execute()
 
-    fun writeActivePayoutMethodStatus(status: PayoutMethodStatus) {
+    suspend fun writeActivePayoutMethodStatus(status: PayoutMethodStatus) {
         val cachedData = apolloClient
             .apolloStore
-            .read(paymentQuery)
-            .execute()
+            .readOperation(paymentQuery)
 
         apolloClient
             .apolloStore
-            .writeAndPublish(
+            .writeOperation(
                 paymentQuery,
                 cachedData.copy(
                     activePayoutMethods = PaymentQuery.ActivePayoutMethods(status = status)
                 )
             )
-            .execute()
     }
 }

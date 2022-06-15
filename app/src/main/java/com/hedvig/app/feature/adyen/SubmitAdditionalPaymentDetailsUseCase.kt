@@ -5,7 +5,7 @@ import arrow.core.left
 import arrow.core.right
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.owldroid.graphql.SubmitAdditionalPaymentDetailsMutation
-import com.hedvig.android.owldroid.type.TokenizationResultType
+import com.hedvig.android.owldroid.graphql.type.TokenizationResultType
 import com.hedvig.app.util.apollo.safeQuery
 import org.json.JSONObject
 

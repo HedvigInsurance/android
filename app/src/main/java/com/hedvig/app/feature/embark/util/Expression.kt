@@ -1,9 +1,9 @@
 package com.hedvig.app.feature.embark.util
 
-import com.hedvig.android.owldroid.fragment.ExpressionFragment
-import com.hedvig.android.owldroid.type.EmbarkExpressionTypeBinary
-import com.hedvig.android.owldroid.type.EmbarkExpressionTypeMultiple
-import com.hedvig.android.owldroid.type.EmbarkExpressionTypeUnary
+import com.hedvig.android.owldroid.graphql.fragment.ExpressionFragment
+import com.hedvig.android.owldroid.graphql.type.EmbarkExpressionTypeBinary
+import com.hedvig.android.owldroid.graphql.type.EmbarkExpressionTypeMultiple
+import com.hedvig.android.owldroid.graphql.type.EmbarkExpressionTypeUnary
 import com.hedvig.app.feature.embark.ExpressionResult
 import com.hedvig.app.feature.embark.ValueStore
 
@@ -80,23 +80,28 @@ fun evaluateExpression(expression: ExpressionFragment, valueStore: ValueStore): 
             multipleExpression.subExpressions.map {
                 evaluateExpression(
                     ExpressionFragment(
+                        __typename = "",
                         fragments = ExpressionFragment.Fragments(it.fragments.basicExpressionFragment),
                         asEmbarkExpressionMultiple = it.asEmbarkExpressionMultiple1?.let { asMulti ->
                             ExpressionFragment.AsEmbarkExpressionMultiple(
+                                __typename = "",
                                 multipleType = asMulti.multipleType,
                                 text = asMulti.text,
                                 subExpressions = asMulti.subExpressions.map { se ->
                                     ExpressionFragment.SubExpression2(
+                                        __typename = "",
                                         fragments = ExpressionFragment.SubExpression2.Fragments(
                                             se.fragments.basicExpressionFragment
                                         ),
                                         asEmbarkExpressionMultiple1 = se
                                             .asEmbarkExpressionMultiple2?.let { asMulti2 ->
                                                 ExpressionFragment.AsEmbarkExpressionMultiple1(
+                                                    __typename = "",
                                                     multipleType = asMulti2.multipleType,
                                                     text = asMulti2.text,
                                                     subExpressions = asMulti2.subExpressions.map { se2 ->
                                                         ExpressionFragment.SubExpression1(
+                                                            __typename = "",
                                                             fragments = ExpressionFragment.SubExpression1.Fragments(
                                                                 se2.fragments.basicExpressionFragment
                                                             ),

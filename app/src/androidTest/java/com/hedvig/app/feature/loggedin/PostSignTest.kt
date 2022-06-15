@@ -23,10 +23,10 @@ class PostSignTest : TestCase() {
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.QUERY_DOCUMENT to apolloResponse {
+        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
             success(LOGGED_IN_DATA)
         },
-        WelcomeQuery.QUERY_DOCUMENT to apolloResponse {
+        WelcomeQuery.OPERATION_DOCUMENT to apolloResponse {
             success(WELCOME_DATA_ONE_PAGE)
         }
     )

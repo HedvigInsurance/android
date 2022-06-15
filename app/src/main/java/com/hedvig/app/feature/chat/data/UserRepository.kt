@@ -1,8 +1,6 @@
 package com.hedvig.app.feature.chat.data
 
 import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.coroutines.await
-import com.apollographql.apollo3.coroutines.toFlow
 import com.hedvig.android.owldroid.graphql.AuthStatusSubscription
 import com.hedvig.android.owldroid.graphql.LogoutMutation
 import com.hedvig.android.owldroid.graphql.SwedishBankIdAuthMutation

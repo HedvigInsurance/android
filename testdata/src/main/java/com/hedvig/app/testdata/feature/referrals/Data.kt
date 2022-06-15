@@ -1,7 +1,7 @@
 package com.hedvig.app.testdata.feature.referrals
 
-import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
-import com.hedvig.android.owldroid.fragment.ReferralFragment
+import com.hedvig.android.owldroid.graphql.fragment.MonetaryAmountFragment
+import com.hedvig.android.owldroid.graphql.fragment.ReferralFragment
 import com.hedvig.app.testdata.common.builders.CostBuilder
 import com.hedvig.app.testdata.feature.referrals.builders.EditCodeDataBuilder
 import com.hedvig.app.testdata.feature.referrals.builders.LoggedInDataBuilder
@@ -20,9 +20,12 @@ val REFERRALS_DATA_WITH_ONE_REFEREE = ReferralsDataBuilder(
         netAmount = "339.00"
     ).build(),
     referredBy = ReferralFragment(
+        __typename = "",
         asActiveReferral = ReferralFragment.AsActiveReferral(
+            __typename = "",
             name = "Example",
             discount = ReferralFragment.Discount(
+                __typename = "",
                 fragments = ReferralFragment.Discount.Fragments(
                     MonetaryAmountFragment(
                         amount = "10.00",
@@ -46,9 +49,12 @@ val REFERRALS_DATA_WITH_ONE_REFEREE_AND_OTHER_DISCOUNT = ReferralsDataBuilder(
         netAmount = "339.00"
     ).build(),
     referredBy = ReferralFragment(
+        __typename = "",
         asActiveReferral = ReferralFragment.AsActiveReferral(
+            __typename = "",
             name = "Example",
             discount = ReferralFragment.Discount(
+                __typename = "",
                 fragments = ReferralFragment.Discount.Fragments(
                     MonetaryAmountFragment(
                         amount = "10.00",
@@ -79,9 +85,12 @@ val REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES = ReferralsDataBu
     ).build(),
     invitations = listOf(
         ReferralFragment(
+            __typename = "",
             asActiveReferral = ReferralFragment.AsActiveReferral(
+                __typename = "",
                 name = "Example",
                 discount = ReferralFragment.Discount(
+                    __typename = "",
                     fragments = ReferralFragment.Discount.Fragments(
                         MonetaryAmountFragment(
                             amount = "10.00",
@@ -94,16 +103,20 @@ val REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES = ReferralsDataBu
             asTerminatedReferral = null
         ),
         ReferralFragment(
+            __typename = "",
             asActiveReferral = null,
             asInProgressReferral = ReferralFragment.AsInProgressReferral(
+                __typename = "",
                 name = "Example 2"
             ),
             asTerminatedReferral = null
         ),
         ReferralFragment(
+            __typename = "",
             asActiveReferral = null,
             asInProgressReferral = null,
             asTerminatedReferral = ReferralFragment.AsTerminatedReferral(
+                __typename = "",
                 name = "Example 3"
             )
         ),
