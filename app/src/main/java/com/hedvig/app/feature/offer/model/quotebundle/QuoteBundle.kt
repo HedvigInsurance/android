@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.offer.model.quotebundle
 
-import com.hedvig.android.owldroid.fragment.QuoteBundleFragment
-import com.hedvig.android.owldroid.type.CheckoutMethod
+import com.hedvig.android.owldroid.graphql.fragment.QuoteBundleFragment
+import com.hedvig.android.owldroid.graphql.type.CheckoutMethod
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
 import com.hedvig.app.feature.offer.model.CheckoutLabel

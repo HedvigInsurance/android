@@ -9,7 +9,7 @@ class StartDanishAuthUseCase(
     private val apolloClient: ApolloClient,
 ) {
     suspend operator fun invoke(personalIdentificationNumber: String) =
-        when (val response = apolloClient.mutate(DanishAuthMutation(personalIdentificationNumber)).safeQuery()) {
+        when (val response = apolloClient.mutation(DanishAuthMutation(personalIdentificationNumber)).safeQuery()) {
             is QueryResult.Error -> SimpleSignStartAuthResult.Error
             is QueryResult.Success -> {
                 val redirectUrl = response.data.danishBankIdAuth.redirectUrl

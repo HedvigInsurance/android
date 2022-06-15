@@ -5,11 +5,11 @@ import arrow.core.None
 import arrow.core.Option
 import arrow.core.Some
 import com.apollographql.apollo3.ApolloCall
-import com.apollographql.apollo3.ApolloQueryWatcher
-import com.apollographql.apollo3.ApolloSubscriptionCall
-import com.apollographql.apollo3.api.Response
-import com.apollographql.apollo3.coroutines.await
-import com.apollographql.apollo3.coroutines.toFlow
+import com.apollographql.apollo3.api.ApolloResponse
+import com.apollographql.apollo3.api.Operation
+import com.apollographql.apollo3.api.Query
+import com.apollographql.apollo3.api.Subscription
+import com.apollographql.apollo3.cache.normalized.watch
 import com.apollographql.apollo3.exception.ApolloException
 import com.hedvig.app.util.coroutines.await
 import kotlinx.coroutines.CancellationException
@@ -22,9 +22,9 @@ import okhttp3.Call
 import org.json.JSONObject
 import java.io.IOException
 
-suspend fun <T> ApolloCall<T>.safeQuery(): QueryResult<T> {
+suspend fun <D : Operation.Data> ApolloCall<D>.safeQuery(): QueryResult<D> {
     return try {
-        await().toQueryResult()
+        execute().toQueryResult()
     } catch (apolloException: ApolloException) {
         QueryResult.Error.NetworkError(apolloException.localizedMessage)
     } catch (throwable: Throwable) {
@@ -35,9 +35,9 @@ suspend fun <T> ApolloCall<T>.safeQuery(): QueryResult<T> {
     }
 }
 
-fun <T> ApolloSubscriptionCall<T>.safeSubscription(): Flow<QueryResult<T>> {
+fun <D : Subscription.Data> ApolloCall<D>.safeSubscription(): Flow<QueryResult<D>> {
     return try {
-        toFlow().map(Response<T>::toQueryResult)
+        toFlow().map(ApolloResponse<D>::toQueryResult)
     } catch (apolloException: ApolloException) {
         flowOf(QueryResult.Error.NetworkError(apolloException.localizedMessage))
     } catch (throwable: Throwable) {
@@ -48,9 +48,10 @@ fun <T> ApolloSubscriptionCall<T>.safeSubscription(): Flow<QueryResult<T>> {
     }
 }
 
-fun <T> ApolloQueryWatcher<T>.safeFlow(): Flow<QueryResult<T>> {
+fun <D : Query.Data> ApolloCall<D>.safeWatch(): Flow<QueryResult<D>> {
     return try {
-        toFlow().map(Response<T>::toQueryResult)
+        watch(null)
+        watch().map(ApolloResponse<D>::toQueryResult)
     } catch (apolloException: ApolloException) {
         flowOf(QueryResult.Error.NetworkError(apolloException.localizedMessage))
     } catch (throwable: Throwable) {
@@ -61,7 +62,7 @@ fun <T> ApolloQueryWatcher<T>.safeFlow(): Flow<QueryResult<T>> {
     }
 }
 
-fun <T> Response<T>.toQueryResult(): QueryResult<T> {
+private fun <D : Operation.Data> ApolloResponse<D>.toQueryResult(): QueryResult<D> {
     val data = data
     return when {
         hasErrors() -> QueryResult.Error.QueryError(errors?.first()?.message)

@@ -54,7 +54,7 @@ class QuoteCartEditStartDateUseCase(
         val mutation = QuoteCartEditQuoteMutation(quoteCartId.id, quoteId, json, localeManager.defaultLocale())
 
         return either {
-            val result = apolloClient.mutate(mutation)
+            val result = apolloClient.mutation(mutation)
                 .safeQuery()
                 .toEither(::ErrorMessage)
                 .bind()

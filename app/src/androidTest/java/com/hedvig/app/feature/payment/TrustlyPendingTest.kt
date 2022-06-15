@@ -28,8 +28,8 @@ class TrustlyPendingTest : TestCase() {
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        PaymentQuery.QUERY_DOCUMENT to apolloResponse { success(PAYMENT_DATA_TRUSTLY_CONNECTED) },
-        PayinStatusQuery.QUERY_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_PENDING) }
+        PaymentQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYMENT_DATA_TRUSTLY_CONNECTED) },
+        PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_PENDING) }
     )
 
     @get:Rule

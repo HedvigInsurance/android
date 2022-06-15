@@ -15,10 +15,13 @@ class EmbarkStoriesBuilder(
             title = "Bundle",
             metadata = listOf(
                 ChoosePlanQuery.Metadatum(
+                    __typename = "",
                     asEmbarkStoryMetadataEntryDiscount = ChoosePlanQuery.AsEmbarkStoryMetadataEntryDiscount(
+                        __typename = "",
                         discount = "25%"
                     ),
                     asEmbarkStoryMetaDataEntryWebUrlPath = ChoosePlanQuery.AsEmbarkStoryMetaDataEntryWebUrlPath(
+                        __typename = "",
                         path = ENGLISH_COMBO_WEB_PATH
                     )
                 )
@@ -29,8 +32,10 @@ class EmbarkStoriesBuilder(
             title = "Content",
             metadata = listOf(
                 ChoosePlanQuery.Metadatum(
+                    __typename = "",
                     asEmbarkStoryMetadataEntryDiscount = null,
                     asEmbarkStoryMetaDataEntryWebUrlPath = ChoosePlanQuery.AsEmbarkStoryMetaDataEntryWebUrlPath(
+                        __typename = "",
                         path = ENGLISH_CONTENTS_WEB_PATH
                     )
                 )
@@ -41,14 +46,16 @@ class EmbarkStoriesBuilder(
             title = "Travel",
             metadata = listOf(
                 ChoosePlanQuery.Metadatum(
+                    __typename = "",
                     asEmbarkStoryMetadataEntryDiscount = null,
                     asEmbarkStoryMetaDataEntryWebUrlPath = ChoosePlanQuery.AsEmbarkStoryMetaDataEntryWebUrlPath(
+                        __typename = "",
                         path = ENGLISH_TRAVEL_WEB_PATH
                     )
                 )
             )
         ).build()
-    )
+    ),
 ) {
     fun build() = ChoosePlanQuery.Data(embarkStories = list)
 }

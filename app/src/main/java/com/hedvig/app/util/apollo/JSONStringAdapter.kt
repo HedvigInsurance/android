@@ -1,10 +1,17 @@
 package com.hedvig.app.util.apollo
 
-import com.apollographql.apollo3.api.CustomTypeAdapter
-import com.apollographql.apollo3.api.CustomTypeValue
+import com.apollographql.apollo3.api.Adapter
+import com.apollographql.apollo3.api.CustomScalarAdapters
+import com.apollographql.apollo3.api.json.JsonReader
+import com.apollographql.apollo3.api.json.JsonWriter
 import org.json.JSONObject
 
-class JSONStringAdapter : CustomTypeAdapter<JSONObject> {
-    override fun decode(value: CustomTypeValue<*>) = JSONObject(value.value as String)
-    override fun encode(value: JSONObject) = CustomTypeValue.fromRawValue(value.toString())
+class JSONStringAdapter : Adapter<JSONObject> {
+    override fun fromJson(reader: JsonReader, customScalarAdapters: CustomScalarAdapters): JSONObject {
+        return JSONObject(reader.nextString()!!)
+    }
+
+    override fun toJson(writer: JsonWriter, customScalarAdapters: CustomScalarAdapters, value: JSONObject) {
+        writer.value(value.toString())
+    }
 }

@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.offer.model
 
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
-import com.hedvig.android.owldroid.fragment.QuoteCartFragment
+import com.hedvig.android.owldroid.graphql.fragment.QuoteCartFragment
 
 @JvmInline
 value class PaymentConnectionId(val id: String)

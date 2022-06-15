@@ -2,7 +2,7 @@ package com.hedvig.app.feature.keygear.ui.itemdetail.viewbinders
 
 import androidx.core.view.doOnNextLayout
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
-import com.hedvig.android.owldroid.type.KeyGearItemCategory
+import com.hedvig.android.owldroid.graphql.type.KeyGearItemCategory
 import com.hedvig.app.databinding.KeyGearItemDetailPhotosSectionBinding
 import com.hedvig.app.feature.keygear.ui.itemdetail.PhotosAdapter
 

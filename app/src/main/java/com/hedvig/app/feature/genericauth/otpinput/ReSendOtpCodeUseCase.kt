@@ -13,7 +13,7 @@ class ReSendOtpCodeUseCaseImpl(
     private val apolloClient: ApolloClient
 ) : ReSendOtpCodeUseCase {
     override suspend operator fun invoke(credential: String): ResendOtpResult {
-        return when (val result = apolloClient.mutate(CreateOtpAttemptMutation(credential)).safeQuery()) {
+        return when (val result = apolloClient.mutation(CreateOtpAttemptMutation(credential)).safeQuery()) {
             is QueryResult.Error -> ResendOtpResult.Error(result.message)
             is QueryResult.Success -> ResendOtpResult.Success(result.toString())
         }

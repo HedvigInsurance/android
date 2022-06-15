@@ -5,13 +5,15 @@ import android.net.Uri
 import arrow.core.Either
 import arrow.core.flatMap
 import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.api.FileUpload
-import com.apollographql.apollo3.api.Response
-import com.apollographql.apollo3.api.cache.http.HttpCachePolicy
-import com.apollographql.apollo3.coroutines.await
-import com.apollographql.apollo3.coroutines.toFlow
-import com.apollographql.apollo3.fetcher.ApolloResponseFetchers
-import com.hedvig.android.owldroid.fragment.ChatMessageFragment
+import com.apollographql.apollo3.api.ApolloResponse
+import com.apollographql.apollo3.api.DefaultUpload
+import com.apollographql.apollo3.api.content
+import com.apollographql.apollo3.cache.http.HttpFetchPolicy
+import com.apollographql.apollo3.cache.http.httpFetchPolicy
+import com.apollographql.apollo3.cache.normalized.FetchPolicy
+import com.apollographql.apollo3.cache.normalized.apolloStore
+import com.apollographql.apollo3.cache.normalized.fetchPolicy
+import com.apollographql.apollo3.cache.normalized.watch
 import com.hedvig.android.owldroid.graphql.ChatMessageIdQuery
 import com.hedvig.android.owldroid.graphql.ChatMessageSubscription
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
@@ -22,12 +24,13 @@ import com.hedvig.android.owldroid.graphql.SendChatSingleSelectResponseMutation
 import com.hedvig.android.owldroid.graphql.SendChatTextResponseMutation
 import com.hedvig.android.owldroid.graphql.TriggerFreeTextChatMutation
 import com.hedvig.android.owldroid.graphql.UploadFileMutation
-import com.hedvig.android.owldroid.type.ChatResponseBodyFileInput
-import com.hedvig.android.owldroid.type.ChatResponseBodySingleSelectInput
-import com.hedvig.android.owldroid.type.ChatResponseBodyTextInput
-import com.hedvig.android.owldroid.type.ChatResponseFileInput
-import com.hedvig.android.owldroid.type.ChatResponseSingleSelectInput
-import com.hedvig.android.owldroid.type.ChatResponseTextInput
+import com.hedvig.android.owldroid.graphql.fragment.ChatMessageFragment
+import com.hedvig.android.owldroid.graphql.type.ChatResponseBodyFileInput
+import com.hedvig.android.owldroid.graphql.type.ChatResponseBodySingleSelectInput
+import com.hedvig.android.owldroid.graphql.type.ChatResponseBodyTextInput
+import com.hedvig.android.owldroid.graphql.type.ChatResponseFileInput
+import com.hedvig.android.owldroid.graphql.type.ChatResponseSingleSelectInput
+import com.hedvig.android.owldroid.graphql.type.ChatResponseTextInput
 import com.hedvig.app.service.FileService
 import com.hedvig.app.util.apollo.safeQuery
 import com.hedvig.app.util.extensions.into
@@ -44,56 +47,50 @@ class ChatRepository(
 ) {
     private lateinit var messagesQuery: ChatMessagesQuery
 
-    fun fetchChatMessages(): Flow<Response<ChatMessagesQuery.Data>> {
+    fun fetchChatMessages(): Flow<ApolloResponse<ChatMessagesQuery.Data>> {
         messagesQuery = ChatMessagesQuery()
         return apolloClient
             .query(messagesQuery)
-            .toBuilder()
-            .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
-            .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
-            .build()
-            .watcher()
-            .toFlow()
+            .httpFetchPolicy(HttpFetchPolicy.NetworkOnly)
+            .fetchPolicy(FetchPolicy.NetworkOnly)
+            .watch()
     }
 
     suspend fun messageIds() =
         apolloClient
             .query(ChatMessageIdQuery())
-            .toBuilder()
-            .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
-            .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
-            .build()
-            .await()
+            .httpFetchPolicy(HttpFetchPolicy.NetworkOnly)
+            .fetchPolicy(FetchPolicy.NetworkOnly)
+            .execute()
 
     fun subscribeToChatMessages() =
-        apolloClient.subscribe(ChatMessageSubscription()).toFlow()
+        apolloClient.subscription(ChatMessageSubscription()).toFlow()
 
     suspend fun sendChatMessage(
         id: String,
         message: String,
-    ) = apolloClient.mutate(
+    ) = apolloClient.mutation(
         SendChatTextResponseMutation(
             ChatResponseTextInput(
                 id,
                 ChatResponseBodyTextInput(message)
             )
         )
-    ).await()
+    ).execute()
 
     suspend fun sendSingleSelect(
         id: String,
         value: String,
-    ) = apolloClient.mutate(
+    ) = apolloClient.mutation(
         SendChatSingleSelectResponseMutation(
             ChatResponseSingleSelectInput(id, ChatResponseBodySingleSelectInput(value))
         )
-    ).await()
+    ).execute()
 
-    fun writeNewMessage(message: ChatMessageFragment) {
+    suspend fun writeNewMessage(message: ChatMessageFragment) {
         val cachedData = apolloClient
             .apolloStore
-            .read(messagesQuery)
-            .execute()
+            .readOperation(messagesQuery)
 
         val chatMessagesFragment =
             ChatMessagesQuery
@@ -104,7 +101,7 @@ class ChatRepository(
         newMessages.add(
             0,
             ChatMessagesQuery.Message(
-                message.__typename,
+                message.body.__typename,
                 fragments = chatMessagesFragment
             )
         )
@@ -114,11 +111,10 @@ class ChatRepository(
 
         apolloClient
             .apolloStore
-            .writeAndPublish(messagesQuery, newData)
-            .execute()
+            .writeOperation(messagesQuery, newData)
     }
 
-    suspend fun uploadFileFromProvider(uri: Uri): Response<UploadFileMutation.Data> {
+    suspend fun uploadFileFromProvider(uri: Uri): ApolloResponse<UploadFileMutation.Data> {
         val mimeType = fileService.getMimeType(uri)
         val file = File(
             context.cacheDir,
@@ -131,25 +127,28 @@ class ChatRepository(
         }
     }
 
-    suspend fun uploadFile(uri: Uri): Response<UploadFileMutation.Data> =
+    suspend fun uploadFile(uri: Uri): ApolloResponse<UploadFileMutation.Data> =
         uploadFile(uri.path!!, fileService.getMimeType(uri))
 
     private suspend fun uploadFile(
         path: String,
         mimeType: String,
-    ): Response<UploadFileMutation.Data> {
+    ): ApolloResponse<UploadFileMutation.Data> {
         val uploadFileMutation = UploadFileMutation(
-            file = FileUpload(mimeType, path)
+            file = DefaultUpload.Builder()
+                .contentType(mimeType)
+                .content(File(path))
+                .build(),
         )
 
-        return apolloClient.mutate(uploadFileMutation).await()
+        return apolloClient.mutation(uploadFileMutation).execute()
     }
 
     suspend fun sendFileResponse(
         id: String,
         key: String,
         uri: Uri,
-    ): Response<SendChatFileResponseMutation.Data> {
+    ): ApolloResponse<SendChatFileResponseMutation.Data> {
         val mimeType = fileService.getMimeType(uri)
 
         val input = ChatResponseFileInput(
@@ -162,14 +161,14 @@ class ChatRepository(
 
         val chatFileResponse = SendChatFileResponseMutation(input)
 
-        return apolloClient.mutate(chatFileResponse).await()
+        return apolloClient.mutation(chatFileResponse).execute()
     }
 
-    suspend fun editLastResponse(): Response<EditLastResponseMutation.Data> =
-        apolloClient.mutate(EditLastResponseMutation()).await()
+    suspend fun editLastResponse(): ApolloResponse<EditLastResponseMutation.Data> =
+        apolloClient.mutation(EditLastResponseMutation()).execute()
 
     suspend fun triggerFreeTextChat(): Either<FreeTextError, FreeTextSuccess> =
-        apolloClient.mutate(TriggerFreeTextChatMutation())
+        apolloClient.mutation(TriggerFreeTextChatMutation())
             .safeQuery()
             .toEither { FreeTextError.NetworkError }
             .flatMap { data ->
@@ -182,8 +181,8 @@ class ChatRepository(
                 )
             }
 
-    suspend fun searchGifs(query: String): Response<GifQuery.Data> =
-        apolloClient.query(GifQuery(query)).await()
+    suspend fun searchGifs(query: String): ApolloResponse<GifQuery.Data> =
+        apolloClient.query(GifQuery(query)).execute()
 }
 
 sealed class FreeTextError {

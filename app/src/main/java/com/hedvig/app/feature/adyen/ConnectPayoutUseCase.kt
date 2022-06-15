@@ -7,7 +7,7 @@ import arrow.core.right
 import com.adyen.checkout.redirect.RedirectComponent
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.owldroid.graphql.TokenizePayoutDetailsMutation
-import com.hedvig.android.owldroid.type.TokenizationResultType
+import com.hedvig.android.owldroid.graphql.type.TokenizationResultType
 import com.hedvig.app.util.apollo.safeQuery
 import org.json.JSONObject
 
@@ -27,7 +27,7 @@ class ConnectPayoutUseCase(
     }
 
     suspend fun connectPayout(data: JSONObject) = apolloClient
-        .mutate(createTokenizePayoutDetailsMutation(data))
+        .mutation(createTokenizePayoutDetailsMutation(data))
         .safeQuery()
         .toEither { Error.ErrorMessage(it) }
         .flatMap {

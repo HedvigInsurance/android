@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.embark.util
 
-import com.hedvig.android.owldroid.fragment.ApiFragment
-import com.hedvig.android.owldroid.fragment.GraphQLVariablesFragment
-import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLSingleVariableCasting
+import com.hedvig.android.owldroid.graphql.fragment.ApiFragment
+import com.hedvig.android.owldroid.graphql.fragment.GraphQLVariablesFragment
+import com.hedvig.android.owldroid.graphql.type.EmbarkAPIGraphQLSingleVariableCasting
 import com.hedvig.app.feature.embark.ValueStore
 import com.hedvig.app.feature.embark.variables.CastType
 import com.hedvig.app.feature.embark.variables.Variable
@@ -46,7 +46,7 @@ private fun GraphQLVariablesFragment.toVariable(): Variable? {
             Variable.Single(
                 asEmbarkAPIGraphQLSingleVariable!!.key,
                 asEmbarkAPIGraphQLSingleVariable!!.from,
-                asEmbarkAPIGraphQLSingleVariable!!.as_.toCast()
+                asEmbarkAPIGraphQLSingleVariable!!.`as`.toCast()
             )
         }
         asEmbarkAPIGraphQLMultiActionVariable != null -> {
@@ -65,7 +65,7 @@ private fun GraphQLVariablesFragment.toVariable(): Variable? {
                             Variable.Single(
                                 it.asEmbarkAPIGraphQLSingleVariable1!!.key,
                                 it.asEmbarkAPIGraphQLSingleVariable1!!.from,
-                                it.asEmbarkAPIGraphQLSingleVariable1!!.as_.toCast()
+                                it.asEmbarkAPIGraphQLSingleVariable1!!.`as`.toCast()
                             )
                         }
                         else -> {
@@ -79,7 +79,7 @@ private fun GraphQLVariablesFragment.toVariable(): Variable? {
             Variable.Constant(
                 asEmbarkAPIGraphQLConstantVariable!!.key,
                 asEmbarkAPIGraphQLConstantVariable!!.value,
-                asEmbarkAPIGraphQLConstantVariable!!.as_.toCast()
+                asEmbarkAPIGraphQLConstantVariable!!.`as`.toCast()
             )
         }
         asEmbarkAPIGraphQLGeneratedVariable != null -> {
@@ -95,10 +95,10 @@ private fun GraphQLVariablesFragment.toVariable(): Variable? {
 }
 
 private fun EmbarkAPIGraphQLSingleVariableCasting.toCast() = when (this) {
-    EmbarkAPIGraphQLSingleVariableCasting.STRING -> CastType.STRING
-    EmbarkAPIGraphQLSingleVariableCasting.INT -> CastType.INT
-    EmbarkAPIGraphQLSingleVariableCasting.BOOLEAN -> CastType.BOOLEAN
-    EmbarkAPIGraphQLSingleVariableCasting.FILE -> CastType.FILE
+    EmbarkAPIGraphQLSingleVariableCasting.string -> CastType.STRING
+    EmbarkAPIGraphQLSingleVariableCasting.int -> CastType.INT
+    EmbarkAPIGraphQLSingleVariableCasting.boolean -> CastType.BOOLEAN
+    EmbarkAPIGraphQLSingleVariableCasting.file -> CastType.FILE
     EmbarkAPIGraphQLSingleVariableCasting.UNKNOWN__ -> CastType.UNKNOWN
 }
 

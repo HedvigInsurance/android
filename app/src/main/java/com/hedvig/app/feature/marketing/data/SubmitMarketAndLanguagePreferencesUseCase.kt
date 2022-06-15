@@ -17,11 +17,10 @@ class SubmitMarketAndLanguagePreferencesUseCase(
     private val marketManager: MarketManager,
 ) {
     suspend operator fun invoke(language: Language, market: Market) = apolloClient
-        .mutate(
-            UpdateLanguageMutation(
-                makeLocaleString(language.apply(context), market),
-                localeManager.defaultLocale(),
-            )
+        .mutation(UpdateLanguageMutation(
+            makeLocaleString(language.apply(context), market),
+            localeManager.defaultLocale(),
+        )
         )
         .safeQuery()
         .toEither()

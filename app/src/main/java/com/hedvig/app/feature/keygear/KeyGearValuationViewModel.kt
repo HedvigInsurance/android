@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
-import com.hedvig.android.owldroid.type.MonetaryAmountV2Input
+import com.hedvig.android.owldroid.graphql.type.MonetaryAmountV2Input
 import com.hedvig.app.feature.keygear.data.KeyGearItemsRepository
 import e
 import kotlinx.coroutines.flow.catch
