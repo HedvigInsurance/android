@@ -34,7 +34,7 @@ class InsuranceViewModel(
         val loading: Boolean = false,
     )
 
-    protected val _viewState = MutableStateFlow(ViewState(loading = true))
+    private val _viewState = MutableStateFlow(ViewState(loading = true))
     val viewState = _viewState.asStateFlow()
 
     fun load() {

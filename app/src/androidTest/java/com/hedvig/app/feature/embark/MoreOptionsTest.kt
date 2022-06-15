@@ -27,7 +27,7 @@ class MoreOptionsTest : TestCase() {
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        MemberIdQuery.QUERY_DOCUMENT to apolloResponse {
+        MemberIdQuery.OPERATION_DOCUMENT to apolloResponse {
             if (shouldFail) {
                 shouldFail = false
                 graphQLError(jsonObjectOf("message" to "error"))

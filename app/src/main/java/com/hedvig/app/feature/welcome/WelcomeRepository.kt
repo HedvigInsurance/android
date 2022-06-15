@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.welcome
 
-import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.coroutines.await
+import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.owldroid.graphql.WelcomeQuery
 import com.hedvig.app.util.LocaleManager
 
@@ -11,5 +10,5 @@ class WelcomeRepository(
 ) {
     suspend fun fetchWelcomeScreens() = apolloClient
         .query(WelcomeQuery(localeManager.defaultLocale()))
-        .await()
+        .execute()
 }

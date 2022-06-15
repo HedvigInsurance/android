@@ -4,7 +4,7 @@ import android.os.Handler
 import android.os.Looper.getMainLooper
 import androidx.lifecycle.MutableLiveData
 import com.hedvig.android.owldroid.graphql.CreateKeyGearItemMutation
-import com.hedvig.android.owldroid.type.KeyGearItemCategory
+import com.hedvig.android.owldroid.graphql.type.KeyGearItemCategory
 import com.hedvig.app.feature.keygear.ui.createitem.CreateKeyGearItemViewModel
 
 class MockCreateKeyGearItemViewModel : CreateKeyGearItemViewModel() {

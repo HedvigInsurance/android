@@ -24,10 +24,10 @@ class OnlyTerminatedContractsTest : TestCase() {
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.QUERY_DOCUMENT to apolloResponse {
+        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
             success(LOGGED_IN_DATA)
         },
-        InsuranceQuery.QUERY_DOCUMENT to apolloResponse {
+        InsuranceQuery.OPERATION_DOCUMENT to apolloResponse {
             success(INSURANCE_DATA_TERMINATED)
         }
     )

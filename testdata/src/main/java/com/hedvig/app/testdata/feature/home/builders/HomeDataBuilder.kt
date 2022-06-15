@@ -1,11 +1,11 @@
 package com.hedvig.app.testdata.feature.home.builders
 
-import com.hedvig.android.owldroid.fragment.IconVariantsFragment
 import com.hedvig.android.owldroid.graphql.HomeQuery
-import com.hedvig.android.owldroid.type.ClaimStatus
-import com.hedvig.android.owldroid.type.ClaimStatusCardPillType
-import com.hedvig.android.owldroid.type.ClaimStatusProgressType
-import com.hedvig.android.owldroid.type.PayinMethodStatus
+import com.hedvig.android.owldroid.graphql.fragment.IconVariantsFragment
+import com.hedvig.android.owldroid.graphql.type.ClaimStatus
+import com.hedvig.android.owldroid.graphql.type.ClaimStatusCardPillType
+import com.hedvig.android.owldroid.graphql.type.ClaimStatusProgressType
+import com.hedvig.android.owldroid.graphql.type.PayinMethodStatus
 import com.hedvig.app.testdata.common.ContractStatus
 import java.time.Instant
 import java.time.LocalDate
@@ -40,8 +40,10 @@ data class HomeDataBuilder(
                 displayName = CONTRACT_DISPLAY_NAME,
                 switchedFromInsuranceProvider = null,
                 status = HomeQuery.Status(
+                    __typename = c.typename,
                     asPendingStatus = if (c == ContractStatus.PENDING) {
                         HomeQuery.AsPendingStatus(
+                            __typename = c.typename,
                             pendingSince = null
                         )
                     } else {
@@ -49,9 +51,11 @@ data class HomeDataBuilder(
                     },
                     asActiveInFutureStatus = when (c) {
                         ContractStatus.ACTIVE_IN_FUTURE -> HomeQuery.AsActiveInFutureStatus(
+                            __typename = c.typename,
                             futureInception = LocalDate.of(2025, 1, 1)
                         )
                         ContractStatus.ACTIVE_IN_FUTURE_INVALID -> HomeQuery.AsActiveInFutureStatus(
+                            __typename = c.typename,
                             futureInception = null
                         )
                         else -> null
@@ -60,6 +64,7 @@ data class HomeDataBuilder(
                         c == ContractStatus.ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE
                     ) {
                         HomeQuery.AsActiveInFutureAndTerminatedInFutureStatus(
+                            __typename = c.typename,
                             futureInception = LocalDate.of(2024, 1, 1)
                         )
                     } else {
@@ -67,18 +72,23 @@ data class HomeDataBuilder(
                     },
                     asActiveStatus = if (c == ContractStatus.ACTIVE) {
                         HomeQuery.AsActiveStatus(
+                            __typename = c.typename,
                             pastInception = LocalDate.now()
                         )
                     } else {
                         null
                     },
                     asTerminatedTodayStatus = if (c == ContractStatus.TERMINATED_TODAY) {
-                        HomeQuery.AsTerminatedTodayStatus(today = LocalDate.now())
+                        HomeQuery.AsTerminatedTodayStatus(
+                            __typename = c.typename,
+                            today = LocalDate.now()
+                        )
                     } else {
                         null
                     },
                     asTerminatedStatus = if (c == ContractStatus.TERMINATED) {
                         HomeQuery.AsTerminatedStatus(
+                            __typename = c.typename,
                             termination = null
                         )
                     } else {
@@ -86,6 +96,7 @@ data class HomeDataBuilder(
                     },
                     asTerminatedInFutureStatus = if (c == ContractStatus.TERMINATED_IN_FUTURE) {
                         HomeQuery.AsTerminatedInFutureStatus(
+                            __typename = c.typename,
                             futureTermination = LocalDate.now().plusDays(10)
                         )
                     } else {
@@ -109,6 +120,7 @@ data class HomeDataBuilder(
             HomeQuery.HowClaimsWork(
                 illustration = HomeQuery.Illustration(
                     variants = HomeQuery.Variants2(
+                        __typename = "",
                         fragments = HomeQuery.Variants2.Fragments(
                             IconVariantsFragment(
                                 dark = IconVariantsFragment.Dark(
@@ -126,6 +138,7 @@ data class HomeDataBuilder(
             HomeQuery.HowClaimsWork(
                 illustration = HomeQuery.Illustration(
                     variants = HomeQuery.Variants2(
+                        __typename = "",
                         fragments = HomeQuery.Variants2.Fragments(
                             IconVariantsFragment(
                                 dark = IconVariantsFragment.Dark(
@@ -143,6 +156,7 @@ data class HomeDataBuilder(
             HomeQuery.HowClaimsWork(
                 illustration = HomeQuery.Illustration(
                     variants = HomeQuery.Variants2(
+                        __typename = "",
                         fragments = HomeQuery.Variants2.Fragments(
                             IconVariantsFragment(
                                 dark = IconVariantsFragment.Dark(
@@ -189,8 +203,9 @@ class ClaimStatusCardsBuilder {
                 subtitle = "Subtitle. Random progress segments vv",
                 progressSegments = List(3) {
                     HomeQuery.ProgressSegment(
+                        __typename = "",
                         fragments = HomeQuery.ProgressSegment.Fragments(
-                            progressSegments = com.hedvig.android.owldroid.fragment.ProgressSegments(
+                            progressSegments = com.hedvig.android.owldroid.graphql.fragment.ProgressSegments(
                                 text = "Segment #$it",
                                 type = ClaimStatusProgressType.values().random()
                             )

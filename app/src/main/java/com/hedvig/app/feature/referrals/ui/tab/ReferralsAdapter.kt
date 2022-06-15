@@ -9,8 +9,8 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
-import com.hedvig.android.owldroid.fragment.ReferralFragment
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
+import com.hedvig.android.owldroid.graphql.fragment.ReferralFragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ReferralsCodeBinding
 import com.hedvig.app.databinding.ReferralsErrorBinding

@@ -1,8 +1,7 @@
 package com.hedvig.app.feature.whatsnew
 
 import android.content.Context
-import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.coroutines.await
+import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.owldroid.graphql.WhatsNewQuery
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.util.LocaleManager
@@ -18,7 +17,7 @@ class WhatsNewRepository(
                 locale = localeManager.defaultLocale(),
                 sinceVersion = sinceVersion ?: latestSeenNews()
             )
-        ).await()
+        ).execute()
 
     fun removeNewsForNewUser() {
         if (latestSeenNews() == NEWS_BASELINE_VERSION) {

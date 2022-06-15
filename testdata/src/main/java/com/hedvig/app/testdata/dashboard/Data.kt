@@ -1,9 +1,11 @@
 package com.hedvig.app.testdata.dashboard
 
-import com.hedvig.android.owldroid.fragment.CrossSellFragment
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
-import com.hedvig.android.owldroid.type.CrossSellType
-import com.hedvig.android.owldroid.type.TypeOfContract
+import com.hedvig.android.owldroid.graphql.fragment.CrossSellFragment
+import com.hedvig.android.owldroid.graphql.type.CrossSell
+import com.hedvig.android.owldroid.graphql.type.CrossSellEmbark
+import com.hedvig.android.owldroid.graphql.type.CrossSellType
+import com.hedvig.android.owldroid.graphql.type.TypeOfContract
 import com.hedvig.app.testdata.common.ContractStatus
 import com.hedvig.app.testdata.dashboard.builders.InsuranceDataBuilder
 
@@ -39,6 +41,7 @@ val INSURANCE_DATA_WITH_CROSS_SELL = InsuranceDataBuilder(
     contracts = listOf(ContractStatus.ACTIVE),
     crossSells = listOf(
         InsuranceQuery.PotentialCrossSell(
+            __typename = CrossSell.type.name,
             fragments = InsuranceQuery.PotentialCrossSell.Fragments(
                 crossSellFragment = CrossSellFragment(
                     title = "Accident Insurance",
@@ -47,8 +50,9 @@ val INSURANCE_DATA_WITH_CROSS_SELL = InsuranceDataBuilder(
                     type = CrossSellType.ACCIDENT,
                     contractType = TypeOfContract.SE_ACCIDENT,
                     action = CrossSellFragment.Action(
-                        __typename = "CrossSellEmbark",
+                        __typename = CrossSellEmbark.type.name,
                         asCrossSellEmbark = CrossSellFragment.AsCrossSellEmbark(
+                            __typename = CrossSellEmbark.type.name,
                             embarkStoryV2 = CrossSellFragment.EmbarkStoryV2(
                                 name = "123",
                             ),

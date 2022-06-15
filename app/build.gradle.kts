@@ -201,6 +201,12 @@ dependencies {
     implementation(libs.accompanist.insetsUi)
     implementation(libs.accompanist.systemUiController)
 
+    implementation(libs.apollo.adapters)
+    implementation(libs.apollo.normalizedCache)
+    androidTestImplementation(libs.apollo.idlingResource)
+    testImplementation(libs.apollo.mockServer)
+    testImplementation(libs.apollo.testingSupport)
+
     implementation(libs.arrowKt.core)
 
     implementation(libs.materialComponents)
@@ -257,8 +263,6 @@ dependencies {
     implementation(libs.shimmer)
 
     implementation(libs.concatAdapterExtension)
-
-    androidTestImplementation(libs.apollo.idlingResource)
 
     testImplementation(libs.assertK)
     androidTestImplementation(libs.assertK)

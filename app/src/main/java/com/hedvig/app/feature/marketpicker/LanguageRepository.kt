@@ -1,11 +1,10 @@
 package com.hedvig.app.feature.marketpicker
 
-import com.apollographql.apollo.ApolloCall
-import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.api.Response
-import com.apollographql.apollo.exception.ApolloException
+import arrow.core.Either
+import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.owldroid.graphql.UpdateLanguageMutation
-import com.hedvig.android.owldroid.type.Locale
+import com.hedvig.android.owldroid.graphql.type.Locale
+import com.hedvig.app.util.apollo.safeQuery
 import e
 import i
 
@@ -13,17 +12,14 @@ class LanguageRepository(
     private val apolloClient: ApolloClient,
 ) {
 
-    fun uploadLanguage(acceptLanguage: String, locale: Locale) {
-        apolloClient
-            .mutate(UpdateLanguageMutation(acceptLanguage, locale))
-            .enqueue(object : ApolloCall.Callback<UpdateLanguageMutation.Data>() {
-                override fun onFailure(e: ApolloException) {
-                    e { "$e Failed to update language" }
-                }
-
-                override fun onResponse(response: Response<UpdateLanguageMutation.Data>) {
-                    i { "Successfully updated language" }
-                }
-            })
+    suspend fun uploadLanguage(acceptLanguage: String, locale: Locale) {
+        val response = apolloClient
+            .mutation(UpdateLanguageMutation(acceptLanguage, locale))
+            .safeQuery()
+            .toEither()
+        when (response) {
+            is Either.Left -> e { "Failed to update language: Error message: ${response.value.message}" }
+            is Either.Right -> i { "Successfully updated language" }
+        }
     }
 }

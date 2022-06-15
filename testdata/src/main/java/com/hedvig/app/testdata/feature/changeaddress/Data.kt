@@ -1,8 +1,8 @@
 package com.hedvig.app.testdata.feature.changeaddress
 
-import com.hedvig.android.owldroid.fragment.UpcomingAgreementFragment
 import com.hedvig.android.owldroid.graphql.ActiveContractBundlesQuery
 import com.hedvig.android.owldroid.graphql.UpcomingAgreementQuery
+import com.hedvig.android.owldroid.graphql.fragment.UpcomingAgreementFragment
 import com.hedvig.app.testdata.common.builders.TableFragmentBuilder
 import com.hedvig.app.testdata.feature.changeaddress.builders.ActiveContractBundlesBuilder
 import com.hedvig.app.testdata.feature.changeaddress.builders.UpcomingAgreementBuilder
@@ -10,14 +10,17 @@ import com.hedvig.app.testdata.feature.changeaddress.builders.UpcomingAgreementB
 val UPCOMING_AGREEMENT_NONE = UpcomingAgreementQuery.Data(
     contracts = listOf(
         UpcomingAgreementQuery.Contract(
+            __typename = "",
             fragments = UpcomingAgreementQuery.Contract.Fragments(
                 upcomingAgreementFragment = UpcomingAgreementFragment(
                     upcomingAgreementDetailsTable = UpcomingAgreementFragment.UpcomingAgreementDetailsTable(
+                        __typename = "",
                         fragments = UpcomingAgreementFragment.UpcomingAgreementDetailsTable.Fragments(
                             TableFragmentBuilder().build()
                         )
                     ),
                     status = UpcomingAgreementFragment.Status(
+                        __typename = "",
                         asActiveStatus = null,
                         asTerminatedInFutureStatus = null,
                         asTerminatedTodayStatus = null,
@@ -31,6 +34,7 @@ val UPCOMING_AGREEMENT_NONE = UpcomingAgreementQuery.Data(
 val UPCOMING_AGREEMENT_SWEDISH_APARTMENT = UpcomingAgreementQuery.Data(
     contracts = listOf(
         UpcomingAgreementQuery.Contract(
+            __typename = "",
             fragments = UpcomingAgreementQuery.Contract.Fragments(
                 upcomingAgreementFragment = UpcomingAgreementBuilder().build()
             ),

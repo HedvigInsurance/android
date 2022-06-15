@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.embark
 
 import com.adyen.checkout.core.model.getStringOrNull
-import com.hedvig.android.owldroid.fragment.ApiFragment
+import com.hedvig.android.owldroid.graphql.fragment.ApiFragment
 import com.hedvig.app.util.apollo.FileVariable
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import com.hedvig.app.util.apollo.QueryResult
@@ -89,7 +89,7 @@ class GraphQLQueryUseCase(
         graphQLQuery.queryData.results.forEach { r ->
             addValues(
                 r.fragments.graphQLResultsFragment.key,
-                r.fragments.graphQLResultsFragment.as_,
+                r.fragments.graphQLResultsFragment.`as`,
                 response,
                 arrayValues,
                 objectValues
@@ -114,7 +114,7 @@ class GraphQLQueryUseCase(
         graphQLMutation.mutationData.results.filterNotNull().forEach { r ->
             addValues(
                 r.fragments.graphQLResultsFragment.key,
-                r.fragments.graphQLResultsFragment.as_,
+                r.fragments.graphQLResultsFragment.`as`,
                 response,
                 arrayValues,
                 objectValues

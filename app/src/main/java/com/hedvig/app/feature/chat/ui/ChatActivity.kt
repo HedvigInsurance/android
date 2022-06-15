@@ -200,23 +200,6 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             startActivity(SettingsActivity.newInstance(this))
         }
 
-        if (intent?.extras?.getBoolean(EXTRA_SHOW_RESTART, false) == true) {
-            binding.restart.setOnClickListener {
-                showAlert(
-                    R.string.CHAT_RESET_DIALOG_TITLE,
-                    R.string.CHAT_RESET_DIALOG_MESSAGE,
-                    R.string.CHAT_RESET_DIALOG_POSITIVE_BUTTON_LABEL,
-                    R.string.CHAT_RESET_DIALOG_NEGATIVE_BUTTON_LABEL,
-                    positiveAction = {
-                        chatViewModel.restartChat()
-                    }
-                )
-            }
-            binding.restart.contentDescription =
-                getString(R.string.CHAT_RESTART_CONTENT_DESCRIPTION)
-            binding.restart.show()
-        }
-
         if (intent?.extras?.getBoolean(EXTRA_SHOW_CLOSE, false) == true) {
             binding.close.setOnClickListener {
                 onBackPressed()
@@ -488,7 +471,6 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
         private const val TAKE_PICTURE_REQUEST_CODE = 2371
 
         const val EXTRA_SHOW_CLOSE = "extra_show_close"
-        const val EXTRA_SHOW_RESTART = "extra_show_restart"
 
         const val ACTIVITY_IS_IN_FOREGROUND = "chat_activity_is_in_foreground"
     }

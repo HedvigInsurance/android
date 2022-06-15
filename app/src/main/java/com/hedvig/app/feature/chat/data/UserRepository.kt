@@ -1,8 +1,6 @@
 package com.hedvig.app.feature.chat.data
 
-import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.coroutines.await
-import com.apollographql.apollo.coroutines.toFlow
+import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.owldroid.graphql.AuthStatusSubscription
 import com.hedvig.android.owldroid.graphql.LogoutMutation
 import com.hedvig.android.owldroid.graphql.SwedishBankIdAuthMutation
@@ -12,10 +10,10 @@ class UserRepository(
     private val apolloClient: ApolloClient,
 ) {
     suspend fun fetchAutoStartToken() =
-        apolloClient.mutate(SwedishBankIdAuthMutation()).await()
+        apolloClient.mutation(SwedishBankIdAuthMutation()).execute()
 
     fun subscribeAuthStatus() =
-        apolloClient.subscribe(AuthStatusSubscription()).toFlow()
+        apolloClient.subscription(AuthStatusSubscription()).toFlow()
 
-    suspend fun logout() = apolloClient.mutate(LogoutMutation()).safeQuery()
+    suspend fun logout() = apolloClient.mutation(LogoutMutation()).safeQuery()
 }

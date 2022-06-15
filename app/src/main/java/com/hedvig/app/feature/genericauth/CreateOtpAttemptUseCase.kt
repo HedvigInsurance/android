@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.genericauth
 
-import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.owldroid.graphql.CreateOtpAttemptMutation
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
@@ -19,7 +19,7 @@ class CreateOtpAttemptUseCase(
 
     suspend operator fun invoke(email: String) = when (
         val result = apolloClient
-            .mutate(CreateOtpAttemptMutation(email = email))
+            .mutation(CreateOtpAttemptMutation(email = email))
             .safeQuery()
     ) {
         is QueryResult.Success -> {

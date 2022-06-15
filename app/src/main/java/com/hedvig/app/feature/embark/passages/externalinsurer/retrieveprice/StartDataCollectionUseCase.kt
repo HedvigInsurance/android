@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice
 
-import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.owldroid.graphql.InitiateDataCollectionNOMutation
 import com.hedvig.android.owldroid.graphql.InitiateDataCollectionSEMutation
 import com.hedvig.app.feature.settings.Market
