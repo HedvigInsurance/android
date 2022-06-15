@@ -23,9 +23,9 @@ class ChangeAddressTest : TestCase() {
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        UpcomingAgreementQuery.QUERY_DOCUMENT to apolloResponse { success(UPCOMING_AGREEMENT_NONE) },
-        ActiveContractBundlesQuery.QUERY_DOCUMENT to apolloResponse { success(SELF_CHANGE_ELIGIBILITY) },
-        CreateOnboardingQuoteCartMutation.QUERY_DOCUMENT to apolloResponse {
+        UpcomingAgreementQuery.OPERATION_DOCUMENT to apolloResponse { success(UPCOMING_AGREEMENT_NONE) },
+        ActiveContractBundlesQuery.OPERATION_DOCUMENT to apolloResponse { success(SELF_CHANGE_ELIGIBILITY) },
+        CreateOnboardingQuoteCartMutation.OPERATION_DOCUMENT to apolloResponse {
             success(
                 CreateOnboardingQuoteCartMutation.Data(
                     onboardingQuoteCart_create = CreateOnboardingQuoteCartMutation.OnboardingQuoteCart_create(

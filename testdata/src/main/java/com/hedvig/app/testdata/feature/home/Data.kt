@@ -1,6 +1,6 @@
 package com.hedvig.app.testdata.feature.home
 
-import com.hedvig.android.owldroid.type.PayinMethodStatus
+import com.hedvig.android.owldroid.graphql.type.PayinMethodStatus
 import com.hedvig.app.testdata.common.ContractStatus
 import com.hedvig.app.testdata.feature.home.builders.HomeDataBuilder
 import com.hedvig.app.testdata.feature.home.builders.ImportantMessageBuilder

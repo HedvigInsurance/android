@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.offer.model.quotebundle
 
 import android.content.Context
-import com.hedvig.android.owldroid.fragment.QuoteBundleFragment
-import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationStartDateTerminology
+import com.hedvig.android.owldroid.graphql.fragment.QuoteBundleFragment
+import com.hedvig.android.owldroid.graphql.type.QuoteBundleAppConfigurationStartDateTerminology
 import com.hedvig.app.R
 
 enum class StartDateLabel {

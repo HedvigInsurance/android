@@ -1,8 +1,8 @@
 package com.hedvig.app.testdata.feature.embark.builders
 
-import com.hedvig.android.owldroid.fragment.ApiFragment
-import com.hedvig.android.owldroid.fragment.EmbarkLinkFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
+import com.hedvig.android.owldroid.graphql.fragment.ApiFragment
+import com.hedvig.android.owldroid.graphql.fragment.EmbarkLinkFragment
 
 data class TextActionBuilder(
     private val key: String,
@@ -13,19 +13,27 @@ data class TextActionBuilder(
     private val api: ApiFragment? = null,
 ) {
     fun build() = EmbarkStoryQuery.Action(
+        __typename = "",
         asEmbarkSelectAction = null,
         asEmbarkTextAction = EmbarkStoryQuery.AsEmbarkTextAction(
+            __typename = "",
             textData = EmbarkStoryQuery.TextData(
                 key = key,
                 placeholder = placeholder,
                 mask = mask,
                 link = EmbarkStoryQuery.Link1(
+                    __typename = "",
                     fragments = EmbarkStoryQuery.Link1.Fragments(
                         link
                             ?: throw IllegalArgumentException("Missing required Link for single text action")
                     )
                 ),
-                api = api?.let { EmbarkStoryQuery.Api1(fragments = EmbarkStoryQuery.Api1.Fragments(it)) },
+                api = api?.let {
+                    EmbarkStoryQuery.Api1(
+                        __typename = "",
+                        fragments = EmbarkStoryQuery.Api1.Fragments(it)
+                    )
+                },
                 subtitle = "Test subtitle",
             )
         ),

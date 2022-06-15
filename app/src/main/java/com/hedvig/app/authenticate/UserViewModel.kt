@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hedvig.android.owldroid.graphql.AuthStatusSubscription
 import com.hedvig.android.owldroid.graphql.SwedishBankIdAuthMutation
-import com.hedvig.android.owldroid.type.AuthState
+import com.hedvig.android.owldroid.graphql.type.AuthState
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.app.util.featureflags.FeatureManager

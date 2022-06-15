@@ -1,10 +1,12 @@
 package com.hedvig.app.feature.home.data
 
 import arrow.core.Either
+import com.apollographql.apollo3.ApolloCall
 import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.ApolloQueryCall
-import com.apollographql.apollo3.api.cache.http.HttpCachePolicy
-import com.apollographql.apollo3.fetcher.ApolloResponseFetchers
+import com.apollographql.apollo3.cache.http.HttpFetchPolicy
+import com.apollographql.apollo3.cache.http.httpFetchPolicy
+import com.apollographql.apollo3.cache.normalized.FetchPolicy
+import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.QueryResult
@@ -21,17 +23,15 @@ class GetHomeUseCase(
             .toEither()
     }
 
-    private fun createHomeCall(forceReload: Boolean): ApolloQueryCall<HomeQuery.Data> {
-        val builder = apolloClient
-            .query(homeQuery())
-            .toBuilder()
+    private fun createHomeCall(forceReload: Boolean): ApolloCall<HomeQuery.Data> {
+        val apolloCall = apolloClient.query(homeQuery())
 
         if (forceReload) {
-            builder
-                .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
-                .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
+            apolloCall
+                .httpFetchPolicy(HttpFetchPolicy.NetworkOnly)
+                .fetchPolicy(FetchPolicy.NetworkOnly)
         }
-        return builder.build()
+        return apolloCall
     }
 
     private fun homeQuery() = HomeQuery(localeManager.defaultLocale(), localeManager.defaultLocale().rawValue)

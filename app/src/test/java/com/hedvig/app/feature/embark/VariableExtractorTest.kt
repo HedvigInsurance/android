@@ -2,8 +2,8 @@ package com.hedvig.app.feature.embark
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import com.hedvig.android.owldroid.fragment.GraphQLVariablesFragment
-import com.hedvig.android.owldroid.type.EmbarkAPIGraphQLSingleVariableCasting
+import com.hedvig.android.owldroid.graphql.fragment.GraphQLVariablesFragment
+import com.hedvig.android.owldroid.graphql.type.EmbarkAPIGraphQLSingleVariableCasting
 import com.hedvig.app.feature.embark.variables.CastType
 import com.hedvig.app.feature.embark.variables.Variable
 import com.hedvig.app.feature.embark.variables.VariableExtractor
@@ -381,7 +381,7 @@ class VariableExtractorTest {
                     __typename = "EmbarkAPIGraphQLSingleVariable",
                     key = "audioRecording",
                     from = "audioRecording",
-                    as_ = EmbarkAPIGraphQLSingleVariableCasting.FILE
+                    `as` = EmbarkAPIGraphQLSingleVariableCasting.`file`
                 ),
                 asEmbarkAPIGraphQLGeneratedVariable = null,
                 asEmbarkAPIGraphQLMultiActionVariable = null,

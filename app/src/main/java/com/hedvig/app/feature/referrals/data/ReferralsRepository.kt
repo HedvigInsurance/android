@@ -2,29 +2,29 @@ package com.hedvig.app.feature.referrals.data
 
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
-import com.apollographql.apollo3.api.cache.http.HttpCachePolicy
-import com.apollographql.apollo3.coroutines.await
-import com.apollographql.apollo3.coroutines.toFlow
-import com.apollographql.apollo3.fetcher.ApolloResponseFetchers
+import com.apollographql.apollo3.cache.http.HttpFetchPolicy
+import com.apollographql.apollo3.cache.http.httpFetchPolicy
+import com.apollographql.apollo3.cache.normalized.FetchPolicy
+import com.apollographql.apollo3.cache.normalized.apolloStore
+import com.apollographql.apollo3.cache.normalized.fetchPolicy
+import com.apollographql.apollo3.cache.normalized.watch
 import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.android.owldroid.graphql.UpdateReferralCampaignCodeMutation
+import kotlinx.coroutines.flow.Flow
 
 class ReferralsRepository(
     private val apolloClient: ApolloClient,
 ) {
     private val referralsQuery = ReferralsQuery()
 
-    fun referrals() = apolloClient
+    fun referrals(): Flow<ApolloResponse<ReferralsQuery.Data>> = apolloClient
         .query(referralsQuery)
-        .watcher()
-        .toFlow()
+        .watch()
 
-    suspend fun reloadReferrals() = apolloClient
+    suspend fun reloadReferrals(): ApolloResponse<ReferralsQuery.Data> = apolloClient
         .query(referralsQuery)
-        .toBuilder()
-        .httpCachePolicy(HttpCachePolicy.NETWORK_ONLY)
-        .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
-        .build()
+        .httpFetchPolicy(HttpFetchPolicy.NetworkOnly)
+        .fetchPolicy(FetchPolicy.NetworkOnly)
         .execute()
 
     suspend fun updateCode(newCode: String): ApolloResponse<UpdateReferralCampaignCodeMutation.Data> {
@@ -35,8 +35,7 @@ class ReferralsRepository(
         response.data?.updateReferralCampaignCode?.asSuccessfullyUpdatedCode?.code?.let { updatedCode ->
             val oldData = apolloClient
                 .apolloStore
-                .read(referralsQuery)
-                .execute()
+                .readOperation(referralsQuery)
 
             val newData = oldData.copy(
                 referralInformation = oldData.referralInformation.copy(
@@ -48,8 +47,7 @@ class ReferralsRepository(
 
             apolloClient
                 .apolloStore
-                .writeAndPublish(referralsQuery, newData)
-                .execute()
+                .writeOperation(referralsQuery, newData)
         }
 
         return response

@@ -8,9 +8,9 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.core.widget.NestedScrollView
 import androidx.dynamicanimation.animation.SpringAnimation
-import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
-import com.hedvig.android.owldroid.type.KeyGearItemCategory
+import com.hedvig.android.owldroid.graphql.fragment.KeyGearItemFragment
+import com.hedvig.android.owldroid.graphql.type.KeyGearItemCategory
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityKeyGearItemDetailBinding
@@ -159,7 +159,7 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
 
         fun newInstance(
             context: Context,
-            item: KeyGearItemFragment
+            item: KeyGearItemFragment,
         ) =
             Intent(context, KeyGearItemDetailActivity::class.java).apply {
                 item.photos.getOrNull(0)?.file?.preSignedUrl?.let {

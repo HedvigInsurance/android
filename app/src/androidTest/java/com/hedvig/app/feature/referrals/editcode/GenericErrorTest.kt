@@ -21,7 +21,7 @@ class GenericErrorTest : TestCase() {
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        UpdateReferralCampaignCodeMutation.QUERY_DOCUMENT to apolloResponse {
+        UpdateReferralCampaignCodeMutation.OPERATION_DOCUMENT to apolloResponse {
             graphQLError(jsonObjectOf("message" to "example message"))
         }
     )

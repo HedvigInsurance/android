@@ -2,7 +2,7 @@ package com.hedvig.app.authenticate.insurely
 
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.owldroid.graphql.ExternalInsuranceProviderV2Subscription
-import com.hedvig.android.owldroid.type.DataCollectionStatus
+import com.hedvig.android.owldroid.graphql.type.DataCollectionStatus
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeSubscription

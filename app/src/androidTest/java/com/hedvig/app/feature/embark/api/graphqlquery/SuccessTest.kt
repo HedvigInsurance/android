@@ -30,7 +30,7 @@ class SuccessTest : TestCase() {
 
     @get:Rule
     val apolloMockServerRule = ApolloMockServerRule(
-        EmbarkStoryQuery.QUERY_DOCUMENT to apolloResponse { success(STORY_WITH_GRAPHQL_QUERY_API) },
+        EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse { success(STORY_WITH_GRAPHQL_QUERY_API) },
         HELLO_QUERY to apolloResponse {
             success(jsonObjectOf("hello" to "world"))
         }

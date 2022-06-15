@@ -2,7 +2,7 @@ package com.hedvig.app.feature.keygear.ui.createitem
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import com.hedvig.android.owldroid.type.KeyGearItemCategory
+import com.hedvig.android.owldroid.graphql.type.KeyGearItemCategory
 import com.hedvig.app.R
 
 data class Category(

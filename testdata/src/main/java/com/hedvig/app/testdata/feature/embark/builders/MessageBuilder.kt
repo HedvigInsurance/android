@@ -1,9 +1,9 @@
 package com.hedvig.app.testdata.feature.embark.builders
 
-import com.hedvig.android.owldroid.fragment.ExpressionFragment
-import com.hedvig.android.owldroid.fragment.MessageFragment
-import com.hedvig.android.owldroid.fragment.ResponseExpressionFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
+import com.hedvig.android.owldroid.graphql.fragment.ExpressionFragment
+import com.hedvig.android.owldroid.graphql.fragment.MessageFragment
+import com.hedvig.android.owldroid.graphql.fragment.ResponseExpressionFragment
 
 data class MessageBuilder(
     private val text: String,
@@ -11,12 +11,16 @@ data class MessageBuilder(
 ) {
     fun build() = MessageFragment(
         expressions = expressions.map {
-            MessageFragment.Expression(fragments = MessageFragment.Expression.Fragments(it))
+            MessageFragment.Expression(
+                __typename = "",
+                fragments = MessageFragment.Expression.Fragments(it)
+            )
         },
         text = text
     )
 
     fun buildMessageResponse() = EmbarkStoryQuery.Response(
+        __typename = "",
         fragments = EmbarkStoryQuery.Response.Fragments(
             messageFragment = build(),
             responseExpressionFragment = null,
@@ -25,12 +29,14 @@ data class MessageBuilder(
     )
 
     fun buildExpressionResponse() = EmbarkStoryQuery.Response(
+        __typename = "",
         fragments = EmbarkStoryQuery.Response.Fragments(
             messageFragment = null,
             responseExpressionFragment = ResponseExpressionFragment(
                 text = text,
                 expressions = expressions.map {
                     ResponseExpressionFragment.Expression(
+                        __typename = "",
                         fragments = ResponseExpressionFragment.Expression.Fragments(it)
                     )
                 }
