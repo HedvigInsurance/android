@@ -4,7 +4,7 @@ import com.apollographql.apollo3.annotations.ApolloExperimental
 import com.apollographql.apollo3.api.test.DefaultTestResolver
 
 @OptIn(ApolloExperimental::class)
-class TestDataTestResolver : DefaultTestResolver() {
+object TestDataTestResolver : DefaultTestResolver() {
     override fun resolveListSize(path: List<Any>): Int {
         return 0
     }

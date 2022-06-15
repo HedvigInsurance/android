@@ -39,7 +39,7 @@ class InsuranceQueryParsingTest {
 
     @Suppress("PrivatePropertyName")
     private val INSURANCE_DATA_from_test_builder by lazy {
-        InsuranceQuery.Data(TestDataTestResolver(), CUSTOM_SCALAR_ADAPTERS) {
+        InsuranceQuery.Data(TestDataTestResolver, CUSTOM_SCALAR_ADAPTERS) {
             activeContractBundles = emptyList()
             contracts = listOf(
                 contract {
