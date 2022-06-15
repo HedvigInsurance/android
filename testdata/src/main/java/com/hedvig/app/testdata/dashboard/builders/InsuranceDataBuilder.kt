@@ -1,14 +1,14 @@
 package com.hedvig.app.testdata.dashboard.builders
 
-import com.hedvig.android.owldroid.fragment.ContractStatusFragment
-import com.hedvig.android.owldroid.fragment.IconVariantsFragment
-import com.hedvig.android.owldroid.fragment.InsurableLimitsFragment
-import com.hedvig.android.owldroid.fragment.TableFragment
-import com.hedvig.android.owldroid.fragment.UpcomingAgreementChangeFragment
-import com.hedvig.android.owldroid.fragment.UpcomingAgreementFragment
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
-import com.hedvig.android.owldroid.type.AgreementStatus
-import com.hedvig.android.owldroid.type.TypeOfContractGradientOption
+import com.hedvig.android.owldroid.graphql.fragment.ContractStatusFragment
+import com.hedvig.android.owldroid.graphql.fragment.IconVariantsFragment
+import com.hedvig.android.owldroid.graphql.fragment.InsurableLimitsFragment
+import com.hedvig.android.owldroid.graphql.fragment.TableFragment
+import com.hedvig.android.owldroid.graphql.fragment.UpcomingAgreementChangeFragment
+import com.hedvig.android.owldroid.graphql.fragment.UpcomingAgreementFragment
+import com.hedvig.android.owldroid.graphql.type.AgreementStatus
+import com.hedvig.android.owldroid.graphql.type.TypeOfContractGradientOption
 import com.hedvig.app.testdata.common.ContractStatus
 import com.hedvig.app.testdata.common.builders.TableFragmentBuilder
 import com.hedvig.app.testdata.feature.insurance.builders.PerilBuilder
@@ -32,6 +32,7 @@ class InsuranceDataBuilder(
     fun build() = InsuranceQuery.Data(
         contracts = contracts.map { c ->
             InsuranceQuery.Contract(
+                __typename = "",
                 id = "120e9ac9-84b1-4e5d-add1-70a9bad340be",
                 status = InsuranceQuery.Status(
                     __typename = c.toTypename(),
@@ -40,6 +41,7 @@ class InsuranceDataBuilder(
                             __typename = c.toTypename(),
                             asPendingStatus = if (c == ContractStatus.PENDING) {
                                 ContractStatusFragment.AsPendingStatus(
+                                    __typename = "",
                                     pendingSince = null
                                 )
                             } else {
@@ -47,21 +49,26 @@ class InsuranceDataBuilder(
                             },
                             asActiveInFutureStatus = when (c) {
                                 ContractStatus.ACTIVE_IN_FUTURE -> ContractStatusFragment.AsActiveInFutureStatus(
+                                    __typename = "",
                                     futureInception = LocalDate.of(2025, 1, 1)
                                 )
                                 ContractStatus.ACTIVE_IN_FUTURE_INVALID ->
                                     ContractStatusFragment.AsActiveInFutureStatus(
+                                        __typename = "",
                                         futureInception = null
                                     )
                                 else -> null
                             },
                             asActiveStatus = if (c == ContractStatus.ACTIVE) {
                                 ContractStatusFragment.AsActiveStatus(
+                                    __typename = "",
                                     pastInception = LocalDate.now(),
                                     upcomingAgreementChange = ContractStatusFragment.UpcomingAgreementChange(
                                         newAgreement = ContractStatusFragment.NewAgreement(
+                                            __typename = "",
                                             asSwedishApartmentAgreement = ContractStatusFragment
                                                 .AsSwedishApartmentAgreement(
+                                                    __typename = "",
                                                     activeFrom = LocalDate.of(2021, 4, 6)
                                                 )
                                         )
@@ -74,6 +81,7 @@ class InsuranceDataBuilder(
                                 c == ContractStatus.ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE
                             ) {
                                 ContractStatusFragment.AsActiveInFutureAndTerminatedInFutureStatus(
+                                    __typename = "",
                                     futureInception = LocalDate.of(2024, 1, 1),
                                     futureTermination = LocalDate.of(2034, 1, 1)
                                 )
@@ -82,12 +90,16 @@ class InsuranceDataBuilder(
                             },
                             asTerminatedInFutureStatus = null,
                             asTerminatedTodayStatus = if (c == ContractStatus.TERMINATED_TODAY) {
-                                ContractStatusFragment.AsTerminatedTodayStatus(today = LocalDate.now())
+                                ContractStatusFragment.AsTerminatedTodayStatus(
+                                    __typename = "",
+                                    today = LocalDate.now()
+                                )
                             } else {
                                 null
                             },
                             asTerminatedStatus = if (c == ContractStatus.TERMINATED) {
                                 ContractStatusFragment.AsTerminatedStatus(
+                                    __typename = "",
                                     termination = null
                                 )
                             } else {
@@ -99,17 +111,21 @@ class InsuranceDataBuilder(
                 displayName = displayName,
                 upcomingRenewal = renewal,
                 currentAgreement = InsuranceQuery.CurrentAgreement(
+                    __typename = "",
                     asAgreementCore = InsuranceQuery.AsAgreementCore(
+                        __typename = "",
                         certificateUrl = "https://www.example.com",
                         status = AgreementStatus.ACTIVE,
                     ),
                 ),
                 currentAgreementDetailsTable = InsuranceQuery.CurrentAgreementDetailsTable(
+                    __typename = "",
                     fragments = InsuranceQuery.CurrentAgreementDetailsTable.Fragments(detailsTable),
                 ),
                 contractPerils = PerilBuilder().insuranceQueryBuild(5),
                 insurableLimits = listOf(
                     InsuranceQuery.InsurableLimit(
+                        __typename = "",
                         fragments = InsuranceQuery.InsurableLimit.Fragments(
                             InsurableLimitsFragment(
                                 label = "Utstyrene dine er forsikrat till",
@@ -133,13 +149,17 @@ class InsuranceDataBuilder(
                             __typename = c.toTypename(),
                             asActiveStatus = if (c == ContractStatus.ACTIVE) {
                                 UpcomingAgreementFragment.AsActiveStatus(
+                                    __typename = "",
                                     upcomingAgreementChange = if (showUpcomingAgreement) {
                                         UpcomingAgreementFragment.UpcomingAgreementChange(
+                                            __typename = "",
                                             fragments = UpcomingAgreementFragment.UpcomingAgreementChange.Fragments(
                                                 upcomingAgreementChangeFragment = UpcomingAgreementChangeFragment(
                                                     newAgreement = UpcomingAgreementChangeFragment.NewAgreement(
+                                                        __typename = "",
                                                         asAgreementCore = UpcomingAgreementChangeFragment
                                                             .AsAgreementCore(
+                                                                __typename = "",
                                                                 activeFrom = LocalDate.of(2021, 1, 13),
                                                             ),
                                                     )
@@ -157,6 +177,7 @@ class InsuranceDataBuilder(
                             asTerminatedTodayStatus = null
                         ),
                         upcomingAgreementDetailsTable = UpcomingAgreementFragment.UpcomingAgreementDetailsTable(
+                            __typename = "",
                             fragments = UpcomingAgreementFragment.UpcomingAgreementDetailsTable.Fragments(
                                 upcomingDetailsTable
                             )
@@ -165,6 +186,7 @@ class InsuranceDataBuilder(
                 ),
                 logo = InsuranceQuery.Logo(
                     variants = InsuranceQuery.Variants(
+                        __typename = "",
                         fragments = InsuranceQuery.Variants.Fragments(
                             IconVariantsFragment(
                                 dark = IconVariantsFragment.Dark(svgUrl = "https://www.example.com"),

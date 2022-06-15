@@ -6,7 +6,8 @@ import arrow.core.Either
 import arrow.core.flatMap
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
-import com.apollographql.apollo3.api.FileUpload
+import com.apollographql.apollo3.api.DefaultUpload
+import com.apollographql.apollo3.api.content
 import com.apollographql.apollo3.cache.http.HttpFetchPolicy
 import com.apollographql.apollo3.cache.http.httpFetchPolicy
 import com.apollographql.apollo3.cache.normalized.FetchPolicy
@@ -24,20 +25,20 @@ import com.hedvig.android.owldroid.graphql.SendChatTextResponseMutation
 import com.hedvig.android.owldroid.graphql.TriggerFreeTextChatMutation
 import com.hedvig.android.owldroid.graphql.UploadFileMutation
 import com.hedvig.android.owldroid.graphql.fragment.ChatMessageFragment
+import com.hedvig.android.owldroid.graphql.type.ChatResponseBodyFileInput
 import com.hedvig.android.owldroid.graphql.type.ChatResponseBodySingleSelectInput
 import com.hedvig.android.owldroid.graphql.type.ChatResponseBodyTextInput
+import com.hedvig.android.owldroid.graphql.type.ChatResponseFileInput
 import com.hedvig.android.owldroid.graphql.type.ChatResponseSingleSelectInput
 import com.hedvig.android.owldroid.graphql.type.ChatResponseTextInput
-import com.hedvig.android.owldroid.type.ChatResponseBodyFileInput
-import com.hedvig.android.owldroid.type.ChatResponseFileInput
 import com.hedvig.app.service.FileService
 import com.hedvig.app.util.apollo.safeQuery
 import com.hedvig.app.util.extensions.into
-import java.io.File
-import java.util.UUID
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import java.io.File
+import java.util.UUID
 
 class ChatRepository(
     private val apolloClient: ApolloClient,
@@ -134,7 +135,10 @@ class ChatRepository(
         mimeType: String,
     ): ApolloResponse<UploadFileMutation.Data> {
         val uploadFileMutation = UploadFileMutation(
-            file = FileUpload(mimeType, path)
+            file = DefaultUpload.Builder()
+                .contentType(mimeType)
+                .content(File(path))
+                .build(),
         )
 
         return apolloClient.mutation(uploadFileMutation).execute()

@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.offer.ui
 
-import com.hedvig.android.owldroid.fragment.QuoteBundleFragment
-import com.hedvig.android.owldroid.type.CheckoutMethod
-import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationApproveButtonTerminology
+import com.hedvig.android.owldroid.graphql.fragment.QuoteBundleFragment
+import com.hedvig.android.owldroid.graphql.type.CheckoutMethod
+import com.hedvig.android.owldroid.graphql.type.QuoteBundleAppConfigurationApproveButtonTerminology
 import com.hedvig.app.feature.offer.model.CheckoutLabel
 
 fun QuoteBundleFragment.checkoutLabel(checkoutMethods: List<CheckoutMethod>) = when {

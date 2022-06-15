@@ -22,8 +22,8 @@ class UpcomingChangeAddressTest : TestCase() {
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        UpcomingAgreementQuery.QUERY_DOCUMENT to apolloResponse { success(UPCOMING_AGREEMENT_SWEDISH_APARTMENT) },
-        ActiveContractBundlesQuery.QUERY_DOCUMENT to apolloResponse { success(SELF_CHANGE_ELIGIBILITY) }
+        UpcomingAgreementQuery.OPERATION_DOCUMENT to apolloResponse { success(UPCOMING_AGREEMENT_SWEDISH_APARTMENT) },
+        ActiveContractBundlesQuery.OPERATION_DOCUMENT to apolloResponse { success(SELF_CHANGE_ELIGIBILITY) }
     )
 
     @get:Rule

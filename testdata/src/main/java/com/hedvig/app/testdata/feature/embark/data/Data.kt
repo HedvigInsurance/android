@@ -1094,7 +1094,7 @@ val STORY_WITH_GRAPHQL_QUERY_API = EmbarkStoryDataBuilder(
     )
 ).build()
 
-val VARIABLE_QUERY = """
+const val VARIABLE_QUERY = """
 query VariableQuery(${'$'}variable: String!) {
     hello(variable: ${'$'}variable)
 }

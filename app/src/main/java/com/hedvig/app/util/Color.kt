@@ -4,7 +4,7 @@ import android.graphics.Color
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.core.graphics.ColorUtils
-import com.hedvig.android.owldroid.type.HedvigColor
+import com.hedvig.android.owldroid.graphql.type.HedvigColor
 import com.hedvig.app.R
 import kotlin.math.abs
 import kotlin.math.max
@@ -32,18 +32,18 @@ fun boundedColorLerp(@ColorInt from: Int, @ColorInt to: Int, amount: Float): Int
 
 @ColorRes
 fun HedvigColor.mappedColor(): Int = when (this) {
-    HedvigColor.DARKPURPLE -> R.color.dark_purple
-    HedvigColor.LIGHTGRAY -> R.color.light_gray
-    HedvigColor.OFFWHITE -> R.color.off_white
-    HedvigColor.DARKGRAY -> R.color.gray
-    HedvigColor.PURPLE -> R.color.purple
-    HedvigColor.WHITE -> R.color.white
-    HedvigColor.OFFBLACK -> R.color.off_black
-    HedvigColor.BLACK -> R.color.black
-    HedvigColor.TURQUOISE -> R.color.green
-    HedvigColor.PINK -> R.color.pink
-    HedvigColor.BLACKPURPLE -> R.color.off_black_dark
-    HedvigColor.YELLOW -> R.color.yellow
+    HedvigColor.DarkPurple -> R.color.dark_purple
+    HedvigColor.LightGray -> R.color.light_gray
+    HedvigColor.OffWhite -> R.color.off_white
+    HedvigColor.DarkGray -> R.color.gray
+    HedvigColor.Purple -> R.color.purple
+    HedvigColor.White -> R.color.white
+    HedvigColor.OffBlack -> R.color.off_black
+    HedvigColor.Black -> R.color.black
+    HedvigColor.Turquoise -> R.color.green
+    HedvigColor.Pink -> R.color.pink
+    HedvigColor.BlackPurple -> R.color.off_black_dark
+    HedvigColor.Yellow -> R.color.yellow
     HedvigColor.UNKNOWN__ -> R.color.purple
 }
 

@@ -1,11 +1,11 @@
 package com.hedvig.app.testdata.feature.payment
 
-import com.hedvig.android.owldroid.fragment.ActivePaymentMethodsFragment
-import com.hedvig.android.owldroid.fragment.BankAccountFragment
-import com.hedvig.android.owldroid.fragment.CostFragment
-import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.graphql.PaymentQuery
-import com.hedvig.android.owldroid.type.PayoutMethodStatus
+import com.hedvig.android.owldroid.graphql.fragment.ActivePaymentMethodsFragment
+import com.hedvig.android.owldroid.graphql.fragment.BankAccountFragment
+import com.hedvig.android.owldroid.graphql.fragment.CostFragment
+import com.hedvig.android.owldroid.graphql.fragment.MonetaryAmountFragment
+import com.hedvig.android.owldroid.graphql.type.PayoutMethodStatus
 import com.hedvig.app.testdata.common.ContractStatus
 import com.hedvig.app.testdata.common.builders.ContractStatusFragmentBuilder
 import com.hedvig.app.testdata.common.builders.CostBuilder
@@ -36,6 +36,7 @@ data class PaymentDataBuilder(
         contracts = contracts.map {
             PaymentQuery.Contract(
                 status = PaymentQuery.Status(
+                    __typename = "",
                     fragments = PaymentQuery.Status.Fragments(
                         ContractStatusFragmentBuilder(it).build()
                     )
@@ -47,6 +48,7 @@ data class PaymentDataBuilder(
         ),
         chargeEstimation = PaymentQuery.ChargeEstimation(
             charge = PaymentQuery.Charge(
+                __typename = "",
                 fragments = PaymentQuery.Charge.Fragments(
                     MonetaryAmountFragment(
                         amount = charge,
@@ -55,6 +57,7 @@ data class PaymentDataBuilder(
                 )
             ),
             discount = PaymentQuery.Discount(
+                __typename = "",
                 fragments = PaymentQuery.Discount.Fragments(
                     MonetaryAmountFragment(
                         amount = discount,
@@ -63,6 +66,7 @@ data class PaymentDataBuilder(
                 )
             ),
             subscription = PaymentQuery.Subscription(
+                __typename = "",
                 fragments = PaymentQuery.Subscription.Fragments(
                     MonetaryAmountFragment(
                         amount = subscription,
@@ -74,6 +78,7 @@ data class PaymentDataBuilder(
         nextChargeDate = nextChargeDate,
         chargeHistory = chargeHistory,
         insuranceCost = PaymentQuery.InsuranceCost(
+            __typename = "",
             freeUntil = freeUntil,
             fragments = PaymentQuery.InsuranceCost.Fragments(
                 costFragment = cost
@@ -82,6 +87,7 @@ data class PaymentDataBuilder(
         redeemedCampaigns = redeemedCampaigns,
         bankAccount = if (payinType == PayinType.TRUSTLY && payinConnected) {
             PaymentQuery.BankAccount(
+                __typename = "",
                 fragments = PaymentQuery.BankAccount.Fragments(
                     BankAccountFragment(
                         bankName = "Testbanken",
@@ -94,9 +100,12 @@ data class PaymentDataBuilder(
         },
         activePaymentMethodsV2 = if (payinType == PayinType.ADYEN && payinConnected) {
             PaymentQuery.ActivePaymentMethodsV2(
+                __typename = "",
                 fragments = PaymentQuery.ActivePaymentMethodsV2.Fragments(
                     ActivePaymentMethodsFragment(
+                        __typename = "",
                         asStoredCardDetails = ActivePaymentMethodsFragment.AsStoredCardDetails(
+                            __typename = "",
                             brand = "Testkortet",
                             lastFourDigits = "1234",
                             expiryMonth = "01",

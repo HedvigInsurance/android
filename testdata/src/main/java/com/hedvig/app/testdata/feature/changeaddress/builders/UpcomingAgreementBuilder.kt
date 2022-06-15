@@ -1,8 +1,8 @@
 package com.hedvig.app.testdata.feature.changeaddress.builders
 
-import com.hedvig.android.owldroid.fragment.TableFragment
-import com.hedvig.android.owldroid.fragment.UpcomingAgreementChangeFragment
-import com.hedvig.android.owldroid.fragment.UpcomingAgreementFragment
+import com.hedvig.android.owldroid.graphql.fragment.TableFragment
+import com.hedvig.android.owldroid.graphql.fragment.UpcomingAgreementChangeFragment
+import com.hedvig.android.owldroid.graphql.fragment.UpcomingAgreementFragment
 import com.hedvig.app.testdata.common.builders.TableFragmentBuilder
 import java.time.LocalDate
 
@@ -10,7 +10,9 @@ class UpcomingAgreementBuilder(
     private val activeFrom: LocalDate = LocalDate.of(2021, 4, 11),
     private val newAgreement: UpcomingAgreementChangeFragment.NewAgreement = UpcomingAgreementChangeFragment
         .NewAgreement(
+            __typename = "",
             asAgreementCore = UpcomingAgreementChangeFragment.AsAgreementCore(
+                __typename = "",
                 activeFrom = activeFrom,
             )
         ),
@@ -26,13 +28,17 @@ class UpcomingAgreementBuilder(
 
     fun build() = UpcomingAgreementFragment(
         upcomingAgreementDetailsTable = UpcomingAgreementFragment.UpcomingAgreementDetailsTable(
+            __typename = "",
             fragments = UpcomingAgreementFragment.UpcomingAgreementDetailsTable.Fragments(
                 table
             )
         ),
         status = UpcomingAgreementFragment.Status(
+            __typename = "",
             asActiveStatus = UpcomingAgreementFragment.AsActiveStatus(
+                __typename = "",
                 upcomingAgreementChange = UpcomingAgreementFragment.UpcomingAgreementChange(
+                    __typename = "",
                     fragments = UpcomingAgreementFragment.UpcomingAgreementChange.Fragments(
                         upcomingAgreementChangeFragment = UpcomingAgreementChangeFragment(
                             newAgreement = newAgreement
