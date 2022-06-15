@@ -30,7 +30,9 @@ class MultipleOptionApi : TestCase() {
 
     @get:Rule
     val apolloMockServerRule = ApolloMockServerRule(
-        EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse { success(STORY_WITH_SELECT_ACTION_API_MULTIPLE_OPTIONS) },
+        EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse {
+            success(STORY_WITH_SELECT_ACTION_API_MULTIPLE_OPTIONS)
+        },
         HELLO_QUERY to apolloResponse {
             success(jsonObjectOf("hello" to "world"))
         }

@@ -19,13 +19,6 @@ subprojects {
 }
 
 buildscript {
-    repositories {
-        google()
-        mavenCentral()
-        mavenLocal()
-        gradlePluginPortal()
-    }
-
     dependencies {
         classpath(libs.android.gradlePlugin)
         classpath(libs.kotlin.gradlePlugin)
@@ -37,9 +30,12 @@ allprojects {
         google()
         mavenCentral()
         mavenLocal()
-        maven(
-            "https://jitpack.io"
-        )
+        maven {
+            url = uri("https://jitpack.io")
+        }
+        maven {
+            url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+        }
     }
 }
 

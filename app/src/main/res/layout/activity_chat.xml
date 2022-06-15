@@ -48,15 +48,6 @@
                 app:srcCompat="@drawable/ic_close"
                 tools:visibility="visible" />
 
-            <ImageView
-                android:id="@+id/restart"
-                style="@style/ToolbarIcon.Start"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/CHAT_CLOSE_DESCRIPTION"
-                android:visibility="gone"
-                app:srcCompat="@drawable/ic_restart_chat"
-                tools:visibility="visible" />
-
         </LinearLayout>
 
         <ImageView

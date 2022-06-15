@@ -5,8 +5,13 @@ import com.hedvig.android.owldroid.graphql.fragment.ContractStatusFragment
 import com.hedvig.android.owldroid.graphql.fragment.IconVariantsFragment
 import com.hedvig.android.owldroid.graphql.fragment.InsurableLimitsFragment
 import com.hedvig.android.owldroid.graphql.fragment.TableFragment
+import com.hedvig.android.owldroid.graphql.fragment.UpcomingAgreementChangeFragment
 import com.hedvig.android.owldroid.graphql.fragment.UpcomingAgreementFragment
+import com.hedvig.android.owldroid.graphql.type.ActiveStatus
 import com.hedvig.android.owldroid.graphql.type.AgreementStatus
+import com.hedvig.android.owldroid.graphql.type.Contract
+import com.hedvig.android.owldroid.graphql.type.NorwegianTravelAgreement
+import com.hedvig.android.owldroid.graphql.type.SwedishApartmentAgreement
 import com.hedvig.android.owldroid.graphql.type.TypeOfContractGradientOption
 import com.hedvig.app.testdata.common.builders.TableFragmentBuilder
 import java.time.LocalDate
@@ -24,24 +29,24 @@ class InsuranceContractBuilder(
 ) {
 
     fun build() = InsuranceQuery.Contract(
-        __typename = "",
+        __typename = Contract.type.name,
         id = "120e9ac9-84b1-4e5d-add1-70a9bad340be",
         status = InsuranceQuery.Status(
-            __typename = "",
+            __typename = ActiveStatus.type.name,
             fragments = InsuranceQuery.Status.Fragments(
                 contractStatusFragment = ContractStatusFragment(
-                    __typename = "",
+                    __typename = ActiveStatus.type.name,
                     asPendingStatus = null,
                     asActiveInFutureStatus = null,
                     asActiveStatus = ContractStatusFragment.AsActiveStatus(
-                        __typename = "",
+                        __typename = ActiveStatus.type.name,
                         pastInception = LocalDate.of(2020, 2, 1),
                         upcomingAgreementChange = if (showUpcomingAgreement) {
                             ContractStatusFragment.UpcomingAgreementChange(
                                 newAgreement = ContractStatusFragment.NewAgreement(
-                                    __typename = "",
+                                    __typename = SwedishApartmentAgreement.type.name,
                                     asSwedishApartmentAgreement = ContractStatusFragment.AsSwedishApartmentAgreement(
-                                        __typename = "",
+                                        __typename = SwedishApartmentAgreement.type.name,
                                         activeFrom = LocalDate.of(2021, 4, 6)
                                     )
                                 )
@@ -58,9 +63,9 @@ class InsuranceContractBuilder(
         displayName = "Hemförsäkring",
         upcomingRenewal = renewal,
         currentAgreement = InsuranceQuery.CurrentAgreement(
-            __typename = "",
+            __typename = NorwegianTravelAgreement.type.name,
             asAgreementCore = InsuranceQuery.AsAgreementCore(
-                __typename = "NorwegianTravelAgreement",
+                __typename = NorwegianTravelAgreement.type.name,
                 certificateUrl = "https://www.example.com",
                 status = agreementStatus,
             ),
@@ -93,8 +98,26 @@ class InsuranceContractBuilder(
         fragments = InsuranceQuery.Contract.Fragments(
             upcomingAgreementFragment = UpcomingAgreementFragment(
                 status = UpcomingAgreementFragment.Status(
-                    __typename = "",
-                    asActiveStatus = null,
+                    __typename = ActiveStatus.type.name,
+                    asActiveStatus = UpcomingAgreementFragment.AsActiveStatus(
+                        __typename = ActiveStatus.type.name,
+                        upcomingAgreementChange = if (showUpcomingAgreement) {
+                            UpcomingAgreementFragment.UpcomingAgreementChange(
+                                __typename = "",
+                                fragments = UpcomingAgreementFragment.UpcomingAgreementChange.Fragments(
+                                    upcomingAgreementChangeFragment = UpcomingAgreementChangeFragment(
+                                        newAgreement = UpcomingAgreementChangeFragment.NewAgreement(
+                                            __typename = SwedishApartmentAgreement.type.name,
+                                            asAgreementCore = UpcomingAgreementChangeFragment.AsAgreementCore(
+                                                __typename = SwedishApartmentAgreement.type.name,
+                                                activeFrom = LocalDate.of(2021, 4, 6)
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        } else null
+                    ),
                     asTerminatedTodayStatus = null,
                     asTerminatedInFutureStatus = null
                 ),

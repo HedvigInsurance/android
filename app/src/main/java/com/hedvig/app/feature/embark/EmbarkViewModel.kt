@@ -376,7 +376,7 @@ abstract class EmbarkViewModel(
                     text = exp.text,
                     expressions = exp.expressions.map {
                         MessageFragment.Expression(
-                            __typename = "",
+                            __typename = it.__typename,
                             fragments = MessageFragment.Expression.Fragments(it.fragments.expressionFragment)
                         )
                     }
@@ -392,7 +392,7 @@ abstract class EmbarkViewModel(
                     text = titleExpression.text,
                     expressions = titleExpression.expressions.map {
                         MessageFragment.Expression(
-                            __typename = "",
+                            __typename = it.__typename,
                             fragments = MessageFragment.Expression.Fragments(it.fragments.expressionFragment)
                         )
                     }

@@ -2,8 +2,6 @@ package com.hedvig.app.feature.referrals.data
 
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
-import com.apollographql.apollo3.cache.http.HttpFetchPolicy
-import com.apollographql.apollo3.cache.http.httpFetchPolicy
 import com.apollographql.apollo3.cache.normalized.FetchPolicy
 import com.apollographql.apollo3.cache.normalized.apolloStore
 import com.apollographql.apollo3.cache.normalized.fetchPolicy
@@ -23,7 +21,6 @@ class ReferralsRepository(
 
     suspend fun reloadReferrals(): ApolloResponse<ReferralsQuery.Data> = apolloClient
         .query(referralsQuery)
-        .httpFetchPolicy(HttpFetchPolicy.NetworkOnly)
         .fetchPolicy(FetchPolicy.NetworkOnly)
         .execute()
 

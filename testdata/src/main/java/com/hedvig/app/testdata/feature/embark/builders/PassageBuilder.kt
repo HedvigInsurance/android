@@ -5,12 +5,13 @@ import com.hedvig.android.owldroid.graphql.fragment.ApiFragment
 import com.hedvig.android.owldroid.graphql.fragment.EmbarkLinkFragment
 import com.hedvig.android.owldroid.graphql.fragment.MessageFragment
 import com.hedvig.android.owldroid.graphql.type.EmbarkExternalRedirectLocation
+import com.hedvig.android.owldroid.graphql.type.EmbarkMessage
 
 data class PassageBuilder(
     private val name: String,
     private val id: String,
     private val messages: List<MessageFragment> = emptyList(),
-    private val response: EmbarkStoryQuery.Response = MessageBuilder(text = "").buildMessageResponse(),
+    private val response: EmbarkStoryQuery.Response = MessageBuilder("").buildMessageResponse(),
     private val redirects: List<EmbarkStoryQuery.Redirect> = emptyList(),
     private val action: EmbarkStoryQuery.Action,
     private val api: ApiFragment? = null,
@@ -25,7 +26,7 @@ data class PassageBuilder(
         id = id,
         messages = messages.map {
             EmbarkStoryQuery.Message(
-                __typename = "",
+                __typename = EmbarkMessage.type.name,
                 fragments = EmbarkStoryQuery.Message.Fragments(
                     it
                 )
@@ -37,7 +38,7 @@ data class PassageBuilder(
         action = action,
         api = api?.let {
             EmbarkStoryQuery.Api4(
-                __typename = "",
+                __typename = it.__typename,
                 fragments = EmbarkStoryQuery.Api4.Fragments(it)
             )
         },

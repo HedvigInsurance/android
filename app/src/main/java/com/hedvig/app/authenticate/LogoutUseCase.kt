@@ -14,7 +14,7 @@ class LogoutUseCase(
     private val loginStatusService: LoginStatusService,
     private val apolloClient: ApolloClient,
     private val userRepository: UserRepository,
-    private val authenticationTokenManager: AuthenticationTokenService,
+    private val authenticationTokenService: AuthenticationTokenService,
     private val chatEventStore: ChatEventStore,
 ) {
 
@@ -37,7 +37,7 @@ class LogoutUseCase(
     }
 
     private fun clearAuthenticationToken() {
-        authenticationTokenManager.authenticationToken = null
+        authenticationTokenService.authenticationToken = null
     }
 
     private fun clearMarket() {

@@ -1,7 +1,5 @@
-To download and generate all models do:
+To download the schema:  
+`./gradlew :apollo:downloadGiraffeApolloSchemaFromIntrospection`
 
-./gradlew :apollo:downloadGiraffeApolloSchemaFromIntrospection
-
-Search for a text: "When we've deleted an" and then delete the escaped comment block: `/"""` to make the generation work
-
-./gradlew :apollo:generateApolloSources
+To manually generate all the models to have the IDE not show errors all over the place:  
+`./gradlew :apollo:generateApolloSources`

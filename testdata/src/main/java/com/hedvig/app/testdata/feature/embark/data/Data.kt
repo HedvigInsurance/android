@@ -69,9 +69,7 @@ val STANDARD_FIRST_PASSAGE_BUILDER =
     PassageBuilder(
         name = "TestPassage",
         id = "1",
-        response = MessageBuilder(
-            text = "{TestPassageResult}"
-        ).buildMessageResponse(),
+        response = MessageBuilder(text = "{TestPassageResult}").buildMessageResponse(),
         messages = listOf(
             STANDARD_FIRST_MESSAGE
         ),
@@ -1142,7 +1140,7 @@ val STORY_WITH_GRAPHQL_QUERY_API_AND_SINGLE_VARIABLE = EmbarkStoryDataBuilder(
     )
 ).build()
 
-val STORY_WITH_GRAPHQL_QUERY_API_AND_GENERATED_VARIABLE = EmbarkStoryDataBuilder(
+val STORY_WITH_GRAPHQL_QUERY_API_AND_GENERATED_VARIABLE: EmbarkStoryQuery.Data = EmbarkStoryDataBuilder(
     passages = listOf(
         STANDARD_FIRST_PASSAGE_BUILDER
             .build(),
@@ -1200,7 +1198,6 @@ val STORY_WITH_GRAPHQL_MUTATION = EmbarkStoryDataBuilder(
                     ),
                     errors = listOf(
                         GraphQLErrorsFragment(
-
                             contains = null,
                             next = GraphQLErrorsFragment.Next(
                                 __typename = "",

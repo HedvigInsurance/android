@@ -4,8 +4,6 @@ import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.continuations.ensureNotNull
 import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.cache.http.HttpFetchPolicy
-import com.apollographql.apollo3.cache.http.httpFetchPolicy
 import com.apollographql.apollo3.cache.normalized.FetchPolicy
 import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.owldroid.graphql.QuoteCartQuery
@@ -39,7 +37,6 @@ class OfferRepository(
     ): Either<ErrorMessage, OfferModel> = either {
         val result = apolloClient
             .query(QuoteCartQuery(localeManager.defaultLocale(), id.id))
-            .httpFetchPolicy(HttpFetchPolicy.NetworkOnly)
             .fetchPolicy(FetchPolicy.NetworkOnly)
             .safeQuery()
             .toEither { ErrorMessage(it) }

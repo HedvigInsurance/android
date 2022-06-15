@@ -5,6 +5,8 @@ import com.hedvig.android.owldroid.graphql.fragment.EmbarkLinkFragment
 import com.hedvig.android.owldroid.graphql.fragment.GraphQLErrorsFragment
 import com.hedvig.android.owldroid.graphql.fragment.GraphQLResultsFragment
 import com.hedvig.android.owldroid.graphql.fragment.GraphQLVariablesFragment
+import com.hedvig.android.owldroid.graphql.type.EmbarkApiGraphQLMutation
+import com.hedvig.android.owldroid.graphql.type.EmbarkApiGraphQLQuery
 
 data class GraphQLApiBuilder(
     private val type: Type,
@@ -15,10 +17,10 @@ data class GraphQLApiBuilder(
     private val next: EmbarkLinkFragment,
 ) {
     fun build() = ApiFragment(
-        __typename = "",
+        __typename = type.typename,
         asEmbarkApiGraphQLQuery = if (type == Type.QUERY) {
             ApiFragment.AsEmbarkApiGraphQLQuery(
-                __typename = "",
+                __typename = type.typename,
                 queryData = ApiFragment.QueryData(
                     query = query,
                     results = results.map {
@@ -39,7 +41,7 @@ data class GraphQLApiBuilder(
                     },
                     variables = variables.map {
                         ApiFragment.Variable(
-                            __typename = "",
+                            __typename = it.__typename,
                             fragments = ApiFragment.Variable.Fragments(
                                 it
                             )
@@ -56,7 +58,7 @@ data class GraphQLApiBuilder(
         },
         asEmbarkApiGraphQLMutation = if (type == Type.MUTATION) {
             ApiFragment.AsEmbarkApiGraphQLMutation(
-                __typename = "",
+                __typename = type.typename,
                 mutationData = ApiFragment.MutationData(
                     mutation = query,
                     results = results.map {
@@ -77,7 +79,7 @@ data class GraphQLApiBuilder(
                     },
                     variables = variables.map {
                         ApiFragment.Variable1(
-                            __typename = "",
+                            __typename = it.__typename,
                             fragments = ApiFragment.Variable1.Fragments(
                                 it
                             )
@@ -96,6 +98,13 @@ data class GraphQLApiBuilder(
 
     enum class Type {
         QUERY,
-        MUTATION
+        MUTATION,
+        ;
+
+        val typename: String
+            get() = when (this) {
+                QUERY -> EmbarkApiGraphQLQuery.type.name
+                MUTATION -> EmbarkApiGraphQLMutation.type.name
+            }
     }
 }

@@ -34,10 +34,12 @@ apollo {
         mapScalarToKotlinString("CheckoutPaymentsAction")
         mapScalarToKotlinString("CheckoutPaymentAction")
         mapScalarToUpload("Upload")
-        mapScalar("LocalDate", "java.time.LocalDate", "com.apollographql.apollo3.adapter.JavaLocalDateTimeAdapter")
         mapScalar("Instant", "java.time.Instant", "com.apollographql.apollo3.adapter.JavaInstantAdapter")
 
+        // Scalars with their adapter being added at runtime.
+        // See `com.hedvig.app.util.apollo.adapter.CUSTOM_SCALAR_ADAPTERS`
         mapScalar("JSONString", "org.json.JSONObject")
+        mapScalar("LocalDate", "java.time.LocalDate")
         mapScalar("PaymentMethodsResponse", "com.adyen.checkout.components.model.PaymentMethodsApiResponse")
         sealedClassesForEnumsMatching.set(
             listOf(
@@ -75,6 +77,7 @@ dependencies {
     coreLibraryDesugaring(libs.coreLibraryDesugaring)
 
     api(libs.apollo.runtime)
+    implementation(libs.apollo.adapters)
 
     implementation(libs.adyen)
 }

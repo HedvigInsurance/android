@@ -2,6 +2,7 @@ package com.hedvig.app.testdata.feature.referrals.builders
 
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.android.owldroid.graphql.fragment.MonetaryAmountFragment
+import com.hedvig.android.owldroid.graphql.type.MonthlyCostDeduction
 
 data class LoggedInDataBuilder(
     val referralTermsUrl: String = "https://www.example.com",
@@ -16,9 +17,9 @@ data class LoggedInDataBuilder(
         referralInformation = LoggedInQuery.ReferralInformation(
             campaign = LoggedInQuery.Campaign(
                 incentive = LoggedInQuery.Incentive(
-                    __typename = "",
+                    __typename = MonthlyCostDeduction.type.name,
                     asMonthlyCostDeduction = LoggedInQuery.AsMonthlyCostDeduction(
-                        __typename = "",
+                        __typename = MonthlyCostDeduction.type.name,
                         amount = LoggedInQuery.Amount(
                             __typename = "",
                             fragments = LoggedInQuery.Amount.Fragments(

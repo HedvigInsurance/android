@@ -17,10 +17,10 @@ import coil.decode.SvgDecoder
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.cache.normalized.api.MemoryCacheFactory
 import com.apollographql.apollo3.cache.normalized.api.NormalizedCacheFactory
-import com.apollographql.apollo3.cache.normalized.logCacheMisses
 import com.apollographql.apollo3.cache.normalized.normalizedCache
 import com.apollographql.apollo3.interceptor.ApolloInterceptor
 import com.apollographql.apollo3.network.okHttpClient
+import com.apollographql.apollo3.network.ws.SubscriptionWsProtocol
 import com.google.firebase.messaging.FirebaseMessaging
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.authenticate.DeviceIdDataStore
@@ -216,6 +216,7 @@ import com.hedvig.app.util.apollo.DeviceIdInterceptor
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import com.hedvig.app.util.apollo.ReopenSubscriptionException
 import com.hedvig.app.util.apollo.SunsettingInterceptor
+import com.hedvig.app.util.apollo.adapter.CUSTOM_SCALAR_ADAPTERS
 import com.hedvig.app.util.featureflags.ClearHAnalyticsExperimentsCacheUseCase
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.app.util.featureflags.FeatureManagerImpl
@@ -226,7 +227,7 @@ import com.hedvig.app.util.featureflags.loginmethod.HAnalyticsLoginMethodProvide
 import com.hedvig.app.util.featureflags.paymenttype.DevPaymentTypeProvider
 import com.hedvig.app.util.featureflags.paymenttype.HAnalyticsPaymentTypeProvider
 import com.hedvig.hanalytics.HAnalytics
-import d
+import kotlinx.coroutines.delay
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.android.ext.koin.androidApplication
@@ -238,12 +239,13 @@ import timber.log.Timber
 import java.time.Clock
 import java.util.Locale
 import java.util.concurrent.TimeUnit
+import kotlin.math.pow
 
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APPLICATION_ID == "com.hedvig.test.app"
 
 val applicationModule = module {
     single { androidApplication() as HedvigApplication }
-    single<MemoryCacheFactory> {
+    single<NormalizedCacheFactory> {
         MemoryCacheFactory(maxSizeBytes = 10 * 1024 * 1024)
     }
     single<OkHttpClient> {
@@ -295,30 +297,38 @@ val applicationModule = module {
         builder.build()
     }
     single<SunsettingInterceptor> { SunsettingInterceptor(get()) } bind ApolloInterceptor::class
-    single<ApolloClient> {
-        val builder: ApolloClient.Builder = ApolloClient.Builder()
-        if (isDebug()) {
-            builder.logCacheMisses { log: String ->
-                d { "Apollo::logCacheMisses: $log" }
-            }
-        }
-        builder
-            .serverUrl(get<HedvigApplication>().graphqlUrl)
+    single<ApolloClient.Builder> {
+        val interceptors = getAll<ApolloInterceptor>().distinct()
+        ApolloClient.Builder()
+            .httpServerUrl(get<HedvigApplication>().graphqlUrl)
             .webSocketServerUrl(get<HedvigApplication>().graphqlSubscriptionUrl)
             .okHttpClient(get<OkHttpClient>())
-            .webSocketReopenWhen { throwable, _ ->
+            .webSocketReopenWhen { throwable, reconnectAttempt ->
                 if (throwable is ReopenSubscriptionException) {
+                    return@webSocketReopenWhen true
+                }
+                if (reconnectAttempt < 3) {
+                    delay(2.0.pow(reconnectAttempt.toDouble()).toLong()) // Retry after 1 - 2 - 4 seconds
                     return@webSocketReopenWhen true
                 }
                 false
             }
-        builder.normalizedCache(get<NormalizedCacheFactory>())
+            .wsProtocol(
+                SubscriptionWsProtocol.Factory(
+                    connectionPayload = {
+                        mapOf("Authorization" to get<AuthenticationTokenService>().authenticationToken)
+                    }
+                )
+            )
+            .normalizedCache(get<NormalizedCacheFactory>())
+            .customScalarAdapters(CUSTOM_SCALAR_ADAPTERS)
+            .addInterceptors(interceptors)
+    }
+}
 
-        builder.customScalarAdapters(CUSTOM_SCALAR_ADAPTERS)
-
-        val interceptors = getAll<ApolloInterceptor>().distinct()
-        builder.addInterceptors(interceptors)
-
+val apolloClientModule = module {
+    single<ApolloClient> {
+        val builder: ApolloClient.Builder = get()
         builder.build()
     }
 }

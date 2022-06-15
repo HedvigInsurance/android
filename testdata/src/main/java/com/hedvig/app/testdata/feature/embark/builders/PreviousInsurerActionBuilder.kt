@@ -3,18 +3,19 @@ package com.hedvig.app.testdata.feature.embark.builders
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.graphql.fragment.EmbarkLinkFragment
 import com.hedvig.android.owldroid.graphql.fragment.IconVariantsFragment
+import com.hedvig.android.owldroid.graphql.type.EmbarkPreviousInsuranceProviderAction
 
 data class PreviousInsurerActionBuilder(
     val storeKey: String = "BAR",
     val next: EmbarkLinkFragment,
 ) {
     fun build() = EmbarkStoryQuery.Action(
-        __typename = "",
+        __typename = EmbarkPreviousInsuranceProviderAction.type.name,
         asEmbarkSelectAction = null,
         asEmbarkTextAction = null,
         asEmbarkTextActionSet = null,
         asEmbarkPreviousInsuranceProviderAction = EmbarkStoryQuery.AsEmbarkPreviousInsuranceProviderAction(
-            __typename = "",
+            __typename = EmbarkPreviousInsuranceProviderAction.type.name,
             previousInsurerData = EmbarkStoryQuery.PreviousInsurerData(
                 insuranceProviders = listOf(
                     EmbarkStoryQuery.InsuranceProvider(

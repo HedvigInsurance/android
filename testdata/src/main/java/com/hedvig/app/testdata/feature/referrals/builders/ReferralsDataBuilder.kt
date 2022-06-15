@@ -4,6 +4,7 @@ import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.android.owldroid.graphql.fragment.CostFragment
 import com.hedvig.android.owldroid.graphql.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.graphql.fragment.ReferralFragment
+import com.hedvig.android.owldroid.graphql.type.MonthlyCostDeduction
 import com.hedvig.app.testdata.common.builders.CostBuilder
 
 data class ReferralsDataBuilder(
@@ -28,9 +29,9 @@ data class ReferralsDataBuilder(
             campaign = ReferralsQuery.Campaign(
                 code = code,
                 incentive = ReferralsQuery.Incentive(
-                    __typename = "",
+                    __typename = MonthlyCostDeduction.type.name,
                     asMonthlyCostDeduction = ReferralsQuery.AsMonthlyCostDeduction(
-                        __typename = "",
+                        __typename = MonthlyCostDeduction.type.name,
                         amount = ReferralsQuery.Amount(
                             __typename = "",
                             fragments = ReferralsQuery.Amount.Fragments(
@@ -51,7 +52,7 @@ data class ReferralsDataBuilder(
             ),
             referredBy = referredBy?.let {
                 ReferralsQuery.ReferredBy(
-                    __typename = "",
+                    __typename = it.__typename,
                     fragments = ReferralsQuery.ReferredBy.Fragments(
                         it
                     )
@@ -59,7 +60,7 @@ data class ReferralsDataBuilder(
             },
             invitations = invitations.map {
                 ReferralsQuery.Invitation(
-                    __typename = "",
+                    __typename = it.__typename,
                     fragments = ReferralsQuery.Invitation.Fragments(
                         it
                     )

@@ -1,8 +1,10 @@
 package com.hedvig.app.feature.marketpicker
 
+import arrow.core.Either
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.owldroid.graphql.UpdateLanguageMutation
 import com.hedvig.android.owldroid.graphql.type.Locale
+import com.hedvig.app.util.apollo.safeQuery
 import e
 import i
 
@@ -11,15 +13,13 @@ class LanguageRepository(
 ) {
 
     suspend fun uploadLanguage(acceptLanguage: String, locale: Locale) {
-        apolloClient
+        val response = apolloClient
             .mutation(UpdateLanguageMutation(acceptLanguage, locale))
-            .execute()
-            .also {
-                if (it.hasErrors() || it.data == null) {
-                    e { "Failed to update language: Errors: ${it.errors}, data: ${it.data}" }
-                } else {
-                    i { "Successfully updated language" }
-                }
-            }
+            .safeQuery()
+            .toEither()
+        when (response) {
+            is Either.Left -> e { "Failed to update language: Error message: ${response.value.message}" }
+            is Either.Right -> i { "Successfully updated language" }
+        }
     }
 }

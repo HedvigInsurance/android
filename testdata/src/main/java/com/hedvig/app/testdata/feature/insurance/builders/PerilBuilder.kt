@@ -2,6 +2,7 @@ package com.hedvig.app.testdata.feature.insurance.builders
 
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.graphql.fragment.PerilFragment
+import com.hedvig.android.owldroid.graphql.type.PerilV2
 import com.hedvig.app.util.toArrayList
 
 class PerilBuilder {
@@ -14,7 +15,7 @@ class PerilBuilder {
                 for (i in 0..noOfPerils) {
                     add(
                         InsuranceQuery.ContractPeril(
-                            __typename = "",
+                            __typename = PerilV2.type.name,
                             fragments = InsuranceQuery.ContractPeril.Fragments(PERIL_FRAGMENT)
                         )
                     )

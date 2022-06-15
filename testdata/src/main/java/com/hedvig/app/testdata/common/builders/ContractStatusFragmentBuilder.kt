@@ -1,6 +1,7 @@
 package com.hedvig.app.testdata.common.builders
 
 import com.hedvig.android.owldroid.graphql.fragment.ContractStatusFragment
+import com.hedvig.android.owldroid.graphql.type.SwedishApartmentAgreement
 import com.hedvig.app.testdata.common.ContractStatus
 import java.time.LocalDate
 
@@ -8,10 +9,10 @@ data class ContractStatusFragmentBuilder(
     private val status: ContractStatus,
 ) {
     fun build() = ContractStatusFragment(
-        __typename = "",
+        __typename = status.typename,
         asPendingStatus = if (status == ContractStatus.PENDING) {
             ContractStatusFragment.AsPendingStatus(
-                __typename = "",
+                __typename = status.typename,
                 pendingSince = null
             )
         } else {
@@ -19,24 +20,24 @@ data class ContractStatusFragmentBuilder(
         },
         asActiveInFutureStatus = when (status) {
             ContractStatus.ACTIVE_IN_FUTURE -> ContractStatusFragment.AsActiveInFutureStatus(
-                __typename = "",
+                __typename = status.typename,
                 futureInception = LocalDate.of(2025, 1, 1)
             )
             ContractStatus.ACTIVE_IN_FUTURE_INVALID -> ContractStatusFragment.AsActiveInFutureStatus(
-                __typename = "",
+                __typename = status.typename,
                 futureInception = null
             )
             else -> null
         },
         asActiveStatus = if (status == ContractStatus.ACTIVE) {
             ContractStatusFragment.AsActiveStatus(
-                __typename = "",
+                __typename = status.typename,
                 pastInception = LocalDate.now(),
                 upcomingAgreementChange = ContractStatusFragment.UpcomingAgreementChange(
                     newAgreement = ContractStatusFragment.NewAgreement(
-                        __typename = "",
+                        __typename = SwedishApartmentAgreement.type.name,
                         asSwedishApartmentAgreement = ContractStatusFragment.AsSwedishApartmentAgreement(
-                            __typename = "",
+                            __typename = SwedishApartmentAgreement.type.name,
                             activeFrom = LocalDate.of(2021, 4, 6)
                         )
                     )
@@ -49,7 +50,7 @@ data class ContractStatusFragmentBuilder(
             status == ContractStatus.ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE
         ) {
             ContractStatusFragment.AsActiveInFutureAndTerminatedInFutureStatus(
-                __typename = "",
+                __typename = status.typename,
                 futureInception = LocalDate.of(2024, 1, 1),
                 futureTermination = LocalDate.of(2034, 1, 1)
             )
@@ -59,7 +60,7 @@ data class ContractStatusFragmentBuilder(
         asTerminatedInFutureStatus = null,
         asTerminatedTodayStatus = if (status == ContractStatus.TERMINATED_TODAY) {
             ContractStatusFragment.AsTerminatedTodayStatus(
-                __typename = "",
+                __typename = status.typename,
                 today = LocalDate.now()
             )
         } else {
@@ -67,7 +68,7 @@ data class ContractStatusFragmentBuilder(
         },
         asTerminatedStatus = if (status == ContractStatus.TERMINATED) {
             ContractStatusFragment.AsTerminatedStatus(
-                __typename = "",
+                __typename = status.typename,
                 termination = null
             )
         } else {

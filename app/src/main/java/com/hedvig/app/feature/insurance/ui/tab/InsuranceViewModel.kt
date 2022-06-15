@@ -33,7 +33,7 @@ class InsuranceViewModel(
         object Error : ViewState()
     }
 
-    protected val _viewState = MutableStateFlow<ViewState>(ViewState.Loading)
+    private val _viewState = MutableStateFlow<ViewState>(ViewState.Loading)
     val viewState = _viewState.asStateFlow()
     fun load() {
         viewModelScope.launch {

@@ -22,7 +22,7 @@ class GetUpcomingAgreementUseCase(
         locale = localeManager.defaultLocale()
     )
 
-    suspend operator fun invoke(): UpcomingAgreementResult {
+    suspend fun invoke(): UpcomingAgreementResult {
         return when (val response = apolloClient.query(upcomingAgreementQuery()).safeQuery()) {
             is QueryResult.Success -> {
                 val contracts = response.data?.contracts

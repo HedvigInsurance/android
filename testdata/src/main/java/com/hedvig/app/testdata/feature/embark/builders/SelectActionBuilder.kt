@@ -3,14 +3,16 @@ package com.hedvig.app.testdata.feature.embark.builders
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.graphql.fragment.ApiFragment
 import com.hedvig.android.owldroid.graphql.fragment.EmbarkLinkFragment
+import com.hedvig.android.owldroid.graphql.type.EmbarkLink
+import com.hedvig.android.owldroid.graphql.type.EmbarkSelectAction
 
 data class SelectActionBuilder(
     private val options: List<EmbarkStoryQuery.Option> = emptyList(),
 ) {
     fun build() = EmbarkStoryQuery.Action(
-        __typename = "",
+        __typename = EmbarkSelectAction.type.name,
         asEmbarkSelectAction = EmbarkStoryQuery.AsEmbarkSelectAction(
-            __typename = "",
+            __typename = EmbarkSelectAction.type.name,
             selectData = EmbarkStoryQuery.SelectData(
                 options = options
             )
@@ -36,7 +38,7 @@ data class SelectOptionBuilder(
 ) {
     fun build() = EmbarkStoryQuery.Option(
         link = EmbarkStoryQuery.Link(
-            __typename = "",
+            __typename = EmbarkLink.type.name,
             fragments = EmbarkStoryQuery.Link.Fragments(link)
         ),
         keys = keyValues.map { it.first },
@@ -44,7 +46,7 @@ data class SelectOptionBuilder(
         badge = badge,
         api = api?.let {
             EmbarkStoryQuery.Api(
-                __typename = "",
+                __typename = it.__typename,
                 fragments = EmbarkStoryQuery.Api.Fragments(it)
             )
         },

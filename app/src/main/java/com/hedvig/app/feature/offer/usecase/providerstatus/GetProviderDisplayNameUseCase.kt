@@ -1,8 +1,6 @@
 package com.hedvig.app.feature.offer.usecase.providerstatus
 
 import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.cache.http.HttpFetchPolicy
-import com.apollographql.apollo3.cache.http.httpFetchPolicy
 import com.apollographql.apollo3.cache.normalized.FetchPolicy
 import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.owldroid.graphql.ProviderStatusQuery
@@ -17,11 +15,10 @@ class GetProviderDisplayNameUseCase(
      * of spaces.
      * An example input is "se-demo"
      */
-    suspend operator fun invoke(insuranceCompany: String?): String? {
+    suspend fun invoke(insuranceCompany: String?): String? {
         if (insuranceCompany == null) return null
         val result = apolloClient
             .query(ProviderStatusQuery())
-            .httpFetchPolicy(HttpFetchPolicy.CacheFirst) // Names aren't going to change often if ever, prefer cache
             .fetchPolicy(FetchPolicy.CacheFirst)
             .safeQuery()
         if (result is QueryResult.Success) {

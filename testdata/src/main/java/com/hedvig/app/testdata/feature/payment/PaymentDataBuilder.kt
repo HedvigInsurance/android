@@ -6,6 +6,7 @@ import com.hedvig.android.owldroid.graphql.fragment.BankAccountFragment
 import com.hedvig.android.owldroid.graphql.fragment.CostFragment
 import com.hedvig.android.owldroid.graphql.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.graphql.type.PayoutMethodStatus
+import com.hedvig.android.owldroid.graphql.type.StoredCardDetails
 import com.hedvig.app.testdata.common.ContractStatus
 import com.hedvig.app.testdata.common.builders.ContractStatusFragmentBuilder
 import com.hedvig.app.testdata.common.builders.CostBuilder
@@ -33,12 +34,12 @@ data class PaymentDataBuilder(
     private val payoutConnectionStatus: PayoutMethodStatus? = null,
 ) {
     fun build() = PaymentQuery.Data(
-        contracts = contracts.map {
+        contracts = contracts.map { contractStatus ->
             PaymentQuery.Contract(
                 status = PaymentQuery.Status(
-                    __typename = "",
+                    __typename = contractStatus.typename,
                     fragments = PaymentQuery.Status.Fragments(
-                        ContractStatusFragmentBuilder(it).build()
+                        ContractStatusFragmentBuilder(contractStatus).build()
                     )
                 )
             )
@@ -100,12 +101,12 @@ data class PaymentDataBuilder(
         },
         activePaymentMethodsV2 = if (payinType == PayinType.ADYEN && payinConnected) {
             PaymentQuery.ActivePaymentMethodsV2(
-                __typename = "",
+                __typename = StoredCardDetails.type.name,
                 fragments = PaymentQuery.ActivePaymentMethodsV2.Fragments(
                     ActivePaymentMethodsFragment(
-                        __typename = "",
+                        __typename = StoredCardDetails.type.name,
                         asStoredCardDetails = ActivePaymentMethodsFragment.AsStoredCardDetails(
-                            __typename = "",
+                            __typename = StoredCardDetails.type.name,
                             brand = "Testkortet",
                             lastFourDigits = "1234",
                             expiryMonth = "01",

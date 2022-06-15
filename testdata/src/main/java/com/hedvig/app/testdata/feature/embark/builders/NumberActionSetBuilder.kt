@@ -2,6 +2,7 @@ package com.hedvig.app.testdata.feature.embark.builders
 
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.graphql.fragment.EmbarkLinkFragment
+import com.hedvig.android.owldroid.graphql.type.EmbarkNumberActionSet
 
 data class NumberActionSetBuilder(
     val numberActions: List<NumberAction>,
@@ -19,7 +20,7 @@ data class NumberActionSetBuilder(
     )
 
     fun build() = EmbarkStoryQuery.Action(
-        __typename = "",
+        __typename = EmbarkNumberActionSet.type.name,
         asEmbarkSelectAction = null,
         asEmbarkTextAction = null,
         asEmbarkTextActionSet = null,
@@ -27,7 +28,7 @@ data class NumberActionSetBuilder(
         asEmbarkNumberAction = null,
         asEmbarkMultiAction = null,
         asEmbarkNumberActionSet = EmbarkStoryQuery.AsEmbarkNumberActionSet(
-            __typename = "",
+            __typename = EmbarkNumberActionSet.type.name,
             numberActionSetData = EmbarkStoryQuery.NumberActionSetData(
                 numberActions = numberActions.map {
                     EmbarkStoryQuery.NumberAction(

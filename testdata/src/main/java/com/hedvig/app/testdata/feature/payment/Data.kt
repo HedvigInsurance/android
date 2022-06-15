@@ -3,8 +3,11 @@ package com.hedvig.app.testdata.feature.payment
 import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.android.owldroid.graphql.PaymentQuery
 import com.hedvig.android.owldroid.graphql.fragment.IncentiveFragment
+import com.hedvig.android.owldroid.graphql.type.FreeMonths
+import com.hedvig.android.owldroid.graphql.type.MonthlyCostDeduction
 import com.hedvig.android.owldroid.graphql.type.PayinMethodStatus
 import com.hedvig.android.owldroid.graphql.type.PayoutMethodStatus
+import com.hedvig.android.owldroid.graphql.type.PercentageDiscountMonths
 import com.hedvig.app.testdata.common.ContractStatus
 import com.hedvig.app.testdata.common.builders.CostBuilder
 import com.hedvig.app.util.months
@@ -49,9 +52,9 @@ val PAYMENT_DATA_FREE_MONTHS = PaymentDataBuilder(
             fragments = PaymentQuery.RedeemedCampaign.Fragments(
                 IncentiveFragment(
                     incentive = IncentiveFragment.Incentive(
-                        __typename = "",
+                        __typename = FreeMonths.type.name,
                         asFreeMonths = IncentiveFragment.AsFreeMonths(
-                            __typename = "",
+                            __typename = FreeMonths.type.name,
                             quantity = 3
                         ),
                         asMonthlyCostDeduction = null,
@@ -79,10 +82,10 @@ val PAYMENT_DATA_REFERRAL = PaymentDataBuilder(
             fragments = PaymentQuery.RedeemedCampaign.Fragments(
                 IncentiveFragment(
                     incentive = IncentiveFragment.Incentive(
-                        __typename = "",
+                        __typename = MonthlyCostDeduction.type.name,
                         asFreeMonths = null,
                         asMonthlyCostDeduction = IncentiveFragment.AsMonthlyCostDeduction(
-                            __typename = "",
+                            __typename = MonthlyCostDeduction.type.name,
                             amount = IncentiveFragment.Amount(
                                 amount = "20.00"
                             )
@@ -104,11 +107,11 @@ val PAYMENT_DATA_PERCENTAGE_CAMPAIGN = PaymentDataBuilder(
             fragments = PaymentQuery.RedeemedCampaign.Fragments(
                 IncentiveFragment(
                     incentive = IncentiveFragment.Incentive(
-                        __typename = "",
+                        __typename = PercentageDiscountMonths.type.name,
                         asFreeMonths = null,
                         asMonthlyCostDeduction = null,
                         asPercentageDiscountMonths = IncentiveFragment.AsPercentageDiscountMonths(
-                            __typename = "",
+                            __typename = PercentageDiscountMonths.type.name,
                             percentageDiscount = 20.0,
                             pdmQuantity = 2
                         ),

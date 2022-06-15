@@ -30,7 +30,7 @@ class ConnectPaymentUseCase(
 
     private suspend fun connectPayment(data: JSONObject): Either<Error, PaymentTokenId> = graphQLQueryHandler
         .graphQLQuery(
-            query = ConnectPaymentMutation.QUERY_DOCUMENT,
+            query = ConnectPaymentMutation.OPERATION_DOCUMENT,
             variables = createConnectPaymentVariables(data),
             files = emptyList()
         )
@@ -46,11 +46,11 @@ class ConnectPaymentUseCase(
 
     private fun createConnectPaymentVariables(data: JSONObject): JSONObject? {
         val market = when (marketManager.market) {
-            Market.SE -> com.hedvig.android.owldroid.type.Market.SWEDEN
-            Market.NO -> com.hedvig.android.owldroid.type.Market.NORWAY
-            Market.DK -> com.hedvig.android.owldroid.type.Market.DENMARK
-            Market.FR -> com.hedvig.android.owldroid.type.Market.UNKNOWN__
-            null -> com.hedvig.android.owldroid.type.Market.UNKNOWN__
+            Market.SE -> com.hedvig.android.owldroid.graphql.type.Market.SWEDEN
+            Market.NO -> com.hedvig.android.owldroid.graphql.type.Market.NORWAY
+            Market.DK -> com.hedvig.android.owldroid.graphql.type.Market.DENMARK
+            Market.FR -> com.hedvig.android.owldroid.graphql.type.Market.UNKNOWN__
+            null -> com.hedvig.android.owldroid.graphql.type.Market.UNKNOWN__
         }.toString()
 
         return buildJsonObject {
