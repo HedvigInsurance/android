@@ -1,7 +1,6 @@
 package com.hedvig.app.feature.embark
 
 import com.adyen.checkout.core.model.getStringOrNull
-import com.hedvig.android.owldroid.fragment.ApiFragment
 import com.hedvig.android.owldroid.graphql.fragment.ApiFragment
 import com.hedvig.app.util.apollo.FileVariable
 import com.hedvig.app.util.apollo.GraphQLQueryHandler

@@ -1,9 +1,9 @@
 package com.hedvig.app.feature.offer.model.quotebundle
 
-import com.hedvig.android.owldroid.fragment.QuoteBundleFragment
-import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationStartDateTerminology
-import com.hedvig.android.owldroid.type.QuoteBundleAppConfigurationTitle
-import com.hedvig.android.owldroid.type.TypeOfContractGradientOption
+import com.hedvig.android.owldroid.graphql.fragment.QuoteBundleFragment
+import com.hedvig.android.owldroid.graphql.type.QuoteBundleAppConfigurationStartDateTerminology
+import com.hedvig.android.owldroid.graphql.type.QuoteBundleAppConfigurationTitle
+import com.hedvig.android.owldroid.graphql.type.TypeOfContractGradientOption
 
 data class ViewConfiguration(
     val showCampaignManagement: Boolean,

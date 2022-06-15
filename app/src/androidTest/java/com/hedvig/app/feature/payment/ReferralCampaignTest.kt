@@ -25,8 +25,8 @@ class ReferralCampaignTest : TestCase() {
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        PaymentQuery.QUERY_DOCUMENT to apolloResponse { success(PAYMENT_DATA_REFERRAL) },
-        PayinStatusQuery.QUERY_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_ACTIVE) }
+        PaymentQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYMENT_DATA_REFERRAL) },
+        PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_ACTIVE) }
     )
 
     @get:Rule

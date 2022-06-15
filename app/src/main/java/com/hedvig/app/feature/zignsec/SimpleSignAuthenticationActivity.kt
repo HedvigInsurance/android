@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
-import com.hedvig.android.owldroid.type.AuthState
+import com.hedvig.android.owldroid.graphql.type.AuthState
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.SimpleSignAuthenticationActivityBinding

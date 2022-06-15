@@ -23,7 +23,7 @@ class ContractDetailErrorTest : TestCase() {
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        InsuranceQuery.QUERY_DOCUMENT to apolloResponse {
+        InsuranceQuery.OPERATION_DOCUMENT to apolloResponse {
             if (shouldFail) {
                 shouldFail = false
                 graphQLError(jsonObjectOf("message" to "error"))

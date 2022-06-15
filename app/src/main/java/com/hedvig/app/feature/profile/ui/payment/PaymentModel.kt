@@ -1,8 +1,8 @@
 package com.hedvig.app.feature.profile.ui.payment
 
 import com.hedvig.android.owldroid.graphql.PaymentQuery
-import com.hedvig.android.owldroid.type.PayinMethodStatus
-import com.hedvig.android.owldroid.type.PayoutMethodStatus
+import com.hedvig.android.owldroid.graphql.type.PayinMethodStatus
+import com.hedvig.android.owldroid.graphql.type.PayoutMethodStatus
 import com.hedvig.hanalytics.PaymentType
 import java.time.LocalDate
 

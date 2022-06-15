@@ -3,7 +3,7 @@ package com.hedvig.app.feature.keygear
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import com.hedvig.android.owldroid.type.KeyGearItemCategory
+import com.hedvig.android.owldroid.graphql.type.KeyGearItemCategory
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityKeyGearValuationInfoBinding

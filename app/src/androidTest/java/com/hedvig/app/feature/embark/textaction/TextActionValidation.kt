@@ -20,7 +20,7 @@ class TextActionValidation : TestCase() {
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        EmbarkStoryQuery.QUERY_DOCUMENT to apolloResponse {
+        EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse {
             success(
                 STORY_WITH_TEXT_ACTION_EMAIL_VALIDATION
             )

@@ -1,7 +1,7 @@
 package com.hedvig.app.ui.compose.composables.claimprogress
 
-import com.hedvig.android.owldroid.fragment.ProgressSegments
-import com.hedvig.android.owldroid.type.ClaimStatusProgressType
+import com.hedvig.android.owldroid.graphql.fragment.ProgressSegments
+import com.hedvig.android.owldroid.graphql.type.ClaimStatusProgressType
 
 data class ClaimProgressUiState(
     val text: String,
