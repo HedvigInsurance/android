@@ -41,7 +41,7 @@ class EmbarkStoryQueryParsingTest {
     }
 
     @Test
-    fun `apollo parses a the standard story`() = runTest(
+    fun `apollo parses a standard story`() = runTest(
         before = { before() },
         after = { after() }
     ) {
