@@ -188,7 +188,7 @@ class InsuranceQueryParsingTest {
     }
 
     @Test
-    fun `apollo correctly parses data object constructed using apollo test builders`() = runTest(
+    fun `apollo parses an insurance constructed using apollo test builders`() = runTest(
         before = { before() },
         after = { after() }
     ) {
@@ -205,7 +205,7 @@ class InsuranceQueryParsingTest {
     }
 
     @Test
-    fun `apollo handles a Data object constructed with its constructor, providing the necessary typename`() = runTest(
+    fun `apollo parses an insurance constructed with our custom builders`() = runTest(
         before = { before() },
         after = { after() }
     ) {

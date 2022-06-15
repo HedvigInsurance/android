@@ -97,7 +97,7 @@ class UpcomingAgreementQueryParsing {
 
     @Suppress("PrivatePropertyName")
     private val UPCOMING_AGREEMENT_SWEDISH_APARTMENT_from_test_builder by lazy {
-        UpcomingAgreementQuery.Data {
+        UpcomingAgreementQuery.Data(TestDataTestResolver, CUSTOM_SCALAR_ADAPTERS) {
             contracts = listOf(
                 this.contract {
                     this.upcomingAgreementDetailsTable = this.upcomingAgreementDetailsTable {
@@ -131,7 +131,7 @@ class UpcomingAgreementQueryParsing {
     }
 
     @Test
-    fun `apollo correctly parses data object constructed using apollo test builders`() = runTest(
+    fun `apollo parses an upcoming agreement constructed using apollo test builders`() = runTest(
         before = { before() },
         after = { after() }
     ) {
@@ -153,7 +153,7 @@ class UpcomingAgreementQueryParsing {
     }
 
     @Test
-    fun `apollo handles a Data object constructed with its constructor, providing the necessary typename`() = runTest(
+    fun `apollo parses an upcoming agreement constructed with our custom builders`() = runTest(
         before = { before() },
         after = { after() }
     ) {
