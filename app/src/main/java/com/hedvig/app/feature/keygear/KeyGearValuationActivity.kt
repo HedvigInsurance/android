@@ -14,7 +14,7 @@ import androidx.core.view.updateLayoutParams
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.dynamicanimation.animation.SpringForce
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
-import com.hedvig.android.owldroid.type.MonetaryAmountV2Input
+import com.hedvig.android.owldroid.graphql.type.MonetaryAmountV2Input
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityKeyGearValuationBinding

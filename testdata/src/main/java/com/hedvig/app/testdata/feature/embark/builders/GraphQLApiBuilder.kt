@@ -1,10 +1,10 @@
 package com.hedvig.app.testdata.feature.embark.builders
 
-import com.hedvig.android.owldroid.fragment.ApiFragment
-import com.hedvig.android.owldroid.fragment.EmbarkLinkFragment
-import com.hedvig.android.owldroid.fragment.GraphQLErrorsFragment
-import com.hedvig.android.owldroid.fragment.GraphQLResultsFragment
-import com.hedvig.android.owldroid.fragment.GraphQLVariablesFragment
+import com.hedvig.android.owldroid.graphql.fragment.ApiFragment
+import com.hedvig.android.owldroid.graphql.fragment.EmbarkLinkFragment
+import com.hedvig.android.owldroid.graphql.fragment.GraphQLErrorsFragment
+import com.hedvig.android.owldroid.graphql.fragment.GraphQLResultsFragment
+import com.hedvig.android.owldroid.graphql.fragment.GraphQLVariablesFragment
 
 data class GraphQLApiBuilder(
     private val type: Type,
@@ -12,15 +12,18 @@ data class GraphQLApiBuilder(
     private val results: List<GraphQLResultsFragment> = emptyList(),
     private val errors: List<GraphQLErrorsFragment> = emptyList(),
     private val variables: List<GraphQLVariablesFragment> = emptyList(),
-    private val next: EmbarkLinkFragment
+    private val next: EmbarkLinkFragment,
 ) {
     fun build() = ApiFragment(
+        __typename = "",
         asEmbarkApiGraphQLQuery = if (type == Type.QUERY) {
             ApiFragment.AsEmbarkApiGraphQLQuery(
+                __typename = "",
                 queryData = ApiFragment.QueryData(
                     query = query,
                     results = results.map {
                         ApiFragment.Result(
+                            __typename = "",
                             fragments = ApiFragment.Result.Fragments(
                                 it
                             )
@@ -28,6 +31,7 @@ data class GraphQLApiBuilder(
                     },
                     errors = errors.map {
                         ApiFragment.Error(
+                            __typename = "",
                             fragments = ApiFragment.Error.Fragments(
                                 it
                             )
@@ -35,12 +39,14 @@ data class GraphQLApiBuilder(
                     },
                     variables = variables.map {
                         ApiFragment.Variable(
+                            __typename = "",
                             fragments = ApiFragment.Variable.Fragments(
                                 it
                             )
                         )
                     },
                     next = ApiFragment.Next(
+                        __typename = "",
                         fragments = ApiFragment.Next.Fragments(next)
                     )
                 )
@@ -50,10 +56,12 @@ data class GraphQLApiBuilder(
         },
         asEmbarkApiGraphQLMutation = if (type == Type.MUTATION) {
             ApiFragment.AsEmbarkApiGraphQLMutation(
+                __typename = "",
                 mutationData = ApiFragment.MutationData(
                     mutation = query,
                     results = results.map {
                         ApiFragment.Result1(
+                            __typename = "",
                             fragments = ApiFragment.Result1.Fragments(
                                 it
                             )
@@ -61,6 +69,7 @@ data class GraphQLApiBuilder(
                     },
                     errors = errors.map {
                         ApiFragment.Error1(
+                            __typename = "",
                             fragments = ApiFragment.Error1.Fragments(
                                 it
                             )
@@ -68,12 +77,16 @@ data class GraphQLApiBuilder(
                     },
                     variables = variables.map {
                         ApiFragment.Variable1(
+                            __typename = "",
                             fragments = ApiFragment.Variable1.Fragments(
                                 it
                             )
                         )
                     },
-                    next = ApiFragment.Next1(fragments = ApiFragment.Next1.Fragments(next))
+                    next = ApiFragment.Next1(
+                        __typename = "",
+                        fragments = ApiFragment.Next1.Fragments(next)
+                    )
                 )
             )
         } else {

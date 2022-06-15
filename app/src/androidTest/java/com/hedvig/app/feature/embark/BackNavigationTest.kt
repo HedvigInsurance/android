@@ -28,7 +28,7 @@ class BackNavigationTest : TestCase() {
 
     @get:Rule
     val apolloMockServerRule = ApolloMockServerRule(
-        EmbarkStoryQuery.QUERY_DOCUMENT to apolloResponse { success(STANDARD_STORY) }
+        EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse { success(STANDARD_STORY) }
     )
 
     @get:Rule

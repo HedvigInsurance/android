@@ -20,7 +20,7 @@ class PreviousInsurerTest : TestCase() {
 
     @get:Rule
     val apolloMockServerRule = ApolloMockServerRule(
-        EmbarkStoryQuery.QUERY_DOCUMENT to apolloResponse { success(PREVIOUS_INSURER_STORY) }
+        EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse { success(PREVIOUS_INSURER_STORY) }
     )
 
     @get:Rule

@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.claimdetail.model
 
 import com.hedvig.android.owldroid.graphql.ClaimDetailsQuery
-import com.hedvig.android.owldroid.type.ClaimStatus
+import com.hedvig.android.owldroid.graphql.type.ClaimStatus
 import java.time.Instant
 
 data class ClaimDetailUiState(
