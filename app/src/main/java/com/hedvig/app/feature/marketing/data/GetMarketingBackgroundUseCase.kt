@@ -2,7 +2,7 @@ package com.hedvig.app.feature.marketing.data
 
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.owldroid.graphql.MarketingBackgroundQuery
-import com.hedvig.android.owldroid.type.UserInterfaceStyle
+import com.hedvig.android.owldroid.graphql.type.UserInterfaceStyle
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.safeQuery
 import com.hedvig.app.util.safeLet
@@ -26,8 +26,8 @@ class GetMarketingBackgroundUseCase(
                     url = url,
                     blurHash = blurHash,
                     theme = when (userInterfaceStyle) {
-                        UserInterfaceStyle.LIGHT -> MarketingBackground.Theme.LIGHT
-                        UserInterfaceStyle.DARK -> MarketingBackground.Theme.DARK
+                        UserInterfaceStyle.Light -> MarketingBackground.Theme.LIGHT
+                        UserInterfaceStyle.Dark -> MarketingBackground.Theme.DARK
                         else -> MarketingBackground.Theme.DARK
                     }
                 )

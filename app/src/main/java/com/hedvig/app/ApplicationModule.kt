@@ -21,8 +21,6 @@ import com.apollographql.apollo3.cache.normalized.logCacheMisses
 import com.apollographql.apollo3.cache.normalized.normalizedCache
 import com.apollographql.apollo3.interceptor.ApolloInterceptor
 import com.apollographql.apollo3.network.okHttpClient
-import com.apollographql.apollo3.subscription.SubscriptionConnectionParams
-import com.apollographql.apollo3.subscription.WebSocketSubscriptionTransport
 import com.google.firebase.messaging.FirebaseMessaging
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.authenticate.DeviceIdDataStore
@@ -213,10 +211,10 @@ import com.hedvig.app.service.push.senders.NotificationSender
 import com.hedvig.app.service.push.senders.PaymentNotificationSender
 import com.hedvig.app.service.push.senders.ReferralsNotificationSender
 import com.hedvig.app.util.LocaleManager
-import com.hedvig.app.util.apollo.ApolloTimberLogger
 import com.hedvig.app.util.apollo.CacheManager
 import com.hedvig.app.util.apollo.DeviceIdInterceptor
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
+import com.hedvig.app.util.apollo.ReopenSubscriptionException
 import com.hedvig.app.util.apollo.SunsettingInterceptor
 import com.hedvig.app.util.featureflags.ClearHAnalyticsExperimentsCacheUseCase
 import com.hedvig.app.util.featureflags.FeatureManager
@@ -306,18 +304,14 @@ val applicationModule = module {
         }
         builder
             .serverUrl(get<HedvigApplication>().graphqlUrl)
+            .webSocketServerUrl(get<HedvigApplication>().graphqlSubscriptionUrl)
             .okHttpClient(get<OkHttpClient>())
-            .subscriptionConnectionParams {
-                SubscriptionConnectionParams(
-                    mapOf("Authorization" to get<AuthenticationTokenService>().authenticationToken)
-                )
+            .webSocketReopenWhen { throwable, _ ->
+                if (throwable is ReopenSubscriptionException) {
+                    return@webSocketReopenWhen true
+                }
+                false
             }
-            .subscriptionTransportFactory(
-                WebSocketSubscriptionTransport.Factory(
-                    get<HedvigApplication>().graphqlSubscriptionUrl,
-                    get<OkHttpClient>()
-                )
-            )
         builder.normalizedCache(get<NormalizedCacheFactory>())
 
         builder.customScalarAdapters(CUSTOM_SCALAR_ADAPTERS)

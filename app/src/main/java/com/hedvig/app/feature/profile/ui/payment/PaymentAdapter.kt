@@ -7,8 +7,8 @@ import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.android.owldroid.graphql.PaymentQuery
-import com.hedvig.android.owldroid.type.PayinMethodStatus
-import com.hedvig.android.owldroid.type.PayoutMethodStatus
+import com.hedvig.android.owldroid.graphql.type.PayinMethodStatus
+import com.hedvig.android.owldroid.graphql.type.PayoutMethodStatus
 import com.hedvig.app.R
 import com.hedvig.app.databinding.AdyenPayinDetailsBinding
 import com.hedvig.app.databinding.CampaignInformationSectionBinding

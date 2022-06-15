@@ -22,7 +22,7 @@ class SingleVariableTest : TestCase() {
 
     @get:Rule
     val apolloMockServerRule = ApolloMockServerRule(
-        EmbarkStoryQuery.QUERY_DOCUMENT to apolloResponse {
+        EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse {
             success(STORY_WITH_GRAPHQL_QUERY_API_AND_SINGLE_VARIABLE)
         },
         VARIABLE_QUERY to apolloResponse {

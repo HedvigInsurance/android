@@ -30,7 +30,7 @@ class GraphQLErrorTest : TestCase() {
 
     @get:Rule
     val apolloMockServerRule = ApolloMockServerRule(
-        EmbarkStoryQuery.QUERY_DOCUMENT to apolloResponse { success(STORY_WITH_GRAPHQL_MUTATION) },
+        EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse { success(STORY_WITH_GRAPHQL_MUTATION) },
         HELLO_MUTATION to apolloResponse {
             graphQLError(jsonObjectOf("message" to "some error"))
         }

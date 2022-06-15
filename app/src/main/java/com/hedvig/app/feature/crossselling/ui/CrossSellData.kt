@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.crossselling.ui
 
 import android.os.Parcelable
-import com.hedvig.android.owldroid.fragment.CrossSellFragment
+import com.hedvig.android.owldroid.graphql.fragment.CrossSellFragment
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.faq.FAQItem
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem

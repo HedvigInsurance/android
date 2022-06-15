@@ -33,10 +33,10 @@ class Error : TestCase() {
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.QUERY_DOCUMENT to apolloResponse {
+        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
             success(LOGGED_IN_DATA)
         },
-        KeyGearItemsQuery.QUERY_DOCUMENT to apolloResponse {
+        KeyGearItemsQuery.OPERATION_DOCUMENT to apolloResponse {
             if (shouldFail) {
                 shouldFail = false
                 graphQLError(jsonObjectOf("message" to "error"))

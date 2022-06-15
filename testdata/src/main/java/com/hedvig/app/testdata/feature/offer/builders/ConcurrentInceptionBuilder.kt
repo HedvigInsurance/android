@@ -1,13 +1,14 @@
 package com.hedvig.app.testdata.feature.offer.builders
 
-import com.hedvig.android.owldroid.fragment.CurrentInsurerFragment
-import com.hedvig.android.owldroid.fragment.QuoteBundleFragment
+import com.hedvig.android.owldroid.graphql.fragment.CurrentInsurerFragment
+import com.hedvig.android.owldroid.graphql.fragment.QuoteBundleFragment
 import java.time.LocalDate
 
 class ConcurrentInceptionBuilder(
     val quoteIds: List<String> = listOf("ea656f5f-40b2-4953-85d9-752b33e69e38"),
     val startDate: LocalDate? = LocalDate.now(),
     val currentInsurer: QuoteBundleFragment.CurrentInsurer1? = QuoteBundleFragment.CurrentInsurer1(
+        __typename = "",
         fragments = QuoteBundleFragment.CurrentInsurer1.Fragments(
             currentInsurerFragment = CurrentInsurerFragment(
                 id = "currentinsurerid",
@@ -15,10 +16,12 @@ class ConcurrentInceptionBuilder(
                 switchable = false
             )
         )
-    )
+    ),
 ) {
     fun build() = QuoteBundleFragment.Inception1(
+        __typename = "",
         asConcurrentInception = QuoteBundleFragment.AsConcurrentInception(
+            __typename = "",
             correspondingQuoteIds = quoteIds,
             startDate = startDate,
             currentInsurer = currentInsurer

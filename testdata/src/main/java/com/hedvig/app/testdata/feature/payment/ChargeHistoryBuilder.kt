@@ -1,7 +1,7 @@
 package com.hedvig.app.testdata.feature.payment
 
-import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
 import com.hedvig.android.owldroid.graphql.PaymentQuery
+import com.hedvig.android.owldroid.graphql.fragment.MonetaryAmountFragment
 import com.hedvig.app.util.months
 import java.time.LocalDate
 
@@ -12,6 +12,7 @@ data class ChargeHistoryBuilder(
 ) {
     fun build() = PaymentQuery.ChargeHistory(
         amount = PaymentQuery.Amount(
+            __typename = "",
             fragments = PaymentQuery.Amount.Fragments(
                 MonetaryAmountFragment(
                     amount = amount,
