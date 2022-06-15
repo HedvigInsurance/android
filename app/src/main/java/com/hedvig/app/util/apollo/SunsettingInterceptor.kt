@@ -14,9 +14,6 @@ import kotlinx.coroutines.flow.map
 class SunsettingInterceptor(
     private val context: Context,
 ) : ApolloInterceptor {
-    @Volatile
-    var disposed: Boolean = false
-
     override fun <D : Operation.Data> intercept(
         request: ApolloRequest<D>,
         chain: ApolloInterceptorChain,
