@@ -15,6 +15,7 @@ import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.util.LiveEvent
+import com.hedvig.app.util.apollo.reconnectSubscriptions
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import e
@@ -325,7 +326,7 @@ class ChatViewModel(
                 response.exceptionOrNull()?.let { e { "$it Failed to log out" } }
                 _events.trySend(Event.Error)
             }
-            apolloClient.subscriptionManager.reconnect()
+            apolloClient.reconnectSubscriptions()
             _events.trySend(Event.Restart)
         }
     }

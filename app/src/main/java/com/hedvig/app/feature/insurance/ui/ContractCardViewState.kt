@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.insurance.ui
 
-import com.hedvig.android.owldroid.type.TypeOfContractGradientOption
+import com.hedvig.android.owldroid.graphql.type.TypeOfContractGradientOption
 import com.hedvig.app.util.apollo.ThemedIconUrls
 
 data class ContractCardViewState(

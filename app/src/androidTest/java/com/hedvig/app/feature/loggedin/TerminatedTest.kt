@@ -26,13 +26,13 @@ class TerminatedTest : TestCase() {
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        ContractStatusQuery.QUERY_DOCUMENT to apolloResponse {
+        ContractStatusQuery.OPERATION_DOCUMENT to apolloResponse {
             success(CONTRACT_STATUS_DATA_ONE_TERMINATED_CONTRACT)
         },
-        LoggedInQuery.QUERY_DOCUMENT to apolloResponse {
+        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
             success(LOGGED_IN_DATA)
         },
-        HomeQuery.QUERY_DOCUMENT to apolloResponse {
+        HomeQuery.OPERATION_DOCUMENT to apolloResponse {
             success(HOME_DATA_TERMINATED)
         }
     )

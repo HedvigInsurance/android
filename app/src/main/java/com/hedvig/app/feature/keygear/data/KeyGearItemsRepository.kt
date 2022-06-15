@@ -4,11 +4,10 @@ import android.content.Context
 import android.net.Uri
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
+import com.apollographql.apollo3.api.DefaultUpload
 import com.apollographql.apollo3.api.FileUpload
-import com.apollographql.apollo3.api.Input
 import com.apollographql.apollo3.cache.normalized.apolloStore
 import com.apollographql.apollo3.cache.normalized.watch
-import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
 import com.hedvig.android.owldroid.graphql.AddReceiptToKeyGearItemMutation
 import com.hedvig.android.owldroid.graphql.CreateKeyGearItemMutation
 import com.hedvig.android.owldroid.graphql.DeleteKeyGearItemMutation
@@ -19,10 +18,10 @@ import com.hedvig.android.owldroid.graphql.UpdateKeyGearPriceAndDateMutation
 import com.hedvig.android.owldroid.graphql.UploadFileMutation
 import com.hedvig.android.owldroid.graphql.UploadFilesMutation
 import com.hedvig.android.owldroid.graphql.fragment.KeyGearItemFragment
+import com.hedvig.android.owldroid.graphql.type.AddReceiptToKeyGearItemInput
+import com.hedvig.android.owldroid.graphql.type.KeyGearItemCategory
 import com.hedvig.android.owldroid.graphql.type.MonetaryAmountV2Input
-import com.hedvig.android.owldroid.type.AddReceiptToKeyGearItemInput
-import com.hedvig.android.owldroid.type.KeyGearItemCategory
-import com.hedvig.android.owldroid.type.S3FileInput
+import com.hedvig.android.owldroid.graphql.type.S3FileInput
 import com.hedvig.app.service.FileService
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.extensions.into
@@ -131,7 +130,10 @@ class KeyGearItemsRepository(
                     ?: "${UUID.randomUUID()}.${fileService.getFileExtension(photo.toString())}"
             ) // I hate this but it seems there's no other way
             context.contentResolver.openInputStream(photo)?.into(file)
-            FileUpload(mimeType, file.path)
+            DefaultUpload.Builder()
+                .content(file.path)
+                .contentType(mimeType)
+                .build()
         }
 
         return@withContext apolloClient.mutation(UploadFilesMutation(files))
@@ -148,8 +150,8 @@ class KeyGearItemsRepository(
             category = category,
             photos = files,
             languageCode = locale,
-            physicalReferenceHash = Input.fromNullable(physicalReferenceHash),
-            name = Input.fromNullable(name)
+            physicalReferenceHash = physicalReferenceHash,
+            name = name,
         )
 
         val result = apolloClient
@@ -192,18 +194,22 @@ class KeyGearItemsRepository(
         return result
     }
 
-    suspend fun uploadReceipt(itemId: String, file: Uri) {
-        val mimeType = fileService.getMimeType(file)
+    suspend fun uploadReceipt(itemId: String, uri: Uri) {
+        val mimeType = fileService.getMimeType(uri)
         val uploadFile = File(
             context.cacheDir,
-            fileService.getFileName(file)
-                ?: "${UUID.randomUUID()}.${fileService.getFileExtension(file.toString())}"
+            fileService.getFileName(uri)
+                ?: "${UUID.randomUUID()}.${fileService.getFileExtension(uri.toString())}"
         )
         withContext(Dispatchers.IO) {
-            context.contentResolver.openInputStream(file)?.into(uploadFile)
+            context.contentResolver.openInputStream(uri)?.into(uploadFile)
         }
+        val file = DefaultUpload.Builder()
+            .contentType(mimeType)
+            .content(uploadFile.path)
+            .build()
         val uploadResult = apolloClient
-            .mutation(UploadFileMutation(FileUpload(mimeType, uploadFile.path)))
+            .mutation(UploadFileMutation(file))
             .execute()
 
         val uploadData = uploadResult.data
@@ -260,7 +266,7 @@ class KeyGearItemsRepository(
         val mutation =
             UpdateKeyGearItemNameMutation(
                 id = itemId,
-                updatedName = Input.fromNullable(name)
+                updatedName = name
             )
         val response = apolloClient.mutation(mutation).execute()
 

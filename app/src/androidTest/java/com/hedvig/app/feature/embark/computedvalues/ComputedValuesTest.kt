@@ -21,7 +21,7 @@ class ComputedValuesTest : TestCase() {
 
     @get:Rule
     val apolloMockServerRule = ApolloMockServerRule(
-        EmbarkStoryQuery.QUERY_DOCUMENT to apolloResponse { success(STORY_WITH_COMPUTED_VALUE) }
+        EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse { success(STORY_WITH_COMPUTED_VALUE) }
     )
 
     @get:Rule

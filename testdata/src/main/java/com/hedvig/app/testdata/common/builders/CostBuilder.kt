@@ -1,7 +1,7 @@
 package com.hedvig.app.testdata.common.builders
 
-import com.hedvig.android.owldroid.fragment.CostFragment
-import com.hedvig.android.owldroid.fragment.MonetaryAmountFragment
+import com.hedvig.android.owldroid.graphql.fragment.CostFragment
+import com.hedvig.android.owldroid.graphql.fragment.MonetaryAmountFragment
 
 data class CostBuilder(
     val currency: String = "SEK",
@@ -11,6 +11,7 @@ data class CostBuilder(
 ) {
     fun build() = CostFragment(
         monthlyDiscount = CostFragment.MonthlyDiscount(
+            __typename = "",
             fragments = CostFragment.MonthlyDiscount.Fragments(
                 MonetaryAmountFragment(
                     amount = discountAmount,
@@ -19,6 +20,7 @@ data class CostBuilder(
             )
         ),
         monthlyNet = CostFragment.MonthlyNet(
+            __typename = "",
             fragments = CostFragment.MonthlyNet.Fragments(
                 MonetaryAmountFragment(
                     amount = netAmount,
@@ -27,6 +29,7 @@ data class CostBuilder(
             )
         ),
         monthlyGross = CostFragment.MonthlyGross(
+            __typename = "",
             fragments = CostFragment.MonthlyGross.Fragments(
                 MonetaryAmountFragment(
                     amount = grossAmount,
