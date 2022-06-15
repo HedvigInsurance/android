@@ -21,8 +21,11 @@ fun Operation.Data.toJsonStringWithData(
 
 // toJsonString gives a json representation, meaning there's extra '"' surrounding the json. This removes it since the
 //  test builders require the json representation without those extra quotation marks.
-fun <T> Adapter<T>.toJsonStringForTestBuilder(data: T): String {
-    val jsonString = toJsonString(data)
+fun <T> Adapter<T>.toJsonStringForTestBuilder(
+    data: T,
+    customScalarAdapters: CustomScalarAdapters = CUSTOM_SCALAR_ADAPTERS,
+): String {
+    val jsonString = toJsonString(data, customScalarAdapters)
     return if ((jsonString.first() == '"') && (jsonString.last() == '"')) {
         jsonString.drop(1).dropLast(1)
     } else {
