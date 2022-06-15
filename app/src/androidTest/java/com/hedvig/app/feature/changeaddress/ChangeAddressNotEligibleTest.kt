@@ -22,8 +22,8 @@ class ChangeAddressNotEligibleTest : TestCase() {
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        UpcomingAgreementQuery.QUERY_DOCUMENT to apolloResponse { success(UPCOMING_AGREEMENT_NONE) },
-        ActiveContractBundlesQuery.QUERY_DOCUMENT to apolloResponse { success(BLOCKED_SELF_CHANGE_ELIGIBILITY) }
+        UpcomingAgreementQuery.OPERATION_DOCUMENT to apolloResponse { success(UPCOMING_AGREEMENT_NONE) },
+        ActiveContractBundlesQuery.OPERATION_DOCUMENT to apolloResponse { success(BLOCKED_SELF_CHANGE_ELIGIBILITY) }
     )
 
     @get:Rule

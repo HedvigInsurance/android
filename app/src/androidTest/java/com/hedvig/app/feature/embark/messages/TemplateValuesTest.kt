@@ -20,7 +20,7 @@ class TemplateValuesTest : TestCase() {
 
     @get:Rule
     val apolloMockServerRule = ApolloMockServerRule(
-        EmbarkStoryQuery.QUERY_DOCUMENT to apolloResponse { success(STORY_WITH_TEMPLATE_MESSAGE) }
+        EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse { success(STORY_WITH_TEMPLATE_MESSAGE) }
     )
 
     @get:Rule

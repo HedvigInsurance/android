@@ -23,7 +23,7 @@ class SingleOptionApi : TestCase() {
 
     @get:Rule
     val apolloMockServerRule = ApolloMockServerRule(
-        EmbarkStoryQuery.QUERY_DOCUMENT to apolloResponse { success(STORY_WITH_SELECT_ACTION_API_SINGLE_OPTION) },
+        EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse { success(STORY_WITH_SELECT_ACTION_API_SINGLE_OPTION) },
         HELLO_QUERY to apolloResponse {
             success(jsonObjectOf("hello" to "world"))
         }

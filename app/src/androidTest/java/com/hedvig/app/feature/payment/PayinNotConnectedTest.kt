@@ -27,8 +27,8 @@ class PayinNotConnectedTest : TestCase() {
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        PaymentQuery.QUERY_DOCUMENT to apolloResponse { success(PAYMENT_DATA_NOT_CONNECTED) },
-        PayinStatusQuery.QUERY_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_NEEDS_SETUP) }
+        PaymentQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYMENT_DATA_NOT_CONNECTED) },
+        PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_NEEDS_SETUP) }
     )
 
     @get:Rule

@@ -22,7 +22,7 @@ class SunsettingTest : TestCase() {
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.QUERY_DOCUMENT to apolloResponse {
+        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
             graphQLError(
                 jsonObjectOf(
                     "message" to "Outdated app",
@@ -33,7 +33,7 @@ class SunsettingTest : TestCase() {
                 )
             )
         },
-        HomeQuery.QUERY_DOCUMENT to apolloResponse { success(HOME_DATA_PENDING) }
+        HomeQuery.OPERATION_DOCUMENT to apolloResponse { success(HOME_DATA_PENDING) }
     )
 
     @get:Rule

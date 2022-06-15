@@ -2,7 +2,6 @@ package com.hedvig.app.testdata.feature.insurance.builders
 
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.graphql.fragment.PerilFragment
-import com.hedvig.android.owldroid.graphql.fragment.QuoteBundleFragment
 import com.hedvig.app.util.toArrayList
 
 class PerilBuilder {
