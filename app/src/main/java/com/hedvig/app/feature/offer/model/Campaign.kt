@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.offer.model
 
-import com.hedvig.android.owldroid.fragment.IncentiveFragment
-import com.hedvig.android.owldroid.fragment.QuoteCartFragment
+import com.hedvig.android.owldroid.graphql.fragment.IncentiveFragment
+import com.hedvig.android.owldroid.graphql.fragment.QuoteCartFragment
 import com.hedvig.app.util.apollo.toMonetaryAmount
 import org.javamoney.moneta.Money
 import javax.money.MonetaryAmount

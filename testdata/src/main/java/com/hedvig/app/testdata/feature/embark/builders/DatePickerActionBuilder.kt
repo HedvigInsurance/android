@@ -1,7 +1,7 @@
 package com.hedvig.app.testdata.feature.embark.builders
 
-import com.hedvig.android.owldroid.fragment.EmbarkLinkFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
+import com.hedvig.android.owldroid.graphql.fragment.EmbarkLinkFragment
 
 data class DatePickerActionBuilder(
     val key: String = "BAR",
@@ -9,6 +9,7 @@ data class DatePickerActionBuilder(
     val link: EmbarkLinkFragment,
 ) {
     fun build() = EmbarkStoryQuery.Action(
+        __typename = "",
         asEmbarkSelectAction = null,
         asEmbarkTextAction = null,
         asEmbarkTextActionSet = null,
@@ -16,9 +17,13 @@ data class DatePickerActionBuilder(
         asEmbarkNumberAction = null,
         asEmbarkNumberActionSet = null,
         asEmbarkDatePickerAction = EmbarkStoryQuery.AsEmbarkDatePickerAction(
+            __typename = "",
             storeKey = key,
             label = label,
-            next = EmbarkStoryQuery.Next2(fragments = EmbarkStoryQuery.Next2.Fragments(link))
+            next = EmbarkStoryQuery.Next2(
+                __typename = "",
+                fragments = EmbarkStoryQuery.Next2.Fragments(link)
+            )
         ),
         asEmbarkMultiAction = null,
         asEmbarkAudioRecorderAction = null,

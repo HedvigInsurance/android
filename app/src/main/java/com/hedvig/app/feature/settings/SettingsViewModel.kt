@@ -1,11 +1,13 @@
 package com.hedvig.app.feature.settings
 
 import androidx.lifecycle.ViewModel
-import com.hedvig.android.owldroid.type.Locale
+import androidx.lifecycle.viewModelScope
+import com.hedvig.android.owldroid.graphql.type.Locale
 import com.hedvig.app.feature.marketpicker.LanguageRepository
 import com.hedvig.app.feature.marketpicker.LocaleBroadcastManager
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
+import kotlinx.coroutines.launch
 
 class SettingsViewModel(
     private val repository: LanguageRepository,
@@ -17,7 +19,9 @@ class SettingsViewModel(
     }
 
     fun save(acceptLanguage: String, locale: Locale) {
-        repository.uploadLanguage(acceptLanguage, locale)
+        viewModelScope.launch {
+            repository.uploadLanguage(acceptLanguage, locale)
+        }
         localeBroadcastManager.sendBroadcast(recreate = true)
     }
 }

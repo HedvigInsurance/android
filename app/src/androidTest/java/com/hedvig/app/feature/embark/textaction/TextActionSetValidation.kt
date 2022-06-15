@@ -21,7 +21,7 @@ class TextActionSetValidation : TestCase() {
 
     @get:Rule
     val apolloMockServerRule = ApolloMockServerRule(
-        EmbarkStoryQuery.QUERY_DOCUMENT to apolloResponse {
+        EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse {
             success(
                 STORY_WITH_TEXT_ACTION_SET_FIRST_TEXT_PERSONAL_NUMBER_SECOND_TEXT_EMAIL_VALIDATION
             )

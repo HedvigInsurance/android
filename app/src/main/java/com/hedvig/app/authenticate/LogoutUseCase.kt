@@ -6,6 +6,7 @@ import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.service.push.PushTokenManager
 import com.hedvig.app.util.apollo.QueryResult
+import com.hedvig.app.util.apollo.reconnectSubscriptions
 
 class LogoutUseCase(
     private val pushTokenManager: PushTokenManager,
@@ -28,7 +29,7 @@ class LogoutUseCase(
             clearLoginStatus()
             clearMarket()
             clearAuthenticationToken()
-            apolloClient.subscriptionManager.reconnect()
+            apolloClient.reconnectSubscriptions()
             runCatching { pushTokenManager.refreshToken() }
             chatEventStore.resetChatClosedCounter()
             LogoutResult.Success

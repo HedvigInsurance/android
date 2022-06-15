@@ -3,8 +3,8 @@ package com.hedvig.app.feature.offer
 import assertk.assertThat
 import assertk.assertions.isDataClassEqualTo
 import assertk.assertions.isEqualTo
-import com.hedvig.android.owldroid.fragment.CurrentInsurerFragment
-import com.hedvig.android.owldroid.fragment.QuoteBundleFragment
+import com.hedvig.android.owldroid.graphql.fragment.CurrentInsurerFragment
+import com.hedvig.android.owldroid.graphql.fragment.QuoteBundleFragment
 import com.hedvig.app.feature.offer.model.quotebundle.OfferStartDate
 import com.hedvig.app.feature.offer.model.quotebundle.getStartDate
 import com.hedvig.app.testdata.feature.offer.builders.ConcurrentInceptionBuilder
@@ -21,12 +21,15 @@ class OfferDateTest {
         ).build()
 
         val independentInception = QuoteBundleFragment.Inception1(
+            __typename = "",
             asIndependentInceptions = QuoteBundleFragment.AsIndependentInceptions(
+                __typename = "",
                 inceptions = listOf(
                     QuoteBundleFragment.Inception(
                         correspondingQuoteId = "ea656f5f-40b2-4953-85d9-752b33e69e38",
                         startDate = LocalDate.now(),
                         currentInsurer = QuoteBundleFragment.CurrentInsurer2(
+                            __typename = "",
                             fragments = QuoteBundleFragment.CurrentInsurer2.Fragments(
                                 CurrentInsurerFragment(
                                     id = "currentinsurerid",
@@ -50,6 +53,7 @@ class OfferDateTest {
         val inception = ConcurrentInceptionBuilder(
             startDate = null,
             currentInsurer = QuoteBundleFragment.CurrentInsurer1(
+                __typename = "",
                 fragments = QuoteBundleFragment.CurrentInsurer1.Fragments(
                     CurrentInsurerFragment(
                         id = "testId",
@@ -68,6 +72,7 @@ class OfferDateTest {
         val inception = ConcurrentInceptionBuilder(
             startDate = null,
             currentInsurer = QuoteBundleFragment.CurrentInsurer1(
+                __typename = "",
                 fragments = QuoteBundleFragment.CurrentInsurer1.Fragments(
                     CurrentInsurerFragment(
                         id = "testId",
@@ -84,12 +89,15 @@ class OfferDateTest {
     @Test
     fun `should show multiple date text if independent inceptions have different start date`() {
         val inception = QuoteBundleFragment.Inception1(
+            __typename = "",
             asIndependentInceptions = QuoteBundleFragment.AsIndependentInceptions(
+                __typename = "",
                 inceptions = listOf(
                     QuoteBundleFragment.Inception(
                         correspondingQuoteId = "ea656f5f-40b2-4953-85d9-752b33e69e38",
                         startDate = LocalDate.now(),
                         currentInsurer = QuoteBundleFragment.CurrentInsurer2(
+                            __typename = "",
                             fragments = QuoteBundleFragment.CurrentInsurer2.Fragments(
                                 CurrentInsurerFragment(
                                     id = "currentinsurerid",
@@ -103,6 +111,7 @@ class OfferDateTest {
                         correspondingQuoteId = "ea656f5f-40b2-4953-85d9-752b33e69e37",
                         startDate = LocalDate.now().plusDays(3),
                         currentInsurer = QuoteBundleFragment.CurrentInsurer2(
+                            __typename = "",
                             fragments = QuoteBundleFragment.CurrentInsurer2.Fragments(
                                 CurrentInsurerFragment(
                                     id = "currentinsurerid2",
@@ -116,6 +125,7 @@ class OfferDateTest {
                         correspondingQuoteId = "ea656f5f-40b2-4953-85d9-752b33e69e36",
                         startDate = LocalDate.now().plusDays(5),
                         currentInsurer = QuoteBundleFragment.CurrentInsurer2(
+                            __typename = "",
                             fragments = QuoteBundleFragment.CurrentInsurer2.Fragments(
                                 CurrentInsurerFragment(
                                     id = "currentinsurerid3",
@@ -136,12 +146,15 @@ class OfferDateTest {
     @Test
     fun `should show multiple date text if independent inceptions have at least one non switchable`() {
         val inception = QuoteBundleFragment.Inception1(
+            __typename = "",
             asIndependentInceptions = QuoteBundleFragment.AsIndependentInceptions(
+                __typename = "",
                 inceptions = listOf(
                     QuoteBundleFragment.Inception(
                         correspondingQuoteId = "ea656f5f-40b2-4953-85d9-752b33e69e38",
                         startDate = LocalDate.now(),
                         currentInsurer = QuoteBundleFragment.CurrentInsurer2(
+                            __typename = "",
                             fragments = QuoteBundleFragment.CurrentInsurer2.Fragments(
                                 CurrentInsurerFragment(
                                     id = "currentinsurerid",
@@ -155,6 +168,7 @@ class OfferDateTest {
                         correspondingQuoteId = "ea656f5f-40b2-4953-85d9-752b33e69e37",
                         startDate = LocalDate.now().plusDays(3),
                         currentInsurer = QuoteBundleFragment.CurrentInsurer2(
+                            __typename = "",
                             fragments = QuoteBundleFragment.CurrentInsurer2.Fragments(
                                 CurrentInsurerFragment(
                                     id = "currentinsurerid2",
@@ -168,6 +182,7 @@ class OfferDateTest {
                         correspondingQuoteId = "ea656f5f-40b2-4953-85d9-752b33e69e36",
                         startDate = LocalDate.now().plusDays(5),
                         currentInsurer = QuoteBundleFragment.CurrentInsurer2(
+                            __typename = "",
                             fragments = QuoteBundleFragment.CurrentInsurer2.Fragments(
                                 CurrentInsurerFragment(
                                     id = "currentinsurerid3",
@@ -188,12 +203,15 @@ class OfferDateTest {
     @Test
     fun `should show switchable date text if independent inceptions have all switchable`() {
         val inception = QuoteBundleFragment.Inception1(
+            __typename = "",
             asIndependentInceptions = QuoteBundleFragment.AsIndependentInceptions(
+                __typename = "",
                 inceptions = listOf(
                     QuoteBundleFragment.Inception(
                         correspondingQuoteId = "ea656f5f-40b2-4953-85d9-752b33e69e38",
                         startDate = null,
                         currentInsurer = QuoteBundleFragment.CurrentInsurer2(
+                            __typename = "",
                             fragments = QuoteBundleFragment.CurrentInsurer2.Fragments(
                                 CurrentInsurerFragment(
                                     id = "currentinsurerid",
@@ -207,6 +225,7 @@ class OfferDateTest {
                         correspondingQuoteId = "ea656f5f-40b2-4953-85d9-752b33e69e37",
                         startDate = null,
                         currentInsurer = QuoteBundleFragment.CurrentInsurer2(
+                            __typename = "",
                             fragments = QuoteBundleFragment.CurrentInsurer2.Fragments(
                                 CurrentInsurerFragment(
                                     id = "currentinsurerid2",
@@ -220,6 +239,7 @@ class OfferDateTest {
                         correspondingQuoteId = "ea656f5f-40b2-4953-85d9-752b33e69e36",
                         startDate = null,
                         currentInsurer = QuoteBundleFragment.CurrentInsurer2(
+                            __typename = "",
                             fragments = QuoteBundleFragment.CurrentInsurer2.Fragments(
                                 CurrentInsurerFragment(
                                     id = "currentinsurerid3",

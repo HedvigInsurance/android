@@ -3,7 +3,7 @@ package com.hedvig.app.feature.embark.quotecart
 import arrow.core.Either
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.owldroid.graphql.CreateOnboardingQuoteCartMutation
-import com.hedvig.android.owldroid.type.Market
+import com.hedvig.android.owldroid.graphql.type.Market
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.ErrorMessage
