@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.insurablelimits
 
 import android.os.Parcelable
-import com.hedvig.android.owldroid.fragment.InsurableLimitsFragment
+import com.hedvig.android.owldroid.graphql.fragment.InsurableLimitsFragment
 import kotlinx.parcelize.Parcelize
 
 sealed class InsurableLimitItem {

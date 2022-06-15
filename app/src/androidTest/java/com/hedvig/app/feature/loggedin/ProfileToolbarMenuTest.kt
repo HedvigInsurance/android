@@ -22,10 +22,10 @@ class ProfileToolbarMenuTest : TestCase() {
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.QUERY_DOCUMENT to apolloResponse {
+        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
             success(LOGGED_IN_DATA)
         },
-        TriggerFreeTextChatMutation.QUERY_DOCUMENT to apolloResponse {
+        TriggerFreeTextChatMutation.OPERATION_DOCUMENT to apolloResponse {
             success(TriggerFreeTextChatMutation.Data(true))
         }
     )

@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.owldroid.type.AuthState
+import com.hedvig.android.owldroid.graphql.type.AuthState
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.zignsec.usecase.SimpleSignStartAuthResult

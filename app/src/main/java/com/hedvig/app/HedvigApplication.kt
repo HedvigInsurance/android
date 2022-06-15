@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.preference.PreferenceManager
 import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.coroutines.await
 import com.hedvig.android.owldroid.graphql.NewSessionMutation
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.feature.settings.Language
@@ -15,6 +14,7 @@ import com.hedvig.app.feature.settings.Theme
 import com.hedvig.app.feature.tracking.ApplicationLifecycleTracker
 import com.hedvig.app.feature.whatsnew.WhatsNewRepository
 import com.hedvig.app.util.FirebaseCrashlyticsLogExceptionTree
+import com.hedvig.app.util.apollo.reconnectSubscriptions
 import com.hedvig.app.util.extensions.SHARED_PREFERENCE_TRIED_MIGRATION_OF_TOKEN
 import com.hedvig.app.util.extensions.getStoredBoolean
 import com.hedvig.app.util.extensions.storeBoolean
@@ -90,7 +90,7 @@ open class HedvigApplication : Application() {
         }
         response.getOrNull()?.data?.createSessionV2?.token?.let { hedvigToken ->
             authenticationTokenService.authenticationToken = hedvigToken
-            apolloClient.subscriptionManager.reconnect()
+            apolloClient.reconnectSubscriptions()
             i { "Successfully saved hedvig token" }
         } ?: e { "createSession returned no token" }
     }
@@ -99,7 +99,7 @@ open class HedvigApplication : Application() {
         val instance = LegacyReactDatabaseSupplier.getInstance(this)
         instance.getTokenIfExists()?.let { token ->
             authenticationTokenService.authenticationToken = token
-            apolloClient.subscriptionManager.reconnect()
+            apolloClient.reconnectSubscriptions()
         }
         instance.clearAndCloseDatabase()
         // Let's only try this once
@@ -110,3 +110,4 @@ open class HedvigApplication : Application() {
     open val graphqlSubscriptionUrl get() = getString(R.string.WS_GRAPHQL_URL)
     open val isTestBuild = false
 }
+

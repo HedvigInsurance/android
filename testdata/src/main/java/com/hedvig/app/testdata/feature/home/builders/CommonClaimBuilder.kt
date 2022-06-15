@@ -1,8 +1,8 @@
 package com.hedvig.app.testdata.feature.home.builders
 
-import com.hedvig.android.owldroid.fragment.IconVariantsFragment
 import com.hedvig.android.owldroid.graphql.HomeQuery
-import com.hedvig.android.owldroid.type.HedvigColor
+import com.hedvig.android.owldroid.graphql.fragment.IconVariantsFragment
+import com.hedvig.android.owldroid.graphql.type.HedvigColor
 
 data class CommonClaimBuilder(
     val title: String = "Example",
@@ -14,6 +14,7 @@ data class CommonClaimBuilder(
         title = title,
         icon = HomeQuery.Icon(
             variants = HomeQuery.Variants(
+                __typename = "",
                 fragments = HomeQuery.Variants.Fragments(
                     IconVariantsFragment(
                         dark = IconVariantsFragment.Dark(
@@ -27,11 +28,13 @@ data class CommonClaimBuilder(
             )
         ),
         layout = HomeQuery.Layout(
+            __typename = "",
             asTitleAndBulletPoints = if (variant == Variant.TITLE_AND_BULLET_POINTS) {
                 HomeQuery.AsTitleAndBulletPoints(
+                    __typename = "",
                     bulletPoints = emptyList(),
                     buttonTitle = "",
-                    color = HedvigColor.BLACK,
+                    color = HedvigColor.Black,
                     title = title
                 )
             } else {
@@ -39,7 +42,8 @@ data class CommonClaimBuilder(
             },
             asEmergency = if (variant == Variant.EMERGENCY) {
                 HomeQuery.AsEmergency(
-                    color = HedvigColor.BLACK,
+                    __typename = "",
+                    color = HedvigColor.Black,
                     emergencyNumber = emergencyNumber,
                 )
             } else {

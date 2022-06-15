@@ -29,10 +29,10 @@ class SwipeToRefreshNewDataTest : TestCase() {
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.QUERY_DOCUMENT to apolloResponse {
+        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
             success(LOGGED_IN_DATA)
         },
-        ReferralsQuery.QUERY_DOCUMENT to apolloResponse {
+        ReferralsQuery.OPERATION_DOCUMENT to apolloResponse {
             if (!firstLoadFlag) {
                 firstLoadFlag = true
                 success(REFERRALS_DATA_WITH_NO_DISCOUNTS)
