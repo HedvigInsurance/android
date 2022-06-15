@@ -50,7 +50,6 @@ import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.viewBinding
-import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.app.util.whenApiVersion
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -75,7 +74,6 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
     private val viewModel: EmbarkViewModel by viewModel { parametersOf(storyName) }
     private val binding by viewBinding(ActivityEmbarkBinding::bind)
     private val marketManager: MarketManager by inject()
-    private val featureManager: FeatureManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -10,7 +10,6 @@ import androidx.compose.runtime.getValue
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
-import com.hedvig.app.feature.offer.quotedetail.QuoteDetailAction
 import com.hedvig.app.feature.offer.quotedetail.QuoteDetailActivity
 import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.ui.compose.theme.HedvigTheme
@@ -30,29 +29,32 @@ class CrossSellDetailActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
 
         val viewModel = getViewModel<CrossSellDetailViewModel> {
-            parametersOf(
-                crossSell,
-            )
+            parametersOf(crossSell)
         }
 
         window.compatSetDecorFitsSystemWindows(false)
 
         setContent {
-            val action by viewModel.action.collectAsState()
-            LaunchedEffect(action) {
-                val act = action
-                if (act != null) {
-                    viewModel.actionOpened()
-                    handleAction(this@CrossSellDetailActivity, act)
-                }
+            val viewState by viewModel.viewState.collectAsState()
+            LaunchedEffect(viewState) {
+                viewState.navigateChat
+                    ?.navigate(this@CrossSellDetailActivity)
+                    ?.also { viewModel.actionOpened() }
+
+                viewState.navigateEmbark
+                    ?.navigate(this@CrossSellDetailActivity)
+                    ?.also { viewModel.actionOpened() }
             }
+
             HedvigTheme {
                 CrossSellDetailScreen(
                     onCtaClick = viewModel::onCtaClick,
                     onUpClick = { finish() },
                     onCoverageClick = { openCoverage(crossSell) },
                     onFaqClick = { openFaq(crossSell) },
+                    onDismissError = { viewModel.dismissError() },
                     data = crossSell,
+                    errorMessage = viewState.errorMessage,
                 )
             }
         }
@@ -66,11 +68,7 @@ class CrossSellDetailActivity : BaseActivity() {
                 title = getString(R.string.cross_sell_info_full_coverage_row),
                 perils = perils,
                 insurableLimits = crossSell.insurableLimits,
-                documents = crossSell.terms,
-                action = QuoteDetailAction(
-                    action = crossSell.action,
-                    label = crossSell.callToAction,
-                )
+                documents = crossSell.terms
             )
         )
     }

@@ -36,6 +36,7 @@ import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.systemBarsPadding
 import com.hedvig.app.R
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
+import com.hedvig.app.ui.compose.composables.ErrorDialog
 import com.hedvig.app.ui.compose.composables.appbar.FadingTopAppBar
 import com.hedvig.app.ui.compose.composables.buttons.LargeContainedButton
 import com.hedvig.app.ui.compose.composables.list.SectionTitle
@@ -48,7 +49,9 @@ fun CrossSellDetailScreen(
     onUpClick: () -> Unit,
     onCoverageClick: () -> Unit,
     onFaqClick: () -> Unit,
+    onDismissError: () -> Unit,
     data: CrossSellData,
+    errorMessage: String?,
 ) {
     val scrollState = rememberScrollState()
     val scrollFromTopInDp = with(LocalDensity.current) {
@@ -89,6 +92,10 @@ fun CrossSellDetailScreen(
         ) {
             Text(text = data.callToAction)
         }
+    }
+
+    if (errorMessage != null) {
+        ErrorDialog(onDismiss = onDismissError, message = errorMessage)
     }
 }
 
@@ -180,6 +187,7 @@ fun CrossSellDetailScreenPreview() {
             onUpClick = {},
             onCoverageClick = {},
             onFaqClick = {},
+            onDismissError = {},
             data = CrossSellData(
                 title = "Accident Insurance",
                 description = "179 kr/mo.",
@@ -214,6 +222,7 @@ fun CrossSellDetailScreenPreview() {
                 faq = emptyList(),
                 insurableLimits = emptyList(),
             ),
+            errorMessage = null,
         )
     }
 }

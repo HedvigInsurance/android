@@ -12,35 +12,38 @@ import arrow.core.Either
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.data.ChatRepository
+import com.hedvig.app.feature.crossselling.model.NavigateChat
+import com.hedvig.app.feature.crossselling.model.NavigateEmbark
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
+import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.faq.FAQBottomSheet
+import com.hedvig.app.feature.home.ui.changeaddress.appendQuoteCartId
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.extensions.showErrorDialog
-import com.hedvig.app.util.extensions.startChat
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class CrossSellFaqActivity : BaseActivity() {
-    private val model: CrossSellFaqViewModel by viewModel()
+
+    val crossSell by lazy {
+        intent.getParcelableExtra<CrossSellData>(CROSS_SELL)
+            ?: throw IllegalArgumentException("Programmer error: CROSS_SELL not passed to ${this.javaClass.name}")
+    }
+
+    private val model: CrossSellFaqViewModel by viewModel { parametersOf(crossSell) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val crossSell = intent.getParcelableExtra<CrossSellData>(CROSS_SELL)
-            ?: throw IllegalArgumentException("Programmer error: CROSS_SELL not passed to ${this.javaClass.name}")
-
-        model.events
+        model.viewState
             .flowWithLifecycle(lifecycle)
-            .onEach { event ->
-                when (event) {
-                    CrossSellFaqViewModel.Event.Error -> showErrorDialog(getString(R.string.component_error)) {}
-                    CrossSellFaqViewModel.Event.StartChat -> startChat()
-                }
-            }
+            .onEach(::handleViewState)
             .launchIn(lifecycleScope)
 
         setContent {
@@ -54,16 +57,27 @@ class CrossSellFaqActivity : BaseActivity() {
                             .show(supportFragmentManager, FAQBottomSheet.TAG)
                     },
                     openChat = ::openChat,
-                    onCtaClick = {
-                        handleAction(
-                            context = this,
-                            action = crossSell.action
-                        )
-                    },
+                    onCtaClick = { model.onCtaClick() },
                     items = crossSell.faq,
                 )
             }
         }
+    }
+
+    private fun handleViewState(viewState: CrossSellFaqViewModel.ViewState) = with(viewState) {
+        errorMessage?.let {
+            showErrorDialog(getString(R.string.component_error)) {
+                model.dismissError()
+            }
+        }
+
+        navigateChat
+            ?.navigate(this@CrossSellFaqActivity)
+            ?.also { model.actionOpened() }
+
+        navigateEmbark
+            ?.navigate(this@CrossSellFaqActivity)
+            ?.also { model.actionOpened() }
     }
 
     private fun openChat() {
@@ -84,24 +98,58 @@ class CrossSellFaqActivity : BaseActivity() {
 }
 
 class CrossSellFaqViewModel(
+    private val crossSell: CrossSellData,
     private val chatRepository: ChatRepository,
+    private val createQuoteCartUseCase: CreateQuoteCartUseCase,
 ) : ViewModel() {
 
-    sealed class Event {
-        object StartChat : Event()
-        object Error : Event()
-    }
+    private val _viewState = MutableStateFlow(ViewState())
+    val viewState = _viewState.asStateFlow()
 
-    private val _events = Channel<Event>(Channel.UNLIMITED)
-    val events = _events.receiveAsFlow()
+    data class ViewState(
+        val navigateEmbark: NavigateEmbark? = null,
+        val navigateChat: NavigateChat? = null,
+        val errorMessage: String? = null,
+        val loading: Boolean = false,
+    )
 
     suspend fun triggerOpenChat() {
         viewModelScope.launch {
-            val event = when (chatRepository.triggerFreeTextChat()) {
-                is Either.Left -> Event.Error
-                is Either.Right -> Event.StartChat
+            val viewState = when (chatRepository.triggerFreeTextChat()) {
+                is Either.Left -> ViewState(errorMessage = null)
+                is Either.Right -> ViewState(navigateChat = NavigateChat)
             }
-            _events.trySend(event)
+            _viewState.value = viewState
+        }
+    }
+
+    fun onCtaClick() {
+        viewModelScope.launch {
+            when (val action = crossSell.action) {
+                CrossSellData.Action.Chat -> _viewState.value = ViewState(navigateChat = NavigateChat)
+                is CrossSellData.Action.Embark -> _viewState.value = action.toViewState()
+            }
+        }
+    }
+
+    private suspend fun CrossSellData.Action.Embark.toViewState(): ViewState {
+        return when (val result = createQuoteCartUseCase.invoke()) {
+            is Either.Left -> ViewState(errorMessage = result.value.message)
+            is Either.Right -> {
+                val embarkStoryId = appendQuoteCartId(embarkStoryId, result.value.id)
+                val navigateEmbark = NavigateEmbark(embarkStoryId, title)
+                ViewState(navigateEmbark = navigateEmbark)
+            }
+        }
+    }
+
+    fun actionOpened() {
+        _viewState.value = ViewState()
+    }
+
+    fun dismissError() {
+        _viewState.update {
+            it.copy(errorMessage = null)
         }
     }
 }
