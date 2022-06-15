@@ -27,6 +27,7 @@ data class CrossSellData(
     val insurableLimits: List<InsurableLimitItem.InsurableLimit>,
 ) : Parcelable {
     sealed class Action : Parcelable {
+
         @Parcelize
         data class Embark(val embarkStoryId: String, val title: String) : Action()
 
@@ -53,8 +54,8 @@ data class CrossSellData(
             title = data.title,
             description = data.description,
             callToAction = data.callToAction,
-            action = data.action.asCrossSellEmbark?.embarkStoryV2?.name?.let { storyName ->
-                Action.Embark(storyName, data.title)
+            action = data.action.asCrossSellEmbark?.embarkStoryV2?.name?.let { storyId ->
+                Action.Embark(storyId, data.title)
             } ?: Action.Chat,
             backgroundUrl = data.imageUrl,
             backgroundBlurHash = data.blurHash,
