@@ -456,7 +456,7 @@ val insuranceModule = module {
 }
 
 val offerModule = module {
-    single<OfferRepository> { OfferRepository(get(), get(), get()) }
+    single<OfferRepository> { OfferRepository(get(), get(), get(), get()) }
     viewModel<OfferViewModel> { parametersHolder: ParametersHolder ->
         OfferViewModelImpl(
             quoteCartId = parametersHolder.get(),
@@ -620,7 +620,6 @@ val repositoriesModule = module {
     single { WhatsNewRepository(get(), get(), get()) }
     single { WelcomeRepository(get(), get()) }
     single { LanguageRepository(get()) }
-    single { OfferRepository(get(), get(), get()) }
     single { KeyGearItemsRepository(get(), get(), get(), get()) }
     single { MarketingRepository(get(), get()) }
     single { AdyenRepository(get(), get()) }
