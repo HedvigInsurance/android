@@ -469,6 +469,7 @@ val offerModule = module {
             addPaymentTokenUseCase = get(),
             getExternalInsuranceProviderUseCase = get(),
             getBundleVariantUseCase = get(),
+            getQuoteCartCheckoutUseCase = get(),
         )
     }
     single { SubscribeToDataCollectionStatusUseCase(get()) }

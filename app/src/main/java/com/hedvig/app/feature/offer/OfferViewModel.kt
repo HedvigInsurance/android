@@ -25,6 +25,7 @@ import com.hedvig.app.feature.offer.usecase.AddPaymentTokenUseCase
 import com.hedvig.app.feature.offer.usecase.EditCampaignUseCase
 import com.hedvig.app.feature.offer.usecase.ExternalProvider
 import com.hedvig.app.feature.offer.usecase.GetExternalInsuranceProviderUseCase
+import com.hedvig.app.feature.offer.usecase.GetQuoteCartCheckoutUseCase
 import com.hedvig.app.feature.offer.usecase.ObserveOfferStateUseCase
 import com.hedvig.app.feature.offer.usecase.OfferState
 import com.hedvig.app.feature.offer.usecase.StartCheckoutUseCase
@@ -168,6 +169,7 @@ class OfferViewModelImpl(
     private val addPaymentTokenUseCase: AddPaymentTokenUseCase,
     private val getExternalInsuranceProviderUseCase: GetExternalInsuranceProviderUseCase,
     private val getBundleVariantUseCase: ObserveOfferStateUseCase,
+    private val getQuoteCartCheckoutUseCase: GetQuoteCartCheckoutUseCase,
 ) : OfferViewModel() {
 
     private val _viewState: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.Loading)
@@ -322,12 +324,16 @@ class OfferViewModelImpl(
     private fun getQuoteIdsAndStartSign(onComplete: suspend (StartCheckoutUseCase.Success) -> Unit) {
         viewModelScope.launch {
             either<ErrorMessage, StartCheckoutUseCase.Success> {
-                val offer = offerState.first().bind()
-                val isPending = offer.offerModel.checkout?.status == Checkout.CheckoutStatus.PENDING
+                val checkoutStatus = getQuoteCartCheckoutUseCase.invoke(quoteCartId)
+                    .mapLeft { ErrorMessage(it.message) }
+                    .bind()
+                    .status
+                val isPending = checkoutStatus == Checkout.CheckoutStatus.PENDING
 
                 if (isPending) {
                     StartCheckoutUseCase.Success
                 } else {
+                    val offer = offerState.first().bind()
                     val quoteIds = offer.selectedQuoteIds
                     startCheckoutUseCase.startCheckoutAndClearCache(quoteCartId, quoteIds).bind()
                 }
