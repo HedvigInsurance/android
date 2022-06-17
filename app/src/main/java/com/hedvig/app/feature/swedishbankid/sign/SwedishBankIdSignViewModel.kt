@@ -29,8 +29,8 @@ class SwedishBankIdSignViewModel(
 
     val viewState: StateFlow<BankIdSignViewState> = _viewState.transformLatest { viewState ->
         emit(viewState)
-        when (viewState) {
-            BankIdSignViewState.StartBankId, BankIdSignViewState.SignInProgress -> {
+        when {
+            viewState.shouldQueryForSignStatus -> {
                 observeQuoteCartCheckoutUseCase
                     .invoke(quoteCartId)
                     .collect { result ->
@@ -41,7 +41,7 @@ class SwedishBankIdSignViewModel(
                         _viewState.value = state
                     }
             }
-            BankIdSignViewState.BankIdSuccess -> {
+            viewState is BankIdSignViewState.BankIdSuccess -> {
                 when (createAccessTokenUseCase.invoke(quoteCartId)) {
                     is Either.Left -> _viewState.value = BankIdSignViewState.Error()
                     is Either.Right -> {
@@ -52,7 +52,6 @@ class SwedishBankIdSignViewModel(
                     }
                 }
             }
-            else -> {}
         }
     }
         .stateIn(
@@ -89,12 +88,15 @@ sealed interface BankIdSignViewState {
     data class StartDirectDebit(val payinType: PaymentType) : BankIdSignViewState
     object Success : BankIdSignViewState
 
+    val shouldQueryForSignStatus: Boolean
+        get() = this is StartBankId || this is SignInProgress
+
     val isDialogDismissible: Boolean
         get() = this is Error || this is Cancelled
 }
 
 private fun Checkout?.toViewState(
-    previousState: BankIdSignViewState
+    previousState: BankIdSignViewState,
 ): BankIdSignViewState {
     return when (this?.status) {
         Checkout.CheckoutStatus.COMPLETED -> BankIdSignViewState.BankIdSuccess
