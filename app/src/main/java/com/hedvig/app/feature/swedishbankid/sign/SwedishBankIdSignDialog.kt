@@ -7,7 +7,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -139,7 +138,6 @@ class SwedishBankIdSignDialog : DialogFragment() {
 fun SwedishBankIdSignDialog(text: String) {
     Surface(
         shape = RoundedCornerShape(8.dp),
-        modifier = Modifier.animateContentSize(),
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
