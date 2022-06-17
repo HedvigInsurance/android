@@ -155,6 +155,7 @@ import com.hedvig.app.feature.offer.usecase.CreateAccessTokenUseCase
 import com.hedvig.app.feature.offer.usecase.CreateAccessTokenUseCaseImpl
 import com.hedvig.app.feature.offer.usecase.EditCampaignUseCase
 import com.hedvig.app.feature.offer.usecase.GetExternalInsuranceProviderUseCase
+import com.hedvig.app.feature.offer.usecase.GetQuoteCartCheckoutUseCase
 import com.hedvig.app.feature.offer.usecase.ObserveOfferStateUseCase
 import com.hedvig.app.feature.offer.usecase.ObserveQuoteCartCheckoutUseCase
 import com.hedvig.app.feature.offer.usecase.ObserveQuoteCartCheckoutUseCaseImpl
@@ -474,6 +475,7 @@ val offerModule = module {
     single { GetProviderDisplayNameUseCase(get()) }
     single { GetDataCollectionResultUseCase(get()) }
     single { QuoteCartFragmentToOfferModelMapper(get()) }
+    single<GetQuoteCartCheckoutUseCase> { GetQuoteCartCheckoutUseCase(get()) }
     single<ObserveQuoteCartCheckoutUseCase> { ObserveQuoteCartCheckoutUseCaseImpl(get()) }
 }
 

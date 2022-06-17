@@ -3,14 +3,9 @@ package com.hedvig.app.feature.offer.usecase
 import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.continuations.ensureNotNull
-import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.fetcher.ApolloResponseFetchers
-import com.hedvig.android.owldroid.graphql.QuoteCartCheckoutStatusQuery
 import com.hedvig.app.feature.offer.model.Checkout
 import com.hedvig.app.feature.offer.model.QuoteCartId
-import com.hedvig.app.feature.offer.model.toCheckout
 import com.hedvig.app.util.apollo.QueryResult
-import com.hedvig.app.util.apollo.safeQuery
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -23,25 +18,17 @@ interface ObserveQuoteCartCheckoutUseCase {
 }
 
 class ObserveQuoteCartCheckoutUseCaseImpl(
-    private val apolloClient: ApolloClient,
+    private val getQuoteCartCheckoutUseCase: GetQuoteCartCheckoutUseCase,
 ) : ObserveQuoteCartCheckoutUseCase {
     override fun invoke(quoteCartId: QuoteCartId): Flow<Either<QueryResult.Error, Checkout>> {
         return flow {
             while (currentCoroutineContext().isActive) {
                 val result = either<QueryResult.Error, Checkout> {
-                    val checkout = apolloClient.query(QuoteCartCheckoutStatusQuery(quoteCartId.id))
-                        .toBuilder()
-                        .responseFetcher(ApolloResponseFetchers.NETWORK_ONLY)
-                        .build()
-                        .safeQuery()
-                        .toEither()
-                        .bind()
-                        .quoteCart
-                        .checkout
+                    val checkout = getQuoteCartCheckoutUseCase.invoke(quoteCartId).bind()
                     ensureNotNull(checkout) {
                         QueryResult.Error.NoDataError(null)
                     }
-                    checkout.toCheckout()
+                    checkout
                 }
                 emit(result)
                 delay(fetchFrequency)
