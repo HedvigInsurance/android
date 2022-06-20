@@ -13,6 +13,7 @@ import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ErrorMessage
 import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.safeQuery
+import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 
@@ -20,6 +21,7 @@ class OfferRepository(
     private val apolloClient: ApolloClient,
     private val localeManager: LocaleManager,
     private val quoteCartFragmentToOfferModelMapper: QuoteCartFragmentToOfferModelMapper,
+    private val hAnalytics: HAnalytics,
 ) {
 
     val offerFlow: MutableSharedFlow<Either<ErrorMessage, OfferModel>> = MutableSharedFlow(
@@ -45,10 +47,16 @@ class OfferRepository(
             .toEither { ErrorMessage(it) }
             .bind()
 
-        ensureNotNull(result.quoteCart.fragments.quoteCartFragment.bundle) {
+        val quoteCartFragment = result.quoteCart.fragments.quoteCartFragment
+        val bundle = quoteCartFragment.bundle
+        ensureNotNull(bundle) {
             ErrorMessage("No quotes in offer, please try again")
         }
+        val receivedQuoteIds = bundle.possibleVariations
+            .flatMap { variation -> variation.bundle.fragments.quoteBundleFragment.quotes }
+            .map { quote -> quote.id }
+        hAnalytics.receivedQuotes(receivedQuoteIds)
 
-        quoteCartFragmentToOfferModelMapper.map(result.quoteCart.fragments.quoteCartFragment)
+        quoteCartFragmentToOfferModelMapper.map(quoteCartFragment)
     }
 }

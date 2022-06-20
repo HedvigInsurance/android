@@ -6,9 +6,7 @@ import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -17,8 +15,9 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
@@ -29,23 +28,22 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import com.hedvig.app.R
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.extensions.canOpenUri
-import com.hedvig.app.util.extensions.viewLifecycle
 import com.hedvig.app.util.extensions.viewLifecycleScope
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 class SwedishBankIdSignDialog : DialogFragment() {
-    private val model: SwedishBankIdSignViewModel by viewModel {
+    private val viewModel: SwedishBankIdSignViewModel by viewModel {
         parametersOf(
             requireArguments().getParcelable(QUOTE_CART_ID)
         )
@@ -58,31 +56,14 @@ class SwedishBankIdSignDialog : DialogFragment() {
         savedInstanceState: Bundle?,
     ) = ComposeView(requireContext()).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnLifecycleDestroyed(viewLifecycleOwner))
-        setContent {
-            val viewState by model.viewState.collectAsState()
-            HedvigTheme {
-                SwedishBankIdSignDialog(
-                    text = stringResource(getTextByViewState(viewState))
-                )
-            }
-        }
-    }
 
-    private fun getTextByViewState(viewState: SwedishBankIdSignViewModel.ViewState) = when (viewState) {
-        is SwedishBankIdSignViewModel.ViewState.StartClient -> R.string.SIGN_START_BANKID
-        SwedishBankIdSignViewModel.ViewState.Cancelled -> R.string.SIGN_CANCELED
-        SwedishBankIdSignViewModel.ViewState.InProgress -> R.string.SIGN_IN_PROGRESS
-        SwedishBankIdSignViewModel.ViewState.Success -> R.string.SIGN_SUCCESSFUL
-        SwedishBankIdSignViewModel.ViewState.Error -> R.string.SIGN_FAILED_REASON_UNKNOWN
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        model
-            .events
-            .flowWithLifecycle(viewLifecycle)
-            .onEach { event ->
-                when (event) {
-                    SwedishBankIdSignViewModel.Event.StartBankID -> {
+        var viewState: BankIdSignViewState by mutableStateOf(viewModel.viewState.value)
+        viewLifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.viewState.collect { state ->
+                    viewState = state
+                    dialog?.setCanceledOnTouchOutside(viewState.isDialogDismissible)
+                    if (state is BankIdSignViewState.StartBankId) {
                         val bankIdUri = bankIdUri()
                         if (requireActivity().canOpenUri(bankIdUri)) {
                             startActivity(
@@ -90,29 +71,30 @@ class SwedishBankIdSignDialog : DialogFragment() {
                                     Intent.ACTION_VIEW, bankIdUri
                                 )
                             )
+                            viewModel.bankIdStarted()
                         }
-                    }
-                    is SwedishBankIdSignViewModel.Event.StartDirectDebit -> {
-                        val market = marketManager.market ?: return@onEach
+                    } else if (state is BankIdSignViewState.StartDirectDebit) {
+                        val market = marketManager.market ?: return@collect
                         startActivity(
                             connectPayinIntent(
                                 requireContext(),
-                                event.payinType,
+                                state.payinType,
                                 market,
                                 true,
                             )
                         )
+                        viewModel.directDebitStarted()
                     }
                 }
             }
-            .launchIn(viewLifecycleScope)
-        model
-            .viewState
-            .flowWithLifecycle(viewLifecycle)
-            .onEach { viewState ->
-                dialog?.setCanceledOnTouchOutside(viewState is SwedishBankIdSignViewModel.ViewState.Error)
+        }
+        setContent {
+            HedvigTheme {
+                SwedishBankIdSignDialog(
+                    text = textFromViewState(viewState)
+                )
             }
-            .launchIn(viewLifecycleScope)
+        }
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?) =
@@ -121,14 +103,20 @@ class SwedishBankIdSignDialog : DialogFragment() {
             setCanceledOnTouchOutside(false)
         }
 
-    override fun onResume() {
-        super.onResume()
-        model.manuallyRecheckSignStatus()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        model.cancelSignStatusPolling()
+    @Composable
+    private fun textFromViewState(viewState: BankIdSignViewState): String {
+        return when (viewState) {
+            is BankIdSignViewState.StartBankId -> stringResource(R.string.SIGN_START_BANKID)
+            BankIdSignViewState.Cancelled -> stringResource(R.string.SIGN_CANCELED)
+            BankIdSignViewState.SignInProgress -> stringResource(R.string.SIGN_IN_PROGRESS)
+            is BankIdSignViewState.Error -> {
+                if (viewState.message != null) return viewState.message
+                stringResource(R.string.SIGN_FAILED_REASON_UNKNOWN)
+            }
+            BankIdSignViewState.BankIdSuccess -> stringResource(R.string.SIGN_IN_PROGRESS)
+            is BankIdSignViewState.StartDirectDebit -> stringResource(R.string.SIGN_IN_PROGRESS)
+            BankIdSignViewState.Success -> stringResource(R.string.SIGN_SUCCESSFUL)
+        }
     }
 
     companion object {
@@ -137,13 +125,12 @@ class SwedishBankIdSignDialog : DialogFragment() {
         private const val QUOTE_CART_ID = "QUOTE_CART_ID"
         const val TAG = "OfferSignDialog"
         fun newInstance(
-            quoteCartId: QuoteCartId?
-        ) =
-            SwedishBankIdSignDialog().apply {
-                arguments = bundleOf(
-                    QUOTE_CART_ID to quoteCartId
-                )
-            }
+            quoteCartId: QuoteCartId,
+        ) = SwedishBankIdSignDialog().apply {
+            arguments = bundleOf(
+                QUOTE_CART_ID to quoteCartId
+            )
+        }
     }
 }
 
@@ -151,7 +138,6 @@ class SwedishBankIdSignDialog : DialogFragment() {
 fun SwedishBankIdSignDialog(text: String) {
     Surface(
         shape = RoundedCornerShape(8.dp),
-        modifier = Modifier.animateContentSize(),
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
