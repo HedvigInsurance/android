@@ -137,6 +137,7 @@ jobs:
         id: find_issue
         with:
           string: ${{ github.event.pull_request.title }}
+        continue-on-error: true
       - name: Update Jira issue with artifact URL
         if: ${{ steps.find_issue.outputs.issue != null }}
         env:
