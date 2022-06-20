@@ -26,8 +26,8 @@ data class MessageBuilder(
         fragments = EmbarkStoryQuery.Response.Fragments(
             messageFragment = build(),
             responseExpressionFragment = null,
+            groupedResponseFragment = null,
         ),
-        asEmbarkGroupedResponse = null,
     )
 
     fun buildExpressionResponse() = EmbarkStoryQuery.Response(
@@ -42,8 +42,8 @@ data class MessageBuilder(
                         fragments = ResponseExpressionFragment.Expression.Fragments(it)
                     )
                 }
-            )
+            ),
+            groupedResponseFragment = null,
         ),
-        asEmbarkGroupedResponse = null,
     )
 }

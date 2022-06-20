@@ -385,7 +385,7 @@ abstract class EmbarkViewModel(
             )?.let { return Response.SingleResponse(it.text) }
         }
 
-        response.asEmbarkGroupedResponse?.let { groupedResponse ->
+        response.fragments.groupedResponseFragment?.let { groupedResponse ->
             val titleExpression = groupedResponse.title.fragments.responseExpressionFragment
             val title = preProcessMessage(
                 MessageFragment(
