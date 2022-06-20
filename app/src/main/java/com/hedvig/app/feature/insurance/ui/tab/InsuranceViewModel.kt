@@ -80,7 +80,6 @@ class InsuranceViewModel(
                 is CrossSellData.Action.Embark -> {
                     hAnalytics.cardClickCrossSellDetail(
                         id = data.typeOfContract,
-                        storyName = action.embarkStoryId,
                     )
                     _viewState.value = action.toViewState()
                 }

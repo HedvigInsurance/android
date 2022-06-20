@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.offer.model
 
+import com.hedvig.android.owldroid.graphql.QuoteCartCheckoutStatusQuery
 import com.hedvig.android.owldroid.graphql.fragment.QuoteCartFragment
 import com.hedvig.android.owldroid.graphql.type.CheckoutStatus
 
@@ -17,7 +18,19 @@ data class Checkout(
     }
 }
 
-fun QuoteCartFragment.Checkout.toCheckout() = Checkout(
+fun QuoteCartCheckoutStatusQuery.Checkout.toCheckout(): Checkout = Checkout(
+    status = when (status) {
+        CheckoutStatus.PENDING -> Checkout.CheckoutStatus.PENDING
+        CheckoutStatus.SIGNED -> Checkout.CheckoutStatus.SIGNED
+        CheckoutStatus.COMPLETED -> Checkout.CheckoutStatus.COMPLETED
+        CheckoutStatus.FAILED -> Checkout.CheckoutStatus.FAILED
+        CheckoutStatus.UNKNOWN__ -> Checkout.CheckoutStatus.UNKNOWN
+    },
+    statusText = statusText,
+    redirectUrl = redirectUrl,
+)
+
+fun QuoteCartFragment.Checkout.toCheckout(): Checkout = Checkout(
     status = when (status) {
         CheckoutStatus.PENDING -> Checkout.CheckoutStatus.PENDING
         CheckoutStatus.SIGNED -> Checkout.CheckoutStatus.SIGNED
