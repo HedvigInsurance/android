@@ -28,8 +28,12 @@ class GetAddressChangeStoryIdUseCase(
                 return SelfChangeEligibilityResult.Error(errorQueryResult.message)
             }
 
-        val storyId = activeContractBundlesQueryData.activeContractBundles.firstOrNull()?.angelStories?.addressChangeV2
+        val storyId = activeContractBundlesQueryData.activeContractBundles
+            .firstOrNull()
+            ?.angelStories
+            ?.addressChangeV2
             ?: return SelfChangeEligibilityResult.Blocked
+
         val storyIdWithQuoteCartId = addQuoteCartId(storyId).getOrHandle { errorMessage ->
             return SelfChangeEligibilityResult.Error(errorMessage.message)
         }

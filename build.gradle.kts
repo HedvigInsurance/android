@@ -2,7 +2,6 @@
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     alias(libs.plugins.buildTimeTracker)
-    alias(libs.plugins.unusedResourcesRemover)
     alias(libs.plugins.cacheFix) apply false
     alias(libs.plugins.doctor)
 }

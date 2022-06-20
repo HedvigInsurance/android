@@ -7,7 +7,6 @@ import androidx.lifecycle.flowWithLifecycle
 import coil.ImageLoader
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentInsuranceBinding
-import com.hedvig.app.feature.crossselling.ui.detail.handleAction
 import com.hedvig.app.feature.insurance.ui.InsuranceAdapter
 import com.hedvig.app.feature.insurance.ui.InsuranceModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
@@ -48,8 +47,9 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
             adapter = InsuranceAdapter(
                 marketManager,
                 insuranceViewModel::load,
-                insuranceViewModel::onClickCrossSell,
-                imageLoader
+                insuranceViewModel::onClickCrossSellAction,
+                imageLoader,
+                insuranceViewModel::onClickCrossSellCard,
             )
         }
 
@@ -61,12 +61,27 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
             .viewState
             .flowWithLifecycle(viewLifecycle)
             .onEach { viewState ->
-                val action = (viewState as? InsuranceViewModel.ViewState.Success)?.action
-                if (action != null) {
-                    insuranceViewModel.crossSellActionOpened()
-                    handleAction(requireContext(), action)
+                val adapter = binding.insuranceRecycler.adapter as? InsuranceAdapter
+
+                with(viewState) {
+                    binding.swipeToRefresh.isRefreshing = viewState.loading
+
+                    navigateEmbark
+                        ?.navigate(requireContext())
+                        ?.also { insuranceViewModel.crossSellActionOpened() }
+
+                    navigateChat
+                        ?.navigate(requireContext())
+                        ?.also { insuranceViewModel.crossSellActionOpened() }
+
+                    errorMessage?.let {
+                        adapter?.submitList(listOf(InsuranceModel.Header, InsuranceModel.Error))
+                    }
+
+                    items?.let {
+                        adapter?.submitList(it)
+                    }
                 }
-                bind(viewState)
             }
             .launchIn(viewLifecycleScope)
     }
@@ -80,26 +95,5 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
     override fun onPause() {
         super.onPause()
         insuranceViewModel.markCardCrossSellsAsSeen()
-    }
-
-    private fun bind(viewState: InsuranceViewModel.ViewState) {
-        val adapter = binding.insuranceRecycler.adapter as? InsuranceAdapter ?: return
-        binding.swipeToRefresh.isRefreshing = viewState is InsuranceViewModel.ViewState.Loading
-
-        when (viewState) {
-            InsuranceViewModel.ViewState.Error -> {
-                adapter.submitList(
-                    listOf(
-                        InsuranceModel.Header,
-                        InsuranceModel.Error
-                    )
-                )
-            }
-            InsuranceViewModel.ViewState.Loading -> {
-            }
-            is InsuranceViewModel.ViewState.Success -> {
-                adapter.submitList(viewState.items)
-            }
-        }
     }
 }

@@ -3,9 +3,7 @@ package com.hedvig.app.feature.offer.quotedetail
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Parcelable
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
@@ -15,8 +13,6 @@ import com.carousell.concatadapterextension.ConcatSpanSizeLookup
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.QuoteDetailActivityBinding
-import com.hedvig.app.feature.crossselling.ui.CrossSellData
-import com.hedvig.app.feature.crossselling.ui.detail.handleAction
 import com.hedvig.app.feature.documents.DocumentAdapter
 import com.hedvig.app.feature.documents.DocumentItems
 import com.hedvig.app.feature.insurablelimits.InsurableLimitItem
@@ -25,12 +21,9 @@ import com.hedvig.app.feature.perils.PerilItem
 import com.hedvig.app.feature.perils.PerilsAdapter
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.toArrayList
-import com.hedvig.app.util.extensions.view.setHapticClickListener
-import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewBinding
 import dev.chrisbanes.insetter.Insetter
 import e
-import kotlinx.parcelize.Parcelize
 import org.koin.android.ext.android.inject
 
 class QuoteDetailActivity : BaseActivity(R.layout.quote_detail_activity) {
@@ -50,8 +43,6 @@ class QuoteDetailActivity : BaseActivity(R.layout.quote_detail_activity) {
             e { "Programmer error: PERILS/INSURABLE_LIMITS/DOCUMENTS not provided to ${this.javaClass.name}" }
             return
         }
-
-        val actionData = intent.getParcelableExtra<QuoteDetailAction>(ACTION)
 
         with(binding) {
             window.compatSetDecorFitsSystemWindows(false)
@@ -106,23 +97,6 @@ class QuoteDetailActivity : BaseActivity(R.layout.quote_detail_activity) {
                     )
                 }
                 .applyToView(recycler)
-
-            if (actionData != null) {
-                Insetter
-                    .builder()
-                    .setOnApplyInsetsListener { view, insets, initialState ->
-                        view.updateMargin(
-                            bottom = initialState.margins.bottom +
-                                insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
-                        )
-                    }
-                    .applyToView(action)
-                action.isVisible = true
-                action.text = actionData.label
-                action.setHapticClickListener {
-                    handleAction(this@QuoteDetailActivity, actionData.action)
-                }
-            }
         }
     }
 
@@ -131,28 +105,18 @@ class QuoteDetailActivity : BaseActivity(R.layout.quote_detail_activity) {
         private const val PERILS = "PERILS"
         private const val INSURABLE_LIMITS = "INSURABLE_LIMITS"
         private const val DOCUMENTS = "DOCUMENTS"
-        private const val ACTION = "ACTION"
+
         fun newInstance(
             context: Context,
             title: String,
             perils: List<PerilItem.Peril>,
             insurableLimits: List<InsurableLimitItem.InsurableLimit>,
-            documents: List<DocumentItems.Document>,
-            action: QuoteDetailAction? = null
+            documents: List<DocumentItems.Document>
         ) = Intent(context, QuoteDetailActivity::class.java).apply {
             putExtra(TITLE, title)
             putParcelableArrayListExtra(PERILS, perils.toArrayList())
             putParcelableArrayListExtra(INSURABLE_LIMITS, insurableLimits.toArrayList())
             putParcelableArrayListExtra(DOCUMENTS, documents.toArrayList())
-            if (action != null) {
-                putExtra(ACTION, action)
-            }
         }
     }
 }
-
-@Parcelize
-data class QuoteDetailAction(
-    val action: CrossSellData.Action,
-    val label: String,
-) : Parcelable

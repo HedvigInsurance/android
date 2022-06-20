@@ -2,51 +2,6 @@ name: PR
 
 on: pull_request
 jobs:
-  integration_test:
-    runs-on: macos-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Setup JDK 11
-        uses: actions/setup-java@v3.3.0
-        with:
-          java-version: '11'
-          distribution: 'zulu'
-          cache: 'gradle'
-      - uses: actions/cache@v3
-        with:
-          path: ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
-      - uses: actions/cache@v3
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
-      - name: Prebuild
-        run: ./ci-prebuild.sh
-        env:
-          LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
-          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
-          ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_CLIENT_KEY_TEST }}
-          SHAKE_CLIENT_ID: ${{ secrets.SHAKE_CLIENT_ID }}
-          SHAKE_CLIENT_SECRET: ${{ secrets.SHAKE_CLIENT_SECRET }}
-      - name: Instrumentation tests
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 28
-          arch: x86_64
-          target: google_apis
-          profile: pixel_3a
-          script: ./gradlew connectedDebugAndroidTest
-      - name: Upload test reports
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: test-reports
-          path: app/build/reports
-      - uses: test-summary/action@v1
-        with: 
-          paths: "app/build/outputs/androidTest-results/**/TEST-*.xml"
-        if: always()
   unit_test:
     runs-on: ubuntu-latest
     steps:
@@ -128,3 +83,75 @@ jobs:
           if [[ $(xmllint --xpath "count(//file)" build/ktlint-report-in-checkstyle-format.xml) -gt 0 ]]; then
               exit 1;
           fi;
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup JDK 11
+        uses: actions/setup-java@v3.3.0
+        with:
+          java-version: '11'
+          distribution: 'zulu'
+          cache: 'gradle'
+      - uses: actions/cache@v3
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+      - uses: actions/cache@v3
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+      - name: Prebuild
+        run: ./ci-prebuild.sh
+        env:
+          LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
+          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+          ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_CLIENT_KEY_TEST }}
+          SHAKE_CLIENT_ID: ${{ secrets.SHAKE_CLIENT_ID }}
+          SHAKE_CLIENT_SECRET: ${{ secrets.SHAKE_CLIENT_SECRET }}
+      - name: Build
+        run: "./gradlew app:assemblePullrequest"
+      - uses: r0adkll/sign-android-release@v1
+        name: Sign app APK
+        id: sign_app
+        with:
+          releaseDirectory: app/build/outputs/apk/pullrequest
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+        env:
+          BUILD_TOOLS_VERSION: "30.0.2"
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Pull Request-Build
+          path: ${{ steps.sign_app.outputs.signedReleaseFile }}
+      - uses: atlassian/gajira-login@v2.0.0
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}        
+      - uses: atlassian/gajira-cli@v2.0.2
+      - uses: atlassian/gajira-find-issue-key@v2.0.2
+        id: find_issue
+        with:
+          string: ${{ github.event.pull_request.title }}
+      - name: Update Jira issue with artifact URL
+        if: ${{ steps.find_issue.outputs.issue != null }}
+        env:
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+        run: |
+          mkdir -p ~/.jira.d/templates
+          cat << EOF > ~/.jira.d/templates/edit
+          {{/* edit template */ -}}
+          # issue: {{ .key }} - created: {{ .fields.created | age}} ago
+          fields:
+          {{- if .meta.fields.customfield_10066 }}
+            customfield_10066: {{.overrides.artifact_url}}
+          {{- end }}
+          EOF
+          sudo apt-get install -y jq curl
+
+          jira edit ${{ steps.find_issue.outputs.issue }} --noedit --override artifact_url=$(curl -s https://api.github.com/repos/hedviginsurance/android/actions/runs/${{ github.run_id }} | jq ".html_url" -r)
+  

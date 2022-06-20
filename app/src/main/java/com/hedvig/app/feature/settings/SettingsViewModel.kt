@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.hedvig.android.owldroid.type.Locale
 import com.hedvig.app.feature.marketpicker.LanguageRepository
 import com.hedvig.app.feature.marketpicker.LocaleBroadcastManager
+import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 
 class SettingsViewModel(
@@ -12,7 +13,7 @@ class SettingsViewModel(
     hAnalytics: HAnalytics,
 ) : ViewModel() {
     init {
-        hAnalytics.screenViewAppSettings()
+        hAnalytics.screenView(AppScreen.APP_SETTINGS)
     }
 
     fun save(acceptLanguage: String, locale: Locale) {
