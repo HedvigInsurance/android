@@ -16,7 +16,6 @@ import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.embark.extensions.api
 import com.hedvig.app.feature.embark.extensions.getComputedValues
-import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.embark.util.SelectedContractType
 import com.hedvig.app.feature.embark.util.evaluateExpression
 import com.hedvig.app.feature.embark.util.getFileVariables
@@ -51,7 +50,7 @@ abstract class EmbarkViewModel(
     private val graphQLQueryUseCase: GraphQLQueryUseCase,
     private val chatRepository: ChatRepository,
     private val hAnalytics: HAnalytics,
-    private val storyName: String,
+    val storyName: String,
     loginStatusService: LoginStatusService,
 ) : ViewModel() {
     private val _passageState = MutableLiveData<PassageState>()
@@ -134,6 +133,8 @@ abstract class EmbarkViewModel(
     fun putInStore(key: String, value: List<String>) {
         valueStore.put(key, value)
     }
+
+    fun getStoreAsMap() = valueStore.toMap()
 
     fun getPrefillFromStore(key: String) = valueStore.prefill.get(key)
 
@@ -532,7 +533,6 @@ class EmbarkViewModelImpl(
     valueStore: ValueStore,
     hAnalytics: HAnalytics,
     storyName: String,
-    private val createQuoteCartUseCase: CreateQuoteCartUseCase,
 ) : EmbarkViewModel(
     valueStore,
     graphQLQueryUseCase,
