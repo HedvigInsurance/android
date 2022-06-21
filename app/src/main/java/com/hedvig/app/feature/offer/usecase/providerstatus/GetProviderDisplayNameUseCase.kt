@@ -1,8 +1,6 @@
 package com.hedvig.app.feature.offer.usecase.providerstatus
 
 import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.cache.normalized.FetchPolicy
-import com.apollographql.apollo3.cache.normalized.fetchPolicy
 import com.hedvig.android.owldroid.graphql.ProviderStatusQuery
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
@@ -19,7 +17,6 @@ class GetProviderDisplayNameUseCase(
         if (insuranceCompany == null) return null
         val result = apolloClient
             .query(ProviderStatusQuery())
-            .fetchPolicy(FetchPolicy.CacheFirst)
             .safeQuery()
         if (result is QueryResult.Success) {
             return result.data.externalInsuranceProvider
