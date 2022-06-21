@@ -11,12 +11,16 @@ import com.apollographql.apollo3.mockserver.MockServer
 import com.hedvig.app.util.apollo.adapter.CUSTOM_SCALAR_ADAPTERS
 import kotlinx.coroutines.test.TestScope
 
-fun runApolloTest(block: suspend TestScope.(MockServer, ApolloClient) -> Unit) {
+fun runApolloTest(
+    extraApolloClientConfiguration: ApolloClient.Builder.() -> ApolloClient.Builder = { this },
+    block: suspend TestScope.(MockServer, ApolloClient) -> Unit,
+) {
     return kotlinx.coroutines.test.runTest {
         val mockServer = MockServer()
         val apolloClient = ApolloClient.Builder()
             .customScalarAdapters(CUSTOM_SCALAR_ADAPTERS)
             .serverUrl(mockServer.url())
+            .extraApolloClientConfiguration()
             .build()
         block(mockServer, apolloClient)
         apolloClient.close()
