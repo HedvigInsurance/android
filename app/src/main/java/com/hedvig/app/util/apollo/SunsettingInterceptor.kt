@@ -29,8 +29,12 @@ class SunsettingInterceptor(
                 response
             }
     }
+
+    companion object {
+        const val SUNSETTING_ERROR_CODE = "invalid_version"
+    }
 }
 
 private fun Error.isSunsetError(): Boolean {
-    return nonStandardFields?.get("errorCode") == "invalid_version"
+    return nonStandardFields?.get("errorCode") == SunsettingInterceptor.SUNSETTING_ERROR_CODE
 }
