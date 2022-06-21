@@ -4,36 +4,17 @@ package com.hedvig.app.feature.offer.usecase
 
 import assertk.assertThat
 import assertk.assertions.isNull
-import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.annotations.ApolloExperimental
 import com.apollographql.apollo3.cache.normalized.api.MemoryCacheFactory
 import com.apollographql.apollo3.cache.normalized.normalizedCache
-import com.apollographql.apollo3.mockserver.MockServer
 import com.apollographql.apollo3.mockserver.enqueue
-import com.apollographql.apollo3.testing.runTest
 import com.hedvig.android.owldroid.graphql.ProviderStatusQuery
+import com.hedvig.app.apollo.runApolloTest
 import com.hedvig.app.apollo.toJsonStringWithData
 import com.hedvig.app.feature.offer.usecase.providerstatus.GetProviderDisplayNameUseCase
 import org.junit.Test
 
 class GetProviderDisplayNameUseCaseTest {
-    private lateinit var mockServer: MockServer
-    private lateinit var apolloClient: ApolloClient
-
-    private suspend fun before() {
-        mockServer = MockServer()
-        apolloClient = ApolloClient
-            .Builder()
-            .normalizedCache(MemoryCacheFactory(maxSizeBytes = 10 * 1024 * 1024))
-            .serverUrl(mockServer.url())
-            .build()
-    }
-
-    private suspend fun after() {
-        apolloClient.close()
-        mockServer.stop()
-    }
-
     private val mockedResponse: ProviderStatusQuery.Data = ProviderStatusQuery.Data(
         ProviderStatusQuery.ExternalInsuranceProvider(
             providerStatusV2 = listOf(
@@ -53,21 +34,18 @@ class GetProviderDisplayNameUseCaseTest {
     )
 
     @Test
-    fun `when sending an unrelated insuranceCompany code string, a null is sent back`() = runTest(
-        before = { before() },
-        after = { after() },
-    ) {
-        val useCase = GetProviderDisplayNameUseCase(apolloClient)
-        mockServer.enqueue(mockedResponse.toJsonStringWithData())
+    fun `when sending an unrelated insuranceCompany code string, a null is sent back`() =
+        runApolloTest { mockServer, apolloClient ->
+            val useCase = GetProviderDisplayNameUseCase(apolloClient)
+            mockServer.enqueue(mockedResponse.toJsonStringWithData())
 
-        assertThat(useCase.invoke("random unrelated text")).isNull()
-    }
+            assertThat(useCase.invoke("random unrelated text")).isNull()
+        }
 
     @Test
-    fun `with a prefixed insurance code name, the company display name is returned back`() = runTest(
-        before = { before() },
-        after = { after() },
-    ) {
+    fun `with a prefixed insurance code name, the company display name is returned back`() = runApolloTest(
+        extraApolloClientConfiguration = { normalizedCache(MemoryCacheFactory(maxSizeBytes = 10 * 1024 * 1024)) }
+    ) { mockServer, apolloClient ->
         val useCase = GetProviderDisplayNameUseCase(apolloClient)
         mockServer.enqueue(mockedResponse.toJsonStringWithData())
 
