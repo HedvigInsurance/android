@@ -15,6 +15,7 @@ import com.hedvig.app.feature.embark.EmbarkViewModel
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.extensions.hasPermissions
 import com.hedvig.app.util.extensions.showPermissionExplanationDialog
+import com.hedvig.hanalytics.HAnalytics
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -24,6 +25,7 @@ class AudioRecorderFragment : Fragment() {
     private val embarkViewModel: EmbarkViewModel by sharedViewModel()
     private val model: AudioRecorderViewModel by viewModel()
     private val clock: Clock by inject()
+    private val hAnalytics: HAnalytics by inject()
 
     private val permission = Manifest.permission.RECORD_AUDIO
 
@@ -55,14 +57,33 @@ class AudioRecorderFragment : Fragment() {
                     viewState = state,
                     startRecording = ::askForPermission,
                     clock = clock,
-                    stopRecording = model::stopRecording,
-                    submit = { submitAudioRecording(state, parameters) },
-                    redo = model::redo,
-                    play = model::play,
-                    pause = model::pause,
+                    stopRecording = {
+                        model::stopRecording
+                        logWithStoryAndStore(hAnalytics::embarkAudioRecordingStopped)
+                    },
+                    submit = {
+                        submitAudioRecording(state, parameters)
+                        logWithStoryAndStore(hAnalytics::embarkAudioRecordingSubmitted)
+                    },
+                    redo = {
+                        model.redo()
+                        logWithStoryAndStore(hAnalytics::embarkAudioRecordingRetry)
+                    },
+                    play = {
+                        model.play()
+                        logWithStoryAndStore(hAnalytics::embarkAudioRecordingPlayback)
+                    },
+                    pause = {
+                        model.pause()
+                        logWithStoryAndStore(hAnalytics::embarkAudioRecordingStopped)
+                    },
                 )
             }
         }
+    }
+
+    private fun logWithStoryAndStore(action: (storyName: String, store: Map<String, String?>) -> Unit) {
+        action(embarkViewModel.storyName, embarkViewModel.getStoreAsMap())
     }
 
     private fun submitAudioRecording(
@@ -80,6 +101,7 @@ class AudioRecorderFragment : Fragment() {
     private fun askForPermission() {
         if (requireActivity().hasPermissions(permission)) {
             model.startRecording()
+            logWithStoryAndStore(hAnalytics::embarkAudioRecordingBegin)
         } else {
             permissionResultLauncher.launch(permission)
         }
