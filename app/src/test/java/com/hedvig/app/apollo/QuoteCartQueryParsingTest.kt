@@ -5,50 +5,29 @@ package com.hedvig.app.apollo
 import assertk.assertThat
 import assertk.assertions.isNotNull
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
-import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.annotations.ApolloExperimental
-import com.apollographql.apollo3.annotations.ApolloInternal
-import com.apollographql.apollo3.mockserver.MockServer
 import com.apollographql.apollo3.mockserver.enqueue
-import com.apollographql.apollo3.testing.runTest
 import com.hedvig.android.owldroid.graphql.QuoteCartQuery
 import com.hedvig.android.owldroid.graphql.type.Locale
-import com.hedvig.app.util.apollo.adapter.CUSTOM_SCALAR_ADAPTERS
 import org.junit.Test
 
 class QuoteCartQueryParsingTest {
-    private lateinit var mockServer: MockServer
-    private lateinit var apolloClient: ApolloClient
 
-    private suspend fun before() {
-        mockServer = MockServer()
-        apolloClient =
-            ApolloClient.Builder().customScalarAdapters(CUSTOM_SCALAR_ADAPTERS).serverUrl(mockServer.url()).build()
-    }
-
-    private suspend fun after() {
-        apolloClient.close()
-        mockServer.stop()
-    }
-
-    @OptIn(ApolloInternal::class)
     @Test
-    fun `apollo parses an quote cart query with a PaymentMethodsApiResponse included`() = runTest(
-        before = { before() },
-        after = { after() }
-    ) {
-        val jsonData = responseForQuoteCartId_2cac79da_ab37_434b_b425_df73343eb895_minified
-        mockServer.enqueue(jsonData)
+    fun `apollo parses an quote cart query with a PaymentMethodsApiResponse included`() =
+        runApolloTest { mockServer, apolloClient ->
+            val jsonData = responseForQuoteCartId_2cac79da_ab37_434b_b425_df73343eb895_minified
+            mockServer.enqueue(jsonData)
 
-        val response = apolloClient
-            .query(QuoteCartQuery(Locale.sv_SE, "2cac79da-ab37-434b-b425-df73343eb895"))
-            .execute()
+            val response = apolloClient
+                .query(QuoteCartQuery(Locale.sv_SE, "2cac79da-ab37-434b-b425-df73343eb895"))
+                .execute()
 
-        assertThat(response.data).isNotNull()
-        val paymentMethodsApiResponse: PaymentMethodsApiResponse? = response.data?.quoteCart?.fragments
-            ?.quoteCartFragment?.paymentConnection?.providers?.firstOrNull()?.asAdyen?.availablePaymentMethods
-        assertThat(paymentMethodsApiResponse).isNotNull()
-    }
+            assertThat(response.data).isNotNull()
+            val paymentMethodsApiResponse: PaymentMethodsApiResponse? = response.data?.quoteCart?.fragments
+                ?.quoteCartFragment?.paymentConnection?.providers?.firstOrNull()?.asAdyen?.availablePaymentMethods
+            assertThat(paymentMethodsApiResponse).isNotNull()
+        }
 
     @Suppress("PrivatePropertyName")
     private val responseForQuoteCartId_2cac79da_ab37_434b_b425_df73343eb895_minified =

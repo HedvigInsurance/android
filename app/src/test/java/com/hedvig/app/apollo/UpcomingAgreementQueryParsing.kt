@@ -3,11 +3,8 @@ package com.hedvig.app.apollo
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
-import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.annotations.ApolloExperimental
-import com.apollographql.apollo3.mockserver.MockServer
 import com.apollographql.apollo3.mockserver.enqueue
-import com.apollographql.apollo3.testing.runTest
 import com.hedvig.android.owldroid.graphql.UpcomingAgreementQuery
 import com.hedvig.android.owldroid.graphql.fragment.TableFragment
 import com.hedvig.android.owldroid.graphql.fragment.UpcomingAgreementChangeFragment
@@ -24,19 +21,6 @@ import java.time.LocalDate
 
 @OptIn(ApolloExperimental::class)
 class UpcomingAgreementQueryParsing {
-    private lateinit var mockServer: MockServer
-    private lateinit var apolloClient: ApolloClient
-
-    private suspend fun before() {
-        mockServer = MockServer()
-        apolloClient =
-            ApolloClient.Builder().customScalarAdapters(CUSTOM_SCALAR_ADAPTERS).serverUrl(mockServer.url()).build()
-    }
-
-    private suspend fun after() {
-        apolloClient.close()
-        mockServer.stop()
-    }
 
     @Suppress("PrivatePropertyName")
     private val UPCOMING_AGREEMENT_SWEDISH_APARTMENT_with_custom_builder by lazy {
@@ -131,63 +115,57 @@ class UpcomingAgreementQueryParsing {
     }
 
     @Test
-    fun `apollo parses an upcoming agreement constructed using apollo test builders`() = runTest(
-        before = { before() },
-        after = { after() }
-    ) {
-        val originalData = UPCOMING_AGREEMENT_SWEDISH_APARTMENT_from_test_builder
-        val jsonData = originalData.toJsonStringWithData()
-        mockServer.enqueue(jsonData)
+    fun `apollo parses an upcoming agreement constructed using apollo test builders`() =
+        runApolloTest { mockServer, apolloClient ->
+            val originalData = UPCOMING_AGREEMENT_SWEDISH_APARTMENT_from_test_builder
+            val jsonData = originalData.toJsonStringWithData()
+            mockServer.enqueue(jsonData)
 
-        val response = apolloClient
-            .query(UpcomingAgreementQuery(Locale.en_SE))
-            .execute()
+            val response = apolloClient
+                .query(UpcomingAgreementQuery(Locale.en_SE))
+                .execute()
 
-        assertThat(response.data).isNotNull()
-        assertThat(response.data!!).isEqualTo(originalData)
-        assertThat(
-            response.data!!.contracts.first().fragments.upcomingAgreementFragment.status.asActiveStatus!!
-                .upcomingAgreementChange!!.fragments.upcomingAgreementChangeFragment.newAgreement.asAgreementCore!!
-                .activeFrom
-        ).isEqualTo(LocalDate.of(2021, 4, 11))
-    }
+            assertThat(response.data).isNotNull()
+            assertThat(response.data!!).isEqualTo(originalData)
+            assertThat(
+                response.data!!.contracts.first().fragments.upcomingAgreementFragment.status.asActiveStatus!!
+                    .upcomingAgreementChange!!.fragments.upcomingAgreementChangeFragment.newAgreement.asAgreementCore!!
+                    .activeFrom
+            ).isEqualTo(LocalDate.of(2021, 4, 11))
+        }
 
     @Test
-    fun `apollo parses an upcoming agreement constructed with our custom builders`() = runTest(
-        before = { before() },
-        after = { after() }
-    ) {
-        val originalData = UPCOMING_AGREEMENT_SWEDISH_APARTMENT_with_custom_builder
-        val jsonData = originalData.toJsonStringWithData()
-        mockServer.enqueue(jsonData)
+    fun `apollo parses an upcoming agreement constructed with our custom builders`() =
+        runApolloTest { mockServer, apolloClient ->
+            val originalData = UPCOMING_AGREEMENT_SWEDISH_APARTMENT_with_custom_builder
+            val jsonData = originalData.toJsonStringWithData()
+            mockServer.enqueue(jsonData)
 
-        val response = apolloClient
-            .query(UpcomingAgreementQuery(Locale.en_SE))
-            .execute()
+            val response = apolloClient
+                .query(UpcomingAgreementQuery(Locale.en_SE))
+                .execute()
 
-        assertThat(response.data).isNotNull()
-        assertThat(response.data!!).isEqualTo(originalData)
-        assertThat(
-            response.data!!.contracts.first().fragments.upcomingAgreementFragment.status.asActiveStatus!!
-                .upcomingAgreementChange!!.fragments.upcomingAgreementChangeFragment.newAgreement.asAgreementCore!!
-                .activeFrom
-        ).isEqualTo(LocalDate.of(2021, 4, 11))
-    }
+            assertThat(response.data).isNotNull()
+            assertThat(response.data!!).isEqualTo(originalData)
+            assertThat(
+                response.data!!.contracts.first().fragments.upcomingAgreementFragment.status.asActiveStatus!!
+                    .upcomingAgreementChange!!.fragments.upcomingAgreementChangeFragment.newAgreement.asAgreementCore!!
+                    .activeFrom
+            ).isEqualTo(LocalDate.of(2021, 4, 11))
+        }
 
     @Test
-    fun `apollo parses an upcoming agreement response with no upcoming agreements`() = runTest(
-        before = { before() },
-        after = { after() }
-    ) {
-        val originalData = UPCOMING_AGREEMENT_NONE
-        val jsonData = originalData.toJsonStringWithData()
-        mockServer.enqueue(jsonData)
+    fun `apollo parses an upcoming agreement response with no upcoming agreements`() =
+        runApolloTest { mockServer, apolloClient ->
+            val originalData = UPCOMING_AGREEMENT_NONE
+            val jsonData = originalData.toJsonStringWithData()
+            mockServer.enqueue(jsonData)
 
-        val response = apolloClient
-            .query(UpcomingAgreementQuery(Locale.en_SE))
-            .execute()
+            val response = apolloClient
+                .query(UpcomingAgreementQuery(Locale.en_SE))
+                .execute()
 
-        assertThat(response.data).isNotNull()
-        assertThat(response.data!!).isEqualTo(originalData)
-    }
+            assertThat(response.data).isNotNull()
+            assertThat(response.data!!).isEqualTo(originalData)
+        }
 }

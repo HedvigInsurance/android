@@ -5,11 +5,8 @@ package com.hedvig.app.apollo
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
-import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.annotations.ApolloExperimental
-import com.apollographql.apollo3.mockserver.MockServer
 import com.apollographql.apollo3.mockserver.enqueue
-import com.apollographql.apollo3.testing.runTest
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.android.owldroid.graphql.test.InsuranceQuery_TestBuilder.Data
 import com.hedvig.android.owldroid.graphql.type.AgreementStatus
@@ -23,19 +20,6 @@ import org.junit.Test
 import java.time.LocalDate
 
 class InsuranceQueryParsingTest {
-    private lateinit var mockServer: MockServer
-    private lateinit var apolloClient: ApolloClient
-
-    private suspend fun before() {
-        mockServer = MockServer()
-        apolloClient =
-            ApolloClient.Builder().customScalarAdapters(CUSTOM_SCALAR_ADAPTERS).serverUrl(mockServer.url()).build()
-    }
-
-    private suspend fun after() {
-        apolloClient.close()
-        mockServer.stop()
-    }
 
     @Suppress("PrivatePropertyName")
     private val INSURANCE_DATA_from_test_builder by lazy {
@@ -159,10 +143,7 @@ class InsuranceQueryParsingTest {
     }
 
     @Test
-    fun `model from testbuilder and our own custom builders result in the same model`() = runTest(
-        before = { before() },
-        after = { after() }
-    ) {
+    fun `model from testbuilder and our own custom builders result in the same model`() {
         val testBuilderData = INSURANCE_DATA_from_test_builder
         val ownBuilderData = INSURANCE_DATA
 
@@ -172,10 +153,7 @@ class InsuranceQueryParsingTest {
     }
 
     @Test
-    fun `model from testbuilder and our own custom builders result in the same json`() = runTest(
-        before = { before() },
-        after = { after() }
-    ) {
+    fun `model from testbuilder and our own custom builders result in the same json`() {
         val testBuilderData = INSURANCE_DATA_from_test_builder
         val ownBuilderData = INSURANCE_DATA
 
@@ -188,44 +166,37 @@ class InsuranceQueryParsingTest {
     }
 
     @Test
-    fun `apollo parses an insurance constructed using apollo test builders`() = runTest(
-        before = { before() },
-        after = { after() }
-    ) {
-        val originalData = INSURANCE_DATA_from_test_builder
-        val jsonData = originalData.toJsonStringWithData()
-        mockServer.enqueue(jsonData)
+    fun `apollo parses an insurance constructed using apollo test builders`() =
+        runApolloTest { mockServer, apolloClient ->
+            val originalData = INSURANCE_DATA_from_test_builder
+            val jsonData = originalData.toJsonStringWithData()
+            mockServer.enqueue(jsonData)
 
-        val response = apolloClient
-            .query(InsuranceQuery(locale = com.hedvig.android.owldroid.graphql.type.Locale.sv_SE))
-            .execute()
+            val response = apolloClient
+                .query(InsuranceQuery(locale = com.hedvig.android.owldroid.graphql.type.Locale.sv_SE))
+                .execute()
 
-        assertThat(response.data).isNotNull()
-        assertThat(response.data!!).isEqualTo(originalData)
-    }
+            assertThat(response.data).isNotNull()
+            assertThat(response.data!!).isEqualTo(originalData)
+        }
 
     @Test
-    fun `apollo parses an insurance constructed with our custom builders`() = runTest(
-        before = { before() },
-        after = { after() }
-    ) {
-        val originalData = INSURANCE_DATA
-        val jsonData = originalData.toJsonStringWithData()
-        mockServer.enqueue(jsonData)
+    fun `apollo parses an insurance constructed with our custom builders`() =
+        runApolloTest { mockServer, apolloClient ->
+            val originalData = INSURANCE_DATA
+            val jsonData = originalData.toJsonStringWithData()
+            mockServer.enqueue(jsonData)
 
-        val response = apolloClient
-            .query(InsuranceQuery(locale = com.hedvig.android.owldroid.graphql.type.Locale.sv_SE))
-            .execute()
+            val response = apolloClient
+                .query(InsuranceQuery(locale = com.hedvig.android.owldroid.graphql.type.Locale.sv_SE))
+                .execute()
 
-        assertThat(response.data).isNotNull()
-        assertThat(response.data!!).isEqualTo(originalData)
-    }
+            assertThat(response.data).isNotNull()
+            assertThat(response.data!!).isEqualTo(originalData)
+        }
 
     @Test
-    fun `apollo parses an insurance for swedish house`() = runTest(
-        before = { before() },
-        after = { after() }
-    ) {
+    fun `apollo parses an insurance for swedish house`() = runApolloTest { mockServer, apolloClient ->
         val originalData = INSURANCE_DATA_SWEDISH_HOUSE
         val jsonData = originalData.toJsonStringWithData()
         mockServer.enqueue(jsonData)
@@ -239,10 +210,7 @@ class InsuranceQueryParsingTest {
     }
 
     @Test
-    fun `apollo parses an insurance which is terminated`() = runTest(
-        before = { before() },
-        after = { after() }
-    ) {
+    fun `apollo parses an insurance which is terminated`() = runApolloTest { mockServer, apolloClient ->
         val originalData = INSURANCE_DATA_TERMINATED
         val jsonData = originalData.toJsonStringWithData()
         mockServer.enqueue(jsonData)
