@@ -515,7 +515,6 @@ val embarkModule = module {
             valueStore = get(),
             hAnalytics = get(),
             storyName = storyName,
-            createQuoteCartUseCase = get(),
         )
     }
 }
