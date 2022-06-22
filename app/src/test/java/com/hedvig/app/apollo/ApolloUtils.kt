@@ -9,6 +9,7 @@ import com.apollographql.apollo3.api.toJson
 import com.apollographql.apollo3.api.toJsonString
 import com.apollographql.apollo3.mockserver.MockServer
 import com.hedvig.app.util.apollo.adapter.CUSTOM_SCALAR_ADAPTERS
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 
 fun runApolloTest(
@@ -18,6 +19,7 @@ fun runApolloTest(
     return kotlinx.coroutines.test.runTest {
         val mockServer = MockServer()
         val apolloClient = ApolloClient.Builder()
+            .requestedDispatcher(StandardTestDispatcher(testScheduler))
             .customScalarAdapters(CUSTOM_SCALAR_ADAPTERS)
             .serverUrl(mockServer.url())
             .extraApolloClientConfiguration()
