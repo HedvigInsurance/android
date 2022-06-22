@@ -8,6 +8,7 @@ import assertk.assertions.isNotNull
 import com.apollographql.apollo3.annotations.ApolloExperimental
 import com.apollographql.apollo3.mockserver.enqueue
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
+import com.hedvig.android.owldroid.graphql.test.EmbarkStoryQuery_TestBuilder.Data
 import com.hedvig.app.testdata.feature.embark.data.STANDARD_STORY
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GRAPHQL_MUTATION
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_GRAPHQL_MUTATION_AND_SINGLE_VARIABLE
@@ -19,6 +20,7 @@ import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_PASSED_KEY_VALUE
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_SELECT_ACTION_API_MULTIPLE_OPTIONS
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION_API
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_UNARY_EXPRESSIONS
+import com.hedvig.app.util.apollo.adapter.CUSTOM_SCALAR_ADAPTERS
 import org.junit.Test
 
 class EmbarkStoryQueryParsingTest {
@@ -192,6 +194,54 @@ class EmbarkStoryQueryParsingTest {
             .execute()
 
         assertThat(response.data).isNotNull()
+    }
+
+    @Test
+    fun `apollo parses a story which contains a JSONString sclar`() = runApolloTest { mockServer, apolloClient ->
+        mockServer.enqueue(
+            EmbarkStoryQuery.Data(TestDataTestResolver, CUSTOM_SCALAR_ADAPTERS) {
+                embarkStory = embarkStory {
+                    passages = listOf(
+                        passage {
+                            api = otherApi {
+                                __typename = ""
+                            }
+                            tracks = listOf(
+                                track {
+                                    customData = """
+                                    |{
+                                    |  "string": "Hello World",
+                                    |  "some": {
+                                    |    "arbitrary": [
+                                    |      { "object": 1 },
+                                    |      "object",
+                                    |      2
+                                    |    ],
+                                    |    "c": "d"
+                                    |  }
+                                    |}
+                                """.trimMargin()
+                                }
+                            )
+                        }
+                    )
+                }
+            }.toJsonStringWithData()
+        )
+
+        val response = apolloClient
+            .query(EmbarkStoryQuery("", "sv_SE"))
+            .execute()
+
+        assertThat(response.data).isNotNull()
+        val jsonObject = response.dataAssertNoErrors.embarkStory!!.passages.first().tracks.first().customData!!
+        assertThat(jsonObject.get("string")).isEqualTo("Hello World")
+        val some = jsonObject.getJSONObject("some")
+        assertThat(some.get("c")).isEqualTo("d")
+        val arbitraryArray = some.getJSONArray("arbitrary")
+        assertThat(arbitraryArray.getJSONObject(0).toString()).isEqualTo("""{"object":1}""")
+        assertThat(arbitraryArray.get(1)).isEqualTo("object")
+        assertThat(arbitraryArray.get(2)).isEqualTo(2)
     }
 
     private val realResponseExample = """
