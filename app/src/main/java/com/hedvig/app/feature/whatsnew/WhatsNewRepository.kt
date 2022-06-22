@@ -5,19 +5,24 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.owldroid.graphql.WhatsNewQuery
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.util.LocaleManager
+import com.hedvig.app.util.apollo.QueryResult
+import com.hedvig.app.util.apollo.safeQuery
 
 class WhatsNewRepository(
     private val apolloClient: ApolloClient,
     private val context: Context,
-    private val localeManager: LocaleManager
+    private val localeManager: LocaleManager,
 ) {
-    suspend fun whatsNew(sinceVersion: String? = null) =
-        apolloClient.query(
-            WhatsNewQuery(
-                locale = localeManager.defaultLocale(),
-                sinceVersion = sinceVersion ?: latestSeenNews()
+    suspend fun whatsNew(sinceVersion: String?): QueryResult<WhatsNewQuery.Data> {
+        return apolloClient
+            .query(
+                WhatsNewQuery(
+                    locale = localeManager.defaultLocale(),
+                    sinceVersion = sinceVersion ?: latestSeenNews()
+                )
             )
-        ).execute()
+            .safeQuery()
+    }
 
     fun removeNewsForNewUser() {
         if (latestSeenNews() == NEWS_BASELINE_VERSION) {
