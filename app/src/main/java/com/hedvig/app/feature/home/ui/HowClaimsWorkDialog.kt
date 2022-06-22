@@ -2,13 +2,12 @@ package com.hedvig.app.feature.home.ui
 
 import android.os.Bundle
 import com.hedvig.app.R
-import com.hedvig.app.feature.claims.ui.pledge.HonestyPledgeBottomSheet
 import com.hedvig.app.feature.dismissiblepager.DismissiblePager
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
 
 class HowClaimsWorkDialog : DismissiblePager() {
     override val proceedLabel = R.string.claims_explainer_button_next
-    override val lastButtonText = R.string.claims_explainer_button_start_claim
+    override val lastButtonText = R.string.general_close_button
     override val animationStyle = R.style.DialogSlideInSlideOut
     override val titleLabel: Nothing? = null
     override val shouldShowLogo = false
@@ -17,9 +16,7 @@ class HowClaimsWorkDialog : DismissiblePager() {
         get() = requireArguments().getParcelableArrayList<DismissiblePagerModel>(ITEMS).orEmpty()
 
     override fun onLastPageButton() {
-        HonestyPledgeBottomSheet
-            .newInstance()
-            .show(parentFragmentManager, HonestyPledgeBottomSheet.TAG)
+        dismiss()
     }
 
     companion object {
