@@ -13,7 +13,7 @@ import com.hedvig.app.feature.offer.usecase.CreateAccessTokenUseCase
 import com.hedvig.app.feature.offer.usecase.FakeCreateAccessTokenUseCase
 import com.hedvig.app.feature.offer.usecase.FakeObserveQuoteCartCheckoutUseCase
 import com.hedvig.app.util.ErrorMessage
-import com.hedvig.app.util.coroutines.StandardTestDispatcherAsMainDispatcherRule
+import com.hedvig.app.util.coroutines.MainCoroutineRule
 import com.hedvig.app.util.featureflags.FakeFeatureManager
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
@@ -28,7 +28,7 @@ import org.junit.Test
 class SwedishBankIdSignViewModelTest {
 
     @get:Rule
-    val standardTestDispatcherAsMainDispatcherRule = StandardTestDispatcherAsMainDispatcherRule()
+    val mainCoroutineRule = MainCoroutineRule()
 
     @Test
     fun `a successful bankId sign and a successful access token call result in success`() = runTest {

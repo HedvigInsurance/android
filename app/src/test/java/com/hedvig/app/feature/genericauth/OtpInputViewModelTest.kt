@@ -8,7 +8,7 @@ import com.hedvig.app.feature.genericauth.otpinput.OtpResult
 import com.hedvig.app.feature.genericauth.otpinput.ReSendOtpCodeUseCase
 import com.hedvig.app.feature.genericauth.otpinput.ResendOtpResult
 import com.hedvig.app.feature.genericauth.otpinput.SendOtpCodeUseCase
-import com.hedvig.app.util.coroutines.StandardTestDispatcherAsMainDispatcherRule
+import com.hedvig.app.util.coroutines.MainCoroutineRule
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -20,7 +20,7 @@ import kotlin.time.Duration.Companion.milliseconds
 class OtpInputViewModelTest {
 
     @get:Rule
-    val standardTestDispatcherAsMainDispatcherRule = StandardTestDispatcherAsMainDispatcherRule()
+    val mainCoroutineRule = MainCoroutineRule()
 
     private var authToken: String? = "testToken"
 

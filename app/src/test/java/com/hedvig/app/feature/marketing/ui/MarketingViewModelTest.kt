@@ -18,7 +18,7 @@ import com.hedvig.app.feature.marketing.data.UpdateApplicationLanguageUseCase
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.util.coroutines.StandardTestDispatcherAsMainDispatcherRule
+import com.hedvig.app.util.coroutines.MainCoroutineRule
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.hanalytics.HAnalytics
 import io.mockk.coEvery
@@ -31,7 +31,7 @@ import org.junit.Test
 
 class MarketingViewModelTest {
     @get:Rule
-    val mainCoroutineRule = StandardTestDispatcherAsMainDispatcherRule()
+    val mainCoroutineRule = MainCoroutineRule()
 
     private fun sut(
         marketManager: MarketManager = mockk(relaxed = true),

@@ -6,7 +6,7 @@ import com.hedvig.app.feature.embark.passages.externalinsurer.ExternalInsurerVie
 import com.hedvig.app.feature.embark.passages.externalinsurer.GetInsuranceProvidersUseCase
 import com.hedvig.app.feature.embark.passages.externalinsurer.InsuranceProvider
 import com.hedvig.app.feature.embark.passages.externalinsurer.InsuranceProvidersResult
-import com.hedvig.app.util.coroutines.StandardTestDispatcherAsMainDispatcherRule
+import com.hedvig.app.util.coroutines.MainCoroutineRule
 import com.hedvig.app.util.featureflags.FeatureManager
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -27,7 +27,7 @@ class ExternalInsurerViewModelTest {
     )
 
     @get:Rule
-    val standardTestDispatcherAsMainDispatcherRule = StandardTestDispatcherAsMainDispatcherRule()
+    val mainCoroutineRule = MainCoroutineRule()
 
     private val getInsuranceProvidersUseCase = mockk<GetInsuranceProvidersUseCase>()
     private val fakeFeatureManager = mockk<FeatureManager>(relaxed = true)

@@ -7,7 +7,7 @@ import kotlinx.coroutines.test.setMain
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 
-class StandardTestDispatcherAsMainDispatcherRule : TestWatcher() {
+class MainCoroutineRule : TestWatcher() {
     override fun starting(description: Description?) {
         super.starting(description)
         Dispatchers.setMain(StandardTestDispatcher())
