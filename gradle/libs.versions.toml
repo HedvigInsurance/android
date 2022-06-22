@@ -19,6 +19,7 @@ lokalise = "1.4.1"
 # Other versions sorted alphabetically
 accompanistPager = "0.23.1" # Use 18 until https://github.com/google/accompanist/issues/847 is fixed
 accompanist = "0.23.1"
+androidx-arch-testing = "2.1.0"
 androidx-compose = "1.1.1"
 androidx-composeThemeAdapter = "1.1.11"
 androidx-datastore = "1.0.0"
@@ -93,6 +94,8 @@ accompanist-pagerIndicators = { module = "com.google.accompanist:accompanist-pag
 accompanist-systemUiController = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 
 adyen = { module = "com.adyen.checkout:drop-in", version.ref = "adyen" }
+
+androidx-arch-testing = { module = "androidx.arch.core:core-testing", version.ref = "androidx-arch-testing" }
 
 androidx-compose-material = { module = "androidx.compose.material:material", version.ref = "androidx-compose" }
 androidx-compose-materialIconsExtended = { module = "androidx.compose.material:material-icons-extended", version.ref = "androidx-compose" }

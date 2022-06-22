@@ -165,6 +165,8 @@ dependencies {
 
     implementation(libs.serialization)
 
+    testImplementation(libs.androidx.arch.testing)
+
     implementation(libs.androidx.other.appCompat)
     implementation(libs.androidx.other.media)
     implementation(libs.androidx.other.constraintLayout)
