@@ -2,7 +2,6 @@ package com.hedvig.app.feature.offer.usecase
 
 import arrow.core.Either
 import arrow.core.continuations.either
-import arrow.core.continuations.ensureNotNull
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.fetcher.ApolloResponseFetchers
 import com.hedvig.android.owldroid.graphql.QuoteCartCheckoutStatusQuery
@@ -15,7 +14,7 @@ import com.hedvig.app.util.apollo.safeQuery
 class GetQuoteCartCheckoutUseCase(
     private val apolloClient: ApolloClient,
 ) {
-    suspend fun invoke(quoteCartId: QuoteCartId): Either<QueryResult.Error, Checkout> {
+    suspend fun invoke(quoteCartId: QuoteCartId): Either<QueryResult.Error, Checkout?> {
         return either {
             val checkout = apolloClient.query(QuoteCartCheckoutStatusQuery(quoteCartId.id))
                 .toBuilder()
@@ -26,10 +25,8 @@ class GetQuoteCartCheckoutUseCase(
                 .bind()
                 .quoteCart
                 .checkout
-            ensureNotNull(checkout) {
-                QueryResult.Error.NoDataError(null)
-            }
-            checkout.toCheckout()
+
+            checkout?.toCheckout()
         }
     }
 }
