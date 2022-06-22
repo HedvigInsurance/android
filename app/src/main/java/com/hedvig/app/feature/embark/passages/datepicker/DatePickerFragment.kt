@@ -57,6 +57,12 @@ class DatePickerFragment : Fragment(R.layout.fragment_embark_date_picker) {
             } else {
                 data.placeholder
             }
+            val textColor = if (selectedDate != null) {
+                requireContext().getColor(R.color.textColorSecondary)
+            } else {
+                requireContext().getColor(R.color.textColorPrimary)
+            }
+            binding.dateLabel.setTextColor(textColor)
         }
 
         datePickerViewModel.showDatePicker.observe(viewLifecycleOwner) { selectedDate ->
