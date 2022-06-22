@@ -327,7 +327,7 @@ class OfferViewModelImpl(
                 val checkoutStatus = getQuoteCartCheckoutUseCase.invoke(quoteCartId)
                     .mapLeft { ErrorMessage(it.message) }
                     .bind()
-                    .status
+                    ?.status
                 val isPending = checkoutStatus == Checkout.CheckoutStatus.PENDING
 
                 if (isPending) {
