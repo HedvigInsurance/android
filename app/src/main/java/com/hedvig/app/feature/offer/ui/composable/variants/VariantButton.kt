@@ -13,6 +13,7 @@ import androidx.compose.material.ContentAlpha
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.RadioButtonDefaults
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -51,7 +52,10 @@ fun VariantButton(
             .heightIn(min = 110.dp),
     ) {
         Row(modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 12.dp, bottom = 16.dp)) {
-            RadioButton(selected = selected, size = 24.dp)
+            RadioButton(
+                selected = selected, size = 24.dp,
+                colors = RadioButtonDefaults.colors(selectedColor = MaterialTheme.colors.primary)
+            )
             Spacer(Modifier.width(12.dp))
             Column {
                 HorizontalTextsWithMaximumSpaceTaken(

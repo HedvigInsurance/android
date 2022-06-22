@@ -3,7 +3,6 @@ package com.hedvig.app.feature.table
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.hedvig.app.BASE_MARGIN
-import com.hedvig.app.BASE_MARGIN_DOUBLE
 import com.hedvig.app.databinding.BottomSheetHeaderItemLayoutBinding
 import com.hedvig.app.databinding.HeaderItemLayoutBinding
 import com.hedvig.app.databinding.ListTextItemBinding
@@ -16,7 +15,7 @@ fun generateTable(target: ViewGroup, table: Table) {
 
     val header = HeaderItemLayoutBinding.inflate(inflater, target, false)
     header.root.text = table.title
-    header.root.updateMargin(bottom = BASE_MARGIN_DOUBLE)
+    header.root.updateMargin(bottom = BASE_MARGIN)
     target.addView(header.root)
 
     table.sections.forEach { section ->
