@@ -10,7 +10,8 @@ import com.apollographql.apollo3.api.json.readAny
 import org.json.JSONObject
 
 /**
- * PaymentMethodsApiResponse is sometimes (?) read as a map from the JsonReader, so we can't just do
+ * PaymentMethodsApiResponse is sometimes (?) read as a map from the JsonReader, therefore this special deserialization
+ * is required.
  */
 object PaymentMethodsApiResponseAdapter : Adapter<PaymentMethodsApiResponse> {
     @OptIn(ApolloInternal::class)
