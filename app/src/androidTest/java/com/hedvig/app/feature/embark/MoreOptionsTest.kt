@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.embark
 
+import com.hedvig.android.core.jsonObjectOf
 import com.hedvig.android.owldroid.graphql.MemberIdQuery
 import com.hedvig.app.feature.embark.screens.MoreOptionsScreen
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
@@ -10,7 +11,6 @@ import com.hedvig.app.util.LazyIntentsActivityScenarioRule
 import com.hedvig.app.util.MarketRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
-import com.hedvig.app.util.jsonObjectOf
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test

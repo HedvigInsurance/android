@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.insurance.detail
 
+import com.hedvig.android.core.jsonObjectOf
 import com.hedvig.android.owldroid.graphql.InsuranceQuery
 import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS
@@ -9,7 +10,6 @@ import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
-import com.hedvig.app.util.jsonObjectOf
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.kakao.screen.Screen
 import org.junit.Rule

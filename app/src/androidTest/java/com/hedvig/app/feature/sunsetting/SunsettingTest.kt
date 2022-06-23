@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.sunsetting
 
+import com.hedvig.android.core.jsonObjectOf
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
@@ -9,7 +10,6 @@ import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyIntentsActivityScenarioRule
 import com.hedvig.app.util.apollo.SunsettingInterceptor
 import com.hedvig.app.util.apolloResponse
-import com.hedvig.app.util.jsonObjectOf
 import com.hedvig.app.util.stub
 import com.kaspersky.kaspresso.screens.KScreen
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase

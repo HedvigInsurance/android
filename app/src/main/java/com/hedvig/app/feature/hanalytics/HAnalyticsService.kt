@@ -2,11 +2,11 @@ package com.hedvig.app.feature.hanalytics
 
 import android.content.Context
 import android.os.Build
+import com.hedvig.android.core.jsonObjectOf
+import com.hedvig.android.core.plus
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.authenticate.DeviceIdStore
 import com.hedvig.app.util.coroutines.await
-import com.hedvig.app.util.jsonObjectOf
-import com.hedvig.app.util.plus
 import com.hedvig.hanalytics.HAnalytics
 import com.hedvig.hanalytics.HAnalyticsEvent
 import kotlinx.coroutines.Dispatchers

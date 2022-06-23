@@ -73,6 +73,8 @@ android {
 }
 
 dependencies {
+    implementation(project(":core-common"))
+
     implementation(libs.kotlin.stdlib)
     coreLibraryDesugaring(libs.coreLibraryDesugaring)
 

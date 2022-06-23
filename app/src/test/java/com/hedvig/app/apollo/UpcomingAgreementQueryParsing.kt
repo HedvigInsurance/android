@@ -13,9 +13,9 @@ import com.hedvig.android.owldroid.graphql.test.UpcomingAgreementQuery_TestBuild
 import com.hedvig.android.owldroid.graphql.type.ActiveStatus
 import com.hedvig.android.owldroid.graphql.type.Locale
 import com.hedvig.android.owldroid.graphql.type.SwedishHouseAgreement
+import com.hedvig.android.typeadapter.PromiscuousLocalDateAdapter
 import com.hedvig.app.testdata.feature.changeaddress.UPCOMING_AGREEMENT_NONE
 import com.hedvig.app.util.apollo.adapter.CUSTOM_SCALAR_ADAPTERS
-import com.hedvig.app.util.apollo.adapter.PromiscuousLocalDateAdapter
 import org.junit.Test
 import java.time.LocalDate
 
