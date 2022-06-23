@@ -13,6 +13,7 @@ import org.json.JSONObject
  * PaymentMethodsApiResponse is sometimes (?) read as a map from the JsonReader, therefore this special deserialization
  * is required.
  */
+@Suppress("unused") // Used inside the `apollo {}` block inside build.gradle.kts
 object PaymentMethodsApiResponseAdapter : Adapter<PaymentMethodsApiResponse> {
     @OptIn(ApolloInternal::class)
     override fun fromJson(reader: JsonReader, customScalarAdapters: CustomScalarAdapters): PaymentMethodsApiResponse {
