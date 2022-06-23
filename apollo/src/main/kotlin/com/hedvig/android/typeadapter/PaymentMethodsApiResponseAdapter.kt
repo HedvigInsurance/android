@@ -16,8 +16,8 @@ import org.json.JSONObject
 object PaymentMethodsApiResponseAdapter : Adapter<PaymentMethodsApiResponse> {
     override fun fromJson(reader: JsonReader, customScalarAdapters: CustomScalarAdapters): PaymentMethodsApiResponse {
         val data = AnyAdapter.fromJson(reader, customScalarAdapters)
-        return if (data is LinkedHashMap<*, *>) {
-            PaymentMethodsApiResponse.SERIALIZER.deserialize(JSONObject(data.toMap()))
+        return if (data is Map<*, *>) {
+            PaymentMethodsApiResponse.SERIALIZER.deserialize(JSONObject(data))
         } else {
             val jsonString = data.toString().replace("\\", "")
             PaymentMethodsApiResponse.SERIALIZER.deserialize(JSONObject(jsonString))
