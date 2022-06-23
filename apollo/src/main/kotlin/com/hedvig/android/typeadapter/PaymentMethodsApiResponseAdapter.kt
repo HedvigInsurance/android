@@ -1,12 +1,11 @@
 package com.hedvig.android.typeadapter
 
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
-import com.apollographql.apollo3.annotations.ApolloInternal
 import com.apollographql.apollo3.api.Adapter
+import com.apollographql.apollo3.api.AnyAdapter
 import com.apollographql.apollo3.api.CustomScalarAdapters
 import com.apollographql.apollo3.api.json.JsonReader
 import com.apollographql.apollo3.api.json.JsonWriter
-import com.apollographql.apollo3.api.json.readAny
 import org.json.JSONObject
 
 /**
@@ -15,9 +14,8 @@ import org.json.JSONObject
  */
 @Suppress("unused") // Used inside the `apollo {}` block inside build.gradle.kts
 object PaymentMethodsApiResponseAdapter : Adapter<PaymentMethodsApiResponse> {
-    @OptIn(ApolloInternal::class)
     override fun fromJson(reader: JsonReader, customScalarAdapters: CustomScalarAdapters): PaymentMethodsApiResponse {
-        val data = reader.readAny()
+        val data = AnyAdapter.fromJson(reader, customScalarAdapters)
         return if (data is LinkedHashMap<*, *>) {
             PaymentMethodsApiResponse.SERIALIZER.deserialize(JSONObject(data.toMap()))
         } else {
