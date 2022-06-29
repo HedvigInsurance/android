@@ -61,6 +61,14 @@ private fun InsuranceContractCardBinding.bindBackgroundColor(
                 blur.context.compatColor(R.color.blur_spring_fog)
             )
         }
+        TypeOfContractGradientOption.GRADIENT_FOUR -> {
+            container.setBackgroundResource(R.drawable.gradient_purple_haze)
+            blur.isVisible = false
+        }
+        TypeOfContractGradientOption.GRADIENT_FIVE -> {
+            container.setBackgroundResource(R.drawable.gradient_yellow_peach)
+            blur.isVisible = false
+        }
         else -> {
             container.setBackgroundColor(container.context.compatColor(R.color.default_insurance_card))
             blur.isVisible = false
