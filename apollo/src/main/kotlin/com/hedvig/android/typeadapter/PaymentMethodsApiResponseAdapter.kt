@@ -9,10 +9,10 @@ import com.apollographql.apollo3.api.json.JsonWriter
 import org.json.JSONObject
 
 /**
- * PaymentMethodsApiResponse is sometimes (?) read as a map from the JsonReader, therefore this special deserialization
- * is required.
+ * PaymentMethodsApiResponse is sometimes read as a map from the JsonReader.
+ * This adapter handles both cases, therefore this special deserialization checking for a Map is required.
  */
-@Suppress("unused") // Used inside the `apollo {}` block inside build.gradle.kts
+@Suppress("unused") // Used inside the `apollo` block inside build.gradle.kts
 object PaymentMethodsApiResponseAdapter : Adapter<PaymentMethodsApiResponse> {
     override fun fromJson(reader: JsonReader, customScalarAdapters: CustomScalarAdapters): PaymentMethodsApiResponse {
         val data = AnyAdapter.fromJson(reader, customScalarAdapters)

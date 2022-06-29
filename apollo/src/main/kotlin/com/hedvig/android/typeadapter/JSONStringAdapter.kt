@@ -6,7 +6,7 @@ import com.apollographql.apollo3.api.json.JsonReader
 import com.apollographql.apollo3.api.json.JsonWriter
 import org.json.JSONObject
 
-@Suppress("unused") // Used inside the `apollo {}` block inside build.gradle.kts
+@Suppress("unused") // Used inside the `apollo` block inside build.gradle.kts
 object JSONStringAdapter : Adapter<JSONObject> {
     override fun fromJson(reader: JsonReader, customScalarAdapters: CustomScalarAdapters): JSONObject {
         return JSONObject(reader.nextString()!!)
