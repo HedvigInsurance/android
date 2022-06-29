@@ -58,7 +58,7 @@ class AudioRecorderFragment : Fragment() {
                     startRecording = ::askForPermission,
                     clock = clock,
                     stopRecording = {
-                        model::stopRecording
+                        model.stopRecording()
                         logWithStoryAndStore(hAnalytics::embarkAudioRecordingStopped)
                     },
                     submit = {
