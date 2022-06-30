@@ -25,8 +25,8 @@
             android:layout_marginBottom="?attr/actionBarSize">
 
             <include
-                layout="@layout/loading_spinner"
                 android:id="@+id/loadingSpinner"
+                layout="@layout/loading_spinner"
                 tools:visibility="gone" />
 
             <TextView
@@ -51,14 +51,10 @@
                 app:layout_constraintTop_toBottomOf="@id/header"
                 tools:visibility="gone">
 
-                <ImageView
+                <androidx.compose.ui.platform.ComposeView
                     android:id="@id/selectedCharityBanner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="@dimen/base_margin_triple"
-                    android:layout_marginEnd="@dimen/base_margin_triple"
-                    android:contentDescription="@null" />
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
 
                 <com.hedvig.app.ui.view.HedvigCardView
                     android:layout_width="match_parent"

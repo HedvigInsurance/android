@@ -34,11 +34,6 @@ class HowClaimsWorkTest : TestCase() {
         HomeQuery.OPERATION_DOCUMENT to apolloResponse {
             success(HOME_DATA_ACTIVE)
         },
-        PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(
-                PAYIN_STATUS_DATA_ACTIVE
-            )
-        }
     )
 
     @get:Rule
@@ -62,17 +57,8 @@ class HowClaimsWorkTest : TestCase() {
                 hasText(R.string.claims_explainer_button_next)
                 click()
                 click()
-                hasText(R.string.claims_explainer_button_start_claim)
-                click()
+                hasText(R.string.general_close_button)
             }
-        }
-        onScreen<HonestyPledgeSheetScreen> {
-            embark { stub() }
-            claim {
-                hasText(R.string.CLAIMS_HONESTY_PLEDGE_BOTTOM_SHEET_BUTTON_LABEL)
-                click()
-            }
-            embark { intended() }
         }
     }
 }
