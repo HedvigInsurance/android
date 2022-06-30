@@ -4,10 +4,10 @@ import java.util.Properties
 // TODO: Remove once https://youtrack.jetbrains.com/issue/KTIJ-19369 is fixed
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    id("com.android.application")
+    id("hedvig.android.application")
+    id("hedvig.android.application.compose")
     alias(libs.plugins.googleServices)
     alias(libs.plugins.crashlytics)
-    id("kotlin-android")
     id("kotlin-parcelize")
     id("kotlin-kapt")
     alias(libs.plugins.lokalise)
@@ -20,23 +20,10 @@ licenseReport {
 }
 
 android {
-    commonConfig(
-        AndroidVersions(
-            libs.versions.compileSdkVersion.get().toInt(),
-            libs.versions.minSdkVersion.get().toInt(),
-            libs.versions.targetSdkVersion.get().toInt(),
-        )
-    )
-
     buildFeatures {
         viewBinding = true
         aidl = false
         renderScript = false
-        compose = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.androidx.compose.get()
     }
 
     defaultConfig {
@@ -156,9 +143,6 @@ dependencies {
     debugImplementation(project(":testdata"))
     "stagingImplementation"(project(":testdata"))
     "pullrequestImplementation"(project(":testdata"))
-
-    coreLibraryDesugaring(libs.coreLibraryDesugaring)
-    implementation(libs.kotlin.stdlib)
 
     implementation(libs.coroutines.core)
     implementation(libs.coroutines.android)

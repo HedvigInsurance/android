@@ -2,8 +2,7 @@ import com.apollographql.apollo3.compiler.MODELS_COMPAT
 
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    id("com.android.library")
-    id("kotlin-android")
+    id("hedvig.android.library")
     alias(libs.plugins.apollo)
 }
 
@@ -54,31 +53,8 @@ apollo {
     }
 }
 
-android {
-    commonConfig(
-        AndroidVersions(
-            libs.versions.compileSdkVersion.get().toInt(),
-            libs.versions.minSdkVersion.get().toInt(),
-            libs.versions.targetSdkVersion.get().toInt(),
-        )
-    )
-
-    buildFeatures {
-        buildConfig = false
-        viewBinding = false
-        dataBinding = false
-        aidl = false
-        renderScript = false
-        resValues = false
-        shaders = false
-    }
-}
-
 dependencies {
     implementation(project(":core-common"))
-
-    implementation(libs.kotlin.stdlib)
-    coreLibraryDesugaring(libs.coreLibraryDesugaring)
 
     api(libs.apollo.runtime)
     implementation(libs.apollo.adapters)
