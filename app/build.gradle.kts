@@ -135,14 +135,14 @@ android {
 }
 
 dependencies {
-    implementation(project(":apollo"))
-    implementation(project(":core-common"))
+    implementation(projects.apollo)
+    implementation(projects.coreCommon)
 
-    androidTestImplementation(project(":testdata"))
-    testImplementation(project(":testdata"))
-    debugImplementation(project(":testdata"))
-    "stagingImplementation"(project(":testdata"))
-    "pullrequestImplementation"(project(":testdata"))
+    androidTestImplementation(projects.testdata)
+    testImplementation(projects.testdata)
+    debugImplementation(projects.testdata)
+    "stagingImplementation"(projects.testdata)
+    "pullrequestImplementation"(projects.testdata)
 
     implementation(libs.coroutines.core)
     implementation(libs.coroutines.android)

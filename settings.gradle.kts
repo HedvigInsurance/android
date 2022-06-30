@@ -1,3 +1,5 @@
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 pluginManagement {
     @Suppress("UnstableApiUsage")
     includeBuild("build-logic")

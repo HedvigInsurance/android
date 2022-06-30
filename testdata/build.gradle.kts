@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":apollo"))
+    implementation(projects.apollo)
     implementation(libs.adyen)
 }

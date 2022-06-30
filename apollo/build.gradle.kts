@@ -54,7 +54,7 @@ apollo {
 }
 
 dependencies {
-    implementation(project(":core-common"))
+    implementation(projects.coreCommon)
 
     api(libs.apollo.runtime)
     implementation(libs.apollo.adapters)
