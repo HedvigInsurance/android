@@ -49,12 +49,13 @@ data class CashbackUiState(
     val description: String?,
 ) {
     companion object {
-        fun fromDto(cashbackFragment: CashbackFragment?): CashbackUiState {
+        fun fromDto(cashbackFragment: CashbackFragment?): CashbackUiState? {
+            if (cashbackFragment == null) return null
             return CashbackUiState(
-                id = cashbackFragment?.id,
-                imageUrl = cashbackFragment?.imageUrl,
-                name = cashbackFragment?.name,
-                description = cashbackFragment?.description,
+                id = cashbackFragment.id,
+                imageUrl = cashbackFragment.imageUrl,
+                name = cashbackFragment.name,
+                description = cashbackFragment.description,
             )
         }
     }
