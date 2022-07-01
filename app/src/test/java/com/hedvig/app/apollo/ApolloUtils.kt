@@ -8,7 +8,6 @@ import com.apollographql.apollo3.api.json.buildJsonString
 import com.apollographql.apollo3.api.toJson
 import com.apollographql.apollo3.api.toJsonString
 import com.apollographql.apollo3.mockserver.MockServer
-import com.hedvig.app.util.apollo.adapter.CUSTOM_SCALAR_ADAPTERS
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 
@@ -20,7 +19,6 @@ fun runApolloTest(
         val mockServer = MockServer()
         val apolloClient = ApolloClient.Builder()
             .requestedDispatcher(StandardTestDispatcher(testScheduler))
-            .customScalarAdapters(CUSTOM_SCALAR_ADAPTERS)
             .serverUrl(mockServer.url())
             .extraApolloClientConfiguration()
             .build()
@@ -31,7 +29,7 @@ fun runApolloTest(
 }
 
 fun Operation.Data.toJsonStringWithData(
-    customScalarAdapters: CustomScalarAdapters = CUSTOM_SCALAR_ADAPTERS,
+    customScalarAdapters: CustomScalarAdapters = CustomScalarAdapters.Empty,
 ): String {
     return buildJsonString {
         beginObject()
@@ -45,7 +43,7 @@ fun Operation.Data.toJsonStringWithData(
 //  test builders require the json representation without those extra quotation marks.
 fun <T> Adapter<T>.toJsonStringForTestBuilder(
     data: T,
-    customScalarAdapters: CustomScalarAdapters = CUSTOM_SCALAR_ADAPTERS,
+    customScalarAdapters: CustomScalarAdapters = CustomScalarAdapters.Empty,
 ): String {
     val jsonString = toJsonString(data, customScalarAdapters)
     return if ((jsonString.first() == '"') && (jsonString.last() == '"')) {

@@ -15,7 +15,6 @@ import com.hedvig.android.typeadapter.PromiscuousLocalDateAdapter
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA
 import com.hedvig.app.testdata.dashboard.INSURANCE_DATA_TERMINATED
 import com.hedvig.app.testdata.feature.insurance.INSURANCE_DATA_SWEDISH_HOUSE
-import com.hedvig.app.util.apollo.adapter.CUSTOM_SCALAR_ADAPTERS
 import org.junit.Test
 import java.time.LocalDate
 
@@ -23,7 +22,7 @@ class InsuranceQueryParsingTest {
 
     @Suppress("PrivatePropertyName")
     private val INSURANCE_DATA_from_test_builder by lazy {
-        InsuranceQuery.Data(TestDataTestResolver, CUSTOM_SCALAR_ADAPTERS) {
+        InsuranceQuery.Data(TestDataTestResolver) {
             activeContractBundles = emptyList()
             contracts = listOf(
                 contract {

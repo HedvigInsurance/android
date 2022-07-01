@@ -12,7 +12,6 @@ import com.hedvig.android.core.jsonObjectOf
 import com.hedvig.android.core.toJsonArray
 import com.hedvig.app.TestApplication
 import com.hedvig.app.apolloClientModule
-import com.hedvig.app.util.apollo.adapter.CUSTOM_SCALAR_ADAPTERS
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import okhttp3.mockwebserver.Dispatcher
@@ -175,7 +174,7 @@ private fun constructTestApolloModule(
 }
 
 private fun Operation.Data.toJsonStringWithData(
-    customScalarAdapters: CustomScalarAdapters = CUSTOM_SCALAR_ADAPTERS,
+    customScalarAdapters: CustomScalarAdapters = CustomScalarAdapters.Empty,
 ): String {
     return buildJsonString {
         beginObject()

@@ -11,7 +11,6 @@ import com.apollographql.apollo3.mockserver.enqueue
 import com.hedvig.android.owldroid.graphql.QuoteCartQuery
 import com.hedvig.android.owldroid.graphql.test.QuoteCartQuery_TestBuilder.Data
 import com.hedvig.android.owldroid.graphql.type.Locale
-import com.hedvig.app.util.apollo.adapter.CUSTOM_SCALAR_ADAPTERS
 import org.junit.Test
 
 @Suppress("LocalVariableName")
@@ -85,7 +84,7 @@ class QuoteCartQueryParsingTest {
     @Test
     fun `apollo parses an quote cart query with availablePaymentMethods being a string`() =
         runApolloTest { mockServer, apolloClient ->
-            val jsonData = QuoteCartQuery.Data(TestDataTestResolver, CUSTOM_SCALAR_ADAPTERS) {
+            val jsonData = QuoteCartQuery.Data(TestDataTestResolver) {
                 quoteCart = quoteCart {
                     paymentConnection = paymentConnection {
                         providers = listOf(

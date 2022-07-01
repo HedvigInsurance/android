@@ -20,7 +20,6 @@ import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_PASSED_KEY_VALUE
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_SELECT_ACTION_API_MULTIPLE_OPTIONS
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_TEXT_ACTION_API
 import com.hedvig.app.testdata.feature.embark.data.STORY_WITH_UNARY_EXPRESSIONS
-import com.hedvig.app.util.apollo.adapter.CUSTOM_SCALAR_ADAPTERS
 import org.junit.Test
 
 class EmbarkStoryQueryParsingTest {
@@ -199,7 +198,7 @@ class EmbarkStoryQueryParsingTest {
     @Test
     fun `apollo parses a story which contains a JSONString scalar`() = runApolloTest { mockServer, apolloClient ->
         mockServer.enqueue(
-            EmbarkStoryQuery.Data(TestDataTestResolver, CUSTOM_SCALAR_ADAPTERS) {
+            EmbarkStoryQuery.Data(TestDataTestResolver) {
                 embarkStory = embarkStory {
                     passages = listOf(
                         passage {
@@ -248,7 +247,7 @@ class EmbarkStoryQueryParsingTest {
     fun `apollo parses a story which contains a JSONString scalar which is minified`() =
         runApolloTest { mockServer, apolloClient ->
             mockServer.enqueue(
-                EmbarkStoryQuery.Data(TestDataTestResolver, CUSTOM_SCALAR_ADAPTERS) {
+                EmbarkStoryQuery.Data(TestDataTestResolver) {
                     embarkStory = embarkStory {
                         passages = listOf(
                             passage {
