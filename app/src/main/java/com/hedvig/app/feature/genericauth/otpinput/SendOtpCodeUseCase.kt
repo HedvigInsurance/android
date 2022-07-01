@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.genericauth.otpinput
 
-import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.owldroid.graphql.SendOtpCodeMutation
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
@@ -13,7 +13,7 @@ class SendOtpCodeUseCaseImpl(
     private val apolloClient: ApolloClient
 ) : SendOtpCodeUseCase {
     override suspend operator fun invoke(otpId: String, otpCode: String): OtpResult {
-        return when (val result = apolloClient.mutate(SendOtpCodeMutation(otpId, otpCode)).safeQuery()) {
+        return when (val result = apolloClient.mutation(SendOtpCodeMutation(otpId, otpCode)).safeQuery()) {
             is QueryResult.Error -> OtpResult.Error.NetworkError(result.message)
             is QueryResult.Success -> parseSuccessResponse(result)
         }

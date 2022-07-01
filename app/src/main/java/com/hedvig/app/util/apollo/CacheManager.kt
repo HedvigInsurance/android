@@ -1,22 +1,19 @@
 package com.hedvig.app.util.apollo
 
-import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.cache.normalized.ApolloStoreOperation
-import timber.log.Timber
+import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.cache.normalized.apolloStore
+import d
+import e
 
 class CacheManager(
-    private val apolloClient: ApolloClient
+    private val apolloClient: ApolloClient,
 ) {
     fun clearCache() {
-        apolloClient.clearHttpCache()
-        apolloClient.clearNormalizedCache(object : ApolloStoreOperation.Callback<Boolean> {
-            override fun onFailure(t: Throwable) {
-                Timber.e(t)
-            }
-
-            override fun onSuccess(result: Boolean) {
-                Timber.d("Clear cache result: $result")
-            }
-        })
+        val didClearAllRecords = apolloClient.apolloStore.clearAll()
+        if (didClearAllRecords) {
+            d { "Did clear entire apolloStore cache" }
+        } else {
+            e { "Failed to clear apolloStore cache" }
+        }
     }
 }

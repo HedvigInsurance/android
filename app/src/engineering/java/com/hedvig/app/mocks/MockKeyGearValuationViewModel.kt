@@ -3,11 +3,11 @@ package com.hedvig.app.mocks
 import android.os.Handler
 import android.os.Looper.getMainLooper
 import androidx.lifecycle.MutableLiveData
-import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
-import com.hedvig.android.owldroid.fragment.KeyGearItemValuationFragment
 import com.hedvig.android.owldroid.graphql.KeyGearItemQuery
-import com.hedvig.android.owldroid.type.KeyGearItemCategory
-import com.hedvig.android.owldroid.type.MonetaryAmountV2Input
+import com.hedvig.android.owldroid.graphql.fragment.KeyGearItemFragment
+import com.hedvig.android.owldroid.graphql.fragment.KeyGearItemValuationFragment
+import com.hedvig.android.owldroid.graphql.type.KeyGearItemCategory
+import com.hedvig.android.owldroid.graphql.type.MonetaryAmountV2Input
 import com.hedvig.app.feature.keygear.KeyGearValuationViewModel
 import java.time.LocalDate
 
@@ -20,6 +20,7 @@ class MockKeyGearValuationViewModel : KeyGearValuationViewModel() {
             {
                 data.postValue(
                     KeyGearItemQuery.KeyGearItem(
+                        __typename = "",
                         fragments = KeyGearItemQuery.KeyGearItem.Fragments(item)
                     )
                 )
@@ -35,6 +36,7 @@ class MockKeyGearValuationViewModel : KeyGearValuationViewModel() {
     ) {
         data.postValue(
             KeyGearItemQuery.KeyGearItem(
+                __typename = "",
                 fragments = KeyGearItemQuery.KeyGearItem.Fragments(
                     item.copy(
                         purchasePrice = KeyGearItemFragment.PurchasePrice(
@@ -48,6 +50,7 @@ class MockKeyGearValuationViewModel : KeyGearValuationViewModel() {
 
     companion object {
         val item = KeyGearItemFragment(
+            __typename = "",
             id = "123",
             name = "Sak",
             physicalReferenceHash = null,

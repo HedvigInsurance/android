@@ -165,6 +165,8 @@ dependencies {
 
     implementation(libs.serialization)
 
+    testImplementation(libs.androidx.arch.testing)
+
     implementation(libs.androidx.other.appCompat)
     implementation(libs.androidx.other.media)
     implementation(libs.androidx.other.constraintLayout)
@@ -200,6 +202,12 @@ dependencies {
     implementation(libs.accompanist.insets)
     implementation(libs.accompanist.insetsUi)
     implementation(libs.accompanist.systemUiController)
+
+    implementation(libs.apollo.adapters)
+    implementation(libs.apollo.normalizedCache)
+    androidTestImplementation(libs.apollo.idlingResource)
+    testImplementation(libs.apollo.mockServer)
+    testImplementation(libs.apollo.testingSupport)
 
     implementation(libs.arrowKt.core)
 
@@ -257,8 +265,6 @@ dependencies {
     implementation(libs.shimmer)
 
     implementation(libs.concatAdapterExtension)
-
-    androidTestImplementation(libs.apollo.idlingResource)
 
     testImplementation(libs.assertK)
     androidTestImplementation(libs.assertK)

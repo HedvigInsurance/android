@@ -8,7 +8,7 @@ import android.os.Build
 import android.provider.Settings
 import android.util.DisplayMetrics
 import android.view.WindowManager
-import com.hedvig.android.owldroid.type.KeyGearItemCategory
+import com.hedvig.android.owldroid.graphql.type.KeyGearItemCategory
 import java.math.BigInteger
 import java.security.MessageDigest
 import kotlin.math.pow

@@ -13,7 +13,7 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.transition.TransitionManager
 import com.google.android.material.transition.MaterialFadeThrough
-import com.hedvig.android.owldroid.type.Locale
+import com.hedvig.android.owldroid.graphql.type.Locale
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticationTokenService
@@ -120,8 +120,8 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
 
     fun load() = with(binding) {
         val localePath = when (localeManager.defaultLocale()) {
-            Locale.DA_DK -> "/dk"
-            Locale.EN_DK -> "/dk-en"
+            Locale.da_DK -> "/dk"
+            Locale.en_DK -> "/dk-en"
             else -> "/dk"
         }
 

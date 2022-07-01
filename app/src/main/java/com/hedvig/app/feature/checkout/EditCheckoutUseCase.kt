@@ -61,7 +61,7 @@ class EditCheckoutUseCase(
         }.toString()
 
         return graphQLQueryHandler.graphQLQuery(
-            query = QuoteCartEditQuoteMutation.QUERY_DOCUMENT,
+            query = QuoteCartEditQuoteMutation.OPERATION_DOCUMENT,
             variables = JSONObject(json),
             files = emptyList()
         )

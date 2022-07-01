@@ -3,7 +3,7 @@ package com.hedvig.app.feature.offer.ui.changestartdate
 import arrow.core.Either
 import arrow.core.continuations.either
 import arrow.core.continuations.ensureNotNull
-import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.owldroid.graphql.QuoteCartEditQuoteMutation
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ErrorMessage
@@ -54,7 +54,7 @@ class QuoteCartEditStartDateUseCase(
         val mutation = QuoteCartEditQuoteMutation(quoteCartId.id, quoteId, json, localeManager.defaultLocale())
 
         return either {
-            val result = apolloClient.mutate(mutation)
+            val result = apolloClient.mutation(mutation)
                 .safeQuery()
                 .toEither(::ErrorMessage)
                 .bind()

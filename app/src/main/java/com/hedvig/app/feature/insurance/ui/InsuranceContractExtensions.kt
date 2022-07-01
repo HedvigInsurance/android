@@ -4,7 +4,7 @@ import android.net.Uri
 import androidx.core.view.isVisible
 import coil.ImageLoader
 import coil.load
-import com.hedvig.android.owldroid.type.TypeOfContractGradientOption
+import com.hedvig.android.owldroid.graphql.type.TypeOfContractGradientOption
 import com.hedvig.app.R
 import com.hedvig.app.databinding.InsuranceContractCardBinding
 import com.hedvig.app.feature.settings.MarketManager

@@ -17,7 +17,7 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
-import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.owldroid.graphql.ExchangeTokenMutation
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.authenticate.LoginStatusService
@@ -123,7 +123,7 @@ class ImpersonationReceiverViewModel(
             }
             when (
                 val result = apolloClient
-                    .mutate(ExchangeTokenMutation(exchangeToken))
+                    .mutation(ExchangeTokenMutation(exchangeToken))
                     .safeQuery()
                     .toEither()
             ) {

@@ -1,12 +1,14 @@
-package com.hedvig.app.util.apollo
+package com.hedvig.app.util.apollo.adapter
 
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
-import com.apollographql.apollo.api.CustomTypeAdapter
-import com.apollographql.apollo.api.CustomTypeValue
+import com.apollographql.apollo3.api.CustomTypeAdapter
+import com.apollographql.apollo3.api.CustomTypeValue
 import com.hedvig.app.util.toJsonObject
 import org.json.JSONObject
 
-class PaymentMethodsApiResponseAdapter : CustomTypeAdapter<PaymentMethodsApiResponse> {
+// TODO: Not sure why we're doing the LinkedHashMap check and how to migrate this to apollo3 Adapter. We can use the
+//  compat Version2CustomTypeAdapterToAdapter for now.
+object PaymentMethodsApiResponseAdapter : CustomTypeAdapter<PaymentMethodsApiResponse> {
     override fun encode(value: PaymentMethodsApiResponse) = CustomTypeValue.fromRawValue(
         PaymentMethodsApiResponse.SERIALIZER.serialize(value).toString()
     )

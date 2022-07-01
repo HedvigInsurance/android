@@ -7,10 +7,10 @@ import androidx.lifecycle.asFlow
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
-import com.hedvig.android.owldroid.fragment.ApiFragment
-import com.hedvig.android.owldroid.fragment.MessageFragment
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
-import com.hedvig.android.owldroid.type.EmbarkExternalRedirectLocation
+import com.hedvig.android.owldroid.graphql.fragment.ApiFragment
+import com.hedvig.android.owldroid.graphql.fragment.MessageFragment
+import com.hedvig.android.owldroid.graphql.type.EmbarkExternalRedirectLocation
 import com.hedvig.app.authenticate.LoginStatus
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.chat.data.ChatRepository
@@ -265,9 +265,9 @@ abstract class EmbarkViewModel(
         hAnalytics.embarkExternalRedirect(location.rawValue)
         viewModelScope.launch {
             val event = when (location) {
-                EmbarkExternalRedirectLocation.OFFER -> createOfferEvent()
-                EmbarkExternalRedirectLocation.CHAT -> createChatEvent()
-                EmbarkExternalRedirectLocation.CLOSE -> Event.Close
+                EmbarkExternalRedirectLocation.Offer -> createOfferEvent()
+                EmbarkExternalRedirectLocation.Chat -> createChatEvent()
+                EmbarkExternalRedirectLocation.Close -> Event.Close
                 else -> null
             }
             event?.let(_events::trySend)
@@ -377,6 +377,7 @@ abstract class EmbarkViewModel(
                     text = exp.text,
                     expressions = exp.expressions.map {
                         MessageFragment.Expression(
+                            __typename = it.__typename,
                             fragments = MessageFragment.Expression.Fragments(it.fragments.expressionFragment)
                         )
                     }
@@ -385,13 +386,14 @@ abstract class EmbarkViewModel(
             )?.let { return Response.SingleResponse(it.text) }
         }
 
-        response.asEmbarkGroupedResponse?.let { groupedResponse ->
+        response.fragments.groupedResponseFragment?.let { groupedResponse ->
             val titleExpression = groupedResponse.title.fragments.responseExpressionFragment
             val title = preProcessMessage(
                 MessageFragment(
                     text = titleExpression.text,
                     expressions = titleExpression.expressions.map {
                         MessageFragment.Expression(
+                            __typename = it.__typename,
                             fragments = MessageFragment.Expression.Fragments(it.fragments.expressionFragment)
                         )
                     }

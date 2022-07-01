@@ -19,7 +19,7 @@ class NetworkErrorTest : TestCase() {
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        ContractStatusQuery.QUERY_DOCUMENT to apolloResponse { internalServerError() }
+        ContractStatusQuery.OPERATION_DOCUMENT to apolloResponse { internalServerError() }
     )
 
     @get:Rule

@@ -6,7 +6,7 @@ minSdkVersion = "23"
 
 # gradlePlugin versions
 androidBuildTools = "7.2.1"
-apollo = "2.5.9"
+apollo = "3.3.1"
 buildTimeTracker = "0.11.0"
 cacheFix = "2.5.3"
 crashlytics = "2.9.0"
@@ -19,6 +19,7 @@ lokalise = "1.4.1"
 # Other versions sorted alphabetically
 accompanistPager = "0.23.1" # Use 18 until https://github.com/google/accompanist/issues/847 is fixed
 accompanist = "0.23.1"
+androidx-arch-testing = "2.1.0"
 androidx-compose = "1.1.1"
 androidx-composeThemeAdapter = "1.1.11"
 androidx-datastore = "1.0.0"
@@ -94,6 +95,8 @@ accompanist-systemUiController = { module = "com.google.accompanist:accompanist-
 
 adyen = { module = "com.adyen.checkout:drop-in", version.ref = "adyen" }
 
+androidx-arch-testing = { module = "androidx.arch.core:core-testing", version.ref = "androidx-arch-testing" }
+
 androidx-compose-material = { module = "androidx.compose.material:material", version.ref = "androidx-compose" }
 androidx-compose-materialIconsExtended = { module = "androidx.compose.material:material-icons-extended", version.ref = "androidx-compose" }
 androidx-compose-animation = { module = "androidx.compose.animation:animation", version.ref = "androidx-compose" }
@@ -139,10 +142,13 @@ androidx-test-runner = { module = "androidx.test:runner", version.ref = "android
 androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidx-test-core" }
 androidx-test-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-test-junit" }
 
-apollo-runtime = { module = "com.apollographql.apollo:apollo-runtime", version.ref = "apollo" }
-apollo-android = { module = "com.apollographql.apollo:apollo-android-support", version.ref = "apollo" }
-apollo-coroutines = { module = "com.apollographql.apollo:apollo-coroutines-support", version.ref = "apollo" }
-apollo-idlingResource = { module = "com.apollographql.apollo:apollo-idling-resource", version.ref = "apollo" }
+apollo-adapters = { module = "com.apollographql.apollo3:apollo-adapters", version.ref = "apollo" }
+apollo-idlingResource = { module = "com.apollographql.apollo3:apollo-idling-resource", version.ref = "apollo" }
+apollo-normalizedCache = { module = "com.apollographql.apollo3:apollo-normalized-cache", version.ref = "apollo" }
+apollo-runtime = { module = "com.apollographql.apollo3:apollo-runtime", version.ref = "apollo" }
+
+apollo-mockServer = { module = "com.apollographql.apollo3:apollo-mockserver", version.ref = "apollo" }
+apollo-testingSupport = { module = "com.apollographql.apollo3:apollo-testing-support", version.ref = "apollo" }
 
 arrowKt-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrowKt" }
 
@@ -229,7 +235,7 @@ zXing = { module = "com.google.zxing:core", version.ref = "zXing" }
 
 [plugins]
 
-apollo = { id = "com.apollographql.apollo", version.ref = "apollo" }
+apollo = { id = "com.apollographql.apollo3", version.ref = "apollo" }
 
 buildTimeTracker = { id = "net.rdrei.android.buildtimetracker", version.ref = "buildTimeTracker" }
 

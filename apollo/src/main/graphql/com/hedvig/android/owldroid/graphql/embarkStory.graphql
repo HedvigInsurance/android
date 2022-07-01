@@ -24,20 +24,7 @@ query EmbarkStory($name: String!, $locale: String!) {
       response {
         ...MessageFragment
         ...ResponseExpressionFragment
-        ... on EmbarkGroupedResponse {
-          title {
-            ...ResponseExpressionFragment
-          }
-          items {
-            ...MessageFragment
-          }
-          each {
-            key
-            content {
-              ...MessageFragment
-            }
-          }
-        }
+        ...GroupedResponseFragment
       }
       redirects {
         ... on EmbarkRedirectUnaryExpression {
@@ -300,6 +287,21 @@ fragment ResponseExpressionFragment on EmbarkResponseExpression {
   text
   expressions {
     ...ExpressionFragment
+  }
+}
+
+fragment GroupedResponseFragment on EmbarkGroupedResponse {
+  title {
+    ...ResponseExpressionFragment
+  }
+  items {
+    ...MessageFragment
+  }
+  each {
+    key
+    content {
+      ...MessageFragment
+    }
   }
 }
 

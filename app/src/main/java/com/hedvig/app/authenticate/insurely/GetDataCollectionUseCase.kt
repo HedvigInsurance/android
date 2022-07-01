@@ -1,8 +1,8 @@
 package com.hedvig.app.authenticate.insurely
 
-import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.owldroid.graphql.ExternalInsuranceProviderV2Subscription
-import com.hedvig.android.owldroid.type.DataCollectionStatus
+import com.hedvig.android.owldroid.graphql.type.DataCollectionStatus
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeSubscription
@@ -18,7 +18,7 @@ class GetDataCollectionUseCase(
         reference: String
     ): Flow<DataCollectionResult> {
         val subscription = ExternalInsuranceProviderV2Subscription(reference)
-        return apolloClient.subscribe(subscription).safeSubscription().map { result ->
+        return apolloClient.subscription(subscription).safeSubscription().map { result ->
             when (result) {
                 is QueryResult.Success -> {
                     val extraInfo = result.data?.dataCollectionStatusV2?.extraInformation

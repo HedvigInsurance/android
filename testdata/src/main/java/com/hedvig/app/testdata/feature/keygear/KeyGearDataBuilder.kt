@@ -1,17 +1,20 @@
 package com.hedvig.app.testdata.feature.keygear
 
-import com.hedvig.android.owldroid.fragment.KeyGearItemFragment
-import com.hedvig.android.owldroid.fragment.KeyGearItemValuationFragment
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
-import com.hedvig.android.owldroid.type.KeyGearItemCategory
+import com.hedvig.android.owldroid.graphql.fragment.KeyGearItemFragment
+import com.hedvig.android.owldroid.graphql.fragment.KeyGearItemValuationFragment
+import com.hedvig.android.owldroid.graphql.type.KeyGearItemCategory
+import com.hedvig.android.owldroid.graphql.type.KeyGearItemValuationFixed
 
 class KeyGearDataBuilder {
 
     fun build() = KeyGearItemsQuery.Data(
         listOf(
             KeyGearItemsQuery.KeyGearItem(
+                __typename = "",
                 fragments = KeyGearItemsQuery.KeyGearItem.Fragments(
                     KeyGearItemFragment(
+                        __typename = "",
                         id = "123",
                         name = "Sak",
                         physicalReferenceHash = null,
@@ -36,8 +39,10 @@ class KeyGearDataBuilder {
                         fragments = KeyGearItemFragment.Fragments(
                             KeyGearItemValuationFragment(
                                 valuation = KeyGearItemValuationFragment.Valuation1(
+                                    __typename = KeyGearItemValuationFixed.type.name,
                                     asKeyGearItemValuationFixed = KeyGearItemValuationFragment
                                         .AsKeyGearItemValuationFixed(
+                                            __typename = KeyGearItemValuationFixed.type.name,
                                             ratio = 31,
                                             valuation = KeyGearItemValuationFragment.Valuation(
                                                 amount = "1234.00"
@@ -51,8 +56,10 @@ class KeyGearDataBuilder {
                 )
             ),
             KeyGearItemsQuery.KeyGearItem(
+                __typename = "",
                 fragments = KeyGearItemsQuery.KeyGearItem.Fragments(
                     KeyGearItemFragment(
+                        __typename = "",
                         id = "234",
                         name = "Mackapär",
                         physicalReferenceHash = null,
@@ -77,8 +84,10 @@ class KeyGearDataBuilder {
                         fragments = KeyGearItemFragment.Fragments(
                             KeyGearItemValuationFragment(
                                 valuation = KeyGearItemValuationFragment.Valuation1(
+                                    __typename = KeyGearItemValuationFixed.type.name,
                                     asKeyGearItemValuationFixed = KeyGearItemValuationFragment
                                         .AsKeyGearItemValuationFixed(
+                                            __typename = KeyGearItemValuationFixed.type.name,
                                             ratio = 31,
                                             valuation = KeyGearItemValuationFragment.Valuation(
                                                 amount = "1234.00"
@@ -93,8 +102,10 @@ class KeyGearDataBuilder {
             ),
 
             KeyGearItemsQuery.KeyGearItem(
+                __typename = "",
                 fragments = KeyGearItemsQuery.KeyGearItem.Fragments(
                     KeyGearItemFragment(
+                        __typename = "",
                         id = "345",
                         name = null,
                         physicalReferenceHash = null,
@@ -113,8 +124,10 @@ class KeyGearDataBuilder {
                         fragments = KeyGearItemFragment.Fragments(
                             KeyGearItemValuationFragment(
                                 valuation = KeyGearItemValuationFragment.Valuation1(
+                                    __typename = KeyGearItemValuationFixed.type.name,
                                     asKeyGearItemValuationFixed = KeyGearItemValuationFragment
                                         .AsKeyGearItemValuationFixed(
+                                            __typename = KeyGearItemValuationFixed.type.name,
                                             ratio = 31,
                                             valuation = KeyGearItemValuationFragment.Valuation(
                                                 amount = "1234.00"

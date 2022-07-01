@@ -4,8 +4,8 @@ import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.apollographql.apollo.ApolloClient
-import com.apollographql.apollo.api.Response
+import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo3.api.ApolloResponse
 import com.hedvig.android.owldroid.graphql.ChatMessagesQuery
 import com.hedvig.android.owldroid.graphql.GifQuery
 import com.hedvig.android.owldroid.graphql.UploadFileMutation
@@ -15,6 +15,7 @@ import com.hedvig.app.feature.chat.data.ChatEventStore
 import com.hedvig.app.feature.chat.data.ChatRepository
 import com.hedvig.app.feature.chat.data.UserRepository
 import com.hedvig.app.util.LiveEvent
+import com.hedvig.app.util.apollo.reconnectSubscriptions
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 import e
@@ -124,7 +125,7 @@ class ChatViewModel(
         }
     }
 
-    private fun isFirstParagraph(response: Response<ChatMessagesQuery.Data>) = response
+    private fun isFirstParagraph(response: ApolloResponse<ChatMessagesQuery.Data>) = response
         .data
         ?.messages
         ?.firstOrNull()
@@ -134,7 +135,7 @@ class ChatViewModel(
         ?.asMessageBodyCore
         ?.type == "paragraph"
 
-    private fun getFirstParagraphDelay(response: Response<ChatMessagesQuery.Data>) =
+    private fun getFirstParagraphDelay(response: ApolloResponse<ChatMessagesQuery.Data>) =
         response.data?.messages?.firstOrNull()?.fragments?.chatMessageFragment?.header?.pollingInterval?.toLong()
             ?: 0L
 
@@ -171,7 +172,7 @@ class ChatViewModel(
         }
     }
 
-    private suspend fun uploadFileInner(uri: Uri): Response<UploadFileMutation.Data>? {
+    private suspend fun uploadFileInner(uri: Uri): ApolloResponse<UploadFileMutation.Data>? {
         isSubscriptionAllowedToWrite = false
         isUploading.value = true
         val response = runCatching { chatRepository.uploadFile(uri) }
@@ -203,7 +204,7 @@ class ChatViewModel(
         }
     }
 
-    private fun postResponseValue(response: Response<ChatMessagesQuery.Data>) {
+    private fun postResponseValue(response: ApolloResponse<ChatMessagesQuery.Data>) {
         response.data?.let { messages.postValue(it) }
     }
 
@@ -325,7 +326,7 @@ class ChatViewModel(
                 response.exceptionOrNull()?.let { e { "$it Failed to log out" } }
                 _events.trySend(Event.Error)
             }
-            apolloClient.subscriptionManager.reconnect()
+            apolloClient.reconnectSubscriptions()
             _events.trySend(Event.Restart)
         }
     }

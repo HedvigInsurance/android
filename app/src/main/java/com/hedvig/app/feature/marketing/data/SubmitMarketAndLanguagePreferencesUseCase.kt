@@ -1,7 +1,7 @@
 package com.hedvig.app.feature.marketing.data
 
 import android.content.Context
-import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.owldroid.graphql.UpdateLanguageMutation
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.Market
@@ -16,11 +16,11 @@ class SubmitMarketAndLanguagePreferencesUseCase(
     private val localeManager: LocaleManager,
     private val marketManager: MarketManager,
 ) {
-    suspend operator fun invoke(language: Language, market: Market) = apolloClient
-        .mutate(
+    suspend fun invoke(language: Language, market: Market) = apolloClient
+        .mutation(
             UpdateLanguageMutation(
                 makeLocaleString(language.apply(context), market),
-                localeManager.defaultLocale(),
+                localeManager.defaultLocale()
             )
         )
         .safeQuery()

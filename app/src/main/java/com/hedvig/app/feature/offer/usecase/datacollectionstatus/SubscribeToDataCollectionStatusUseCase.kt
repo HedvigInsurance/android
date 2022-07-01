@@ -1,6 +1,6 @@
 package com.hedvig.app.feature.offer.usecase.datacollectionstatus
 
-import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.owldroid.graphql.DataCollectionStatusSubscription
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeSubscription
@@ -23,7 +23,7 @@ class SubscribeToDataCollectionStatusUseCase(
 
     operator fun invoke(referenceUuid: String): Flow<Status> {
         return apolloClient
-            .subscribe(DataCollectionStatusSubscription(referenceUuid))
+            .subscription(DataCollectionStatusSubscription(referenceUuid))
             .safeSubscription()
             .map { queryResult ->
                 when (queryResult) {

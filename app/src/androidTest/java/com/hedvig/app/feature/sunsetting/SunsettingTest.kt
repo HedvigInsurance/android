@@ -7,6 +7,7 @@ import com.hedvig.app.testdata.feature.home.HOME_DATA_PENDING
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyIntentsActivityScenarioRule
+import com.hedvig.app.util.apollo.SunsettingInterceptor
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.jsonObjectOf
 import com.hedvig.app.util.stub
@@ -22,18 +23,18 @@ class SunsettingTest : TestCase() {
 
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.QUERY_DOCUMENT to apolloResponse {
+        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
             graphQLError(
                 jsonObjectOf(
                     "message" to "Outdated app",
                     "errorMessage" to "Buildversion -1 triggers test case for invalid versions",
-                    "errorCode" to "invalid_version",
+                    "errorCode" to SunsettingInterceptor.SUNSETTING_ERROR_CODE,
                     "supportPhoneNumber" to "+4670 123 45 67",
                     "supportEmail" to "info@hedvig.com",
                 )
             )
         },
-        HomeQuery.QUERY_DOCUMENT to apolloResponse { success(HOME_DATA_PENDING) }
+        HomeQuery.OPERATION_DOCUMENT to apolloResponse { success(HOME_DATA_PENDING) }
     )
 
     @get:Rule

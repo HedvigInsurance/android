@@ -10,7 +10,7 @@ import com.hedvig.app.feature.embark.passages.externalinsurer.retrieveprice.Star
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.feature.tracking.MockHAnalytics
-import com.hedvig.app.util.coroutines.StandardTestDispatcherAsMainDispatcherRule
+import com.hedvig.app.util.coroutines.MainCoroutineRule
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.delay
@@ -26,7 +26,7 @@ import kotlin.time.Duration.Companion.milliseconds
 class RetrievePriceViewModelTest {
 
     @get:Rule
-    val standardTestDispatcherAsMainDispatcherRule = StandardTestDispatcherAsMainDispatcherRule()
+    val mainCoroutineRule = MainCoroutineRule()
 
     private val marketManager = object : MarketManager {
         override val enabledMarkets: List<Market> = listOf(Market.SE, Market.NO, Market.DK)
