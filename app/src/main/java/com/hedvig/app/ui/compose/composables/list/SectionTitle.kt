@@ -55,7 +55,7 @@ fun SectionTitle(
 fun SectionTitlePreviewNoNotification() {
     HedvigTheme {
         SectionTitle(
-            text = "Section Title"
+            text = "Section Title",
         )
     }
 }
@@ -69,7 +69,7 @@ fun SectionTitlePreviewNotification() {
     HedvigTheme {
         SectionTitle(
             text = "Section Title",
-            notification = true
+            notification = true,
         )
     }
 }

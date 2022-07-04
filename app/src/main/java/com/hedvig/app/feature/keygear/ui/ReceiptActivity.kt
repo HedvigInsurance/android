@@ -69,7 +69,7 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
                 } else {
                     askForPermissions(
                         arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                        EXTERNAL_STORAGE_REQUEST_CODE
+                        EXTERNAL_STORAGE_REQUEST_CODE,
                     )
                 }
             }
@@ -88,7 +88,7 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
-        grantResults: IntArray
+        grantResults: IntArray,
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == EXTERNAL_STORAGE_REQUEST_CODE && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -126,14 +126,13 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
 
             withContext(Dispatchers.Main) {
                 val sendIntent = Intent().apply {
-
                     action = Intent.ACTION_SEND
                     type = "image/jpg"
 
                     this.data = FileProvider.getUriForFile(
                         applicationContext,
                         getString(R.string.file_provider_authority),
-                        File(filePath)
+                        File(filePath),
                     )
 
                     flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
@@ -142,8 +141,8 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
                         FileProvider.getUriForFile(
                             applicationContext,
                             getString(R.string.file_provider_authority),
-                            File(filePath)
-                        )
+                            File(filePath),
+                        ),
                     )
                 }
                 val shareIntent = Intent.createChooser(sendIntent, null)
@@ -160,7 +159,7 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
             setTitle(fileService.getFileName(uri))
             setDestinationInExternalPublicDir(
                 Environment.DIRECTORY_DOWNLOADS,
-                fileService.getFileName(uri)
+                fileService.getFileName(uri),
             )
             setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
         }
@@ -172,9 +171,9 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
                 binding.root,
                 getString(
                     R.string.KEY_GEAR_RECEIPT_DOWNLOAD_SNACKBAR,
-                    filename ?: getString(R.string.KEY_GEAR_ITEM_VIEW_RECEIPT_CELL_TITLE)
+                    filename ?: getString(R.string.KEY_GEAR_ITEM_VIEW_RECEIPT_CELL_TITLE),
                 ),
-                Snackbar.LENGTH_LONG
+                Snackbar.LENGTH_LONG,
             )
             .show()
     }
@@ -217,7 +216,7 @@ class ReceiptActivity : BaseActivity(R.layout.activity_receipt) {
                 when (
                     Uri.parse(url).buildUpon().clearQuery().build().toString().substringAfterLast(
                         '.',
-                        ""
+                        "",
                     )
                 ) {
                     "jpg", "jpeg", "png" -> true

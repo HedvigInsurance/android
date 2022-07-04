@@ -29,7 +29,7 @@ class TerminatedTodayTest : TestCase() {
         },
         HomeQuery.OPERATION_DOCUMENT to apolloResponse {
             success(HOME_DATA_TERMINATED_TODAY)
-        }
+        },
     )
 
     @get:Rule

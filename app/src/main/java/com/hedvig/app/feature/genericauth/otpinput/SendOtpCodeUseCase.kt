@@ -10,7 +10,7 @@ interface SendOtpCodeUseCase {
 }
 
 class SendOtpCodeUseCaseImpl(
-    private val apolloClient: ApolloClient
+    private val apolloClient: ApolloClient,
 ) : SendOtpCodeUseCase {
     override suspend operator fun invoke(otpId: String, otpCode: String): OtpResult {
         return when (val result = apolloClient.mutation(SendOtpCodeMutation(otpId, otpCode)).safeQuery()) {

@@ -21,7 +21,7 @@ import com.hedvig.app.util.extensions.viewBinding
 class InsurableLimitsAdapter(
     private val fragmentManager: FragmentManager,
 ) : ListAdapter<InsurableLimitItem, InsurableLimitsAdapter.ViewHolder>(
-    GenericDiffUtilItemCallback()
+    GenericDiffUtilItemCallback(),
 ) {
     override fun getItemViewType(position: Int) = when (getItem(position)) {
         is InsurableLimitItem.Header -> R.layout.text_headline6
@@ -49,7 +49,7 @@ class InsurableLimitsAdapter(
                     start = BASE_MARGIN_DOUBLE,
                     top = BASE_MARGIN_SEPTUPLE,
                     end = BASE_MARGIN_DOUBLE,
-                    bottom = BASE_MARGIN_DOUBLE
+                    bottom = BASE_MARGIN_DOUBLE,
                 )
             }
 
@@ -61,7 +61,7 @@ class InsurableLimitsAdapter(
                     when (data) {
                         InsurableLimitItem.Header.Details -> R.string.moving_summary_scroll_Details
                         InsurableLimitItem.Header.MoreInfo -> R.string.CONTRACT_COVERAGE_MORE_INFO
-                    }
+                    },
                 )
             }
         }

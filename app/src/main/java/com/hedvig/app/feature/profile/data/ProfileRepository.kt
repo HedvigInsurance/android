@@ -36,7 +36,7 @@ class ProfileRepository(
             .member
             .copy(
                 email = email,
-                phoneNumber = phoneNumber
+                phoneNumber = phoneNumber,
             )
 
         val newData = cachedData
@@ -59,8 +59,8 @@ class ProfileRepository(
             .copy(
                 cashback = ProfileQuery.Cashback(
                     __typename = "Cashback",
-                    fragments = ProfileQuery.Cashback.Fragments(cashback.fragments.cashbackFragment)
-                )
+                    fragments = ProfileQuery.Cashback.Fragments(cashback.fragments.cashbackFragment),
+                ),
             )
 
         apolloClient

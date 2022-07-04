@@ -35,7 +35,7 @@ fun MarketPickedScreen(
     onClickMarket: () -> Unit,
     onClickSignUp: () -> Unit,
     onClickLogIn: () -> Unit,
-    data: MarketPicked.Loaded
+    data: MarketPicked.Loaded,
 ) {
     val insets = LocalWindowInsets.current
     val statusBarHeight = with(LocalDensity.current) { insets.statusBars.top.toDp() }
@@ -47,7 +47,7 @@ fun MarketPickedScreen(
                 .padding(
                     start = 8.dp,
                     top = statusBarHeight,
-                )
+                ),
         ) {
             Image(
                 painter = painterResource(data.selectedMarket.flag),

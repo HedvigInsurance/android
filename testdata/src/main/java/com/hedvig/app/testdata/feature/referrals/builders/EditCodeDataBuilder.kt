@@ -20,7 +20,7 @@ data class EditCodeDataBuilder(
             asSuccessfullyUpdatedCode = if (variant == ResultVariant.SUCCESS) {
                 UpdateReferralCampaignCodeMutation.AsSuccessfullyUpdatedCode(
                     __typename = variant.typename,
-                    code = code
+                    code = code,
                 )
             } else {
                 null
@@ -28,7 +28,7 @@ data class EditCodeDataBuilder(
             asCodeAlreadyTaken = if (variant == ResultVariant.ALREADY_TAKEN) {
                 UpdateReferralCampaignCodeMutation.AsCodeAlreadyTaken(
                     __typename = variant.typename,
-                    code = code
+                    code = code,
                 )
             } else {
                 null
@@ -36,7 +36,7 @@ data class EditCodeDataBuilder(
             asCodeTooLong = if (variant == ResultVariant.TOO_LONG) {
                 UpdateReferralCampaignCodeMutation.AsCodeTooLong(
                     __typename = variant.typename,
-                    maxCharacters = maxCharacters
+                    maxCharacters = maxCharacters,
                 )
             } else {
                 null
@@ -44,7 +44,7 @@ data class EditCodeDataBuilder(
             asCodeTooShort = if (variant == ResultVariant.TOO_SHORT) {
                 UpdateReferralCampaignCodeMutation.AsCodeTooShort(
                     __typename = variant.typename,
-                    minCharacters = minCharacters
+                    minCharacters = minCharacters,
                 )
             } else {
                 null
@@ -52,12 +52,12 @@ data class EditCodeDataBuilder(
             asExceededMaximumUpdates = if (variant == ResultVariant.EXCEEDED_MAX_UPDATES) {
                 UpdateReferralCampaignCodeMutation.AsExceededMaximumUpdates(
                     __typename = variant.typename,
-                    maximumNumberOfUpdates = maximumNumberOfUpdates
+                    maximumNumberOfUpdates = maximumNumberOfUpdates,
                 )
             } else {
                 null
-            }
-        )
+            },
+        ),
     )
 
     enum class ResultVariant {

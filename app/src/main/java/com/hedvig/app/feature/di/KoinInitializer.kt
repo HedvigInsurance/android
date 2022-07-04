@@ -104,7 +104,7 @@ class KoinInitializer : Initializer<KoinApplication> {
                 insurelyAuthModule,
                 deviceIdStoreModule,
                 graphQLQueryModule,
-            )
+            ),
         )
     }
 

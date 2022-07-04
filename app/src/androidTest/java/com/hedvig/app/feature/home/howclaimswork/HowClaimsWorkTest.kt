@@ -2,21 +2,17 @@ package com.hedvig.app.feature.home.howclaimswork
 
 import com.hedvig.android.owldroid.graphql.HomeQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
-import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import com.hedvig.app.R
 import com.hedvig.app.feature.home.screens.HomeTabScreen
-import com.hedvig.app.feature.home.screens.HonestyPledgeSheetScreen
 import com.hedvig.app.feature.home.screens.HowClaimsWorkScreen
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.testdata.feature.home.HOME_DATA_ACTIVE
-import com.hedvig.app.testdata.feature.payment.PAYIN_STATUS_DATA_ACTIVE
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA
 import com.hedvig.app.util.ApolloCacheClearRule
 import com.hedvig.app.util.ApolloMockServerRule
 import com.hedvig.app.util.LazyIntentsActivityScenarioRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
-import com.hedvig.app.util.stub
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.kakao.screen.Screen.Companion.onScreen
 import org.junit.Rule

@@ -66,7 +66,7 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
                         context = this@SplashActivity,
                         marketManager = marketManager,
                         featureManager = featureManager,
-                        onDefault = { startDefaultActivity(loginStatus) }
+                        onDefault = { startDefaultActivity(loginStatus) },
                     )
                 }
                 is LoginStatus.InOffer -> startDefaultActivity(loginStatus)
@@ -90,8 +90,8 @@ class SplashActivity : BaseActivity(R.layout.activity_splash) {
                     OfferActivity.newInstance(
                         context = this,
                         quoteCartId = loginStatus.quoteCartId,
-                        shouldShowOnNextAppStart = true
-                    )
+                        shouldShowOnNextAppStart = true,
+                    ),
                 )
             }
         }

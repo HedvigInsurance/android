@@ -70,15 +70,15 @@ class SimpleSignAuthenticationActivity : BaseActivity(R.layout.simple_sign_authe
         startActivity(
             LoggedInActivity.newInstance(
                 this,
-                withoutHistory = true
-            )
+                withoutHistory = true,
+            ),
         )
     }
 
     private fun restart() {
         supportFragmentManager.popBackStack(
             supportFragmentManager.getBackStackEntryAt(0).id,
-            FragmentManager.POP_BACK_STACK_INCLUSIVE
+            FragmentManager.POP_BACK_STACK_INCLUSIVE,
         )
     }
 

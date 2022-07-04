@@ -21,7 +21,7 @@ import com.hedvig.app.ui.compose.composables.buttons.LargeContainedTextButton
 
 @Composable
 fun RetrievePriceSuccess(
-    onContinue: () -> Unit
+    onContinue: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -37,11 +37,11 @@ fun RetrievePriceSuccess(
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = stringResource(R.string.insurely_confirmation_title),
-            style = MaterialTheme.typography.h6
+            style = MaterialTheme.typography.h6,
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = stringResource(R.string.insurely_confirmation_description)
+            text = stringResource(R.string.insurely_confirmation_description),
         )
         Spacer(modifier = Modifier.height(40.dp))
         LargeContainedTextButton(text = stringResource(R.string.continue_button), onClick = onContinue)

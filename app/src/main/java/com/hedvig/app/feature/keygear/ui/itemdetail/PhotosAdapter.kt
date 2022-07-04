@@ -22,7 +22,7 @@ import com.hedvig.app.util.extensions.viewBinding
 class PhotosAdapter(
     firstPhotoUrl: String?,
     private val category: KeyGearItemCategory,
-    private val photoDidLoad: () -> Unit
+    private val photoDidLoad: () -> Unit,
 ) :
     RecyclerView.Adapter<PhotosAdapter.ViewHolder>() {
     var photoUrls: List<String?> = listOf(firstPhotoUrl)
@@ -37,8 +37,8 @@ class PhotosAdapter(
         LayoutInflater.from(parent.context).inflate(
             R.layout.key_gear_item_detail_photo,
             parent,
-            false
-        )
+            false,
+        ),
     )
 
     override fun getItemCount() = if (photoUrls.isNotEmpty()) {
@@ -57,7 +57,7 @@ class PhotosAdapter(
             photoUrl: String?,
             category: KeyGearItemCategory,
             photoDidLoad: () -> Unit,
-            position: Int
+            position: Int,
         ) {
             binding.apply {
                 if (photoUrl != null) {
@@ -71,7 +71,7 @@ class PhotosAdapter(
                         scale(Scale.FILL)
                         listener(
                             onSuccess = { _, _ -> photoDidLoad() },
-                            onError = { _, _ -> photoDidLoad() }
+                            onError = { _, _ -> photoDidLoad() },
                         )
                     }
 

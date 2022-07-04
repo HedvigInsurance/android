@@ -69,7 +69,7 @@ data class GraphQLVariableBuilder(
         } else {
             null
         },
-        asEmbarkAPIGraphQLConstantVariable = null
+        asEmbarkAPIGraphQLConstantVariable = null,
     )
 
     enum class VariableKind {

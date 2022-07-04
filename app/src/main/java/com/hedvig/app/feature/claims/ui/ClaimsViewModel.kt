@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 
 class ClaimsViewModel(
     private val claimsRepository: ClaimsRepository,
-    private val chatRepository: ChatRepository
+    private val chatRepository: ChatRepository,
 ) : ViewModel() {
 
     val data: MutableLiveData<CommonClaimQuery.Data> = MutableLiveData()

@@ -22,9 +22,9 @@ class CoverageTest : TestCase() {
     val mockServerRule = ApolloMockServerRule(
         InsuranceQuery.OPERATION_DOCUMENT to apolloResponse {
             success(
-                INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS
+                INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS,
             )
-        }
+        },
     )
 
     @get:Rule
@@ -35,8 +35,8 @@ class CoverageTest : TestCase() {
         activityRule.launch(
             ContractDetailActivity.newInstance(
                 context(),
-                INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS.contracts[0].id
-            )
+                INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS.contracts[0].id,
+            ),
         )
 
         onScreen<ContractDetailScreen> {
@@ -47,7 +47,7 @@ class CoverageTest : TestCase() {
                             2 +
                                 INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS
                                     .contracts[0]
-                                    .let { it.contractPerils.size + it.insurableLimits.size }
+                                    .let { it.contractPerils.size + it.insurableLimits.size },
                         )
                         childAt<PerilRecyclerItem>(3) {
                             click()

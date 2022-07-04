@@ -95,7 +95,7 @@ abstract class OfferViewModel : ViewModel() {
             quote.displayName,
             quote.perils.map { PerilItem.Peril(it) },
             quote.insurableLimits,
-            quote.insuranceTerms
+            quote.insuranceTerms,
         )
     }
 
@@ -123,7 +123,7 @@ abstract class OfferViewModel : ViewModel() {
             )
 
             fun createBottomOfferItems() = OfferItemsBuilder.createBottomOfferItems(
-                bundleVariant = bundleVariant
+                bundleVariant = bundleVariant,
             )
 
             fun createPerilItems() = if (bundleVariant.bundle.quotes.size == 1) {
@@ -207,7 +207,7 @@ class OfferViewModelImpl(
                                 externalProvider = externalProvider,
                                 onVariantSelected = { variantId ->
                                     getBundleVariantUseCase.selectedVariant(variantId)
-                                }
+                                },
                             )
                         }
                 } else {
@@ -221,12 +221,12 @@ class OfferViewModelImpl(
                                 externalProvider = null,
                                 onVariantSelected = { variantId ->
                                     getBundleVariantUseCase.selectedVariant(variantId)
-                                }
-                            )
+                                },
+                            ),
                         )
                     }
                 }
-            }
+            },
         )
 
     override fun onOpenCheckout() {
@@ -240,7 +240,7 @@ class OfferViewModelImpl(
                         val parameter = CheckoutParameter(selectedVariantId, quoteCartId)
                         val event = Event.OpenCheckout(parameter)
                         _events.trySend(event)
-                    }
+                    },
                 )
         }
     }
@@ -255,7 +255,7 @@ class OfferViewModelImpl(
     override suspend fun triggerOpenChat() {
         chatRepository.triggerFreeTextChat().fold(
             ifLeft = { _viewState.value = ViewState.Error(null) },
-            ifRight = { _events.trySend(Event.OpenChat) }
+            ifRight = { _events.trySend(Event.OpenChat) },
         )
     }
 
@@ -270,7 +270,7 @@ class OfferViewModelImpl(
                         val quoteDetailItems = QuoteDetailItems(quote)
                         val event = Event.OpenQuoteDetails(quoteDetailItems)
                         _events.trySend(event)
-                    }
+                    },
                 )
         }
     }
@@ -305,11 +305,11 @@ class OfferViewModelImpl(
                                 startDate = (it.bundle.inception.startDate as? OfferStartDate.AtDate)?.date,
                                 postSignScreen = it.bundle.viewConfiguration.postSignScreen,
                                 bundleDisplayName = it.bundle.name,
-                                payinType = featureManager.getPaymentType()
+                                payinType = featureManager.getPaymentType(),
                             )
                             _events.send(event)
                         }
-                    }
+                    },
                 )
         }
     }
@@ -339,7 +339,7 @@ class OfferViewModelImpl(
                 }
             }.fold(
                 ifLeft = { _viewState.value = ViewState.Error(it.message) },
-                ifRight = { result -> onComplete(result) }
+                ifRight = { result -> onComplete(result) },
             )
         }
     }

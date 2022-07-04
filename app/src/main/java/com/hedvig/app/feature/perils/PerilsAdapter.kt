@@ -142,7 +142,7 @@ class PerilsAdapter(
                     }
                 }
             }
-        }
+        },
     )
 
     companion object {

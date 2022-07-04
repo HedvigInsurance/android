@@ -20,7 +20,7 @@ class TemplateValuesTest : TestCase() {
 
     @get:Rule
     val apolloMockServerRule = ApolloMockServerRule(
-        EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse { success(STORY_WITH_TEMPLATE_MESSAGE) }
+        EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse { success(STORY_WITH_TEMPLATE_MESSAGE) },
     )
 
     @get:Rule
@@ -33,7 +33,7 @@ class TemplateValuesTest : TestCase() {
                 context(),
                 this.javaClass.name,
                 "",
-            )
+            ),
         )
 
         Screen.onScreen<EmbarkScreen> {

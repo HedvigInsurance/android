@@ -13,7 +13,7 @@ fun UpcomingAgreementFragment.toUpcomingAgreementResult(): UpcomingAgreement? {
 
     return UpcomingAgreement(
         activeFrom = activeFrom(),
-        table = upcomingAgreementDetailsTable.fragments.tableFragment.intoTable()
+        table = upcomingAgreementDetailsTable.fragments.tableFragment.intoTable(),
     )
 }
 

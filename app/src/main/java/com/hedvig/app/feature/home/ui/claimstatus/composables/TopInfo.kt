@@ -33,7 +33,7 @@ fun TopInfo(
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
             Text(
                 text = subtitle,
-                style = MaterialTheme.typography.body2
+                style = MaterialTheme.typography.body2,
             )
         }
         Spacer(modifier = Modifier.height(4.dp))

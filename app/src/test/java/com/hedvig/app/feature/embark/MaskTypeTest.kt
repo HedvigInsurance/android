@@ -14,7 +14,7 @@ class MaskTypeTest {
         val derivedValue = MaskType.PERSONAL_NUMBER.derivedValues(
             text = "910113-1234",
             key = "personalNumber",
-            currentDate = LocalDate.of(2022, 1, 17)
+            currentDate = LocalDate.of(2022, 1, 17),
         )
         assertThat(derivedValue).isNotNull()
         assertThat(derivedValue!![0].second).isEqualTo("31")
@@ -22,7 +22,7 @@ class MaskTypeTest {
         val derivedValue2 = MaskType.PERSONAL_NUMBER.derivedValues(
             text = "020113-1234",
             key = "personalNumber",
-            currentDate = LocalDate.of(2022, 1, 17)
+            currentDate = LocalDate.of(2022, 1, 17),
         )
         assertThat(derivedValue2).isNotNull()
         assertThat(derivedValue2!![0].second).isEqualTo("20")
@@ -33,7 +33,7 @@ class MaskTypeTest {
         val derivedValue = MaskType.BIRTH_DATE.derivedValues(
             text = "910113",
             key = "birthDate",
-            currentDate = LocalDate.of(2022, 1, 17)
+            currentDate = LocalDate.of(2022, 1, 17),
         )
         assertThat(derivedValue).isNotNull()
         assertThat(derivedValue!![0].second).isEqualTo("31")
@@ -41,7 +41,7 @@ class MaskTypeTest {
         val derivedValue2 = MaskType.PERSONAL_NUMBER.derivedValues(
             text = "020113",
             key = "birthDate",
-            currentDate = LocalDate.of(2022, 1, 17)
+            currentDate = LocalDate.of(2022, 1, 17),
         )
         assertThat(derivedValue2).isNotNull()
         assertThat(derivedValue2!![0].second).isEqualTo("20")
@@ -52,7 +52,7 @@ class MaskTypeTest {
         val derivedValue = MaskType.BIRTH_DATE_REVERSE.derivedValues(
             text = MaskType.BIRTH_DATE_REVERSE.unMask("13-01-1991"),
             key = "birthDate",
-            currentDate = LocalDate.of(2022, 1, 17)
+            currentDate = LocalDate.of(2022, 1, 17),
         )
         assertThat(derivedValue).isNotNull()
         assertThat(derivedValue!![0].second).isEqualTo("31")
@@ -60,7 +60,7 @@ class MaskTypeTest {
         val derivedValue2 = MaskType.BIRTH_DATE_REVERSE.derivedValues(
             text = MaskType.BIRTH_DATE_REVERSE.unMask("13-01-2002"),
             key = "birthDate",
-            currentDate = LocalDate.of(2022, 1, 17)
+            currentDate = LocalDate.of(2022, 1, 17),
         )
         assertThat(derivedValue2).isNotNull()
         assertThat(derivedValue2!![0].second).isEqualTo("20")

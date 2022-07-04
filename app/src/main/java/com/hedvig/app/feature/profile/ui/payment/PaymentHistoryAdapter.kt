@@ -16,7 +16,7 @@ import com.hedvig.app.util.extensions.viewBinding
 import e
 
 class PaymentHistoryAdapter(
-    private val marketManager: MarketManager
+    private val marketManager: MarketManager,
 ) :
     ListAdapter<ChargeWrapper, PaymentHistoryAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
@@ -28,7 +28,7 @@ class PaymentHistoryAdapter(
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
-        viewType: Int
+        viewType: Int,
     ): ViewHolder = when (viewType) {
         R.layout.payout_history_title -> ViewHolder.TitleViewHolder(parent)
         R.layout.payout_history_header -> ViewHolder.HeaderViewHolder(parent)

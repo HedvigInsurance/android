@@ -45,7 +45,7 @@ class TranslateDeferringInsetsAnimationCallback(
     private val view: View,
     val persistentInsetTypes: Int,
     val deferredInsetTypes: Int,
-    dispatchMode: Int = DISPATCH_MODE_STOP
+    dispatchMode: Int = DISPATCH_MODE_STOP,
 ) : WindowInsetsAnimation.Callback(dispatchMode) {
     init {
         require(persistentInsetTypes and deferredInsetTypes == 0) {
@@ -56,7 +56,7 @@ class TranslateDeferringInsetsAnimationCallback(
 
     override fun onProgress(
         insets: WindowInsets,
-        runningAnimations: List<WindowInsetsAnimation>
+        runningAnimations: List<WindowInsetsAnimation>,
     ): WindowInsets {
         // onProgress() is called when any of the running animations progress...
 

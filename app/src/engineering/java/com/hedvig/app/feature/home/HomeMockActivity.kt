@@ -35,7 +35,7 @@ class HomeMockActivity : MockActivity() {
             viewModel<LoggedInViewModel> { MockLoggedInViewModel() }
             viewModel<HomeViewModel> { MockHomeViewModel() }
             single<MarketManager> { MockMarketManager() }
-        }
+        },
     )
 
     override fun adapter() = genericDevelopmentAdapter {

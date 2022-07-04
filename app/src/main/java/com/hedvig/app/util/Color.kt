@@ -54,7 +54,7 @@ val colorArray = arrayOf(
     R.color.dark_green,
     R.color.pink,
     R.color.maroon,
-    R.color.yellow
+    R.color.yellow,
 )
 
 @ColorRes

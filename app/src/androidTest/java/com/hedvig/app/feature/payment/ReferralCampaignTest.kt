@@ -26,7 +26,7 @@ class ReferralCampaignTest : TestCase() {
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
         PaymentQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYMENT_DATA_REFERRAL) },
-        PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_ACTIVE) }
+        PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_ACTIVE) },
     )
 
     @get:Rule
@@ -50,7 +50,7 @@ class ReferralCampaignTest : TestCase() {
                                 .fragments
                                 .monetaryAmountFragment
                                 .toMonetaryAmount()
-                                .format(context(), market())
+                                .format(context(), market()),
                         )
                     }
                     net {
@@ -61,7 +61,7 @@ class ReferralCampaignTest : TestCase() {
                                 .fragments
                                 .monetaryAmountFragment
                                 .toMonetaryAmount()
-                                .format(context(), market())
+                                .format(context(), market()),
                         )
                     }
                 }

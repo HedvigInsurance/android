@@ -9,15 +9,15 @@ import com.hedvig.app.feature.offer.ui.changestartdate.toChangeDateBottomSheetDa
 data class Inception(
     val startDate: OfferStartDate,
     val startDateLabel: StartDateLabel,
-    val changeDateData: ChangeDateBottomSheetData
+    val changeDateData: ChangeDateBottomSheetData,
 )
 
 fun QuoteBundleFragment.Inception1.toInception(
     startDateTerminology: QuoteBundleAppConfigurationStartDateTerminology,
     quoteCartId: QuoteCartId,
-    quoteNames: List<String>
+    quoteNames: List<String>,
 ) = Inception(
     startDate = getStartDate(),
     startDateLabel = getStartDateLabel(startDateTerminology),
-    changeDateData = toChangeDateBottomSheetData(quoteCartId, quoteNames)
+    changeDateData = toChangeDateBottomSheetData(quoteCartId, quoteNames),
 )

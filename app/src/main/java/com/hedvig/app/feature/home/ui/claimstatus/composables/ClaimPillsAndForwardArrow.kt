@@ -36,7 +36,7 @@ fun ClaimPillsAndForwardArrow(
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
         ) {
             pillsUiState.forEach { pillUiState: PillUiState ->
                 ClaimPill(
@@ -49,7 +49,7 @@ fun ClaimPillsAndForwardArrow(
             Icon(
                 painter = painterResource(R.drawable.ic_arrow_forward),
                 contentDescription = null,
-                modifier = Modifier.size(16.dp)
+                modifier = Modifier.size(16.dp),
             )
         }
     }
@@ -95,6 +95,6 @@ class PillsUiStateProvider : CollectionPreviewParameterProvider<List<PillUiState
         },
         List(10) { PillUiState.PillType.REOPENED }.map { pillType ->
             PillUiState(pillType.name, pillType)
-        }
-    )
+        },
+    ),
 )

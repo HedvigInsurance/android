@@ -16,7 +16,7 @@ fun <T1, T2, T3, T4, T5, T6, R> safeLet(
     d: T4?,
     e: T5?,
     f: T6?,
-    action: (T1, T2, T3, T4, T5, T6) -> R
+    action: (T1, T2, T3, T4, T5, T6) -> R,
 ) =
     if (a != null && b != null && c != null && d != null && e != null && f != null) action(
         a,
@@ -24,5 +24,5 @@ fun <T1, T2, T3, T4, T5, T6, R> safeLet(
         c,
         d,
         e,
-        f
+        f,
     ) else null

@@ -46,8 +46,8 @@ class MoreOptionsActivity : BaseActivity(R.layout.activity_more_options) {
                                     MoreOptionsModel.Header,
                                     MoreOptionsModel.UserId.Error,
                                     MoreOptionsModel.Version,
-                                    MoreOptionsModel.Copyright
-                                )
+                                    MoreOptionsModel.Copyright,
+                                ),
                             )
                         }
                         MemberIdViewModel.State.Loading -> {
@@ -59,7 +59,7 @@ class MoreOptionsActivity : BaseActivity(R.layout.activity_more_options) {
                                     MoreOptionsModel.UserId.Success(state.id),
                                     MoreOptionsModel.Version,
                                     MoreOptionsModel.Copyright,
-                                )
+                                ),
                             )
                         }
                     }

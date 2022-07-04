@@ -9,7 +9,7 @@ interface AuthenticationTokenService {
 }
 
 class SharedPreferencesAuthenticationTokenService(
-    private val sharedPreferences: SharedPreferences
+    private val sharedPreferences: SharedPreferences,
 ) : AuthenticationTokenService {
     override var authenticationToken: String?
         set(value) = sharedPreferences.edit()

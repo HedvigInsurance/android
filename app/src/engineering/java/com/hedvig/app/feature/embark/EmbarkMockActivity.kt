@@ -61,7 +61,7 @@ class EmbarkMockActivity : MockActivity() {
         module {
             viewModel<EmbarkViewModel> { MockEmbarkViewModel(get(), get(), MockHAnalytics(), get(), get()) }
             viewModel<MemberIdViewModel> { MockMemberIdViewModel() }
-        }
+        },
     )
 
     override fun adapter() = genericDevelopmentAdapter {
@@ -104,9 +104,10 @@ class EmbarkMockActivity : MockActivity() {
                 AskForPriceInfoActivity.createIntent(
                     context,
                     InsuranceProviderParameter(
-                        "Test ID", "Test Name"
-                    )
-                )
+                        "Test ID",
+                        "Test Name",
+                    ),
+                ),
             )
         }
         header("Embark Screen")
@@ -211,7 +212,7 @@ class EmbarkMockActivity : MockActivity() {
                     this@EmbarkMockActivity,
                     this.javaClass.name,
                     "Incompatible Action",
-                )
+                ),
             )
         }
         header("Template Values")
@@ -252,7 +253,7 @@ class EmbarkMockActivity : MockActivity() {
                     this@EmbarkMockActivity,
                     this.javaClass.name,
                     "Message Expressions",
-                )
+                ),
             )
         }
         clickableItem("Equals (==)") {
@@ -265,7 +266,7 @@ class EmbarkMockActivity : MockActivity() {
                     this@EmbarkMockActivity,
                     this.javaClass.name,
                     "Message Expressions",
-                )
+                ),
             )
         }
         clickableItem("Not Equals (!=)") {
@@ -278,7 +279,7 @@ class EmbarkMockActivity : MockActivity() {
                     this@EmbarkMockActivity,
                     this.javaClass.name,
                     "Message Expressions",
-                )
+                ),
             )
         }
         clickableItem("Greater Than (>)") {
@@ -291,7 +292,7 @@ class EmbarkMockActivity : MockActivity() {
                     this@EmbarkMockActivity,
                     this.javaClass.name,
                     "Message Expressions",
-                )
+                ),
             )
         }
         clickableItem("Greater Than or Equals (>=)") {
@@ -304,7 +305,7 @@ class EmbarkMockActivity : MockActivity() {
                     this@EmbarkMockActivity,
                     this.javaClass.name,
                     "Message Expressions",
-                )
+                ),
             )
         }
         clickableItem("Less Than (<)") {
@@ -317,7 +318,7 @@ class EmbarkMockActivity : MockActivity() {
                     this@EmbarkMockActivity,
                     this.javaClass.name,
                     "Message Expressions",
-                )
+                ),
             )
         }
         clickableItem("Less Than or Equals (<=)") {
@@ -330,7 +331,7 @@ class EmbarkMockActivity : MockActivity() {
                     this@EmbarkMockActivity,
                     this.javaClass.name,
                     "Message Expressions",
-                )
+                ),
             )
         }
         clickableItem("Or (||)") {
@@ -343,7 +344,7 @@ class EmbarkMockActivity : MockActivity() {
                     this@EmbarkMockActivity,
                     this.javaClass.name,
                     "Message Expressions",
-                )
+                ),
             )
         }
         clickableItem("And (&&)") {
@@ -356,7 +357,7 @@ class EmbarkMockActivity : MockActivity() {
                     this@EmbarkMockActivity,
                     this.javaClass.name,
                     "Message Expressions",
-                )
+                ),
             )
         }
         header("Redirects")
@@ -405,7 +406,7 @@ class EmbarkMockActivity : MockActivity() {
                     this@EmbarkMockActivity,
                     this.javaClass.name,
                     "Story with progress",
-                )
+                ),
             )
         }
         header("External Redirects")
@@ -419,7 +420,7 @@ class EmbarkMockActivity : MockActivity() {
                     this@EmbarkMockActivity,
                     this.javaClass.name,
                     "Story with external redirects",
-                )
+                ),
             )
         }
     }

@@ -10,7 +10,7 @@ fun stubExternalIntents() {
     Intents.intending(Matchers.not(IntentMatchers.isInternal())).respondWith(
         Instrumentation.ActivityResult(
             Activity.RESULT_OK,
-            null
-        )
+            null,
+        ),
     )
 }

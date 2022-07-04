@@ -22,9 +22,9 @@ class CodeTooLongErrorTest : TestCase() {
     val mockServerRule = ApolloMockServerRule(
         UpdateReferralCampaignCodeMutation.OPERATION_DOCUMENT to apolloResponse {
             success(
-                EDIT_CODE_DATA_TOO_LONG
+                EDIT_CODE_DATA_TOO_LONG,
             )
-        }
+        },
     )
 
     @get:Rule
@@ -35,8 +35,8 @@ class CodeTooLongErrorTest : TestCase() {
         activityRule.launch(
             ReferralsEditCodeActivity.newInstance(
                 context(),
-                "TEST123"
-            )
+                "TEST123",
+            ),
         )
 
         onScreen<ReferralsEditCodeScreen> {

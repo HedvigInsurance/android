@@ -30,7 +30,7 @@ data class FAQItem(
         fun from(data: QuoteBundle.FrequentlyAskedQuestion) = safeLet(data.title, data.description) { headline, body ->
             FAQItem(
                 headline = headline,
-                body = body
+                body = body,
             )
         }
     }

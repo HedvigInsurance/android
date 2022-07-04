@@ -43,7 +43,7 @@ class WhatsNewDialog : DismissiblePager() {
             arguments = Bundle().apply {
                 putParcelableArrayList(
                     PAGES,
-                    ArrayList(pages + DismissiblePagerModel.SwipeOffScreen)
+                    ArrayList(pages + DismissiblePagerModel.SwipeOffScreen),
                 )
             }
         }

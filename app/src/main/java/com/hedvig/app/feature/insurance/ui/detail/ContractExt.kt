@@ -18,7 +18,7 @@ fun InsuranceQuery.Contract.toContractDetailViewState(): ContractDetailViewState
         contractCardViewState = toContractCardViewState(),
         memberDetailsViewState = toMemberDetailsViewState(),
         coverageViewState = toCoverageViewState(),
-        documentsViewState = toDocumentsViewState()
+        documentsViewState = toDocumentsViewState(),
     )
 }
 
@@ -29,7 +29,7 @@ fun InsuranceQuery.Contract.toContractCardViewState() = ContractCardViewState(
     gradientOption = gradientOption,
     displayName = displayName,
     detailPills = detailPills,
-    logoUrls = logo?.variants?.fragments?.iconVariantsFragment?.let { ThemedIconUrls.from(it) }
+    logoUrls = logo?.variants?.fragments?.iconVariantsFragment?.let { ThemedIconUrls.from(it) },
 )
 
 fun InsuranceQuery.Contract.toMemberDetailsViewState() =
@@ -44,12 +44,12 @@ fun InsuranceQuery.Contract.toMemberDetailsViewState() =
         } else {
             null
         },
-        change = YourInfoModel.Change
+        change = YourInfoModel.Change,
     )
 
 fun InsuranceQuery.Contract.toCoverageViewState() = ContractDetailViewState.CoverageViewState(
     perils = listOf(
-        PerilItem.Header.CoversSuffix(displayName)
+        PerilItem.Header.CoversSuffix(displayName),
     ) + contractPerils.map {
         PerilItem.Peril(Peril.from(it.fragments.perilFragment))
     },
@@ -61,7 +61,7 @@ fun InsuranceQuery.Contract.toCoverageViewState() = ContractDetailViewState.Cove
                 description = insurableLimitsFragment.description,
             )
         }
-    }.let { listOf(InsurableLimitItem.Header.MoreInfo) + it }
+    }.let { listOf(InsurableLimitItem.Header.MoreInfo) + it },
 )
 
 fun InsuranceQuery.Contract.toDocumentsViewState() = ContractDetailViewState.DocumentsViewState(
@@ -77,7 +77,7 @@ fun InsuranceQuery.Contract.toDocumentsViewState() = ContractDetailViewState.Doc
             titleRes = R.string.MY_DOCUMENTS_INSURANCE_TERMS,
             subTitleRes = R.string.insurance_details_view_documents_insurance_letter_subtitle,
             uri = Uri.parse(termsAndConditions.url),
-            type = DocumentItems.Document.Type.TERMS_AND_CONDITIONS
-        )
-    )
+            type = DocumentItems.Document.Type.TERMS_AND_CONDITIONS,
+        ),
+    ),
 )

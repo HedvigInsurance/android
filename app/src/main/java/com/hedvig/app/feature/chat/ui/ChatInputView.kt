@@ -42,7 +42,7 @@ class ChatInputView : FrameLayout {
     constructor(context: Context, attributeSet: AttributeSet, defStyle: Int) : super(
         context,
         attributeSet,
-        defStyle
+        defStyle,
     )
 
     private lateinit var sendTextMessage: ((String) -> Unit)
@@ -145,7 +145,7 @@ class ChatInputView : FrameLayout {
                         endAction = {
                             paragraphView.avdStop()
                             fadeIn()
-                        }
+                        },
                     )
                 }
                 is Audio, is NullInput -> fadeIn()
@@ -198,7 +198,7 @@ class ChatInputView : FrameLayout {
                 inflateSingleSelectButton(
                     selection.text,
                     selection.value,
-                    SingleSelectChoiceType.SELECTION
+                    SingleSelectChoiceType.SELECTION,
                 )
             }
             option.asMessageBodyChoicesLink?.let { link ->
@@ -208,7 +208,7 @@ class ChatInputView : FrameLayout {
                 inflateSingleSelectButton(
                     undefined.text,
                     undefined.value,
-                    SingleSelectChoiceType.UNDEFINED
+                    SingleSelectChoiceType.UNDEFINED,
                 )
             }
         }
@@ -223,7 +223,7 @@ class ChatInputView : FrameLayout {
             layoutInflater.inflate(
                 R.layout.chat_single_select_button,
                 binding.singleSelectContainer,
-                false
+                false,
             ) as TextView
         singleSelectButton.text = label
         singleSelectButton.setHapticClickListener {
@@ -253,7 +253,7 @@ class ChatInputView : FrameLayout {
     fun rotateFileUploadIcon(isOpening: Boolean) {
         SpringAnimation(
             binding.uploadFile,
-            DynamicAnimation.ROTATION
+            DynamicAnimation.ROTATION,
         ).animateToFinalPosition(if (isOpening) 135f else 0f)
     }
 

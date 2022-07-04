@@ -70,26 +70,28 @@ fun apolloMockServer(vararg mocks: Pair<String, ApolloResultProvider>): MockWebS
                     ApolloMockServerResult.InternalServerError -> MockResponse().setResponseCode(500)
                     is ApolloMockServerResult.GraphQLError -> MockResponse().setBody(
                         jsonObjectOf(
-                            "errors" to result.errors.toJsonArray()
-                        ).toString()
+                            "errors" to result.errors.toJsonArray(),
+                        ).toString(),
                     )
                     is ApolloMockServerResult.GraphQLResponse -> MockResponse().setBody(result.body)
                 }
             }
 
             private fun handleWebSocket(): MockResponse {
-                return MockResponse().withWebSocketUpgrade(object : WebSocketListener() {
-                    override fun onMessage(webSocket: WebSocket, text: String) {
-                        val message = JSONObject(text)
-                        if (message.getString("type") == "connection_init") {
-                            webSocket.send(
-                                jsonObjectOf(
-                                    "type" to "connection_ack"
-                                ).toString()
-                            )
+                return MockResponse().withWebSocketUpgrade(
+                    object : WebSocketListener() {
+                        override fun onMessage(webSocket: WebSocket, text: String) {
+                            val message = JSONObject(text)
+                            if (message.getString("type") == "connection_init") {
+                                webSocket.send(
+                                    jsonObjectOf(
+                                        "type" to "connection_ack",
+                                    ).toString(),
+                                )
+                            }
                         }
-                    }
-                })
+                    },
+                )
             }
         }
     }

@@ -27,7 +27,7 @@ class AdyenPayoutConnectedTest : TestCase() {
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
         PaymentQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYMENT_DATA_PAYOUT_CONNECTED) },
-        PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_ACTIVE) }
+        PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_ACTIVE) },
     )
 
     @get:Rule

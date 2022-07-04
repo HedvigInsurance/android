@@ -7,7 +7,7 @@ import com.hedvig.app.R
 
 data class Category(
     val category: KeyGearItemCategory,
-    val selected: Boolean = false
+    val selected: Boolean = false,
 )
 
 @get:StringRes

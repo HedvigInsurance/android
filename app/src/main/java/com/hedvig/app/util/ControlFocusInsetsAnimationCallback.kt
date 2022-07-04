@@ -38,12 +38,12 @@ import androidx.annotation.RequiresApi
 @RequiresApi(Build.VERSION_CODES.R)
 class ControlFocusInsetsAnimationCallback(
     private val view: View,
-    dispatchMode: Int = DISPATCH_MODE_STOP
+    dispatchMode: Int = DISPATCH_MODE_STOP,
 ) : WindowInsetsAnimation.Callback(dispatchMode) {
 
     override fun onProgress(
         insets: WindowInsets,
-        runningAnimations: List<WindowInsetsAnimation>
+        runningAnimations: List<WindowInsetsAnimation>,
     ): WindowInsets {
         // no-op and return the insets
         return insets

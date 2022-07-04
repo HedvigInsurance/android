@@ -31,7 +31,7 @@ fun View.spring(
     property: DynamicAnimation.ViewProperty,
     stiffness: Float = 500f,
     damping: Float = SpringForce.DAMPING_RATIO_NO_BOUNCY,
-    startVelocity: Float? = null
+    startVelocity: Float? = null,
 ): SpringAnimation {
     val key = getKey(property)
     var springAnim = getTag(key) as? SpringAnimation?
@@ -77,7 +77,7 @@ private fun getKey(property: DynamicAnimation.ViewProperty): Int {
  */
 class MultiSpringEndListener(
     onEnd: (Boolean) -> Unit,
-    vararg springs: SpringAnimation
+    vararg springs: SpringAnimation,
 ) {
     private val listeners = ArrayList<DynamicAnimation.OnAnimationEndListener>(springs.size)
 
@@ -90,7 +90,7 @@ class MultiSpringEndListener(
                     animation: DynamicAnimation<out DynamicAnimation<*>>?,
                     canceled: Boolean,
                     value: Float,
-                    velocity: Float
+                    velocity: Float,
                 ) {
                     animation?.removeEndListener(this)
                     wasCancelled = wasCancelled or canceled
@@ -108,5 +108,5 @@ class MultiSpringEndListener(
 
 fun listenForAllSpringsEnd(
     onEnd: (Boolean) -> Unit,
-    vararg springs: SpringAnimation
+    vararg springs: SpringAnimation,
 ) = MultiSpringEndListener(onEnd, *springs)

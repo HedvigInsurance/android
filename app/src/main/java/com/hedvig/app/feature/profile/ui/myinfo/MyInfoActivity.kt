@@ -78,7 +78,7 @@ class MyInfoActivity : BaseActivity(R.layout.activity_my_info) {
                 ValidationDialog.newInstance(
                     R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_TITLE,
                     R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_EMAIL,
-                    R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DISMISS
+                    R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DISMISS,
                 ).show(supportFragmentManager, ValidationDialog.TAG)
                 return true
             }
@@ -88,14 +88,14 @@ class MyInfoActivity : BaseActivity(R.layout.activity_my_info) {
                 ValidationDialog.newInstance(
                     R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_TITLE,
                     R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DESCRIPTION_PHONE_NUMBER,
-                    R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DISMISS
+                    R.string.PROFILE_MY_INFO_VALIDATION_DIALOG_DISMISS,
                 ).show(supportFragmentManager, ValidationDialog.TAG)
                 return true
             }
 
             profileViewModel.saveInputs(
                 emailInput.text.toString(),
-                phoneNumberInput.text.toString()
+                phoneNumberInput.text.toString(),
             )
             if (emailInput.isFocused) {
                 emailInput.clearFocus()

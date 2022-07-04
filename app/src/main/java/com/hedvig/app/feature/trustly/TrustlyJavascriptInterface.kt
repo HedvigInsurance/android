@@ -8,7 +8,7 @@ import android.net.Uri
 import android.webkit.JavascriptInterface
 
 class TrustlyJavascriptInterface(
-    private val activity: Activity
+    private val activity: Activity,
 ) {
     @JavascriptInterface
     fun openURLScheme(packageName: String, URIScheme: String): Boolean {
@@ -19,7 +19,7 @@ class TrustlyJavascriptInterface(
                     action = Intent.ACTION_VIEW
                     data = Uri.parse(URIScheme)
                 },
-                0
+                0,
             )
             return true
         }

@@ -47,7 +47,7 @@ fun FaqScreen(
             Column(
                 modifier = Modifier
                     .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 16.dp)
+                    .padding(horizontal = 16.dp),
             ) {
                 Spacer(Modifier.height(16.dp))
                 FAQCard(
@@ -58,7 +58,7 @@ fun FaqScreen(
                 Text(
                     text = stringResource(R.string.cross_sell_info_faq_chat_headline),
                     style = MaterialTheme.typography.subtitle2,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
                 )
                 Spacer(Modifier.height(16.dp))
                 LargeOutlinedButton(onClick = openChat) {
@@ -78,7 +78,7 @@ fun FaqScreen(
             onClick = onCtaClick,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
         ) {
             Text(text = ctaLabel)
         }

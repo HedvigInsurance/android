@@ -20,8 +20,8 @@ class SubmitMarketAndLanguagePreferencesUseCase(
         .mutation(
             UpdateLanguageMutation(
                 makeLocaleString(language.apply(context), market),
-                localeManager.defaultLocale()
-            )
+                localeManager.defaultLocale(),
+            ),
         )
         .safeQuery()
         .toEither()

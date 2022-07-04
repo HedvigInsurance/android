@@ -14,7 +14,7 @@ import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.viewBinding
 
 class TableAdapter : ListAdapter<TableAdapter.UpcomingAgreementItem, TableAdapter.UpcomingAgreementViewHolder>(
-    GenericDiffUtilItemCallback()
+    GenericDiffUtilItemCallback(),
 ) {
 
     fun setTable(table: Table) {
@@ -29,7 +29,7 @@ class TableAdapter : ListAdapter<TableAdapter.UpcomingAgreementItem, TableAdapte
                         UpcomingAgreementItem.BuildingItem(row.title, subtitle, row.value)
                     } ?: UpcomingAgreementItem.ListItem(row.title, row.value)
                 }
-            }
+            },
         )
     }
 

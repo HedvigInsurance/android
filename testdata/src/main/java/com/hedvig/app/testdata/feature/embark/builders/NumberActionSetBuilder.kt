@@ -39,17 +39,17 @@ data class NumberActionSetBuilder(
                             label = it.label,
                             maxValue = it.maxValue,
                             minValue = it.minValue,
-                            title = it.title
-                        )
+                            title = it.title,
+                        ),
                     )
                 },
                 link = EmbarkStoryQuery.Link3(
                     __typename = "",
                     fragments = EmbarkStoryQuery.Link3.Fragments(
-                        embarkLinkFragment = link
-                    )
+                        embarkLinkFragment = link,
+                    ),
                 ),
-            )
+            ),
         ),
         asEmbarkDatePickerAction = null,
         asEmbarkAudioRecorderAction = null,

@@ -16,7 +16,7 @@ interface ChatEventStore {
 }
 
 class ChatEventDataStore(
-    private val dataStore: DataStore<Preferences>
+    private val dataStore: DataStore<Preferences>,
 ) : ChatEventStore {
 
     override suspend fun increaseChatClosedCounter() {

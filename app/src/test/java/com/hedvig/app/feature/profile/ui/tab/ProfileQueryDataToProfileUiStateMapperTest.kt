@@ -29,7 +29,7 @@ class ProfileQueryDataToProfileUiStateMapperTest {
         val featureManager = mockk<FeatureManager>(relaxed = true)
         coEvery { featureManager.isFeatureEnabled(Feature.PAYMENT_SCREEN) } returns false
         val mapper = sut(
-            featureManager = featureManager
+            featureManager = featureManager,
         )
 
         val result = mapper.map(PROFILE_DATA)
@@ -42,7 +42,7 @@ class ProfileQueryDataToProfileUiStateMapperTest {
         val featureManager = mockk<FeatureManager>(relaxed = true)
         coEvery { featureManager.isFeatureEnabled(Feature.PAYMENT_SCREEN) } returns true
         val mapper = sut(
-            featureManager = featureManager
+            featureManager = featureManager,
         )
 
         val result = mapper.map(PROFILE_DATA)
@@ -55,7 +55,7 @@ class ProfileQueryDataToProfileUiStateMapperTest {
         val featureManager = mockk<FeatureManager>(relaxed = true)
         coEvery { featureManager.isFeatureEnabled(Feature.SHOW_CHARITY) } returns false
         val mapper = sut(
-            featureManager = featureManager
+            featureManager = featureManager,
         )
 
         val result = mapper.map(PROFILE_DATA)
@@ -68,7 +68,7 @@ class ProfileQueryDataToProfileUiStateMapperTest {
         val featureManager = mockk<FeatureManager>(relaxed = true)
         coEvery { featureManager.isFeatureEnabled(Feature.SHOW_CHARITY) } returns true
         val mapper = sut(
-            featureManager = featureManager
+            featureManager = featureManager,
         )
 
         val result = mapper.map(PROFILE_DATA)

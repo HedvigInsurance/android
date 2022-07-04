@@ -28,8 +28,8 @@ data class PassageBuilder(
             EmbarkStoryQuery.Message(
                 __typename = EmbarkMessage.type.name,
                 fragments = EmbarkStoryQuery.Message.Fragments(
-                    it
-                )
+                    it,
+                ),
             )
         },
         response = response,
@@ -39,13 +39,13 @@ data class PassageBuilder(
         api = api?.let {
             EmbarkStoryQuery.Api4(
                 __typename = it.__typename,
-                fragments = EmbarkStoryQuery.Api4.Fragments(it)
+                fragments = EmbarkStoryQuery.Api4.Fragments(it),
             )
         },
         allLinks = links.map {
             EmbarkStoryQuery.AllLink(
                 __typename = "",
-                fragments = EmbarkStoryQuery.AllLink.Fragments(it)
+                fragments = EmbarkStoryQuery.AllLink.Fragments(it),
             )
         },
         tracks = tracks,
@@ -55,8 +55,8 @@ data class PassageBuilder(
         offerRedirect = offerRedirectKeys?.let { ork ->
             EmbarkStoryQuery.OfferRedirect(
                 data = EmbarkStoryQuery.Data2(
-                    keys = ork
-                )
+                    keys = ork,
+                ),
             )
         },
         variantedOfferRedirects = listOf(),

@@ -7,7 +7,7 @@ import javax.money.MonetaryAmount
 data class BundleCost constructor(
     val grossMonthlyCost: MonetaryAmount,
     val netMonthlyCost: MonetaryAmount,
-    val ignoreCampaigns: Boolean
+    val ignoreCampaigns: Boolean,
 ) {
     val finalPremium: MonetaryAmount
         get() = if (ignoreCampaigns) {
@@ -20,7 +20,7 @@ data class BundleCost constructor(
 fun QuoteBundleFragment.toBundleCost() = BundleCost(
     grossMonthlyCost = bundleCost.grossMonthlyCost(),
     netMonthlyCost = bundleCost.netMonthlyCost(),
-    ignoreCampaigns = appConfiguration.ignoreCampaigns
+    ignoreCampaigns = appConfiguration.ignoreCampaigns,
 )
 
 fun QuoteBundleFragment.BundleCost.netMonthlyCost() = fragments

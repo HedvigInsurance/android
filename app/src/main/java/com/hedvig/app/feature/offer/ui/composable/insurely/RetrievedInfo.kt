@@ -41,7 +41,7 @@ fun RetrievedInfo(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(16.dp),
     ) {
         if (data.savedWithHedvig != null) {
             SavedWithHedvigChip(data.savedWithHedvig)
@@ -58,14 +58,14 @@ fun RetrievedInfo(
                     data.insuranceProviderDisplayName != null -> {
                         stringResource(
                             R.string.offer_screen_insurely_card_your_insurance_with,
-                            data.insuranceProviderDisplayName
+                            data.insuranceProviderDisplayName,
                         )
                     }
                     else -> {
                         resources.getQuantityString(R.plurals.offer_switcher_title, 1)
                     }
                 }.uppercase(locale),
-                style = MaterialTheme.typography.caption
+                style = MaterialTheme.typography.caption,
             )
         }
         Spacer(Modifier.height(24.dp))
@@ -76,7 +76,7 @@ fun RetrievedInfo(
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
             Text(
                 text = stringResource(R.string.OFFER_PRICE_PER_MONTH),
-                style = MaterialTheme.typography.body2
+                style = MaterialTheme.typography.body2,
             )
         }
         if (data.currentInsurances.size <= 1) {
@@ -99,7 +99,7 @@ private fun SavedWithHedvigChip(savedWithHedvig: MonetaryAmount) {
         Text(
             text = stringResource(R.string.offer_screen_insurely_card_cost_difference_info, savedWithHedvig.number),
             style = MaterialTheme.typography.overline,
-            modifier = Modifier.padding(vertical = 4.dp, horizontal = 6.dp)
+            modifier = Modifier.padding(vertical = 4.dp, horizontal = 6.dp),
         )
     }
 }
@@ -120,12 +120,12 @@ private fun CurrentInsurancesList(
             Text(
                 text = insurance.name,
                 style = MaterialTheme.typography.subtitle1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
             CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                 Text(
                     text = insurance.amount.format(locale),
-                    style = MaterialTheme.typography.body1
+                    style = MaterialTheme.typography.body1,
                 )
             }
         }
@@ -141,7 +141,7 @@ fun RetrievedInfoPreview() {
         ) {
             RetrievedInfo(
                 OfferItems.InsurelyCard.Retrieved.previewData(),
-                Locale.ENGLISH
+                Locale.ENGLISH,
             )
         }
     }

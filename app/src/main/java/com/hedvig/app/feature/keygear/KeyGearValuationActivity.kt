@@ -65,19 +65,19 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
             saveContainer.measure(
                 View.MeasureSpec.makeMeasureSpec(
                     root.width,
-                    View.MeasureSpec.EXACTLY
+                    View.MeasureSpec.EXACTLY,
                 ),
-                View.MeasureSpec.makeMeasureSpec(root.height, View.MeasureSpec.AT_MOST)
+                View.MeasureSpec.makeMeasureSpec(root.height, View.MeasureSpec.AT_MOST),
             )
 
             scrollView.updatePadding(
-                bottom = scrollView.paddingBottom + saveContainer.measuredHeight
+                bottom = scrollView.paddingBottom + saveContainer.measuredHeight,
             )
 
             model.data.observe(this@KeyGearValuationActivity) { data ->
                 safeLet(
                     data,
-                    data?.fragments?.keyGearItemFragment?.maxInsurableAmount?.amount
+                    data?.fragments?.keyGearItemFragment?.maxInsurableAmount?.amount,
                 ) { d, amount ->
                     maxInsurableAmount = amount.toBigDecimal().toInt()
                     val category =
@@ -103,7 +103,7 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
                     },
                     date?.year ?: calendar.get(Calendar.YEAR),
                     date?.monthValue ?: calendar.get(Calendar.MONTH),
-                    date?.dayOfMonth ?: calendar.get(Calendar.DAY_OF_MONTH)
+                    date?.dayOfMonth ?: calendar.get(Calendar.DAY_OF_MONTH),
                 ).apply {
                     datePicker.maxDate = calendar.time.time
                     show()
@@ -152,7 +152,7 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
         model.uploadResult.observe(this) { uploadResult ->
             safeLet(
                 uploadResult?.keyGearItem,
-                uploadResult?.keyGearItem?.fragments?.keyGearItemFragment?.purchasePrice?.amount
+                uploadResult?.keyGearItem?.fragments?.keyGearItemFragment?.purchasePrice?.amount,
             ) { item, amount ->
                 val type = valuationType(item)
                 if (type == ValuationType.FIXED) {
@@ -173,9 +173,9 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
                                 amount,
                                 type,
                                 valuation.ratio,
-                                valuation.valuation.amount
-                            )
-                        )
+                                valuation.valuation.amount,
+                            ),
+                        ),
                     )
                     finish()
                 } else if (type == ValuationType.MARKET_PRICE) {
@@ -196,9 +196,9 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
                             ValuationData.from(
                                 amount,
                                 type,
-                                ratio
-                            )
-                        )
+                                ratio,
+                            ),
+                        ),
                     )
                     finish()
                 }
@@ -211,13 +211,13 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
             dateInput.spring(
                 SpringAnimation.TRANSLATION_Y,
                 SpringForce.STIFFNESS_HIGH,
-                SpringForce.DAMPING_RATIO_NO_BOUNCY
+                SpringForce.DAMPING_RATIO_NO_BOUNCY,
             ).animateToFinalPosition(getNoCoverageHeight())
 
             saveContainer.spring(
                 SpringAnimation.TRANSLATION_Y,
                 SpringForce.STIFFNESS_HIGH,
-                SpringForce.DAMPING_RATIO_NO_BOUNCY
+                SpringForce.DAMPING_RATIO_NO_BOUNCY,
             ).animateToFinalPosition(getNoCoverageHeight())
         }
     }
@@ -227,13 +227,13 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
             dateInput.spring(
                 SpringAnimation.TRANSLATION_Y,
                 SpringForce.STIFFNESS_HIGH,
-                SpringForce.DAMPING_RATIO_NO_BOUNCY
+                SpringForce.DAMPING_RATIO_NO_BOUNCY,
             ).animateToFinalPosition(-(getNoCoverageHeight() / 50f))
 
             saveContainer.spring(
                 SpringAnimation.TRANSLATION_Y,
                 SpringForce.STIFFNESS_HIGH,
-                SpringForce.DAMPING_RATIO_NO_BOUNCY
+                SpringForce.DAMPING_RATIO_NO_BOUNCY,
             ).animateToFinalPosition(-(getNoCoverageHeight() / 50f))
         }
     }
@@ -242,7 +242,7 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
         binding.apply {
             noCoverage.measure(
                 View.MeasureSpec.UNSPECIFIED,
-                View.MeasureSpec.UNSPECIFIED
+                View.MeasureSpec.UNSPECIFIED,
             )
             return noCoverage.measuredHeight.toFloat()
         }
@@ -288,7 +288,7 @@ class KeyGearValuationActivity : BaseActivity(R.layout.activity_key_gear_valuati
                 saveContainer.backgroundTintList =
                     ContextCompat.getColorStateList(
                         this@KeyGearValuationActivity,
-                        R.color.semi_light_gray
+                        R.color.semi_light_gray,
                     )
             }
         }

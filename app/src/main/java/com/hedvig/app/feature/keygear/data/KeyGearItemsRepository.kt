@@ -103,12 +103,12 @@ class KeyGearItemsRepository(
                                                 .fragments
                                                 .keyGearItemValuationFragment
                                                 .copy(
-                                                    valuation = newValuation
-                                                )
-                                        )
-                                )
-                            )
-                        )
+                                                    valuation = newValuation,
+                                                ),
+                                        ),
+                                ),
+                            ),
+                        ),
                 )
 
             apolloClient
@@ -126,7 +126,7 @@ class KeyGearItemsRepository(
             val file = File(
                 context.cacheDir,
                 fileService.getFileName(photo)
-                    ?: "${UUID.randomUUID()}.${fileService.getFileExtension(photo.toString())}"
+                    ?: "${UUID.randomUUID()}.${fileService.getFileExtension(photo.toString())}",
             ) // I hate this but it seems there's no other way
             context.contentResolver.openInputStream(photo)?.into(file)
             DefaultUpload.Builder()
@@ -177,13 +177,13 @@ class KeyGearItemsRepository(
             newKeyGearItems.add(
                 KeyGearItemsQuery.KeyGearItem(
                     "KeyGearItem",
-                    KeyGearItemsQuery.KeyGearItem.Fragments(data.createKeyGearItem.fragments.keyGearItemFragment)
-                )
+                    KeyGearItemsQuery.KeyGearItem.Fragments(data.createKeyGearItem.fragments.keyGearItemFragment),
+                ),
             )
         }
         val newData = cachedData
             .copy(
-                keyGearItems = newKeyGearItems
+                keyGearItems = newKeyGearItems,
             )
 
         apolloClient
@@ -198,7 +198,7 @@ class KeyGearItemsRepository(
         val uploadFile = File(
             context.cacheDir,
             fileService.getFileName(uri)
-                ?: "${UUID.randomUUID()}.${fileService.getFileExtension(uri.toString())}"
+                ?: "${UUID.randomUUID()}.${fileService.getFileExtension(uri.toString())}",
         )
         withContext(Dispatchers.IO) {
             context.contentResolver.openInputStream(uri)?.into(uploadFile)
@@ -219,7 +219,7 @@ class KeyGearItemsRepository(
 
         val s3file = S3FileInput(
             bucket = uploadData.uploadFile.bucket,
-            key = uploadData.uploadFile.key
+            key = uploadData.uploadFile.key,
         )
 
         val addReceiptResult = apolloClient
@@ -227,10 +227,10 @@ class KeyGearItemsRepository(
                 AddReceiptToKeyGearItemMutation(
                     AddReceiptToKeyGearItemInput(
                         itemId = itemId,
-                        file = s3file
+                        file = s3file,
                     ),
-                    locale
-                )
+                    locale,
+                ),
             )
             .execute()
 
@@ -250,9 +250,9 @@ class KeyGearItemsRepository(
                     keyGearItem = keyGearItem
                         .copy(
                             fragments = KeyGearItemQuery.KeyGearItem.Fragments(
-                                addReceiptData.addReceiptToKeyGearItem.fragments.keyGearItemFragment
-                            )
-                        )
+                                addReceiptData.addReceiptToKeyGearItem.fragments.keyGearItemFragment,
+                            ),
+                        ),
                 )
 
             apolloClient
@@ -265,7 +265,7 @@ class KeyGearItemsRepository(
         val mutation =
             UpdateKeyGearItemNameMutation(
                 id = itemId,
-                updatedName = name
+                updatedName = name,
             )
         val response = apolloClient.mutation(mutation).execute()
 
@@ -282,10 +282,10 @@ class KeyGearItemsRepository(
                         .copy(
                             fragments = KeyGearItemQuery.KeyGearItem.Fragments(
                                 keyGearItem.fragments.keyGearItemFragment.copy(
-                                    name = newName
-                                )
-                            )
-                        )
+                                    name = newName,
+                                ),
+                            ),
+                        ),
                 )
 
             apolloClient
@@ -302,14 +302,14 @@ class KeyGearItemsRepository(
                         it.copy(
                             fragments = it.fragments.copy(
                                 keyGearItemFragment = it.fragments.keyGearItemFragment.copy(
-                                    name = newName
-                                )
-                            )
+                                    name = newName,
+                                ),
+                            ),
                         )
                     } else {
                         it
                     }
-                }
+                },
             )
 
             apolloClient

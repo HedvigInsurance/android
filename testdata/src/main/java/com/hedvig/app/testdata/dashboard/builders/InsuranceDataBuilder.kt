@@ -25,7 +25,7 @@ class InsuranceDataBuilder(
     private val renewal: InsuranceQuery.UpcomingRenewal? =
         InsuranceQuery.UpcomingRenewal(
             renewalDate = LocalDate.of(2021, 5, 6),
-            draftCertificateUrl = "https://www.example.com"
+            draftCertificateUrl = "https://www.example.com",
         ),
     private val displayName: String = "Hemförsäkring",
     private val showUpcomingAgreement: Boolean = false,
@@ -48,7 +48,7 @@ class InsuranceDataBuilder(
                             asPendingStatus = if (c == ContractStatus.PENDING) {
                                 ContractStatusFragment.AsPendingStatus(
                                     __typename = c.typename,
-                                    pendingSince = null
+                                    pendingSince = null,
                                 )
                             } else {
                                 null
@@ -56,12 +56,12 @@ class InsuranceDataBuilder(
                             asActiveInFutureStatus = when (c) {
                                 ContractStatus.ACTIVE_IN_FUTURE -> ContractStatusFragment.AsActiveInFutureStatus(
                                     __typename = c.typename,
-                                    futureInception = LocalDate.of(2025, 1, 1)
+                                    futureInception = LocalDate.of(2025, 1, 1),
                                 )
                                 ContractStatus.ACTIVE_IN_FUTURE_INVALID ->
                                     ContractStatusFragment.AsActiveInFutureStatus(
                                         __typename = c.typename,
-                                        futureInception = null
+                                        futureInception = null,
                                     )
                                 else -> null
                             },
@@ -76,13 +76,13 @@ class InsuranceDataBuilder(
                                                 asSwedishApartmentAgreement = ContractStatusFragment
                                                     .AsSwedishApartmentAgreement(
                                                         __typename = SwedishApartmentAgreement.type.name,
-                                                        activeFrom = LocalDate.of(2021, 4, 6)
-                                                    )
-                                            )
+                                                        activeFrom = LocalDate.of(2021, 4, 6),
+                                                    ),
+                                            ),
                                         )
                                     } else {
                                         null
-                                    }
+                                    },
                                 )
                             } else {
                                 null
@@ -93,7 +93,7 @@ class InsuranceDataBuilder(
                                 ContractStatusFragment.AsActiveInFutureAndTerminatedInFutureStatus(
                                     __typename = c.typename,
                                     futureInception = LocalDate.of(2024, 1, 1),
-                                    futureTermination = LocalDate.of(2034, 1, 1)
+                                    futureTermination = LocalDate.of(2034, 1, 1),
                                 )
                             } else {
                                 null
@@ -102,7 +102,7 @@ class InsuranceDataBuilder(
                             asTerminatedTodayStatus = if (c == ContractStatus.TERMINATED_TODAY) {
                                 ContractStatusFragment.AsTerminatedTodayStatus(
                                     __typename = c.typename,
-                                    today = LocalDate.now()
+                                    today = LocalDate.now(),
                                 )
                             } else {
                                 null
@@ -110,13 +110,13 @@ class InsuranceDataBuilder(
                             asTerminatedStatus = if (c == ContractStatus.TERMINATED) {
                                 ContractStatusFragment.AsTerminatedStatus(
                                     __typename = c.typename,
-                                    termination = null
+                                    termination = null,
                                 )
                             } else {
                                 null
-                            }
-                        )
-                    )
+                            },
+                        ),
+                    ),
                 ),
                 displayName = displayName,
                 upcomingRenewal = renewal,
@@ -140,14 +140,14 @@ class InsuranceDataBuilder(
                             InsurableLimitsFragment(
                                 label = "Utstyrene dine er forsikrat till",
                                 limit = "1 000 000 kr",
-                                description = "Dina prylar är försäkrade till"
-                            )
-                        )
-                    )
+                                description = "Dina prylar är försäkrade till",
+                            ),
+                        ),
+                    ),
                 ),
                 termsAndConditions = InsuranceQuery.TermsAndConditions(
                     displayName = "Terms and Conditions",
-                    url = "https://cdn.hedvig.com/info/insurance-terms-tenant-owners-2019-05.pdf"
+                    url = "https://cdn.hedvig.com/info/insurance-terms-tenant-owners-2019-05.pdf",
                 ),
                 statusPills = emptyList(),
                 detailPills = emptyList(),
@@ -170,29 +170,29 @@ class InsuranceDataBuilder(
                                                         asAgreementCore = UpcomingAgreementChangeFragment
                                                             .AsAgreementCore(
                                                                 __typename = SwedishApartmentAgreement.type.name,
-                                                                activeFrom = LocalDate.of(2021, 4, 6)
+                                                                activeFrom = LocalDate.of(2021, 4, 6),
                                                             ),
-                                                    )
-                                                )
-                                            )
+                                                    ),
+                                                ),
+                                            ),
                                         )
                                     } else {
                                         null
-                                    }
+                                    },
                                 )
                             } else {
                                 null
                             },
                             asTerminatedInFutureStatus = null,
-                            asTerminatedTodayStatus = null
+                            asTerminatedTodayStatus = null,
                         ),
                         upcomingAgreementDetailsTable = UpcomingAgreementFragment.UpcomingAgreementDetailsTable(
                             __typename = Table.type.name,
                             fragments = UpcomingAgreementFragment.UpcomingAgreementDetailsTable.Fragments(
-                                upcomingDetailsTable
-                            )
-                        )
-                    )
+                                upcomingDetailsTable,
+                            ),
+                        ),
+                    ),
                 ),
                 logo = InsuranceQuery.Logo(
                     variants = InsuranceQuery.Variants(
@@ -200,10 +200,10 @@ class InsuranceDataBuilder(
                         fragments = InsuranceQuery.Variants.Fragments(
                             IconVariantsFragment(
                                 dark = IconVariantsFragment.Dark(svgUrl = "https://www.example.com"),
-                                light = IconVariantsFragment.Light(svgUrl = "https://www.example.com")
-                            )
-                        )
-                    )
+                                light = IconVariantsFragment.Light(svgUrl = "https://www.example.com"),
+                            ),
+                        ),
+                    ),
                 ),
             )
         },
@@ -211,11 +211,11 @@ class InsuranceDataBuilder(
             listOf(
                 InsuranceQuery.ActiveContractBundle(
                     potentialCrossSells = crossSells,
-                )
+                ),
             )
         } else {
             emptyList()
-        }
+        },
     )
 
     companion object {
@@ -226,12 +226,12 @@ class InsuranceDataBuilder(
                     Triple("Adress", null, "Testvägen 1"),
                     Triple("Postal code", null, "123 45"),
                     Triple("Housing type", null, "Rental"),
-                    Triple("Size", null, "50 m2")
+                    Triple("Size", null, "50 m2"),
                 ),
                 "Coinsured" to listOf(
                     Triple("Insured people", null, "You + 1 person"),
-                )
-            )
+                ),
+            ),
         ).build()
     }
 }

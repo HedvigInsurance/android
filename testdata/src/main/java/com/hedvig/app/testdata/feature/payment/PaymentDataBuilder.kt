@@ -26,7 +26,7 @@ data class PaymentDataBuilder(
         grossAmount = "139.00",
         netAmount = "139.00",
         discountAmount = "139.00",
-        currency = currency
+        currency = currency,
     ).build(),
     private val redeemedCampaigns: List<PaymentQuery.RedeemedCampaign> = emptyList(),
     private val payinType: PayinType = PayinType.TRUSTLY,
@@ -39,13 +39,13 @@ data class PaymentDataBuilder(
                 status = PaymentQuery.Status(
                     __typename = contractStatus.typename,
                     fragments = PaymentQuery.Status.Fragments(
-                        ContractStatusFragmentBuilder(contractStatus).build()
-                    )
-                )
+                        ContractStatusFragmentBuilder(contractStatus).build(),
+                    ),
+                ),
             )
         },
         balance = PaymentQuery.Balance(
-            failedCharges = failedCharges
+            failedCharges = failedCharges,
         ),
         chargeEstimation = PaymentQuery.ChargeEstimation(
             charge = PaymentQuery.Charge(
@@ -53,28 +53,28 @@ data class PaymentDataBuilder(
                 fragments = PaymentQuery.Charge.Fragments(
                     MonetaryAmountFragment(
                         amount = charge,
-                        currency = currency
-                    )
-                )
+                        currency = currency,
+                    ),
+                ),
             ),
             discount = PaymentQuery.Discount(
                 __typename = "",
                 fragments = PaymentQuery.Discount.Fragments(
                     MonetaryAmountFragment(
                         amount = discount,
-                        currency = currency
-                    )
-                )
+                        currency = currency,
+                    ),
+                ),
             ),
             subscription = PaymentQuery.Subscription(
                 __typename = "",
                 fragments = PaymentQuery.Subscription.Fragments(
                     MonetaryAmountFragment(
                         amount = subscription,
-                        currency = currency
-                    )
-                )
-            )
+                        currency = currency,
+                    ),
+                ),
+            ),
         ),
         nextChargeDate = nextChargeDate,
         chargeHistory = chargeHistory,
@@ -82,8 +82,8 @@ data class PaymentDataBuilder(
             __typename = "",
             freeUntil = freeUntil,
             fragments = PaymentQuery.InsuranceCost.Fragments(
-                costFragment = cost
-            )
+                costFragment = cost,
+            ),
         ),
         redeemedCampaigns = redeemedCampaigns,
         bankAccount = if (payinType == PayinType.TRUSTLY && payinConnected) {
@@ -92,9 +92,9 @@ data class PaymentDataBuilder(
                 fragments = PaymentQuery.BankAccount.Fragments(
                     BankAccountFragment(
                         bankName = "Testbanken",
-                        descriptor = "**** 1234"
-                    )
-                )
+                        descriptor = "**** 1234",
+                    ),
+                ),
             )
         } else {
             null
@@ -112,14 +112,14 @@ data class PaymentDataBuilder(
                             expiryMonth = "01",
                             expiryYear = "2050",
                         ),
-                        asStoredThirdPartyDetails = null
-                    )
-                )
+                        asStoredThirdPartyDetails = null,
+                    ),
+                ),
             )
         } else {
             null
         },
-        activePayoutMethods = payoutConnectionStatus?.let { PaymentQuery.ActivePayoutMethods(status = it) }
+        activePayoutMethods = payoutConnectionStatus?.let { PaymentQuery.ActivePayoutMethods(status = it) },
     )
 }
 

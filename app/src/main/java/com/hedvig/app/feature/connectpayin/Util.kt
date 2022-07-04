@@ -7,7 +7,7 @@ import com.hedvig.app.util.extensions.showAlert
 fun showConfirmCloseDialog(
     context: Context,
     connectPayinType: ConnectPayinType,
-    close: () -> Unit
+    close: () -> Unit,
 ) = context.showAlert(
     title = R.string.pay_in_iframe_post_sign_skip_alert_title,
     message = when (connectPayinType) {
@@ -18,5 +18,5 @@ fun showConfirmCloseDialog(
     negativeLabel = R.string.pay_in_iframe_post_sign_skip_alert_dismiss_button,
     positiveAction = {
         close()
-    }
+    },
 )

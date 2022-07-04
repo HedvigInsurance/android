@@ -13,14 +13,16 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 
 class CategoryAdapter(
-    private val setActiveCategory: (Category) -> Unit
+    private val setActiveCategory: (Category) -> Unit,
 ) : ListAdapter<Category, CategoryAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         ViewHolder(
             LayoutInflater.from(parent.context).inflate(
-                R.layout.create_key_gear_item_category, parent, false
-            )
+                R.layout.create_key_gear_item_category,
+                parent,
+                false,
+            ),
         )
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) =

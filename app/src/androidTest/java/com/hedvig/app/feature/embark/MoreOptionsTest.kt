@@ -34,7 +34,7 @@ class MoreOptionsTest : TestCase() {
             } else {
                 success(MEMBER_ID_DATA)
             }
-        }
+        },
     )
 
     @Test

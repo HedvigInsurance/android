@@ -35,7 +35,7 @@ sealed class DocumentItems {
                 title = insuranceTerm.displayName,
                 subtitle = null,
                 uri = Uri.parse(insuranceTerm.url),
-                type = Type.GENERAL_TERMS
+                type = Type.GENERAL_TERMS,
             )
         }
     }

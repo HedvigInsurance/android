@@ -30,7 +30,7 @@ fun QuoteBundleFragment.AppConfiguration.toViewConfiguration() = ViewConfigurati
     title = title.toTitle(),
     startDateTerminology = startDateTerminology.toStartDateTerminology(),
     gradient = gradientOption.toGradient(),
-    postSignScreen = PostSignScreen.from(postSignStep)
+    postSignScreen = PostSignScreen.from(postSignStep),
 )
 
 private fun QuoteBundleAppConfigurationTitle.toTitle() = when (this) {

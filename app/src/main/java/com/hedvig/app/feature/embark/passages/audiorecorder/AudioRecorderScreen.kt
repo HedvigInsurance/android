@@ -56,7 +56,7 @@ fun AudioRecorderScreen(
                 top = 24.dp + systemTop,
                 bottom = systemBottom,
             )
-            .fillMaxSize()
+            .fillMaxSize(),
     ) {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -109,11 +109,11 @@ fun NotRecording(startRecording: () -> Unit) {
             onClick = startRecording,
             modifier = Modifier
                 .padding(bottom = 24.dp)
-                .then(Modifier.size(72.dp))
+                .then(Modifier.size(72.dp)),
         ) {
             Image(
                 painter = painterResource(
-                    R.drawable.ic_record
+                    R.drawable.ic_record,
                 ),
                 contentDescription = label,
             )
@@ -141,25 +141,26 @@ fun Recording(
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .padding(bottom = 24.dp)
+                .padding(bottom = 24.dp),
         ) {
             if (viewState.amplitudes.isNotEmpty()) {
                 RecordingAmplitudeIndicator(amplitude = viewState.amplitudes.last())
             }
             IconButton(
                 onClick = stopRecording,
-                modifier = Modifier.size(72.dp)
+                modifier = Modifier.size(72.dp),
             ) {
                 Image(
                     painter = painterResource(
-                        R.drawable.ic_record_stop
+                        R.drawable.ic_record_stop,
                     ),
-                    contentDescription = stringResource(R.string.EMBARK_STOP_RECORDING)
+                    contentDescription = stringResource(R.string.EMBARK_STOP_RECORDING),
                 )
             }
         }
         val diff = Duration.between(
-            viewState.startedAt, Instant.now(clock)
+            viewState.startedAt,
+            Instant.now(clock),
         )
         val label = String.format("%02d:%02d", diff.toMinutes(), diff.seconds % 60)
         Text(
@@ -219,7 +220,7 @@ fun AudioRecorderScreenNotRecordingPreview() {
                 messages = listOf("Hello", "World"),
                 key = "key",
                 label = "label",
-                link = "link"
+                link = "link",
             ),
             viewState = AudioRecorderViewModel.ViewState.NotRecording,
             startRecording = {},
@@ -242,7 +243,7 @@ fun AudioRecorderScreenRecordingPreview() {
                 messages = listOf("Hello", "World"),
                 key = "key",
                 label = "label",
-                link = "link"
+                link = "link",
             ),
             viewState = AudioRecorderViewModel.ViewState.Recording(
                 listOf(
@@ -293,7 +294,7 @@ fun AudioRecorderScreenPlaybackPreview() {
                 messages = listOf("Hello", "World"),
                 key = "key",
                 label = "label",
-                link = "link"
+                link = "link",
             ),
             viewState = AudioRecorderViewModel.ViewState.Playback(
                 "",

@@ -23,11 +23,11 @@ class AddPaymentTokenUseCase(
 
     suspend operator fun invoke(
         quoteCartId: QuoteCartId,
-        paymentTokenId: PaymentTokenId
+        paymentTokenId: PaymentTokenId,
     ): Either<Error, Success> {
         val mutation = AddPaymentTokenIdMutation(
             quoteCartId = quoteCartId.id,
-            paymentTokenId = paymentTokenId.id
+            paymentTokenId = paymentTokenId.id,
         )
         return apolloClient.mutation(mutation)
             .safeQuery()

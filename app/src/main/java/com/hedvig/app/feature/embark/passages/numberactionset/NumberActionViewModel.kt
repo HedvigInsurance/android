@@ -18,8 +18,8 @@ class NumberActionViewModel(
             NumberInput(
                 key = key,
                 input = value,
-                valid = isValid(value.toIntOrNull(), data.numberActions.first { it.key == key })
-            )
+                valid = isValid(value.toIntOrNull(), data.numberActions.first { it.key == key }),
+            ),
         ) {
             it.key == key
         }
@@ -45,6 +45,6 @@ class NumberActionViewModel(
     data class NumberInput(
         val key: String,
         val input: String? = null,
-        val valid: Boolean = false
+        val valid: Boolean = false,
     )
 }

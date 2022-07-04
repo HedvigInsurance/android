@@ -48,7 +48,7 @@ fun KView.hasNrOfChildren(quantity: Int) {
 
 fun KBottomNavigationView.hasNumberOfMenuItems(matcherNumber: Int) {
     view.check(
-        ViewAssertions.matches(HasNumberOfMenuItemsCheck(matcherNumber))
+        ViewAssertions.matches(HasNumberOfMenuItemsCheck(matcherNumber)),
     )
 }
 
@@ -64,7 +64,7 @@ fun KTextInputLayout.hasPlaceholderText(text: String) {
             if (text != view.placeholderText) {
                 throw AssertionError(
                     "Expected placeholder text is $text," +
-                        " but actual is ${view.placeholderText}"
+                        " but actual is ${view.placeholderText}",
                 )
             }
         } else {
@@ -79,7 +79,7 @@ fun KTextInputLayout.hasHelperText(text: String) {
             if (text != view.helperText) {
                 throw AssertionError(
                     "Expected helper text is $text," +
-                        " but actual is ${view.helperText}"
+                        " but actual is ${view.helperText}",
                 )
             }
         } else {

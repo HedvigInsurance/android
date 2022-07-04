@@ -42,7 +42,7 @@ class GetExternalInsuranceProviderUseCase(
                         ExternalProvider(
                             dataCollectionStatus = dataCollectionStatus,
                             dataCollectionResult = dataCollectionResult.await(),
-                            insuranceProviderDisplayName = insuranceProviderDisplayName.await()
+                            insuranceProviderDisplayName = insuranceProviderDisplayName.await(),
                         )
                     }
                 }

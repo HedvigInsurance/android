@@ -43,7 +43,7 @@ abstract class OnSwipeListener : GestureDetector.SimpleOnGestureListener() {
                 if (inRange(
                         angle,
                         0f,
-                        45f
+                        45f,
                     ) || inRange(angle, 315f, 360f)
                 ) {
                     return RIGHT

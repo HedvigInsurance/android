@@ -14,7 +14,7 @@ import java.util.UUID
 
 class AddComponentViewModel(
     private val component: MultiActionItem.Component?,
-    multiActionParams: MultiActionParams
+    multiActionParams: MultiActionParams,
 ) : ViewModel() {
 
     private val dropDownStates = MutableStateFlow(emptyMap<String, DropDownState>())
@@ -34,7 +34,7 @@ class AddComponentViewModel(
     val viewState: LiveData<ViewState> = combine(
         inputStates,
         dropDownStates,
-        ::validateState
+        ::validateState,
     )
         .onStart { emit(ViewState.Invalid) }
         .asLiveData()
@@ -58,7 +58,7 @@ class AddComponentViewModel(
             MultiActionItem.DropDown(
                 key = it.key,
                 text = (it.value as? DropDownState.Selected)?.text ?: "",
-                value = (it.value as? DropDownState.Selected)?.value ?: ""
+                value = (it.value as? DropDownState.Selected)?.value ?: "",
             )
         },
         inputs = inputStates.value.map {
@@ -72,9 +72,9 @@ class AddComponentViewModel(
             MultiActionItem.Switch(
                 key = it.key,
                 value = it.value.checked,
-                label = it.value.label
+                label = it.value.label,
             )
-        }
+        },
     )
 
     fun onContinue() {
@@ -119,7 +119,7 @@ class AddComponentViewModel(
     sealed class DropDownState {
         data class Selected(
             val text: String,
-            val value: String
+            val value: String,
         ) : DropDownState()
 
         object NotSelected : DropDownState()

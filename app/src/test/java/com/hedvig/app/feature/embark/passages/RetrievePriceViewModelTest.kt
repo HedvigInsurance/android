@@ -58,7 +58,7 @@ class RetrievePriceViewModelTest {
         viewModel.onIdentityInput("Invalid input")
         assertThat(viewModel.viewState.value.input).isEqualTo("Invalid input")
         assertThat(viewModel.viewState.value.inputError).isEqualTo(
-            RetrievePriceViewModel.ViewState.InputError(R.string.INVALID_NATIONAL_IDENTITY_NUMBER)
+            RetrievePriceViewModel.ViewState.InputError(R.string.INVALID_NATIONAL_IDENTITY_NUMBER),
         )
 
         viewModel.onIdentityInput("1")
@@ -71,7 +71,7 @@ class RetrievePriceViewModelTest {
         coEvery {
             startDataCollectionUseCase.startDataCollection(
                 "9101131093",
-                "testCollectionId"
+                "testCollectionId",
             )
         } coAnswers {
             delay(100.milliseconds)
@@ -94,7 +94,7 @@ class RetrievePriceViewModelTest {
         coEvery {
             startDataCollectionUseCase.startDataCollection(
                 "9101131093",
-                "testCollectionId"
+                "testCollectionId",
             )
         } coAnswers {
             delay(100.milliseconds)
@@ -110,8 +110,8 @@ class RetrievePriceViewModelTest {
         advanceUntilIdle()
         assertThat(viewModel.events.first()).isEqualTo(
             RetrievePriceViewModel.Event.AuthInformation(
-                "testToken"
-            )
+                "testToken",
+            ),
         )
         assertThat(viewModel.viewState.value.isLoading).isEqualTo(false)
     }

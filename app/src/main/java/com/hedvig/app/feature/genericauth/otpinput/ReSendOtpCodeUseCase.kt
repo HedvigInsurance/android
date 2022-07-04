@@ -10,7 +10,7 @@ interface ReSendOtpCodeUseCase {
 }
 
 class ReSendOtpCodeUseCaseImpl(
-    private val apolloClient: ApolloClient
+    private val apolloClient: ApolloClient,
 ) : ReSendOtpCodeUseCase {
     override suspend operator fun invoke(credential: String): ResendOtpResult {
         return when (val result = apolloClient.mutation(CreateOtpAttemptMutation(credential)).safeQuery()) {

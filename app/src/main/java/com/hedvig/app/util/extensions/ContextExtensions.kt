@@ -157,7 +157,7 @@ fun Context.showShareSheet(title: String, configureClosure: ((Intent) -> Unit)?)
 
     configureClosure?.let { it(intent) }
     startActivity(
-        Intent.createChooser(intent, title)
+        Intent.createChooser(intent, title),
     )
 }
 
@@ -250,7 +250,7 @@ fun Context.hasPermissions(vararg permissions: String): Boolean {
     for (permission in permissions) {
         if (ActivityCompat.checkSelfPermission(
                 this,
-                permission
+                permission,
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             return false
@@ -275,7 +275,7 @@ fun Context.tryOpenUri(uri: Uri) {
         showAlert(
             title = R.string.error_dialog_title,
             message = R.string.component_error,
-            positiveAction = {}
+            positiveAction = {},
         )
     }
 
@@ -300,7 +300,7 @@ fun Context.startChat(
         ActivityOptionsCompat.makeCustomAnimation(
             this,
             R.anim.chat_slide_up_in,
-            R.anim.stay_in_place
+            R.anim.stay_in_place,
         )
 
     ActivityCompat.startActivity(this, intent, options.toBundle())

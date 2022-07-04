@@ -48,13 +48,12 @@ fun AppCompatActivity.setupToolbar(
     rootLayout: View? = null,
     backAction: (() -> Unit)?,
 ) {
-
     this.findViewById<Toolbar>(toolbar).setupToolbar(
         activity = this,
         usingEdgeToEdge = usingEdgeToEdge,
         icon = icon,
         rootLayout = rootLayout,
-        backAction = backAction
+        backAction = backAction,
     )
 }
 
@@ -88,19 +87,19 @@ fun Activity.showPermissionExplanationDialog(permission: String) {
             showAlert(
                 title = R.string.PERMISSION_DIALOG_TITLE,
                 message = R.string.PERMISSION_DIALOG_EXTERNAL_STORAGE_MESSAGE,
-                positiveAction = { openAppSettings() }
+                positiveAction = { openAppSettings() },
             )
         android.Manifest.permission.RECORD_AUDIO ->
             showAlert(
                 title = R.string.PERMISSION_DIALOG_TITLE,
                 message = R.string.PERMISSION_DIALOG_RECORD_AUDIO_MESSAGE,
-                positiveAction = { openAppSettings() }
+                positiveAction = { openAppSettings() },
             )
         android.Manifest.permission.CAMERA ->
             showAlert(
                 title = R.string.PERMISSION_DIALOG_TITLE,
                 message = R.string.PERMISSION_DIALOG_CAMERA_MESSAGE,
-                positiveAction = { openAppSettings() }
+                positiveAction = { openAppSettings() },
             )
         else -> {
             e { "No dialog for permission $permission!" }
@@ -124,7 +123,7 @@ fun Activity.openEmail(title: String) {
         // First create an intent with only the package name of the first registered email app
         // and build a picked based on it
         val intentChooser = packageManager.getLaunchIntentForPackage(
-            resInfo.first().activityInfo.packageName
+            resInfo.first().activityInfo.packageName,
         )
         val openInChooser = Intent.createChooser(intentChooser, title)
 
@@ -185,7 +184,7 @@ fun Activity.makeACall(uri: Uri) {
 }
 
 fun Activity.showReviewDialog(
-    onComplete: () -> Unit = {}
+    onComplete: () -> Unit = {},
 ) {
     val manager = ReviewManagerFactory.create(this)
     val request = manager.requestReviewFlow()

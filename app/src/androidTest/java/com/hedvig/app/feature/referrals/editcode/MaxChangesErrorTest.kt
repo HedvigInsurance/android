@@ -23,9 +23,9 @@ class MaxChangesErrorTest : TestCase() {
     val mockServerRule = ApolloMockServerRule(
         UpdateReferralCampaignCodeMutation.OPERATION_DOCUMENT to apolloResponse {
             success(
-                EDIT_CODE_DATA_TOO_MANY_CHANGES
+                EDIT_CODE_DATA_TOO_MANY_CHANGES,
             )
-        }
+        },
     )
 
     @get:Rule
@@ -36,8 +36,8 @@ class MaxChangesErrorTest : TestCase() {
         activityRule.launch(
             ReferralsEditCodeActivity.newInstance(
                 context(),
-                "TEST123"
-            )
+                "TEST123",
+            ),
         )
 
         onScreen<ReferralsEditCodeScreen> {

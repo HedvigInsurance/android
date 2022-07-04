@@ -31,7 +31,7 @@ fun ClaimType(
     Row(
         horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.Start),
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
+        modifier = modifier,
     ) {
         Image(
             painter = painterResource(drawableRes),

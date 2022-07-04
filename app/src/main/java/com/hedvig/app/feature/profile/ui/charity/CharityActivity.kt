@@ -98,7 +98,7 @@ class CharityActivity : BaseActivity(R.layout.activity_charity) {
             selectCharityContainer.show()
             cashbackOptions.adapter = CharityAdapter(
                 context = this@CharityActivity,
-                clickListener = { id -> profileViewModel.selectCashback(id) }
+                clickListener = { id -> profileViewModel.selectCashback(id) },
             ).also {
                 it.submitList(options)
             }

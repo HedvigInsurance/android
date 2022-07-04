@@ -19,7 +19,7 @@ fun GenericErrorScreen(
 ) {
     AndroidViewBinding(
         factory = GenericErrorBinding::inflate,
-        modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize(),
     ) {
         retry.setHapticClickListener {
             onRetryButtonClicked()

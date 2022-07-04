@@ -8,7 +8,7 @@ import android.webkit.MimeTypeMap
 import java.util.Locale
 
 class FileService(
-    private val context: Context
+    private val context: Context,
 ) {
     fun getFileName(uri: Uri): String? {
         if (uri.scheme == ContentResolver.SCHEME_CONTENT) {

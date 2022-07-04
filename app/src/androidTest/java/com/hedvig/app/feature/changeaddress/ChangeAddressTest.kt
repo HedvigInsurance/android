@@ -30,10 +30,10 @@ class ChangeAddressTest : TestCase() {
                 CreateOnboardingQuoteCartMutation.Data(
                     onboardingQuoteCart_create = CreateOnboardingQuoteCartMutation.OnboardingQuoteCart_create(
                         id = "123",
-                    )
-                )
+                    ),
+                ),
             )
-        }
+        },
     )
 
     @get:Rule

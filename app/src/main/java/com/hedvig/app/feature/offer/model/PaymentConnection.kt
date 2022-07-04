@@ -28,5 +28,5 @@ fun QuoteCartFragment.PaymentConnection.toPaymentConnection() = PaymentConnectio
                 PaymentProvider.Trustly
             }
         }
-    }
+    },
 )

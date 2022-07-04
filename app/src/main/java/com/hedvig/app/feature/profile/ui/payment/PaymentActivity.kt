@@ -62,8 +62,8 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
                             *paymentHistory(paymentData),
                             redeemCampaign(paymentData),
                             *payinDetails(paymentData, payinStatusData, payinType),
-                            *paymentData.toPayoutDetails()
-                        )
+                            *paymentData.toPayoutDetails(),
+                        ),
                     )
                 }
                 .launchIn(lifecycleScope)
@@ -84,7 +84,7 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
 
     private fun failedPayments(data: PaymentQuery.Data) = safeLet(
         data.balance.failedCharges,
-        data.nextChargeDate
+        data.nextChargeDate,
     ) { failedCharges, nextChargeDate ->
         if (failedCharges > 0) {
             PaymentModel.FailedPayments(failedCharges, nextChargeDate)
@@ -105,7 +105,7 @@ class PaymentActivity : BaseActivity(R.layout.activity_payment) {
             PaymentModel.PaymentHistoryHeader,
             data.chargeHistory.getOrNull(0)?.let { PaymentModel.Charge(it) },
             data.chargeHistory.getOrNull(1)?.let { PaymentModel.Charge(it) },
-            PaymentModel.PaymentHistoryLink
+            PaymentModel.PaymentHistoryLink,
         ).toTypedArray()
     } else {
         emptyArray()

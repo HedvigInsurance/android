@@ -60,7 +60,7 @@ data class DanishAddress(
                     floor != null -> ", $floor."
                     apartment != null -> ", $apartment"
                     else -> ""
-                }
+                },
             )
         }
         val bottomString = "$postalCode $city"

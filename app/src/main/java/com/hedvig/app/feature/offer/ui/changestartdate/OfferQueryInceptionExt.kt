@@ -5,7 +5,7 @@ import com.hedvig.app.feature.offer.model.QuoteCartId
 
 fun QuoteBundleFragment.Inception1.toChangeDateBottomSheetData(
     quoteCartId: QuoteCartId,
-    quoteNames: List<String>
+    quoteNames: List<String>,
 ) = ChangeDateBottomSheetData(
     quoteCartId = quoteCartId,
     inceptions = asConcurrentInception?.let { concurrentInception ->
@@ -23,7 +23,7 @@ fun QuoteBundleFragment.Inception1.toChangeDateBottomSheetData(
                             ?: throw IllegalArgumentException("Current insurer switchable not found"),
                     )
                 },
-                isConcurrent = true
+                isConcurrent = true,
             )
         }
     } ?: asIndependentInceptions?.let { independentInceptions ->
@@ -41,8 +41,8 @@ fun QuoteBundleFragment.Inception1.toChangeDateBottomSheetData(
                             ?: throw IllegalArgumentException("Current insurer switchable not found"),
                     )
                 },
-                isConcurrent = false
+                isConcurrent = false,
             )
         }
-    } ?: throw IllegalArgumentException("Could not parse inception")
+    } ?: throw IllegalArgumentException("Could not parse inception"),
 )

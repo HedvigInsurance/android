@@ -22,7 +22,7 @@ data class Peril(
             lightUrl = fragment.icon.variants.light.svgUrl,
             exception = fragment.exceptions,
             covered = fragment.covered,
-            info = fragment.info
+            info = fragment.info,
         )
     }
 }

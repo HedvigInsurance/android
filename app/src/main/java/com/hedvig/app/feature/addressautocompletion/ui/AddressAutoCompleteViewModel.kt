@@ -33,7 +33,7 @@ class AddressAutoCompleteViewModel(
 ) : ViewModel() {
 
     private val currentInput: MutableStateFlow<DanishAddressInput> = MutableStateFlow(
-        DanishAddressInput.fromDanishAddress(initialAddress)
+        DanishAddressInput.fromDanishAddress(initialAddress),
     )
     private val inputResult: Flow<InputResult> = currentInput
         .withHistoryOfLastValue()
@@ -58,7 +58,7 @@ class AddressAutoCompleteViewModel(
                         .invoke(newInput)
                         .fold(
                             { emptyList() },
-                            AddressAutoCompleteResults::resultList
+                            AddressAutoCompleteResults::resultList,
                         )
                         .let(::InputResult)
                 }

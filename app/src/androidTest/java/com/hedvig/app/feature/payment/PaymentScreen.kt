@@ -31,7 +31,7 @@ class PaymentScreen : Screen<PaymentScreen>() {
             itemType(::AdyenPayoutDetails)
             itemType(::AdyenPayoutParagraph)
             itemType(::Link)
-        }
+        },
     )
 
     class FailedPayments(parent: Matcher<View>) : KRecyclerItem<FailedPayments>(parent) {

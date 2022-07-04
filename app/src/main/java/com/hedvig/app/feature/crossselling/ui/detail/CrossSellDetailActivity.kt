@@ -68,8 +68,8 @@ class CrossSellDetailActivity : BaseActivity() {
                 title = getString(R.string.cross_sell_info_full_coverage_row),
                 perils = perils,
                 insurableLimits = crossSell.insurableLimits,
-                documents = crossSell.terms
-            )
+                documents = crossSell.terms,
+            ),
         )
     }
 

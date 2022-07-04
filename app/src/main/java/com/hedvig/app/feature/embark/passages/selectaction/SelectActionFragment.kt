@@ -96,7 +96,7 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
                                 yield()
                                 model.submitAction(selectAction.link, position)
                             }
-                        }
+                        },
                     )
                 }
             }
@@ -123,7 +123,7 @@ class SelectActionFragment : Fragment(R.layout.fragment_embark_select_action) {
         fun newInstance(data: SelectActionParameter) =
             SelectActionFragment().apply {
                 arguments = bundleOf(
-                    DATA to data
+                    DATA to data,
                 )
             }
     }

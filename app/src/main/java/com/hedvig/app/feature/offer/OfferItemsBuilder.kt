@@ -58,8 +58,8 @@ object OfferItemsBuilder {
                         description = it.description,
                         price = it.bundle.cost.finalPremium,
                         isSelected = it.id == quoteBundleVariant.id,
-                        onVariantSelected = onVariantSelected
-                    )
+                        onVariantSelected = onVariantSelected,
+                    ),
                 )
             }
         }
@@ -71,8 +71,8 @@ object OfferItemsBuilder {
                     add(
                         OfferItems.InsurelyCard.FailedToRetrieve(
                             id = externalProvider.dataCollectionStatus.referenceUuid,
-                            insuranceProviderDisplayName = externalProvider.insuranceProviderDisplayName
-                        )
+                            insuranceProviderDisplayName = externalProvider.insuranceProviderDisplayName,
+                        ),
                     )
                 }
                 is Content -> {
@@ -82,7 +82,7 @@ object OfferItemsBuilder {
                             externalProvider.dataCollectionResult,
                             bundle.cost.finalPremium,
                             externalProvider.insuranceProviderDisplayName,
-                        )
+                        ),
                     )
                 }
             }
@@ -144,7 +144,7 @@ object OfferItemsBuilder {
     }
 
     fun createBottomOfferItems(
-        bundleVariant: QuoteBundleVariant
+        bundleVariant: QuoteBundleVariant,
     ): List<OfferItems> = buildList {
         val bundle = bundleVariant.bundle
         if (bundle.hasCurrentInsurer()) {
@@ -181,8 +181,8 @@ object OfferItemsBuilder {
                             associatedQuote
                         } else {
                             null
-                        }
-                    )
+                        },
+                    ),
                 )
             }
             add(OfferItems.ManualSwitchCard)
@@ -205,8 +205,8 @@ object OfferItemsBuilder {
                             associatedQuote
                         } else {
                             null
-                        }
-                    )
+                        },
+                    ),
                 )
             }
             add(OfferItems.AutomaticSwitchCard)

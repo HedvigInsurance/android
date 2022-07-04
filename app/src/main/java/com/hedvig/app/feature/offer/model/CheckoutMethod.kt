@@ -17,7 +17,8 @@ fun CheckoutMethod.checkoutIconRes() = when (this) {
     CheckoutMethod.APPROVE_ONLY,
     CheckoutMethod.NORWEGIAN_BANK_ID, // Deprecated
     CheckoutMethod.DANISH_BANK_ID, // Deprecated
-    CheckoutMethod.UNKNOWN -> null
+    CheckoutMethod.UNKNOWN,
+    -> null
 }
 
 fun com.hedvig.android.owldroid.graphql.type.CheckoutMethod.toCheckoutMethod() = when (this) {

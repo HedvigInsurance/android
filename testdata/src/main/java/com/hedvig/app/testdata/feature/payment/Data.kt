@@ -23,7 +23,7 @@ val PAYMENT_DATA_HISTORIC_PAYMENTS = PaymentDataBuilder(
     chargeHistory = listOf(
         ChargeHistoryBuilder().build(),
         ChargeHistoryBuilder(date = LocalDate.now() - 2.months).build(),
-    )
+    ),
 ).build()
 val PAYMENT_DATA_TRUSTLY_CONNECTED = PaymentDataBuilder(
     payinType = PayinType.TRUSTLY,
@@ -38,7 +38,7 @@ val PAYMENT_DATA_FREE_MONTHS = PaymentDataBuilder(
     cost = CostBuilder(
         discountAmount = "139.00",
         netAmount = "0.00",
-        grossAmount = "139.00"
+        grossAmount = "139.00",
     ).build(),
     subscription = "139.00",
     discount = "139.00",
@@ -47,7 +47,7 @@ val PAYMENT_DATA_FREE_MONTHS = PaymentDataBuilder(
         PaymentQuery.RedeemedCampaign(
             __typename = "",
             owner = PaymentQuery.Owner(
-                displayName = "Test Owner"
+                displayName = "Test Owner",
             ),
             fragments = PaymentQuery.RedeemedCampaign.Fragments(
                 IncentiveFragment(
@@ -55,24 +55,24 @@ val PAYMENT_DATA_FREE_MONTHS = PaymentDataBuilder(
                         __typename = FreeMonths.type.name,
                         asFreeMonths = IncentiveFragment.AsFreeMonths(
                             __typename = FreeMonths.type.name,
-                            quantity = 3
+                            quantity = 3,
                         ),
                         asMonthlyCostDeduction = null,
                         asNoDiscount = null,
                         asPercentageDiscountMonths = null,
                     ),
-                    displayValue = "3 FREE MONTHS"
-                )
-            )
-        )
-    )
+                    displayValue = "3 FREE MONTHS",
+                ),
+            ),
+        ),
+    ),
 ).build()
 val PAYMENT_DATA_REFERRAL = PaymentDataBuilder(
     discount = "20.00",
     cost = CostBuilder(
         discountAmount = "20.00",
         netAmount = "119.00",
-        grossAmount = "139.00"
+        grossAmount = "139.00",
     ).build(),
     charge = "119.00",
     redeemedCampaigns = listOf(
@@ -87,17 +87,17 @@ val PAYMENT_DATA_REFERRAL = PaymentDataBuilder(
                         asMonthlyCostDeduction = IncentiveFragment.AsMonthlyCostDeduction(
                             __typename = MonthlyCostDeduction.type.name,
                             amount = IncentiveFragment.Amount(
-                                amount = "20.00"
-                            )
+                                amount = "20.00",
+                            ),
                         ),
                         asNoDiscount = null,
                         asPercentageDiscountMonths = null,
                     ),
-                    displayValue = "20% DISCOUNT PER MONTH"
-                )
-            )
-        )
-    )
+                    displayValue = "20% DISCOUNT PER MONTH",
+                ),
+            ),
+        ),
+    ),
 ).build()
 val PAYMENT_DATA_PERCENTAGE_CAMPAIGN = PaymentDataBuilder(
     redeemedCampaigns = listOf(
@@ -113,15 +113,15 @@ val PAYMENT_DATA_PERCENTAGE_CAMPAIGN = PaymentDataBuilder(
                         asPercentageDiscountMonths = IncentiveFragment.AsPercentageDiscountMonths(
                             __typename = PercentageDiscountMonths.type.name,
                             percentageDiscount = 20.0,
-                            pdmQuantity = 2
+                            pdmQuantity = 2,
                         ),
                         asNoDiscount = null,
                     ),
-                    displayValue = "20% DISCOUNT FOR 2 MONTHS"
-                )
-            )
-        )
-    )
+                    displayValue = "20% DISCOUNT FOR 2 MONTHS",
+                ),
+            ),
+        ),
+    ),
 ).build()
 val PAYMENT_DATA_INACTIVE = PaymentDataBuilder(contracts = listOf(ContractStatus.PENDING)).build()
 val PAYMENT_DATA_PAYOUT_NOT_CONNECTED =

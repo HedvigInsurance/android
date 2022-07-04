@@ -19,7 +19,7 @@ class CharityAdapter(
     val context: Context,
     private val clickListener: (id: String) -> Unit,
 ) : ListAdapter<CharityOption, CharityAdapter.CashbackOptionViewHolder>(
-    GenericDiffUtilItemCallback()
+    GenericDiffUtilItemCallback(),
 ) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CashbackOptionViewHolder =
@@ -27,8 +27,8 @@ class CharityAdapter(
             LayoutInflater.from(context).inflate(
                 R.layout.cashback_option,
                 parent,
-                false
-            )
+                false,
+            ),
         )
 
     override fun onBindViewHolder(holder: CashbackOptionViewHolder, position: Int) {
@@ -48,7 +48,7 @@ class CharityAdapter(
 
                 cashbackSelect.text = cashbackSelect.resources.getString(
                     R.string.PROFILE_CHARITY_SELECT_BUTTON,
-                    charityOption.name
+                    charityOption.name,
                 )
                 cashbackSelect.setHapticClickListener {
                     charityOption.id?.let { id ->

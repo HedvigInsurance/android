@@ -32,7 +32,7 @@ fun ClaimStatusCard(
     }
     Card(
         modifier = modifier,
-        elevation = 4.dp
+        elevation = 4.dp,
     ) {
         Column {
             TopInfo(
@@ -40,12 +40,12 @@ fun ClaimStatusCard(
                 title = uiState.title,
                 subtitle = uiState.subtitle,
                 isClickable = isClickable,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(16.dp),
             )
             Divider()
             ClaimProgressRow(
                 claimProgressItemsUiState = uiState.claimProgressItemsUiState,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(16.dp),
             )
         }
     }

@@ -18,7 +18,7 @@ class ReferralsNotificationBadgeService(
                     .map { it ?: false }
                     .map { hasSeenCampaign ->
                         !hasSeenCampaign && featureManager.isFeatureEnabled(Feature.REFERRAL_CAMPAIGN)
-                    }
+                    },
             )
         }
     }

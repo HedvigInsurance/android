@@ -23,9 +23,9 @@ class ChatMockActivity : MockActivity() {
                     type = "",
                     RemoteMessage(
                         bundleOf(
-                            DATA_NEW_MESSAGE_BODY to "Hello, world!"
-                        )
-                    )
+                            DATA_NEW_MESSAGE_BODY to "Hello, world!",
+                        ),
+                    ),
                 )
         }
     }

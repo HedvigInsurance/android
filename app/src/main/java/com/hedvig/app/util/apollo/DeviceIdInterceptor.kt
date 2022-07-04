@@ -11,7 +11,7 @@ import okhttp3.Response
 private const val HEADER_NAME = "hedvig-device-id"
 
 class DeviceIdInterceptor(
-    private val deviceIdStore: DeviceIdStore
+    private val deviceIdStore: DeviceIdStore,
 ) : Interceptor {
 
     private var deviceId: String? = null

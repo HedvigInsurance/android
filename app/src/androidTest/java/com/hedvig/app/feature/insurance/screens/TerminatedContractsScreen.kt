@@ -11,6 +11,6 @@ class TerminatedContractsScreen : Screen<TerminatedContractsScreen>() {
             {
                 itemType(InsuranceScreen::ContractCard)
                 itemType(InsuranceScreen::Error)
-            }
+            },
         )
 }

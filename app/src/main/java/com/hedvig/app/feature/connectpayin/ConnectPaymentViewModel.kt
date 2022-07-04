@@ -59,7 +59,7 @@ class ConnectPaymentViewModel(
 sealed class ConnectPaymentScreenState {
     object Explainer : ConnectPaymentScreenState()
     data class Connect(
-        val transitionType: TransitionType
+        val transitionType: TransitionType,
     ) : ConnectPaymentScreenState()
 
     data class Result(val success: Boolean) : ConnectPaymentScreenState()

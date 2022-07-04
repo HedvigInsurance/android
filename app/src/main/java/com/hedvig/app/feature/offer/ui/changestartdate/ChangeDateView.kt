@@ -15,7 +15,7 @@ import java.time.format.DateTimeFormatter
 class ChangeDateView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+    defStyleAttr: Int = 0,
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
     private val binding: ChangeDateBinding = ChangeDateBinding.inflate(LayoutInflater.from(context), this, true)
@@ -27,7 +27,7 @@ class ChangeDateView @JvmOverloads constructor(
         startDate: LocalDate?,
         switchable: Boolean,
         datePickerListener: () -> Unit,
-        switchListener: (Boolean) -> Unit
+        switchListener: (Boolean) -> Unit,
     ) {
         setDateText(startDate)
         binding.title.text = title

@@ -95,7 +95,7 @@ fun View.updatePadding(
     start ?: paddingStart,
     top ?: paddingTop,
     end ?: paddingEnd,
-    bottom ?: paddingBottom
+    bottom ?: paddingBottom,
 )
 
 fun View.updateMargin(
@@ -111,7 +111,7 @@ fun View.updateMargin(
         start ?: lp.marginStart,
         top ?: lp.topMargin,
         end ?: lp.marginEnd,
-        bottom ?: lp.bottomMargin
+        bottom ?: lp.bottomMargin,
     )
 
     layoutParams = lp
@@ -163,25 +163,27 @@ fun Toolbar.setupToolbar(
                 }
             } else if (root is RecyclerView) {
                 val toolbar = this
-                root.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                        super.onScrolled(recyclerView, dx, dy)
-                        val toolbarHeight = toolbar.height.toFloat()
-                        val offset = root.computeVerticalScrollOffset().toFloat()
-                        val percentage = if (offset < toolbarHeight) {
-                            offset / toolbarHeight
-                        } else {
-                            1f
+                root.addOnScrollListener(
+                    object : RecyclerView.OnScrollListener() {
+                        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                            super.onScrolled(recyclerView, dx, dy)
+                            val toolbarHeight = toolbar.height.toFloat()
+                            val offset = root.computeVerticalScrollOffset().toFloat()
+                            val percentage = if (offset < toolbarHeight) {
+                                offset / toolbarHeight
+                            } else {
+                                1f
+                            }
+                            if (dy < 0) {
+                                // Scroll up
+                                toolbar.elevation = percentage * 10
+                            } else {
+                                // scroll down
+                                toolbar.elevation = percentage * 10
+                            }
                         }
-                        if (dy < 0) {
-                            // Scroll up
-                            toolbar.elevation = percentage * 10
-                        } else {
-                            // scroll down
-                            toolbar.elevation = percentage * 10
-                        }
-                    }
-                })
+                    },
+                )
             }
         }
     }
@@ -203,33 +205,37 @@ fun NestedScrollView.setupToolbarScrollListener(
 }
 
 fun RecyclerView.setupToolbarScrollListener(onScroll: (Float) -> Unit) {
-    addOnScrollListener(object : RecyclerView.OnScrollListener() {
-        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-            val maxElevationScroll = 200
-            val offset = computeVerticalScrollOffset().toFloat()
-            val percentage = if (offset < maxElevationScroll) {
-                offset / maxElevationScroll
-            } else {
-                1f
+    addOnScrollListener(
+        object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                val maxElevationScroll = 200
+                val offset = computeVerticalScrollOffset().toFloat()
+                val percentage = if (offset < maxElevationScroll) {
+                    offset / maxElevationScroll
+                } else {
+                    1f
+                }
+                onScroll(percentage)
             }
-            onScroll(percentage)
-        }
-    })
+        },
+    )
 }
 
 fun RecyclerView.setupToolbarScrollListener(toolbar: Toolbar) {
-    addOnScrollListener(object : RecyclerView.OnScrollListener() {
-        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-            val maxElevationScroll = 200
-            val offset = computeVerticalScrollOffset().toFloat()
-            val percentage = if (offset < maxElevationScroll) {
-                offset / maxElevationScroll
-            } else {
-                1f
+    addOnScrollListener(
+        object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                val maxElevationScroll = 200
+                val offset = computeVerticalScrollOffset().toFloat()
+                val percentage = if (offset < maxElevationScroll) {
+                    offset / maxElevationScroll
+                } else {
+                    1f
+                }
+                toolbar.elevation = percentage * 10
             }
-            toolbar.elevation = percentage * 10
-        }
-    })
+        },
+    )
 }
 
 fun View.fadeIn(endAction: (() -> Unit)? = null) {
@@ -256,13 +262,13 @@ fun View.fadeOut(endAction: (() -> Unit)? = null, removeOnEnd: Boolean = true) {
 fun View.dismissKeyboard() =
     (context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(
         windowToken,
-        0
+        0,
     )
 
 fun View.openKeyboard() =
     (context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager).showSoftInput(
         this,
-        0
+        0,
     )
 
 val View.centerX: Int
@@ -284,7 +290,7 @@ fun View.setupInsetsForIme(root: View, vararg translatableViews: View) {
     val deferringListener = RootViewDeferringInsetsCallback(
         persistentInsetTypes = WindowInsets.Type.systemBars(),
         deferredInsetTypes = WindowInsets.Type.ime(),
-        setPaddingTop = false
+        setPaddingTop = false,
     )
 
     root.setWindowInsetsAnimationCallback(deferringListener)
@@ -296,13 +302,13 @@ fun View.setupInsetsForIme(root: View, vararg translatableViews: View) {
                 view = it,
                 persistentInsetTypes = WindowInsets.Type.systemBars(),
                 deferredInsetTypes = WindowInsets.Type.ime(),
-                dispatchMode = WindowInsetsAnimation.Callback.DISPATCH_MODE_CONTINUE_ON_SUBTREE
-            )
+                dispatchMode = WindowInsetsAnimation.Callback.DISPATCH_MODE_CONTINUE_ON_SUBTREE,
+            ),
         )
     }
 
     setWindowInsetsAnimationCallback(
-        ControlFocusInsetsAnimationCallback(this)
+        ControlFocusInsetsAnimationCallback(this),
     )
 }
 

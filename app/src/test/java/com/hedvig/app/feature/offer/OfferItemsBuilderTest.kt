@@ -18,7 +18,7 @@ class OfferItemsBuilderTest {
         val monthlyCost = Money.of(300, "SEK")
         val testData = TestOfferModelBuilder(
             grossMonthlyCost = monthlyCost,
-            ignoreCampaigns = true
+            ignoreCampaigns = true,
         ).build()
 
         val items = OfferItemsBuilder.createTopOfferItems(
@@ -26,7 +26,7 @@ class OfferItemsBuilderTest {
             null,
             null,
             {},
-            testData
+            testData,
         )
 
         assertThat(items).containsOfType<OfferItems.Header>()
@@ -39,7 +39,7 @@ class OfferItemsBuilderTest {
         val netMonthlyCost = Money.of(310, "SEK")
         val testData = TestOfferModelBuilder(
             netMonthlyCost = netMonthlyCost,
-            ignoreCampaigns = false
+            ignoreCampaigns = false,
         ).build()
 
         val items = OfferItemsBuilder.createTopOfferItems(
@@ -47,7 +47,7 @@ class OfferItemsBuilderTest {
             null,
             null,
             {},
-            testData
+            testData,
         )
 
         assertThat(items).containsOfType<OfferItems.Header>()
@@ -59,7 +59,7 @@ class OfferItemsBuilderTest {
     fun `should set correct checkout text for approve changes`() {
         val testData = TestOfferModelBuilder(
             checkoutMethod = CheckoutMethod.APPROVE_ONLY,
-            checkoutLabel = CheckoutLabel.APPROVE
+            checkoutLabel = CheckoutLabel.APPROVE,
         ).build()
 
         val items = OfferItemsBuilder.createTopOfferItems(
@@ -67,7 +67,7 @@ class OfferItemsBuilderTest {
             null,
             null,
             {},
-            testData
+            testData,
         )
 
         assertThat(items).containsOfType<OfferItems.Header>()
@@ -85,7 +85,7 @@ class OfferItemsBuilderTest {
     fun `should set correct checkout text for confirm purchase`() {
         val testData = TestOfferModelBuilder(
             checkoutMethod = CheckoutMethod.APPROVE_ONLY,
-            checkoutLabel = CheckoutLabel.CONFIRM
+            checkoutLabel = CheckoutLabel.CONFIRM,
         ).build()
 
         val topItems = OfferItemsBuilder.createTopOfferItems(
@@ -93,7 +93,7 @@ class OfferItemsBuilderTest {
             null,
             null,
             {},
-            testData
+            testData,
         )
 
         assertThat(topItems).containsOfType<OfferItems.Header>()
@@ -120,7 +120,7 @@ class OfferItemsBuilderTest {
             null,
             null,
             {},
-            testData
+            testData,
         )
 
         assertThat(topItems).all {
@@ -142,7 +142,7 @@ class OfferItemsBuilderTest {
             null,
             null,
             {},
-            testData
+            testData,
         )
 
         assertThat(topItems).all {

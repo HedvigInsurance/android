@@ -63,9 +63,11 @@ class InsurelyDialog : AuthenticateDialog() {
             binding.authTitle.setText(R.string.BANK_ID_AUTH_TITLE_INITIATED)
         }
         DataCollectionResult.Success.CollectionStatus.COMPLETED,
-        DataCollectionResult.Success.CollectionStatus.COLLECTING -> setResult(success = true)
+        DataCollectionResult.Success.CollectionStatus.COLLECTING,
+        -> setResult(success = true)
         DataCollectionResult.Success.CollectionStatus.UNKNOWN,
-        DataCollectionResult.Success.CollectionStatus.FAILED -> {
+        DataCollectionResult.Success.CollectionStatus.FAILED,
+        -> {
             binding.authTitle.setText(R.string.OFFER_COMPARISION_ERROR)
             dialog?.setCanceledOnTouchOutside(true)
         }
@@ -83,7 +85,7 @@ class InsurelyDialog : AuthenticateDialog() {
                 } else {
                     null
                 },
-            )
+            ),
         )
         dismiss()
     }

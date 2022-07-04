@@ -14,7 +14,7 @@ class TabNotificationService(
     fun unseenTabNotifications(): Flow<Set<LoggedInTabs>> {
         return combine(
             crossSellNotificationBadgeService.shouldShowTabNotification(),
-            referralsNotificationBadgeService.shouldShowNotification()
+            referralsNotificationBadgeService.shouldShowNotification(),
         ) { shouldShowCrossSellNotification: Boolean, shouldShowReferralNotification: Boolean ->
             buildSet {
                 if (shouldShowCrossSellNotification) add(LoggedInTabs.INSURANCE)
@@ -27,7 +27,7 @@ class TabNotificationService(
         when (tab) {
             LoggedInTabs.INSURANCE -> {
                 crossSellNotificationBadgeService.markCurrentCrossSellsAsSeen(
-                    CrossSellNotificationBadgeService.CrossSellBadgeType.BottomNav
+                    CrossSellNotificationBadgeService.CrossSellBadgeType.BottomNav,
                 )
             }
             LoggedInTabs.REFERRALS -> {

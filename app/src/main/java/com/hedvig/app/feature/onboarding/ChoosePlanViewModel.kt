@@ -68,8 +68,8 @@ class ChoosePlanViewModel(
                     _events.send(
                         Event.Continue(
                             storyName = appendQuoteCartId(selectedBundle.storyName, quoteCartId.id),
-                            storyTitle = selectedBundle.storyTitle
-                        )
+                            storyTitle = selectedBundle.storyTitle,
+                        ),
                     )
                 }
             }
@@ -80,6 +80,6 @@ class ChoosePlanViewModel(
 fun BundlesResult.Success.toModel() = bundles.mapIndexed { index, bundle ->
     OnboardingModel.BundleItem(
         selected = index == 0,
-        bundle = bundle
+        bundle = bundle,
     )
 }

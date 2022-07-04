@@ -23,6 +23,6 @@ fun FadingTopAppBar(
         contentPadding = contentPadding,
         navigationIcon = navigationIcon,
         backgroundColor = backgroundColor.copy(alpha = backgroundAlpha),
-        elevation = 0.dp
+        elevation = 0.dp,
     )
 }

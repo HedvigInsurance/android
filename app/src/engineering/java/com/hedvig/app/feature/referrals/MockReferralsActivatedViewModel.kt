@@ -15,7 +15,7 @@ class MockReferralsActivatedViewModel : ReferralsActivatedViewModel() {
             {
                 data.postValue(LOGGED_IN_DATA)
             },
-            loadDelay
+            loadDelay,
         )
     }
 

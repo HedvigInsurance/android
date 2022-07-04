@@ -10,7 +10,7 @@ class PhotosBinder(
     private val root: KeyGearItemDetailPhotosSectionBinding,
     private val firstUrl: String?,
     firstCategory: KeyGearItemCategory,
-    startPostponedTransition: () -> Unit
+    startPostponedTransition: () -> Unit,
 ) {
     init {
         var firstPhotoDidLoad = false

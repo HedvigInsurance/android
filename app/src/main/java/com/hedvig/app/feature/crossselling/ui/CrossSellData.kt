@@ -69,7 +69,7 @@ data class CrossSellData(
             faq = data.info.faq.map(FAQItem::from),
             insurableLimits = data.info.insurableLimits.map {
                 InsurableLimitItem.InsurableLimit.from(it.fragments.insurableLimitsFragment)
-            }
+            },
         )
     }
 }

@@ -15,10 +15,10 @@ data class TableFragmentBuilder(
                     TableFragment.Row(
                         title = title,
                         subtitle = subtitle,
-                        value = value
+                        value = value,
                     )
-                }
+                },
             )
-        }
+        },
     )
 }

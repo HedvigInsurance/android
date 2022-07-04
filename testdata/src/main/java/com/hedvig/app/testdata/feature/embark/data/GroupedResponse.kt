@@ -12,15 +12,15 @@ val STORY_WITH_GROUPED_RESPONSE = EmbarkStoryDataBuilder(
                     title = "Test title",
                     items = listOf(
                         MessageBuilder(
-                            "Test message 1"
+                            "Test message 1",
                         ).build(),
                         MessageBuilder(
-                            "Test message 2"
-                        ).build()
-                    )
-                ).build()
+                            "Test message 2",
+                        ).build(),
+                    ),
+                ).build(),
             )
             .build(),
-        STANDARD_SECOND_PASSAGE_BUILDER.build()
-    )
+        STANDARD_SECOND_PASSAGE_BUILDER.build(),
+    ),
 ).build()

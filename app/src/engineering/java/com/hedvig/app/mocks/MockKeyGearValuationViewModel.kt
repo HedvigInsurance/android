@@ -21,18 +21,18 @@ class MockKeyGearValuationViewModel : KeyGearValuationViewModel() {
                 data.postValue(
                     KeyGearItemQuery.KeyGearItem(
                         __typename = "",
-                        fragments = KeyGearItemQuery.KeyGearItem.Fragments(item)
-                    )
+                        fragments = KeyGearItemQuery.KeyGearItem.Fragments(item),
+                    ),
                 )
             },
-            250
+            250,
         )
     }
 
     override fun updatePurchaseDateAndPrice(
         id: String,
         date: LocalDate,
-        price: MonetaryAmountV2Input
+        price: MonetaryAmountV2Input,
     ) {
         data.postValue(
             KeyGearItemQuery.KeyGearItem(
@@ -40,11 +40,11 @@ class MockKeyGearValuationViewModel : KeyGearValuationViewModel() {
                 fragments = KeyGearItemQuery.KeyGearItem.Fragments(
                     item.copy(
                         purchasePrice = KeyGearItemFragment.PurchasePrice(
-                            amount = price.amount
-                        )
-                    )
-                )
-            )
+                            amount = price.amount,
+                        ),
+                    ),
+                ),
+            ),
         )
     }
 
@@ -57,26 +57,26 @@ class MockKeyGearValuationViewModel : KeyGearValuationViewModel() {
             photos = listOf(
                 KeyGearItemFragment.Photo(
                     file = KeyGearItemFragment.File(
-                        preSignedUrl = "https://images.unsplash.com/photo-1505156868547-9b49f4df4e04"
-                    )
-                )
+                        preSignedUrl = "https://images.unsplash.com/photo-1505156868547-9b49f4df4e04",
+                    ),
+                ),
             ),
             receipts = emptyList(),
             category = KeyGearItemCategory.PHONE,
             purchasePrice = null,
             timeOfPurchase = null,
             deductible = KeyGearItemFragment.Deductible(
-                amount = "1500.00"
+                amount = "1500.00",
             ),
             maxInsurableAmount = KeyGearItemFragment.MaxInsurableAmount(
-                amount = "50000"
+                amount = "50000",
             ),
             deleted = false,
             fragments = KeyGearItemFragment.Fragments(
                 KeyGearItemValuationFragment(
-                    valuation = null
-                )
-            )
+                    valuation = null,
+                ),
+            ),
         )
     }
 }

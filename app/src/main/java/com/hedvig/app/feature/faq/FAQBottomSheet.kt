@@ -39,7 +39,7 @@ class FAQBottomSheet : BottomSheetDialogFragment() {
         private const val BODY = "BODY"
 
         fun newInstance(
-            item: FAQItem
+            item: FAQItem,
         ) = FAQBottomSheet().apply {
             arguments = bundleOf(
                 TITLE to item.headline,

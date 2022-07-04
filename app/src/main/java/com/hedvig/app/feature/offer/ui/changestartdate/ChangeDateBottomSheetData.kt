@@ -9,7 +9,7 @@ import java.time.LocalDate
 @Parcelize
 data class ChangeDateBottomSheetData(
     val quoteCartId: QuoteCartId,
-    val inceptions: List<Inception>
+    val inceptions: List<Inception>,
 ) : Parcelable {
 
     @IgnoredOnParcel
@@ -21,13 +21,13 @@ data class ChangeDateBottomSheetData(
         val quoteId: String,
         val startDate: LocalDate?,
         val currentInsurer: CurrentInsurer?,
-        val isConcurrent: Boolean
+        val isConcurrent: Boolean,
     ) : Parcelable
 
     @Parcelize
     data class CurrentInsurer(
         val id: String,
         val displayName: String,
-        val switchable: Boolean
+        val switchable: Boolean,
     ) : Parcelable
 }

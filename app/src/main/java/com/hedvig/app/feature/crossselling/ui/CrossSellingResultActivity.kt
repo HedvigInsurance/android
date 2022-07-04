@@ -20,7 +20,7 @@ class CrossSellingResultActivity : BaseActivity() {
     private val crossSellingResult: CrossSellingResult
         get() = intent.getParcelableExtra(CROSS_SELLING_RESULT)
             ?: throw IllegalArgumentException(
-                "Programmer error: CROSS_SELLING_RESULT not provided to ${this.javaClass.name}"
+                "Programmer error: CROSS_SELLING_RESULT not provided to ${this.javaClass.name}",
             )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,10 +37,10 @@ class CrossSellingResultActivity : BaseActivity() {
                         LoggedInActivity.newInstance(
                             context = this,
                             withoutHistory = true,
-                            initialTab = LoggedInTabs.INSURANCE
-                        )
+                            initialTab = LoggedInTabs.INSURANCE,
+                        ),
                     )
-                }
+                },
             )
         }
     }
@@ -50,8 +50,8 @@ class CrossSellingResultActivity : BaseActivity() {
             LoggedInActivity.newInstance(
                 context = this,
                 withoutHistory = true,
-                initialTab = LoggedInTabs.INSURANCE
-            )
+                initialTab = LoggedInTabs.INSURANCE,
+            ),
         )
     }
 

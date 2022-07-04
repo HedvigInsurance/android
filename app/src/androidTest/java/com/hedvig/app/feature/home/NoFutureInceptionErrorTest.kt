@@ -37,7 +37,7 @@ class NoFutureInceptionErrorTest : TestCase() {
             } else {
                 success(HOME_DATA_PENDING)
             }
-        }
+        },
     )
 
     @get:Rule
@@ -53,7 +53,7 @@ class NoFutureInceptionErrorTest : TestCase() {
                     text {
                         hasText(
                             R.string.home_tab_active_in_future_body,
-                            "Test"
+                            "Test",
                         )
                     }
                 }

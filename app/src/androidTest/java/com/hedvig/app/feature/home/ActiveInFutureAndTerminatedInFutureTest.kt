@@ -32,9 +32,9 @@ class ActiveInFutureAndTerminatedInFutureTest : TestCase() {
         },
         HomeQuery.OPERATION_DOCUMENT to apolloResponse {
             success(
-                HOME_DATA_ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE
+                HOME_DATA_ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE,
             )
-        }
+        },
     )
 
     @get:Rule
@@ -53,7 +53,7 @@ class ActiveInFutureAndTerminatedInFutureTest : TestCase() {
                             hasText(
                                 R.string.home_tab_active_in_future_welcome_title,
                                 "Test",
-                                formatter.format(LocalDate.of(2024, 1, 1))
+                                formatter.format(LocalDate.of(2024, 1, 1)),
                             )
                         }
                     }

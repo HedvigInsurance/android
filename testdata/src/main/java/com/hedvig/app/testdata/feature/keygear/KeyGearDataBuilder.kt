@@ -21,19 +21,19 @@ class KeyGearDataBuilder {
                         photos = listOf(
                             KeyGearItemFragment.Photo(
                                 file = KeyGearItemFragment.File(
-                                    preSignedUrl = "https://images.unsplash.com/photo-1505156868547-9b49f4df4e04"
-                                )
-                            )
+                                    preSignedUrl = "https://images.unsplash.com/photo-1505156868547-9b49f4df4e04",
+                                ),
+                            ),
                         ),
                         receipts = emptyList(),
                         category = KeyGearItemCategory.PHONE,
                         purchasePrice = null,
                         timeOfPurchase = null,
                         deductible = KeyGearItemFragment.Deductible(
-                            amount = "1500.00"
+                            amount = "1500.00",
                         ),
                         maxInsurableAmount = KeyGearItemFragment.MaxInsurableAmount(
-                            amount = "50000"
+                            amount = "50000",
                         ),
                         deleted = false,
                         fragments = KeyGearItemFragment.Fragments(
@@ -45,15 +45,15 @@ class KeyGearDataBuilder {
                                             __typename = KeyGearItemValuationFixed.type.name,
                                             ratio = 31,
                                             valuation = KeyGearItemValuationFragment.Valuation(
-                                                amount = "1234.00"
-                                            )
+                                                amount = "1234.00",
+                                            ),
                                         ),
-                                    asKeyGearItemValuationMarketValue = null
-                                )
-                            )
-                        )
-                    )
-                )
+                                    asKeyGearItemValuationMarketValue = null,
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
             ),
             KeyGearItemsQuery.KeyGearItem(
                 __typename = "",
@@ -66,19 +66,19 @@ class KeyGearDataBuilder {
                         photos = listOf(
                             KeyGearItemFragment.Photo(
                                 file = KeyGearItemFragment.File(
-                                    preSignedUrl = "https://images.unsplash.com/photo-1522199755839-a2bacb67c546"
-                                )
-                            )
+                                    preSignedUrl = "https://images.unsplash.com/photo-1522199755839-a2bacb67c546",
+                                ),
+                            ),
                         ),
                         receipts = emptyList(),
                         category = KeyGearItemCategory.COMPUTER,
                         purchasePrice = null,
                         timeOfPurchase = null,
                         deductible = KeyGearItemFragment.Deductible(
-                            amount = "1500.00"
+                            amount = "1500.00",
                         ),
                         maxInsurableAmount = KeyGearItemFragment.MaxInsurableAmount(
-                            amount = "50000"
+                            amount = "50000",
                         ),
                         deleted = false,
                         fragments = KeyGearItemFragment.Fragments(
@@ -90,15 +90,15 @@ class KeyGearDataBuilder {
                                             __typename = KeyGearItemValuationFixed.type.name,
                                             ratio = 31,
                                             valuation = KeyGearItemValuationFragment.Valuation(
-                                                amount = "1234.00"
-                                            )
+                                                amount = "1234.00",
+                                            ),
                                         ),
-                                    asKeyGearItemValuationMarketValue = null
-                                )
-                            )
-                        )
-                    )
-                )
+                                    asKeyGearItemValuationMarketValue = null,
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
             ),
 
             KeyGearItemsQuery.KeyGearItem(
@@ -115,10 +115,10 @@ class KeyGearDataBuilder {
                         purchasePrice = null,
                         timeOfPurchase = null,
                         deductible = KeyGearItemFragment.Deductible(
-                            amount = "1500.00"
+                            amount = "1500.00",
                         ),
                         maxInsurableAmount = KeyGearItemFragment.MaxInsurableAmount(
-                            amount = "50000"
+                            amount = "50000",
                         ),
                         deleted = false,
                         fragments = KeyGearItemFragment.Fragments(
@@ -130,16 +130,16 @@ class KeyGearDataBuilder {
                                             __typename = KeyGearItemValuationFixed.type.name,
                                             ratio = 31,
                                             valuation = KeyGearItemValuationFragment.Valuation(
-                                                amount = "1234.00"
-                                            )
+                                                amount = "1234.00",
+                                            ),
                                         ),
-                                    asKeyGearItemValuationMarketValue = null
-                                )
-                            )
-                        )
-                    )
-                )
-            )
-        )
+                                    asKeyGearItemValuationMarketValue = null,
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        ),
     )
 }

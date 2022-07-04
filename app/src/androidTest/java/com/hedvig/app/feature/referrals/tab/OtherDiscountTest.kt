@@ -33,9 +33,9 @@ class OtherDiscountTest : TestCase() {
         },
         ReferralsQuery.OPERATION_DOCUMENT to apolloResponse {
             success(
-                REFERRALS_DATA_WITH_ONE_REFEREE_AND_OTHER_DISCOUNT
+                REFERRALS_DATA_WITH_ONE_REFEREE_AND_OTHER_DISCOUNT,
             )
-        }
+        },
     )
 
     @get:Rule
@@ -52,7 +52,7 @@ class OtherDiscountTest : TestCase() {
     fun shouldShowOtherDiscountWhenUserHasNonReferralDiscounts() = run {
         val intent = LoggedInActivity.newInstance(
             context(),
-            initialTab = LoggedInTabs.REFERRALS
+            initialTab = LoggedInTabs.REFERRALS,
         )
 
         activityRule.launch(intent)
@@ -66,7 +66,7 @@ class OtherDiscountTest : TestCase() {
                         isVisible()
                         hasText(
                             Money.of(349, "SEK")
-                                .format(context(), market())
+                                .format(context(), market()),
                         )
                     }
                     discountPerMonthPlaceholder { isGone() }
@@ -75,14 +75,14 @@ class OtherDiscountTest : TestCase() {
                         isVisible()
                         hasText(
                             Money.of(-10, "SEK")
-                                .format(context(), market())
+                                .format(context(), market()),
                         )
                     }
                     newPrice {
                         isVisible()
                         hasText(
                             Money.of(339, "SEK")
-                                .format(context(), market())
+                                .format(context(), market()),
                         )
                     }
                     discountPerMonthLabel { isVisible() }
@@ -116,7 +116,7 @@ class OtherDiscountTest : TestCase() {
                     status {
                         hasText(
                             Money.of(-10, "SEK")
-                                .format(context(), market())
+                                .format(context(), market()),
                         )
                     }
                 }

@@ -114,12 +114,12 @@ class PaymentAdapter(
 
                 title.text = title.resources.getQuantityText(
                     R.plurals.payments_screen_late_payments_title,
-                    data.failedCharges
+                    data.failedCharges,
                 )
                 paragraph.text = paragraph.context.getString(
                     R.string.PAYMENTS_LATE_PAYMENTS_MESSAGE,
                     data.failedCharges,
-                    data.nextChargeDate
+                    data.nextChargeDate,
                 )
             }
         }
@@ -179,7 +179,7 @@ class PaymentAdapter(
                         discount.text = discount.resources.getQuantityString(
                             R.plurals.payment_screen_free_month_discount_label,
                             quantity,
-                            quantity
+                            quantity,
                         )
                     }
                 }
@@ -188,7 +188,7 @@ class PaymentAdapter(
                         R.plurals.payment_screen_percentage_discount_label,
                         percentageDiscountMonthsIncentive.pdmQuantity,
                         percentageDiscountMonthsIncentive.percentageDiscount.toInt(),
-                        percentageDiscountMonthsIncentive.pdmQuantity
+                        percentageDiscountMonthsIncentive.pdmQuantity,
                     )
                 }
             }
@@ -213,7 +213,7 @@ class PaymentAdapter(
                             data.payinType,
                             market,
                             false,
-                        )
+                        ),
                     )
                 }
             }
@@ -265,7 +265,7 @@ class PaymentAdapter(
                             campaignInformationFieldOne.text =
                                 campaignInformationFieldOne.context.getString(
                                     R.string.PAYMENTS_DISCOUNT_AMOUNT,
-                                    amount
+                                    amount,
                                 )
                         }
                 }
@@ -311,8 +311,8 @@ class PaymentAdapter(
                 root.setHapticClickListener {
                     root.context.startActivity(
                         PaymentHistoryActivity.newInstance(
-                            root.context
-                        )
+                            root.context,
+                        ),
                     )
                 }
             }
@@ -362,7 +362,7 @@ class PaymentAdapter(
                         cardType.text = it.brand
                         maskedCardNumber.text = maskedCardNumber.context.getString(
                             R.string.payment_screen_credit_card_masking,
-                            it.lastFourDigits
+                            it.lastFourDigits,
                         )
                         maskedCardNumber.show()
                     } ?: data.inner.fragments.activePaymentMethodsFragment.asStoredThirdPartyDetails?.let {
@@ -398,7 +398,7 @@ class PaymentAdapter(
                     PayoutMethodStatus.ACTIVE -> {
                         root.setText(R.string.payment_screen_pay_connected_label)
                         root.putCompoundDrawablesRelativeWithIntrinsicBounds(
-                            start = R.drawable.ic_checkmark_in_circle
+                            start = R.drawable.ic_checkmark_in_circle,
                         )
                     }
                     PayoutMethodStatus.PENDING -> {
@@ -426,7 +426,7 @@ class PaymentAdapter(
 
                 when (data.status) {
                     PayoutMethodStatus.ACTIVE -> root.setText(
-                        R.string.payment_screen_pay_out_connected_payout_footer_connected
+                        R.string.payment_screen_pay_out_connected_payout_footer_connected,
                     )
                     PayoutMethodStatus.NEEDS_SETUP -> root.setText(R.string.payment_screen_pay_out_footer_not_connected)
                     PayoutMethodStatus.PENDING -> root.setText(R.string.payment_screen_pay_out_footer_pending)
@@ -456,7 +456,7 @@ class PaymentAdapter(
                         is PaymentModel.Link.AdyenAddPayout ->
                             R.string.payment_screen_connect_pay_out_connect_payout_button
                         PaymentModel.Link.AdyenChangePayout -> R.string.payment_screen_pay_out_change_payout_button
-                    }
+                    },
                 )
 
                 root.putCompoundDrawablesRelativeWithIntrinsicBounds(
@@ -468,7 +468,7 @@ class PaymentAdapter(
                         is PaymentModel.Link.AdyenChangePayin,
                         PaymentModel.Link.AdyenChangePayout,
                         -> R.drawable.ic_edit
-                    }
+                    },
                 )
 
                 root.setHapticClickListener {
@@ -481,14 +481,14 @@ class PaymentAdapter(
                                     data.payinType,
                                     market,
                                     false,
-                                )
+                                ),
                             )
                         }
                         PaymentModel.Link.RedeemDiscountCode -> {
                             RefetchingRedeemCodeBottomSheet.newInstance()
                                 .show(
                                     fragmentManager,
-                                    RefetchingRedeemCodeBottomSheet.TAG
+                                    RefetchingRedeemCodeBottomSheet.TAG,
                                 )
                         }
                         is PaymentModel.Link.AdyenAddPayout,

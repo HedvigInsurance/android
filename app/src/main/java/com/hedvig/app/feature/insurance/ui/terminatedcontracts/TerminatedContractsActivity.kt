@@ -62,7 +62,7 @@ class TerminatedContractsActivity : BaseActivity(R.layout.terminated_contracts_a
                         }
                         is TerminatedContractsViewModel.ViewState.Success -> {
                             adapter.submitList(
-                                viewState.items
+                                viewState.items,
                             )
                             recycler.post { startPostponedEnterTransition() }
                         }
@@ -98,7 +98,7 @@ class TerminatedContractsViewModel(
             _viewState.value = getContractsUseCase.invoke()
                 .fold(
                     ifLeft = { ViewState.Error },
-                    ifRight = { insuranceQueryData -> ViewState.Success(items(insuranceQueryData)) }
+                    ifRight = { insuranceQueryData -> ViewState.Success(items(insuranceQueryData)) },
                 )
         }
     }

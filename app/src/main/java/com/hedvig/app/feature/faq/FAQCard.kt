@@ -26,7 +26,7 @@ fun FAQCard(
                     modifier = Modifier
                         .clickable(onClick = { openSheet(item) })
                         .padding(16.dp)
-                        .fillMaxWidth()
+                        .fillMaxWidth(),
                 ) {
                     Text(
                         text = item.headline,

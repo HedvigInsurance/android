@@ -9,7 +9,7 @@ import e
 import kotlinx.coroutines.launch
 
 class WelcomeViewModel(
-    private val welcomeRepository: WelcomeRepository
+    private val welcomeRepository: WelcomeRepository,
 ) : ViewModel() {
 
     private val _data = MutableLiveData<WelcomeQuery.Data>()

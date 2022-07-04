@@ -13,7 +13,7 @@ import com.hedvig.app.util.extensions.view.setScaleXY
 class PagerIndicatorView @JvmOverloads constructor(
     context: Context,
     attributeSet: AttributeSet? = null,
-    defStyle: Int = 0
+    defStyle: Int = 0,
 ) : LinearLayout(context, attributeSet, defStyle) {
     private val inflater by lazy { LayoutInflater.from(context) }
 
@@ -41,7 +41,7 @@ class PagerIndicatorView @JvmOverloads constructor(
         override fun onPageScrolled(
             position: Int,
             positionOffset: Float,
-            positionOffsetPixels: Int
+            positionOffsetPixels: Int,
         ) {
             pager?.currentItem?.let { currentItem ->
                 if (position == currentItem) {
@@ -49,7 +49,7 @@ class PagerIndicatorView @JvmOverloads constructor(
                     (getChildAt(position + 1) as? ImageView)?.let {
                         expandIndicator(
                             it,
-                            positionOffset
+                            positionOffset,
                         )
                     }
                     (getChildAt(position) as? ImageView)?.let {
@@ -60,7 +60,7 @@ class PagerIndicatorView @JvmOverloads constructor(
                     (getChildAt(position + 1) as? ImageView)?.let {
                         shrinkIndicator(
                             it,
-                            1.0f - positionOffset
+                            1.0f - positionOffset,
                         )
                     }
                     (getChildAt(position) as? ImageView)?.let {

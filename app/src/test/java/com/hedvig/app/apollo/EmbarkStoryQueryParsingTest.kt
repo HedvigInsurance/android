@@ -219,13 +219,13 @@ class EmbarkStoryQueryParsingTest {
                                     |    "c": "d"
                                     |  }
                                     |}
-                                """.trimMargin()
-                                }
+                                    """.trimMargin()
+                                },
                             )
-                        }
+                        },
                     )
                 }
-            }.toJsonStringWithData()
+            }.toJsonStringWithData(),
         )
 
         val response = apolloClient
@@ -258,12 +258,12 @@ class EmbarkStoryQueryParsingTest {
                                     track {
                                         customData =
                                             """{"string":"Hello World","some":{"arbitrary":[{"object":1},"object",2],"c":"d"}}""" // ktlint-disable max-line-length
-                                    }
+                                    },
                                 )
-                            }
+                            },
                         )
                     }
-                }.toJsonStringWithData()
+                }.toJsonStringWithData(),
             )
 
             val response = apolloClient

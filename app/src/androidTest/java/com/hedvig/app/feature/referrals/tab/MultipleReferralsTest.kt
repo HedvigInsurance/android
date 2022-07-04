@@ -33,9 +33,9 @@ class MultipleReferralsTest : TestCase() {
         },
         ReferralsQuery.OPERATION_DOCUMENT to apolloResponse {
             success(
-                REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES
+                REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES,
             )
-        }
+        },
     )
 
     @get:Rule
@@ -52,7 +52,7 @@ class MultipleReferralsTest : TestCase() {
     fun shouldShowActiveStateWhenUserHasMultipleReferrals() = run {
         val intent = LoggedInActivity.newInstance(
             context(),
-            initialTab = LoggedInTabs.REFERRALS
+            initialTab = LoggedInTabs.REFERRALS,
         )
 
         activityRule.launch(intent)
@@ -66,7 +66,7 @@ class MultipleReferralsTest : TestCase() {
                         isVisible()
                         hasText(
                             Money.of(349, "SEK")
-                                .format(context(), market())
+                                .format(context(), market()),
                         )
                     }
                     discountPerMonthPlaceholder { isGone() }
@@ -75,14 +75,14 @@ class MultipleReferralsTest : TestCase() {
                         isVisible()
                         hasText(
                             Money.of(-10, "SEK")
-                                .format(context(), market())
+                                .format(context(), market()),
                         )
                     }
                     newPrice {
                         isVisible()
                         hasText(
                             Money.of(339, "SEK")
-                                .format(context(), market())
+                                .format(context(), market()),
                         )
                     }
                     discountPerMonthLabel { isVisible() }
@@ -110,7 +110,7 @@ class MultipleReferralsTest : TestCase() {
                     status {
                         hasText(
                             Money.of(-10, "SEK")
-                                .format(context(), market())
+                                .format(context(), market()),
                         )
                     }
                 }

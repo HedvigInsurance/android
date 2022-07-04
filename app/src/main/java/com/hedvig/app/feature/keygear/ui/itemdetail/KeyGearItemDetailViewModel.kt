@@ -27,7 +27,7 @@ abstract class KeyGearItemDetailViewModel : ViewModel() {
 }
 
 class KeyGearItemDetailViewModelImpl(
-    private val repository: KeyGearItemsRepository
+    private val repository: KeyGearItemsRepository,
 ) : KeyGearItemDetailViewModel() {
 
     override val data = MutableLiveData<KeyGearItemQuery.KeyGearItem>()

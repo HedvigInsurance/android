@@ -34,7 +34,7 @@ class ActiveTest : TestCase() {
         },
         HomeQuery.OPERATION_DOCUMENT to apolloResponse {
             success(HOME_DATA_ACTIVE)
-        }
+        },
     )
 
     @get:Rule

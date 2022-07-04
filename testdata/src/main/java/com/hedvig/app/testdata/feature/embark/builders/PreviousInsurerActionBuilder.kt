@@ -27,11 +27,11 @@ data class PreviousInsurerActionBuilder(
                                 fragments = EmbarkStoryQuery.Variants.Fragments(
                                     iconVariantsFragment = IconVariantsFragment(
                                         dark = IconVariantsFragment.Dark(svgUrl = ""),
-                                        light = IconVariantsFragment.Light(svgUrl = "/app-content-service/if.svg")
-                                    )
-                                )
-                            )
-                        )
+                                        light = IconVariantsFragment.Light(svgUrl = "/app-content-service/if.svg"),
+                                    ),
+                                ),
+                            ),
+                        ),
                     ),
                     EmbarkStoryQuery.InsuranceProvider(
                         id = "trygghansa",
@@ -43,12 +43,12 @@ data class PreviousInsurerActionBuilder(
                                     iconVariantsFragment = IconVariantsFragment(
                                         dark = IconVariantsFragment.Dark(svgUrl = ""),
                                         light = IconVariantsFragment.Light(
-                                            svgUrl = "/app-content-service/trygg_hansa.svg"
-                                        )
-                                    )
-                                )
-                            )
-                        )
+                                            svgUrl = "/app-content-service/trygg_hansa.svg",
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
                     ),
                     EmbarkStoryQuery.InsuranceProvider(
                         id = "folksam",
@@ -59,17 +59,17 @@ data class PreviousInsurerActionBuilder(
                                 fragments = EmbarkStoryQuery.Variants.Fragments(
                                     iconVariantsFragment = IconVariantsFragment(
                                         dark = IconVariantsFragment.Dark(svgUrl = ""),
-                                        light = IconVariantsFragment.Light(svgUrl = "/app-content-service/folksam.svg")
-                                    )
-                                )
-                            )
-                        )
-                    )
+                                        light = IconVariantsFragment.Light(svgUrl = "/app-content-service/folksam.svg"),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
                 ),
                 storeKey = storeKey,
                 next = EmbarkStoryQuery.Next(
                     __typename = "",
-                    fragments = EmbarkStoryQuery.Next.Fragments(next)
+                    fragments = EmbarkStoryQuery.Next.Fragments(next),
                 ),
                 skip = EmbarkStoryQuery.Skip(
                     __typename = "",
@@ -78,10 +78,10 @@ data class PreviousInsurerActionBuilder(
                             name = "test_skip",
                             label = "Skip",
                             hidden = false,
-                        )
-                    )
+                        ),
+                    ),
                 ),
-            )
+            ),
         ),
         asEmbarkNumberAction = null,
         asEmbarkNumberActionSet = null,

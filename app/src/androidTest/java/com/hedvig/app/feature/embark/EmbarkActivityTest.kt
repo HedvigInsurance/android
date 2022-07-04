@@ -25,7 +25,7 @@ class EmbarkActivityTest : TestCase() {
                 context(),
                 this.javaClass.name,
                 "",
-            )
+            ),
         )
         onScreen<EmbarkScreen> {
             errorDialog { title { hasText(R.string.error_dialog_title) } }

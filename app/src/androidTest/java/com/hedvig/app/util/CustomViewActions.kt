@@ -13,7 +13,7 @@ object CustomViewActions {
             Swipe.FAST,
             GeneralLocation.CENTER,
             GeneralLocation.BOTTOM_CENTER,
-            Press.FINGER
-        )
+            Press.FINGER,
+        ),
     )
 }

@@ -80,7 +80,7 @@ class LoggedInViewModelImpl(
         loggedInQueryData,
         isKeyGearEnabled,
         isReferralsEnabled,
-        tabNotificationService.unseenTabNotifications()
+        tabNotificationService.unseenTabNotifications(),
     ) { loggedInQueryData, isKeyGearEnabled, isReferralsEnabled, unseenTabNotifications ->
         LoggedInViewState(loggedInQueryData, isKeyGearEnabled, isReferralsEnabled, unseenTabNotifications)
     }

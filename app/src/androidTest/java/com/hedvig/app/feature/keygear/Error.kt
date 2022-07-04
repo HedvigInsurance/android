@@ -23,7 +23,7 @@ import org.junit.Test
 class Error : TestCase() {
     val intent = LoggedInActivity.newInstance(
         context(),
-        initialTab = LoggedInTabs.KEY_GEAR
+        initialTab = LoggedInTabs.KEY_GEAR,
     )
 
     @get:Rule
@@ -43,7 +43,7 @@ class Error : TestCase() {
             } else {
                 success(KEY_GEAR_DATA)
             }
-        }
+        },
     )
 
     @get:Rule

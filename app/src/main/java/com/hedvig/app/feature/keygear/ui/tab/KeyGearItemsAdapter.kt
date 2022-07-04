@@ -27,7 +27,7 @@ class KeyGearItemsAdapter(
     private val createItem: (view: View) -> Unit,
     private val openItem: (root: View, item: KeyGearItemsQuery.KeyGearItem) -> Unit,
 ) : ListAdapter<KeyGearItemsQuery.KeyGearItem, KeyGearItemsAdapter.ViewHolder>(
-    GenericDiffUtilItemCallback()
+    GenericDiffUtilItemCallback(),
 ) {
 
     override fun getItemViewType(position: Int) = when (position) {
@@ -41,13 +41,13 @@ class KeyGearItemsAdapter(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.key_gear_add_item,
                     parent,
-                    false
-                )
+                    false,
+                ),
             )
         }
         ITEM -> {
             ViewHolder.Item(
-                LayoutInflater.from(parent.context).inflate(R.layout.key_gear_item, parent, false)
+                LayoutInflater.from(parent.context).inflate(R.layout.key_gear_item, parent, false),
             )
         }
         else -> {
@@ -88,7 +88,7 @@ class KeyGearItemsAdapter(
                     keyGearItemRoot.setHapticClickListener {
                         openItem(
                             keyGearItemRoot,
-                            item
+                            item,
                         )
                     }
                     val photoUrl =

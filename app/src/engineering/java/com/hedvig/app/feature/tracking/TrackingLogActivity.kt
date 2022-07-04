@@ -112,7 +112,7 @@ fun TrackingLogScreen(
                     var dropdownOpen by rememberSaveable { mutableStateOf(false) }
                     Box(
                         modifier = Modifier
-                            .wrapContentSize(Alignment.TopEnd)
+                            .wrapContentSize(Alignment.TopEnd),
                     ) {
                         IconButton(onClick = { dropdownOpen = true }) {
                             Icon(imageVector = Icons.Default.MoreVert, contentDescription = "More options")
@@ -127,12 +127,12 @@ fun TrackingLogScreen(
                                         context.startService(
                                             TrackingShortcutService.newInstance(
                                                 context,
-                                                show = !showNotification
-                                            )
+                                                show = !showNotification,
+                                            ),
                                         )
                                         showNotification = !showNotification
                                     }
-                                }
+                                },
                             ) {
                                 Checkbox(checked = showNotification, onCheckedChange = null)
                                 Spacer(Modifier.width(8.dp))
@@ -149,19 +149,19 @@ fun TrackingLogScreen(
                 },
                 backgroundColor = MaterialTheme.colors.surface,
             )
-        }
+        },
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
                 .padding(paddingValues)
-                .fillMaxWidth()
+                .fillMaxWidth(),
         ) {
             items(tracks) { event ->
                 Column(
                     modifier = Modifier
                         .clickable { onClickEvent(event) }
                         .padding(16.dp)
-                        .fillMaxWidth()
+                        .fillMaxWidth(),
                 ) {
                     Text(
                         text = event.name,
@@ -177,7 +177,7 @@ fun TrackingLogScreen(
                             } else {
                                 "No"
                             },
-                        )
+                        ),
                     )
                 }
             }
@@ -198,7 +198,7 @@ fun TrackingLogScreenPreview() {
                 TrackEvent("example_event", "{}", LocalDateTime.now()),
                 TrackEvent("example_event", "{}", LocalDateTime.now()),
                 TrackEvent("example_event", "{}", LocalDateTime.now()),
-            )
+            ),
         )
     }
 }

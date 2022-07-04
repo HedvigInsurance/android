@@ -22,7 +22,7 @@ data class InsuranceProvider(
 
 class GetInsuranceProvidersUseCase(
     private val apolloClient: ApolloClient,
-    private val localeManager: LocaleManager
+    private val localeManager: LocaleManager,
 ) {
     suspend fun getInsuranceProviders(): InsuranceProvidersResult {
         val insuranceProviders = InsuranceProvidersQuery(localeManager.defaultLocale())
@@ -33,20 +33,20 @@ class GetInsuranceProvidersUseCase(
     }
 
     private fun createSuccessResult(
-        result: QueryResult.Success<InsuranceProvidersQuery.Data>
+        result: QueryResult.Success<InsuranceProvidersQuery.Data>,
     ): InsuranceProvidersResult.Success {
         var providers = result.data.insuranceProviders.map {
             InsuranceProvider(
                 it.id,
                 it.name,
-                it.externalCollectionId
+                it.externalCollectionId,
             )
         }
         if (isDebug()) {
             providers = providers + InsuranceProvider(
                 "se-demo",
                 "Demo",
-                "se-demo"
+                "se-demo",
             )
         }
         return InsuranceProvidersResult.Success(providers)

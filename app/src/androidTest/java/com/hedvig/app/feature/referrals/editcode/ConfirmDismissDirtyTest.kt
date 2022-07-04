@@ -23,8 +23,8 @@ class ConfirmDismissDirtyTest : TestCase() {
         activityRule.launchActivity(
             ReferralsEditCodeActivity.newInstance(
                 context(),
-                "TEST123"
-            )
+                "TEST123",
+            ),
         )
 
         onScreen<ReferralsEditCodeScreen> {

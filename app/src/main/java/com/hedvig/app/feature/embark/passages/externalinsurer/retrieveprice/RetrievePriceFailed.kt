@@ -24,7 +24,7 @@ import com.hedvig.app.ui.compose.composables.buttons.LargeOutlinedTextButton
 fun RetrievePriceFailed(
     onRetry: () -> Unit,
     onSkip: () -> Unit,
-    insurerName: String
+    insurerName: String,
 ) {
     Column(
         modifier = Modifier
@@ -40,11 +40,11 @@ fun RetrievePriceFailed(
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = stringResource(R.string.insurely_failure_title),
-            style = MaterialTheme.typography.h6
+            style = MaterialTheme.typography.h6,
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = stringResource(R.string.insurely_failure_description, insurerName)
+            text = stringResource(R.string.insurely_failure_description, insurerName),
         )
         Spacer(modifier = Modifier.height(40.dp))
         LargeContainedTextButton(text = stringResource(R.string.insurely_failure_retry_button_text), onClick = onRetry)

@@ -56,7 +56,7 @@ fun HorizontalTextsWithMaximumSpaceTaken(
         if (textsShouldShareEqualSpace) {
             val halfWidthMinusSpaceConstraints = constraints.copy(
                 minWidth = halfWidthMinusSpace,
-                maxWidth = halfWidthMinusSpace
+                maxWidth = halfWidthMinusSpace,
             )
             firstConstraints = halfWidthMinusSpaceConstraints
             secondConstraints = halfWidthMinusSpaceConstraints
@@ -120,7 +120,7 @@ fun BigTextsWithSpaceTextPreview() {
             startText = { Text(text = "Start".repeat(10)) },
             endText = { Text(text = "End".repeat(10), textAlign = it) },
             modifier = Modifier.size(width = 250.dp, height = 100.dp),
-            spaceBetween = 30.dp
+            spaceBetween = 30.dp,
         )
     }
 }
@@ -157,7 +157,7 @@ fun BigEndTextWithSpacePreview() {
             startText = { Text(text = "Start") },
             endText = { Text(text = "End".repeat(10), textAlign = it) },
             modifier = Modifier.size(width = 250.dp, height = 100.dp),
-            spaceBetween = 32.dp
+            spaceBetween = 32.dp,
         )
     }
 }

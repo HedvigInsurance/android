@@ -23,9 +23,9 @@ class DocumentsTest : TestCase() {
     val mockServerRule = ApolloMockServerRule(
         InsuranceQuery.OPERATION_DOCUMENT to apolloResponse {
             success(
-                INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS
+                INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS,
             )
-        }
+        },
     )
 
     @get:Rule
@@ -36,8 +36,8 @@ class DocumentsTest : TestCase() {
         activityRule.launch(
             ContractDetailActivity.newInstance(
                 context(),
-                INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS.contracts[0].id
-            )
+                INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS.contracts[0].id,
+            ),
         )
         stubExternalIntents()
 

@@ -22,14 +22,14 @@ class GroupedResponseBuilder(
                     fragments = GroupedResponseFragment.Title.Fragments(
                         ResponseExpressionFragment(
                             text = title,
-                            expressions = emptyList()
-                        )
-                    )
+                            expressions = emptyList(),
+                        ),
+                    ),
                 ),
                 items = items.map { messageFragment ->
                     GroupedResponseFragment.Item(
                         __typename = "",
-                        fragments = GroupedResponseFragment.Item.Fragments(messageFragment)
+                        fragments = GroupedResponseFragment.Item.Fragments(messageFragment),
                     )
                 },
                 each = each?.let { (key, content) ->
@@ -37,11 +37,11 @@ class GroupedResponseBuilder(
                         key = key,
                         content = GroupedResponseFragment.Content(
                             __typename = "",
-                            fragments = GroupedResponseFragment.Content.Fragments(content)
-                        )
+                            fragments = GroupedResponseFragment.Content.Fragments(content),
+                        ),
                     )
                 },
-            )
+            ),
         ),
     )
 }

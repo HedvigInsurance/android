@@ -52,7 +52,7 @@ fun FakeAudioWaves(
                 .pointerInput(Unit) {
                     detectTapGestures { offset ->
                         updatedWaveInteraction.onInteraction(
-                            ProgressPercentage.of(current = offset.x.toDp(), target = maxWidth)
+                            ProgressPercentage.of(current = offset.x.toDp(), target = maxWidth),
                         )
                     }
                 }
@@ -61,10 +61,10 @@ fun FakeAudioWaves(
                         // Do not trigger on minuscule movements
                         if (dragAmount.absoluteValue < 1f) return@detectHorizontalDragGestures
                         updatedWaveInteraction.onInteraction(
-                            ProgressPercentage.of(current = change.position.x.toDp(), target = maxWidth)
+                            ProgressPercentage.of(current = change.position.x.toDp(), target = maxWidth),
                         )
                     }
-                }
+                },
         ) {
             repeat(numberOfWaves) { waveIndex ->
                 FakeAudioWave(
@@ -73,7 +73,7 @@ fun FakeAudioWaves(
                     waveIndex = waveIndex,
                     playedColor = playedColor,
                     notPlayedColor = notPlayedColor,
-                    modifier = Modifier.width(waveWidth)
+                    modifier = Modifier.width(waveWidth),
                 )
             }
         }
@@ -102,7 +102,7 @@ private fun FakeAudioWave(
         val maxHeightFraction = MathUtils.lerp(
             maxWaveHeightFractionForSideWaves,
             maxWaveHeightFraction,
-            percentageToCenterPoint
+            percentageToCenterPoint,
         )
         if (maxHeightFraction <= minWaveHeightFraction) {
             maxHeightFraction

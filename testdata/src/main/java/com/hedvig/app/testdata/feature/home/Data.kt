@@ -12,7 +12,7 @@ val HOME_DATA_PENDING = HomeDataBuilder(listOf(ContractStatus.PENDING)).build()
 
 val HOME_DATA_UPCOMING_RENEWAL = HomeDataBuilder(
     contracts = listOf(ContractStatus.ACTIVE, ContractStatus.ACTIVE),
-    renewalDate = LocalDate.now().plusDays(1L)
+    renewalDate = LocalDate.now().plusDays(1L),
 ).build()
 
 val HOME_DATA_ACTIVE_IN_FUTURE =
@@ -21,14 +21,14 @@ val HOME_DATA_ACTIVE_IN_FUTURE =
 val HOME_DATA_ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE = HomeDataBuilder(
     listOf(
         ContractStatus.ACTIVE_IN_FUTURE,
-        ContractStatus.ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE
-    )
+        ContractStatus.ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE,
+    ),
 ).build()
 
 val HOME_DATA_ACTIVE_IN_FUTURE_NO_INCEPTION = HomeDataBuilder(
     listOf(
-        ContractStatus.ACTIVE_IN_FUTURE_INVALID
-    )
+        ContractStatus.ACTIVE_IN_FUTURE_INVALID,
+    ),
 ).build()
 
 val HOME_DATA_TERMINATED =
@@ -37,7 +37,7 @@ val HOME_DATA_TERMINATED =
 val HOME_DATA_TERMINATED_WITH_ONGOING_CLAIMS =
     HomeDataBuilder(
         contracts = listOf(ContractStatus.TERMINATED),
-        withClaimStatusCards = true
+        withClaimStatusCards = true,
     ).build()
 
 val HOME_DATA_ACTIVE = HomeDataBuilder(listOf(ContractStatus.ACTIVE)).build()
@@ -51,19 +51,19 @@ val HOME_DATA_ACTIVE_WITH_PSA = HomeDataBuilder(
     listOf(ContractStatus.ACTIVE),
     importantMessages = listOf(
         ImportantMessageBuilder(
-            "COVID-19: Your insurance doesn’t cover trips to certain countries. See full list at UD."
-        ).build()
-    )
+            "COVID-19: Your insurance doesn’t cover trips to certain countries. See full list at UD.",
+        ).build(),
+    ),
 ).build()
 
 val HOME_DATA_ACTIVE_WITH_MULTIPLE_PSA = HomeDataBuilder(
     listOf(ContractStatus.ACTIVE),
     importantMessages = listOf(
         ImportantMessageBuilder(
-            "COVID-19: Your insurance doesn’t cover trips to certain countries. See full list at UD."
+            "COVID-19: Your insurance doesn’t cover trips to certain countries. See full list at UD.",
         ).build(),
         ImportantMessageBuilder(
-            "COVID-19: Your insurance doesn’t cover trips to certain countries. See full list at UD."
-        ).build()
-    )
+            "COVID-19: Your insurance doesn’t cover trips to certain countries. See full list at UD.",
+        ).build(),
+    ),
 ).build()

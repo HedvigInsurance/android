@@ -78,7 +78,7 @@ class OfferAdapter(
             locale,
             fragmentManager,
             onSign,
-            onRemoveDiscount
+            onRemoveDiscount,
         )
         VARIANT_BUTTON -> ViewHolder.VariantButton(ComposeView(parent.context), locale)
         VARIANT_HEADER -> ViewHolder.VariantHeader(ComposeView(parent.context))
@@ -182,7 +182,7 @@ class OfferAdapter(
                                     R.string.OFFER_REMOVE_DISCOUNT_ALERT_CANCEL,
                                     {
                                         onRemoveDiscount()
-                                    }
+                                    },
                                 )
                             }
                         }
@@ -195,7 +195,7 @@ class OfferAdapter(
                                 OfferRedeemCodeBottomSheet.newInstance(data.quoteCartId)
                                     .show(
                                         fragmentManager,
-                                        OfferRedeemCodeBottomSheet.TAG
+                                        OfferRedeemCodeBottomSheet.TAG,
                                     )
                             }
                         }
@@ -256,7 +256,7 @@ class OfferAdapter(
                             description = data.description,
                             cost = data.price.format(locale),
                             selected = data.isSelected,
-                            onClick = data.onVariantSelected
+                            onClick = data.onVariantSelected,
                         )
                     }
                 }
@@ -306,7 +306,7 @@ class OfferAdapter(
                 val link = itemView.context.getString(
                     R.string.OFFER_FOOTER_GDPR_INFO,
                     checkoutString,
-                    itemView.context.getString(R.string.PRIVACY_POLICY_URL)
+                    itemView.context.getString(R.string.PRIVACY_POLICY_URL),
                 )
                 binding.text.setMarkdownText(link)
             }
@@ -336,7 +336,7 @@ class OfferAdapter(
                     is OfferItems.Subheading.Switcher -> {
                         text = context.resources.getQuantityString(
                             R.plurals.offer_switcher_title,
-                            data.amountOfCurrentInsurers
+                            data.amountOfCurrentInsurers,
                         )
                         updateMargin(bottom = BASE_MARGIN_DOUBLE)
                     }
@@ -408,7 +408,7 @@ class OfferAdapter(
                             style = MaterialTheme.typography.h5,
                             modifier = Modifier
                                 .padding(horizontal = 16.dp)
-                                .padding(top = 48.dp)
+                                .padding(top = 48.dp),
                         )
                     }
                 }
@@ -429,7 +429,7 @@ class OfferAdapter(
                         Divider(
                             modifier = Modifier
                                 .padding(horizontal = 16.dp)
-                                .padding(top = data.topPadding)
+                                .padding(top = data.topPadding),
                         )
                     }
                 }
@@ -451,7 +451,7 @@ class OfferAdapter(
                         InsurelyCard(
                             data = data,
                             locale = locale,
-                            modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 0.dp)
+                            modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 0.dp),
                         )
                     }
                 }
@@ -477,7 +477,7 @@ class OfferAdapter(
                     val rowBinding = TextSubtitle1Binding.inflate(
                         layoutInflater,
                         rowContainer,
-                        false
+                        false,
                     )
 
                     with(rowBinding.root) {

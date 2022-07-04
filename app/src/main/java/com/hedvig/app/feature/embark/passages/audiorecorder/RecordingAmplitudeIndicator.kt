@@ -18,7 +18,7 @@ fun RecordingAmplitudeIndicator(amplitude: Int) {
         targetValue = (sqrt(amplitude.toDouble()).toInt() * 10).coerceAtMost(1000),
         animationSpec = spring(
             stiffness = Spring.StiffnessLow,
-        )
+        ),
     )
 
     Canvas(modifier = Modifier) {

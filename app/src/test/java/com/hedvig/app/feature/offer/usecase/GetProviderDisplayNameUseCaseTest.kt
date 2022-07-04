@@ -28,9 +28,9 @@ class GetProviderDisplayNameUseCaseTest {
                 ProviderStatusQuery.ProviderStatusV2("se-gjensidige", "Gjensidige"),
                 ProviderStatusQuery.ProviderStatusV2("se-trekronor", "Trekronor"),
                 ProviderStatusQuery.ProviderStatusV2("no-demo", "Demo"),
-                ProviderStatusQuery.ProviderStatusV2("se-demo", "Demo")
-            )
-        )
+                ProviderStatusQuery.ProviderStatusV2("se-demo", "Demo"),
+            ),
+        ),
     )
 
     @Test
@@ -44,7 +44,7 @@ class GetProviderDisplayNameUseCaseTest {
 
     @Test
     fun `with a prefixed insurance code name, the company display name is returned back`() = runApolloTest(
-        extraApolloClientConfiguration = { normalizedCache(MemoryCacheFactory(maxSizeBytes = 10 * 1024 * 1024)) }
+        extraApolloClientConfiguration = { normalizedCache(MemoryCacheFactory(maxSizeBytes = 10 * 1024 * 1024)) },
     ) { mockServer, apolloClient ->
         val useCase = GetProviderDisplayNameUseCase(apolloClient)
         mockServer.enqueue(mockedResponse.toJsonStringWithData())

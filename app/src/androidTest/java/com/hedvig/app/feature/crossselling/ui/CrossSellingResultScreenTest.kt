@@ -25,7 +25,7 @@ class CrossSellingResultScreenTest {
 
     private val baseClockTime = Clock.fixed(
         Instant.parse("2021-09-14T12:00:00.00Z"),
-        ZoneId.of("Europe/Stockholm")
+        ZoneId.of("Europe/Stockholm"),
     )
     private val baseLocalDate = LocalDate.now(baseClockTime)
     private val accidentInsurance = "Accident Insurance"
@@ -54,8 +54,8 @@ class CrossSellingResultScreenTest {
                 TextAlternative.WillActivate.getString(
                     context,
                     contractYesterday.insuranceType,
-                    contractYesterday.startingDate
-                )
+                    contractYesterday.startingDate,
+                ),
             )
             .assertDoesNotExist()
         compose.onNodeWithText(TextAlternative.Failed.getString(context)).assertDoesNotExist()
@@ -92,8 +92,8 @@ class CrossSellingResultScreenTest {
                 TextAlternative.WillActivate.getString(
                     context,
                     contractTomorrow.insuranceType,
-                    contractTomorrow.startingDate
-                )
+                    contractTomorrow.startingDate,
+                ),
             )
             .assertExists()
             .assertTextContains("2021-09-15", substring = true)
@@ -126,8 +126,8 @@ class CrossSellingResultScreenTest {
                 TextAlternative.WillActivate.getString(
                     context,
                     contractNextMonth.insuranceType,
-                    contractNextMonth.startingDate
-                )
+                    contractNextMonth.startingDate,
+                ),
             )
             .assertExists()
     }
@@ -145,8 +145,8 @@ class CrossSellingResultScreenTest {
                 TextAlternative.WillActivate.getString(
                     context,
                     contractNextYear.insuranceType,
-                    contractNextYear.startingDate
-                )
+                    contractNextYear.startingDate,
+                ),
             )
             .assertExists()
     }
@@ -170,7 +170,7 @@ class CrossSellingResultScreenTest {
         val contractInTwoDays = CrossSellingResult.Success(activationDate, accidentInsurance)
         val todayClock = Clock.fixed(
             Instant.parse("2021-09-22T12:00:00.00Z"),
-            ZoneId.of("Europe/Stockholm")
+            ZoneId.of("Europe/Stockholm"),
         )
 
         compose.setContent {
@@ -179,7 +179,7 @@ class CrossSellingResultScreenTest {
                 clock = todayClock,
                 dateFormatter = isoDateFormatter,
                 openChat = {},
-                closeResultScreen = {}
+                closeResultScreen = {},
             )
         }
 
@@ -191,8 +191,8 @@ class CrossSellingResultScreenTest {
                 TextAlternative.WillActivate.getString(
                     context,
                     contractInTwoDays.insuranceType,
-                    activationDate
-                )
+                    activationDate,
+                ),
             )
             .assertExists()
     }
@@ -205,28 +205,28 @@ private sealed class TextAlternative(@StringRes protected val stringRes: Int) {
     }
 
     object AlreadyActivated : TextAlternative(
-        R.string.purchase_confirmation_new_insurance_today_app_state_description
-    ) {
-        fun getString(
-            context: Context,
-            insuranceType: String
-        ): String = context.getString(
-            stringRes,
-            insuranceType
-        )
-    }
-
-    object WillActivate : TextAlternative(
-        R.string.purchase_confirmation_new_insurance_active_in_future_app_state_description
+        R.string.purchase_confirmation_new_insurance_today_app_state_description,
     ) {
         fun getString(
             context: Context,
             insuranceType: String,
-            activationDate: LocalDate
         ): String = context.getString(
             stringRes,
             insuranceType,
-            activationDate.format(isoDateFormatter)
+        )
+    }
+
+    object WillActivate : TextAlternative(
+        R.string.purchase_confirmation_new_insurance_active_in_future_app_state_description,
+    ) {
+        fun getString(
+            context: Context,
+            insuranceType: String,
+            activationDate: LocalDate,
+        ): String = context.getString(
+            stringRes,
+            insuranceType,
+            activationDate.format(isoDateFormatter),
         )
     }
 }

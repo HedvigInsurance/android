@@ -36,7 +36,7 @@ class GeneratedVariableTest : TestCase() {
         },
         VARIABLE_QUERY to apolloResponse {
             success(jsonObjectOf("hello" to variables.getString("variable")))
-        }
+        },
     )
 
     @get:Rule
@@ -49,7 +49,7 @@ class GeneratedVariableTest : TestCase() {
                 ApplicationProvider.getApplicationContext(),
                 this.javaClass.name,
                 "",
-            )
+            ),
         )
 
         onScreen<EmbarkScreen> {

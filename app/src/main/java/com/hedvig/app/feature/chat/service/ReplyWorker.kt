@@ -12,7 +12,7 @@ import org.koin.core.component.inject
 
 class ReplyWorker(
     private val context: Context,
-    params: WorkerParameters
+    params: WorkerParameters,
 ) : CoroutineWorker(context, params),
     KoinComponent {
     private val chatRepository: ChatRepository by inject()
@@ -37,7 +37,7 @@ class ReplyWorker(
             chatRepository
                 .sendChatMessage(
                     lastChatMessage.globalId,
-                    replyText
+                    replyText,
                 )
         }
 
@@ -53,7 +53,7 @@ class ReplyWorker(
             chatNotificationSender.addReplyToExistingChatNotification(
                 context,
                 notificationId,
-                replyText
+                replyText,
             )
         }
 

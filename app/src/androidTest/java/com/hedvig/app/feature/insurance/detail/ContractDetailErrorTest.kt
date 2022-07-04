@@ -29,10 +29,10 @@ class ContractDetailErrorTest : TestCase() {
                 graphQLError(jsonObjectOf("message" to "error"))
             } else {
                 success(
-                    INSURANCE_DATA_SWEDISH_HOUSE
+                    INSURANCE_DATA_SWEDISH_HOUSE,
                 )
             }
-        }
+        },
     )
 
     @get:Rule
@@ -43,8 +43,8 @@ class ContractDetailErrorTest : TestCase() {
         activityRule.launch(
             ContractDetailActivity.newInstance(
                 context(),
-                INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS.contracts[0].id
-            )
+                INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS.contracts[0].id,
+            ),
         )
 
         Screen.onScreen<ContractDetailScreen> {

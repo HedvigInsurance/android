@@ -58,7 +58,7 @@ class GenericAuthActivity : BaseActivity() {
             GenericAuthViewModel.ViewState.TextFieldError.INVALID_EMAIL ->
                 R.string.login_text_input_email_error_not_valid
             GenericAuthViewModel.ViewState.TextFieldError.NETWORK_ERROR -> R.string.NETWORK_ERROR_ALERT_MESSAGE
-        }
+        },
     )
 
     private fun startOtpInputActivity(value: GenericAuthViewModel.Event.SubmitEmailSuccess) {

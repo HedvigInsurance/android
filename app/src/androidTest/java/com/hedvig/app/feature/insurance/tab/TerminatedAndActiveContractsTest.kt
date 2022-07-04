@@ -32,7 +32,7 @@ class TerminatedAndActiveContractsTest : TestCase() {
         },
         InsuranceQuery.OPERATION_DOCUMENT to apolloResponse {
             success(INSURANCE_DATA_ONE_ACTIVE_ONE_TERMINATED)
-        }
+        },
     )
 
     @get:Rule
@@ -42,7 +42,7 @@ class TerminatedAndActiveContractsTest : TestCase() {
     fun shouldShowTerminatedContractsRowWhenUserHasTerminatedContracts() = run {
         val intent = LoggedInActivity.newInstance(
             context(),
-            initialTab = LoggedInTabs.INSURANCE
+            initialTab = LoggedInTabs.INSURANCE,
         )
         activityRule.launch(intent)
 

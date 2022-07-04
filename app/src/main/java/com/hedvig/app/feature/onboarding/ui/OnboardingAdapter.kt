@@ -30,7 +30,7 @@ import com.hedvig.app.util.invalidData
 
 class OnboardingAdapter(
     val viewModel: ChoosePlanViewModel,
-    val marketProvider: MarketManager
+    val marketProvider: MarketManager,
 ) :
     ListAdapter<OnboardingModel, OnboardingAdapter.ViewHolder>(OnboardingDiffUtilCallback()) {
 
@@ -84,7 +84,7 @@ class OnboardingAdapter(
                                 name.contains(CONTENTS) -> R.drawable.gradient_fall_sunset
                                 name.contains(TRAVEL) -> R.drawable.gradient_spring_fog
                                 else -> R.drawable.gradient_fall_sunset
-                            }
+                            },
                         )
                         blur.show()
                         blur.setColorFilter(
@@ -94,8 +94,8 @@ class OnboardingAdapter(
                                     name.contains(CONTENTS) -> R.color.blur_fall_sunset
                                     name.contains(TRAVEL) -> R.color.blur_spring_fog
                                     else -> R.color.blur_fall_sunset
-                                }
-                            )
+                                },
+                            ),
                         )
                         radioButton.isChecked = true
                     }
@@ -134,7 +134,7 @@ class OnboardingAdapter(
                                 start()
                             }
                         },
-                        300
+                        300,
                     )
                 }
             }
@@ -145,7 +145,7 @@ class OnboardingAdapter(
             override fun bind(
                 item: OnboardingModel,
                 viewModel: ChoosePlanViewModel,
-                marketProvider: MarketManager
+                marketProvider: MarketManager,
             ) {
                 binding.retry.setHapticClickListener { viewModel.load() }
             }

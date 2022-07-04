@@ -4,7 +4,7 @@ import androidx.recyclerview.widget.DiffUtil
 
 class ReferralsDiffCallback(
     private val old: List<ReferralsModel>,
-    private val new: List<ReferralsModel>
+    private val new: List<ReferralsModel>,
 ) : DiffUtil.Callback() {
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
         val oldItem = old[oldItemPosition]

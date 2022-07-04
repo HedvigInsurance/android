@@ -74,14 +74,14 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                         scroll = scrollPosition
                         loggedInViewModel.onScroll(scrollPosition)
                     },
-                    viewLifecycleOwner
-                )
+                    viewLifecycleOwner,
+                ),
             )
 
             invites.itemAnimator = ViewHolderReusingDefaultItemAnimator()
             val adapter = ReferralsAdapter(
                 referralsViewModel::load,
-                marketManager
+                marketManager,
             )
             invites.adapter = adapter
 
@@ -89,7 +89,7 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                 swipeToRefresh.setProgressViewOffset(
                     false,
                     0,
-                    insets.systemWindowInsetTop + BASE_MARGIN_DOUBLE
+                    insets.systemWindowInsetTop + BASE_MARGIN_DOUBLE,
                 )
                 insets
             }
@@ -115,7 +115,6 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                             adapter.submitList(LOADING_STATE)
                         }
                         is ReferralsViewModel.ViewState.Success -> {
-
                             val incentive =
                                 viewState
                                     .data
@@ -144,10 +143,10 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                                                 localeManager.defaultLocale().toWebLocaleTag()
                                                 }/forever/${
                                                 Uri.encode(
-                                                    code
+                                                    code,
                                                 )
-                                                }"
-                                            )
+                                                }",
+                                            ),
                                         )
                                         intent.type = "text/plain"
                                     }
@@ -170,8 +169,8 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                                     listOfNotNull(
                                         ReferralsModel.Title,
                                         ReferralsModel.Header.LoadedEmptyHeader(viewState.data),
-                                        ReferralsModel.Code.LoadedCode(viewState.data)
-                                    )
+                                        ReferralsModel.Code.LoadedCode(viewState.data),
+                                    ),
                                 )
                                 return@onEach
                             }
@@ -180,7 +179,7 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                                 ReferralsModel.Title,
                                 ReferralsModel.Header.LoadedHeader(viewState.data),
                                 ReferralsModel.Code.LoadedCode(viewState.data),
-                                ReferralsModel.InvitesHeader
+                                ReferralsModel.InvitesHeader,
                             ).toMutableList()
 
                             items += viewState.data.referralInformation.invitations
@@ -191,7 +190,7 @@ class ReferralsFragment : Fragment(R.layout.fragment_referrals) {
                                 }
                                 .map {
                                     ReferralsModel.Referral.LoadedReferral(
-                                        it.fragments.referralFragment
+                                        it.fragments.referralFragment,
                                     )
                                 }
 

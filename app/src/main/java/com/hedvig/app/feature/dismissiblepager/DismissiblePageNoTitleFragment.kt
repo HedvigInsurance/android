@@ -39,7 +39,7 @@ class DismissiblePageNoTitleFragment : Fragment(R.layout.dismissible_page_no_tit
             model: DismissiblePagerModel.NoTitlePage,
         ) = DismissiblePageNoTitleFragment().also {
             it.arguments = bundleOf(
-                "model" to model
+                "model" to model,
             )
         }
     }

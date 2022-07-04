@@ -29,7 +29,7 @@ class PendingTest : TestCase() {
         },
         HomeQuery.OPERATION_DOCUMENT to apolloResponse {
             success(HOME_DATA_PENDING)
-        }
+        },
     )
 
     @get:Rule

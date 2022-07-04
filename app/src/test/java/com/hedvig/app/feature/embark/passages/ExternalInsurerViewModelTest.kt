@@ -23,7 +23,7 @@ class ExternalInsurerViewModelTest {
     private val insuranceProviders = listOf(
         InsuranceProvider("1", "Test1"),
         InsuranceProvider("2", "Test2"),
-        InsuranceProvider("3", "Test3")
+        InsuranceProvider("3", "Test3"),
     )
 
     @get:Rule

@@ -28,8 +28,8 @@ class TrackingShortcutService : Service() {
                     this,
                     0,
                     TrackingLogActivity.newInstance(this),
-                    PendingIntent.FLAG_IMMUTABLE
-                )
+                    PendingIntent.FLAG_IMMUTABLE,
+                ),
             )
             .setSmallIcon(R.drawable.ic_hedvig_h)
             .setAutoCancel(false)

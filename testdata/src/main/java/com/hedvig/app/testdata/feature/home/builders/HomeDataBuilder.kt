@@ -16,10 +16,10 @@ data class HomeDataBuilder(
     private val commonClaims: List<HomeQuery.CommonClaim> = listOf(
         CommonClaimBuilder(
             title = "Det är kris!",
-            variant = CommonClaimBuilder.Variant.EMERGENCY
+            variant = CommonClaimBuilder.Variant.EMERGENCY,
         ).build(),
         CommonClaimBuilder(title = "Trasig telefon").build(),
-        CommonClaimBuilder(title = "Försenat bagage").build()
+        CommonClaimBuilder(title = "Försenat bagage").build(),
     ),
     private val withClaimStatusCards: Boolean = false,
     private val importantMessages: List<HomeQuery.ImportantMessage> = emptyList(),
@@ -28,7 +28,7 @@ data class HomeDataBuilder(
 ) {
     fun build() = HomeQuery.Data(
         member = HomeQuery.Member(
-            firstName = firstName
+            firstName = firstName,
         ),
         claimStatusCards = if (withClaimStatusCards) { // Better preview the cards using Showkase
             ClaimStatusCardsBuilder().build()
@@ -44,7 +44,7 @@ data class HomeDataBuilder(
                     asPendingStatus = if (c == ContractStatus.PENDING) {
                         HomeQuery.AsPendingStatus(
                             __typename = c.typename,
-                            pendingSince = null
+                            pendingSince = null,
                         )
                     } else {
                         null
@@ -52,11 +52,11 @@ data class HomeDataBuilder(
                     asActiveInFutureStatus = when (c) {
                         ContractStatus.ACTIVE_IN_FUTURE -> HomeQuery.AsActiveInFutureStatus(
                             __typename = c.typename,
-                            futureInception = LocalDate.of(2025, 1, 1)
+                            futureInception = LocalDate.of(2025, 1, 1),
                         )
                         ContractStatus.ACTIVE_IN_FUTURE_INVALID -> HomeQuery.AsActiveInFutureStatus(
                             __typename = c.typename,
-                            futureInception = null
+                            futureInception = null,
                         )
                         else -> null
                     },
@@ -65,7 +65,7 @@ data class HomeDataBuilder(
                     ) {
                         HomeQuery.AsActiveInFutureAndTerminatedInFutureStatus(
                             __typename = c.typename,
-                            futureInception = LocalDate.of(2024, 1, 1)
+                            futureInception = LocalDate.of(2024, 1, 1),
                         )
                     } else {
                         null
@@ -73,7 +73,7 @@ data class HomeDataBuilder(
                     asActiveStatus = if (c == ContractStatus.ACTIVE) {
                         HomeQuery.AsActiveStatus(
                             __typename = c.typename,
-                            pastInception = LocalDate.now()
+                            pastInception = LocalDate.now(),
                         )
                     } else {
                         null
@@ -81,7 +81,7 @@ data class HomeDataBuilder(
                     asTerminatedTodayStatus = if (c == ContractStatus.TERMINATED_TODAY) {
                         HomeQuery.AsTerminatedTodayStatus(
                             __typename = c.typename,
-                            today = LocalDate.now()
+                            today = LocalDate.now(),
                         )
                     } else {
                         null
@@ -89,7 +89,7 @@ data class HomeDataBuilder(
                     asTerminatedStatus = if (c == ContractStatus.TERMINATED) {
                         HomeQuery.AsTerminatedStatus(
                             __typename = c.typename,
-                            termination = null
+                            termination = null,
                         )
                     } else {
                         null
@@ -97,20 +97,20 @@ data class HomeDataBuilder(
                     asTerminatedInFutureStatus = if (c == ContractStatus.TERMINATED_IN_FUTURE) {
                         HomeQuery.AsTerminatedInFutureStatus(
                             __typename = c.typename,
-                            futureTermination = LocalDate.now().plusDays(10)
+                            futureTermination = LocalDate.now().plusDays(10),
                         )
                     } else {
                         null
-                    }
+                    },
                 ),
                 upcomingRenewal = if (renewalDate != null) {
                     HomeQuery.UpcomingRenewal(
                         renewalDate = renewalDate,
-                        draftCertificateUrl = "https://www.example.com"
+                        draftCertificateUrl = "https://www.example.com",
                     )
                 } else {
                     null
-                }
+                },
             )
         },
         isEligibleToCreateClaim = contracts.any { it == ContractStatus.ACTIVE },
@@ -124,16 +124,16 @@ data class HomeDataBuilder(
                         fragments = HomeQuery.Variants2.Fragments(
                             IconVariantsFragment(
                                 dark = IconVariantsFragment.Dark(
-                                    svgUrl = "/app-content-service/welcome_welcome.svg"
+                                    svgUrl = "/app-content-service/welcome_welcome.svg",
                                 ),
                                 light = IconVariantsFragment.Light(
-                                    svgUrl = "/app-content-service/welcome_welcome.svg"
-                                )
-                            )
-                        )
-                    )
+                                    svgUrl = "/app-content-service/welcome_welcome.svg",
+                                ),
+                            ),
+                        ),
+                    ),
                 ),
-                body = "1"
+                body = "1",
             ),
             HomeQuery.HowClaimsWork(
                 illustration = HomeQuery.Illustration(
@@ -142,16 +142,16 @@ data class HomeDataBuilder(
                         fragments = HomeQuery.Variants2.Fragments(
                             IconVariantsFragment(
                                 dark = IconVariantsFragment.Dark(
-                                    svgUrl = "/app-content-service/welcome_welcome.svg"
+                                    svgUrl = "/app-content-service/welcome_welcome.svg",
                                 ),
                                 light = IconVariantsFragment.Light(
-                                    svgUrl = "/app-content-service/welcome_welcome.svg"
-                                )
-                            )
-                        )
-                    )
+                                    svgUrl = "/app-content-service/welcome_welcome.svg",
+                                ),
+                            ),
+                        ),
+                    ),
                 ),
-                body = "2"
+                body = "2",
             ),
             HomeQuery.HowClaimsWork(
                 illustration = HomeQuery.Illustration(
@@ -160,20 +160,20 @@ data class HomeDataBuilder(
                         fragments = HomeQuery.Variants2.Fragments(
                             IconVariantsFragment(
                                 dark = IconVariantsFragment.Dark(
-                                    svgUrl = "/app-content-service/welcome_welcome.svg"
+                                    svgUrl = "/app-content-service/welcome_welcome.svg",
                                 ),
                                 light = IconVariantsFragment.Light(
-                                    svgUrl = "/app-content-service/welcome_welcome.svg"
-                                )
-                            )
-                        )
-                    )
+                                    svgUrl = "/app-content-service/welcome_welcome.svg",
+                                ),
+                            ),
+                        ),
+                    ),
                 ),
-                body = "3"
-            )
+                body = "3",
+            ),
         ),
         payinMethodStatus = payinMethodStatus,
-        insuranceProviders = emptyList()
+        insuranceProviders = emptyList(),
     )
 
     companion object {
@@ -187,7 +187,7 @@ data class ImportantMessageBuilder(
 ) {
     fun build() = HomeQuery.ImportantMessage(
         message = body,
-        link = url
+        link = url,
     )
 }
 
@@ -207,9 +207,9 @@ class ClaimStatusCardsBuilder {
                         fragments = HomeQuery.ProgressSegment.Fragments(
                             progressSegments = com.hedvig.android.owldroid.graphql.fragment.ProgressSegments(
                                 text = "Segment #$it",
-                                type = ClaimStatusProgressType.values().random()
-                            )
-                        )
+                                type = ClaimStatusProgressType.values().random(),
+                            ),
+                        ),
                     )
                 },
                 claim = HomeQuery.Claim(
@@ -218,7 +218,7 @@ class ClaimStatusCardsBuilder {
                     type = "Claim type",
                     statusParagraph = "Status Paragraph",
                     progressSegments = emptyList(),
-                    status = ClaimStatus.CLOSED
+                    status = ClaimStatus.CLOSED,
                 ),
             )
         }

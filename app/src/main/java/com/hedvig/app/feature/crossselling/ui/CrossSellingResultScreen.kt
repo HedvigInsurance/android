@@ -44,7 +44,7 @@ fun CrossSellingResultScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = 16.dp),
         ) {
             InformationSection(
                 crossSellingResult = crossSellingResult,
@@ -73,7 +73,7 @@ private fun InformationSection(
     crossSellingResult: CrossSellingResult,
     clock: Clock,
     dateFormatter: DateTimeFormatter,
-    modifier: Modifier
+    modifier: Modifier,
 ) {
     val icon: Painter = when (crossSellingResult) {
         is CrossSellingResult.Success -> painterResource(R.drawable.ic_checkmark_in_circle)
@@ -84,7 +84,7 @@ private fun InformationSection(
         is CrossSellingResult.Success -> {
             stringResource(
                 R.string.purchase_confirmation_new_insurance_today_app_state_title,
-                crossSellingResult.insuranceType
+                crossSellingResult.insuranceType,
             )
         }
     }
@@ -95,7 +95,7 @@ private fun InformationSection(
                 crossSellingResult.startingDate <= LocalDate.now(clock) -> {
                     stringResource(
                         R.string.purchase_confirmation_new_insurance_today_app_state_description,
-                        crossSellingResult.insuranceType
+                        crossSellingResult.insuranceType,
                     )
                 }
                 else -> {
@@ -103,7 +103,7 @@ private fun InformationSection(
                     stringResource(
                         R.string.purchase_confirmation_new_insurance_active_in_future_app_state_description,
                         crossSellingResult.insuranceType,
-                        activationDate
+                        activationDate,
                     )
                 }
             }
@@ -117,7 +117,7 @@ private fun InformationSection(
     icon: Painter,
     title: String,
     description: String,
-    modifier: Modifier
+    modifier: Modifier,
 ) {
     Column(
         modifier = modifier,
@@ -130,12 +130,12 @@ private fun InformationSection(
         Spacer(Modifier.height(20.dp))
         Text(
             title,
-            style = MaterialTheme.typography.h5
+            style = MaterialTheme.typography.h5,
         )
         Spacer(Modifier.height(24.dp))
         Text(
             description,
-            style = MaterialTheme.typography.body1
+            style = MaterialTheme.typography.body1,
         )
     }
 }
@@ -149,7 +149,7 @@ private fun ButtonsSection(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         when (crossSellingResult) {
             is CrossSellingResult.Error -> {
@@ -165,13 +165,13 @@ private fun ButtonsSection(
                 }
                 LargeOutlinedTextButton(
                     onClick = closeResultScreen,
-                    text = stringResource(R.string.purchase_confirmation_error_close_button)
+                    text = stringResource(R.string.purchase_confirmation_error_close_button),
                 )
             }
             is CrossSellingResult.Success -> {
                 LargeContainedTextButton(
                     onClick = closeResultScreen,
-                    text = stringResource(R.string.purchase_confirmation_accident_insurance_done_button)
+                    text = stringResource(R.string.purchase_confirmation_accident_insurance_done_button),
                 )
             }
         }
@@ -181,7 +181,7 @@ private fun ButtonsSection(
 @Preview(
     showSystemUi = true,
     name = "Accident Result",
-    group = "Cross Sell result"
+    group = "Cross Sell result",
 )
 @Composable
 fun CrossSellingResultScreenPreview(
@@ -193,7 +193,7 @@ fun CrossSellingResultScreenPreview(
             Clock.systemDefaultZone(),
             DateTimeFormatter.ISO_LOCAL_DATE,
             {},
-            {}
+            {},
         )
     }
 }

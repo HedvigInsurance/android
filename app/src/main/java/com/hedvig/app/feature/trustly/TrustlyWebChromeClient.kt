@@ -13,14 +13,14 @@ class TrustlyWebChromeClient : WebChromeClient() {
         view: WebView,
         isDialog: Boolean,
         isUserGesture: Boolean,
-        resultMsg: Message
+        resultMsg: Message,
     ): Boolean {
         val tabView = WeakReference(WebView(view.context))
         tabView.get()?.let { webView ->
             webView.webViewClient = object : WebViewClient() {
                 override fun shouldOverrideUrlLoading(
                     view: WebView,
-                    request: WebResourceRequest
+                    request: WebResourceRequest,
                 ): Boolean {
                     CustomTabsIntent.Builder().build().let { customTab ->
                         customTab.launchUrl(view.context, request.url)

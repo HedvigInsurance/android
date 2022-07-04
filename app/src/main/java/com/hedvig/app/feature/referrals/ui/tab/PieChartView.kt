@@ -14,7 +14,7 @@ import androidx.dynamicanimation.animation.SpringForce
 class PieChartView @JvmOverloads constructor(
     context: Context,
     attributeSet: AttributeSet? = null,
-    defStyle: Int = 0
+    defStyle: Int = 0,
 ) : View(context, attributeSet, defStyle) {
 
     private val circle = RectF()
@@ -72,7 +72,7 @@ class PieChartView @JvmOverloads constructor(
             0f,
             0f,
             resolvedWidth.toFloat(),
-            resolvedHeight.toFloat()
+            resolvedHeight.toFloat(),
         )
 
         setMeasuredDimension(resolvedWidth, resolvedHeight)
@@ -112,5 +112,5 @@ class PieChartView @JvmOverloads constructor(
 data class PieChartSegment(
     val id: Int,
     val percentage: Float,
-    @ColorInt val color: Int
+    @ColorInt val color: Int,
 )

@@ -40,6 +40,6 @@ class ConnectPayoutUseCase(
 
     private fun createTokenizePayoutDetailsMutation(data: JSONObject) = TokenizePayoutDetailsMutation(
         data.getJSONObject("paymentMethod").toString(),
-        RedirectComponent.getReturnUrl(context)
+        RedirectComponent.getReturnUrl(context),
     )
 }

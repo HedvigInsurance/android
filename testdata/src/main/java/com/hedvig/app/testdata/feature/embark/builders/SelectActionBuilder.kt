@@ -14,8 +14,8 @@ data class SelectActionBuilder(
         asEmbarkSelectAction = EmbarkStoryQuery.AsEmbarkSelectAction(
             __typename = EmbarkSelectAction.type.name,
             selectData = EmbarkStoryQuery.SelectData(
-                options = options
-            )
+                options = options,
+            ),
         ),
         asEmbarkTextAction = null,
         asEmbarkTextActionSet = null,
@@ -39,7 +39,7 @@ data class SelectOptionBuilder(
     fun build() = EmbarkStoryQuery.Option(
         link = EmbarkStoryQuery.Link(
             __typename = EmbarkLink.type.name,
-            fragments = EmbarkStoryQuery.Link.Fragments(link)
+            fragments = EmbarkStoryQuery.Link.Fragments(link),
         ),
         keys = keyValues.map { it.first },
         values = keyValues.map { it.second },
@@ -47,7 +47,7 @@ data class SelectOptionBuilder(
         api = api?.let {
             EmbarkStoryQuery.Api(
                 __typename = it.__typename,
-                fragments = EmbarkStoryQuery.Api.Fragments(it)
+                fragments = EmbarkStoryQuery.Api.Fragments(it),
             )
         },
     )

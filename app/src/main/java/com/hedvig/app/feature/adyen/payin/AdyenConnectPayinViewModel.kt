@@ -35,7 +35,7 @@ class AdyenConnectPayinViewModelImpl(
 
             response.getOrNull()?.data?.availablePaymentMethods?.paymentMethodsResponse?.let {
                 _paymentMethods.postValue(
-                    it
+                    it,
                 )
             }
         }

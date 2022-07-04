@@ -25,12 +25,12 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                     KeyGearItemQuery.KeyGearItem(
                         "KeyGearItem",
                         KeyGearItemQuery.KeyGearItem.Fragments(
-                            items[id]!!.copy(name = newName)
-                        )
-                    )
+                            items[id]!!.copy(name = newName),
+                        ),
+                    ),
                 )
             },
-            250
+            250,
         )
     }
 
@@ -39,7 +39,7 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
             {
                 isDeleted.postValue(true)
             },
-            250
+            250,
         )
     }
 
@@ -49,11 +49,11 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                 data.postValue(
                     KeyGearItemQuery.KeyGearItem(
                         "KeyGearItem",
-                        KeyGearItemQuery.KeyGearItem.Fragments(items[id]!!)
-                    )
+                        KeyGearItemQuery.KeyGearItem.Fragments(items[id]!!),
+                    ),
                 )
             },
-            250
+            250,
         )
     }
 
@@ -71,17 +71,17 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                                     KeyGearItemFragment.Receipt(
                                         file = KeyGearItemFragment.File1(
                                             preSignedUrl =
-                                            "https://upload.wikimedia.org/wikipedia/commons/0/0b/ReceiptSwiss.jpg"
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    )
+                                            "https://upload.wikimedia.org/wikipedia/commons/0/0b/ReceiptSwiss.jpg",
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
                 )
                 isUploading.postValue(false)
             },
-            2000
+            2000,
         )
     }
 
@@ -96,21 +96,21 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                     photos = listOf(
                         KeyGearItemFragment.Photo(
                             file = KeyGearItemFragment.File(
-                                preSignedUrl = "https://images.unsplash.com/photo-1505156868547-9b49f4df4e04"
-                            )
-                        )
+                                preSignedUrl = "https://images.unsplash.com/photo-1505156868547-9b49f4df4e04",
+                            ),
+                        ),
                     ),
                     receipts = listOf(),
                     category = KeyGearItemCategory.PHONE,
                     purchasePrice = KeyGearItemFragment.PurchasePrice(
-                        amount = "60000"
+                        amount = "60000",
                     ),
                     timeOfPurchase = null,
                     deductible = KeyGearItemFragment.Deductible(
-                        amount = "1500"
+                        amount = "1500",
                     ),
                     maxInsurableAmount = KeyGearItemFragment.MaxInsurableAmount(
-                        amount = "50000"
+                        amount = "50000",
                     ),
                     deleted = false,
                     fragments = KeyGearItemFragment.Fragments(
@@ -121,13 +121,13 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                                     __typename = "",
                                     ratio = 90,
                                     valuation = KeyGearItemValuationFragment.Valuation(
-                                        amount = "9000.00"
-                                    )
+                                        amount = "9000.00",
+                                    ),
                                 ),
-                                asKeyGearItemValuationMarketValue = null
-                            )
-                        )
-                    )
+                                asKeyGearItemValuationMarketValue = null,
+                            ),
+                        ),
+                    ),
                 ),
             "234" to
                 KeyGearItemFragment(
@@ -138,21 +138,21 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                     photos = listOf(
                         KeyGearItemFragment.Photo(
                             file = KeyGearItemFragment.File(
-                                preSignedUrl = "https://images.unsplash.com/photo-1522199755839-a2bacb67c546"
-                            )
-                        )
+                                preSignedUrl = "https://images.unsplash.com/photo-1522199755839-a2bacb67c546",
+                            ),
+                        ),
                     ),
                     receipts = listOf(),
                     category = KeyGearItemCategory.COMPUTER,
                     purchasePrice = KeyGearItemFragment.PurchasePrice(
-                        amount = "20000"
+                        amount = "20000",
                     ),
                     timeOfPurchase = null,
                     deductible = KeyGearItemFragment.Deductible(
-                        amount = "1500"
+                        amount = "1500",
                     ),
                     maxInsurableAmount = KeyGearItemFragment.MaxInsurableAmount(
-                        amount = "50000"
+                        amount = "50000",
                     ),
                     deleted = false,
                     fragments = KeyGearItemFragment.Fragments(
@@ -163,13 +163,13 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                                     __typename = "",
                                     ratio = 31,
                                     valuation = KeyGearItemValuationFragment.Valuation(
-                                        amount = "55000.00"
-                                    )
+                                        amount = "55000.00",
+                                    ),
                                 ),
-                                asKeyGearItemValuationMarketValue = null
-                            )
-                        )
-                    )
+                                asKeyGearItemValuationMarketValue = null,
+                            ),
+                        ),
+                    ),
                 ),
             "345" to
                 KeyGearItemFragment(
@@ -181,26 +181,26 @@ class MockKeyGearItemDetailViewModel : KeyGearItemDetailViewModel() {
                     receipts = listOf(
                         KeyGearItemFragment.Receipt(
                             file = KeyGearItemFragment.File1(
-                                preSignedUrl = "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
-                            )
-                        )
+                                "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+                            ),
+                        ),
                     ),
                     category = KeyGearItemCategory.JEWELRY,
                     purchasePrice = null,
                     timeOfPurchase = null,
                     deductible = KeyGearItemFragment.Deductible(
-                        amount = "1500"
+                        amount = "1500",
                     ),
                     maxInsurableAmount = KeyGearItemFragment.MaxInsurableAmount(
-                        amount = "50000"
+                        amount = "50000",
                     ),
                     deleted = false,
                     fragments = KeyGearItemFragment.Fragments(
                         KeyGearItemValuationFragment(
-                            valuation = null
-                        )
-                    )
-                )
+                            valuation = null,
+                        ),
+                    ),
+                ),
         )
     }
 }

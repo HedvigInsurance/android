@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 class ScrollPositionListener(
     private val onScroll: (Int) -> Unit,
-    private val lifecycleOwner: LifecycleOwner
+    private val lifecycleOwner: LifecycleOwner,
 ) : RecyclerView.OnScrollListener() {
     private var scrollY = 0
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {

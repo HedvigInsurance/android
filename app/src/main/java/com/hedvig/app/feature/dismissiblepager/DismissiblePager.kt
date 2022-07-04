@@ -58,7 +58,7 @@ abstract class DismissiblePager : DialogFragment() {
         super.onStart()
         dialog?.window?.setLayout(
             ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT
+            ViewGroup.LayoutParams.MATCH_PARENT,
         )
         dialog?.window?.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
 
@@ -152,7 +152,7 @@ abstract class DismissiblePager : DialogFragment() {
                         is DismissiblePagerModel.SwipeOffScreen -> {
                             proceed.text = if (isPositionLast(page, count) || isPositionNextToLast(
                                     page,
-                                    count
+                                    count,
                                 )
                             ) {
                                 resources.getString(lastButtonText)

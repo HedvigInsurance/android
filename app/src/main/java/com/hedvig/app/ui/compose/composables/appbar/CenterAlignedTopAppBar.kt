@@ -51,7 +51,7 @@ fun CenterAlignedTopAppBar(
         color = backgroundColor,
         contentColor = contentColor,
         elevation = elevation,
-        modifier = modifier
+        modifier = modifier,
     ) {
         TopAppBar(
             backgroundColor = Color.Transparent,
@@ -66,7 +66,7 @@ fun CenterAlignedTopAppBar(
                         .fillMaxHeight()
                         .width(72.dp - AppBarHorizontalPadding)
                         .padding(start = AppBarHorizontalPadding),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     CompositionLocalProvider(
                         LocalContentAlpha provides ContentAlpha.high,
@@ -77,7 +77,7 @@ fun CenterAlignedTopAppBar(
                                     contentDescription = null,
                                 )
                             }
-                        }
+                        },
                     )
                 }
                 ProvideTextStyle(value = MaterialTheme.typography.h6) {
@@ -86,9 +86,9 @@ fun CenterAlignedTopAppBar(
                         content = {
                             Text(
                                 text = title,
-                                modifier = Modifier.align(Alignment.Center)
+                                modifier = Modifier.align(Alignment.Center),
                             )
-                        }
+                        },
                     )
                 }
             }

@@ -22,7 +22,7 @@ class HomeItemDecoration(context: Context) : RecyclerView.ItemDecoration() {
         outRect: Rect,
         view: View,
         parent: RecyclerView,
-        state: RecyclerView.State
+        state: RecyclerView.State,
     ) {
         val position = parent.getChildAdapterPosition(view)
         val item = (parent.adapter as? HomeAdapter)?.currentList?.getOrNull(position) ?: return

@@ -25,7 +25,7 @@ class FailedPaymentsTest : TestCase() {
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
         PaymentQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYMENT_DATA_FAILED_PAYMENTS) },
-        PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_NEEDS_SETUP) }
+        PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_NEEDS_SETUP) },
     )
 
     @get:Rule
@@ -42,7 +42,7 @@ class FailedPaymentsTest : TestCase() {
                         hasText(
                             R.string.PAYMENTS_LATE_PAYMENTS_MESSAGE,
                             PAYMENT_DATA_FAILED_PAYMENTS.balance.failedCharges!!,
-                            PAYMENT_DATA_FAILED_PAYMENTS.nextChargeDate!!
+                            PAYMENT_DATA_FAILED_PAYMENTS.nextChargeDate!!,
                         )
                     }
                 }

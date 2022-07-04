@@ -47,7 +47,7 @@ class AddressAutoCompleteActivity : AppCompatActivity() {
     private fun finishWithResult(result: FetchDanishAddressContractResult) {
         setResult(
             FetchDanishAddressContract.RESULT_CODE,
-            Intent().putExtra(FetchDanishAddressContract.FETCH_DANISH_ADDRESS_CONTRACT_RESULT_KEY, result)
+            Intent().putExtra(FetchDanishAddressContract.FETCH_DANISH_ADDRESS_CONTRACT_RESULT_KEY, result),
         )
         finish()
     }

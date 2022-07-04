@@ -35,10 +35,10 @@ class TestOfferModelBuilder(
             Table.Section(
                 "Section 1",
                 listOf(
-                    Table.Row("Row 1", "Subtitle 1", "Value 1")
-                )
-            )
-        )
+                    Table.Row("Row 1", "Subtitle 1", "Value 1"),
+                ),
+            ),
+        ),
     ),
     private val perils: List<Peril> = listOf(
         Peril(
@@ -48,15 +48,15 @@ class TestOfferModelBuilder(
             "light url test",
             emptyList(),
             emptyList(),
-            "Test info"
-        )
+            "Test info",
+        ),
     ),
     private val insurableLimits: List<InsurableLimitItem.InsurableLimit> = listOf(
         InsurableLimitItem.InsurableLimit(
             "Test limit",
             "test",
-            "testable limit"
-        )
+            "testable limit",
+        ),
     ),
     private val documents: List<DocumentItems.Document> = emptyList(),
     private val grossMonthlyCost: MonetaryAmount = Money.parse("SEK 200"),
@@ -64,13 +64,13 @@ class TestOfferModelBuilder(
     private val frequentlyAskedQuestions: List<QuoteBundle.FrequentlyAskedQuestion> = listOf(
         QuoteBundle.FrequentlyAskedQuestion(
             "Question 1",
-            "Test question"
-        )
+            "Test question",
+        ),
     ),
     private val inception: Inception = Inception(
         startDate = OfferStartDate.AtDate(LocalDate.of(2022, 2, 21)),
         startDateLabel = StartDateLabel.SINGLE_START_DATE,
-        changeDateData = ChangeDateBottomSheetData(QuoteCartId("123"), emptyList())
+        changeDateData = ChangeDateBottomSheetData(QuoteCartId("123"), emptyList()),
     ),
     private val viewConfiguration: ViewConfiguration = ViewConfiguration(
         showCampaignManagement = true,
@@ -79,7 +79,7 @@ class TestOfferModelBuilder(
         title = ViewConfiguration.Title.LOGO,
         startDateTerminology = ViewConfiguration.StartDateTerminology.START_DATE,
         gradient = GradientType.FALL_SUNSET,
-        postSignScreen = PostSignScreen.CONNECT_PAYIN
+        postSignScreen = PostSignScreen.CONNECT_PAYIN,
     ),
     private val checkoutMethod: CheckoutMethod = CheckoutMethod.SWEDISH_BANK_ID,
     private val checkoutLabel: CheckoutLabel = CheckoutLabel.SIGN_UP,
@@ -113,25 +113,25 @@ class TestOfferModelBuilder(
                                     insurableLimits = insurableLimits,
                                     insuranceTerms = documents,
                                     insuranceType = "TEST",
-                                )
+                                ),
                             ),
                             cost = BundleCost(
                                 grossMonthlyCost = grossMonthlyCost,
                                 netMonthlyCost = netMonthlyCost,
-                                ignoreCampaigns = ignoreCampaigns
+                                ignoreCampaigns = ignoreCampaigns,
                             ),
                             frequentlyAskedQuestions = frequentlyAskedQuestions,
                             inception = inception,
                             viewConfiguration = viewConfiguration,
-                            checkoutLabel = checkoutLabel
-                        )
-                    )
+                            checkoutLabel = checkoutLabel,
+                        ),
+                    ),
                 )
             }
         },
         checkoutMethod = checkoutMethod,
         campaign = campaign,
         checkout = null,
-        paymentMethodsApiResponse = null
+        paymentMethodsApiResponse = null,
     )
 }

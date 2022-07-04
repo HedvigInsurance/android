@@ -15,10 +15,10 @@ data class MessageBuilder(
         expressions = expressions.map {
             MessageFragment.Expression(
                 __typename = it.__typename,
-                fragments = MessageFragment.Expression.Fragments(it)
+                fragments = MessageFragment.Expression.Fragments(it),
             )
         },
-        text = text
+        text = text,
     )
 
     fun buildMessageResponse() = EmbarkStoryQuery.Response(
@@ -39,9 +39,9 @@ data class MessageBuilder(
                 expressions = expressions.map {
                     ResponseExpressionFragment.Expression(
                         __typename = EmbarkResponseExpression.type.name,
-                        fragments = ResponseExpressionFragment.Expression.Fragments(it)
+                        fragments = ResponseExpressionFragment.Expression.Fragments(it),
                     )
-                }
+                },
             ),
             groupedResponseFragment = null,
         ),

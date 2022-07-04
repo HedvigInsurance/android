@@ -15,7 +15,7 @@ class LoggedInMockActivity : MockActivity() {
     override val mocks = listOf(
         module {
             viewModel<WhatsNewViewModel> { MockWhatsNewViewModel() }
-        }
+        },
     )
 
     override fun adapter() = genericDevelopmentAdapter {
@@ -29,7 +29,7 @@ class LoggedInMockActivity : MockActivity() {
             MockWhatsNewViewModel.whatsNewData = NO_WHATS_NEW
             startActivity(
                 LoggedInActivity.newInstance(this@LoggedInMockActivity)
-                    .putExtra(LoggedInActivity.EXTRA_IS_FROM_ONBOARDING, true)
+                    .putExtra(LoggedInActivity.EXTRA_IS_FROM_ONBOARDING, true),
             )
         }
     }

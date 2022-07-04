@@ -34,7 +34,7 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? = inflater.inflate(R.layout.dialog_change_start_date, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -60,7 +60,7 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
                             title = getString(R.string.error_dialog_title),
                             message = viewState.message ?: getString(R.string.component_error),
                             positiveLabel = R.string.insurances_tab_error_button_text,
-                            positiveAction = { changeDateBottomSheetViewModel.setNewDateAndDismiss() }
+                            positiveAction = { changeDateBottomSheetViewModel.setNewDateAndDismiss() },
                         )
                     }
                     is ChangeDateBottomSheetViewModel.ViewState.Loading -> {
@@ -90,7 +90,7 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
                     .datePicker()
                     .setTitleText("")
                     .setCalendarConstraints(
-                        CalendarConstraints.Builder().setValidator(DateValidatorPointForward.now()).build()
+                        CalendarConstraints.Builder().setValidator(DateValidatorPointForward.now()).build(),
                     )
                     .build()
                     .apply {
@@ -99,7 +99,7 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
                             changeDateBottomSheetViewModel.onDateSelected(
                                 isConcurrent = inception.isConcurrent,
                                 quoteId = inception.quoteId,
-                                epochMillis = epochMillis
+                                epochMillis = epochMillis,
                             )
                         }
                     }
@@ -107,7 +107,7 @@ class ChangeDateBottomSheet : BottomSheetDialogFragment() {
             },
             switchListener = { checked ->
                 changeDateBottomSheetViewModel.onSwitchChecked(inception.quoteId, checked)
-            }
+            },
         )
         return changeDateView
     }

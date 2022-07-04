@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 abstract class MemberIdViewModel : ViewModel() {
     sealed class State {
         data class Success(
-            val id: String
+            val id: String,
         ) : State()
 
         object Error : State()

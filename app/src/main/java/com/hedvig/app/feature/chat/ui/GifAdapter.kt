@@ -18,7 +18,7 @@ import com.hedvig.app.util.extensions.viewBinding
 
 class GifAdapter(
     private val imageLoader: ImageLoader,
-    private val sendGif: (String) -> Unit
+    private val sendGif: (String) -> Unit,
 ) : ListAdapter<GifQuery.Gif, GifAdapter.GifViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = GifViewHolder(
@@ -28,8 +28,8 @@ class GifAdapter(
             .inflate(
                 R.layout.gif_item,
                 parent,
-                false
-            )
+                false,
+            ),
     )
 
     override fun onBindViewHolder(holder: GifViewHolder, position: Int) {
@@ -42,7 +42,7 @@ class GifAdapter(
 
     class GifViewHolder(
         private val imageLoader: ImageLoader,
-        view: View
+        view: View,
     ) : RecyclerView.ViewHolder(view) {
         val binding by viewBinding(GifItemBinding::bind)
         fun bind(item: GifQuery.Gif, sendGif: (String) -> Unit) {

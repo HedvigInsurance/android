@@ -13,7 +13,7 @@ class GetBundlesUseCase(
 ) {
 
     suspend operator fun invoke(
-        filterOnType: EmbarkStoryType? = EmbarkStoryType.APP_ONBOARDING_QUOTE_CART
+        filterOnType: EmbarkStoryType? = EmbarkStoryType.APP_ONBOARDING_QUOTE_CART,
     ): BundlesResult {
         val locale = localeManager.defaultLocale().rawValue
         val choosePlanQuery = ChoosePlanQuery(locale)
@@ -38,7 +38,7 @@ fun ChoosePlanQuery.Data.mapToSuccess(storyType: EmbarkStoryType?): BundlesResul
             description = it.description,
             discountText = it.metadata.find { it.asEmbarkStoryMetadataEntryDiscount != null }
                 ?.asEmbarkStoryMetadataEntryDiscount
-                ?.discount
+                ?.discount,
         )
     }
     return BundlesResult.Success(bundles)
@@ -46,7 +46,7 @@ fun ChoosePlanQuery.Data.mapToSuccess(storyType: EmbarkStoryType?): BundlesResul
 
 sealed class BundlesResult {
     data class Success(
-        val bundles: List<Bundle>
+        val bundles: List<Bundle>,
     ) : BundlesResult() {
         data class Bundle(
             val storyName: String,

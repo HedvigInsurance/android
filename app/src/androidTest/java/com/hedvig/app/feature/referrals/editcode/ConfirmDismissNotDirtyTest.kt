@@ -23,8 +23,8 @@ class ConfirmDismissNotDirtyTest : TestCase() {
         activityRule.launchActivity(
             ReferralsEditCodeActivity.newInstance(
                 context(),
-                "TEST123"
-            )
+                "TEST123",
+            ),
         )
 
         Espresso.pressBackUnconditionally()

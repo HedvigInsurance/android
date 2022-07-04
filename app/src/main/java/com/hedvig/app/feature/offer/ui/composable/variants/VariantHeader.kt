@@ -20,7 +20,7 @@ fun VariantHeader() {
         style = MaterialTheme.typography.h6,
         modifier = Modifier
             .padding(horizontal = 16.dp)
-            .padding(bottom = 4.dp, top = 40.dp)
+            .padding(bottom = 4.dp, top = 40.dp),
     )
 }
 

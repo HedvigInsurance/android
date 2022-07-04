@@ -35,9 +35,9 @@ class MockAdyenConnectPayoutViewModel : AdyenConnectPayoutViewModel() {
                     }
                   ]
                 }
-                    """.trimIndent()
-                )
-            )
+                    """.trimIndent(),
+                ),
+            ),
         )
     }
 }

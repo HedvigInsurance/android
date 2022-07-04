@@ -20,7 +20,7 @@ fun ApiFragment.AsEmbarkApiGraphQLQuery.getVariables(valueStore: ValueStore): JS
                 it,
                 valueStore::get,
                 valueStore::put,
-                valueStore::getMultiActionItems
+                valueStore::getMultiActionItems,
             )
         }
 }
@@ -35,7 +35,7 @@ fun ApiFragment.AsEmbarkApiGraphQLMutation.getVariables(valueStore: ValueStore):
                 it,
                 valueStore::get,
                 valueStore::put,
-                valueStore::getMultiActionItems
+                valueStore::getMultiActionItems,
             )
         }
 }
@@ -46,7 +46,7 @@ private fun GraphQLVariablesFragment.toVariable(): Variable? {
             Variable.Single(
                 asEmbarkAPIGraphQLSingleVariable!!.key,
                 asEmbarkAPIGraphQLSingleVariable!!.from,
-                asEmbarkAPIGraphQLSingleVariable!!.`as`.toCast()
+                asEmbarkAPIGraphQLSingleVariable!!.`as`.toCast(),
             )
         }
         asEmbarkAPIGraphQLMultiActionVariable != null -> {
@@ -58,34 +58,34 @@ private fun GraphQLVariablesFragment.toVariable(): Variable? {
                         it.asEmbarkAPIGraphQLGeneratedVariable1 != null -> {
                             Variable.Generated(
                                 it.asEmbarkAPIGraphQLGeneratedVariable1!!.key,
-                                it.asEmbarkAPIGraphQLGeneratedVariable1!!.storeAs
+                                it.asEmbarkAPIGraphQLGeneratedVariable1!!.storeAs,
                             )
                         }
                         it.asEmbarkAPIGraphQLSingleVariable1 != null -> {
                             Variable.Single(
                                 it.asEmbarkAPIGraphQLSingleVariable1!!.key,
                                 it.asEmbarkAPIGraphQLSingleVariable1!!.from,
-                                it.asEmbarkAPIGraphQLSingleVariable1!!.`as`.toCast()
+                                it.asEmbarkAPIGraphQLSingleVariable1!!.`as`.toCast(),
                             )
                         }
                         else -> {
                             null
                         }
                     }
-                }
+                },
             )
         }
         asEmbarkAPIGraphQLConstantVariable != null -> {
             Variable.Constant(
                 asEmbarkAPIGraphQLConstantVariable!!.key,
                 asEmbarkAPIGraphQLConstantVariable!!.value,
-                asEmbarkAPIGraphQLConstantVariable!!.`as`.toCast()
+                asEmbarkAPIGraphQLConstantVariable!!.`as`.toCast(),
             )
         }
         asEmbarkAPIGraphQLGeneratedVariable != null -> {
             Variable.Generated(
                 asEmbarkAPIGraphQLGeneratedVariable!!.key,
-                asEmbarkAPIGraphQLGeneratedVariable!!.storeAs
+                asEmbarkAPIGraphQLGeneratedVariable!!.storeAs,
             )
         }
         else -> {

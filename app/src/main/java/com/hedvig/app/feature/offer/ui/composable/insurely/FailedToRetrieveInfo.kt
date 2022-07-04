@@ -32,12 +32,12 @@ fun FailedToRetrieveInfo(insuranceProviderDisplayName: String?) {
             top = 20.dp,
             end = 16.dp,
             bottom = 16.dp,
-        )
+        ),
     ) {
         Icon(painterResource(R.drawable.ic_warning_triangle), null)
         Column(
             verticalArrangement = Arrangement.spacedBy(4.dp),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Text(
                 text = if (insuranceProviderDisplayName != null) {

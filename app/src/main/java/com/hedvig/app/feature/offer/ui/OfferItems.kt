@@ -31,7 +31,7 @@ sealed class OfferItems {
         val ignoreCampaigns: Boolean,
         val gradientType: GradientType,
         val paymentMethodsApiResponse: PaymentMethodsApiResponse?,
-        val quoteCartId: QuoteCartId?
+        val quoteCartId: QuoteCartId?,
     ) : OfferItems()
 
     object VariantHeader : OfferItems()
@@ -43,7 +43,7 @@ sealed class OfferItems {
         val description: String?,
         val price: MonetaryAmount,
         val isSelected: Boolean,
-        val onVariantSelected: (id: String) -> Unit
+        val onVariantSelected: (id: String) -> Unit,
     ) : OfferItems()
 
     data class Facts(

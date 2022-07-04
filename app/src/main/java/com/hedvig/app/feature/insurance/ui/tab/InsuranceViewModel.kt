@@ -55,14 +55,14 @@ class InsuranceViewModel(
 
         return items(
             data = result.value,
-            showCrossSellNotificationBadge = showNotificationBadge
+            showCrossSellNotificationBadge = showNotificationBadge,
         )
     }
 
     fun markCardCrossSellsAsSeen() {
         viewModelScope.launch {
             crossSellNotificationBadgeService.markCurrentCrossSellsAsSeen(
-                CrossSellNotificationBadgeService.CrossSellBadgeType.InsuranceFragmentCard
+                CrossSellNotificationBadgeService.CrossSellBadgeType.InsuranceFragmentCard,
             )
         }
     }

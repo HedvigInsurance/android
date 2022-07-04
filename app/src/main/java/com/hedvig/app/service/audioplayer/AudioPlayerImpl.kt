@@ -117,7 +117,7 @@ class AudioPlayerImpl(
                 AudioAttributes.Builder()
                     .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
                     .setUsage(AudioAttributes.USAGE_MEDIA)
-                    .build()
+                    .build(),
             )
             setDataSource(signedAudioURL.rawUrl)
             setOnErrorListener { _, what, extra ->

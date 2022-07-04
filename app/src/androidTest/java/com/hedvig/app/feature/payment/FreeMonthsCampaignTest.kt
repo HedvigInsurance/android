@@ -26,7 +26,7 @@ class FreeMonthsCampaignTest : TestCase() {
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
         PaymentQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYMENT_DATA_FREE_MONTHS) },
-        PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_ACTIVE) }
+        PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_ACTIVE) },
     )
 
     @get:Rule
@@ -49,7 +49,7 @@ class FreeMonthsCampaignTest : TestCase() {
                                 .incentive!!
                                 .asFreeMonths!!
                                 .quantity!!
-                                .toString()
+                                .toString(),
                         )
                     }
                     gross {
@@ -61,7 +61,7 @@ class FreeMonthsCampaignTest : TestCase() {
                                 .fragments
                                 .monetaryAmountFragment
                                 .toMonetaryAmount()
-                                .format(context(), market())
+                                .format(context(), market()),
                         )
                     }
                 }
@@ -70,8 +70,8 @@ class FreeMonthsCampaignTest : TestCase() {
                     lastFreeDay {
                         hasText(
                             PAYMENT_DATA_FREE_MONTHS.insuranceCost!!.freeUntil!!.format(
-                                PaymentActivity.DATE_FORMAT
-                            )
+                                PaymentActivity.DATE_FORMAT,
+                            ),
                         )
                     }
                 }

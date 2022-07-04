@@ -35,7 +35,7 @@ fun BackgroundImage(background: Background, content: @Composable BoxScope.() -> 
                         placeholder(placeholder)
                         crossfade(true)
                         scale(Scale.FILL)
-                    }
+                    },
                 ),
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize(),

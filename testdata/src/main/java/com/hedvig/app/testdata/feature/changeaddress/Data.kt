@@ -16,8 +16,8 @@ val UPCOMING_AGREEMENT_NONE = UpcomingAgreementQuery.Data(
                     upcomingAgreementDetailsTable = UpcomingAgreementFragment.UpcomingAgreementDetailsTable(
                         __typename = "",
                         fragments = UpcomingAgreementFragment.UpcomingAgreementDetailsTable.Fragments(
-                            TableFragmentBuilder().build()
-                        )
+                            TableFragmentBuilder().build(),
+                        ),
                     ),
                     status = UpcomingAgreementFragment.Status(
                         __typename = "",
@@ -25,10 +25,10 @@ val UPCOMING_AGREEMENT_NONE = UpcomingAgreementQuery.Data(
                         asTerminatedInFutureStatus = null,
                         asTerminatedTodayStatus = null,
                     ),
-                )
-            )
-        )
-    )
+                ),
+            ),
+        ),
+    ),
 )
 
 val UPCOMING_AGREEMENT_SWEDISH_APARTMENT = UpcomingAgreementQuery.Data(
@@ -36,20 +36,20 @@ val UPCOMING_AGREEMENT_SWEDISH_APARTMENT = UpcomingAgreementQuery.Data(
         UpcomingAgreementQuery.Contract(
             __typename = "",
             fragments = UpcomingAgreementQuery.Contract.Fragments(
-                upcomingAgreementFragment = UpcomingAgreementBuilder().build()
+                upcomingAgreementFragment = UpcomingAgreementBuilder().build(),
             ),
-        )
-    )
+        ),
+    ),
 )
 
 val SELF_CHANGE_ELIGIBILITY = ActiveContractBundlesQuery.Data(
     listOf(
         ActiveContractBundlesBuilder(
-            embarkStoryId = "testId"
-        ).build()
-    )
+            embarkStoryId = "testId",
+        ).build(),
+    ),
 )
 
 val BLOCKED_SELF_CHANGE_ELIGIBILITY = ActiveContractBundlesQuery.Data(
-    listOf()
+    listOf(),
 )

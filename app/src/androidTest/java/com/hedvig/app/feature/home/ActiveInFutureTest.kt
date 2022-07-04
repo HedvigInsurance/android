@@ -32,7 +32,7 @@ class ActiveInFutureTest : TestCase() {
         },
         HomeQuery.OPERATION_DOCUMENT to apolloResponse {
             success(HOME_DATA_ACTIVE_IN_FUTURE)
-        }
+        },
     )
 
     @get:Rule
@@ -50,7 +50,7 @@ class ActiveInFutureTest : TestCase() {
                         hasText(
                             R.string.home_tab_active_in_future_welcome_title,
                             "Test",
-                            formatter.format(LocalDate.of(2025, 1, 1))
+                            formatter.format(LocalDate.of(2025, 1, 1)),
                         )
                     }
                 }

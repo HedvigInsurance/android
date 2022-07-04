@@ -48,7 +48,7 @@ fun HighlightPreview() {
     HedvigTheme {
         Highlight(
             title = "Covers dental injuries",
-            description = "Up to 100 000 SEK per damage."
+            description = "Up to 100 000 SEK per damage.",
         )
     }
 }

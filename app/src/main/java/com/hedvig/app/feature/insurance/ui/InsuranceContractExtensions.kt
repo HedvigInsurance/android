@@ -40,25 +40,25 @@ fun ContractCardViewState.bindTo(
     }
 
 private fun InsuranceContractCardBinding.bindBackgroundColor(
-    gradientOption: TypeOfContractGradientOption?
+    gradientOption: TypeOfContractGradientOption?,
 ) {
     when (gradientOption) {
         TypeOfContractGradientOption.GRADIENT_ONE, TypeOfContractGradientOption.UNKNOWN__ -> {
             container.setBackgroundResource(R.drawable.gradient_summer_sky)
             blur.setColorFilter(
-                blur.context.compatColor(R.color.blur_summer_sky)
+                blur.context.compatColor(R.color.blur_summer_sky),
             )
         }
         TypeOfContractGradientOption.GRADIENT_TWO -> {
             container.setBackgroundResource(R.drawable.gradient_fall_sunset)
             blur.setColorFilter(
-                blur.context.compatColor(R.color.blur_fall_sunset)
+                blur.context.compatColor(R.color.blur_fall_sunset),
             )
         }
         TypeOfContractGradientOption.GRADIENT_THREE -> {
             container.setBackgroundResource(R.drawable.gradient_spring_fog)
             blur.setColorFilter(
-                blur.context.compatColor(R.color.blur_spring_fog)
+                blur.context.compatColor(R.color.blur_spring_fog),
             )
         }
         TypeOfContractGradientOption.GRADIENT_FOUR -> {

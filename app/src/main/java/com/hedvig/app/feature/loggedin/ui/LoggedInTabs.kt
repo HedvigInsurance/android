@@ -42,7 +42,7 @@ enum class LoggedInTabs {
             KEY_GEAR -> R.array.key_gear_gradient
             REFERRALS -> R.array.forever_gradient
             PROFILE -> R.array.profile_gradient
-        }
+        },
     )
 
     companion object {

@@ -26,17 +26,17 @@ data class TextActionBuilder(
                     __typename = "",
                     fragments = EmbarkStoryQuery.Link1.Fragments(
                         link
-                            ?: throw IllegalArgumentException("Missing required Link for single text action")
-                    )
+                            ?: throw IllegalArgumentException("Missing required Link for single text action"),
+                    ),
                 ),
                 api = api?.let {
                     EmbarkStoryQuery.Api1(
                         __typename = it.__typename,
-                        fragments = EmbarkStoryQuery.Api1.Fragments(it)
+                        fragments = EmbarkStoryQuery.Api1.Fragments(it),
                     )
                 },
                 subtitle = "Test subtitle",
-            )
+            ),
         ),
         asEmbarkTextActionSet = null,
         asEmbarkPreviousInsuranceProviderAction = null,
@@ -55,7 +55,7 @@ data class TextActionBuilder(
             placeholder = placeholder,
             mask = mask,
             title = title,
-        )
+        ),
     )
 
     companion object {

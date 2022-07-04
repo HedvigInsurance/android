@@ -33,7 +33,7 @@ class SuccessTest : TestCase() {
         EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse { success(STORY_WITH_GRAPHQL_MUTATION) },
         HELLO_MUTATION to apolloResponse {
             success(jsonObjectOf("hello" to "world"))
-        }
+        },
     )
 
     @get:Rule
@@ -46,7 +46,7 @@ class SuccessTest : TestCase() {
                 context(),
                 this.javaClass.name,
                 "",
-            )
+            ),
         )
 
         onScreen<EmbarkScreen> {

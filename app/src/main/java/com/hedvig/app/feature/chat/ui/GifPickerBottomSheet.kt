@@ -33,7 +33,7 @@ class GifPickerBottomSheet : BottomSheetDialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? = inflater.inflate(R.layout.send_gif_dialog, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -54,7 +54,7 @@ class GifPickerBottomSheet : BottomSheetDialogFragment() {
                         }
                         model.searchGifs(query)
                     },
-                    { e(it) }
+                    { e(it) },
                 )
             val adapter = GifAdapter(imageLoader) { url ->
                 model.respondWithGif(url)

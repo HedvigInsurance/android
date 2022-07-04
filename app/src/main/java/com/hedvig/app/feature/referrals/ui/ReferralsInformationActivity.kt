@@ -55,7 +55,7 @@ class ReferralsInformationActivity : BaseActivity(R.layout.activity_referrals_in
             val incentive = Money.of(incentiveAmount, incentiveCurrency)
             body.text = getString(
                 R.string.referrals_info_sheet_body,
-                incentive.format(this@ReferralsInformationActivity, marketManager.market)
+                incentive.format(this@ReferralsInformationActivity, marketManager.market),
             )
 
             val termsAsUri = Uri.parse(termsUrl)
@@ -79,7 +79,7 @@ class ReferralsInformationActivity : BaseActivity(R.layout.activity_referrals_in
                 putExtra(TERMS_URL, termsUrl)
                 putExtra(
                     INCENTIVE_AMOUNT,
-                    incentive.number.numberValueExact(BigDecimal::class.java)
+                    incentive.number.numberValueExact(BigDecimal::class.java),
                 )
                 putExtra(INCENTIVE_CURRENCY, incentive.currency.currencyCode)
             }

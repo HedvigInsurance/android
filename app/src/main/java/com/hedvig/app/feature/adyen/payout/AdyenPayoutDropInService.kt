@@ -46,7 +46,7 @@ class AdyenPayoutDropInService : DropInService(), CoroutineScope {
                                 runCatching { paymentRepository.writeActivePayoutMethodStatus(payoutMethodStatus) }
                             }
                         sendResult(DropInServiceResult.Finished(it.code))
-                    }
+                    },
                 )
         }
     }
@@ -65,7 +65,7 @@ class AdyenPayoutDropInService : DropInService(), CoroutineScope {
                             runCatching { paymentRepository.writeActivePayoutMethodStatus(payoutMethodStatus) }
                         }
                         sendResult(DropInServiceResult.Finished(it.code))
-                    }
+                    },
                 )
         }
     }

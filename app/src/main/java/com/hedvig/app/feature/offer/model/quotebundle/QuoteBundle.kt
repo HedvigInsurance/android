@@ -36,13 +36,13 @@ data class QuoteBundle(
     ) {
         data class CurrentInsurer(
             val switchable: Boolean,
-            val name: String?
+            val name: String?,
         )
     }
 
     data class FrequentlyAskedQuestion(
         val title: String?,
-        val description: String?
+        val description: String?,
     )
 
     fun hasCurrentInsurer() = quotes.any { it.currentInsurer != null }
@@ -57,7 +57,7 @@ fun QuoteBundleFragment.toQuoteBundle(quoteCartId: QuoteCartId, checkoutMethods:
     inception = inception.toInception(
         startDateTerminology = appConfiguration.startDateTerminology,
         quoteCartId = quoteCartId,
-        quoteNames = quotes.map { it.displayName }
+        quoteNames = quotes.map { it.displayName },
     ),
     viewConfiguration = appConfiguration.toViewConfiguration(),
     checkoutLabel = checkoutLabel(checkoutMethods),
@@ -78,16 +78,16 @@ private fun QuoteBundleFragment.Quote.toQuote() = QuoteBundle.Quote(
     insuranceTerms = insuranceTerms.map {
         DocumentItems.Document.from(it.fragments.insuranceTermFragment)
     },
-    insuranceType = insuranceType
+    insuranceType = insuranceType,
 )
 
 private fun QuoteBundleFragment.FrequentlyAskedQuestion.toFrequentlyAskedQuestion() =
     QuoteBundle.FrequentlyAskedQuestion(
         title = headline,
-        description = body
+        description = body,
     )
 
 private fun QuoteBundleFragment.CurrentInsurer.toCurrentInsurer() = QuoteBundle.Quote.CurrentInsurer(
     switchable = switchable ?: false,
-    name = displayName
+    name = displayName,
 )

@@ -45,7 +45,7 @@ class HonestyPledgeBottomSheet(
         return EmbarkActivity.newInstance(
             requireContext(),
             "claims",
-            getString(R.string.CLAIMS_HONESTY_PLEDGE_BOTTOM_SHEET_BUTTON_LABEL)
+            getString(R.string.CLAIMS_HONESTY_PLEDGE_BOTTOM_SHEET_BUTTON_LABEL),
         )
     }
 

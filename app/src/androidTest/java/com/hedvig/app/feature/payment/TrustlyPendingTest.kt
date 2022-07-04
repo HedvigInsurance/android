@@ -29,7 +29,7 @@ class TrustlyPendingTest : TestCase() {
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
         PaymentQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYMENT_DATA_TRUSTLY_CONNECTED) },
-        PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_PENDING) }
+        PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_PENDING) },
     )
 
     @get:Rule
@@ -54,7 +54,7 @@ class TrustlyPendingTest : TestCase() {
                     bank { hasText(R.string.PAYMENTS_DIRECT_DEBIT_PENDING) }
                     accountNumber {
                         containsText(
-                            PAYMENT_DATA_TRUSTLY_CONNECTED.bankAccount!!.fragments.bankAccountFragment.descriptor
+                            PAYMENT_DATA_TRUSTLY_CONNECTED.bankAccount!!.fragments.bankAccountFragment.descriptor,
                         )
                     }
                     pending { isVisible() }

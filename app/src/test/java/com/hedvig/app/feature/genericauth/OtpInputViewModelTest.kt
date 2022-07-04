@@ -48,7 +48,7 @@ class OtpInputViewModelTest {
                 delay(100.milliseconds)
                 return resendOtpResult
             }
-        }
+        },
     )
 
     @Test

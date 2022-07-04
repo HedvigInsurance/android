@@ -22,8 +22,8 @@ data class ReferralsDataBuilder(
         insuranceCost = ReferralsQuery.InsuranceCost(
             __typename = "",
             fragments = ReferralsQuery.InsuranceCost.Fragments(
-                insuranceCost
-            )
+                insuranceCost,
+            ),
         ),
         referralInformation = ReferralsQuery.ReferralInformation(
             campaign = ReferralsQuery.Campaign(
@@ -37,35 +37,35 @@ data class ReferralsDataBuilder(
                             fragments = ReferralsQuery.Amount.Fragments(
                                 MonetaryAmountFragment(
                                     amount = incentiveAmount,
-                                    currency = incentiveCurrency
-                                )
-                            )
-                        )
-                    )
-                )
+                                    currency = incentiveCurrency,
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
             ),
             costReducedIndefiniteDiscount = ReferralsQuery.CostReducedIndefiniteDiscount(
                 __typename = "",
                 fragments = ReferralsQuery.CostReducedIndefiniteDiscount.Fragments(
-                    costReducedIndefiniteDiscount
-                )
+                    costReducedIndefiniteDiscount,
+                ),
             ),
             referredBy = referredBy?.let {
                 ReferralsQuery.ReferredBy(
                     __typename = it.__typename,
                     fragments = ReferralsQuery.ReferredBy.Fragments(
-                        it
-                    )
+                        it,
+                    ),
                 )
             },
             invitations = invitations.map {
                 ReferralsQuery.Invitation(
                     __typename = it.__typename,
                     fragments = ReferralsQuery.Invitation.Fragments(
-                        it
-                    )
+                        it,
+                    ),
                 )
-            }
-        )
+            },
+        ),
     )
 }

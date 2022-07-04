@@ -23,7 +23,7 @@ class ReferralsNotificationSender(
             context,
             REFERRAL_CHANNEL_ID,
             context.resources.getString(R.string.NOTIFICATION_REFERRAL_CHANNEL_NAME),
-            context.resources.getString(R.string.NOTIFICATION_REFERRAL_CHANNEL_DESCRIPTION)
+            context.resources.getString(R.string.NOTIFICATION_REFERRAL_CHANNEL_DESCRIPTION),
         )
     }
 
@@ -41,11 +41,11 @@ class ReferralsNotificationSender(
                 addNextIntentWithParentStack(
                     LoggedInActivity.newInstance(
                         context,
-                        initialTab = LoggedInTabs.REFERRALS
-                    )
+                        initialTab = LoggedInTabs.REFERRALS,
+                    ),
                 )
                 addNextIntentWithParentStack(
-                    NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_TYPE_REFERRAL_SUCCESS)
+                    NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_TYPE_REFERRAL_SUCCESS),
                 )
                 getPendingIntent(0, getImmutablePendingIntentFlags())
             }
@@ -55,7 +55,7 @@ class ReferralsNotificationSender(
         val contentText = referralName?.let {
             context.resources.getString(
                 R.string.NOTIFICATION_REFERRAL_COMPLETED_CONTENT_WITH_NAME,
-                it
+                it,
             )
         } ?: context.resources.getString(R.string.NOTIFICATION_REFERRAL_COMPLETED_CONTENT)
 
@@ -63,7 +63,7 @@ class ReferralsNotificationSender(
             context = context,
             title = context.resources.getString(R.string.NOTIFICATION_REFERRAL_COMPLETED_TITLE),
             body = contentText,
-            pendingIntent = pendingIntent
+            pendingIntent = pendingIntent,
         )
 
         NotificationManagerCompat
@@ -78,11 +78,11 @@ class ReferralsNotificationSender(
                 addNextIntentWithParentStack(
                     LoggedInActivity.newInstance(
                         context,
-                        initialTab = LoggedInTabs.REFERRALS
-                    )
+                        initialTab = LoggedInTabs.REFERRALS,
+                    ),
                 )
                 addNextIntentWithParentStack(
-                    NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_TYPE_REFERRALS_CAMPAIGN)
+                    NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_TYPE_REFERRALS_CAMPAIGN),
                 )
                 getPendingIntent(0, getImmutablePendingIntentFlags())
             }
@@ -94,7 +94,7 @@ class ReferralsNotificationSender(
             context = context,
             title = title,
             body = message,
-            pendingIntent = pendingIntent
+            pendingIntent = pendingIntent,
         )
 
         NotificationManagerCompat
@@ -104,7 +104,8 @@ class ReferralsNotificationSender(
 
     override fun handlesNotificationType(notificationType: String) = when (notificationType) {
         NOTIFICATION_TYPE_REFERRAL_SUCCESS,
-        NOTIFICATION_TYPE_REFERRALS_CAMPAIGN -> true
+        NOTIFICATION_TYPE_REFERRALS_CAMPAIGN,
+        -> true
         else -> false
     }
 
@@ -112,7 +113,7 @@ class ReferralsNotificationSender(
         context: Context,
         title: String?,
         body: String?,
-        pendingIntent: PendingIntent?
+        pendingIntent: PendingIntent?,
     ) = NotificationCompat
         .Builder(context, REFERRAL_CHANNEL_ID)
         .setSmallIcon(R.drawable.ic_hedvig_h)

@@ -36,7 +36,7 @@ class ShareTest : TestCase() {
         LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
             success(LOGGED_IN_DATA)
         },
-        ReferralsQuery.OPERATION_DOCUMENT to apolloResponse { success(REFERRALS_DATA_WITH_COMPLEX_CODE) }
+        ReferralsQuery.OPERATION_DOCUMENT to apolloResponse { success(REFERRALS_DATA_WITH_COMPLEX_CODE) },
     )
 
     @get:Rule
@@ -46,7 +46,7 @@ class ShareTest : TestCase() {
     fun shouldOpenShareWhenClickingShare() = run {
         val intent = LoggedInActivity.newInstance(
             context(),
-            initialTab = LoggedInTabs.REFERRALS
+            initialTab = LoggedInTabs.REFERRALS,
         )
         activityRule.launch(intent)
 
@@ -68,11 +68,11 @@ class ShareTest : TestCase() {
                         hasAction(Intent.ACTION_SEND),
                         hasExtra(
                             equalTo(Intent.EXTRA_TEXT),
-                            containsString(Uri.encode(COMPLEX_REFERRAL_CODE))
-                        )
-                    )
-                )
-            )
+                            containsString(Uri.encode(COMPLEX_REFERRAL_CODE)),
+                        ),
+                    ),
+                ),
+            ),
         )
     }
 }

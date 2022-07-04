@@ -13,7 +13,7 @@ import com.hedvig.app.util.ProgressPercentage
 class MaterialProgressToolbar @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+    defStyleAttr: Int = 0,
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
     private var binding: ViewMaterialProgressToolbarBinding =
@@ -31,7 +31,7 @@ class MaterialProgressToolbar @JvmOverloads constructor(
             TransitionManager.beginDelayedTransition(this)
             binding.progress.layoutParams = FrameLayout.LayoutParams(
                 (this.width * progressPercentage.value).toInt(),
-                binding.progress.layoutParams.height
+                binding.progress.layoutParams.height,
             )
         }
     }

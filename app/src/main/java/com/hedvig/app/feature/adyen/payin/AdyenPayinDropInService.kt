@@ -29,28 +29,28 @@ class AdyenPayinDropInService : DropInService(), CoroutineScope {
 
     override fun onDetailsCallRequested(
         actionComponentData: ActionComponentData,
-        actionComponentJson: JSONObject
+        actionComponentJson: JSONObject,
     ) {
         launch(coroutineContext) {
             submitAdditionalPaymentDetailsUseCase.submitAdditionalPaymentDetails(actionComponentJson)
                 .mapLeft { it.toDropInServiceResult() }
                 .fold(
                     ifLeft = { sendResult(it) },
-                    ifRight = { sendResult(DropInServiceResult.Finished(it.code)) }
+                    ifRight = { sendResult(DropInServiceResult.Finished(it.code)) },
                 )
         }
     }
 
     override fun onPaymentsCallRequested(
         paymentComponentState: PaymentComponentState<*>,
-        paymentComponentJson: JSONObject
+        paymentComponentJson: JSONObject,
     ) {
         launch(coroutineContext) {
             connectPaymentUseCase.getPaymentTokenId(paymentComponentJson)
                 .mapLeft { it.toError() }
                 .fold(
                     ifLeft = { sendResult(it) },
-                    ifRight = { sendResult(DropInServiceResult.Finished(it.id)) }
+                    ifRight = { sendResult(DropInServiceResult.Finished(it.id)) },
                 )
         }
     }

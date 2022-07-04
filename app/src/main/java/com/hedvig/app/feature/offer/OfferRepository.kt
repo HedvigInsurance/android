@@ -26,7 +26,7 @@ class OfferRepository(
 
     val offerFlow: MutableSharedFlow<Either<ErrorMessage, OfferModel>> = MutableSharedFlow(
         replay = 1,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
     )
 
     suspend fun queryAndEmitOffer(quoteCartId: QuoteCartId) {

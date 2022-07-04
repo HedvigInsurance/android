@@ -98,7 +98,7 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
                     if (isSubmitting) {
                         save.actionView = layoutInflater.inflate(
                             R.layout.toolbar_loading_spinner,
-                            null
+                            null,
                         )
                         save.isEnabled = false
                     } else {
@@ -147,7 +147,7 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
                                 codeContainer.error =
                                     getString(
                                         R.string.referrals_change_code_sheet_error_change_limit_reached,
-                                        maximumNumberOfUpdates
+                                        maximumNumberOfUpdates,
                                     )
                                 return@onEach
                             }
@@ -176,7 +176,7 @@ class ReferralsEditCodeActivity : BaseActivity(R.layout.activity_referrals_edit_
                 positiveAction = {
                     super.onBackPressed()
                 },
-                negativeAction = {}
+                negativeAction = {},
             )
         } else {
             super.onBackPressed()

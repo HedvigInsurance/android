@@ -28,7 +28,7 @@ object HedvigDateUtils {
         return DateUtils.getRelativeTimeSpanString(
             from.toEpochMilli(),
             to.toEpochMilli(),
-            DateUtils.SECOND_IN_MILLIS
+            DateUtils.SECOND_IN_MILLIS,
         ).toString()
     }
 }

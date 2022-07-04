@@ -69,9 +69,9 @@ class ChatRepository(
         SendChatTextResponseMutation(
             ChatResponseTextInput(
                 id,
-                ChatResponseBodyTextInput(message)
-            )
-        )
+                ChatResponseBodyTextInput(message),
+            ),
+        ),
     ).execute()
 
     suspend fun sendSingleSelect(
@@ -79,8 +79,8 @@ class ChatRepository(
         value: String,
     ) = apolloClient.mutation(
         SendChatSingleSelectResponseMutation(
-            ChatResponseSingleSelectInput(id, ChatResponseBodySingleSelectInput(value))
-        )
+            ChatResponseSingleSelectInput(id, ChatResponseBodySingleSelectInput(value)),
+        ),
     ).execute()
 
     suspend fun writeNewMessage(message: ChatMessageFragment) {
@@ -98,8 +98,8 @@ class ChatRepository(
             0,
             ChatMessagesQuery.Message(
                 message.body.__typename,
-                fragments = chatMessagesFragment
-            )
+                fragments = chatMessagesFragment,
+            ),
         )
 
         val newData = cachedData
@@ -115,7 +115,7 @@ class ChatRepository(
         val file = File(
             context.cacheDir,
             fileService.getFileName(uri)
-                ?: "${UUID.randomUUID()}.${fileService.getFileExtension(uri.toString())}"
+                ?: "${UUID.randomUUID()}.${fileService.getFileExtension(uri.toString())}",
         ) // I hate this but it seems there's no other way
         return withContext(Dispatchers.IO) {
             context.contentResolver.openInputStream(uri)?.into(file)
@@ -150,9 +150,9 @@ class ChatRepository(
         val input = ChatResponseFileInput(
             body = ChatResponseBodyFileInput(
                 key = key,
-                mimeType = mimeType
+                mimeType = mimeType,
             ),
-            globalId = id
+            globalId = id,
         )
 
         val chatFileResponse = SendChatFileResponseMutation(input)
@@ -173,7 +173,7 @@ class ChatRepository(
                 Either.conditionally(
                     didTriggerFreeTextChat,
                     ifFalse = { FreeTextError.CouldNotTrigger },
-                    ifTrue = { FreeTextSuccess }
+                    ifTrue = { FreeTextSuccess },
                 )
             }
 

@@ -30,11 +30,11 @@ class OtpInputActivity : BaseActivity() {
     val model: OtpInputViewModel by viewModel {
         parametersOf(
             intent.getStringExtra(OTP_ID_EXTRA) ?: throw IllegalArgumentException(
-                "Programmer error: Missing OTP_ID in ${this.javaClass.name}"
+                "Programmer error: Missing OTP_ID in ${this.javaClass.name}",
             ),
             intent.getStringExtra(CREDENTIAL_EXTRA) ?: throw IllegalArgumentException(
-                "Programmer error: Missing CREDENTIAL in ${this.javaClass.name}"
-            )
+                "Programmer error: Missing CREDENTIAL in ${this.javaClass.name}",
+            ),
         )
     }
 
@@ -47,7 +47,6 @@ class OtpInputActivity : BaseActivity() {
             val scaffoldState = rememberScaffoldState()
 
             HedvigTheme {
-
                 LaunchedEffect(Unit) {
                     model.events.collectLatest { event ->
                         when (event) {
@@ -65,7 +64,7 @@ class OtpInputActivity : BaseActivity() {
                     topBar = {
                         TopAppBarWithBack(
                             onClick = ::onBackPressed,
-                            title = stringResource(R.string.login_navigation_bar_center_element_title)
+                            title = stringResource(R.string.login_navigation_bar_center_element_title),
                         )
                     },
                     scaffoldState = scaffoldState,
@@ -84,7 +83,7 @@ class OtpInputActivity : BaseActivity() {
                         otpErrorMessage = viewState.otpError?.toStringRes()?.let(::getString),
                         networkErrorMessage = viewState.networkErrorMessage,
                         loadingResend = viewState.loadingResend,
-                        loadingCode = viewState.loadingCode
+                        loadingCode = viewState.loadingCode,
                     )
                 }
             }
@@ -111,7 +110,7 @@ class OtpInputActivity : BaseActivity() {
         fun newInstance(
             context: Context,
             id: String,
-            credential: String
+            credential: String,
         ) = Intent(context, OtpInputActivity::class.java).apply {
             putExtra(OTP_ID_EXTRA, id)
             putExtra(CREDENTIAL_EXTRA, credential)

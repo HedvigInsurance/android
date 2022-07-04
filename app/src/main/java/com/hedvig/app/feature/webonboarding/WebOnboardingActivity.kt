@@ -78,7 +78,7 @@ class WebOnboardingActivity : BaseActivity(R.layout.activity_web_onboarding) {
                                     featureManager.getPaymentType(),
                                     market,
                                     true,
-                                )
+                                ),
                             )
                         }
                         return

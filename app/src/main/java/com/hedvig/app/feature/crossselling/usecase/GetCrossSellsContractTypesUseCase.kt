@@ -9,7 +9,7 @@ import e
 
 class GetCrossSellsContractTypesUseCase(
     private val apolloClient: ApolloClient,
-    private val localeManager: LocaleManager
+    private val localeManager: LocaleManager,
 ) {
     suspend operator fun invoke() = when (
         val result = apolloClient
@@ -26,7 +26,7 @@ class GetCrossSellsContractTypesUseCase(
     }
 
     private fun getCrossSells(
-        crossSellData: CrossSellsQuery.Data
+        crossSellData: CrossSellsQuery.Data,
     ) = crossSellData
         .activeContractBundles
         .flatMap { contractBundle ->

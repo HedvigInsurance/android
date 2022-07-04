@@ -29,7 +29,7 @@ class OtpInputViewModel(
         val networkErrorMessage: String? = null,
         val otpError: OtpResult.Error.OtpError? = null,
         val loadingResend: Boolean = false,
-        val loadingCode: Boolean = false
+        val loadingCode: Boolean = false,
     )
 
     sealed class Event {

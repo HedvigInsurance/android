@@ -12,9 +12,9 @@ data class ClaimDetailCardUiState(
         fun fromDto(dto: ClaimDetailsQuery.ClaimDetail): ClaimDetailCardUiState {
             return ClaimDetailCardUiState(
                 claimProgressItemsUiState = ClaimProgressUiState.fromProgressSegments(
-                    dto.progressSegments.map { it.fragments.progressSegments }
+                    dto.progressSegments.map { it.fragments.progressSegments },
                 ),
-                statusParagraph = dto.claim.statusParagraph
+                statusParagraph = dto.claim.statusParagraph,
             )
         }
     }

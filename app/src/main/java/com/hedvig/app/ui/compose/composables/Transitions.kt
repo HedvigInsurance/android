@@ -15,6 +15,6 @@ fun FadeWhen(
         visible = visible,
         enter = fadeIn(),
         exit = fadeOut(),
-        content = content
+        content = content,
     )
 }

@@ -20,14 +20,14 @@ data class CommonClaimBuilder(
                 fragments = HomeQuery.Variants.Fragments(
                     IconVariantsFragment(
                         dark = IconVariantsFragment.Dark(
-                            svgUrl = "/app-content-service/warning_dark.svg"
+                            svgUrl = "/app-content-service/warning_dark.svg",
                         ),
                         light = IconVariantsFragment.Light(
-                            svgUrl = "/app-content-service/warning.svg"
-                        )
-                    )
-                )
-            )
+                            svgUrl = "/app-content-service/warning.svg",
+                        ),
+                    ),
+                ),
+            ),
         ),
         layout = HomeQuery.Layout(
             __typename = variant.typename,
@@ -37,7 +37,7 @@ data class CommonClaimBuilder(
                     bulletPoints = emptyList(),
                     buttonTitle = "",
                     color = HedvigColor.Black,
-                    title = title
+                    title = title,
                 )
             } else {
                 null
@@ -50,8 +50,8 @@ data class CommonClaimBuilder(
                 )
             } else {
                 null
-            }
-        )
+            },
+        ),
     )
 
     enum class Variant {

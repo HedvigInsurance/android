@@ -41,7 +41,7 @@ class TrustlyConnectFragment : Fragment(R.layout.trustly_connect_fragment) {
         if (transitionType != TransitionType.NO_ENTER_EXIT_RIGHT) {
             enterTransition = MaterialSharedAxis(
                 MaterialSharedAxis.X,
-                transitionType == TransitionType.ENTER_LEFT_EXIT_RIGHT
+                transitionType == TransitionType.ENTER_LEFT_EXIT_RIGHT,
             )
         }
         exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, true)
@@ -61,9 +61,9 @@ class TrustlyConnectFragment : Fragment(R.layout.trustly_connect_fragment) {
                     showConfirmCloseDialog(
                         requireContext(),
                         ConnectPayinType.TRUSTLY,
-                        connectPaymentViewModel::close
+                        connectPaymentViewModel::close,
                     )
-                })
+                },),
             )
         }
 
@@ -76,7 +76,7 @@ class TrustlyConnectFragment : Fragment(R.layout.trustly_connect_fragment) {
                             showConfirmCloseDialog(
                                 requireContext(),
                                 ConnectPayinType.TRUSTLY,
-                                connectPaymentViewModel::close
+                                connectPaymentViewModel::close,
                             )
                             true
                         }
@@ -101,7 +101,7 @@ class TrustlyConnectFragment : Fragment(R.layout.trustly_connect_fragment) {
             webChromeClient = TrustlyWebChromeClient()
             addJavascriptInterface(
                 TrustlyJavascriptInterface(requireActivity()),
-                TrustlyJavascriptInterface.NAME
+                TrustlyJavascriptInterface.NAME,
             )
             webViewClient = object : WebViewClient() {
                 override fun onPageFinished(view: WebView?, url: String?) {
@@ -110,7 +110,7 @@ class TrustlyConnectFragment : Fragment(R.layout.trustly_connect_fragment) {
                         if (!hasLoadedWebView) {
                             TransitionManager.beginDelayedTransition(
                                 root,
-                                MaterialFadeThrough()
+                                MaterialFadeThrough(),
                             )
                             loadingContainer.isVisible = false
                             trustly.isVisible = true
@@ -137,8 +137,8 @@ class TrustlyConnectFragment : Fragment(R.layout.trustly_connect_fragment) {
                         view?.stopLoading()
                         connectPaymentViewModel.navigateTo(
                             ConnectPaymentScreenState.Result(
-                                false
-                            )
+                                false,
+                            ),
                         )
                         return
                     }
@@ -171,7 +171,7 @@ class TrustlyConnectFragment : Fragment(R.layout.trustly_connect_fragment) {
             TrustlyConnectFragment().apply {
                 arguments = bundleOf(
                     IS_POST_SIGN to isPostSign,
-                    TRANSITION_TYPE to transitionType
+                    TRANSITION_TYPE to transitionType,
                 )
             }
     }

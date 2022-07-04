@@ -82,8 +82,8 @@ class DevelopmentActivity : AppCompatActivity(R.layout.activity_development) {
                     DevelopmentScreenAdapter.DevelopmentScreenItem.Row("Theme-gallery") {
                         startActivity(ViewGalleryActivity.newInstance(this))
                     },
-                    DevelopmentScreenAdapter.DevelopmentScreenItem.Footer
-                )
+                    DevelopmentScreenAdapter.DevelopmentScreenItem.Footer,
+                ),
             )
         }
     }

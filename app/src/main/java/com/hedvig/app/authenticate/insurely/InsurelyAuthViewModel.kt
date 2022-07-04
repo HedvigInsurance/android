@@ -48,14 +48,14 @@ class InsurelyAuthViewModel(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5.seconds),
-            initialValue = ViewState.Loading
+            initialValue = ViewState.Loading,
         )
 
     sealed class ViewState {
         object Loading : ViewState()
 
         data class Error(
-            val error: DataCollectionResult.Error
+            val error: DataCollectionResult.Error,
         ) : ViewState()
 
         data class Success(

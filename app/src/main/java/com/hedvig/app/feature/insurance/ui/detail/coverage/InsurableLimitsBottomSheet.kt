@@ -37,7 +37,7 @@ class InsurableLimitsBottomSheet : BottomSheetDialogFragment() {
             InsurableLimitsBottomSheet().apply {
                 arguments = bundleOf(
                     TITLE to insurableLimits.label,
-                    BODY to insurableLimits.description
+                    BODY to insurableLimits.description,
                 )
             }
 
@@ -47,7 +47,7 @@ class InsurableLimitsBottomSheet : BottomSheetDialogFragment() {
         ) = InsurableLimitsBottomSheet().apply {
             arguments = bundleOf(
                 TITLE to label,
-                BODY to description
+                BODY to description,
             )
         }
     }

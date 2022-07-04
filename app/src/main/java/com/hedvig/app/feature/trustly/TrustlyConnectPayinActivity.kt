@@ -37,7 +37,7 @@ class TrustlyConnectPayinActivity : BaseActivity(R.layout.fragment_container_act
                         .beginTransaction()
                         .replace(
                             R.id.container,
-                            PostSignExplainerFragment.newInstance(ConnectPayinType.TRUSTLY)
+                            PostSignExplainerFragment.newInstance(ConnectPayinType.TRUSTLY),
                         )
                         .commitAllowingStateLoss()
                 is ConnectPaymentScreenState.Connect ->
@@ -45,7 +45,7 @@ class TrustlyConnectPayinActivity : BaseActivity(R.layout.fragment_container_act
                         .beginTransaction()
                         .replace(
                             R.id.container,
-                            TrustlyConnectFragment.newInstance(isPostSign(), state.transitionType)
+                            TrustlyConnectFragment.newInstance(isPostSign(), state.transitionType),
                         )
                         .commitAllowingStateLoss()
                 is ConnectPaymentScreenState.Result ->
@@ -55,8 +55,8 @@ class TrustlyConnectPayinActivity : BaseActivity(R.layout.fragment_container_act
                             R.id.container,
                             ConnectPaymentResultFragment.newInstance(
                                 state.success,
-                                ConnectPayinType.TRUSTLY
-                            )
+                                ConnectPayinType.TRUSTLY,
+                            ),
                         )
                         .commitAllowingStateLoss()
             }
@@ -68,8 +68,8 @@ class TrustlyConnectPayinActivity : BaseActivity(R.layout.fragment_container_act
                         LoggedInActivity.newInstance(
                             this,
                             withoutHistory = true,
-                            isFromOnboarding = true
-                        )
+                            isFromOnboarding = true,
+                        ),
                     )
                     return@observe
                 }

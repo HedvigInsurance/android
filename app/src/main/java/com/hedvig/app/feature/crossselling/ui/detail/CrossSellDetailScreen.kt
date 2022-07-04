@@ -75,7 +75,7 @@ fun CrossSellDetailScreen(
         FadingTopAppBar(
             backgroundAlpha = topAppBarBackgroundColorAlpha,
             contentPadding = rememberInsetsPaddingValues(
-                insets = LocalWindowInsets.current.statusBars
+                insets = LocalWindowInsets.current.statusBars,
             ),
             navigationIcon = {
                 IconButton(onClick = onUpClick) {
@@ -88,7 +88,7 @@ fun CrossSellDetailScreen(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .systemBarsPadding(bottom = true)
-                .padding(16.dp)
+                .padding(16.dp),
         ) {
             Text(text = data.callToAction)
         }

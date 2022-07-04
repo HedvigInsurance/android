@@ -15,12 +15,12 @@ data class CommonClaimsData(
     val layoutTitle: String,
     val buttonText: String,
     val eligibleToClaim: Boolean,
-    val bulletPoints: List<BulletPoint>
+    val bulletPoints: List<BulletPoint>,
 ) : Parcelable {
     companion object {
         fun from(
             data: HomeQuery.CommonClaim,
-            eligibleToClaim: Boolean
+            eligibleToClaim: Boolean,
         ): CommonClaimsData? {
             val layout = data.layout.asTitleAndBulletPoints ?: return null
             return CommonClaimsData(
@@ -31,7 +31,7 @@ data class CommonClaimsData(
                 layout.title,
                 layout.buttonTitle,
                 eligibleToClaim,
-                BulletPoint.from(layout.bulletPoints)
+                BulletPoint.from(layout.bulletPoints),
             )
         }
     }

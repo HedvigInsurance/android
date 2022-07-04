@@ -60,7 +60,7 @@ fun CenteredContentWithTopBadge(
                 }
             }
         },
-        modifier = modifier
+        modifier = modifier,
     ) { measurables, constraints ->
         val placeableConstraints = constraints.copy(minWidth = 0, minHeight = 0)
         val centerPlaceable = measurables.first { it.layoutId == "center" }.measure(placeableConstraints)
@@ -72,7 +72,7 @@ fun CenteredContentWithTopBadge(
         val layoutWidth = constraints.maxWidth
         val heightOfCenterContentPlusTwoTopContents = centerContentHeight + (topContentHeight * 2)
         val layoutHeight = heightOfCenterContentPlusTwoTopContents.coerceIn(
-            constraints.minHeight..constraints.maxHeight
+            constraints.minHeight..constraints.maxHeight,
         )
 
         layout(layoutWidth, layoutHeight) {
@@ -108,7 +108,7 @@ fun CenteredContentWithTopBadgePreview(
                             Text(text = badge)
                         }
                     }
-                }
+                },
             )
         }
     }
@@ -121,5 +121,5 @@ class TextAndBadgeProvider : CollectionPreviewParameterProvider<Pair<String, Str
         "Text\n".repeat(5).dropLast(1) to "Badge #3",
         "Badgeless".repeat(10) to null,
         "Badgeless\n".repeat(2).dropLast(1) to null,
-    )
+    ),
 )

@@ -19,7 +19,7 @@ class PagerIndicatorView : LinearLayout {
     constructor(context: Context, attributeSet: AttributeSet?, defStyle: Int) : super(
         context,
         attributeSet,
-        defStyle
+        defStyle,
     )
 
     init {
@@ -57,7 +57,7 @@ class PagerIndicatorView : LinearLayout {
         override fun onPageScrolled(position: Int, offsetPercentage: Float, offsetPixels: Int) {
             safeLet<Int, Int, Unit>(
                 pager?.currentItem,
-                pager?.adapter?.itemCount
+                pager?.adapter?.itemCount,
             ) { currentItem, count ->
                 if (position == currentItem) {
                     when (items.last()) {
@@ -66,7 +66,7 @@ class PagerIndicatorView : LinearLayout {
                                 (getChildAt(position + 1) as? ImageView)?.let {
                                     expandIndicator(
                                         it,
-                                        offsetPercentage
+                                        offsetPercentage,
                                     )
                                 }
                             }
@@ -74,7 +74,7 @@ class PagerIndicatorView : LinearLayout {
                                 (getChildAt(position) as? ImageView)?.let {
                                     shrinkIndicator(
                                         it,
-                                        offsetPercentage
+                                        offsetPercentage,
                                     )
                                 }
                             }
@@ -83,13 +83,13 @@ class PagerIndicatorView : LinearLayout {
                             (getChildAt(position + 1) as? ImageView)?.let {
                                 expandIndicator(
                                     it,
-                                    offsetPercentage
+                                    offsetPercentage,
                                 )
                             }
                             (getChildAt(position) as? ImageView)?.let {
                                 shrinkIndicator(
                                     it,
-                                    offsetPercentage
+                                    offsetPercentage,
                                 )
                             }
                         }
@@ -101,7 +101,7 @@ class PagerIndicatorView : LinearLayout {
                                 (getChildAt(position + 1) as? ImageView)?.let {
                                     shrinkIndicator(
                                         it,
-                                        1.0f - offsetPercentage
+                                        1.0f - offsetPercentage,
                                     )
                                 }
                             }
@@ -110,7 +110,7 @@ class PagerIndicatorView : LinearLayout {
                             (getChildAt(position + 1) as? ImageView)?.let {
                                 shrinkIndicator(
                                     it,
-                                    1.0f - offsetPercentage
+                                    1.0f - offsetPercentage,
                                 )
                             }
                         }
@@ -118,7 +118,7 @@ class PagerIndicatorView : LinearLayout {
                     (getChildAt(position) as? ImageView?)?.let {
                         expandIndicator(
                             it,
-                            1.0f - offsetPercentage
+                            1.0f - offsetPercentage,
                         )
                     }
                 }

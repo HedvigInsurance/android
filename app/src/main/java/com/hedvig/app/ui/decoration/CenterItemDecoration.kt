@@ -9,7 +9,7 @@ class CenterItemDecoration : RecyclerView.ItemDecoration() {
         outRect: Rect,
         view: View,
         parent: RecyclerView,
-        state: RecyclerView.State
+        state: RecyclerView.State,
     ) {
         val edgeMargin = (parent.measuredWidth - view.layoutParams.width) / 2
         outRect.left = edgeMargin

@@ -11,21 +11,21 @@ import com.hedvig.app.testdata.dashboard.builders.InsuranceDataBuilder
 
 val INSURANCE_DATA =
     InsuranceDataBuilder(
-        contracts = listOf(ContractStatus.ACTIVE)
+        contracts = listOf(ContractStatus.ACTIVE),
     ).build()
 
 val INSURANCE_DATA_STUDENT =
     InsuranceDataBuilder(
         contracts = listOf(ContractStatus.ACTIVE),
-        displayName = "Hemförsäkring Student"
+        displayName = "Hemförsäkring Student",
     ).build()
 
 val INSURANCE_DATA_ACTIVE_AND_TERMINATED =
     InsuranceDataBuilder(
-        contracts = listOf(ContractStatus.ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE)
+        contracts = listOf(ContractStatus.ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE),
     ).build()
 val INSURANCE_DATA_ONE_ACTIVE_ONE_TERMINATED = InsuranceDataBuilder(
-    contracts = listOf(ContractStatus.ACTIVE, ContractStatus.TERMINATED)
+    contracts = listOf(ContractStatus.ACTIVE, ContractStatus.TERMINATED),
 ).build()
 val INSURANCE_DATA_DANISH_HOME_CONTENTS = InsuranceDataBuilder(
     contracts = listOf(ContractStatus.ACTIVE),
@@ -34,7 +34,7 @@ val INSURANCE_DATA_DANISH_ACCIDENT = InsuranceDataBuilder(
     contracts = listOf(ContractStatus.ACTIVE),
 ).build()
 val INSURANCE_DATA_TERMINATED = InsuranceDataBuilder(
-    contracts = listOf(ContractStatus.TERMINATED)
+    contracts = listOf(ContractStatus.TERMINATED),
 ).build()
 
 val INSURANCE_DATA_WITH_CROSS_SELL = InsuranceDataBuilder(
@@ -56,7 +56,7 @@ val INSURANCE_DATA_WITH_CROSS_SELL = InsuranceDataBuilder(
                             embarkStoryV2 = CrossSellFragment.EmbarkStoryV2(
                                 name = "123",
                             ),
-                        )
+                        ),
                     ),
                     blurHash = "LJC6\$2-:DiWB~WxuRkayMwNGo~of",
                     imageUrl = "https://images.unsplash.com/photo-1628996796855-0b056a464e06",
@@ -74,11 +74,11 @@ val INSURANCE_DATA_WITH_CROSS_SELL = InsuranceDataBuilder(
                         highlights = emptyList(),
                         faq = emptyList(),
                         insurableLimits = emptyList(),
-                    )
-                )
-            )
-        )
-    )
+                    ),
+                ),
+            ),
+        ),
+    ),
 ).build()
 
 val INSURANCE_DATA_UPCOMING_AGREEMENT = InsuranceDataBuilder(

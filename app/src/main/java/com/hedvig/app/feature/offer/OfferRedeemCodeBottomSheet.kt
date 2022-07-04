@@ -22,7 +22,7 @@ class OfferRedeemCodeBottomSheet : RedeemCodeBottomSheet() {
         private const val QUOTE_CART_ID = "QUOTE_CART_ID"
 
         fun newInstance(
-            quoteCartId: QuoteCartId?
+            quoteCartId: QuoteCartId?,
         ) = OfferRedeemCodeBottomSheet().apply {
             if (quoteCartId != null) {
                 val bundle = Bundle()

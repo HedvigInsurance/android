@@ -31,7 +31,7 @@ import com.hedvig.app.util.spring
  */
 open class SlideInItemAnimator @JvmOverloads constructor(
     slideFromEdge: Int = Gravity.BOTTOM, // Default to sliding in upward
-    layoutDirection: Int = -1
+    layoutDirection: Int = -1,
 ) : DefaultItemAnimator() {
 
     private val slideFromEdge: Int = Gravity.getAbsoluteGravity(slideFromEdge, layoutDirection)
@@ -59,7 +59,7 @@ open class SlideInItemAnimator @JvmOverloads constructor(
         fromViewX: Int,
         fromViewY: Int,
         toViewX: Int,
-        toViewY: Int
+        toViewY: Int,
     ): Boolean {
         holder ?: return false
         val view = holder.itemView
@@ -133,7 +133,9 @@ open class SlideInItemAnimator @JvmOverloads constructor(
                 dispatchFinishedWhenDone()
                 runningAdds -= holder
             },
-            springAlpha, springTranslationX, springTranslationY
+            springAlpha,
+            springTranslationX,
+            springTranslationY,
         )
         springAlpha.animateToFinalPosition(1f)
         springTranslationX.animateToFinalPosition(0f)
@@ -154,7 +156,8 @@ open class SlideInItemAnimator @JvmOverloads constructor(
                 dispatchFinishedWhenDone()
                 runningMoves -= holder
             },
-            springX, springY
+            springX,
+            springY,
         )
         springX.animateToFinalPosition(0f)
         springY.animateToFinalPosition(0f)

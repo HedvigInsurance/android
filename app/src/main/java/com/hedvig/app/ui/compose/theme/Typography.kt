@@ -45,41 +45,41 @@ val HedvigTypography = Typography(
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         letterSpacing = 0.15.sp,
-        lineHeight = 24.sp
+        lineHeight = 24.sp,
     ),
     subtitle2 = TextStyle(
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
         letterSpacing = 0.1.sp,
-        lineHeight = 20.sp
+        lineHeight = 20.sp,
     ),
     body1 = TextStyle(
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         letterSpacing = 0.sp,
-        lineHeight = 26.sp
+        lineHeight = 26.sp,
     ),
     body2 = TextStyle(
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
         letterSpacing = 0.sp,
-        lineHeight = 22.sp
+        lineHeight = 22.sp,
     ),
     button = TextStyle(
         fontWeight = FontWeight.Normal,
         fontSize = 17.sp,
         letterSpacing = -(0.01).sp,
-        lineHeight = 24.sp
+        lineHeight = 24.sp,
     ),
     caption = TextStyle(
         fontWeight = FontWeight.Normal,
         fontSize = 12.sp,
         letterSpacing = 0.sp,
-        lineHeight = 16.sp
+        lineHeight = 16.sp,
     ),
     overline = TextStyle(
         fontWeight = FontWeight.Normal,
         fontSize = 12.sp,
-        letterSpacing = 1.sp
-    )
+        letterSpacing = 1.sp,
+    ),
 )

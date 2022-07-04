@@ -13,7 +13,7 @@ interface MarketManager {
 }
 
 class MarketManagerImpl(
-    context: Context
+    context: Context,
 ) : MarketManager {
 
     private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
@@ -22,7 +22,7 @@ class MarketManagerImpl(
         Market.SE,
         Market.NO,
         Market.DK,
-        if (isDebug()) Market.FR else null
+        if (isDebug()) Market.FR else null,
     )
 
     override var market: Market?

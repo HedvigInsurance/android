@@ -45,7 +45,7 @@ import org.koin.core.parameter.parametersOf
 class SwedishBankIdSignDialog : DialogFragment() {
     private val viewModel: SwedishBankIdSignViewModel by viewModel {
         parametersOf(
-            requireArguments().getParcelable(QUOTE_CART_ID)
+            requireArguments().getParcelable(QUOTE_CART_ID),
         )
     }
     private val marketManager: MarketManager by inject()
@@ -68,8 +68,9 @@ class SwedishBankIdSignDialog : DialogFragment() {
                         if (requireActivity().canOpenUri(bankIdUri)) {
                             startActivity(
                                 Intent(
-                                    Intent.ACTION_VIEW, bankIdUri
-                                )
+                                    Intent.ACTION_VIEW,
+                                    bankIdUri,
+                                ),
                             )
                             viewModel.bankIdStarted()
                         }
@@ -81,7 +82,7 @@ class SwedishBankIdSignDialog : DialogFragment() {
                                 state.payinType,
                                 market,
                                 true,
-                            )
+                            ),
                         )
                         viewModel.directDebitStarted()
                     }
@@ -91,7 +92,7 @@ class SwedishBankIdSignDialog : DialogFragment() {
         setContent {
             HedvigTheme {
                 SwedishBankIdSignDialog(
-                    text = textFromViewState(viewState)
+                    text = textFromViewState(viewState),
                 )
             }
         }
@@ -128,7 +129,7 @@ class SwedishBankIdSignDialog : DialogFragment() {
             quoteCartId: QuoteCartId,
         ) = SwedishBankIdSignDialog().apply {
             arguments = bundleOf(
-                QUOTE_CART_ID to quoteCartId
+                QUOTE_CART_ID to quoteCartId,
             )
         }
     }

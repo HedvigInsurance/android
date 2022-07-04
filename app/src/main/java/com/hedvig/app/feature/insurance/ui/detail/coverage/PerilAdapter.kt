@@ -97,7 +97,7 @@ class PerilAdapter(
                             PerilModel.Header.InfoHeader -> {
                                 R.string.PERIL_MODAL_INFO_TITLE
                             }
-                        }
+                        },
                     )
                 }
             }

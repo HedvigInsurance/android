@@ -19,11 +19,11 @@ class EmbarkStoriesBuilder(
                     __typename = EmbarkStoryMetadataEntryDiscount.type.name,
                     asEmbarkStoryMetadataEntryDiscount = ChoosePlanQuery.AsEmbarkStoryMetadataEntryDiscount(
                         __typename = EmbarkStoryMetadataEntryDiscount.type.name,
-                        discount = "25%"
+                        discount = "25%",
                     ),
-                    asEmbarkStoryMetaDataEntryWebUrlPath = null
-                )
-            )
+                    asEmbarkStoryMetaDataEntryWebUrlPath = null,
+                ),
+            ),
         ).build(),
         EmbarkStoryBuilder(
             name = ENGLISH_CONTENTS,
@@ -34,10 +34,10 @@ class EmbarkStoriesBuilder(
                     asEmbarkStoryMetadataEntryDiscount = null,
                     asEmbarkStoryMetaDataEntryWebUrlPath = ChoosePlanQuery.AsEmbarkStoryMetaDataEntryWebUrlPath(
                         __typename = EmbarkStoryMetaDataEntryWebUrlPath.type.name,
-                        path = ENGLISH_CONTENTS_WEB_PATH
-                    )
-                )
-            )
+                        path = ENGLISH_CONTENTS_WEB_PATH,
+                    ),
+                ),
+            ),
         ).build(),
         EmbarkStoryBuilder(
             name = ENGLISH_TRAVEL,
@@ -48,11 +48,11 @@ class EmbarkStoriesBuilder(
                     asEmbarkStoryMetadataEntryDiscount = null,
                     asEmbarkStoryMetaDataEntryWebUrlPath = ChoosePlanQuery.AsEmbarkStoryMetaDataEntryWebUrlPath(
                         __typename = EmbarkStoryMetaDataEntryWebUrlPath.type.name,
-                        path = ENGLISH_TRAVEL_WEB_PATH
-                    )
-                )
-            )
-        ).build()
+                        path = ENGLISH_TRAVEL_WEB_PATH,
+                    ),
+                ),
+            ),
+        ).build(),
     ),
 ) {
     fun build() = ChoosePlanQuery.Data(embarkStories = list)

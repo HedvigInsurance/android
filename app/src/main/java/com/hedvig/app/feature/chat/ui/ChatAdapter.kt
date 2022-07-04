@@ -29,7 +29,7 @@ import e
 class ChatAdapter(
     context: Context,
     private val onPressEdit: () -> Unit,
-    private val imageLoader: ImageLoader
+    private val imageLoader: ImageLoader,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val doubleMargin = context.resources.getDimensionPixelSize(R.dimen.base_margin_double)
@@ -42,25 +42,27 @@ class ChatAdapter(
             field = value
 
             val diff =
-                DiffUtil.calculateDiff(object : DiffUtil.Callback() {
-                    override fun areItemsTheSame(
-                        oldItemPosition: Int,
-                        newItemPosition: Int,
-                    ): Boolean =
-                        oldMessages.getOrNull(oldItemPosition)?.fragments?.chatMessageFragment?.globalId ==
-                            value.getOrNull(newItemPosition)?.fragments?.chatMessageFragment?.globalId
+                DiffUtil.calculateDiff(
+                    object : DiffUtil.Callback() {
+                        override fun areItemsTheSame(
+                            oldItemPosition: Int,
+                            newItemPosition: Int,
+                        ): Boolean =
+                            oldMessages.getOrNull(oldItemPosition)?.fragments?.chatMessageFragment?.globalId ==
+                                value.getOrNull(newItemPosition)?.fragments?.chatMessageFragment?.globalId
 
-                    override fun getOldListSize(): Int = oldMessages.size
+                        override fun getOldListSize(): Int = oldMessages.size
 
-                    override fun getNewListSize(): Int = value.size
+                        override fun getNewListSize(): Int = value.size
 
-                    override fun areContentsTheSame(
-                        oldItemPosition: Int,
-                        newItemPosition: Int,
-                    ): Boolean =
-                        oldMessages.getOrNull(oldItemPosition)?.fragments?.chatMessageFragment ==
-                            value.getOrNull(newItemPosition)?.fragments?.chatMessageFragment
-                })
+                        override fun areContentsTheSame(
+                            oldItemPosition: Int,
+                            newItemPosition: Int,
+                        ): Boolean =
+                            oldMessages.getOrNull(oldItemPosition)?.fragments?.chatMessageFragment ==
+                                value.getOrNull(newItemPosition)?.fragments?.chatMessageFragment
+                    },
+                )
             diff.dispatchUpdatesTo(this)
         }
 
@@ -73,50 +75,50 @@ class ChatAdapter(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.chat_message_hedvig,
                     parent,
-                    false
-                )
+                    false,
+                ),
             )
             FROM_HEDVIG_GIPHY -> HedvigGiphyMessage(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.chat_message_hedvig_giphy,
                     parent,
-                    false
-                )
+                    false,
+                ),
             )
             FROM_ME_TEXT -> UserMessage(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.chat_message_user,
                     parent,
-                    false
-                )
+                    false,
+                ),
             )
             FROM_ME_GIPHY -> GiphyUserMessage(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.chat_message_user_giphy,
                     parent,
-                    false
-                )
+                    false,
+                ),
             )
             FROM_ME_IMAGE -> ImageUserMessage(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.chat_message_user_image,
                     parent,
-                    false
-                )
+                    false,
+                ),
             )
             FROM_ME_IMAGE_UPLOAD -> ImageUploadUserMessage(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.chat_message_user_image,
                     parent,
-                    false
-                )
+                    false,
+                ),
             )
             FROM_ME_FILE_UPLOAD -> FileUploadUserMessage(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.chat_message_file_upload,
                     parent,
-                    false
-                )
+                    false,
+                ),
             )
             NULL_RENDER -> NullMessage(View(parent.context))
             else -> TODO("Handle the invalid invariant")
@@ -129,26 +131,26 @@ class ChatAdapter(
             if (isFromMyself) {
                 when {
                     isImageUploadMessage(
-                        messages[position].fragments.chatMessageFragment.body
+                        messages[position].fragments.chatMessageFragment.body,
                     ) -> FROM_ME_IMAGE_UPLOAD
                     isFileUploadMessage(
-                        messages[position].fragments.chatMessageFragment.body
+                        messages[position].fragments.chatMessageFragment.body,
                     ) -> FROM_ME_FILE_UPLOAD
                     isGiphyMessage(
-                        messages[position].fragments.chatMessageFragment.body.asMessageBodyCore?.text
+                        messages[position].fragments.chatMessageFragment.body.asMessageBodyCore?.text,
                     ) -> FROM_ME_GIPHY
                     isImageMessage(
-                        messages[position].fragments.chatMessageFragment.body.asMessageBodyCore?.text
+                        messages[position].fragments.chatMessageFragment.body.asMessageBodyCore?.text,
                     ) -> FROM_ME_IMAGE
                     else -> FROM_ME_TEXT
                 }
             } else {
                 when {
                     isGiphyMessage(
-                        messages[position].fragments.chatMessageFragment.body.asMessageBodyCore?.text
+                        messages[position].fragments.chatMessageFragment.body.asMessageBodyCore?.text,
                     ) -> FROM_HEDVIG_GIPHY
                     isAudioMessage(
-                        messages[position].fragments.chatMessageFragment.body
+                        messages[position].fragments.chatMessageFragment.body,
                     ) -> NULL_RENDER // This message sucks. Lets kill it
                     else -> FROM_HEDVIG
                 }
@@ -176,7 +178,7 @@ class ChatAdapter(
                         messages[position].fragments.chatMessageFragment.body.asMessageBodyCore?.text,
                         position,
                         messages[position].fragments.chatMessageFragment.header.statusMessage,
-                        messages[position].fragments.chatMessageFragment.header.editAllowed
+                        messages[position].fragments.chatMessageFragment.header.editAllowed,
                     )
                 }
             }
@@ -192,8 +194,8 @@ class ChatAdapter(
                 (viewHolder as? ImageUploadUserMessage)?.apply {
                     bind(
                         getFileUrl(
-                            messages[position].fragments.chatMessageFragment.body
-                        )
+                            messages[position].fragments.chatMessageFragment.body,
+                        ),
                     )
                 }
             }
@@ -201,8 +203,8 @@ class ChatAdapter(
                 (viewHolder as? FileUploadUserMessage)?.apply {
                     bind(
                         getFileUrl(
-                            messages[position].fragments.chatMessageFragment.body
-                        )
+                            messages[position].fragments.chatMessageFragment.body,
+                        ),
                     )
                 }
             }
@@ -326,7 +328,10 @@ class ChatAdapter(
         private const val NULL_RENDER = 6
 
         private val imageExtensions = listOf(
-            "jpg", "png", "gif", "jpeg"
+            "jpg",
+            "png",
+            "gif",
+            "jpeg",
         )
 
         private fun isGiphyMessage(text: String?) = text?.contains("giphy.com") ?: false

@@ -23,9 +23,9 @@ class RecorderScaffoldActivity : AppCompatActivity(R.layout.fragment_container_a
                             messages = listOf("Hello"),
                             key = "test",
                             label = "recordLabel",
-                            link = "nextPassage"
-                        )
-                    )
+                            link = "nextPassage",
+                        ),
+                    ),
                 )
             }
     }

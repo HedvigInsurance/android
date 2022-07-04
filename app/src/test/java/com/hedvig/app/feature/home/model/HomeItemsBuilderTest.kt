@@ -14,7 +14,7 @@ import org.junit.Test
 
 class HomeItemsBuilderTest {
     private fun sut(
-        featureManager: FeatureManager = mockk(relaxed = true)
+        featureManager: FeatureManager = mockk(relaxed = true),
     ) = HomeItemsBuilder(
         featureManager,
     )

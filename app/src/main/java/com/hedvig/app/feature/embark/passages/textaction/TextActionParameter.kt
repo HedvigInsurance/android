@@ -35,7 +35,7 @@ data class TextActionParameter(
                 passageName = passageName,
                 masks = data.textActions.map {
                     it.data?.mask?.let(::maskTypeFromString)
-                }
+                },
             )
 
         fun from(
@@ -52,7 +52,7 @@ data class TextActionParameter(
                 messages = messages,
                 submitLabel = data.link.fragments.embarkLinkFragment.label,
                 passageName = passageName,
-                masks = listOf(data.mask?.let(::maskTypeFromString))
+                masks = listOf(data.mask?.let(::maskTypeFromString)),
             )
     }
 }

@@ -29,8 +29,8 @@ data class MultiActionBuilder(
                 link = EmbarkStoryQuery.Link4(
                     __typename = "",
                     fragments = EmbarkStoryQuery.Link4.Fragments(
-                        embarkLinkFragment = link
-                    )
+                        embarkLinkFragment = link,
+                    ),
                 ),
                 components = listOf(
                     EmbarkStoryQuery.Component(
@@ -43,7 +43,7 @@ data class MultiActionBuilder(
                                 options = listOf(
                                     EmbarkStoryQuery.Option1(
                                         value = "GarageVal",
-                                        text = "Garage"
+                                        text = "Garage",
                                     ),
                                     EmbarkStoryQuery.Option1(
                                         value = "AttefallVal",
@@ -51,13 +51,13 @@ data class MultiActionBuilder(
                                     ),
                                     EmbarkStoryQuery.Option1(
                                         value = "FriggebodVal",
-                                        text = "Friggebod"
-                                    )
-                                )
-                            )
+                                        text = "Friggebod",
+                                    ),
+                                ),
+                            ),
                         ),
                         asEmbarkSwitchAction = null,
-                        asEmbarkMultiActionNumberAction = null
+                        asEmbarkMultiActionNumberAction = null,
                     ),
                     EmbarkStoryQuery.Component(
                         __typename = EmbarkMultiActionNumberAction.type.name,
@@ -68,10 +68,10 @@ data class MultiActionBuilder(
                                 placeholder = "52",
                                 label = "Size",
                                 unit = "sqm",
-                            )
+                            ),
                         ),
                         asEmbarkDropdownAction = null,
-                        asEmbarkSwitchAction = null
+                        asEmbarkSwitchAction = null,
                     ),
                     EmbarkStoryQuery.Component(
                         __typename = EmbarkSwitchAction.type.name,
@@ -80,14 +80,14 @@ data class MultiActionBuilder(
                             switchActionData = EmbarkStoryQuery.SwitchActionData(
                                 label = "Water connected",
                                 key = "water",
-                                defaultValue = true
-                            )
+                                defaultValue = true,
+                            ),
                         ),
                         asEmbarkDropdownAction = null,
-                        asEmbarkMultiActionNumberAction = null
+                        asEmbarkMultiActionNumberAction = null,
                     ),
-                )
-            )
+                ),
+            ),
         ),
         asEmbarkAudioRecorderAction = null,
         asEmbarkExternalInsuranceProviderAction = null,

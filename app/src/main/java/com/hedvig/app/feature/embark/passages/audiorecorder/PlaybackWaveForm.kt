@@ -40,7 +40,7 @@ fun PlaybackWaveForm(
     modifier: Modifier = Modifier,
 ) {
     Card(
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth(),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -56,7 +56,7 @@ fun PlaybackWaveForm(
                     start = 16.dp,
                     top = 16.dp,
                     bottom = 16.dp,
-                )
+                ),
             ) {
                 Image(
                     painterResource(
@@ -64,13 +64,13 @@ fun PlaybackWaveForm(
                             R.drawable.ic_pause
                         } else {
                             R.drawable.ic_play
-                        }
+                        },
                     ),
                     contentDescription = if (isPlaying) {
                         "Pause"
                     } else {
                         "Play"
-                    }
+                    },
                 )
             }
 
@@ -95,7 +95,7 @@ fun PlaybackWaveForm(
                     .height(80.dp)
                     .weight(1f, fill = true)
                     .clipToBounds()
-                    .onSizeChanged { size = it }
+                    .onSizeChanged { size = it },
             ) {
                 val sampledAmplitudesSize = sampledAmplitudes.size
                 sampledAmplitudes

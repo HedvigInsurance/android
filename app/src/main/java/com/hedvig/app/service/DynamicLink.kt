@@ -7,7 +7,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
 sealed class DynamicLink(
-    val type: String
+    val type: String,
 ) {
 
     data class Referrals(
@@ -44,7 +44,7 @@ fun createDynamicLinkFromUri(uri: Uri?): DynamicLink {
             uri.pathSegments.contains("referrals") -> DynamicLink.Referrals(
                 code = uri.getQueryParameter("code") ?: "",
                 // Fixme "10" should not be hard coded
-                incentive = "10"
+                incentive = "10",
             )
             uri.pathSegments.contains("direct-debit") -> DynamicLink.DirectDebit
             uri.pathSegments.contains("forever") -> DynamicLink.Forever

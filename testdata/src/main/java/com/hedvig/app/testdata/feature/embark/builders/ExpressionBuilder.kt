@@ -30,7 +30,7 @@ data class ExpressionBuilder(
                                 ExpressionType.NEVER -> EmbarkExpressionTypeUnary.NEVER
                                 else -> throw Error("Unreachable")
                             },
-                            text = text
+                            text = text,
                         )
                     } else {
                         null
@@ -49,12 +49,12 @@ data class ExpressionBuilder(
                             },
                             key = key,
                             value = value,
-                            text = text
+                            text = text,
                         )
                     } else {
                         null
                     },
-                )
+                ),
             ),
             asEmbarkExpressionMultiple = if (type.isMultiple) {
                 ExpressionFragment.AsEmbarkExpressionMultiple(
@@ -69,7 +69,7 @@ data class ExpressionBuilder(
                         ExpressionFragment.SubExpression2(
                             __typename = type.typename,
                             fragments = ExpressionFragment.SubExpression2.Fragments(
-                                subEx.fragments.basicExpressionFragment
+                                subEx.fragments.basicExpressionFragment,
                             ),
                             asEmbarkExpressionMultiple1 = subEx.asEmbarkExpressionMultiple?.let { asMulti ->
                                 ExpressionFragment.AsEmbarkExpressionMultiple1(
@@ -80,7 +80,7 @@ data class ExpressionBuilder(
                                         ExpressionFragment.SubExpression1(
                                             __typename = type.typename,
                                             fragments = ExpressionFragment.SubExpression1.Fragments(
-                                                subEx2.fragments.basicExpressionFragment
+                                                subEx2.fragments.basicExpressionFragment,
                                             ),
                                             asEmbarkExpressionMultiple2 = subEx2
                                                 .asEmbarkExpressionMultiple1
@@ -93,22 +93,22 @@ data class ExpressionBuilder(
                                                             ExpressionFragment.SubExpression(
                                                                 __typename = "",
                                                                 fragments = ExpressionFragment.SubExpression.Fragments(
-                                                                    subEx3.fragments.basicExpressionFragment
-                                                                )
+                                                                    subEx3.fragments.basicExpressionFragment,
+                                                                ),
                                                             )
-                                                        }
+                                                        },
                                                     )
-                                                }
+                                                },
                                         )
-                                    }
+                                    },
                                 )
-                            }
+                            },
                         )
                     },
                 )
             } else {
                 null
-            }
+            },
         )
     }
 

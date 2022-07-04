@@ -91,8 +91,8 @@ class QuoteCartQueryParsingTest {
                             adyenProvider {
                                 availablePaymentMethods = """
                                 |{"paymentMethods":[{"brands":["visadankort","mc","visa"],"details":[{"key":"encryptedCardNumber","type":"cardToken"},{"key":"encryptedSecurityCode","type":"cardToken"},{"key":"encryptedExpiryMonth","type":"cardToken"},{"key":"encryptedExpiryYear","type":"cardToken"},{"key":"holderName","optional":true,"type":"text"}],"name":"Credit Card","type":"scheme"},{"configuration":{"merchantId":"50","gatewayMerchantId":"HEDVIG-DK"},"details":[{"key":"paywithgoogle.token","type":"payWithGoogleToken"}],"name":"Google Pay","type":"paywithgoogle"}]}
-                            """.trimMargin()
-                            }
+                                """.trimMargin()
+                            },
                         )
                     }
                 }
