@@ -149,6 +149,7 @@ android {
 
 dependencies {
     implementation(project(":apollo"))
+    implementation(project(":core-common"))
 
     androidTestImplementation(project(":testdata"))
     testImplementation(project(":testdata"))

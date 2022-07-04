@@ -36,11 +36,13 @@ apollo {
         mapScalarToUpload("Upload")
         mapScalar("Instant", "java.time.Instant", "com.apollographql.apollo3.adapter.JavaInstantAdapter")
 
-        // Scalars with their adapter being added at runtime.
-        // See `com.hedvig.app.util.apollo.adapter.CUSTOM_SCALAR_ADAPTERS`
-        mapScalar("JSONString", "org.json.JSONObject")
-        mapScalar("LocalDate", "java.time.LocalDate")
-        mapScalar("PaymentMethodsResponse", "com.adyen.checkout.components.model.PaymentMethodsApiResponse")
+        mapScalar("JSONString", "org.json.JSONObject", "com.hedvig.android.typeadapter.JSONStringAdapter")
+        mapScalar("LocalDate", "java.time.LocalDate", "com.hedvig.android.typeadapter.PromiscuousLocalDateAdapter")
+        mapScalar(
+            "PaymentMethodsResponse",
+            "com.adyen.checkout.components.model.PaymentMethodsApiResponse",
+            "com.hedvig.android.typeadapter.PaymentMethodsApiResponseAdapter"
+        )
         sealedClassesForEnumsMatching.set(
             listOf(
                 "TypeOfContract",
@@ -73,6 +75,8 @@ android {
 }
 
 dependencies {
+    implementation(project(":core-common"))
+
     implementation(libs.kotlin.stdlib)
     coreLibraryDesugaring(libs.coreLibraryDesugaring)
 

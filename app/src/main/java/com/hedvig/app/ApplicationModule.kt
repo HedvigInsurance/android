@@ -220,7 +220,6 @@ import com.hedvig.app.util.apollo.DeviceIdInterceptor
 import com.hedvig.app.util.apollo.GraphQLQueryHandler
 import com.hedvig.app.util.apollo.ReopenSubscriptionException
 import com.hedvig.app.util.apollo.SunsettingInterceptor
-import com.hedvig.app.util.apollo.adapter.CUSTOM_SCALAR_ADAPTERS
 import com.hedvig.app.util.featureflags.ClearHAnalyticsExperimentsCacheUseCase
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.app.util.featureflags.FeatureManagerImpl
@@ -325,7 +324,6 @@ val applicationModule = module {
                 )
             )
             .normalizedCache(get<NormalizedCacheFactory>())
-            .customScalarAdapters(CUSTOM_SCALAR_ADAPTERS)
             .addInterceptors(interceptors)
     }
 }

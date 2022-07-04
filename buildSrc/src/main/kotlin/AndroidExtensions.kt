@@ -4,7 +4,7 @@ import org.gradle.api.Action
 import org.gradle.api.JavaVersion
 
 data class AndroidVersions(
-    val compileSdk: Int = 31,
+    val compileSdk: Int = 32,
     val minSdk: Int = 23,
     val targetSdk: Int = 30,
 )

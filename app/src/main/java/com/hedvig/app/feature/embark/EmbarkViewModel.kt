@@ -7,6 +7,7 @@ import androidx.lifecycle.asFlow
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
+import com.hedvig.android.core.asMap
 import com.hedvig.android.owldroid.graphql.EmbarkStoryQuery
 import com.hedvig.android.owldroid.graphql.fragment.ApiFragment
 import com.hedvig.android.owldroid.graphql.fragment.MessageFragment
@@ -25,7 +26,6 @@ import com.hedvig.app.feature.embark.util.getVariables
 import com.hedvig.app.feature.embark.util.toExpressionFragment
 import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.ProgressPercentage
-import com.hedvig.app.util.asMap
 import com.hedvig.app.util.safeLet
 import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics

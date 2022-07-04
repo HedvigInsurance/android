@@ -1,4 +1,4 @@
-package com.hedvig.app.util
+package com.hedvig.android.core
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo

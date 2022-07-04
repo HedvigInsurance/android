@@ -1,6 +1,7 @@
 package com.hedvig.app.feature.keygear
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule
+import com.hedvig.android.core.jsonObjectOf
 import com.hedvig.android.owldroid.graphql.KeyGearItemsQuery
 import com.hedvig.android.owldroid.graphql.LoggedInQuery
 import com.hedvig.app.R
@@ -15,7 +16,6 @@ import com.hedvig.app.util.FeatureFlagRule
 import com.hedvig.app.util.apolloResponse
 import com.hedvig.app.util.context
 import com.hedvig.app.util.featureflags.flags.Feature
-import com.hedvig.app.util.jsonObjectOf
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import org.junit.Rule
 import org.junit.Test
