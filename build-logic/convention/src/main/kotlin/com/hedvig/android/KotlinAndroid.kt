@@ -57,7 +57,9 @@ internal fun Project.configureKotlinAndroid(
                 "-opt-in=kotlinx.coroutines.FlowPreview",
                 "-opt-in=kotlin.Experimental",
                 // Enable experimental kotlinx serialization APIs
-                "-opt-in=kotlinx.serialization.ExperimentalSerializationApi"
+                "-opt-in=kotlinx.serialization.ExperimentalSerializationApi",
+                // Fixes "Inheritance from an interface with '@JvmDefault' members is only allowed with -Xjvm-default option"
+                "-Xjvm-default=enable",
             )
 
             jvmTarget = JavaVersion.VERSION_11.toString()
