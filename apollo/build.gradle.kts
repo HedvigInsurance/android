@@ -3,6 +3,7 @@ import com.apollographql.apollo3.compiler.MODELS_COMPAT
 @Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     id("hedvig.android.library")
+    id("hedvig.android.ktlint")
     alias(libs.plugins.apollo)
 }
 
@@ -40,7 +41,7 @@ apollo {
         mapScalar(
             "PaymentMethodsResponse",
             "com.adyen.checkout.components.model.PaymentMethodsApiResponse",
-            "com.hedvig.android.typeadapter.PaymentMethodsApiResponseAdapter"
+            "com.hedvig.android.typeadapter.PaymentMethodsApiResponseAdapter",
         )
         sealedClassesForEnumsMatching.set(
             listOf(
@@ -48,7 +49,7 @@ apollo {
                 "CrossSellType",
                 "ClaimStatus",
                 "EmbarkExternalRedirectLocation",
-            )
+            ),
         )
     }
 }

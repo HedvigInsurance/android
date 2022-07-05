@@ -12,25 +12,30 @@ java {
 dependencies {
     implementation(libs.android.gradlePlugin)
     implementation(libs.kotlin.gradlePlugin)
+    implementation(libs.ktlint.gradlePlugin)
 }
 
 gradlePlugin {
     plugins {
         register("hedvigAndroidApplicationCompose") {
             id = "hedvig.android.application.compose"
-            implementationClass = "HedvigAndroidApplicationComposeConventionPlugin"
+            implementationClass = "ApplicationComposeConventionPlugin"
         }
         register("hedvigAndroidApplication") {
             id = "hedvig.android.application"
-            implementationClass = "HedvigAndroidApplicationConventionPlugin"
+            implementationClass = "ApplicationConventionPlugin"
         }
         register("hedvigAndroidLibraryCompose") {
-            id = "nowinandroid.android.library.compose"
-            implementationClass = "HedvigAndroidLibraryComposeConventionPlugin"
+            id = "hedvig.android.library.compose"
+            implementationClass = "LibraryComposeConventionPlugin"
         }
         register("hedvigAndroidLibrary") {
             id = "hedvig.android.library"
-            implementationClass = "HedvigAndroidLibraryConventionPlugin"
+            implementationClass = "LibraryConventionPlugin"
+        }
+        register("hedvigAndroidKtlint") {
+            id = "hedvig.android.ktlint"
+            implementationClass = "KtlintConventionPlugin"
         }
     }
 }

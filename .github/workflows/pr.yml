@@ -69,20 +69,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: Homebrew/actions/setup-homebrew@master
-      - run: sudo apt-get update && sudo apt-get install libxml2-utils
-      - run: brew install ktlint --build-from-source ktlint
-      - name: run ktlint
-        continue-on-error: true
-        run: |
-          ktlint "\!**/generated/**" "**/src/**/*.kt*" --reporter=checkstyle,output=build/ktlint-report-in-checkstyle-format.xml
-      - uses: yutailang0119/action-ktlint@v3.0.0
+      - name: Setup JDK 11
+        uses: actions/setup-java@v3.4.0
         with:
-          report-path: build/ktlint-report-in-checkstyle-format.xml
-      - run: |
-          if [[ $(xmllint --xpath "count(//file)" build/ktlint-report-in-checkstyle-format.xml) -gt 0 ]]; then
-              exit 1;
-          fi;
+          java-version: '11'
+          distribution: 'zulu'
+          cache: 'gradle'
+      - uses: actions/cache@v3
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+      - uses: actions/cache@v3
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+      - name: Prebuild
+        run: ./ci-prebuild.sh
+        env:
+          LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
+          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+          ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_CLIENT_KEY_TEST }}
+          SHAKE_CLIENT_ID: ${{ secrets.SHAKE_CLIENT_ID }}
+          SHAKE_CLIENT_SECRET: ${{ secrets.SHAKE_CLIENT_SECRET }}
+      - name: run ktlint from gradle
+        run: ./gradlew ktlintCheck --stacktrace
   build:
     runs-on: ubuntu-latest
     steps:

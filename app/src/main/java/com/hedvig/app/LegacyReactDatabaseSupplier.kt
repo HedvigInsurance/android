@@ -21,7 +21,8 @@ class LegacyReactDatabaseSupplier private constructor(private val context: Conte
         e { "This database is deprecated and should not be used. Let's not upgrade is!" }
     }
 
-    /* package */ @Synchronized
+    /* package */
+    @Synchronized
     internal fun ensureDatabase(): Boolean {
         if (database != null && database!!.isOpen) {
             return true
@@ -79,7 +80,8 @@ class LegacyReactDatabaseSupplier private constructor(private val context: Conte
         }
     }
 
-    /* package */ @Synchronized
+    /* package */
+    @Synchronized
     internal fun clear() {
         get()?.delete(TABLE_CATALYST, null, null)
     }

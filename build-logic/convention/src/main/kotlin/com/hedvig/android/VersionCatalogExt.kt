@@ -13,3 +13,6 @@ internal val VersionCatalog.compileSdkVersion: Int
 
 internal val VersionCatalog.composeVersion: String
     get() = findVersion("androidx-compose").get().toString()
+
+internal val VersionCatalog.ktlintVersion: String
+    get() = findVersion("ktlint").get().toString()

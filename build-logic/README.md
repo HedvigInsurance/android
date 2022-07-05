@@ -29,10 +29,11 @@ in the module's `build.gradle`, as opposed to creating a convention plugin with 
 setup.
 
 Current list of convention plugins:
-
-- [`hedvig.android.application`](convention/src/main/kotlin/HedvigAndroidApplicationConventionPlugin.kt),
-  [`hedvig.android.library`](convention/src/main/kotlin/HedvigAndroidLibraryConventionPlugin.kt),
+- [`hedvig.android.ktlint`](convention/src/main/kotlin/KtlintConventionPlugin.kt),
+  Setup ktlint plugin looking at configuration coming from [`.editorconfig`](../.editorconfig)
+- [`hedvig.android.application`](convention/src/main/kotlin/ApplicationConventionPlugin.kt),
+  [`hedvig.android.library`](convention/src/main/kotlin/LibraryConventionPlugin.kt),
   Configures common Android and Kotlin options.
-- [`hedvig.android.application.compose`](convention/src/main/kotlin/HedvigAndroidApplicationComposeConventionPlugin.kt),
-  [`hedvig.android.library.compose`](convention/src/main/kotlin/HedvigAndroidLibraryComposeConventionPlugin.kt):
+- [`hedvig.android.application.compose`](convention/src/main/kotlin/ApplicationComposeConventionPlugin.kt),
+  [`hedvig.android.library.compose`](convention/src/main/kotlin/LibraryComposeConventionPlugin.kt):
   Configures Jetpack Compose options
