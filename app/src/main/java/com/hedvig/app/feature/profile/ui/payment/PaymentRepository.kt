@@ -12,31 +12,31 @@ import com.hedvig.app.util.LocaleManager
 import kotlinx.coroutines.flow.Flow
 
 class PaymentRepository(
-    private val apolloClient: ApolloClient,
-    private val localeManager: LocaleManager,
+  private val apolloClient: ApolloClient,
+  private val localeManager: LocaleManager,
 ) {
-    private val paymentQuery = PaymentQuery(localeManager.defaultLocale())
-    fun payment(): Flow<ApolloResponse<PaymentQuery.Data>> = apolloClient
-        .query(PaymentQuery(localeManager.defaultLocale()))
-        .watch()
+  private val paymentQuery = PaymentQuery(localeManager.defaultLocale())
+  fun payment(): Flow<ApolloResponse<PaymentQuery.Data>> = apolloClient
+    .query(PaymentQuery(localeManager.defaultLocale()))
+    .watch()
 
-    suspend fun refresh(): ApolloResponse<PaymentQuery.Data> = apolloClient
-        .query(paymentQuery)
-        .fetchPolicy(FetchPolicy.NetworkOnly)
-        .execute()
+  suspend fun refresh(): ApolloResponse<PaymentQuery.Data> = apolloClient
+    .query(paymentQuery)
+    .fetchPolicy(FetchPolicy.NetworkOnly)
+    .execute()
 
-    suspend fun writeActivePayoutMethodStatus(status: PayoutMethodStatus) {
-        val cachedData = apolloClient
-            .apolloStore
-            .readOperation(paymentQuery)
+  suspend fun writeActivePayoutMethodStatus(status: PayoutMethodStatus) {
+    val cachedData = apolloClient
+      .apolloStore
+      .readOperation(paymentQuery)
 
-        apolloClient
-            .apolloStore
-            .writeOperation(
-                paymentQuery,
-                cachedData.copy(
-                    activePayoutMethods = PaymentQuery.ActivePayoutMethods(status = status),
-                ),
-            )
-    }
+    apolloClient
+      .apolloStore
+      .writeOperation(
+        paymentQuery,
+        cachedData.copy(
+          activePayoutMethods = PaymentQuery.ActivePayoutMethods(status = status),
+        ),
+      )
+  }
 }

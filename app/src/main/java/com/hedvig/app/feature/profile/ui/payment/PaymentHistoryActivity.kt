@@ -21,58 +21,58 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PaymentHistoryActivity : BaseActivity(R.layout.activity_payment_history) {
-    private val binding by viewBinding(ActivityPaymentHistoryBinding::bind)
-    private val model: PaymentViewModel by viewModel()
-    private val marketManager: MarketManager by inject()
+  private val binding by viewBinding(ActivityPaymentHistoryBinding::bind)
+  private val model: PaymentViewModel by viewModel()
+  private val marketManager: MarketManager by inject()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-        binding.apply {
-            window.compatSetDecorFitsSystemWindows(false)
-            paymentHistory.applyNavigationBarInsets()
-            toolbar.applyStatusBarInsets()
-            toolbar.setNavigationOnClickListener {
-                onBackPressed()
-            }
-            paymentHistory.setupToolbarScrollListener(toolbar)
+    binding.apply {
+      window.compatSetDecorFitsSystemWindows(false)
+      paymentHistory.applyNavigationBarInsets()
+      toolbar.applyStatusBarInsets()
+      toolbar.setNavigationOnClickListener {
+        onBackPressed()
+      }
+      paymentHistory.setupToolbarScrollListener(toolbar)
 
-            paymentHistory.adapter = PaymentHistoryAdapter(marketManager)
+      paymentHistory.adapter = PaymentHistoryAdapter(marketManager)
 
-            model
-                .data
-                .flowWithLifecycle(lifecycle)
-                .onEach { (data, _) ->
-                    data?.chargeHistory?.let { chargeHistory ->
-                        (paymentHistory.adapter as? PaymentHistoryAdapter)?.submitList(
-                            listOf(ChargeWrapper.Title) + wrapCharges(chargeHistory),
-                        )
-                    }
-                }
-                .launchIn(lifecycleScope)
+      model
+        .data
+        .flowWithLifecycle(lifecycle)
+        .onEach { (data, _) ->
+          data?.chargeHistory?.let { chargeHistory ->
+            (paymentHistory.adapter as? PaymentHistoryAdapter)?.submitList(
+              listOf(ChargeWrapper.Title) + wrapCharges(chargeHistory),
+            )
+          }
         }
+        .launchIn(lifecycleScope)
     }
+  }
 
-    companion object {
-        fun newInstance(context: Context): Intent =
-            Intent(context, PaymentHistoryActivity::class.java)
+  companion object {
+    fun newInstance(context: Context): Intent =
+      Intent(context, PaymentHistoryActivity::class.java)
 
-        fun wrapCharges(charges: List<PaymentQuery.ChargeHistory>): List<ChargeWrapper> {
-            return buildList {
-                for (index in charges.indices) {
-                    if (index == 0) {
-                        add(ChargeWrapper.Header(charges[index].date.year))
-                        add(ChargeWrapper.Item(charges[index]))
-                        continue
-                    }
-                    if (charges[index - 1].date.year != charges[index].date.year) {
-                        add(ChargeWrapper.Header(charges[index].date.year))
-                        add(ChargeWrapper.Item(charges[index]))
-                        continue
-                    }
-                    add(ChargeWrapper.Item(charges[index]))
-                }
-            }
+    fun wrapCharges(charges: List<PaymentQuery.ChargeHistory>): List<ChargeWrapper> {
+      return buildList {
+        for (index in charges.indices) {
+          if (index == 0) {
+            add(ChargeWrapper.Header(charges[index].date.year))
+            add(ChargeWrapper.Item(charges[index]))
+            continue
+          }
+          if (charges[index - 1].date.year != charges[index].date.year) {
+            add(ChargeWrapper.Header(charges[index].date.year))
+            add(ChargeWrapper.Item(charges[index]))
+            continue
+          }
+          add(ChargeWrapper.Item(charges[index]))
         }
+      }
     }
+  }
 }

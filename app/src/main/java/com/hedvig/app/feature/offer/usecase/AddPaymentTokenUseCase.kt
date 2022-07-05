@@ -11,34 +11,34 @@ import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.util.apollo.safeQuery
 
 class AddPaymentTokenUseCase(
-    private val apolloClient: ApolloClient,
+  private val apolloClient: ApolloClient,
 ) {
 
-    object Success
+  object Success
 
-    sealed class Error {
-        data class CheckoutPaymentAction(val action: String) : Error()
-        data class ErrorMessage(val message: String?) : Error()
-    }
+  sealed class Error {
+    data class CheckoutPaymentAction(val action: String) : Error()
+    data class ErrorMessage(val message: String?) : Error()
+  }
 
-    suspend operator fun invoke(
-        quoteCartId: QuoteCartId,
-        paymentTokenId: PaymentTokenId,
-    ): Either<Error, Success> {
-        val mutation = AddPaymentTokenIdMutation(
-            quoteCartId = quoteCartId.id,
-            paymentTokenId = paymentTokenId.id,
-        )
-        return apolloClient.mutation(mutation)
-            .safeQuery()
-            .toEither()
-            .mapLeft { Error.ErrorMessage(it.message) }
-            .flatMap {
-                it.quoteCart_addPaymentToken.asBasicError?.let {
-                    Error.ErrorMessage(it.message).left()
-                } ?: it.quoteCart_addPaymentToken.asQuoteCart?.let {
-                    Success.right()
-                } ?: Error.ErrorMessage(null).left()
-            }
-    }
+  suspend operator fun invoke(
+    quoteCartId: QuoteCartId,
+    paymentTokenId: PaymentTokenId,
+  ): Either<Error, Success> {
+    val mutation = AddPaymentTokenIdMutation(
+      quoteCartId = quoteCartId.id,
+      paymentTokenId = paymentTokenId.id,
+    )
+    return apolloClient.mutation(mutation)
+      .safeQuery()
+      .toEither()
+      .mapLeft { Error.ErrorMessage(it.message) }
+      .flatMap {
+        it.quoteCart_addPaymentToken.asBasicError?.let {
+          Error.ErrorMessage(it.message).left()
+        } ?: it.quoteCart_addPaymentToken.asQuoteCart?.let {
+          Success.right()
+        } ?: Error.ErrorMessage(null).left()
+      }
+  }
 }

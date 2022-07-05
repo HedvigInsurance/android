@@ -22,45 +22,45 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
 class ActiveInFutureAndTerminatedInFutureTest : TestCase() {
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(LOGGED_IN_DATA)
-        },
-        HomeQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(
-                HOME_DATA_ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE,
-            )
-        },
-    )
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(LOGGED_IN_DATA)
+    },
+    HomeQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(
+        HOME_DATA_ACTIVE_IN_FUTURE_AND_TERMINATED_IN_FUTURE,
+      )
+    },
+  )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
 
-    @Test
-    fun shouldShowMessageWhenUserHasAllContractsInActiveInFutureStateOrActiveInFutureAndTerminatedInFutureState() =
-        run {
-            activityRule.launch(LoggedInActivity.newInstance(context()))
-            val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
+  @Test
+  fun shouldShowMessageWhenUserHasAllContractsInActiveInFutureStateOrActiveInFutureAndTerminatedInFutureState() =
+    run {
+      activityRule.launch(LoggedInActivity.newInstance(context()))
+      val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
 
-            onScreen<HomeTabScreen> {
-                recycler {
-                    childAt<HomeTabScreen.BigTextItem>(0) {
-                        text {
-                            hasText(
-                                R.string.home_tab_active_in_future_welcome_title,
-                                "Test",
-                                formatter.format(LocalDate.of(2024, 1, 1)),
-                            )
-                        }
-                    }
-                    childAt<HomeTabScreen.BodyTextItem>(1) {
-                        text { hasText(R.string.home_tab_active_in_future_body) }
-                    }
-                }
+      onScreen<HomeTabScreen> {
+        recycler {
+          childAt<HomeTabScreen.BigTextItem>(0) {
+            text {
+              hasText(
+                R.string.home_tab_active_in_future_welcome_title,
+                "Test",
+                formatter.format(LocalDate.of(2024, 1, 1)),
+              )
             }
+          }
+          childAt<HomeTabScreen.BodyTextItem>(1) {
+            text { hasText(R.string.home_tab_active_in_future_body) }
+          }
         }
+      }
+    }
 }

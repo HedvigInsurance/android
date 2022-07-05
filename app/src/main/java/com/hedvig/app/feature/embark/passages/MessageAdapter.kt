@@ -11,24 +11,24 @@ import com.hedvig.app.util.extensions.setMarkdownText
 import com.hedvig.app.util.extensions.viewBinding
 
 class MessageAdapter(
-    messages: List<String>,
+  messages: List<String>,
 ) : ListAdapter<String, MessageAdapter.MessageViewHolder>(GenericDiffUtilItemCallback()) {
 
-    init {
-        submitList(messages)
+  init {
+    submitList(messages)
+  }
+
+  override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = MessageViewHolder(parent)
+
+  override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
+    holder.bind(getItem(position))
+  }
+
+  class MessageViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate(R.layout.embark_message_item)) {
+    private val binding by viewBinding(EmbarkMessageItemBinding::bind)
+
+    fun bind(message: String) {
+      binding.root.setMarkdownText(message)
     }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = MessageViewHolder(parent)
-
-    override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
-        holder.bind(getItem(position))
-    }
-
-    class MessageViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate(R.layout.embark_message_item)) {
-        private val binding by viewBinding(EmbarkMessageItemBinding::bind)
-
-        fun bind(message: String) {
-            binding.root.setMarkdownText(message)
-        }
-    }
+  }
 }

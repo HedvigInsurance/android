@@ -10,23 +10,23 @@ import org.koin.core.context.unloadKoinModules
 import org.koin.dsl.module
 
 class ValueStoreRule(
-    private val key: String,
-    private val value: String,
+  private val key: String,
+  private val value: String,
 ) : ExternalResource() {
 
-    private val valueStore = mockk<ValueStore>(relaxed = true)
+  private val valueStore = mockk<ValueStore>(relaxed = true)
 
-    override fun before() {
-        unloadKoinModules(valueStoreModule)
-        loadKoinModules(module { single { valueStore } })
-        every { valueStore.get(key) } returns value
-        every { valueStore.withCommittedVersion<Any>(any()) } answers {
-            firstArg<ValueStore.() -> Any>().invoke(valueStore)
-        }
+  override fun before() {
+    unloadKoinModules(valueStoreModule)
+    loadKoinModules(module { single { valueStore } })
+    every { valueStore.get(key) } returns value
+    every { valueStore.withCommittedVersion<Any>(any()) } answers {
+      firstArg<ValueStore.() -> Any>().invoke(valueStore)
     }
+  }
 
-    override fun after() {
-        unloadKoinModules(module { single { valueStore } })
-        loadKoinModules(valueStoreModule)
-    }
+  override fun after() {
+    unloadKoinModules(module { single { valueStore } })
+    loadKoinModules(valueStoreModule)
+  }
 }

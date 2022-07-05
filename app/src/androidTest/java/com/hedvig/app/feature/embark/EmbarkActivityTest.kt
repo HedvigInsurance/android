@@ -12,23 +12,23 @@ import org.junit.Rule
 import org.junit.Test
 
 class EmbarkActivityTest : TestCase() {
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
 
-    @Test
-    fun testErrorDialog() = run {
-        activityRule.launch(
-            EmbarkActivity.newInstance(
-                context(),
-                this.javaClass.name,
-                "",
-            ),
-        )
-        onScreen<EmbarkScreen> {
-            errorDialog { title { hasText(R.string.error_dialog_title) } }
-        }
+  @Test
+  fun testErrorDialog() = run {
+    activityRule.launch(
+      EmbarkActivity.newInstance(
+        context(),
+        this.javaClass.name,
+        "",
+      ),
+    )
+    onScreen<EmbarkScreen> {
+      errorDialog { title { hasText(R.string.error_dialog_title) } }
     }
+  }
 }

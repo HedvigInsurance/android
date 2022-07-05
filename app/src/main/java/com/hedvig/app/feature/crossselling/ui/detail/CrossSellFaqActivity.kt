@@ -31,125 +31,125 @@ import org.koin.core.parameter.parametersOf
 
 class CrossSellFaqActivity : BaseActivity() {
 
-    val crossSell by lazy {
-        intent.getParcelableExtra<CrossSellData>(CROSS_SELL)
-            ?: throw IllegalArgumentException("Programmer error: CROSS_SELL not passed to ${this.javaClass.name}")
+  val crossSell by lazy {
+    intent.getParcelableExtra<CrossSellData>(CROSS_SELL)
+      ?: throw IllegalArgumentException("Programmer error: CROSS_SELL not passed to ${this.javaClass.name}")
+  }
+
+  private val model: CrossSellFaqViewModel by viewModel { parametersOf(crossSell) }
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+
+    model.viewState
+      .flowWithLifecycle(lifecycle)
+      .onEach(::handleViewState)
+      .launchIn(lifecycleScope)
+
+    setContent {
+      HedvigTheme {
+        FaqScreen(
+          ctaLabel = crossSell.callToAction,
+          onUpClick = ::finish,
+          openSheet = { faq ->
+            FAQBottomSheet
+              .newInstance(faq)
+              .show(supportFragmentManager, FAQBottomSheet.TAG)
+          },
+          openChat = ::openChat,
+          onCtaClick = { model.onCtaClick() },
+          items = crossSell.faq,
+        )
+      }
+    }
+  }
+
+  private fun handleViewState(viewState: CrossSellFaqViewModel.ViewState) = with(viewState) {
+    errorMessage?.let {
+      showErrorDialog(getString(R.string.component_error)) {
+        model.dismissError()
+      }
     }
 
-    private val model: CrossSellFaqViewModel by viewModel { parametersOf(crossSell) }
+    navigateChat
+      ?.navigate(this@CrossSellFaqActivity)
+      ?.also { model.actionOpened() }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    navigateEmbark
+      ?.navigate(this@CrossSellFaqActivity)
+      ?.also { model.actionOpened() }
+  }
 
-        model.viewState
-            .flowWithLifecycle(lifecycle)
-            .onEach(::handleViewState)
-            .launchIn(lifecycleScope)
-
-        setContent {
-            HedvigTheme {
-                FaqScreen(
-                    ctaLabel = crossSell.callToAction,
-                    onUpClick = ::finish,
-                    openSheet = { faq ->
-                        FAQBottomSheet
-                            .newInstance(faq)
-                            .show(supportFragmentManager, FAQBottomSheet.TAG)
-                    },
-                    openChat = ::openChat,
-                    onCtaClick = { model.onCtaClick() },
-                    items = crossSell.faq,
-                )
-            }
-        }
+  private fun openChat() {
+    lifecycleScope.launch {
+      model.triggerOpenChat()
     }
+  }
 
-    private fun handleViewState(viewState: CrossSellFaqViewModel.ViewState) = with(viewState) {
-        errorMessage?.let {
-            showErrorDialog(getString(R.string.component_error)) {
-                model.dismissError()
-            }
-        }
-
-        navigateChat
-            ?.navigate(this@CrossSellFaqActivity)
-            ?.also { model.actionOpened() }
-
-        navigateEmbark
-            ?.navigate(this@CrossSellFaqActivity)
-            ?.also { model.actionOpened() }
+  companion object {
+    private const val CROSS_SELL = "CROSS_SELL"
+    fun newInstance(
+      context: Context,
+      crossSell: CrossSellData,
+    ) = Intent(context, CrossSellFaqActivity::class.java).apply {
+      putExtra(CROSS_SELL, crossSell)
     }
-
-    private fun openChat() {
-        lifecycleScope.launch {
-            model.triggerOpenChat()
-        }
-    }
-
-    companion object {
-        private const val CROSS_SELL = "CROSS_SELL"
-        fun newInstance(
-            context: Context,
-            crossSell: CrossSellData,
-        ) = Intent(context, CrossSellFaqActivity::class.java).apply {
-            putExtra(CROSS_SELL, crossSell)
-        }
-    }
+  }
 }
 
 class CrossSellFaqViewModel(
-    private val crossSell: CrossSellData,
-    private val chatRepository: ChatRepository,
-    private val createQuoteCartUseCase: CreateQuoteCartUseCase,
+  private val crossSell: CrossSellData,
+  private val chatRepository: ChatRepository,
+  private val createQuoteCartUseCase: CreateQuoteCartUseCase,
 ) : ViewModel() {
 
-    private val _viewState = MutableStateFlow(ViewState())
-    val viewState = _viewState.asStateFlow()
+  private val _viewState = MutableStateFlow(ViewState())
+  val viewState = _viewState.asStateFlow()
 
-    data class ViewState(
-        val navigateEmbark: NavigateEmbark? = null,
-        val navigateChat: NavigateChat? = null,
-        val errorMessage: String? = null,
-        val loading: Boolean = false,
-    )
+  data class ViewState(
+    val navigateEmbark: NavigateEmbark? = null,
+    val navigateChat: NavigateChat? = null,
+    val errorMessage: String? = null,
+    val loading: Boolean = false,
+  )
 
-    suspend fun triggerOpenChat() {
-        viewModelScope.launch {
-            val viewState = when (chatRepository.triggerFreeTextChat()) {
-                is Either.Left -> ViewState(errorMessage = null)
-                is Either.Right -> ViewState(navigateChat = NavigateChat)
-            }
-            _viewState.value = viewState
-        }
+  suspend fun triggerOpenChat() {
+    viewModelScope.launch {
+      val viewState = when (chatRepository.triggerFreeTextChat()) {
+        is Either.Left -> ViewState(errorMessage = null)
+        is Either.Right -> ViewState(navigateChat = NavigateChat)
+      }
+      _viewState.value = viewState
     }
+  }
 
-    fun onCtaClick() {
-        viewModelScope.launch {
-            when (val action = crossSell.action) {
-                CrossSellData.Action.Chat -> _viewState.value = ViewState(navigateChat = NavigateChat)
-                is CrossSellData.Action.Embark -> _viewState.value = action.toViewState()
-            }
-        }
+  fun onCtaClick() {
+    viewModelScope.launch {
+      when (val action = crossSell.action) {
+        CrossSellData.Action.Chat -> _viewState.value = ViewState(navigateChat = NavigateChat)
+        is CrossSellData.Action.Embark -> _viewState.value = action.toViewState()
+      }
     }
+  }
 
-    private suspend fun CrossSellData.Action.Embark.toViewState(): ViewState {
-        return when (val result = createQuoteCartUseCase.invoke()) {
-            is Either.Left -> ViewState(errorMessage = result.value.message)
-            is Either.Right -> {
-                val embarkStoryId = appendQuoteCartId(embarkStoryId, result.value.id)
-                val navigateEmbark = NavigateEmbark(embarkStoryId, title)
-                ViewState(navigateEmbark = navigateEmbark)
-            }
-        }
+  private suspend fun CrossSellData.Action.Embark.toViewState(): ViewState {
+    return when (val result = createQuoteCartUseCase.invoke()) {
+      is Either.Left -> ViewState(errorMessage = result.value.message)
+      is Either.Right -> {
+        val embarkStoryId = appendQuoteCartId(embarkStoryId, result.value.id)
+        val navigateEmbark = NavigateEmbark(embarkStoryId, title)
+        ViewState(navigateEmbark = navigateEmbark)
+      }
     }
+  }
 
-    fun actionOpened() {
-        _viewState.value = ViewState()
-    }
+  fun actionOpened() {
+    _viewState.value = ViewState()
+  }
 
-    fun dismissError() {
-        _viewState.update {
-            it.copy(errorMessage = null)
-        }
+  fun dismissError() {
+    _viewState.update {
+      it.copy(errorMessage = null)
     }
+  }
 }

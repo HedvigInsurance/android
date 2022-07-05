@@ -16,48 +16,48 @@ import org.junit.Rule
 import org.junit.Test
 
 class ContractDetailErrorTest : TestCase() {
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(ContractDetailActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(ContractDetailActivity::class.java)
 
-    var shouldFail = true
+  var shouldFail = true
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        InsuranceQuery.OPERATION_DOCUMENT to apolloResponse {
-            if (shouldFail) {
-                shouldFail = false
-                graphQLError(jsonObjectOf("message" to "error"))
-            } else {
-                success(
-                    INSURANCE_DATA_SWEDISH_HOUSE,
-                )
-            }
-        },
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    InsuranceQuery.OPERATION_DOCUMENT to apolloResponse {
+      if (shouldFail) {
+        shouldFail = false
+        graphQLError(jsonObjectOf("message" to "error"))
+      } else {
+        success(
+          INSURANCE_DATA_SWEDISH_HOUSE,
+        )
+      }
+    },
+  )
+
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
+
+  @Test
+  fun shouldReload() = run {
+    activityRule.launch(
+      ContractDetailActivity.newInstance(
+        context(),
+        INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS.contracts[0].id,
+      ),
     )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
-
-    @Test
-    fun shouldReload() = run {
-        activityRule.launch(
-            ContractDetailActivity.newInstance(
-                context(),
-                INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS.contracts[0].id,
-            ),
-        )
-
-        Screen.onScreen<ContractDetailScreen> {
-            retry {
-                click()
-            }
-            tabContent {
-                childAt<ContractDetailScreen.YourInfoTab>(0) {
-                    recycler {
-                        isVisible()
-                    }
-                }
-            }
+    Screen.onScreen<ContractDetailScreen> {
+      retry {
+        click()
+      }
+      tabContent {
+        childAt<ContractDetailScreen.YourInfoTab>(0) {
+          recycler {
+            isVisible()
+          }
         }
+      }
     }
+  }
 }

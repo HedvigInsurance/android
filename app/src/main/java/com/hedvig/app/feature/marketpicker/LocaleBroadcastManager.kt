@@ -6,13 +6,13 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.hedvig.app.BaseActivity
 
 class LocaleBroadcastManager(private val context: Context) {
-    fun sendBroadcast(recreate: Boolean = false) {
-        LocalBroadcastManager
-            .getInstance(context)
-            .sendBroadcast(Intent(BaseActivity.LOCALE_BROADCAST).also { it.putExtra(RECREATE, recreate) })
-    }
+  fun sendBroadcast(recreate: Boolean = false) {
+    LocalBroadcastManager
+      .getInstance(context)
+      .sendBroadcast(Intent(BaseActivity.LOCALE_BROADCAST).also { it.putExtra(RECREATE, recreate) })
+  }
 
-    companion object {
-        const val RECREATE = "RECREATE"
-    }
+  companion object {
+    const val RECREATE = "RECREATE"
+  }
 }

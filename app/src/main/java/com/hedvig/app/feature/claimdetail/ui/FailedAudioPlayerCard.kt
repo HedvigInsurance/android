@@ -31,58 +31,58 @@ import com.hedvig.app.ui.compose.theme.warning
 
 @Composable
 fun FailedAudioPlayerCard(
-    tryAgain: () -> Unit,
-    modifier: Modifier = Modifier,
+  tryAgain: () -> Unit,
+  modifier: Modifier = Modifier,
 ) {
-    Column(modifier) {
-        Spacer(Modifier.height(20.dp))
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.Top,
-            modifier = Modifier.padding(horizontal = 16.dp),
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_warning_triangle),
-                contentDescription = null,
-            )
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(
-                    text = stringResource(R.string.claim_status_detail_info_error_title),
-                    style = MaterialTheme.typography.body1,
-                )
-                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                    Text(
-                        text = stringResource(R.string.claim_status_detail_info_error_body),
-                        style = MaterialTheme.typography.body2,
-                    )
-                }
-            }
+  Column(modifier) {
+    Spacer(Modifier.height(20.dp))
+    Row(
+      horizontalArrangement = Arrangement.spacedBy(12.dp),
+      verticalAlignment = Alignment.Top,
+      modifier = Modifier.padding(horizontal = 16.dp),
+    ) {
+      Icon(
+        painter = painterResource(R.drawable.ic_warning_triangle),
+        contentDescription = null,
+      )
+      Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Text(
+          text = stringResource(R.string.claim_status_detail_info_error_title),
+          style = MaterialTheme.typography.body1,
+        )
+        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+          Text(
+            text = stringResource(R.string.claim_status_detail_info_error_body),
+            style = MaterialTheme.typography.body2,
+          )
         }
-        Spacer(Modifier.height(16.dp))
-        Divider()
-        TextButton(
-            onClick = tryAgain,
-            modifier = Modifier
-                .align(Alignment.End)
-                .padding(horizontal = 8.dp, vertical = 5.dp),
-            colors = ButtonDefaults.textButtonColors(contentColor = LocalContentColor.current),
-        ) {
-            Text(
-                text = stringResource(R.string.claim_status_detail_info_error_button),
-                style = MaterialTheme.typography.body2,
-            )
-        }
+      }
     }
+    Spacer(Modifier.height(16.dp))
+    Divider()
+    TextButton(
+      onClick = tryAgain,
+      modifier = Modifier
+        .align(Alignment.End)
+        .padding(horizontal = 8.dp, vertical = 5.dp),
+      colors = ButtonDefaults.textButtonColors(contentColor = LocalContentColor.current),
+    ) {
+      Text(
+        text = stringResource(R.string.claim_status_detail_info_error_button),
+        style = MaterialTheme.typography.body2,
+      )
+    }
+  }
 }
 
 @Preview
 @Composable
 fun FailedAudioPlayerCardPreview() {
-    HedvigTheme {
-        Surface(color = MaterialTheme.colors.warning) {
-            CompositionLocalProvider(LocalContentColor provides MaterialTheme.colors.onWarning) {
-                FailedAudioPlayerCard({})
-            }
-        }
+  HedvigTheme {
+    Surface(color = MaterialTheme.colors.warning) {
+      CompositionLocalProvider(LocalContentColor provides MaterialTheme.colors.onWarning) {
+        FailedAudioPlayerCard({})
+      }
     }
+  }
 }

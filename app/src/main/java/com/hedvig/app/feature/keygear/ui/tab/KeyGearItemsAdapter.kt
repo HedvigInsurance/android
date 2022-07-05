@@ -24,110 +24,110 @@ import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 
 class KeyGearItemsAdapter(
-    private val createItem: (view: View) -> Unit,
-    private val openItem: (root: View, item: KeyGearItemsQuery.KeyGearItem) -> Unit,
+  private val createItem: (view: View) -> Unit,
+  private val openItem: (root: View, item: KeyGearItemsQuery.KeyGearItem) -> Unit,
 ) : ListAdapter<KeyGearItemsQuery.KeyGearItem, KeyGearItemsAdapter.ViewHolder>(
-    GenericDiffUtilItemCallback(),
+  GenericDiffUtilItemCallback(),
 ) {
 
-    override fun getItemViewType(position: Int) = when (position) {
-        0 -> NEW_ITEM
-        else -> ITEM
+  override fun getItemViewType(position: Int) = when (position) {
+    0 -> NEW_ITEM
+    else -> ITEM
+  }
+
+  override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
+    NEW_ITEM -> {
+      ViewHolder.NewItem(
+        LayoutInflater.from(parent.context).inflate(
+          R.layout.key_gear_add_item,
+          parent,
+          false,
+        ),
+      )
+    }
+    ITEM -> {
+      ViewHolder.Item(
+        LayoutInflater.from(parent.context).inflate(R.layout.key_gear_item, parent, false),
+      )
+    }
+    else -> {
+      throw Error("Invalid viewType: $viewType")
+    }
+  }
+
+  override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    when (holder) {
+      is ViewHolder.NewItem -> {
+        holder.bind(createItem)
+      }
+      is ViewHolder.Item -> {
+        holder.bind(getItem(position), openItem)
+      }
+    }
+  }
+
+  sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class NewItem(view: View) : ViewHolder(view) {
+      val binding by viewBinding(KeyGearAddItemBinding::bind)
+      fun bind(createItem: (view: View) -> Unit) {
+        binding.root.apply {
+          setHapticClickListener { v ->
+            createItem(v)
+          }
+        }
+      }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
-        NEW_ITEM -> {
-            ViewHolder.NewItem(
-                LayoutInflater.from(parent.context).inflate(
-                    R.layout.key_gear_add_item,
-                    parent,
-                    false,
-                ),
+    class Item(view: View) : ViewHolder(view) {
+      val binding by viewBinding(KeyGearItemBinding::bind)
+      fun bind(
+        item: KeyGearItemsQuery.KeyGearItem,
+        openItem: (root: View, item: KeyGearItemsQuery.KeyGearItem) -> Unit,
+      ) {
+        binding.apply {
+          keyGearItemRoot.setHapticClickListener {
+            openItem(
+              keyGearItemRoot,
+              item,
             )
-        }
-        ITEM -> {
-            ViewHolder.Item(
-                LayoutInflater.from(parent.context).inflate(R.layout.key_gear_item, parent, false),
-            )
-        }
-        else -> {
-            throw Error("Invalid viewType: $viewType")
-        }
-    }
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        when (holder) {
-            is ViewHolder.NewItem -> {
-                holder.bind(createItem)
+          }
+          val photoUrl =
+            item.fragments.keyGearItemFragment.photos.getOrNull(0)?.file?.preSignedUrl
+          if (photoUrl != null) {
+            keyGearItemRoot.setBackgroundColor(Color.TRANSPARENT)
+            itemPhoto.updateLayoutParams {
+              width = ViewGroup.LayoutParams.MATCH_PARENT
+              height = ViewGroup.LayoutParams.MATCH_PARENT
             }
-            is ViewHolder.Item -> {
-                holder.bind(getItem(position), openItem)
+            itemPhoto.load(photoUrl) {
+              crossfade(true)
+              transformations(RoundedCornersTransformation(BASE_MARGIN.toFloat()))
+              scale(Scale.FILL)
             }
-        }
-    }
-
-    sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        class NewItem(view: View) : ViewHolder(view) {
-            val binding by viewBinding(KeyGearAddItemBinding::bind)
-            fun bind(createItem: (view: View) -> Unit) {
-                binding.root.apply {
-                    setHapticClickListener { v ->
-                        createItem(v)
-                    }
-                }
+          } else {
+            keyGearItemRoot.setBackgroundResource(R.drawable.background_rounded_corners)
+            itemPhoto.updateLayoutParams {
+              width = ViewGroup.LayoutParams.WRAP_CONTENT
+              height = ViewGroup.LayoutParams.WRAP_CONTENT
             }
+            itemPhoto.setImageResource(item.fragments.keyGearItemFragment.category.illustration)
+          }
+
+          name.text = item.fragments.keyGearItemFragment.name
+            ?: name.resources.getString(item.fragments.keyGearItemFragment.category.label)
+
+          if (item.fragments.keyGearItemFragment.physicalReferenceHash != null) {
+            autoAddedTag.show()
+          } else {
+            autoAddedTag.remove()
+          }
         }
-
-        class Item(view: View) : ViewHolder(view) {
-            val binding by viewBinding(KeyGearItemBinding::bind)
-            fun bind(
-                item: KeyGearItemsQuery.KeyGearItem,
-                openItem: (root: View, item: KeyGearItemsQuery.KeyGearItem) -> Unit,
-            ) {
-                binding.apply {
-                    keyGearItemRoot.setHapticClickListener {
-                        openItem(
-                            keyGearItemRoot,
-                            item,
-                        )
-                    }
-                    val photoUrl =
-                        item.fragments.keyGearItemFragment.photos.getOrNull(0)?.file?.preSignedUrl
-                    if (photoUrl != null) {
-                        keyGearItemRoot.setBackgroundColor(Color.TRANSPARENT)
-                        itemPhoto.updateLayoutParams {
-                            width = ViewGroup.LayoutParams.MATCH_PARENT
-                            height = ViewGroup.LayoutParams.MATCH_PARENT
-                        }
-                        itemPhoto.load(photoUrl) {
-                            crossfade(true)
-                            transformations(RoundedCornersTransformation(BASE_MARGIN.toFloat()))
-                            scale(Scale.FILL)
-                        }
-                    } else {
-                        keyGearItemRoot.setBackgroundResource(R.drawable.background_rounded_corners)
-                        itemPhoto.updateLayoutParams {
-                            width = ViewGroup.LayoutParams.WRAP_CONTENT
-                            height = ViewGroup.LayoutParams.WRAP_CONTENT
-                        }
-                        itemPhoto.setImageResource(item.fragments.keyGearItemFragment.category.illustration)
-                    }
-
-                    name.text = item.fragments.keyGearItemFragment.name
-                        ?: name.resources.getString(item.fragments.keyGearItemFragment.category.label)
-
-                    if (item.fragments.keyGearItemFragment.physicalReferenceHash != null) {
-                        autoAddedTag.show()
-                    } else {
-                        autoAddedTag.remove()
-                    }
-                }
-            }
-        }
+      }
     }
+  }
 
-    companion object {
-        private const val NEW_ITEM = 0
-        private const val ITEM = 1
-    }
+  companion object {
+    private const val NEW_ITEM = 0
+    private const val ITEM = 1
+  }
 }

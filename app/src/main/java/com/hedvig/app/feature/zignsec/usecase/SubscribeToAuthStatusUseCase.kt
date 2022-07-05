@@ -4,7 +4,7 @@ import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.owldroid.graphql.AuthStatusSubscription
 
 class SubscribeToAuthStatusUseCase(
-    private val apolloClient: ApolloClient,
+  private val apolloClient: ApolloClient,
 ) {
-    operator fun invoke() = apolloClient.subscription(AuthStatusSubscription()).toFlow()
+  operator fun invoke() = apolloClient.subscription(AuthStatusSubscription()).toFlow()
 }

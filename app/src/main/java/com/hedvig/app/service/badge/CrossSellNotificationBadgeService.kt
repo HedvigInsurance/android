@@ -9,55 +9,55 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 class CrossSellNotificationBadgeService(
-    private val getCrossSellsContractTypesUseCase: GetCrossSellsContractTypesUseCase,
-    private val notificationBadgeService: NotificationBadgeService,
+  private val getCrossSellsContractTypesUseCase: GetCrossSellsContractTypesUseCase,
+  private val notificationBadgeService: NotificationBadgeService,
 ) {
-    fun getUnseenCrossSells(badgeType: CrossSellBadgeType): Flow<Set<TypeOfContract>> {
-        return flow {
-            val potentialCrossSells = getCrossSellsContractTypesUseCase.invoke()
-            val tabNotifications = badgeType.associatedBadge
+  fun getUnseenCrossSells(badgeType: CrossSellBadgeType): Flow<Set<TypeOfContract>> {
+    return flow {
+      val potentialCrossSells = getCrossSellsContractTypesUseCase.invoke()
+      val tabNotifications = badgeType.associatedBadge
 
-            emitAll(
-                notificationBadgeService.getValue(tabNotifications)
-                    .map { unseenCrossSellStrings ->
-                        unseenCrossSellStrings.map(TypeOfContract::safeValueOf).toSet()
-                    }
-                    .map { seenCrossSells ->
-                        potentialCrossSells subtract seenCrossSells
-                    },
-            )
-        }
+      emitAll(
+        notificationBadgeService.getValue(tabNotifications)
+          .map { unseenCrossSellStrings ->
+            unseenCrossSellStrings.map(TypeOfContract::safeValueOf).toSet()
+          }
+          .map { seenCrossSells ->
+            potentialCrossSells subtract seenCrossSells
+          },
+      )
+    }
+  }
+
+  suspend fun markCurrentCrossSellsAsSeen(badgeType: CrossSellBadgeType) {
+    val associatedBadge = badgeType.associatedBadge
+    val potentialCrossSells = getCrossSellsContractTypesUseCase.invoke().map(TypeOfContract::rawValue).toSet()
+    val alreadySeenCrossSells = notificationBadgeService
+      .getValue(associatedBadge)
+      .first()
+    notificationBadgeService.setValue(
+      associatedBadge,
+      potentialCrossSells + alreadySeenCrossSells,
+    )
+  }
+
+  fun shouldShowTabNotification(): Flow<Boolean> {
+    return getUnseenCrossSells(CrossSellBadgeType.BottomNav).map { contracts ->
+      contracts.isNotEmpty()
+    }
+  }
+
+  sealed class CrossSellBadgeType {
+    abstract val associatedBadge: NotificationBadge<Set<String>>
+
+    object BottomNav : CrossSellBadgeType() {
+      override val associatedBadge: NotificationBadge<Set<String>>
+        get() = NotificationBadge.BottomNav.CrossSellOnInsuranceFragment
     }
 
-    suspend fun markCurrentCrossSellsAsSeen(badgeType: CrossSellBadgeType) {
-        val associatedBadge = badgeType.associatedBadge
-        val potentialCrossSells = getCrossSellsContractTypesUseCase.invoke().map(TypeOfContract::rawValue).toSet()
-        val alreadySeenCrossSells = notificationBadgeService
-            .getValue(associatedBadge)
-            .first()
-        notificationBadgeService.setValue(
-            associatedBadge,
-            potentialCrossSells + alreadySeenCrossSells,
-        )
+    object InsuranceFragmentCard : CrossSellBadgeType() {
+      override val associatedBadge: NotificationBadge<Set<String>>
+        get() = NotificationBadge.CrossSellInsuranceFragmentCard
     }
-
-    fun shouldShowTabNotification(): Flow<Boolean> {
-        return getUnseenCrossSells(CrossSellBadgeType.BottomNav).map { contracts ->
-            contracts.isNotEmpty()
-        }
-    }
-
-    sealed class CrossSellBadgeType {
-        abstract val associatedBadge: NotificationBadge<Set<String>>
-
-        object BottomNav : CrossSellBadgeType() {
-            override val associatedBadge: NotificationBadge<Set<String>>
-                get() = NotificationBadge.BottomNav.CrossSellOnInsuranceFragment
-        }
-
-        object InsuranceFragmentCard : CrossSellBadgeType() {
-            override val associatedBadge: NotificationBadge<Set<String>>
-                get() = NotificationBadge.CrossSellInsuranceFragmentCard
-        }
-    }
+  }
 }

@@ -7,13 +7,13 @@ import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
 
 class UpdateApplicationLanguageUseCase(
-    private val marketManager: MarketManager,
-    private val localeBroadcastManager: LocaleBroadcastManager,
-    private val context: Context,
+  private val marketManager: MarketManager,
+  private val localeBroadcastManager: LocaleBroadcastManager,
+  private val context: Context,
 ) {
-    operator fun invoke(market: Market, language: Language) {
-        marketManager.market = market
-        Language.persist(context, language)
-        localeBroadcastManager.sendBroadcast()
-    }
+  operator fun invoke(market: Market, language: Language) {
+    marketManager.market = market
+    Language.persist(context, language)
+    localeBroadcastManager.sendBroadcast()
+  }
 }

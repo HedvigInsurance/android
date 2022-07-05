@@ -16,77 +16,77 @@ import com.google.accompanist.insets.ui.TopAppBar
 
 @Composable
 fun TopAppBarWithBack(
-    onClick: () -> Unit,
-    title: String,
-    modifier: Modifier = Modifier,
-    backgroundColor: Color = MaterialTheme.colors.background,
-    contentPadding: PaddingValues = PaddingValues(0.dp),
+  onClick: () -> Unit,
+  title: String,
+  modifier: Modifier = Modifier,
+  backgroundColor: Color = MaterialTheme.colors.background,
+  contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
-    TopAppBar(
-        onClick,
-        title,
-        TopAppBarActionType.BACK,
-        modifier,
-        backgroundColor,
-        contentPadding,
-    )
+  TopAppBar(
+    onClick,
+    title,
+    TopAppBarActionType.BACK,
+    modifier,
+    backgroundColor,
+    contentPadding,
+  )
 }
 
 @Composable
 fun TopAppBarWithClose(
-    onClick: () -> Unit,
-    title: String,
-    modifier: Modifier = Modifier,
-    backgroundColor: Color = MaterialTheme.colors.background,
-    contentPadding: PaddingValues,
+  onClick: () -> Unit,
+  title: String,
+  modifier: Modifier = Modifier,
+  backgroundColor: Color = MaterialTheme.colors.background,
+  contentPadding: PaddingValues,
 ) {
-    TopAppBar(
-        onClick,
-        title,
-        TopAppBarActionType.CLOSE,
-        modifier,
-        backgroundColor,
-        contentPadding,
-    )
+  TopAppBar(
+    onClick,
+    title,
+    TopAppBarActionType.CLOSE,
+    modifier,
+    backgroundColor,
+    contentPadding,
+  )
 }
 
 private enum class TopAppBarActionType {
-    BACK, CLOSE
+  BACK, CLOSE
 }
 
 @Composable
 private inline fun TopAppBar(
-    crossinline onClick: () -> Unit,
-    title: String,
-    actionType: TopAppBarActionType,
-    modifier: Modifier = Modifier,
-    backgroundColor: Color = MaterialTheme.colors.background,
-    contentPadding: PaddingValues = PaddingValues(0.dp),
+  crossinline onClick: () -> Unit,
+  title: String,
+  actionType: TopAppBarActionType,
+  modifier: Modifier = Modifier,
+  backgroundColor: Color = MaterialTheme.colors.background,
+  contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
-    TopAppBar(
-        modifier = modifier,
-        title = {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.h6,
-            )
+  TopAppBar(
+    modifier = modifier,
+    title = {
+      Text(
+        text = title,
+        style = MaterialTheme.typography.h6,
+      )
+    },
+    contentPadding = contentPadding,
+    navigationIcon = {
+      IconButton(
+        onClick = { onClick() },
+        content = {
+          Icon(
+            imageVector = when (actionType) {
+              TopAppBarActionType.BACK -> Icons.Filled.ArrowBack
+              TopAppBarActionType.CLOSE -> Icons.Filled.Close
+            },
+            contentDescription = null,
+          )
         },
-        contentPadding = contentPadding,
-        navigationIcon = {
-            IconButton(
-                onClick = { onClick() },
-                content = {
-                    Icon(
-                        imageVector = when (actionType) {
-                            TopAppBarActionType.BACK -> Icons.Filled.ArrowBack
-                            TopAppBarActionType.CLOSE -> Icons.Filled.Close
-                        },
-                        contentDescription = null,
-                    )
-                },
-            )
-        },
-        backgroundColor = backgroundColor,
-        elevation = 0.dp,
-    )
+      )
+    },
+    backgroundColor = backgroundColor,
+    elevation = 0.dp,
+  )
 }

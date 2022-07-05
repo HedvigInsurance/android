@@ -4,5 +4,5 @@ import androidx.annotation.StringRes
 import com.google.android.material.textfield.TextInputLayout
 
 fun TextInputLayout.setHelperText(@StringRes resId: Int) {
-    helperText = resources.getString(resId)
+  helperText = resources.getString(resId)
 }

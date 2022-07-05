@@ -15,37 +15,37 @@ import com.hedvig.app.util.apollo.safeQuery
 value class CampaignCode(val code: String)
 
 class EditCampaignUseCase(
-    private val apolloClient: ApolloClient,
-    private val offerRepository: OfferRepository,
+  private val apolloClient: ApolloClient,
+  private val offerRepository: OfferRepository,
 ) {
-    suspend fun addCampaignToQuoteCart(
-        campaignCode: CampaignCode,
-        quoteCartId: QuoteCartId,
-    ): Either<ErrorMessage, QuoteCartId> = apolloClient
-        .mutation(QuoteCartAddCampaignMutation(campaignCode.code, quoteCartId.id))
-        .safeQuery()
-        .toEither(::ErrorMessage)
-        .map { it.quoteCart_addCampaign }
-        .flatMap {
-            it.asQuoteCart
-                ?.id
-                ?.let { id -> QuoteCartId(id) }
-                .rightIfNotNull { ErrorMessage(it.asBasicError?.message) }
-        }
-        .tap { offerRepository.queryAndEmitOffer(quoteCartId) }
+  suspend fun addCampaignToQuoteCart(
+    campaignCode: CampaignCode,
+    quoteCartId: QuoteCartId,
+  ): Either<ErrorMessage, QuoteCartId> = apolloClient
+    .mutation(QuoteCartAddCampaignMutation(campaignCode.code, quoteCartId.id))
+    .safeQuery()
+    .toEither(::ErrorMessage)
+    .map { it.quoteCart_addCampaign }
+    .flatMap {
+      it.asQuoteCart
+        ?.id
+        ?.let { id -> QuoteCartId(id) }
+        .rightIfNotNull { ErrorMessage(it.asBasicError?.message) }
+    }
+    .tap { offerRepository.queryAndEmitOffer(quoteCartId) }
 
-    suspend fun removeCampaignFromQuoteCart(
-        quoteCartId: QuoteCartId,
-    ): Either<ErrorMessage, QuoteCartId> = apolloClient
-        .mutation(QuoteCartRemoveCampaignMutation(quoteCartId.id))
-        .safeQuery()
-        .toEither(::ErrorMessage)
-        .map { it.quoteCart_removeCampaign }
-        .flatMap {
-            it.asQuoteCart
-                ?.id
-                ?.let { id -> QuoteCartId(id) }
-                .rightIfNotNull { ErrorMessage(it.asBasicError?.message) }
-        }
-        .tap { offerRepository.queryAndEmitOffer(quoteCartId) }
+  suspend fun removeCampaignFromQuoteCart(
+    quoteCartId: QuoteCartId,
+  ): Either<ErrorMessage, QuoteCartId> = apolloClient
+    .mutation(QuoteCartRemoveCampaignMutation(quoteCartId.id))
+    .safeQuery()
+    .toEither(::ErrorMessage)
+    .map { it.quoteCart_removeCampaign }
+    .flatMap {
+      it.asQuoteCart
+        ?.id
+        ?.let { id -> QuoteCartId(id) }
+        .rightIfNotNull { ErrorMessage(it.asBasicError?.message) }
+    }
+    .tap { offerRepository.queryAndEmitOffer(quoteCartId) }
 }

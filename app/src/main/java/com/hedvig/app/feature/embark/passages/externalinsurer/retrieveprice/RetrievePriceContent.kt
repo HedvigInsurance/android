@@ -23,66 +23,66 @@ import com.hedvig.app.ui.compose.textutil.SwedishSSNVisualTransformation
 
 @Composable
 fun RetrievePriceContent(
-    onRetrievePriceInfo: () -> Unit,
-    onIdentityInput: (String) -> Unit,
-    onDismissError: () -> Unit,
-    input: String,
-    title: String,
-    placeholder: String,
-    label: String,
-    inputErrorMessage: String?,
-    errorMessage: String?,
-    modifier: Modifier = Modifier,
+  onRetrievePriceInfo: () -> Unit,
+  onIdentityInput: (String) -> Unit,
+  onDismissError: () -> Unit,
+  input: String,
+  title: String,
+  placeholder: String,
+  label: String,
+  inputErrorMessage: String?,
+  errorMessage: String?,
+  modifier: Modifier = Modifier,
 ) {
-    val baseMargin = dimensionResource(R.dimen.base_margin)
-    val baseMarginDouble = dimensionResource(R.dimen.base_margin_double)
-    val baseMarginQuadruple = dimensionResource(R.dimen.base_margin_quadruple)
+  val baseMargin = dimensionResource(R.dimen.base_margin)
+  val baseMarginDouble = dimensionResource(R.dimen.base_margin_double)
+  val baseMarginQuadruple = dimensionResource(R.dimen.base_margin_quadruple)
 
-    Column(
-        modifier = modifier
-            .padding(baseMarginDouble)
-            .fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(baseMarginDouble),
-    ) {
-        Text(
-            modifier = Modifier.padding(top = baseMargin),
-            text = title,
-            style = MaterialTheme.typography.h6,
-        )
-        TextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = input,
-            onValueChange = {
-                if (it.length <= 10) {
-                    onIdentityInput(it)
-                }
-            },
-            singleLine = true,
-            placeholder = { Text(placeholder) },
-            label = {
-                Text(inputErrorMessage ?: label)
-            },
-            colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = MaterialTheme.colors.background,
-            ),
-            isError = inputErrorMessage != null,
-            visualTransformation = SwedishSSNVisualTransformation(),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Send,
-            ),
-            keyboardActions = KeyboardActions(
-                onSend = { onRetrievePriceInfo() },
-            ),
-        )
-        LargeContainedTextButton(
-            modifier = Modifier.padding(top = baseMarginQuadruple),
-            text = stringResource(R.string.insurely_ssn_continue_button_text),
-            onClick = onRetrievePriceInfo,
-        )
-    }
+  Column(
+    modifier = modifier
+      .padding(baseMarginDouble)
+      .fillMaxWidth(),
+    verticalArrangement = Arrangement.spacedBy(baseMarginDouble),
+  ) {
+    Text(
+      modifier = Modifier.padding(top = baseMargin),
+      text = title,
+      style = MaterialTheme.typography.h6,
+    )
+    TextField(
+      modifier = Modifier.fillMaxWidth(),
+      value = input,
+      onValueChange = {
+        if (it.length <= 10) {
+          onIdentityInput(it)
+        }
+      },
+      singleLine = true,
+      placeholder = { Text(placeholder) },
+      label = {
+        Text(inputErrorMessage ?: label)
+      },
+      colors = TextFieldDefaults.textFieldColors(
+        backgroundColor = MaterialTheme.colors.background,
+      ),
+      isError = inputErrorMessage != null,
+      visualTransformation = SwedishSSNVisualTransformation(),
+      keyboardOptions = KeyboardOptions(
+        keyboardType = KeyboardType.Number,
+        imeAction = ImeAction.Send,
+      ),
+      keyboardActions = KeyboardActions(
+        onSend = { onRetrievePriceInfo() },
+      ),
+    )
+    LargeContainedTextButton(
+      modifier = Modifier.padding(top = baseMarginQuadruple),
+      text = stringResource(R.string.insurely_ssn_continue_button_text),
+      onClick = onRetrievePriceInfo,
+    )
+  }
 
-    if (errorMessage != null) {
-        ErrorDialog(onDismiss = onDismissError, message = errorMessage)
-    }
+  if (errorMessage != null) {
+    ErrorDialog(onDismiss = onDismissError, message = errorMessage)
+  }
 }

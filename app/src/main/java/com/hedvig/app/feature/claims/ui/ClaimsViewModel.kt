@@ -13,42 +13,42 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 class ClaimsViewModel(
-    private val claimsRepository: ClaimsRepository,
-    private val chatRepository: ChatRepository,
+  private val claimsRepository: ClaimsRepository,
+  private val chatRepository: ChatRepository,
 ) : ViewModel() {
 
-    val data: MutableLiveData<CommonClaimQuery.Data> = MutableLiveData()
+  val data: MutableLiveData<CommonClaimQuery.Data> = MutableLiveData()
 
-    sealed class Event {
-        object StartChat : Event()
-        object Error : Event()
+  sealed class Event {
+    object StartChat : Event()
+    object Error : Event()
+  }
+
+  private val _events = Channel<Event>(Channel.UNLIMITED)
+  val events = _events.receiveAsFlow()
+
+  init {
+    fetchCommonClaims()
+  }
+
+  private fun fetchCommonClaims() {
+    viewModelScope.launch {
+      val response = runCatching { claimsRepository.fetchCommonClaims() }
+      if (response.isFailure) {
+        response.exceptionOrNull()?.let { e { "$it Failed to fetch claims data" } }
+        return@launch
+      }
+      response.getOrNull()?.data?.let(data::postValue)
     }
+  }
 
-    private val _events = Channel<Event>(Channel.UNLIMITED)
-    val events = _events.receiveAsFlow()
-
-    init {
-        fetchCommonClaims()
+  suspend fun triggerFreeTextChat() {
+    viewModelScope.launch {
+      val event = when (chatRepository.triggerFreeTextChat()) {
+        is Either.Left -> Event.Error
+        is Either.Right -> Event.StartChat
+      }
+      _events.trySend(event)
     }
-
-    private fun fetchCommonClaims() {
-        viewModelScope.launch {
-            val response = runCatching { claimsRepository.fetchCommonClaims() }
-            if (response.isFailure) {
-                response.exceptionOrNull()?.let { e { "$it Failed to fetch claims data" } }
-                return@launch
-            }
-            response.getOrNull()?.data?.let(data::postValue)
-        }
-    }
-
-    suspend fun triggerFreeTextChat() {
-        viewModelScope.launch {
-            val event = when (chatRepository.triggerFreeTextChat()) {
-                is Either.Left -> Event.Error
-                is Either.Right -> Event.StartChat
-            }
-            _events.trySend(event)
-        }
-    }
+  }
 }

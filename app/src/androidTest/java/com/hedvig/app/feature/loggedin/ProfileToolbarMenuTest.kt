@@ -17,35 +17,35 @@ import org.junit.Rule
 import org.junit.Test
 
 class ProfileToolbarMenuTest : TestCase() {
-    @get:Rule
-    val activityRule = LazyIntentsActivityScenarioRule(LoggedInActivity::class.java)
+  @get:Rule
+  val activityRule = LazyIntentsActivityScenarioRule(LoggedInActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(LOGGED_IN_DATA)
-        },
-        TriggerFreeTextChatMutation.OPERATION_DOCUMENT to apolloResponse {
-            success(TriggerFreeTextChatMutation.Data(true))
-        },
-    )
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(LOGGED_IN_DATA)
+    },
+    TriggerFreeTextChatMutation.OPERATION_DOCUMENT to apolloResponse {
+      success(TriggerFreeTextChatMutation.Data(true))
+    },
+  )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
 
-    @Test
-    fun shouldOpenChatWhenClickingToolbarActionOnProfileTab() = run {
-        activityRule.launch(LoggedInActivity.newInstance(context()))
+  @Test
+  fun shouldOpenChatWhenClickingToolbarActionOnProfileTab() = run {
+    activityRule.launch(LoggedInActivity.newInstance(context()))
 
-        onScreen<LoggedInScreen> {
-            chat { stub() }
-            root { isVisible() }
-            bottomTabs { setSelectedItem(R.id.profile) }
-            openChat {
-                isVisible()
-                click()
-            }
-            chat { intended() }
-        }
+    onScreen<LoggedInScreen> {
+      chat { stub() }
+      root { isVisible() }
+      bottomTabs { setSelectedItem(R.id.profile) }
+      openChat {
+        isVisible()
+        click()
+      }
+      chat { intended() }
     }
+  }
 }

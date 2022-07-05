@@ -7,13 +7,13 @@ import com.hedvig.android.owldroid.graphql.SwedishBankIdAuthMutation
 import com.hedvig.app.util.apollo.safeQuery
 
 class UserRepository(
-    private val apolloClient: ApolloClient,
+  private val apolloClient: ApolloClient,
 ) {
-    suspend fun fetchAutoStartToken() =
-        apolloClient.mutation(SwedishBankIdAuthMutation()).execute()
+  suspend fun fetchAutoStartToken() =
+    apolloClient.mutation(SwedishBankIdAuthMutation()).execute()
 
-    fun subscribeAuthStatus() =
-        apolloClient.subscription(AuthStatusSubscription()).toFlow()
+  fun subscribeAuthStatus() =
+    apolloClient.subscription(AuthStatusSubscription()).toFlow()
 
-    suspend fun logout() = apolloClient.mutation(LogoutMutation()).safeQuery()
+  suspend fun logout() = apolloClient.mutation(LogoutMutation()).safeQuery()
 }

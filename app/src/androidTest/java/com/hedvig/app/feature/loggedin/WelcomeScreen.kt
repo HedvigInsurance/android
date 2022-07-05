@@ -5,5 +5,5 @@ import io.github.kakaocup.kakao.image.KImageView
 import io.github.kakaocup.kakao.screen.Screen
 
 class WelcomeScreen : Screen<WelcomeScreen>() {
-    val close = KImageView { withId(R.id.close) }
+  val close = KImageView { withId(R.id.close) }
 }

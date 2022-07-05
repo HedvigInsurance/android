@@ -26,75 +26,75 @@ import com.hedvig.app.util.compose.preview.previewList
 
 @Composable
 fun ClaimPillsAndForwardArrow(
-    pillsUiState: List<PillUiState>,
-    modifier: Modifier = Modifier,
-    isClickable: Boolean = false,
+  pillsUiState: List<PillUiState>,
+  modifier: Modifier = Modifier,
+  isClickable: Boolean = false,
 ) {
+  Row(
+    modifier = modifier.fillMaxWidth(),
+    verticalAlignment = Alignment.Top,
+  ) {
     Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.Top,
+      horizontalArrangement = Arrangement.spacedBy(8.dp),
+      modifier = Modifier.weight(1f),
     ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.weight(1f),
-        ) {
-            pillsUiState.forEach { pillUiState: PillUiState ->
-                ClaimPill(
-                    text = pillUiState.text,
-                    pillType = pillUiState.type,
-                )
-            }
-        }
-        if (isClickable) {
-            Icon(
-                painter = painterResource(R.drawable.ic_arrow_forward),
-                contentDescription = null,
-                modifier = Modifier.size(16.dp),
-            )
-        }
+      pillsUiState.forEach { pillUiState: PillUiState ->
+        ClaimPill(
+          text = pillUiState.text,
+          pillType = pillUiState.type,
+        )
+      }
     }
+    if (isClickable) {
+      Icon(
+        painter = painterResource(R.drawable.ic_arrow_forward),
+        contentDescription = null,
+        modifier = Modifier.size(16.dp),
+      )
+    }
+  }
 }
 
 @Composable
 private fun ClaimPill(
-    text: String,
-    pillType: PillUiState.PillType,
+  text: String,
+  pillType: PillUiState.PillType,
 ) {
-    when (pillType) {
-        PillUiState.PillType.OPEN -> OutlinedPill(text)
-        PillUiState.PillType.CLOSED -> Pill(text, MaterialTheme.colors.primary)
-        PillUiState.PillType.REOPENED -> Pill(text, ClaimStatusColors.Pill.reopened)
-        PillUiState.PillType.PAYMENT -> Pill(text, ClaimStatusColors.Pill.paid)
-        PillUiState.PillType.UNKNOWN -> OutlinedPill(text)
-    }
+  when (pillType) {
+    PillUiState.PillType.OPEN -> OutlinedPill(text)
+    PillUiState.PillType.CLOSED -> Pill(text, MaterialTheme.colors.primary)
+    PillUiState.PillType.REOPENED -> Pill(text, ClaimStatusColors.Pill.reopened)
+    PillUiState.PillType.PAYMENT -> Pill(text, ClaimStatusColors.Pill.paid)
+    PillUiState.PillType.UNKNOWN -> OutlinedPill(text)
+  }
 }
 
 @Preview
 @Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun PillsPreview(
-    @PreviewParameter(PillsUiStateProvider::class) pillsUiState: List<PillUiState>,
+  @PreviewParameter(PillsUiStateProvider::class) pillsUiState: List<PillUiState>,
 ) {
-    HedvigTheme {
-        Surface(
-            color = MaterialTheme.colors.background,
-        ) {
-            ClaimPillsAndForwardArrow(pillsUiState, isClickable = true)
-        }
+  HedvigTheme {
+    Surface(
+      color = MaterialTheme.colors.background,
+    ) {
+      ClaimPillsAndForwardArrow(pillsUiState, isClickable = true)
     }
+  }
 }
 
 class PillsUiStateProvider : CollectionPreviewParameterProvider<List<PillUiState>>(
-    listOf(
-        PillUiState.previewList(),
-        listOf(PillUiState.PillType.CLOSED, PillUiState.PillType.PAYMENT).map { pillType ->
-            PillUiState(pillType.name, pillType)
-        },
-        listOf(PillUiState.PillType.REOPENED, PillUiState.PillType.OPEN).map { pillType ->
-            PillUiState(pillType.name, pillType)
-        },
-        List(10) { PillUiState.PillType.REOPENED }.map { pillType ->
-            PillUiState(pillType.name, pillType)
-        },
-    ),
+  listOf(
+    PillUiState.previewList(),
+    listOf(PillUiState.PillType.CLOSED, PillUiState.PillType.PAYMENT).map { pillType ->
+      PillUiState(pillType.name, pillType)
+    },
+    listOf(PillUiState.PillType.REOPENED, PillUiState.PillType.OPEN).map { pillType ->
+      PillUiState(pillType.name, pillType)
+    },
+    List(10) { PillUiState.PillType.REOPENED }.map { pillType ->
+      PillUiState(pillType.name, pillType)
+    },
+  ),
 )

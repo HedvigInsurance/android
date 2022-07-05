@@ -18,41 +18,41 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class YourInfoFragment : Fragment(R.layout.contract_detail_your_info_fragment) {
 
-    private val binding by viewBinding(ContractDetailYourInfoFragmentBinding::bind)
-    private val model: ContractDetailViewModel by sharedViewModel()
+  private val binding by viewBinding(ContractDetailYourInfoFragmentBinding::bind)
+  private val model: ContractDetailViewModel by sharedViewModel()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.root.applyNavigationBarInsets()
-        val topYourInfoAdapter = YourInfoAdapter(parentFragmentManager)
-        val tableAdapter = TableAdapter()
-        val bottomYourInfoAdapter = YourInfoAdapter(parentFragmentManager)
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    binding.root.applyNavigationBarInsets()
+    val topYourInfoAdapter = YourInfoAdapter(parentFragmentManager)
+    val tableAdapter = TableAdapter()
+    val bottomYourInfoAdapter = YourInfoAdapter(parentFragmentManager)
 
-        binding.recycler.adapter = ConcatAdapter(
-            topYourInfoAdapter,
-            tableAdapter,
-            bottomYourInfoAdapter,
-        )
+    binding.recycler.adapter = ConcatAdapter(
+      topYourInfoAdapter,
+      tableAdapter,
+      bottomYourInfoAdapter,
+    )
 
-        model.viewState
-            .flowWithLifecycle(lifecycle)
-            .onEach { viewState ->
-                when (viewState) {
-                    ContractDetailViewModel.ViewState.Error -> {
-                        topYourInfoAdapter.submitList(emptyList())
-                        bottomYourInfoAdapter.submitList(emptyList())
-                    }
-                    ContractDetailViewModel.ViewState.Loading -> {
-                        topYourInfoAdapter.submitList(emptyList())
-                        bottomYourInfoAdapter.submitList(emptyList())
-                    }
-                    is ContractDetailViewModel.ViewState.Success -> {
-                        val state = viewState.state.memberDetailsViewState
-                        tableAdapter.setTable(state.detailsTable)
-                        topYourInfoAdapter.submitList(listOfNotNull(state.pendingAddressChange))
-                        bottomYourInfoAdapter.submitList(listOfNotNull(state.changeAddressButton, state.change))
-                    }
-                }
-            }
-            .launchIn(viewLifecycleScope)
-    }
+    model.viewState
+      .flowWithLifecycle(lifecycle)
+      .onEach { viewState ->
+        when (viewState) {
+          ContractDetailViewModel.ViewState.Error -> {
+            topYourInfoAdapter.submitList(emptyList())
+            bottomYourInfoAdapter.submitList(emptyList())
+          }
+          ContractDetailViewModel.ViewState.Loading -> {
+            topYourInfoAdapter.submitList(emptyList())
+            bottomYourInfoAdapter.submitList(emptyList())
+          }
+          is ContractDetailViewModel.ViewState.Success -> {
+            val state = viewState.state.memberDetailsViewState
+            tableAdapter.setTable(state.detailsTable)
+            topYourInfoAdapter.submitList(listOfNotNull(state.pendingAddressChange))
+            bottomYourInfoAdapter.submitList(listOfNotNull(state.changeAddressButton, state.change))
+          }
+        }
+      }
+      .launchIn(viewLifecycleScope)
+  }
 }

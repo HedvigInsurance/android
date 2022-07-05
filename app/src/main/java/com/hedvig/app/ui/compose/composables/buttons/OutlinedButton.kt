@@ -18,47 +18,47 @@ import com.hedvig.app.ui.compose.theme.HedvigTheme
 
 @Composable
 fun LargeOutlinedTextButton(
-    text: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
+  text: String,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
 ) {
-    LargeOutlinedButton(
-        modifier = modifier,
-        content = {
-            Text(text = text)
-        },
-        onClick = onClick,
-    )
+  LargeOutlinedButton(
+    modifier = modifier,
+    content = {
+      Text(text = text)
+    },
+    onClick = onClick,
+  )
 }
 
 @Composable
 fun LargeOutlinedButton(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    backgroundColor: Color = Color.Transparent,
-    content: @Composable RowScope.() -> Unit,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+  backgroundColor: Color = Color.Transparent,
+  content: @Composable RowScope.() -> Unit,
 ) {
-    OutlinedButton(
-        onClick = onClick,
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(modifier),
-        border = ButtonDefaults.outlinedBorder.copy(brush = SolidColor(MaterialTheme.colors.primary)),
-        colors = ButtonDefaults.outlinedButtonColors(backgroundColor = backgroundColor),
-        shape = MaterialTheme.shapes.large,
-        contentPadding = PaddingValues(dimensionResource(R.dimen.base_margin_double)),
-        content = content,
-    )
+  OutlinedButton(
+    onClick = onClick,
+    modifier = Modifier
+      .fillMaxWidth()
+      .then(modifier),
+    border = ButtonDefaults.outlinedBorder.copy(brush = SolidColor(MaterialTheme.colors.primary)),
+    colors = ButtonDefaults.outlinedButtonColors(backgroundColor = backgroundColor),
+    shape = MaterialTheme.shapes.large,
+    contentPadding = PaddingValues(dimensionResource(R.dimen.base_margin_double)),
+    content = content,
+  )
 }
 
 @Preview(
-    name = "Outlined Button (Large)",
-    group = "Buttons",
-    showBackground = true,
+  name = "Outlined Button (Large)",
+  group = "Buttons",
+  showBackground = true,
 )
 @Composable
 fun LargeOutlinedButtonPreview() {
-    HedvigTheme {
-        LargeOutlinedTextButton(text = "Outlined Button (Large)", onClick = {})
-    }
+  HedvigTheme {
+    LargeOutlinedTextButton(text = "Outlined Button (Large)", onClick = {})
+  }
 }

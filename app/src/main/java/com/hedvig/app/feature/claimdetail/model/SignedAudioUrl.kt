@@ -5,26 +5,26 @@ package com.hedvig.app.feature.claimdetail.model
  * dealing with the same audio file but with a different query string
  */
 class SignedAudioUrl private constructor(
-    val rawUrl: String,
+  val rawUrl: String,
 ) {
-    private val urlWithoutQueryString: String = rawUrl.substringBefore("?")
+  private val urlWithoutQueryString: String = rawUrl.substringBefore("?")
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-        other as SignedAudioUrl
-        if (urlWithoutQueryString != other.urlWithoutQueryString) return false
-        return true
-    }
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+    other as SignedAudioUrl
+    if (urlWithoutQueryString != other.urlWithoutQueryString) return false
+    return true
+  }
 
-    override fun hashCode(): Int {
-        return urlWithoutQueryString.hashCode()
-    }
+  override fun hashCode(): Int {
+    return urlWithoutQueryString.hashCode()
+  }
 
-    companion object {
-        fun fromSignedAudioUrlStringOrNull(signedAudioUrl: String?): SignedAudioUrl? {
-            if (signedAudioUrl == null) return null
-            return SignedAudioUrl(signedAudioUrl)
-        }
+  companion object {
+    fun fromSignedAudioUrlStringOrNull(signedAudioUrl: String?): SignedAudioUrl? {
+      if (signedAudioUrl == null) return null
+      return SignedAudioUrl(signedAudioUrl)
     }
+  }
 }

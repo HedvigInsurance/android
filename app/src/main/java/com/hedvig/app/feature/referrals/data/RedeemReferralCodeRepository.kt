@@ -9,16 +9,16 @@ import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.safeQuery
 
 class RedeemReferralCodeRepository(
-    private val apolloClient: ApolloClient,
-    private val localeManager: LocaleManager,
+  private val apolloClient: ApolloClient,
+  private val localeManager: LocaleManager,
 ) {
-    suspend fun redeemReferralCode(
-        campaignCode: CampaignCode,
-    ): Either<ErrorMessage, RedeemReferralCodeMutation.Data?> {
-        return apolloClient
-            .mutation(RedeemReferralCodeMutation(campaignCode.code, localeManager.defaultLocale()))
-            .safeQuery()
-            .toEither()
-            .mapLeft { ErrorMessage(it.message) }
-    }
+  suspend fun redeemReferralCode(
+    campaignCode: CampaignCode,
+  ): Either<ErrorMessage, RedeemReferralCodeMutation.Data?> {
+    return apolloClient
+      .mutation(RedeemReferralCodeMutation(campaignCode.code, localeManager.defaultLocale()))
+      .safeQuery()
+      .toEither()
+      .mapLeft { ErrorMessage(it.message) }
+  }
 }

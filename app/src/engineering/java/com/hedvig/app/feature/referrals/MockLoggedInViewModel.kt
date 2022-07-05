@@ -9,15 +9,15 @@ import kotlinx.coroutines.flow.StateFlow
 
 class MockLoggedInViewModel : LoggedInViewModel() {
 
-    override val viewState: StateFlow<LoggedInViewState?> = MutableStateFlow(
-        LoggedInViewState(
-            loggedInQueryData = LoggedInDataBuilder().build(),
-            isKeyGearEnabled = true,
-            isReferralsEnabled = true,
-            unseenTabNotifications = emptySet(),
-        ),
-    )
+  override val viewState: StateFlow<LoggedInViewState?> = MutableStateFlow(
+    LoggedInViewState(
+      loggedInQueryData = LoggedInDataBuilder().build(),
+      isKeyGearEnabled = true,
+      isReferralsEnabled = true,
+      unseenTabNotifications = emptySet(),
+    ),
+  )
 
-    override fun onReviewByChatComplete() {}
-    override fun onTabVisited(tab: LoggedInTabs) {}
+  override fun onReviewByChatComplete() {}
+  override fun onTabVisited(tab: LoggedInTabs) {}
 }

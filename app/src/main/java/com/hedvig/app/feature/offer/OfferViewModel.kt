@@ -50,305 +50,305 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 abstract class OfferViewModel : ViewModel() {
-    abstract val viewState: StateFlow<ViewState>
+  abstract val viewState: StateFlow<ViewState>
 
-    sealed class Event {
-        data class OpenQuoteDetails(
-            val quoteDetailItems: QuoteDetailItems,
-        ) : Event()
+  sealed class Event {
+    data class OpenQuoteDetails(
+      val quoteDetailItems: QuoteDetailItems,
+    ) : Event()
 
-        data class OpenCheckout(
-            val checkoutParameter: CheckoutParameter,
-        ) : Event()
+    data class OpenCheckout(
+      val checkoutParameter: CheckoutParameter,
+    ) : Event()
 
-        object OpenChat : Event()
+    object OpenChat : Event()
 
-        data class ApproveError(
-            val postSignScreen: PostSignScreen,
-        ) : Event()
+    data class ApproveError(
+      val postSignScreen: PostSignScreen,
+    ) : Event()
 
-        data class ApproveSuccessful(
-            val startDate: LocalDate?,
-            val postSignScreen: PostSignScreen,
-            val bundleDisplayName: String,
-            val payinType: PaymentType,
-        ) : Event()
+    data class ApproveSuccessful(
+      val startDate: LocalDate?,
+      val postSignScreen: PostSignScreen,
+      val bundleDisplayName: String,
+      val payinType: PaymentType,
+    ) : Event()
 
-        object StartSwedishBankIdSign : Event()
+    object StartSwedishBankIdSign : Event()
 
-        object DiscardOffer : Event()
+    object DiscardOffer : Event()
+  }
+
+  protected val _events = Channel<Event>(Channel.UNLIMITED)
+  val events = _events.receiveAsFlow()
+
+  abstract fun removeDiscount()
+  abstract suspend fun triggerOpenChat()
+
+  data class QuoteDetailItems(
+    val displayName: String,
+    val perils: List<PerilItem.Peril>,
+    val insurableLimits: List<InsurableLimitItem.InsurableLimit>,
+    val documents: List<DocumentItems.Document>,
+  ) {
+    constructor(quote: QuoteBundle.Quote) : this(
+      quote.displayName,
+      quote.perils.map { PerilItem.Peril(it) },
+      quote.insurableLimits,
+      quote.insuranceTerms,
+    )
+  }
+
+  abstract fun onOpenQuoteDetails(id: String)
+
+  abstract fun approveOffer()
+
+  sealed class ViewState {
+    object Loading : ViewState()
+    data class Error(val message: String? = null) : ViewState()
+    data class Content(
+      val offerModel: OfferModel,
+      val bundleVariant: QuoteBundleVariant,
+      val loginStatus: LoginStatus = LoginStatus.LoggedIn,
+      val paymentMethods: PaymentMethodsApiResponse?,
+      val externalProvider: ExternalProvider?,
+      val onVariantSelected: (id: String) -> Unit,
+    ) : ViewState() {
+      fun createTopOfferItems() = OfferItemsBuilder.createTopOfferItems(
+        quoteBundleVariant = bundleVariant,
+        externalProvider = externalProvider,
+        paymentMethods = paymentMethods,
+        onVariantSelected = onVariantSelected,
+        offerModel = offerModel,
+      )
+
+      fun createBottomOfferItems() = OfferItemsBuilder.createBottomOfferItems(
+        bundleVariant = bundleVariant,
+      )
+
+      fun createPerilItems() = if (bundleVariant.bundle.quotes.size == 1) {
+        bundleVariant.bundle.quotes.first().perils.map { PerilItem.Peril(it) }
+      } else {
+        emptyList()
+      }
+
+      fun createDocumentItems() = if (bundleVariant.bundle.quotes.size == 1) {
+        listOf(DocumentItems.Header(R.string.OFFER_DOCUMENTS_SECTION_TITLE)) +
+          bundleVariant.bundle.quotes.first().insuranceTerms
+      } else {
+        emptyList()
+      }
+
+      fun createInsurableLimitItems() = if (bundleVariant.bundle.quotes.size == 1) {
+        listOf(InsurableLimitItem.Header.Details) +
+          bundleVariant.bundle.quotes.first().insurableLimits
+      } else {
+        emptyList()
+      }
     }
+  }
 
-    protected val _events = Channel<Event>(Channel.UNLIMITED)
-    val events = _events.receiveAsFlow()
-
-    abstract fun removeDiscount()
-    abstract suspend fun triggerOpenChat()
-
-    data class QuoteDetailItems(
-        val displayName: String,
-        val perils: List<PerilItem.Peril>,
-        val insurableLimits: List<InsurableLimitItem.InsurableLimit>,
-        val documents: List<DocumentItems.Document>,
-    ) {
-        constructor(quote: QuoteBundle.Quote) : this(
-            quote.displayName,
-            quote.perils.map { PerilItem.Peril(it) },
-            quote.insurableLimits,
-            quote.insuranceTerms,
-        )
-    }
-
-    abstract fun onOpenQuoteDetails(id: String)
-
-    abstract fun approveOffer()
-
-    sealed class ViewState {
-        object Loading : ViewState()
-        data class Error(val message: String? = null) : ViewState()
-        data class Content(
-            val offerModel: OfferModel,
-            val bundleVariant: QuoteBundleVariant,
-            val loginStatus: LoginStatus = LoginStatus.LoggedIn,
-            val paymentMethods: PaymentMethodsApiResponse?,
-            val externalProvider: ExternalProvider?,
-            val onVariantSelected: (id: String) -> Unit,
-        ) : ViewState() {
-            fun createTopOfferItems() = OfferItemsBuilder.createTopOfferItems(
-                quoteBundleVariant = bundleVariant,
-                externalProvider = externalProvider,
-                paymentMethods = paymentMethods,
-                onVariantSelected = onVariantSelected,
-                offerModel = offerModel,
-            )
-
-            fun createBottomOfferItems() = OfferItemsBuilder.createBottomOfferItems(
-                bundleVariant = bundleVariant,
-            )
-
-            fun createPerilItems() = if (bundleVariant.bundle.quotes.size == 1) {
-                bundleVariant.bundle.quotes.first().perils.map { PerilItem.Peril(it) }
-            } else {
-                emptyList()
-            }
-
-            fun createDocumentItems() = if (bundleVariant.bundle.quotes.size == 1) {
-                listOf(DocumentItems.Header(R.string.OFFER_DOCUMENTS_SECTION_TITLE)) +
-                    bundleVariant.bundle.quotes.first().insuranceTerms
-            } else {
-                emptyList()
-            }
-
-            fun createInsurableLimitItems() = if (bundleVariant.bundle.quotes.size == 1) {
-                listOf(InsurableLimitItem.Header.Details) +
-                    bundleVariant.bundle.quotes.first().insurableLimits
-            } else {
-                emptyList()
-            }
-        }
-    }
-
-    abstract fun onOpenCheckout()
-    abstract fun reload()
-    abstract fun onDiscardOffer()
-    abstract fun onGoToDirectDebit()
-    abstract fun onSwedishBankIdSign()
-    abstract fun onPaymentTokenIdReceived(id: PaymentTokenId)
+  abstract fun onOpenCheckout()
+  abstract fun reload()
+  abstract fun onDiscardOffer()
+  abstract fun onGoToDirectDebit()
+  abstract fun onSwedishBankIdSign()
+  abstract fun onPaymentTokenIdReceived(id: PaymentTokenId)
 }
 
 class OfferViewModelImpl(
-    private val quoteCartId: QuoteCartId,
-    selectedContractTypes: List<SelectedContractType>,
-    private val offerRepository: OfferRepository,
-    private val loginStatusService: LoginStatusService,
-    private val startCheckoutUseCase: StartCheckoutUseCase,
-    shouldShowOnNextAppStart: Boolean,
-    private val chatRepository: ChatRepository,
-    private val editCampaignUseCase: EditCampaignUseCase,
-    private val featureManager: FeatureManager,
-    private val addPaymentTokenUseCase: AddPaymentTokenUseCase,
-    private val getExternalInsuranceProviderUseCase: GetExternalInsuranceProviderUseCase,
-    private val getBundleVariantUseCase: ObserveOfferStateUseCase,
-    private val getQuoteCartCheckoutUseCase: GetQuoteCartCheckoutUseCase,
+  private val quoteCartId: QuoteCartId,
+  selectedContractTypes: List<SelectedContractType>,
+  private val offerRepository: OfferRepository,
+  private val loginStatusService: LoginStatusService,
+  private val startCheckoutUseCase: StartCheckoutUseCase,
+  shouldShowOnNextAppStart: Boolean,
+  private val chatRepository: ChatRepository,
+  private val editCampaignUseCase: EditCampaignUseCase,
+  private val featureManager: FeatureManager,
+  private val addPaymentTokenUseCase: AddPaymentTokenUseCase,
+  private val getExternalInsuranceProviderUseCase: GetExternalInsuranceProviderUseCase,
+  private val getBundleVariantUseCase: ObserveOfferStateUseCase,
+  private val getQuoteCartCheckoutUseCase: GetQuoteCartCheckoutUseCase,
 ) : OfferViewModel() {
 
-    private val _viewState: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.Loading)
-    override val viewState: StateFlow<ViewState> = _viewState.asStateFlow()
+  private val _viewState: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.Loading)
+  override val viewState: StateFlow<ViewState> = _viewState.asStateFlow()
 
-    private val offerState = getBundleVariantUseCase.observeOfferState(quoteCartId, selectedContractTypes)
+  private val offerState = getBundleVariantUseCase.observeOfferState(quoteCartId, selectedContractTypes)
 
-    init {
-        loginStatusService.isViewingOffer = shouldShowOnNextAppStart
-        loginStatusService.persistOfferIds(quoteCartId)
+  init {
+    loginStatusService.isViewingOffer = shouldShowOnNextAppStart
+    loginStatusService.persistOfferIds(quoteCartId)
 
-        offerState
-            .flatMapLatest(::toViewState)
-            .onEach { viewState: ViewState ->
-                _viewState.value = viewState
+    offerState
+      .flatMapLatest(::toViewState)
+      .onEach { viewState: ViewState ->
+        _viewState.value = viewState
+      }
+      .launchIn(viewModelScope)
+  }
+
+  private fun toViewState(offerResult: Either<ErrorMessage, OfferState>): Flow<ViewState> =
+    offerResult.fold(
+      ifLeft = { flowOf(ViewState.Error(it.message)) },
+      ifRight = { offerWithVariant ->
+        val offerModel = offerWithVariant.offerModel
+        val bundle = offerWithVariant.selectedVariant
+        if (bundle.externalProviderId != null) {
+          getExternalInsuranceProviderUseCase
+            .observeExternalProviderOrNull(bundle.externalProviderId)
+            .mapLatest { externalProvider ->
+              ViewState.Content(
+                offerModel = offerModel,
+                bundleVariant = bundle,
+                loginStatus = loginStatusService.getLoginStatus(),
+                paymentMethods = offerModel.paymentMethodsApiResponse,
+                externalProvider = externalProvider,
+                onVariantSelected = { variantId ->
+                  getBundleVariantUseCase.selectedVariant(variantId)
+                },
+              )
             }
-            .launchIn(viewModelScope)
-    }
-
-    private fun toViewState(offerResult: Either<ErrorMessage, OfferState>): Flow<ViewState> =
-        offerResult.fold(
-            ifLeft = { flowOf(ViewState.Error(it.message)) },
-            ifRight = { offerWithVariant ->
-                val offerModel = offerWithVariant.offerModel
-                val bundle = offerWithVariant.selectedVariant
-                if (bundle.externalProviderId != null) {
-                    getExternalInsuranceProviderUseCase
-                        .observeExternalProviderOrNull(bundle.externalProviderId)
-                        .mapLatest { externalProvider ->
-                            ViewState.Content(
-                                offerModel = offerModel,
-                                bundleVariant = bundle,
-                                loginStatus = loginStatusService.getLoginStatus(),
-                                paymentMethods = offerModel.paymentMethodsApiResponse,
-                                externalProvider = externalProvider,
-                                onVariantSelected = { variantId ->
-                                    getBundleVariantUseCase.selectedVariant(variantId)
-                                },
-                            )
-                        }
-                } else {
-                    flow {
-                        emit(
-                            ViewState.Content(
-                                offerModel = offerModel,
-                                bundleVariant = bundle,
-                                loginStatus = loginStatusService.getLoginStatus(),
-                                paymentMethods = offerModel.paymentMethodsApiResponse,
-                                externalProvider = null,
-                                onVariantSelected = { variantId ->
-                                    getBundleVariantUseCase.selectedVariant(variantId)
-                                },
-                            ),
-                        )
-                    }
-                }
-            },
-        )
-
-    override fun onOpenCheckout() {
-        viewModelScope.launch {
-            offerState
-                .first()
-                .map { it.selectedVariant.id }
-                .fold(
-                    ifLeft = { _viewState.value = ViewState.Error(it.message) },
-                    ifRight = { selectedVariantId ->
-                        val parameter = CheckoutParameter(selectedVariantId, quoteCartId)
-                        val event = Event.OpenCheckout(parameter)
-                        _events.trySend(event)
-                    },
-                )
-        }
-    }
-
-    override fun removeDiscount() {
-        viewModelScope.launch {
-            editCampaignUseCase.removeCampaignFromQuoteCart(quoteCartId)
-                .tapLeft { _viewState.value = ViewState.Error(null) }
-        }
-    }
-
-    override suspend fun triggerOpenChat() {
-        chatRepository.triggerFreeTextChat().fold(
-            ifLeft = { _viewState.value = ViewState.Error(null) },
-            ifRight = { _events.trySend(Event.OpenChat) },
-        )
-    }
-
-    override fun onOpenQuoteDetails(id: String) {
-        viewModelScope.launch {
-            offerState
-                .first()
-                .map { it.findQuote(id) }
-                .fold(
-                    ifLeft = { _viewState.value = ViewState.Error(it.message) },
-                    ifRight = { quote ->
-                        val quoteDetailItems = QuoteDetailItems(quote)
-                        val event = Event.OpenQuoteDetails(quoteDetailItems)
-                        _events.trySend(event)
-                    },
-                )
-        }
-    }
-
-    override fun reload() {
-        _viewState.value = ViewState.Loading
-        viewModelScope.launch {
-            offerRepository.queryAndEmitOffer(quoteCartId)
-        }
-    }
-
-    override fun onDiscardOffer() {
-        loginStatusService.isViewingOffer = false
-        _events.trySend(Event.DiscardOffer)
-    }
-
-    override fun onGoToDirectDebit() {
-        loginStatusService.isViewingOffer = false
-    }
-
-    override fun approveOffer() {
-        getQuoteIdsAndStartSign {
-            offerState
-                .first()
-                .map { it.selectedVariant }
-                .fold(
-                    ifLeft = { _viewState.value = ViewState.Error(it.message) },
-                    ifRight = {
-                        viewModelScope.launch {
-                            featureManager.invalidateExperiments()
-                            val event = Event.ApproveSuccessful(
-                                startDate = (it.bundle.inception.startDate as? OfferStartDate.AtDate)?.date,
-                                postSignScreen = it.bundle.viewConfiguration.postSignScreen,
-                                bundleDisplayName = it.bundle.name,
-                                payinType = featureManager.getPaymentType(),
-                            )
-                            _events.send(event)
-                        }
-                    },
-                )
-        }
-    }
-
-    override fun onSwedishBankIdSign() {
-        getQuoteIdsAndStartSign {
-            offerRepository.queryAndEmitOffer(quoteCartId)
-            _events.trySend(Event.StartSwedishBankIdSign)
-        }
-    }
-
-    private fun getQuoteIdsAndStartSign(onComplete: suspend (StartCheckoutUseCase.Success) -> Unit) {
-        viewModelScope.launch {
-            either<ErrorMessage, StartCheckoutUseCase.Success> {
-                val checkoutStatus = getQuoteCartCheckoutUseCase.invoke(quoteCartId)
-                    .mapLeft { ErrorMessage(it.message) }
-                    .bind()
-                    ?.status
-                val isPending = checkoutStatus == Checkout.CheckoutStatus.PENDING
-
-                if (isPending) {
-                    StartCheckoutUseCase.Success
-                } else {
-                    val offer = offerState.first().bind()
-                    val quoteIds = offer.selectedQuoteIds
-                    startCheckoutUseCase.startCheckoutAndClearCache(quoteCartId, quoteIds).bind()
-                }
-            }.fold(
-                ifLeft = { _viewState.value = ViewState.Error(it.message) },
-                ifRight = { result -> onComplete(result) },
+        } else {
+          flow {
+            emit(
+              ViewState.Content(
+                offerModel = offerModel,
+                bundleVariant = bundle,
+                loginStatus = loginStatusService.getLoginStatus(),
+                paymentMethods = offerModel.paymentMethodsApiResponse,
+                externalProvider = null,
+                onVariantSelected = { variantId ->
+                  getBundleVariantUseCase.selectedVariant(variantId)
+                },
+              ),
             )
+          }
         }
-    }
+      },
+    )
 
-    override fun onPaymentTokenIdReceived(id: PaymentTokenId) {
-        viewModelScope.launch {
-            addPaymentTokenUseCase.invoke(quoteCartId, id)
-                .tapLeft { _viewState.value = ViewState.Error(null) }
-            onOpenCheckout()
-        }
+  override fun onOpenCheckout() {
+    viewModelScope.launch {
+      offerState
+        .first()
+        .map { it.selectedVariant.id }
+        .fold(
+          ifLeft = { _viewState.value = ViewState.Error(it.message) },
+          ifRight = { selectedVariantId ->
+            val parameter = CheckoutParameter(selectedVariantId, quoteCartId)
+            val event = Event.OpenCheckout(parameter)
+            _events.trySend(event)
+          },
+        )
     }
+  }
+
+  override fun removeDiscount() {
+    viewModelScope.launch {
+      editCampaignUseCase.removeCampaignFromQuoteCart(quoteCartId)
+        .tapLeft { _viewState.value = ViewState.Error(null) }
+    }
+  }
+
+  override suspend fun triggerOpenChat() {
+    chatRepository.triggerFreeTextChat().fold(
+      ifLeft = { _viewState.value = ViewState.Error(null) },
+      ifRight = { _events.trySend(Event.OpenChat) },
+    )
+  }
+
+  override fun onOpenQuoteDetails(id: String) {
+    viewModelScope.launch {
+      offerState
+        .first()
+        .map { it.findQuote(id) }
+        .fold(
+          ifLeft = { _viewState.value = ViewState.Error(it.message) },
+          ifRight = { quote ->
+            val quoteDetailItems = QuoteDetailItems(quote)
+            val event = Event.OpenQuoteDetails(quoteDetailItems)
+            _events.trySend(event)
+          },
+        )
+    }
+  }
+
+  override fun reload() {
+    _viewState.value = ViewState.Loading
+    viewModelScope.launch {
+      offerRepository.queryAndEmitOffer(quoteCartId)
+    }
+  }
+
+  override fun onDiscardOffer() {
+    loginStatusService.isViewingOffer = false
+    _events.trySend(Event.DiscardOffer)
+  }
+
+  override fun onGoToDirectDebit() {
+    loginStatusService.isViewingOffer = false
+  }
+
+  override fun approveOffer() {
+    getQuoteIdsAndStartSign {
+      offerState
+        .first()
+        .map { it.selectedVariant }
+        .fold(
+          ifLeft = { _viewState.value = ViewState.Error(it.message) },
+          ifRight = {
+            viewModelScope.launch {
+              featureManager.invalidateExperiments()
+              val event = Event.ApproveSuccessful(
+                startDate = (it.bundle.inception.startDate as? OfferStartDate.AtDate)?.date,
+                postSignScreen = it.bundle.viewConfiguration.postSignScreen,
+                bundleDisplayName = it.bundle.name,
+                payinType = featureManager.getPaymentType(),
+              )
+              _events.send(event)
+            }
+          },
+        )
+    }
+  }
+
+  override fun onSwedishBankIdSign() {
+    getQuoteIdsAndStartSign {
+      offerRepository.queryAndEmitOffer(quoteCartId)
+      _events.trySend(Event.StartSwedishBankIdSign)
+    }
+  }
+
+  private fun getQuoteIdsAndStartSign(onComplete: suspend (StartCheckoutUseCase.Success) -> Unit) {
+    viewModelScope.launch {
+      either<ErrorMessage, StartCheckoutUseCase.Success> {
+        val checkoutStatus = getQuoteCartCheckoutUseCase.invoke(quoteCartId)
+          .mapLeft { ErrorMessage(it.message) }
+          .bind()
+          ?.status
+        val isPending = checkoutStatus == Checkout.CheckoutStatus.PENDING
+
+        if (isPending) {
+          StartCheckoutUseCase.Success
+        } else {
+          val offer = offerState.first().bind()
+          val quoteIds = offer.selectedQuoteIds
+          startCheckoutUseCase.startCheckoutAndClearCache(quoteCartId, quoteIds).bind()
+        }
+      }.fold(
+        ifLeft = { _viewState.value = ViewState.Error(it.message) },
+        ifRight = { result -> onComplete(result) },
+      )
+    }
+  }
+
+  override fun onPaymentTokenIdReceived(id: PaymentTokenId) {
+    viewModelScope.launch {
+      addPaymentTokenUseCase.invoke(quoteCartId, id)
+        .tapLeft { _viewState.value = ViewState.Error(null) }
+      onOpenCheckout()
+    }
+  }
 }

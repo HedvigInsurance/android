@@ -15,28 +15,28 @@ import io.github.kakaocup.kakao.text.KTextView
 import org.hamcrest.Matcher
 
 class EmbarkScreen : Screen<EmbarkScreen>() {
-    val messages = KRecyclerView({ withId(R.id.messages) }, { itemType(::MessageRow) })
+  val messages = KRecyclerView({ withId(R.id.messages) }, { itemType(::MessageRow) })
 
-    val response = KTextView { withId(R.id.response) }
+  val response = KTextView { withId(R.id.response) }
 
-    val singleSelectAction = KButton { withId(R.id.singleActionButton) }
+  val singleSelectAction = KButton { withId(R.id.singleActionButton) }
 
-    val textActionSingleInput = KEditText { withId(R.id.input) }
+  val textActionSingleInput = KEditText { withId(R.id.input) }
 
-    val textActionSubmit = KButton { withId(R.id.textActionSubmit) }
+  val textActionSubmit = KButton { withId(R.id.textActionSubmit) }
 
-    val upgradeApp = KButton { withId(R.id.upgradeApp) }
+  val upgradeApp = KButton { withId(R.id.upgradeApp) }
 
-    val offerActivityIntent = KIntent { hasComponent(OfferActivity::class.java.name) }
-    val webOfferIntent = KIntent { hasComponent(WebOnboardingActivity::class.java.name) }
+  val offerActivityIntent = KIntent { hasComponent(OfferActivity::class.java.name) }
+  val webOfferIntent = KIntent { hasComponent(WebOnboardingActivity::class.java.name) }
 
-    class MessageRow(parent: Matcher<View>) : KRecyclerItem<MessageRow>(parent) {
-        val text = KTextView { withMatcher(parent) }
-    }
+  class MessageRow(parent: Matcher<View>) : KRecyclerItem<MessageRow>(parent) {
+    val text = KTextView { withMatcher(parent) }
+  }
 
-    val continueButton = KButton { withId(R.id.continueButton) }
+  val continueButton = KButton { withId(R.id.continueButton) }
 
-    val previousInsurerButton = KButton { withId(R.id.currentInsurerContainer) }
-    val previousInsurerButtonLabel = KTextView { withId(R.id.currentInsurerLabel) }
-    val errorDialog = KAlertDialog()
+  val previousInsurerButton = KButton { withId(R.id.currentInsurerContainer) }
+  val previousInsurerButtonLabel = KTextView { withId(R.id.currentInsurerLabel) }
+  val errorDialog = KAlertDialog()
 }

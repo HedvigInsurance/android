@@ -20,62 +20,62 @@ import org.junit.Test
 
 class FreeMonthsCampaignTest : TestCase() {
 
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(PaymentActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(PaymentActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        PaymentQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYMENT_DATA_FREE_MONTHS) },
-        PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_ACTIVE) },
-    )
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    PaymentQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYMENT_DATA_FREE_MONTHS) },
+    PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_ACTIVE) },
+  )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
 
-    @Test
-    fun shouldShowFreeMonthsDiscount() = run {
-        activityRule.launch(PaymentActivity.newInstance(context()))
+  @Test
+  fun shouldShowFreeMonthsDiscount() = run {
+    activityRule.launch(PaymentActivity.newInstance(context()))
 
-        onScreen<PaymentScreen> {
-            recycler {
-                childAt<PaymentScreen.NextPayment>(1) {
-                    discount {
-                        isVisible()
-                        containsText(
-                            PAYMENT_DATA_FREE_MONTHS
-                                .redeemedCampaigns[0]
-                                .fragments
-                                .incentiveFragment
-                                .incentive!!
-                                .asFreeMonths!!
-                                .quantity!!
-                                .toString(),
-                        )
-                    }
-                    gross {
-                        isVisible()
-                        hasText(
-                            PAYMENT_DATA_FREE_MONTHS
-                                .chargeEstimation
-                                .subscription
-                                .fragments
-                                .monetaryAmountFragment
-                                .toMonetaryAmount()
-                                .format(context(), market()),
-                        )
-                    }
-                }
-                childAt<PaymentScreen.Campaign>(2) {
-                    owner { hasText(PAYMENT_DATA_FREE_MONTHS.redeemedCampaigns[0].owner!!.displayName) }
-                    lastFreeDay {
-                        hasText(
-                            PAYMENT_DATA_FREE_MONTHS.insuranceCost!!.freeUntil!!.format(
-                                PaymentActivity.DATE_FORMAT,
-                            ),
-                        )
-                    }
-                }
-            }
+    onScreen<PaymentScreen> {
+      recycler {
+        childAt<PaymentScreen.NextPayment>(1) {
+          discount {
+            isVisible()
+            containsText(
+              PAYMENT_DATA_FREE_MONTHS
+                .redeemedCampaigns[0]
+                .fragments
+                .incentiveFragment
+                .incentive!!
+                .asFreeMonths!!
+                .quantity!!
+                .toString(),
+            )
+          }
+          gross {
+            isVisible()
+            hasText(
+              PAYMENT_DATA_FREE_MONTHS
+                .chargeEstimation
+                .subscription
+                .fragments
+                .monetaryAmountFragment
+                .toMonetaryAmount()
+                .format(context(), market()),
+            )
+          }
         }
+        childAt<PaymentScreen.Campaign>(2) {
+          owner { hasText(PAYMENT_DATA_FREE_MONTHS.redeemedCampaigns[0].owner!!.displayName) }
+          lastFreeDay {
+            hasText(
+              PAYMENT_DATA_FREE_MONTHS.insuranceCost!!.freeUntil!!.format(
+                PaymentActivity.DATE_FORMAT,
+              ),
+            )
+          }
+        }
+      }
     }
+  }
 }

@@ -4,6 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Experiment(
-    val name: String,
-    val variant: String,
+  val name: String,
+  val variant: String,
 )

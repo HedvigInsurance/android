@@ -8,53 +8,53 @@ import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
 
 class GetBundlesUseCase(
-    private val apolloClient: ApolloClient,
-    private val localeManager: LocaleManager,
+  private val apolloClient: ApolloClient,
+  private val localeManager: LocaleManager,
 ) {
 
-    suspend operator fun invoke(
-        filterOnType: EmbarkStoryType? = EmbarkStoryType.APP_ONBOARDING_QUOTE_CART,
-    ): BundlesResult {
-        val locale = localeManager.defaultLocale().rawValue
-        val choosePlanQuery = ChoosePlanQuery(locale)
-        return when (val result = apolloClient.query(choosePlanQuery).safeQuery()) {
-            is QueryResult.Error -> BundlesResult.Error
-            is QueryResult.Success -> result.data.mapToSuccess(filterOnType)
-        }
+  suspend operator fun invoke(
+    filterOnType: EmbarkStoryType? = EmbarkStoryType.APP_ONBOARDING_QUOTE_CART,
+  ): BundlesResult {
+    val locale = localeManager.defaultLocale().rawValue
+    val choosePlanQuery = ChoosePlanQuery(locale)
+    return when (val result = apolloClient.query(choosePlanQuery).safeQuery()) {
+      is QueryResult.Error -> BundlesResult.Error
+      is QueryResult.Success -> result.data.mapToSuccess(filterOnType)
     }
+  }
 }
 
 fun ChoosePlanQuery.Data.mapToSuccess(storyType: EmbarkStoryType?): BundlesResult.Success {
-    val appStories = if (storyType != null) {
-        embarkStories.filter { it.type == storyType }
-    } else {
-        embarkStories
-    }
+  val appStories = if (storyType != null) {
+    embarkStories.filter { it.type == storyType }
+  } else {
+    embarkStories
+  }
 
-    val bundles = appStories.map {
-        BundlesResult.Success.Bundle(
-            storyName = it.name,
-            storyTitle = it.title,
-            description = it.description,
-            discountText = it.metadata.find { it.asEmbarkStoryMetadataEntryDiscount != null }
-                ?.asEmbarkStoryMetadataEntryDiscount
-                ?.discount,
-        )
-    }
-    return BundlesResult.Success(bundles)
+  val bundles = appStories.map {
+    BundlesResult.Success.Bundle(
+      storyName = it.name,
+      storyTitle = it.title,
+      description = it.description,
+      discountText = it.metadata.find { it.asEmbarkStoryMetadataEntryDiscount != null }
+        ?.asEmbarkStoryMetadataEntryDiscount
+        ?.discount,
+    )
+  }
+  return BundlesResult.Success(bundles)
 }
 
 sealed class BundlesResult {
-    data class Success(
-        val bundles: List<Bundle>,
-    ) : BundlesResult() {
-        data class Bundle(
-            val storyName: String,
-            val storyTitle: String,
-            val description: String,
-            val discountText: String?,
-        )
-    }
+  data class Success(
+    val bundles: List<Bundle>,
+  ) : BundlesResult() {
+    data class Bundle(
+      val storyName: String,
+      val storyTitle: String,
+      val description: String,
+      val discountText: String?,
+    )
+  }
 
-    object Error : BundlesResult()
+  object Error : BundlesResult()
 }

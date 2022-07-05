@@ -16,46 +16,46 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 
 class CharityAdapter(
-    val context: Context,
-    private val clickListener: (id: String) -> Unit,
+  val context: Context,
+  private val clickListener: (id: String) -> Unit,
 ) : ListAdapter<CharityOption, CharityAdapter.CashbackOptionViewHolder>(
-    GenericDiffUtilItemCallback(),
+  GenericDiffUtilItemCallback(),
 ) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CashbackOptionViewHolder =
-        CashbackOptionViewHolder(
-            LayoutInflater.from(context).inflate(
-                R.layout.cashback_option,
-                parent,
-                false,
-            ),
+  override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CashbackOptionViewHolder =
+    CashbackOptionViewHolder(
+      LayoutInflater.from(context).inflate(
+        R.layout.cashback_option,
+        parent,
+        false,
+      ),
+    )
+
+  override fun onBindViewHolder(holder: CashbackOptionViewHolder, position: Int) {
+    holder.bind(getItem(position), clickListener)
+  }
+
+  class CashbackOptionViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    private val binding by viewBinding(CashbackOptionBinding::bind)
+    val title: TextView = binding.cashbackOptionTitle
+    val paragraph: TextView = binding.cashbackOptionParagraph
+    val button: Button = binding.cashbackSelect
+
+    fun bind(charityOption: CharityOption, clickListener: (id: String) -> Unit) {
+      binding.apply {
+        cashbackOptionTitle.text = charityOption.name
+        cashbackOptionParagraph.text = charityOption.description
+
+        cashbackSelect.text = cashbackSelect.resources.getString(
+          R.string.PROFILE_CHARITY_SELECT_BUTTON,
+          charityOption.name,
         )
-
-    override fun onBindViewHolder(holder: CashbackOptionViewHolder, position: Int) {
-        holder.bind(getItem(position), clickListener)
-    }
-
-    class CashbackOptionViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private val binding by viewBinding(CashbackOptionBinding::bind)
-        val title: TextView = binding.cashbackOptionTitle
-        val paragraph: TextView = binding.cashbackOptionParagraph
-        val button: Button = binding.cashbackSelect
-
-        fun bind(charityOption: CharityOption, clickListener: (id: String) -> Unit) {
-            binding.apply {
-                cashbackOptionTitle.text = charityOption.name
-                cashbackOptionParagraph.text = charityOption.description
-
-                cashbackSelect.text = cashbackSelect.resources.getString(
-                    R.string.PROFILE_CHARITY_SELECT_BUTTON,
-                    charityOption.name,
-                )
-                cashbackSelect.setHapticClickListener {
-                    charityOption.id?.let { id ->
-                        clickListener(id)
-                    }
-                }
-            }
+        cashbackSelect.setHapticClickListener {
+          charityOption.id?.let { id ->
+            clickListener(id)
+          }
         }
+      }
     }
+  }
 }

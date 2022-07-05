@@ -9,19 +9,19 @@ import org.gradle.kotlin.dsl.getByType
  * Configure Compose-specific options
  */
 internal fun Project.configureAndroidCompose(
-    commonExtension: CommonExtension<*, *, *, *>,
+  commonExtension: CommonExtension<*, *, *, *>,
 ) {
-    val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
+  val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
-    commonExtension.apply {
-        @Suppress("UnstableApiUsage")
-        buildFeatures {
-            compose = true
-        }
-
-        @Suppress("UnstableApiUsage")
-        composeOptions {
-            kotlinCompilerExtensionVersion = libs.composeVersion
-        }
+  commonExtension.apply {
+    @Suppress("UnstableApiUsage")
+    buildFeatures {
+      compose = true
     }
+
+    @Suppress("UnstableApiUsage")
+    composeOptions {
+      kotlinCompilerExtensionVersion = libs.composeVersion
+    }
+  }
 }

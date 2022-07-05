@@ -17,38 +17,38 @@ import org.junit.Test
 
 class MoreOptionsTest : TestCase() {
 
-    @get:Rule
-    val activityRule = LazyIntentsActivityScenarioRule(MoreOptionsActivity::class.java)
+  @get:Rule
+  val activityRule = LazyIntentsActivityScenarioRule(MoreOptionsActivity::class.java)
 
-    var shouldFail = true
+  var shouldFail = true
 
-    @get:Rule
-    val marketRule = MarketRule(Market.NO)
+  @get:Rule
+  val marketRule = MarketRule(Market.NO)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        MemberIdQuery.OPERATION_DOCUMENT to apolloResponse {
-            if (shouldFail) {
-                shouldFail = false
-                graphQLError(jsonObjectOf("message" to "error"))
-            } else {
-                success(MEMBER_ID_DATA)
-            }
-        },
-    )
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    MemberIdQuery.OPERATION_DOCUMENT to apolloResponse {
+      if (shouldFail) {
+        shouldFail = false
+        graphQLError(jsonObjectOf("message" to "error"))
+      } else {
+        success(MEMBER_ID_DATA)
+      }
+    },
+  )
 
-    @Test
-    fun openMoreOptionsActivity() = run {
-        activityRule.launch(MoreOptionsActivity.newInstance(context()))
-        MoreOptionsScreen {
-            recycler {
-                childAt<MoreOptionsScreen.Row>(1) {
-                    info {
-                        click()
-                        hasText("1234567890")
-                    }
-                }
-            }
+  @Test
+  fun openMoreOptionsActivity() = run {
+    activityRule.launch(MoreOptionsActivity.newInstance(context()))
+    MoreOptionsScreen {
+      recycler {
+        childAt<MoreOptionsScreen.Row>(1) {
+          info {
+            click()
+            hasText("1234567890")
+          }
         }
+      }
     }
+  }
 }

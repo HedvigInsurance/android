@@ -20,55 +20,55 @@ import org.junit.Test
 
 class ReferralCampaignTest : TestCase() {
 
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(PaymentActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(PaymentActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        PaymentQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYMENT_DATA_REFERRAL) },
-        PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_ACTIVE) },
-    )
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    PaymentQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYMENT_DATA_REFERRAL) },
+    PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_ACTIVE) },
+  )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
 
-    @Test
-    fun shouldShowReferralDiscount() = run {
-        activityRule.launch(PaymentActivity.newInstance(context()))
+  @Test
+  fun shouldShowReferralDiscount() = run {
+    activityRule.launch(PaymentActivity.newInstance(context()))
 
-        onScreen<PaymentScreen> {
-            recycler {
-                childAt<PaymentScreen.NextPayment>(1) {
-                    gross {
-                        isVisible()
-                        hasText(
-                            PAYMENT_DATA_REFERRAL
-                                .insuranceCost!!
-                                .fragments
-                                .costFragment
-                                .monthlyGross
-                                .fragments
-                                .monetaryAmountFragment
-                                .toMonetaryAmount()
-                                .format(context(), market()),
-                        )
-                    }
-                    net {
-                        hasText(
-                            PAYMENT_DATA_REFERRAL
-                                .chargeEstimation
-                                .charge
-                                .fragments
-                                .monetaryAmountFragment
-                                .toMonetaryAmount()
-                                .format(context(), market()),
-                        )
-                    }
-                }
-                childAt<PaymentScreen.Campaign>(2) {
-                    isVisible()
-                }
-            }
+    onScreen<PaymentScreen> {
+      recycler {
+        childAt<PaymentScreen.NextPayment>(1) {
+          gross {
+            isVisible()
+            hasText(
+              PAYMENT_DATA_REFERRAL
+                .insuranceCost!!
+                .fragments
+                .costFragment
+                .monthlyGross
+                .fragments
+                .monetaryAmountFragment
+                .toMonetaryAmount()
+                .format(context(), market()),
+            )
+          }
+          net {
+            hasText(
+              PAYMENT_DATA_REFERRAL
+                .chargeEstimation
+                .charge
+                .fragments
+                .monetaryAmountFragment
+                .toMonetaryAmount()
+                .format(context(), market()),
+            )
+          }
         }
+        childAt<PaymentScreen.Campaign>(2) {
+          isVisible()
+        }
+      }
     }
+  }
 }

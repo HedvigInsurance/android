@@ -6,6 +6,6 @@ import io.github.kakaocup.kakao.text.KButton
 import io.github.kakaocup.kakao.text.KTextView
 
 class HowClaimsWorkScreen : Screen<HowClaimsWorkScreen>() {
-    val button = KButton { withId(R.id.proceed) }
-    val title = KTextView { withId(R.id.title) }
+  val button = KButton { withId(R.id.proceed) }
+  val title = KTextView { withId(R.id.title) }
 }

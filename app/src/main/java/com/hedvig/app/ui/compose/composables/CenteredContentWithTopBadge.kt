@@ -45,81 +45,81 @@ import com.hedvig.app.ui.compose.theme.HedvigTheme
  */
 @Composable
 fun CenteredContentWithTopBadge(
-    modifier: Modifier = Modifier,
-    centeredContent: @Composable () -> Unit,
-    topContent: (@Composable () -> Unit)? = {},
+  modifier: Modifier = Modifier,
+  centeredContent: @Composable () -> Unit,
+  topContent: (@Composable () -> Unit)? = {},
 ) {
-    Layout(
-        content = {
-            Box(Modifier.layoutId("center")) {
-                centeredContent()
-            }
-            if (topContent != null) {
-                Box(Modifier.layoutId("top")) {
-                    topContent()
-                }
-            }
-        },
-        modifier = modifier,
-    ) { measurables, constraints ->
-        val placeableConstraints = constraints.copy(minWidth = 0, minHeight = 0)
-        val centerPlaceable = measurables.first { it.layoutId == "center" }.measure(placeableConstraints)
-        val topPlaceable = measurables.firstOrNull { it.layoutId == "top" }?.measure(placeableConstraints)
-
-        val centerContentHeight = centerPlaceable.measuredHeight
-        val topContentHeight = topPlaceable?.measuredHeight ?: 0
-
-        val layoutWidth = constraints.maxWidth
-        val heightOfCenterContentPlusTwoTopContents = centerContentHeight + (topContentHeight * 2)
-        val layoutHeight = heightOfCenterContentPlusTwoTopContents.coerceIn(
-            constraints.minHeight..constraints.maxHeight,
-        )
-
-        layout(layoutWidth, layoutHeight) {
-            topPlaceable?.place(
-                x = (layoutWidth - topPlaceable.width) / 2,
-                y = 0,
-            )
-            centerPlaceable.place(
-                x = (layoutWidth - centerPlaceable.width) / 2,
-                y = (layoutHeight - centerPlaceable.height) / 2,
-            )
+  Layout(
+    content = {
+      Box(Modifier.layoutId("center")) {
+        centeredContent()
+      }
+      if (topContent != null) {
+        Box(Modifier.layoutId("top")) {
+          topContent()
         }
+      }
+    },
+    modifier = modifier,
+  ) { measurables, constraints ->
+    val placeableConstraints = constraints.copy(minWidth = 0, minHeight = 0)
+    val centerPlaceable = measurables.first { it.layoutId == "center" }.measure(placeableConstraints)
+    val topPlaceable = measurables.firstOrNull { it.layoutId == "top" }?.measure(placeableConstraints)
+
+    val centerContentHeight = centerPlaceable.measuredHeight
+    val topContentHeight = topPlaceable?.measuredHeight ?: 0
+
+    val layoutWidth = constraints.maxWidth
+    val heightOfCenterContentPlusTwoTopContents = centerContentHeight + (topContentHeight * 2)
+    val layoutHeight = heightOfCenterContentPlusTwoTopContents.coerceIn(
+      constraints.minHeight..constraints.maxHeight,
+    )
+
+    layout(layoutWidth, layoutHeight) {
+      topPlaceable?.place(
+        x = (layoutWidth - topPlaceable.width) / 2,
+        y = 0,
+      )
+      centerPlaceable.place(
+        x = (layoutWidth - centerPlaceable.width) / 2,
+        y = (layoutHeight - centerPlaceable.height) / 2,
+      )
     }
+  }
 }
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun CenteredContentWithTopBadgePreview(
-    @PreviewParameter(TextAndBadgeProvider::class) textToBadgePair: Pair<String, String?>,
+  @PreviewParameter(TextAndBadgeProvider::class) textToBadgePair: Pair<String, String?>,
 ) {
-    val (text, badge) = textToBadgePair
-    HedvigTheme {
-        Card(backgroundColor = MaterialTheme.colors.background) {
-            CenteredContentWithTopBadge(
-                centeredContent = {
-                    Text(text = text, modifier = Modifier.padding(16.dp))
-                },
-                topContent = if (badge == null) {
-                    null
-                } else {
-                    {
-                        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                            Text(text = badge)
-                        }
-                    }
-                },
-            )
-        }
+  val (text, badge) = textToBadgePair
+  HedvigTheme {
+    Card(backgroundColor = MaterialTheme.colors.background) {
+      CenteredContentWithTopBadge(
+        centeredContent = {
+          Text(text = text, modifier = Modifier.padding(16.dp))
+        },
+        topContent = if (badge == null) {
+          null
+        } else {
+          {
+            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+              Text(text = badge)
+            }
+          }
+        },
+      )
     }
+  }
 }
 
 class TextAndBadgeProvider : CollectionPreviewParameterProvider<Pair<String, String?>>(
-    listOf(
-        "Text" to "Badge #1",
-        "Text".repeat(20) to "Badge #2",
-        "Text\n".repeat(5).dropLast(1) to "Badge #3",
-        "Badgeless".repeat(10) to null,
-        "Badgeless\n".repeat(2).dropLast(1) to null,
-    ),
+  listOf(
+    "Text" to "Badge #1",
+    "Text".repeat(20) to "Badge #2",
+    "Text\n".repeat(5).dropLast(1) to "Badge #3",
+    "Badgeless".repeat(10) to null,
+    "Badgeless\n".repeat(2).dropLast(1) to null,
+  ),
 )

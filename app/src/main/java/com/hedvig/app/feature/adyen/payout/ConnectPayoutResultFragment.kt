@@ -11,20 +11,20 @@ import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class ConnectPayoutResultFragment : Fragment(R.layout.connect_payout_result_fragment) {
-    private val model: AdyenConnectPayoutViewModel by sharedViewModel()
-    private val binding by viewBinding(ConnectPayoutResultFragmentBinding::bind)
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enterTransition = MaterialFadeThrough()
-    }
+  private val model: AdyenConnectPayoutViewModel by sharedViewModel()
+  private val binding by viewBinding(ConnectPayoutResultFragmentBinding::bind)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    enterTransition = MaterialFadeThrough()
+  }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.close.setHapticClickListener {
-            model.close()
-        }
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    binding.close.setHapticClickListener {
+      model.close()
     }
+  }
 
-    companion object {
-        fun newInstance() = ConnectPayoutResultFragment()
-    }
+  companion object {
+    fun newInstance() = ConnectPayoutResultFragment()
+  }
 }

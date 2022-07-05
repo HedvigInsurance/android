@@ -8,20 +8,20 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.getByType
 
 class ApplicationConventionPlugin : Plugin<Project> {
-    override fun apply(target: Project) {
-        with(target) {
-            with(pluginManager) {
-                apply("com.android.application")
-                apply("org.jetbrains.kotlin.android")
-            }
+  override fun apply(target: Project) {
+    with(target) {
+      with(pluginManager) {
+        apply("com.android.application")
+        apply("org.jetbrains.kotlin.android")
+      }
 
-            val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
+      val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
-            extensions.configure<BaseAppModuleExtension> {
-                configureKotlinAndroid(this, addStandardBuildTypes = false)
-                @Suppress("MISSING_DEPENDENCY_SUPERCLASS")
-                defaultConfig.targetSdk = libs.targetSdkVersion
-            }
-        }
+      extensions.configure<BaseAppModuleExtension> {
+        configureKotlinAndroid(this, addStandardBuildTypes = false)
+        @Suppress("MISSING_DEPENDENCY_SUPERCLASS")
+        defaultConfig.targetSdk = libs.targetSdkVersion
+      }
     }
+  }
 }

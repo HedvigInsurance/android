@@ -13,29 +13,29 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 
 class ViewGalleryActivity : AppCompatActivity(R.layout.activity_view_gallery) {
-    private val binding by viewBinding(ActivityViewGalleryBinding::bind)
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+  private val binding by viewBinding(ActivityViewGalleryBinding::bind)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-        with(binding) {
-            window.compatSetDecorFitsSystemWindows(false)
-            toolbar.applyStatusBarInsets()
-            scrollView.applyStatusBarInsets()
-            scrollViewContent.applyNavigationBarInsets()
+    with(binding) {
+      window.compatSetDecorFitsSystemWindows(false)
+      toolbar.applyStatusBarInsets()
+      scrollView.applyStatusBarInsets()
+      scrollViewContent.applyNavigationBarInsets()
 
-            toolbar.setNavigationOnClickListener {
-                onBackPressed()
-            }
+      toolbar.setNavigationOnClickListener {
+        onBackPressed()
+      }
 
-            openBottomSheet.setHapticClickListener {
-                ViewGalleryBottomSheet
-                    .newInstance()
-                    .show(supportFragmentManager)
-            }
-        }
+      openBottomSheet.setHapticClickListener {
+        ViewGalleryBottomSheet
+          .newInstance()
+          .show(supportFragmentManager)
+      }
     }
+  }
 
-    companion object {
-        fun newInstance(context: Context) = Intent(context, ViewGalleryActivity::class.java)
-    }
+  companion object {
+    fun newInstance(context: Context) = Intent(context, ViewGalleryActivity::class.java)
+  }
 }

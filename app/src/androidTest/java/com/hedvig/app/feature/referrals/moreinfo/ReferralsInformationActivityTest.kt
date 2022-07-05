@@ -27,53 +27,53 @@ import org.junit.Test
 
 class ReferralsInformationActivityTest : TestCase() {
 
-    @get:Rule
-    val activityRule = LazyIntentsActivityScenarioRule(LoggedInActivity::class.java)
+  @get:Rule
+  val activityRule = LazyIntentsActivityScenarioRule(LoggedInActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(LOGGED_IN_DATA)
-        },
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(LOGGED_IN_DATA)
+    },
+  )
+
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
+
+  @Test
+  fun shouldOpenInformationActivityWhenClickingMoreInformationAction() = run {
+    val intent = LoggedInActivity.newInstance(
+      context(),
+      initialTab = LoggedInTabs.REFERRALS,
     )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+    activityRule.launch(intent)
 
-    @Test
-    fun shouldOpenInformationActivityWhenClickingMoreInformationAction() = run {
-        val intent = LoggedInActivity.newInstance(
-            context(),
-            initialTab = LoggedInTabs.REFERRALS,
+    onScreen<ReferralTabScreen> {
+      moreInfo { click() }
+    }
+
+    stubExternalIntents()
+
+    onScreen<ReferralsInformationScreen> {
+      body {
+        containsText(
+          Money.of(10, "SEK").format(context(), market()),
         )
-
-        activityRule.launch(intent)
-
-        onScreen<ReferralTabScreen> {
-            moreInfo { click() }
-        }
-
-        stubExternalIntents()
-
-        onScreen<ReferralsInformationScreen> {
-            body {
-                containsText(
-                    Money.of(10, "SEK").format(context(), market()),
-                )
-            }
-            termsAndConditions { click() }
-            termsAndConditionsIntent {
-                intended()
-            }
-        }
+      }
+      termsAndConditions { click() }
+      termsAndConditionsIntent {
+        intended()
+      }
     }
+  }
 
-    class ReferralsInformationScreen : Screen<ReferralsInformationScreen>() {
-        val body = KTextView { withId(R.id.body) }
-        val termsAndConditions = KButton { withId(R.id.termsAndConditions) }
-        val termsAndConditionsIntent = KIntent {
-            hasAction(Intent.ACTION_VIEW)
-            hasData("https://www.example.com")
-        }
+  class ReferralsInformationScreen : Screen<ReferralsInformationScreen>() {
+    val body = KTextView { withId(R.id.body) }
+    val termsAndConditions = KButton { withId(R.id.termsAndConditions) }
+    val termsAndConditionsIntent = KIntent {
+      hasAction(Intent.ACTION_VIEW)
+      hasData("https://www.example.com")
     }
+  }
 }

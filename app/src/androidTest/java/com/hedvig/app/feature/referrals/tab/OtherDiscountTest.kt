@@ -23,104 +23,104 @@ import org.junit.Test
 
 class OtherDiscountTest : TestCase() {
 
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(LOGGED_IN_DATA)
-        },
-        ReferralsQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(
-                REFERRALS_DATA_WITH_ONE_REFEREE_AND_OTHER_DISCOUNT,
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(LOGGED_IN_DATA)
+    },
+    ReferralsQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(
+        REFERRALS_DATA_WITH_ONE_REFEREE_AND_OTHER_DISCOUNT,
+      )
+    },
+  )
+
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
+
+  @get:Rule
+  val featureFlagRule = FeatureFlagRule(
+    Feature.REFERRAL_CAMPAIGN to false,
+    Feature.KEY_GEAR to false,
+    Feature.REFERRALS to true,
+  )
+
+  @Test
+  fun shouldShowOtherDiscountWhenUserHasNonReferralDiscounts() = run {
+    val intent = LoggedInActivity.newInstance(
+      context(),
+      initialTab = LoggedInTabs.REFERRALS,
+    )
+
+    activityRule.launch(intent)
+
+    onScreen<ReferralTabScreen> {
+      share { isVisible() }
+      recycler {
+        hasSize(5)
+        childAt<ReferralTabScreen.HeaderItem>(1) {
+          grossPrice {
+            isVisible()
+            hasText(
+              Money.of(349, "SEK")
+                .format(context(), market()),
             )
-        },
-    )
-
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
-
-    @get:Rule
-    val featureFlagRule = FeatureFlagRule(
-        Feature.REFERRAL_CAMPAIGN to false,
-        Feature.KEY_GEAR to false,
-        Feature.REFERRALS to true,
-    )
-
-    @Test
-    fun shouldShowOtherDiscountWhenUserHasNonReferralDiscounts() = run {
-        val intent = LoggedInActivity.newInstance(
-            context(),
-            initialTab = LoggedInTabs.REFERRALS,
-        )
-
-        activityRule.launch(intent)
-
-        onScreen<ReferralTabScreen> {
-            share { isVisible() }
-            recycler {
-                hasSize(5)
-                childAt<ReferralTabScreen.HeaderItem>(1) {
-                    grossPrice {
-                        isVisible()
-                        hasText(
-                            Money.of(349, "SEK")
-                                .format(context(), market()),
-                        )
-                    }
-                    discountPerMonthPlaceholder { isGone() }
-                    newPricePlaceholder { isGone() }
-                    discountPerMonth {
-                        isVisible()
-                        hasText(
-                            Money.of(-10, "SEK")
-                                .format(context(), market()),
-                        )
-                    }
-                    newPrice {
-                        isVisible()
-                        hasText(
-                            Money.of(339, "SEK")
-                                .format(context(), market()),
-                        )
-                    }
-                    discountPerMonthLabel { isVisible() }
-                    newPriceLabel { isVisible() }
-                    emptyHeadline { isGone() }
-                    emptyBody { isGone() }
-                    otherDiscountBox { isVisible() }
-                }
-                childAt<ReferralTabScreen.CodeItem>(2) {
-                    placeholder { isGone() }
-                    code {
-                        isVisible()
-                        hasText("TEST123")
-                    }
-                }
-                childAt<ReferralTabScreen.InvitesHeaderItem>(3) {
-                    isVisible()
-                }
-                childAt<ReferralTabScreen.ReferralItem>(4) {
-                    iconPlaceholder { isGone() }
-                    textPlaceholder { isGone() }
-                    name {
-                        isVisible()
-                        hasText("Example")
-                    }
-                    referee { isVisible() }
-                    icon {
-                        isVisible()
-                        // hasDrawable(R.drawable.ic_basketball) // This assertion fails incorrectly on Kakao 2.4.0
-                    }
-                    status {
-                        hasText(
-                            Money.of(-10, "SEK")
-                                .format(context(), market()),
-                        )
-                    }
-                }
-            }
+          }
+          discountPerMonthPlaceholder { isGone() }
+          newPricePlaceholder { isGone() }
+          discountPerMonth {
+            isVisible()
+            hasText(
+              Money.of(-10, "SEK")
+                .format(context(), market()),
+            )
+          }
+          newPrice {
+            isVisible()
+            hasText(
+              Money.of(339, "SEK")
+                .format(context(), market()),
+            )
+          }
+          discountPerMonthLabel { isVisible() }
+          newPriceLabel { isVisible() }
+          emptyHeadline { isGone() }
+          emptyBody { isGone() }
+          otherDiscountBox { isVisible() }
         }
+        childAt<ReferralTabScreen.CodeItem>(2) {
+          placeholder { isGone() }
+          code {
+            isVisible()
+            hasText("TEST123")
+          }
+        }
+        childAt<ReferralTabScreen.InvitesHeaderItem>(3) {
+          isVisible()
+        }
+        childAt<ReferralTabScreen.ReferralItem>(4) {
+          iconPlaceholder { isGone() }
+          textPlaceholder { isGone() }
+          name {
+            isVisible()
+            hasText("Example")
+          }
+          referee { isVisible() }
+          icon {
+            isVisible()
+            // hasDrawable(R.drawable.ic_basketball) // This assertion fails incorrectly on Kakao 2.4.0
+          }
+          status {
+            hasText(
+              Money.of(-10, "SEK")
+                .format(context(), market()),
+            )
+          }
+        }
+      }
     }
+  }
 }

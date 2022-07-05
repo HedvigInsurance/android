@@ -5,11 +5,11 @@ import com.hedvig.app.feature.adyen.payin.AdyenConnectPayinViewModel
 import org.json.JSONObject
 
 class MockAdyenConnectPayinViewModel : AdyenConnectPayinViewModel() {
-    init {
-        _paymentMethods.postValue(
-            PaymentMethodsApiResponse.SERIALIZER.deserialize(
-                JSONObject(
-                    """{
+  init {
+    _paymentMethods.postValue(
+      PaymentMethodsApiResponse.SERIALIZER.deserialize(
+        JSONObject(
+          """{
   "groups": [
     {
       "name": "Credit Card",
@@ -62,8 +62,8 @@ class MockAdyenConnectPayinViewModel : AdyenConnectPayinViewModel() {
   ]
 }
                     """,
-                ),
-            ),
-        )
-    }
+        ),
+      ),
+    )
+  }
 }

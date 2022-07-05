@@ -28,316 +28,316 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
 
 fun View.show(): View {
-    if (visibility != View.VISIBLE) {
-        visibility = View.VISIBLE
-    }
-    return this
+  if (visibility != View.VISIBLE) {
+    visibility = View.VISIBLE
+  }
+  return this
 }
 
 fun View.hide(): View {
-    if (visibility != View.INVISIBLE) {
-        visibility = View.INVISIBLE
-    }
+  if (visibility != View.INVISIBLE) {
+    visibility = View.INVISIBLE
+  }
 
-    return this
+  return this
 }
 
 fun View.remove(): View {
-    if (visibility != View.GONE) {
-        this.visibility = View.GONE
-    }
+  if (visibility != View.GONE) {
+    this.visibility = View.GONE
+  }
 
-    return this
+  return this
 }
 
 fun View.disable() {
-    isEnabled = false
-    alpha = 0.2f
+  isEnabled = false
+  alpha = 0.2f
 }
 
 fun View.enable() {
-    isEnabled = true
-    alpha = 1f
+  isEnabled = true
+  alpha = 1f
 }
 
 fun View.increaseTouchableArea(additionalArea: Int): View {
-    val parent = (this.parent as View)
-    parent.post {
-        val touchableArea = Rect()
-        getHitRect(touchableArea)
-        touchableArea.top -= additionalArea
-        touchableArea.left -= additionalArea
-        touchableArea.right += additionalArea
-        touchableArea.bottom += additionalArea
-        parent.touchDelegate = TouchDelegate(touchableArea, this)
-    }
+  val parent = (this.parent as View)
+  parent.post {
+    val touchableArea = Rect()
+    getHitRect(touchableArea)
+    touchableArea.top -= additionalArea
+    touchableArea.left -= additionalArea
+    touchableArea.right += additionalArea
+    touchableArea.bottom += additionalArea
+    parent.touchDelegate = TouchDelegate(touchableArea, this)
+  }
 
-    return this
+  return this
 }
 
 fun View.setHapticClickListener(onClickListener: (View) -> Unit) {
-    setOnClickListener { view ->
-        performOnTapHapticFeedback()
-        onClickListener(view)
-    }
+  setOnClickListener { view ->
+    performOnTapHapticFeedback()
+    onClickListener(view)
+  }
 }
 
 fun View.performOnTapHapticFeedback() = performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
 fun View.performOnLongPressHapticFeedback() =
-    performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+  performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
 
 fun View.updatePadding(
-    @Dimension start: Int? = null,
-    @Dimension top: Int? = null,
-    @Dimension end: Int? = null,
-    @Dimension bottom: Int? = null,
+  @Dimension start: Int? = null,
+  @Dimension top: Int? = null,
+  @Dimension end: Int? = null,
+  @Dimension bottom: Int? = null,
 ) = setPaddingRelative(
-    start ?: paddingStart,
-    top ?: paddingTop,
-    end ?: paddingEnd,
-    bottom ?: paddingBottom,
+  start ?: paddingStart,
+  top ?: paddingTop,
+  end ?: paddingEnd,
+  bottom ?: paddingBottom,
 )
 
 fun View.updateMargin(
-    start: Int? = null,
-    top: Int? = null,
-    end: Int? = null,
-    bottom: Int? = null,
+  start: Int? = null,
+  top: Int? = null,
+  end: Int? = null,
+  bottom: Int? = null,
 ) {
-    val lp = layoutParams as? ViewGroup.MarginLayoutParams
-        ?: return
+  val lp = layoutParams as? ViewGroup.MarginLayoutParams
+    ?: return
 
-    lp.setMargins(
-        start ?: lp.marginStart,
-        top ?: lp.topMargin,
-        end ?: lp.marginEnd,
-        bottom ?: lp.bottomMargin,
-    )
+  lp.setMargins(
+    start ?: lp.marginStart,
+    top ?: lp.topMargin,
+    end ?: lp.marginEnd,
+    bottom ?: lp.bottomMargin,
+  )
 
-    layoutParams = lp
+  layoutParams = lp
 }
 
 fun View.setScaleXY(scale: Float) {
-    scaleX = scale
-    scaleY = scale
+  scaleX = scale
+  scaleY = scale
 }
 
 fun Toolbar.setupToolbar(
-    activity: AppCompatActivity,
-    usingEdgeToEdge: Boolean = false,
-    @DrawableRes icon: Int? = null,
-    rootLayout: View?,
-    backAction: (() -> Unit)? = null,
+  activity: AppCompatActivity,
+  usingEdgeToEdge: Boolean = false,
+  @DrawableRes icon: Int? = null,
+  rootLayout: View?,
+  backAction: (() -> Unit)? = null,
 ) {
-    activity.setSupportActionBar(this)
-    activity.supportActionBar?.setDisplayShowTitleEnabled(false)
-    icon?.let { ic ->
-        this.navigationIcon = this.context.compatDrawable(ic)
-    }
-    backAction?.let {
-        this.setNavigationOnClickListener { it() }
-    }
-    if (usingEdgeToEdge) {
-        applyStatusBarInsets()
-        rootLayout?.let { root ->
-            root.applyStatusBarInsets()
-            root.applyNavigationBarInsets()
+  activity.setSupportActionBar(this)
+  activity.supportActionBar?.setDisplayShowTitleEnabled(false)
+  icon?.let { ic ->
+    this.navigationIcon = this.context.compatDrawable(ic)
+  }
+  backAction?.let {
+    this.setNavigationOnClickListener { it() }
+  }
+  if (usingEdgeToEdge) {
+    applyStatusBarInsets()
+    rootLayout?.let { root ->
+      root.applyStatusBarInsets()
+      root.applyNavigationBarInsets()
 
-            if (root is NestedScrollView) {
-                root.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
-                    val dy = oldScrollY - scrollY
-                    val toolbarHeight = this.height.toFloat()
-                    val offset = root.computeVerticalScrollOffset().toFloat()
-                    val percentage = if (offset < toolbarHeight) {
-                        offset / toolbarHeight
-                    } else {
-                        1f
-                    }
-                    if (dy < 0) {
-                        // Scroll up
-                        this.elevation = percentage * 10
-                    } else {
-                        // scroll down
-                        this.elevation = percentage * 10
-                    }
-                }
-            } else if (root is RecyclerView) {
-                val toolbar = this
-                root.addOnScrollListener(
-                    object : RecyclerView.OnScrollListener() {
-                        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                            super.onScrolled(recyclerView, dx, dy)
-                            val toolbarHeight = toolbar.height.toFloat()
-                            val offset = root.computeVerticalScrollOffset().toFloat()
-                            val percentage = if (offset < toolbarHeight) {
-                                offset / toolbarHeight
-                            } else {
-                                1f
-                            }
-                            if (dy < 0) {
-                                // Scroll up
-                                toolbar.elevation = percentage * 10
-                            } else {
-                                // scroll down
-                                toolbar.elevation = percentage * 10
-                            }
-                        }
-                    },
-                )
-            }
+      if (root is NestedScrollView) {
+        root.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, oldScrollY: Int ->
+          val dy = oldScrollY - scrollY
+          val toolbarHeight = this.height.toFloat()
+          val offset = root.computeVerticalScrollOffset().toFloat()
+          val percentage = if (offset < toolbarHeight) {
+            offset / toolbarHeight
+          } else {
+            1f
+          }
+          if (dy < 0) {
+            // Scroll up
+            this.elevation = percentage * 10
+          } else {
+            // scroll down
+            this.elevation = percentage * 10
+          }
         }
+      } else if (root is RecyclerView) {
+        val toolbar = this
+        root.addOnScrollListener(
+          object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+              super.onScrolled(recyclerView, dx, dy)
+              val toolbarHeight = toolbar.height.toFloat()
+              val offset = root.computeVerticalScrollOffset().toFloat()
+              val percentage = if (offset < toolbarHeight) {
+                offset / toolbarHeight
+              } else {
+                1f
+              }
+              if (dy < 0) {
+                // Scroll up
+                toolbar.elevation = percentage * 10
+              } else {
+                // scroll down
+                toolbar.elevation = percentage * 10
+              }
+            }
+          },
+        )
+      }
     }
+  }
 }
 
 fun NestedScrollView.setupToolbarScrollListener(
-    toolbar: Toolbar,
+  toolbar: Toolbar,
 ) {
-    setOnScrollChangeListener { _: NestedScrollView?, _: Int, _: Int, _: Int, _: Int ->
-        val maxElevationScroll = 200
-        val offset = this.computeVerticalScrollOffset().toFloat()
-        val percentage = if (offset < maxElevationScroll) {
-            offset / maxElevationScroll
-        } else {
-            1f
-        }
-        toolbar.elevation = percentage * 10
+  setOnScrollChangeListener { _: NestedScrollView?, _: Int, _: Int, _: Int, _: Int ->
+    val maxElevationScroll = 200
+    val offset = this.computeVerticalScrollOffset().toFloat()
+    val percentage = if (offset < maxElevationScroll) {
+      offset / maxElevationScroll
+    } else {
+      1f
     }
+    toolbar.elevation = percentage * 10
+  }
 }
 
 fun RecyclerView.setupToolbarScrollListener(onScroll: (Float) -> Unit) {
-    addOnScrollListener(
-        object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                val maxElevationScroll = 200
-                val offset = computeVerticalScrollOffset().toFloat()
-                val percentage = if (offset < maxElevationScroll) {
-                    offset / maxElevationScroll
-                } else {
-                    1f
-                }
-                onScroll(percentage)
-            }
-        },
-    )
+  addOnScrollListener(
+    object : RecyclerView.OnScrollListener() {
+      override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+        val maxElevationScroll = 200
+        val offset = computeVerticalScrollOffset().toFloat()
+        val percentage = if (offset < maxElevationScroll) {
+          offset / maxElevationScroll
+        } else {
+          1f
+        }
+        onScroll(percentage)
+      }
+    },
+  )
 }
 
 fun RecyclerView.setupToolbarScrollListener(toolbar: Toolbar) {
-    addOnScrollListener(
-        object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                val maxElevationScroll = 200
-                val offset = computeVerticalScrollOffset().toFloat()
-                val percentage = if (offset < maxElevationScroll) {
-                    offset / maxElevationScroll
-                } else {
-                    1f
-                }
-                toolbar.elevation = percentage * 10
-            }
-        },
-    )
+  addOnScrollListener(
+    object : RecyclerView.OnScrollListener() {
+      override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+        val maxElevationScroll = 200
+        val offset = computeVerticalScrollOffset().toFloat()
+        val percentage = if (offset < maxElevationScroll) {
+          offset / maxElevationScroll
+        } else {
+          1f
+        }
+        toolbar.elevation = percentage * 10
+      }
+    },
+  )
 }
 
 fun View.fadeIn(endAction: (() -> Unit)? = null) {
-    alpha = 0f
-    show()
-    val animation = animate().setDuration(225).alpha(1f)
-    endAction?.let { animation.withEndAction(it) }
-    animation.start()
+  alpha = 0f
+  show()
+  val animation = animate().setDuration(225).alpha(1f)
+  endAction?.let { animation.withEndAction(it) }
+  animation.start()
 }
 
 fun View.fadeOut(endAction: (() -> Unit)? = null, removeOnEnd: Boolean = true) {
-    alpha = 1f
-    show()
-    val animation = animate().setDuration(225).alpha(0f)
-    animation.withEndAction {
-        if (removeOnEnd) {
-            this.remove()
-        }
-        endAction?.invoke()
+  alpha = 1f
+  show()
+  val animation = animate().setDuration(225).alpha(0f)
+  animation.withEndAction {
+    if (removeOnEnd) {
+      this.remove()
     }
-    animation.start()
+    endAction?.invoke()
+  }
+  animation.start()
 }
 
 fun View.dismissKeyboard() =
-    (context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(
-        windowToken,
-        0,
-    )
+  (context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(
+    windowToken,
+    0,
+  )
 
 fun View.openKeyboard() =
-    (context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager).showSoftInput(
-        this,
-        0,
-    )
+  (context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager).showSoftInput(
+    this,
+    0,
+  )
 
 val View.centerX: Int
-    get() = (x + width / 2).toInt()
+  get() = (x + width / 2).toInt()
 
 val View.centerY: Int
-    get() = (y + height / 2).toInt()
+  get() = (y + height / 2).toInt()
 
 fun View.hapticClicks(): Flow<Unit> = callbackFlow<Unit> {
-    setOnClickListener {
-        performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-        runCatching { trySend(Unit) }.getOrDefault(false)
-    }
-    awaitClose { setOnClickListener(null) }
+  setOnClickListener {
+    performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+    runCatching { trySend(Unit) }.getOrDefault(false)
+  }
+  awaitClose { setOnClickListener(null) }
 }.conflate()
 
 @RequiresApi(Build.VERSION_CODES.R)
 fun View.setupInsetsForIme(root: View, vararg translatableViews: View) {
-    val deferringListener = RootViewDeferringInsetsCallback(
+  val deferringListener = RootViewDeferringInsetsCallback(
+    persistentInsetTypes = WindowInsets.Type.systemBars(),
+    deferredInsetTypes = WindowInsets.Type.ime(),
+    setPaddingTop = false,
+  )
+
+  root.setWindowInsetsAnimationCallback(deferringListener)
+  root.setOnApplyWindowInsetsListener(deferringListener)
+
+  translatableViews.forEach {
+    it.setWindowInsetsAnimationCallback(
+      TranslateDeferringInsetsAnimationCallback(
+        view = it,
         persistentInsetTypes = WindowInsets.Type.systemBars(),
         deferredInsetTypes = WindowInsets.Type.ime(),
-        setPaddingTop = false,
+        dispatchMode = WindowInsetsAnimation.Callback.DISPATCH_MODE_CONTINUE_ON_SUBTREE,
+      ),
     )
+  }
 
-    root.setWindowInsetsAnimationCallback(deferringListener)
-    root.setOnApplyWindowInsetsListener(deferringListener)
-
-    translatableViews.forEach {
-        it.setWindowInsetsAnimationCallback(
-            TranslateDeferringInsetsAnimationCallback(
-                view = it,
-                persistentInsetTypes = WindowInsets.Type.systemBars(),
-                deferredInsetTypes = WindowInsets.Type.ime(),
-                dispatchMode = WindowInsetsAnimation.Callback.DISPATCH_MODE_CONTINUE_ON_SUBTREE,
-            ),
-        )
-    }
-
-    setWindowInsetsAnimationCallback(
-        ControlFocusInsetsAnimationCallback(this),
-    )
+  setWindowInsetsAnimationCallback(
+    ControlFocusInsetsAnimationCallback(this),
+  )
 }
 
 fun View.applyStatusBarInsets() = applyInsetter {
-    type(statusBars = true) {
-        padding()
-    }
+  type(statusBars = true) {
+    padding()
+  }
 }
 
 fun View.applyStatusBarInsetsMargin() = applyInsetter {
-    type(statusBars = true) {
-        margin()
-    }
+  type(statusBars = true) {
+    margin()
+  }
 }
 
 fun View.applyNavigationBarInsets() = applyInsetter {
-    type(navigationBars = true) {
-        padding()
-    }
+  type(navigationBars = true) {
+    padding()
+  }
 }
 
 fun View.applyNavigationBarInsetsMargin() = applyInsetter {
-    type(navigationBars = true) {
-        margin()
-    }
+  type(navigationBars = true) {
+    margin()
+  }
 }
 
 fun View.applyStatusBarAndNavigationBarInsets() = applyInsetter {
-    type(statusBars = true, navigationBars = true) {
-        padding()
-    }
+  type(statusBars = true, navigationBars = true) {
+    padding()
+  }
 }

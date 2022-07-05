@@ -20,74 +20,74 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.core.parameter.parametersOf
 
 class IdentityInputFragment : Fragment(R.layout.identity_input_fragment) {
-    private val binding by viewBinding(IdentityInputFragmentBinding::bind)
-    private val model: SimpleSignAuthenticationViewModel by sharedViewModel { parametersOf(data) }
+  private val binding by viewBinding(IdentityInputFragmentBinding::bind)
+  private val model: SimpleSignAuthenticationViewModel by sharedViewModel { parametersOf(data) }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-        exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, true)
-        reenterTransition = MaterialSharedAxis(MaterialSharedAxis.X, false)
-    }
+    exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, true)
+    reenterTransition = MaterialSharedAxis(MaterialSharedAxis.X, false)
+  }
 
-    private val data by lazy {
-        requireArguments().getParcelable<SimpleSignAuthenticationData>(DATA)
-    }
+  private val data by lazy {
+    requireArguments().getParcelable<SimpleSignAuthenticationData>(DATA)
+  }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        with(binding) {
-            when (data?.market) {
-                Market.NO -> {
-                    input.setHint(R.string.simple_sign_login_text_field_label)
-                    input.setHelperText(R.string.simple_sign_login_text_field_helper_text)
-                    inputText.setMaxLength(11)
-                    signIn.setText(R.string.simple_sign_sign_in)
-                }
-                Market.DK -> {
-                    input.setHint(R.string.simple_sign_login_text_field_label_dk)
-                    input.setHelperText(R.string.simple_sign_login_text_field_helper_text_dk)
-                    inputText.setMaxLength(10)
-                    signIn.setText(R.string.simple_sign_sign_in_dk)
-                }
-                else -> {
-                    model.invalidMarket()
-                    return
-                }
-            }
-
-            inputText.apply {
-                requestFocus()
-                doOnTextChanged { text, _, _, _ -> model.setInput(text) }
-                onImeAction { startZignSecIfValid() }
-            }
-            model.isValid.observe(viewLifecycleOwner) { isValid ->
-                if (model.isSubmitting.value != true) {
-                    signIn.isEnabled = isValid
-                }
-            }
-            model.isSubmitting.observe(viewLifecycleOwner) { isSubmitting ->
-                if (isSubmitting) {
-                    signIn.isEnabled = false
-                }
-            }
-
-            signIn.setHapticClickListener {
-                startZignSecIfValid()
-            }
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    with(binding) {
+      when (data?.market) {
+        Market.NO -> {
+          input.setHint(R.string.simple_sign_login_text_field_label)
+          input.setHelperText(R.string.simple_sign_login_text_field_helper_text)
+          inputText.setMaxLength(11)
+          signIn.setText(R.string.simple_sign_sign_in)
         }
-    }
-
-    private fun startZignSecIfValid() {
-        if (model.isValid.value == true) {
-            model.startZignSec()
+        Market.DK -> {
+          input.setHint(R.string.simple_sign_login_text_field_label_dk)
+          input.setHelperText(R.string.simple_sign_login_text_field_helper_text_dk)
+          inputText.setMaxLength(10)
+          signIn.setText(R.string.simple_sign_sign_in_dk)
         }
-    }
-
-    companion object {
-
-        private const val DATA = "DATA"
-        fun newInstance(data: SimpleSignAuthenticationData) = IdentityInputFragment().apply {
-            arguments = bundleOf(DATA to data)
+        else -> {
+          model.invalidMarket()
+          return
         }
+      }
+
+      inputText.apply {
+        requestFocus()
+        doOnTextChanged { text, _, _, _ -> model.setInput(text) }
+        onImeAction { startZignSecIfValid() }
+      }
+      model.isValid.observe(viewLifecycleOwner) { isValid ->
+        if (model.isSubmitting.value != true) {
+          signIn.isEnabled = isValid
+        }
+      }
+      model.isSubmitting.observe(viewLifecycleOwner) { isSubmitting ->
+        if (isSubmitting) {
+          signIn.isEnabled = false
+        }
+      }
+
+      signIn.setHapticClickListener {
+        startZignSecIfValid()
+      }
     }
+  }
+
+  private fun startZignSecIfValid() {
+    if (model.isValid.value == true) {
+      model.startZignSec()
+    }
+  }
+
+  companion object {
+
+    private const val DATA = "DATA"
+    fun newInstance(data: SimpleSignAuthenticationData) = IdentityInputFragment().apply {
+      arguments = bundleOf(DATA to data)
+    }
+  }
 }

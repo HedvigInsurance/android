@@ -30,91 +30,91 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
 
-    override val screenName = "choose_insurance_type"
+  override val screenName = "choose_insurance_type"
 
-    private val binding by viewBinding(ActivityChoosePlanBinding::bind)
-    private val marketProvider: MarketManager by inject()
-    private val viewModel: ChoosePlanViewModel by viewModel()
-    private val marketManager: MarketManager by inject()
+  private val binding by viewBinding(ActivityChoosePlanBinding::bind)
+  private val marketProvider: MarketManager by inject()
+  private val viewModel: ChoosePlanViewModel by viewModel()
+  private val marketManager: MarketManager by inject()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-        binding.apply {
-            window.compatSetDecorFitsSystemWindows(false)
-            toolbar.applyStatusBarInsets()
-            continueButton.applyNavigationBarInsetsMargin()
-            recycler.applyNavigationBarInsetsMargin()
+    binding.apply {
+      window.compatSetDecorFitsSystemWindows(false)
+      toolbar.applyStatusBarInsets()
+      continueButton.applyNavigationBarInsetsMargin()
+      recycler.applyNavigationBarInsetsMargin()
 
-            setSupportActionBar(toolbar)
-            toolbar.setNavigationOnClickListener { onBackPressed() }
+      setSupportActionBar(toolbar)
+      toolbar.setNavigationOnClickListener { onBackPressed() }
 
-            recycler.itemAnimator = ViewHolderReusingDefaultItemAnimator()
-            val adapter = OnboardingAdapter(viewModel, marketProvider)
-            recycler.adapter = adapter
+      recycler.itemAnimator = ViewHolderReusingDefaultItemAnimator()
+      val adapter = OnboardingAdapter(viewModel, marketProvider)
+      recycler.adapter = adapter
 
-            continueButton.setHapticClickListener {
-                viewModel.onContinue()
+      continueButton.setHapticClickListener {
+        viewModel.onContinue()
+      }
+
+      viewModel.events
+        .flowWithLifecycle(lifecycle)
+        .onEach { event ->
+          when (event) {
+            is ChoosePlanViewModel.Event.Continue -> {
+              startActivity(
+                EmbarkActivity.newInstance(
+                  this@ChoosePlanActivity,
+                  event.storyName,
+                  event.storyTitle,
+                ),
+              )
             }
-
-            viewModel.events
-                .flowWithLifecycle(lifecycle)
-                .onEach { event ->
-                    when (event) {
-                        is ChoosePlanViewModel.Event.Continue -> {
-                            startActivity(
-                                EmbarkActivity.newInstance(
-                                    this@ChoosePlanActivity,
-                                    event.storyName,
-                                    event.storyTitle,
-                                ),
-                            )
-                        }
-                    }
-                }
-                .launchIn(lifecycleScope)
-
-            viewModel
-                .viewState
-                .flowWithLifecycle(lifecycle)
-                .onEach { viewState ->
-                    continueButton.isVisible = viewState is ChoosePlanViewModel.ViewState.Success
-                    when (viewState) {
-                        ChoosePlanViewModel.ViewState.Loading -> {}
-                        ChoosePlanViewModel.ViewState.Error -> adapter.submitList(listOf(OnboardingModel.Error))
-                        is ChoosePlanViewModel.ViewState.Success -> adapter.submitList(viewState.bundleItems)
-                    }
-                }
-                .launchIn(lifecycleScope)
+          }
         }
-    }
+        .launchIn(lifecycleScope)
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.choose_plan_menu, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
-        R.id.app_settings -> {
-            startActivity(SettingsActivity.newInstance(this))
-            true
+      viewModel
+        .viewState
+        .flowWithLifecycle(lifecycle)
+        .onEach { viewState ->
+          continueButton.isVisible = viewState is ChoosePlanViewModel.ViewState.Success
+          when (viewState) {
+            ChoosePlanViewModel.ViewState.Loading -> {}
+            ChoosePlanViewModel.ViewState.Error -> adapter.submitList(listOf(OnboardingModel.Error))
+            is ChoosePlanViewModel.ViewState.Success -> adapter.submitList(viewState.bundleItems)
+          }
         }
-        R.id.app_info -> {
-            startActivity(MoreOptionsActivity.newInstance(this))
-            true
-        }
-        R.id.login -> {
-            marketManager.market?.openAuth(this, supportFragmentManager)
-            true
-        }
-        else -> false
+        .launchIn(lifecycleScope)
     }
+  }
 
-    companion object {
-        const val COMBO = "Combo"
-        const val CONTENTS = "Contents"
-        const val TRAVEL = "Travel"
+  override fun onCreateOptionsMenu(menu: Menu): Boolean {
+    menuInflater.inflate(R.menu.choose_plan_menu, menu)
+    return true
+  }
 
-        fun newInstance(context: Context) = Intent(context, ChoosePlanActivity::class.java)
+  override fun onOptionsItemSelected(menuItem: MenuItem) = when (menuItem.itemId) {
+    R.id.app_settings -> {
+      startActivity(SettingsActivity.newInstance(this))
+      true
     }
+    R.id.app_info -> {
+      startActivity(MoreOptionsActivity.newInstance(this))
+      true
+    }
+    R.id.login -> {
+      marketManager.market?.openAuth(this, supportFragmentManager)
+      true
+    }
+    else -> false
+  }
+
+  companion object {
+    const val COMBO = "Combo"
+    const val CONTENTS = "Contents"
+    const val TRAVEL = "Travel"
+
+    fun newInstance(context: Context) = Intent(context, ChoosePlanActivity::class.java)
+  }
 }

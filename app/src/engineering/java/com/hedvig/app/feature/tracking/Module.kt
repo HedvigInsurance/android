@@ -8,8 +8,8 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val trackingLogModule = module {
-    viewModel { TrackingLogViewModel(get()) }
-    single<EngineeringTrackerSink> { EngineeringTrackerSink() } bind HAnalyticsSink::class
-    single<DebugLogTrackerSink> { DebugLogTrackerSink() } bind HAnalyticsSink::class
-    single<ShakeTrackerSink> { ShakeTrackerSink() } bind HAnalyticsSink::class
+  viewModel { TrackingLogViewModel(get()) }
+  single<EngineeringTrackerSink> { EngineeringTrackerSink() } bind HAnalyticsSink::class
+  single<DebugLogTrackerSink> { DebugLogTrackerSink() } bind HAnalyticsSink::class
+  single<ShakeTrackerSink> { ShakeTrackerSink() } bind HAnalyticsSink::class
 }

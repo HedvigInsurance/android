@@ -9,25 +9,25 @@ import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.safeQuery
 
 class GetContractDetailsUseCase(
-    private val apolloClient: ApolloClient,
-    private val localeManager: LocaleManager,
+  private val apolloClient: ApolloClient,
+  private val localeManager: LocaleManager,
 ) {
 
-    suspend operator fun invoke(contractId: String): Either<ContractDetailError, ContractDetailViewState> {
-        return apolloClient
-            .query(InsuranceQuery(localeManager.defaultLocale()))
-            .safeQuery()
-            .toEither { ContractDetailError.NetworkError }
-            .flatMap { data ->
-                data.contracts
-                    .firstOrNone { it.id == contractId }
-                    .toEither { ContractDetailError.ContractNotFoundError }
-                    .map { it.toContractDetailViewState() }
-            }
-    }
+  suspend operator fun invoke(contractId: String): Either<ContractDetailError, ContractDetailViewState> {
+    return apolloClient
+      .query(InsuranceQuery(localeManager.defaultLocale()))
+      .safeQuery()
+      .toEither { ContractDetailError.NetworkError }
+      .flatMap { data ->
+        data.contracts
+          .firstOrNone { it.id == contractId }
+          .toEither { ContractDetailError.ContractNotFoundError }
+          .map { it.toContractDetailViewState() }
+      }
+  }
 
-    sealed class ContractDetailError {
-        object NetworkError : ContractDetailError()
-        object ContractNotFoundError : ContractDetailError()
-    }
+  sealed class ContractDetailError {
+    object NetworkError : ContractDetailError()
+    object ContractNotFoundError : ContractDetailError()
+  }
 }

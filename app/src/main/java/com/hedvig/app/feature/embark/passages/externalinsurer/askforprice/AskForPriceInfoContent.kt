@@ -17,45 +17,45 @@ import com.hedvig.app.ui.compose.composables.buttons.LargeOutlinedTextButton
 
 @Composable
 fun IntroContent(
-    selectedInsurance: String,
-    onNavigateToRetrievePriceInfo: () -> Unit,
-    onSkipRetrievePriceInfo: () -> Unit,
+  selectedInsurance: String,
+  onNavigateToRetrievePriceInfo: () -> Unit,
+  onSkipRetrievePriceInfo: () -> Unit,
 ) {
-    val baseMargin = dimensionResource(R.dimen.base_margin)
-    val baseMarginDouble = dimensionResource(R.dimen.base_margin_double)
+  val baseMargin = dimensionResource(R.dimen.base_margin)
+  val baseMarginDouble = dimensionResource(R.dimen.base_margin_double)
 
-    Column(
-        modifier = Modifier
-            .padding(baseMarginDouble)
-            .fillMaxSize(),
-        verticalArrangement = Arrangement.SpaceBetween,
-    ) {
-        Column(verticalArrangement = Arrangement.spacedBy(baseMarginDouble)) {
-            Text(
-                modifier = Modifier.padding(top = baseMargin),
-                text = stringResource(R.string.insurely_intro_title, selectedInsurance),
-                style = MaterialTheme.typography.h6,
-                color = MaterialTheme.colors.primary,
-            )
-            Text(
-                text = stringResource(R.string.insurely_intro_description),
-                style = MaterialTheme.typography.body1,
-            )
-        }
-        Column(verticalArrangement = Arrangement.spacedBy(baseMarginDouble)) {
-            LargeContainedTextButton(
-                text = stringResource(R.string.insurely_intro_continue_button_text),
-                onClick = onNavigateToRetrievePriceInfo,
-            )
-            LargeOutlinedTextButton(
-                text = stringResource(R.string.insurely_intro_skip_button_text),
-                onClick = onSkipRetrievePriceInfo,
-            )
-            Text(
-                text = stringResource(R.string.insurely_intro_footer, selectedInsurance),
-                style = MaterialTheme.typography.caption,
-                textAlign = TextAlign.Center,
-            )
-        }
+  Column(
+    modifier = Modifier
+      .padding(baseMarginDouble)
+      .fillMaxSize(),
+    verticalArrangement = Arrangement.SpaceBetween,
+  ) {
+    Column(verticalArrangement = Arrangement.spacedBy(baseMarginDouble)) {
+      Text(
+        modifier = Modifier.padding(top = baseMargin),
+        text = stringResource(R.string.insurely_intro_title, selectedInsurance),
+        style = MaterialTheme.typography.h6,
+        color = MaterialTheme.colors.primary,
+      )
+      Text(
+        text = stringResource(R.string.insurely_intro_description),
+        style = MaterialTheme.typography.body1,
+      )
     }
+    Column(verticalArrangement = Arrangement.spacedBy(baseMarginDouble)) {
+      LargeContainedTextButton(
+        text = stringResource(R.string.insurely_intro_continue_button_text),
+        onClick = onNavigateToRetrievePriceInfo,
+      )
+      LargeOutlinedTextButton(
+        text = stringResource(R.string.insurely_intro_skip_button_text),
+        onClick = onSkipRetrievePriceInfo,
+      )
+      Text(
+        text = stringResource(R.string.insurely_intro_footer, selectedInsurance),
+        style = MaterialTheme.typography.caption,
+        textAlign = TextAlign.Center,
+      )
+    }
+  }
 }

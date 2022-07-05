@@ -10,23 +10,23 @@ import e
 import kotlinx.coroutines.launch
 
 abstract class TrustlyViewModel : ViewModel() {
-    protected val _data = MutableLiveData<String>()
-    val data: LiveData<String> = _data
+  protected val _data = MutableLiveData<String>()
+  val data: LiveData<String> = _data
 }
 
 class TrustlyViewModelImpl(
-    private val repository: TrustlyRepository,
-    hAnalytics: HAnalytics,
+  private val repository: TrustlyRepository,
+  hAnalytics: HAnalytics,
 ) : TrustlyViewModel() {
-    init {
-        hAnalytics.screenView(AppScreen.CONNECT_PAYMENT_TRUSTLY)
-        viewModelScope.launch {
-            val response = runCatching { repository.startTrustlySession() }
-            if (response.isFailure) {
-                response.exceptionOrNull()?.let { e(it) }
-                return@launch
-            }
-            response.getOrNull()?.data?.startDirectDebitRegistration?.let { _data.postValue(it) }
-        }
+  init {
+    hAnalytics.screenView(AppScreen.CONNECT_PAYMENT_TRUSTLY)
+    viewModelScope.launch {
+      val response = runCatching { repository.startTrustlySession() }
+      if (response.isFailure) {
+        response.exceptionOrNull()?.let { e(it) }
+        return@launch
+      }
+      response.getOrNull()?.data?.startDirectDebitRegistration?.let { _data.postValue(it) }
     }
+  }
 }

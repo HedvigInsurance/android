@@ -5,9 +5,9 @@ import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 
 class CommonClaimViewModel(
-    hAnalytics: HAnalytics,
+  hAnalytics: HAnalytics,
 ) : ViewModel() {
-    init {
-        hAnalytics.screenView(AppScreen.COMMON_CLAIM_DETAIL)
-    }
+  init {
+    hAnalytics.screenView(AppScreen.COMMON_CLAIM_DETAIL)
+  }
 }

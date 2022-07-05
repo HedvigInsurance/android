@@ -19,35 +19,35 @@ import org.junit.Rule
 import org.junit.Test
 
 class PendingTest : TestCase() {
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(LOGGED_IN_DATA)
-        },
-        HomeQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(HOME_DATA_PENDING)
-        },
-    )
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(LOGGED_IN_DATA)
+    },
+    HomeQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(HOME_DATA_PENDING)
+    },
+  )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
 
-    @Test
-    fun shouldShowMessageWhenUserHasAllContractsInPendingState() = run {
-        activityRule.launch(LoggedInActivity.newInstance(context()))
+  @Test
+  fun shouldShowMessageWhenUserHasAllContractsInPendingState() = run {
+    activityRule.launch(LoggedInActivity.newInstance(context()))
 
-        onScreen<HomeTabScreen> {
-            recycler {
-                childAt<HomeTabScreen.BigTextItem>(0) {
-                    text { hasText(R.string.home_tab_pending_unknown_title, "Test") }
-                }
-                childAt<HomeTabScreen.BodyTextItem>(1) {
-                    text { hasText(R.string.home_tab_pending_unknown_body) }
-                }
-            }
+    onScreen<HomeTabScreen> {
+      recycler {
+        childAt<HomeTabScreen.BigTextItem>(0) {
+          text { hasText(R.string.home_tab_pending_unknown_title, "Test") }
         }
+        childAt<HomeTabScreen.BodyTextItem>(1) {
+          text { hasText(R.string.home_tab_pending_unknown_body) }
+        }
+      }
     }
+  }
 }

@@ -9,29 +9,29 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class FAQItem(
-    val headline: String,
-    val body: String,
+  val headline: String,
+  val body: String,
 ) : Parcelable {
 
-    companion object {
-        fun from(data: CrossSellFragment.Faq) = FAQItem(
-            headline = data.headline,
-            body = data.body,
+  companion object {
+    fun from(data: CrossSellFragment.Faq) = FAQItem(
+      headline = data.headline,
+      body = data.body,
+    )
+
+    fun from(data: QuoteBundleFragment.FrequentlyAskedQuestion) =
+      safeLet(data.headline, data.body) { headline, body ->
+        FAQItem(
+          headline = headline,
+          body = body,
         )
+      }
 
-        fun from(data: QuoteBundleFragment.FrequentlyAskedQuestion) =
-            safeLet(data.headline, data.body) { headline, body ->
-                FAQItem(
-                    headline = headline,
-                    body = body,
-                )
-            }
-
-        fun from(data: QuoteBundle.FrequentlyAskedQuestion) = safeLet(data.title, data.description) { headline, body ->
-            FAQItem(
-                headline = headline,
-                body = body,
-            )
-        }
+    fun from(data: QuoteBundle.FrequentlyAskedQuestion) = safeLet(data.title, data.description) { headline, body ->
+      FAQItem(
+        headline = headline,
+        body = body,
+      )
     }
+  }
 }

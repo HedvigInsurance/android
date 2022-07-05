@@ -12,16 +12,16 @@ import org.koin.dsl.module
 
 class MarketRule(val market: Market) : ExternalResource() {
 
-    val marketManager = mockk<MarketManager>(relaxed = true)
+  val marketManager = mockk<MarketManager>(relaxed = true)
 
-    override fun before() {
-        unloadKoinModules(marketManagerModule)
-        loadKoinModules(module { single { marketManager } })
-        every { marketManager.market } returns market
-    }
+  override fun before() {
+    unloadKoinModules(marketManagerModule)
+    loadKoinModules(module { single { marketManager } })
+    every { marketManager.market } returns market
+  }
 
-    override fun after() {
-        unloadKoinModules(module { single { marketManager } })
-        loadKoinModules(marketManagerModule)
-    }
+  override fun after() {
+    unloadKoinModules(module { single { marketManager } })
+    loadKoinModules(marketManagerModule)
+  }
 }

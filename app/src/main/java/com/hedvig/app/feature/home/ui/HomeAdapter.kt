@@ -53,497 +53,497 @@ import java.time.format.FormatStyle
 import java.time.temporal.ChronoUnit
 
 class HomeAdapter(
-    private val fragmentManager: FragmentManager,
-    private val retry: () -> Unit,
-    private val startIntentForResult: (Intent) -> Unit,
-    private val imageLoader: ImageLoader,
-    private val marketManager: MarketManager,
-    private val onClaimDetailCardClicked: (String) -> Unit,
-    private val onClaimDetailCardShown: (String) -> Unit,
-    private val onPaymentCardShown: () -> Unit,
+  private val fragmentManager: FragmentManager,
+  private val retry: () -> Unit,
+  private val startIntentForResult: (Intent) -> Unit,
+  private val imageLoader: ImageLoader,
+  private val marketManager: MarketManager,
+  private val onClaimDetailCardClicked: (String) -> Unit,
+  private val onClaimDetailCardShown: (String) -> Unit,
+  private val onPaymentCardShown: () -> Unit,
 ) : ListAdapter<HomeModel, HomeAdapter.ViewHolder>(HomeModelDiffUtilItemCallback) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
-        R.layout.home_psa -> ViewHolder.PSABox(parent)
-        R.layout.home_big_text -> ViewHolder.BigText(parent)
-        R.layout.home_body_text -> ViewHolder.BodyText(parent)
-        ACTIVE_CLAIM -> ViewHolder.ClaimStatus(
-            ComposeView(parent.context),
-            onClaimDetailCardClicked,
-            onClaimDetailCardShown,
-        )
-        SPACE -> ViewHolder.Space(ComposeView(parent.context))
-        R.layout.home_start_claim_outlined -> ViewHolder.StartClaimOutlined(parent, startIntentForResult)
-        R.layout.home_start_claim_contained -> ViewHolder.StartClaimContained(parent, startIntentForResult)
-        CONNECT_PAYIN -> ViewHolder.InfoCard(ComposeView(parent.context), onPaymentCardShown)
-        R.layout.home_common_claim -> ViewHolder.CommonClaim(parent, imageLoader)
-        R.layout.generic_error -> ViewHolder.Error(parent, retry)
-        R.layout.how_claims_work_button -> ViewHolder.HowClaimsWorkButton(parent)
-        R.layout.upcoming_renewal_card -> ViewHolder.UpcomingRenewal(parent)
-        R.layout.home_change_address_button -> ViewHolder.ChangeAddress(parent)
-        R.layout.change_address_pending_change_card -> ViewHolder.PendingChange(parent)
-        R.layout.header_item_layout -> ViewHolder.Header(parent)
-        else -> throw Error("Invalid view type")
+  override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
+    R.layout.home_psa -> ViewHolder.PSABox(parent)
+    R.layout.home_big_text -> ViewHolder.BigText(parent)
+    R.layout.home_body_text -> ViewHolder.BodyText(parent)
+    ACTIVE_CLAIM -> ViewHolder.ClaimStatus(
+      ComposeView(parent.context),
+      onClaimDetailCardClicked,
+      onClaimDetailCardShown,
+    )
+    SPACE -> ViewHolder.Space(ComposeView(parent.context))
+    R.layout.home_start_claim_outlined -> ViewHolder.StartClaimOutlined(parent, startIntentForResult)
+    R.layout.home_start_claim_contained -> ViewHolder.StartClaimContained(parent, startIntentForResult)
+    CONNECT_PAYIN -> ViewHolder.InfoCard(ComposeView(parent.context), onPaymentCardShown)
+    R.layout.home_common_claim -> ViewHolder.CommonClaim(parent, imageLoader)
+    R.layout.generic_error -> ViewHolder.Error(parent, retry)
+    R.layout.how_claims_work_button -> ViewHolder.HowClaimsWorkButton(parent)
+    R.layout.upcoming_renewal_card -> ViewHolder.UpcomingRenewal(parent)
+    R.layout.home_change_address_button -> ViewHolder.ChangeAddress(parent)
+    R.layout.change_address_pending_change_card -> ViewHolder.PendingChange(parent)
+    R.layout.header_item_layout -> ViewHolder.Header(parent)
+    else -> throw Error("Invalid view type")
+  }
+
+  override fun getItemViewType(position: Int) = when (getItem(position)) {
+    is HomeModel.BigText -> R.layout.home_big_text
+    is HomeModel.BodyText -> R.layout.home_body_text
+    is HomeModel.ClaimStatus -> ACTIVE_CLAIM
+    is HomeModel.Space -> SPACE
+    is HomeModel.StartClaimOutlined -> R.layout.home_start_claim_outlined
+    is HomeModel.StartClaimContained -> R.layout.home_start_claim_contained
+    is HomeModel.ConnectPayin -> CONNECT_PAYIN
+    is HomeModel.CommonClaim -> R.layout.home_common_claim
+    HomeModel.Error -> R.layout.generic_error
+    is HomeModel.PSA -> R.layout.home_psa
+    is HomeModel.HowClaimsWork -> R.layout.how_claims_work_button
+    is HomeModel.UpcomingRenewal -> R.layout.upcoming_renewal_card
+    is HomeModel.Header -> R.layout.header_item_layout
+    is HomeModel.ChangeAddress -> R.layout.home_change_address_button
+    is HomeModel.PendingAddressChange -> R.layout.change_address_pending_change_card
+  }
+
+  override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    holder.bind(
+      getItem(position),
+      fragmentManager,
+      marketManager,
+    )
+  }
+
+  override fun onViewRecycled(holder: ViewHolder) {
+    val itemView = holder.itemView
+    if (itemView is ComposeView) {
+      itemView.disposeComposition()
     }
+  }
 
-    override fun getItemViewType(position: Int) = when (getItem(position)) {
-        is HomeModel.BigText -> R.layout.home_big_text
-        is HomeModel.BodyText -> R.layout.home_body_text
-        is HomeModel.ClaimStatus -> ACTIVE_CLAIM
-        is HomeModel.Space -> SPACE
-        is HomeModel.StartClaimOutlined -> R.layout.home_start_claim_outlined
-        is HomeModel.StartClaimContained -> R.layout.home_start_claim_contained
-        is HomeModel.ConnectPayin -> CONNECT_PAYIN
-        is HomeModel.CommonClaim -> R.layout.home_common_claim
-        HomeModel.Error -> R.layout.generic_error
-        is HomeModel.PSA -> R.layout.home_psa
-        is HomeModel.HowClaimsWork -> R.layout.how_claims_work_button
-        is HomeModel.UpcomingRenewal -> R.layout.upcoming_renewal_card
-        is HomeModel.Header -> R.layout.header_item_layout
-        is HomeModel.ChangeAddress -> R.layout.home_change_address_button
-        is HomeModel.PendingAddressChange -> R.layout.change_address_pending_change_card
-    }
+  sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    abstract fun bind(
+      data: HomeModel,
+      fragmentManager: FragmentManager,
+      marketManager: MarketManager,
+    )
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(
-            getItem(position),
-            fragmentManager,
-            marketManager,
-        )
-    }
-
-    override fun onViewRecycled(holder: ViewHolder) {
-        val itemView = holder.itemView
-        if (itemView is ComposeView) {
-            itemView.disposeComposition()
-        }
-    }
-
-    sealed class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        abstract fun bind(
-            data: HomeModel,
-            fragmentManager: FragmentManager,
-            marketManager: MarketManager,
-        )
-
-        class BigText(parent: ViewGroup) : ViewHolder(
-            parent.inflate(
-                R.layout.home_big_text,
-            ),
-        ) {
-            private val binding by viewBinding(HomeBigTextBinding::bind)
-            private val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
-            override fun bind(
-                data: HomeModel,
-                fragmentManager: FragmentManager,
-                marketManager: MarketManager,
-            ) = with(binding) {
-                if (data !is HomeModel.BigText) {
-                    return invalid(data)
-                }
-
-                val textRes = when (data) {
-                    is HomeModel.BigText.Pending -> root.resources.getString(
-                        R.string.home_tab_pending_unknown_title,
-                        data.name,
-                    )
-                    is HomeModel.BigText.ActiveInFuture -> root.resources.getString(
-                        R.string.home_tab_active_in_future_welcome_title,
-                        data.name,
-                        formatter.format(data.inception),
-                    )
-                    is HomeModel.BigText.Active -> root.resources.getString(R.string.home_tab_welcome_title, data.name)
-                    is HomeModel.BigText.Terminated -> root.resources.getString(
-                        R.string.home_tab_terminated_welcome_title,
-                        data.name,
-                    )
-                    is HomeModel.BigText.Switching -> root.resources.getString(
-                        R.string.home_tab_pending_switchable_welcome_title,
-                        data.name,
-                    )
-                }
-                root.text = textRes
-            }
+    class BigText(parent: ViewGroup) : ViewHolder(
+      parent.inflate(
+        R.layout.home_big_text,
+      ),
+    ) {
+      private val binding by viewBinding(HomeBigTextBinding::bind)
+      private val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
+      override fun bind(
+        data: HomeModel,
+        fragmentManager: FragmentManager,
+        marketManager: MarketManager,
+      ) = with(binding) {
+        if (data !is HomeModel.BigText) {
+          return invalid(data)
         }
 
-        class BodyText(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.home_body_text)) {
-            private val binding by viewBinding(HomeBodyTextBinding::bind)
+        val textRes = when (data) {
+          is HomeModel.BigText.Pending -> root.resources.getString(
+            R.string.home_tab_pending_unknown_title,
+            data.name,
+          )
+          is HomeModel.BigText.ActiveInFuture -> root.resources.getString(
+            R.string.home_tab_active_in_future_welcome_title,
+            data.name,
+            formatter.format(data.inception),
+          )
+          is HomeModel.BigText.Active -> root.resources.getString(R.string.home_tab_welcome_title, data.name)
+          is HomeModel.BigText.Terminated -> root.resources.getString(
+            R.string.home_tab_terminated_welcome_title,
+            data.name,
+          )
+          is HomeModel.BigText.Switching -> root.resources.getString(
+            R.string.home_tab_pending_switchable_welcome_title,
+            data.name,
+          )
+        }
+        root.text = textRes
+      }
+    }
 
-            override fun bind(
-                data: HomeModel,
-                fragmentManager: FragmentManager,
-                marketManager: MarketManager,
-            ) = with(binding) {
-                if (data !is HomeModel.BodyText) {
-                    return invalid(data)
-                }
+    class BodyText(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.home_body_text)) {
+      private val binding by viewBinding(HomeBodyTextBinding::bind)
 
-                val textRes = when (data) {
-                    HomeModel.BodyText.Pending -> R.string.home_tab_pending_unknown_body
-                    HomeModel.BodyText.ActiveInFuture -> R.string.home_tab_active_in_future_body
-                    HomeModel.BodyText.Terminated -> R.string.home_tab_terminated_body
-                    HomeModel.BodyText.Switching -> R.string.home_tab_pending_switchable_body
-                }
-                root.setText(textRes)
-            }
+      override fun bind(
+        data: HomeModel,
+        fragmentManager: FragmentManager,
+        marketManager: MarketManager,
+      ) = with(binding) {
+        if (data !is HomeModel.BodyText) {
+          return invalid(data)
         }
 
-        class ClaimStatus(
-            val composeView: ComposeView,
-            private val onClaimDetailCardClicked: (String) -> Unit,
-            private val onClaimDetailCardShown: (String) -> Unit,
-        ) : ViewHolder(composeView) {
-            init {
-                composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            }
+        val textRes = when (data) {
+          HomeModel.BodyText.Pending -> R.string.home_tab_pending_unknown_body
+          HomeModel.BodyText.ActiveInFuture -> R.string.home_tab_active_in_future_body
+          HomeModel.BodyText.Terminated -> R.string.home_tab_terminated_body
+          HomeModel.BodyText.Switching -> R.string.home_tab_pending_switchable_body
+        }
+        root.setText(textRes)
+      }
+    }
 
-            private fun goToClaimDetailScreen(claimId: String) {
-                onClaimDetailCardClicked(claimId)
+    class ClaimStatus(
+      val composeView: ComposeView,
+      private val onClaimDetailCardClicked: (String) -> Unit,
+      private val onClaimDetailCardShown: (String) -> Unit,
+    ) : ViewHolder(composeView) {
+      init {
+        composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+      }
+
+      private fun goToClaimDetailScreen(claimId: String) {
+        onClaimDetailCardClicked(claimId)
+        composeView.context.startActivity(
+          ClaimDetailActivity.newInstance(composeView.context, claimId),
+        )
+      }
+
+      override fun bind(
+        data: HomeModel,
+        fragmentManager: FragmentManager,
+        marketManager: MarketManager,
+      ) {
+        if (data !is HomeModel.ClaimStatus) {
+          return invalid(data)
+        }
+
+        composeView.setContent {
+          HedvigTheme {
+            ClaimStatusCards(
+              goToDetailScreen = ::goToClaimDetailScreen,
+              onClaimCardShown = onClaimDetailCardShown,
+              claimStatusCardsUiState = data.claimStatusCardsUiState,
+            )
+          }
+        }
+      }
+    }
+
+    class Space(
+      private val composeView: ComposeView,
+    ) : ViewHolder(composeView) {
+      init {
+        composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+      }
+
+      override fun bind(
+        data: HomeModel,
+        fragmentManager: FragmentManager,
+        marketManager: MarketManager,
+      ) {
+        if (data !is HomeModel.Space) return invalid(data)
+        composeView.setContent {
+          Spacer(Modifier.height(data.height))
+        }
+      }
+    }
+
+    class StartClaimOutlined(
+      parent: ViewGroup,
+      private val startIntentForResult: (Intent) -> Unit,
+    ) : ViewHolder(parent.inflate(R.layout.home_start_claim_outlined)) {
+      private val binding by viewBinding(HomeStartClaimOutlinedBinding::bind)
+
+      override fun bind(
+        data: HomeModel,
+        fragmentManager: FragmentManager,
+        marketManager: MarketManager,
+      ) = with(binding) {
+        if (data !is HomeModel.StartClaimOutlined) {
+          return invalid(data)
+        }
+
+        binding.button.setText(data.textId)
+        root.setHapticClickListener {
+          HonestyPledgeBottomSheet
+            .newInstance(startIntentForResult)
+            .show(fragmentManager, HonestyPledgeBottomSheet.TAG)
+        }
+      }
+    }
+
+    class StartClaimContained(
+      parent: ViewGroup,
+      private val startIntentForResult: (Intent) -> Unit,
+    ) : ViewHolder(parent.inflate(R.layout.home_start_claim_contained)) {
+      private val binding by viewBinding(HomeStartClaimContainedBinding::bind)
+      override fun bind(
+        data: HomeModel,
+        fragmentManager: FragmentManager,
+        marketManager: MarketManager,
+      ) = with(binding) {
+        if (data !is HomeModel.StartClaimContained) {
+          return invalid(data)
+        }
+
+        binding.button.setText(data.textId)
+        root.setHapticClickListener {
+          HonestyPledgeBottomSheet
+            .newInstance(startIntentForResult)
+            .show(fragmentManager, HonestyPledgeBottomSheet.TAG)
+        }
+      }
+    }
+
+    class UpcomingRenewal(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.upcoming_renewal_card)) {
+      private val binding by viewBinding(UpcomingRenewalCardBinding::bind)
+      override fun bind(
+        data: HomeModel,
+        fragmentManager: FragmentManager,
+        marketManager: MarketManager,
+      ) = with(binding) {
+        if (data !is HomeModel.UpcomingRenewal) {
+          return invalid(data)
+        }
+        val upcomingRenewal = data.upcomingRenewal
+        title.text = title.context.getString(
+          R.string.DASHBOARD_RENEWAL_PROMPTER_TITLE,
+          data.contractDisplayName,
+        )
+        body.text = body.context.getString(
+          R.string.DASHBOARD_RENEWAL_PROMPTER_BODY,
+          daysLeft(upcomingRenewal.renewalDate),
+        )
+
+        val maybeLinkUri = runCatching {
+          Uri.parse(upcomingRenewal.draftCertificateUrl)
+        }
+        action.setHapticClickListener {
+          maybeLinkUri.getOrNull()?.let { uri ->
+            if (action.context.canOpenUri(uri)) {
+              action.context.openUri(uri)
+            }
+          }
+        }
+      }
+    }
+
+    class InfoCard(
+      val composeView: ComposeView,
+      private val onPaymentCardShown: () -> Unit,
+    ) : ViewHolder(composeView) {
+
+      init {
+        composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+      }
+
+      override fun bind(
+        data: HomeModel,
+        fragmentManager: FragmentManager,
+        marketManager: MarketManager,
+      ) {
+        if (data !is HomeModel.ConnectPayin) {
+          return invalid(data)
+        }
+
+        composeView.setContent {
+          HedvigTheme {
+            ConnectPayinCard(
+              onActionClick = {
+                val market = marketManager.market ?: return@ConnectPayinCard
                 composeView.context.startActivity(
-                    ClaimDetailActivity.newInstance(composeView.context, claimId),
+                  connectPayinIntent(
+                    composeView.context,
+                    data.payinType,
+                    market,
+                    false,
+                  ),
                 )
-            }
-
-            override fun bind(
-                data: HomeModel,
-                fragmentManager: FragmentManager,
-                marketManager: MarketManager,
-            ) {
-                if (data !is HomeModel.ClaimStatus) {
-                    return invalid(data)
-                }
-
-                composeView.setContent {
-                    HedvigTheme {
-                        ClaimStatusCards(
-                            goToDetailScreen = ::goToClaimDetailScreen,
-                            onClaimCardShown = onClaimDetailCardShown,
-                            claimStatusCardsUiState = data.claimStatusCardsUiState,
-                        )
-                    }
-                }
-            }
+              },
+              onShown = onPaymentCardShown,
+            )
+          }
         }
-
-        class Space(
-            private val composeView: ComposeView,
-        ) : ViewHolder(composeView) {
-            init {
-                composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            }
-
-            override fun bind(
-                data: HomeModel,
-                fragmentManager: FragmentManager,
-                marketManager: MarketManager,
-            ) {
-                if (data !is HomeModel.Space) return invalid(data)
-                composeView.setContent {
-                    Spacer(Modifier.height(data.height))
-                }
-            }
-        }
-
-        class StartClaimOutlined(
-            parent: ViewGroup,
-            private val startIntentForResult: (Intent) -> Unit,
-        ) : ViewHolder(parent.inflate(R.layout.home_start_claim_outlined)) {
-            private val binding by viewBinding(HomeStartClaimOutlinedBinding::bind)
-
-            override fun bind(
-                data: HomeModel,
-                fragmentManager: FragmentManager,
-                marketManager: MarketManager,
-            ) = with(binding) {
-                if (data !is HomeModel.StartClaimOutlined) {
-                    return invalid(data)
-                }
-
-                binding.button.setText(data.textId)
-                root.setHapticClickListener {
-                    HonestyPledgeBottomSheet
-                        .newInstance(startIntentForResult)
-                        .show(fragmentManager, HonestyPledgeBottomSheet.TAG)
-                }
-            }
-        }
-
-        class StartClaimContained(
-            parent: ViewGroup,
-            private val startIntentForResult: (Intent) -> Unit,
-        ) : ViewHolder(parent.inflate(R.layout.home_start_claim_contained)) {
-            private val binding by viewBinding(HomeStartClaimContainedBinding::bind)
-            override fun bind(
-                data: HomeModel,
-                fragmentManager: FragmentManager,
-                marketManager: MarketManager,
-            ) = with(binding) {
-                if (data !is HomeModel.StartClaimContained) {
-                    return invalid(data)
-                }
-
-                binding.button.setText(data.textId)
-                root.setHapticClickListener {
-                    HonestyPledgeBottomSheet
-                        .newInstance(startIntentForResult)
-                        .show(fragmentManager, HonestyPledgeBottomSheet.TAG)
-                }
-            }
-        }
-
-        class UpcomingRenewal(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.upcoming_renewal_card)) {
-            private val binding by viewBinding(UpcomingRenewalCardBinding::bind)
-            override fun bind(
-                data: HomeModel,
-                fragmentManager: FragmentManager,
-                marketManager: MarketManager,
-            ) = with(binding) {
-                if (data !is HomeModel.UpcomingRenewal) {
-                    return invalid(data)
-                }
-                val upcomingRenewal = data.upcomingRenewal
-                title.text = title.context.getString(
-                    R.string.DASHBOARD_RENEWAL_PROMPTER_TITLE,
-                    data.contractDisplayName,
-                )
-                body.text = body.context.getString(
-                    R.string.DASHBOARD_RENEWAL_PROMPTER_BODY,
-                    daysLeft(upcomingRenewal.renewalDate),
-                )
-
-                val maybeLinkUri = runCatching {
-                    Uri.parse(upcomingRenewal.draftCertificateUrl)
-                }
-                action.setHapticClickListener {
-                    maybeLinkUri.getOrNull()?.let { uri ->
-                        if (action.context.canOpenUri(uri)) {
-                            action.context.openUri(uri)
-                        }
-                    }
-                }
-            }
-        }
-
-        class InfoCard(
-            val composeView: ComposeView,
-            private val onPaymentCardShown: () -> Unit,
-        ) : ViewHolder(composeView) {
-
-            init {
-                composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            }
-
-            override fun bind(
-                data: HomeModel,
-                fragmentManager: FragmentManager,
-                marketManager: MarketManager,
-            ) {
-                if (data !is HomeModel.ConnectPayin) {
-                    return invalid(data)
-                }
-
-                composeView.setContent {
-                    HedvigTheme {
-                        ConnectPayinCard(
-                            onActionClick = {
-                                val market = marketManager.market ?: return@ConnectPayinCard
-                                composeView.context.startActivity(
-                                    connectPayinIntent(
-                                        composeView.context,
-                                        data.payinType,
-                                        market,
-                                        false,
-                                    ),
-                                )
-                            },
-                            onShown = onPaymentCardShown,
-                        )
-                    }
-                }
-            }
-        }
-
-        class PSABox(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.home_psa)) {
-            private val binding by viewBinding(HomePsaBinding::bind)
-            override fun bind(
-                data: HomeModel,
-                fragmentManager: FragmentManager,
-                marketManager: MarketManager,
-            ) = with(binding) {
-                if (data !is HomeModel.PSA) {
-                    return invalid(data)
-                }
-                body.text = data.inner.message
-                val uri = Uri.parse(data.inner.link)
-                root.setHapticClickListener {
-                    if (arrow.context.canOpenUri(uri)) {
-                        arrow.context.openUri(uri)
-                    }
-                }
-            }
-        }
-
-        class CommonClaim(
-            parent: ViewGroup,
-            private val imageLoader: ImageLoader,
-        ) : ViewHolder(parent.inflate(R.layout.home_common_claim)) {
-            private val binding by viewBinding(HomeCommonClaimBinding::bind)
-            override fun bind(
-                data: HomeModel,
-                fragmentManager: FragmentManager,
-                marketManager: MarketManager,
-            ) = with(binding) {
-                if (data !is HomeModel.CommonClaim) {
-                    return invalid(data)
-                }
-
-                when (data) {
-                    is HomeModel.CommonClaim.Emergency -> {
-                        label.text = data.inner.title
-                        icon.load(requestUri(data.inner.iconUrls), imageLoader)
-                        root.setHapticClickListener {
-                            root.context.startActivity(
-                                EmergencyActivity.newInstance(
-                                    root.context,
-                                    data.inner,
-                                ),
-                            )
-                        }
-                    }
-                    is HomeModel.CommonClaim.TitleAndBulletPoints -> {
-                        label.text = data.inner.title
-                        icon.load(requestUri(data.inner.iconUrls), imageLoader)
-                        root.setHapticClickListener {
-                            root.context.startActivity(
-                                CommonClaimActivity.newInstance(
-                                    root.context,
-                                    data.inner,
-                                ),
-                            )
-                        }
-                    }
-                }
-            }
-
-            private fun requestUri(icons: ThemedIconUrls) = Uri.parse(icons.iconByTheme(binding.root.context))
-        }
-
-        class HowClaimsWorkButton(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.how_claims_work_button)) {
-            private val binding by viewBinding(HowClaimsWorkButtonBinding::bind)
-            override fun bind(
-                data: HomeModel,
-                fragmentManager: FragmentManager,
-                marketManager: MarketManager,
-            ) = with(binding) {
-                if (data !is HomeModel.HowClaimsWork) {
-                    return invalid(data)
-                }
-                val howClaimsWorkData = data.pages.mapIndexed { index, page ->
-                    DismissiblePagerModel.NoTitlePage(
-                        ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
-                        page.body,
-                        button.context.getString(
-                            if (index == data.pages.size - 1) {
-                                R.string.claims_explainer_button_start_claim
-                            } else {
-                                R.string.claims_explainer_button_next
-                            },
-                        ),
-                    )
-                }
-                button.setHapticClickListener {
-                    HowClaimsWorkDialog.newInstance(howClaimsWorkData)
-                        .show(fragmentManager, HowClaimsWorkDialog.TAG)
-                }
-            }
-        }
-
-        class Error(
-            parent: ViewGroup,
-            private val retry: () -> Unit,
-        ) : ViewHolder(parent.inflate(R.layout.generic_error)) {
-            private val binding by viewBinding(GenericErrorBinding::bind)
-            override fun bind(
-                data: HomeModel,
-                fragmentManager: FragmentManager,
-                marketManager: MarketManager,
-            ) = with(binding) {
-                this.retry.setHapticClickListener {
-                    retry()
-                }
-            }
-        }
-
-        class ChangeAddress(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.home_change_address_button)) {
-            private val binding by viewBinding(HomeChangeAddressButtonBinding::bind)
-            override fun bind(
-                data: HomeModel,
-                fragmentManager: FragmentManager,
-                marketManager: MarketManager,
-            ) = with(binding) {
-                if (data !is HomeModel.ChangeAddress) {
-                    invalid(data)
-                } else {
-                    title.setHapticClickListener {
-                        root.context.startActivity(ChangeAddressActivity.newInstance(root.context))
-                    }
-                }
-            }
-        }
-
-        class PendingChange(parent: ViewGroup) :
-            ViewHolder(parent.inflate(R.layout.change_address_pending_change_card)) {
-            private val binding by viewBinding(ChangeAddressPendingChangeCardBinding::bind)
-            override fun bind(
-                data: HomeModel,
-                fragmentManager: FragmentManager,
-                marketManager: MarketManager,
-            ) = with(binding) {
-                if (data !is HomeModel.PendingAddressChange) {
-                    return invalid(data)
-                }
-
-                paragraph.text = root.context.getString(R.string.home_tab_moving_info_card_description, data.address)
-                continueButton.text = root.context.getString(R.string.home_tab_moving_info_card_button_text)
-                continueButton.setHapticClickListener {
-                    root.context.startActivity(ChangeAddressActivity.newInstance(binding.root.context))
-                }
-            }
-        }
-
-        class Header(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.header_item_layout)) {
-            private val binding by viewBinding(HeaderItemLayoutBinding::bind)
-
-            override fun bind(
-                data: HomeModel,
-                fragmentManager: FragmentManager,
-                marketManager: MarketManager,
-            ) = with(binding) {
-                if (data !is HomeModel.Header) {
-                    return invalid(data)
-                }
-                binding.headerItem.text = itemView.context.getString(data.stringRes)
-            }
-        }
+      }
     }
 
-    companion object {
-        const val ACTIVE_CLAIM = 1
-        const val CONNECT_PAYIN = 2
-        const val SPACE = 3
-
-        fun daysLeft(date: LocalDate): Int = ChronoUnit.DAYS.between(LocalDate.now(), date).toInt()
-
-        object HomeModelDiffUtilItemCallback : DiffUtil.ItemCallback<HomeModel>() {
-            override fun areItemsTheSame(oldItem: HomeModel, newItem: HomeModel): Boolean {
-                if (oldItem is HomeModel.ClaimStatus && newItem is HomeModel.ClaimStatus) {
-                    // Only a single ClaimStatus must appear in the list, therefore always true
-                    return true
-                }
-                return oldItem == newItem
-            }
-
-            override fun areContentsTheSame(oldItem: HomeModel, newItem: HomeModel) = oldItem == newItem
+    class PSABox(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.home_psa)) {
+      private val binding by viewBinding(HomePsaBinding::bind)
+      override fun bind(
+        data: HomeModel,
+        fragmentManager: FragmentManager,
+        marketManager: MarketManager,
+      ) = with(binding) {
+        if (data !is HomeModel.PSA) {
+          return invalid(data)
         }
+        body.text = data.inner.message
+        val uri = Uri.parse(data.inner.link)
+        root.setHapticClickListener {
+          if (arrow.context.canOpenUri(uri)) {
+            arrow.context.openUri(uri)
+          }
+        }
+      }
     }
+
+    class CommonClaim(
+      parent: ViewGroup,
+      private val imageLoader: ImageLoader,
+    ) : ViewHolder(parent.inflate(R.layout.home_common_claim)) {
+      private val binding by viewBinding(HomeCommonClaimBinding::bind)
+      override fun bind(
+        data: HomeModel,
+        fragmentManager: FragmentManager,
+        marketManager: MarketManager,
+      ) = with(binding) {
+        if (data !is HomeModel.CommonClaim) {
+          return invalid(data)
+        }
+
+        when (data) {
+          is HomeModel.CommonClaim.Emergency -> {
+            label.text = data.inner.title
+            icon.load(requestUri(data.inner.iconUrls), imageLoader)
+            root.setHapticClickListener {
+              root.context.startActivity(
+                EmergencyActivity.newInstance(
+                  root.context,
+                  data.inner,
+                ),
+              )
+            }
+          }
+          is HomeModel.CommonClaim.TitleAndBulletPoints -> {
+            label.text = data.inner.title
+            icon.load(requestUri(data.inner.iconUrls), imageLoader)
+            root.setHapticClickListener {
+              root.context.startActivity(
+                CommonClaimActivity.newInstance(
+                  root.context,
+                  data.inner,
+                ),
+              )
+            }
+          }
+        }
+      }
+
+      private fun requestUri(icons: ThemedIconUrls) = Uri.parse(icons.iconByTheme(binding.root.context))
+    }
+
+    class HowClaimsWorkButton(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.how_claims_work_button)) {
+      private val binding by viewBinding(HowClaimsWorkButtonBinding::bind)
+      override fun bind(
+        data: HomeModel,
+        fragmentManager: FragmentManager,
+        marketManager: MarketManager,
+      ) = with(binding) {
+        if (data !is HomeModel.HowClaimsWork) {
+          return invalid(data)
+        }
+        val howClaimsWorkData = data.pages.mapIndexed { index, page ->
+          DismissiblePagerModel.NoTitlePage(
+            ThemedIconUrls.from(page.illustration.variants.fragments.iconVariantsFragment),
+            page.body,
+            button.context.getString(
+              if (index == data.pages.size - 1) {
+                R.string.claims_explainer_button_start_claim
+              } else {
+                R.string.claims_explainer_button_next
+              },
+            ),
+          )
+        }
+        button.setHapticClickListener {
+          HowClaimsWorkDialog.newInstance(howClaimsWorkData)
+            .show(fragmentManager, HowClaimsWorkDialog.TAG)
+        }
+      }
+    }
+
+    class Error(
+      parent: ViewGroup,
+      private val retry: () -> Unit,
+    ) : ViewHolder(parent.inflate(R.layout.generic_error)) {
+      private val binding by viewBinding(GenericErrorBinding::bind)
+      override fun bind(
+        data: HomeModel,
+        fragmentManager: FragmentManager,
+        marketManager: MarketManager,
+      ) = with(binding) {
+        this.retry.setHapticClickListener {
+          retry()
+        }
+      }
+    }
+
+    class ChangeAddress(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.home_change_address_button)) {
+      private val binding by viewBinding(HomeChangeAddressButtonBinding::bind)
+      override fun bind(
+        data: HomeModel,
+        fragmentManager: FragmentManager,
+        marketManager: MarketManager,
+      ) = with(binding) {
+        if (data !is HomeModel.ChangeAddress) {
+          invalid(data)
+        } else {
+          title.setHapticClickListener {
+            root.context.startActivity(ChangeAddressActivity.newInstance(root.context))
+          }
+        }
+      }
+    }
+
+    class PendingChange(parent: ViewGroup) :
+      ViewHolder(parent.inflate(R.layout.change_address_pending_change_card)) {
+      private val binding by viewBinding(ChangeAddressPendingChangeCardBinding::bind)
+      override fun bind(
+        data: HomeModel,
+        fragmentManager: FragmentManager,
+        marketManager: MarketManager,
+      ) = with(binding) {
+        if (data !is HomeModel.PendingAddressChange) {
+          return invalid(data)
+        }
+
+        paragraph.text = root.context.getString(R.string.home_tab_moving_info_card_description, data.address)
+        continueButton.text = root.context.getString(R.string.home_tab_moving_info_card_button_text)
+        continueButton.setHapticClickListener {
+          root.context.startActivity(ChangeAddressActivity.newInstance(binding.root.context))
+        }
+      }
+    }
+
+    class Header(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.header_item_layout)) {
+      private val binding by viewBinding(HeaderItemLayoutBinding::bind)
+
+      override fun bind(
+        data: HomeModel,
+        fragmentManager: FragmentManager,
+        marketManager: MarketManager,
+      ) = with(binding) {
+        if (data !is HomeModel.Header) {
+          return invalid(data)
+        }
+        binding.headerItem.text = itemView.context.getString(data.stringRes)
+      }
+    }
+  }
+
+  companion object {
+    const val ACTIVE_CLAIM = 1
+    const val CONNECT_PAYIN = 2
+    const val SPACE = 3
+
+    fun daysLeft(date: LocalDate): Int = ChronoUnit.DAYS.between(LocalDate.now(), date).toInt()
+
+    object HomeModelDiffUtilItemCallback : DiffUtil.ItemCallback<HomeModel>() {
+      override fun areItemsTheSame(oldItem: HomeModel, newItem: HomeModel): Boolean {
+        if (oldItem is HomeModel.ClaimStatus && newItem is HomeModel.ClaimStatus) {
+          // Only a single ClaimStatus must appear in the list, therefore always true
+          return true
+        }
+        return oldItem == newItem
+      }
+
+      override fun areContentsTheSame(oldItem: HomeModel, newItem: HomeModel) = oldItem == newItem
+    }
+  }
 }

@@ -29,94 +29,94 @@ import com.hedvig.app.ui.compose.theme.HedvigTheme
 
 @Composable
 fun FaqScreen(
-    ctaLabel: String,
-    onUpClick: () -> Unit,
-    openSheet: (FAQItem) -> Unit,
-    openChat: () -> Unit,
-    onCtaClick: () -> Unit,
-    items: List<FAQItem>,
+  ctaLabel: String,
+  onUpClick: () -> Unit,
+  openSheet: (FAQItem) -> Unit,
+  openChat: () -> Unit,
+  onCtaClick: () -> Unit,
+  items: List<FAQItem>,
 ) {
-    Box {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            TopAppBarWithBack(
-                onClick = onUpClick,
-                title = stringResource(R.string.cross_sell_info_common_questions_title),
-            )
-            Column(
-                modifier = Modifier
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 16.dp),
-            ) {
-                Spacer(Modifier.height(16.dp))
-                FAQCard(
-                    openSheet = openSheet,
-                    items = items,
-                )
-                Spacer(Modifier.height(40.dp))
-                Text(
-                    text = stringResource(R.string.cross_sell_info_faq_chat_headline),
-                    style = MaterialTheme.typography.subtitle2,
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                )
-                Spacer(Modifier.height(16.dp))
-                LargeOutlinedButton(onClick = openChat) {
-                    Image(
-                        painter = painterResource(R.drawable.ic_chat_black),
-                        contentDescription = null,
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Text(
-                        text = stringResource(R.string.cross_sell_info_faq_chat_button),
-                    )
-                }
-                Spacer(Modifier.height(104.dp))
-            }
+  Box {
+    Column(
+      modifier = Modifier.fillMaxSize(),
+    ) {
+      TopAppBarWithBack(
+        onClick = onUpClick,
+        title = stringResource(R.string.cross_sell_info_common_questions_title),
+      )
+      Column(
+        modifier = Modifier
+          .verticalScroll(rememberScrollState())
+          .padding(horizontal = 16.dp),
+      ) {
+        Spacer(Modifier.height(16.dp))
+        FAQCard(
+          openSheet = openSheet,
+          items = items,
+        )
+        Spacer(Modifier.height(40.dp))
+        Text(
+          text = stringResource(R.string.cross_sell_info_faq_chat_headline),
+          style = MaterialTheme.typography.subtitle2,
+          modifier = Modifier.align(Alignment.CenterHorizontally),
+        )
+        Spacer(Modifier.height(16.dp))
+        LargeOutlinedButton(onClick = openChat) {
+          Image(
+            painter = painterResource(R.drawable.ic_chat_black),
+            contentDescription = null,
+          )
+          Spacer(Modifier.width(8.dp))
+          Text(
+            text = stringResource(R.string.cross_sell_info_faq_chat_button),
+          )
         }
-        LargeContainedButton(
-            onClick = onCtaClick,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
-        ) {
-            Text(text = ctaLabel)
-        }
+        Spacer(Modifier.height(104.dp))
+      }
     }
+    LargeContainedButton(
+      onClick = onCtaClick,
+      modifier = Modifier
+        .align(Alignment.BottomCenter)
+        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+    ) {
+      Text(text = ctaLabel)
+    }
+  }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun FaqScreenPreview() {
-    HedvigTheme {
-        FaqScreen(
-            ctaLabel = "Calculate your price",
-            onUpClick = {},
-            openSheet = {},
-            openChat = {},
-            onCtaClick = {},
-            items = listOf(
-                FAQItem(
-                    headline = "What is included in my home insurance?",
-                    body = "",
-                ),
-                FAQItem(
-                    headline = "Why should I choose Hedvig?",
-                    body = "",
-                ),
-                FAQItem(
-                    headline = "Can I get Hedvig even though I already have an insurance policy?",
-                    body = "",
-                ),
-                FAQItem(
-                    headline = "How do I pay for my insurance?",
-                    body = "",
-                ),
-                FAQItem(
-                    headline = "How do I make a claim?",
-                    body = "",
-                ),
-            ),
-        )
-    }
+  HedvigTheme {
+    FaqScreen(
+      ctaLabel = "Calculate your price",
+      onUpClick = {},
+      openSheet = {},
+      openChat = {},
+      onCtaClick = {},
+      items = listOf(
+        FAQItem(
+          headline = "What is included in my home insurance?",
+          body = "",
+        ),
+        FAQItem(
+          headline = "Why should I choose Hedvig?",
+          body = "",
+        ),
+        FAQItem(
+          headline = "Can I get Hedvig even though I already have an insurance policy?",
+          body = "",
+        ),
+        FAQItem(
+          headline = "How do I pay for my insurance?",
+          body = "",
+        ),
+        FAQItem(
+          headline = "How do I make a claim?",
+          body = "",
+        ),
+      ),
+    )
+  }
 }

@@ -14,52 +14,52 @@ import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
 
 class GetUpcomingAgreementUseCase(
-    private val apolloClient: ApolloClient,
-    private val localeManager: LocaleManager,
+  private val apolloClient: ApolloClient,
+  private val localeManager: LocaleManager,
 ) {
 
-    private fun upcomingAgreementQuery() = UpcomingAgreementQuery(
-        locale = localeManager.defaultLocale(),
-    )
+  private fun upcomingAgreementQuery() = UpcomingAgreementQuery(
+    locale = localeManager.defaultLocale(),
+  )
 
-    suspend fun invoke(): UpcomingAgreementResult {
-        return when (val response = apolloClient.query(upcomingAgreementQuery()).safeQuery()) {
-            is QueryResult.Success -> {
-                val contracts = response.data?.contracts
-                if (contracts.isNullOrEmpty()) {
-                    Error.NoContractsError
-                } else {
-                    contracts.firstOrNull {
-                        it.fragments.upcomingAgreementFragment
-                            .upcomingAgreementDetailsTable
-                            .fragments
-                            .tableFragment
-                            .sections
-                            .isNotEmpty()
-                    }
-                        ?.fragments
-                        ?.upcomingAgreementFragment
-                        ?.toUpcomingAgreementResult()
-                        ?: NoUpcomingAgreementChange
-                }
-            }
-            is QueryResult.Error -> Error.GeneralError(response.message)
+  suspend fun invoke(): UpcomingAgreementResult {
+    return when (val response = apolloClient.query(upcomingAgreementQuery()).safeQuery()) {
+      is QueryResult.Success -> {
+        val contracts = response.data?.contracts
+        if (contracts.isNullOrEmpty()) {
+          Error.NoContractsError
+        } else {
+          contracts.firstOrNull {
+            it.fragments.upcomingAgreementFragment
+              .upcomingAgreementDetailsTable
+              .fragments
+              .tableFragment
+              .sections
+              .isNotEmpty()
+          }
+            ?.fragments
+            ?.upcomingAgreementFragment
+            ?.toUpcomingAgreementResult()
+            ?: NoUpcomingAgreementChange
         }
+      }
+      is QueryResult.Error -> Error.GeneralError(response.message)
     }
+  }
 
-    sealed class UpcomingAgreementResult {
+  sealed class UpcomingAgreementResult {
 
-        @Parcelize
-        data class UpcomingAgreement(
-            val activeFrom: LocalDate?,
-            val table: Table?,
-        ) : UpcomingAgreementResult(), Parcelable
+    @Parcelize
+    data class UpcomingAgreement(
+      val activeFrom: LocalDate?,
+      val table: Table?,
+    ) : UpcomingAgreementResult(), Parcelable
 
-        object NoUpcomingAgreementChange : UpcomingAgreementResult()
+    object NoUpcomingAgreementChange : UpcomingAgreementResult()
 
-        sealed class Error : UpcomingAgreementResult() {
-            object NoContractsError : Error()
-            data class GeneralError(val message: String?) : Error()
-        }
+    sealed class Error : UpcomingAgreementResult() {
+      object NoContractsError : Error()
+      data class GeneralError(val message: String?) : Error()
     }
+  }
 }

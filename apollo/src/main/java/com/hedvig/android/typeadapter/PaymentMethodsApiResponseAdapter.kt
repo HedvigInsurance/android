@@ -14,22 +14,22 @@ import org.json.JSONObject
  */
 @Suppress("unused") // Used inside the `apollo` block inside build.gradle.kts
 object PaymentMethodsApiResponseAdapter : Adapter<PaymentMethodsApiResponse> {
-    override fun fromJson(reader: JsonReader, customScalarAdapters: CustomScalarAdapters): PaymentMethodsApiResponse {
-        val data = AnyAdapter.fromJson(reader, customScalarAdapters)
-        return if (data is Map<*, *>) {
-            PaymentMethodsApiResponse.SERIALIZER.deserialize(JSONObject(data))
-        } else {
-            val jsonString = data.toString().replace("\\", "")
-            PaymentMethodsApiResponse.SERIALIZER.deserialize(JSONObject(jsonString))
-        }
+  override fun fromJson(reader: JsonReader, customScalarAdapters: CustomScalarAdapters): PaymentMethodsApiResponse {
+    val data = AnyAdapter.fromJson(reader, customScalarAdapters)
+    return if (data is Map<*, *>) {
+      PaymentMethodsApiResponse.SERIALIZER.deserialize(JSONObject(data))
+    } else {
+      val jsonString = data.toString().replace("\\", "")
+      PaymentMethodsApiResponse.SERIALIZER.deserialize(JSONObject(jsonString))
     }
+  }
 
-    override fun toJson(
-        writer: JsonWriter,
-        customScalarAdapters: CustomScalarAdapters,
-        value: PaymentMethodsApiResponse,
-    ) {
-        val jsonString = PaymentMethodsApiResponse.SERIALIZER.serialize(value).toString()
-        writer.value(jsonString)
-    }
+  override fun toJson(
+    writer: JsonWriter,
+    customScalarAdapters: CustomScalarAdapters,
+    value: PaymentMethodsApiResponse,
+  ) {
+    val jsonString = PaymentMethodsApiResponse.SERIALIZER.serialize(value).toString()
+    writer.value(jsonString)
+  }
 }

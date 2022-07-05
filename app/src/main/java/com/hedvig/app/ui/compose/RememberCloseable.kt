@@ -7,38 +7,38 @@ import androidx.compose.runtime.remember
 import java.io.Closeable
 
 private class Wrapper<T : Closeable>(val closeable: T) : RememberObserver {
-    override fun onAbandoned() {
-        closeable.close()
-    }
+  override fun onAbandoned() {
+    closeable.close()
+  }
 
-    override fun onForgotten() {
-        closeable.close()
-    }
+  override fun onForgotten() {
+    closeable.close()
+  }
 
-    override fun onRemembered() {}
+  override fun onRemembered() {}
 }
 
 @Composable
 fun <T : Closeable> rememberCloseable(calculation: @DisallowComposableCalls () -> T): T {
-    val wrapper = remember { Wrapper(calculation()) }
-    return wrapper.closeable
+  val wrapper = remember { Wrapper(calculation()) }
+  return wrapper.closeable
 }
 
 @Composable
 fun <T : Closeable> rememberCloseable(
-    key1: Any?,
-    calculation: @DisallowComposableCalls () -> T,
+  key1: Any?,
+  calculation: @DisallowComposableCalls () -> T,
 ): T {
-    val wrapper = remember(key1) { Wrapper(calculation()) }
-    return wrapper.closeable
+  val wrapper = remember(key1) { Wrapper(calculation()) }
+  return wrapper.closeable
 }
 
 @Composable
 fun <T : Closeable> rememberCloseable(
-    key1: Any?,
-    key2: Any?,
-    calculation: @DisallowComposableCalls () -> T,
+  key1: Any?,
+  key2: Any?,
+  calculation: @DisallowComposableCalls () -> T,
 ): T {
-    val wrapper = remember(key1, key2) { Wrapper(calculation()) }
-    return wrapper.closeable
+  val wrapper = remember(key1, key2) { Wrapper(calculation()) }
+  return wrapper.closeable
 }

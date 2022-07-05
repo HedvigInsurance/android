@@ -4,4 +4,4 @@ import java.time.Period
 import java.time.temporal.TemporalAmount
 
 inline val Int.months: TemporalAmount
-    get() = Period.ofMonths(this)
+  get() = Period.ofMonths(this)

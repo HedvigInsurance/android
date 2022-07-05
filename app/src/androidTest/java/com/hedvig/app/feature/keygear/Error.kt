@@ -21,50 +21,50 @@ import org.junit.Rule
 import org.junit.Test
 
 class Error : TestCase() {
-    val intent = LoggedInActivity.newInstance(
-        context(),
-        initialTab = LoggedInTabs.KEY_GEAR,
-    )
+  val intent = LoggedInActivity.newInstance(
+    context(),
+    initialTab = LoggedInTabs.KEY_GEAR,
+  )
 
-    @get:Rule
-    var activityRule = ActivityScenarioRule<LoggedInActivity>(intent)
+  @get:Rule
+  var activityRule = ActivityScenarioRule<LoggedInActivity>(intent)
 
-    var shouldFail = true
+  var shouldFail = true
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(LOGGED_IN_DATA)
-        },
-        KeyGearItemsQuery.OPERATION_DOCUMENT to apolloResponse {
-            if (shouldFail) {
-                shouldFail = false
-                graphQLError(jsonObjectOf("message" to "error"))
-            } else {
-                success(KEY_GEAR_DATA)
-            }
-        },
-    )
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(LOGGED_IN_DATA)
+    },
+    KeyGearItemsQuery.OPERATION_DOCUMENT to apolloResponse {
+      if (shouldFail) {
+        shouldFail = false
+        graphQLError(jsonObjectOf("message" to "error"))
+      } else {
+        success(KEY_GEAR_DATA)
+      }
+    },
+  )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
 
-    @get:Rule
-    val featureFlagRule = FeatureFlagRule(
-        Feature.KEY_GEAR to true,
-        Feature.REFERRALS to false,
-    )
+  @get:Rule
+  val featureFlagRule = FeatureFlagRule(
+    Feature.KEY_GEAR to true,
+    Feature.REFERRALS to false,
+  )
 
-    @Test
-    fun shouldReload() = run {
-        KeyGearScreen {
-            reload {
-                click()
-            }
-            header {
-                isVisible()
-                hasText(R.string.KEY_GEAR_TAB_TITLE)
-            }
-        }
+  @Test
+  fun shouldReload() = run {
+    KeyGearScreen {
+      reload {
+        click()
+      }
+      header {
+        isVisible()
+        hasText(R.string.KEY_GEAR_TAB_TITLE)
+      }
     }
+  }
 }

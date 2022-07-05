@@ -13,31 +13,31 @@ import kotlinx.parcelize.Parcelize
  * Output: FetchDanishAddressContractResult The result potentially containing the autocomplete address result.
  */
 class FetchDanishAddressContract : ActivityResultContract<DanishAddress?, FetchDanishAddressContractResult>() {
-    override fun createIntent(context: Context, input: DanishAddress?): Intent {
-        return AddressAutoCompleteActivity.newInstance(context, input)
-    }
+  override fun createIntent(context: Context, input: DanishAddress?): Intent {
+    return AddressAutoCompleteActivity.newInstance(context, input)
+  }
 
-    override fun parseResult(resultCode: Int, intent: Intent?): FetchDanishAddressContractResult {
-        if (resultCode != RESULT_CODE) return FetchDanishAddressContractResult.Canceled
-        return intent?.extras
-            ?.getParcelable(FETCH_DANISH_ADDRESS_CONTRACT_RESULT_KEY)
-            ?: FetchDanishAddressContractResult.Canceled
-    }
+  override fun parseResult(resultCode: Int, intent: Intent?): FetchDanishAddressContractResult {
+    if (resultCode != RESULT_CODE) return FetchDanishAddressContractResult.Canceled
+    return intent?.extras
+      ?.getParcelable(FETCH_DANISH_ADDRESS_CONTRACT_RESULT_KEY)
+      ?: FetchDanishAddressContractResult.Canceled
+  }
 
-    companion object {
-        const val RESULT_CODE = 1
-        const val FETCH_DANISH_ADDRESS_CONTRACT_RESULT_KEY =
-            "com.hedvig.app.feature.addressautocompletion.activityresult.FETCH_DANISH_ADDRESS_CONTRACT_RESULT_KEY"
-    }
+  companion object {
+    const val RESULT_CODE = 1
+    const val FETCH_DANISH_ADDRESS_CONTRACT_RESULT_KEY =
+      "com.hedvig.app.feature.addressautocompletion.activityresult.FETCH_DANISH_ADDRESS_CONTRACT_RESULT_KEY"
+  }
 }
 
 sealed interface FetchDanishAddressContractResult : Parcelable {
-    @Parcelize
-    object Canceled : FetchDanishAddressContractResult
+  @Parcelize
+  object Canceled : FetchDanishAddressContractResult
 
-    @Parcelize
-    object CantFind : FetchDanishAddressContractResult
+  @Parcelize
+  object CantFind : FetchDanishAddressContractResult
 
-    @Parcelize
-    data class Selected(val address: DanishAddress) : FetchDanishAddressContractResult
+  @Parcelize
+  data class Selected(val address: DanishAddress) : FetchDanishAddressContractResult
 }

@@ -9,12 +9,12 @@ import io.github.kakaocup.kakao.screen.Screen
 import io.github.kakaocup.kakao.text.KButton
 
 class ReferralsEditCodeScreen : Screen<ReferralsEditCodeScreen>() {
-    val editLayout = KTextInputLayout { withId(R.id.codeContainer) }
-    val save = KButton { withId(R.id.save) }
+  val editLayout = KTextInputLayout { withId(R.id.codeContainer) }
+  val save = KButton { withId(R.id.save) }
 
-    val confirmDismiss = KAlertDialog()
-    val up = KView {
-        withParent { withId(R.id.toolbar) }
-        isInstanceOf(ImageButton::class.java)
-    }
+  val confirmDismiss = KAlertDialog()
+  val up = KView {
+    withParent { withId(R.id.toolbar) }
+    isInstanceOf(ImageButton::class.java)
+  }
 }

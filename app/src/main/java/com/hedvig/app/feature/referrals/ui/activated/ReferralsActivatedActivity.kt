@@ -22,64 +22,64 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ReferralsActivatedActivity : BaseActivity(R.layout.activity_referrals_activated) {
-    private val binding by viewBinding(ActivityReferralsActivatedBinding::bind)
-    private val model: ReferralsActivatedViewModel by viewModel()
-    private val marketManager: MarketManager by inject()
+  private val binding by viewBinding(ActivityReferralsActivatedBinding::bind)
+  private val model: ReferralsActivatedViewModel by viewModel()
+  private val marketManager: MarketManager by inject()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-        binding.apply {
-            close.measure(
-                View.MeasureSpec.makeMeasureSpec(root.width, View.MeasureSpec.EXACTLY),
-                View.MeasureSpec.makeMeasureSpec(root.height, View.MeasureSpec.UNSPECIFIED),
-            )
+    binding.apply {
+      close.measure(
+        View.MeasureSpec.makeMeasureSpec(root.width, View.MeasureSpec.EXACTLY),
+        View.MeasureSpec.makeMeasureSpec(root.height, View.MeasureSpec.UNSPECIFIED),
+      )
 
-            scrollView.updatePadding(bottom = scrollView.paddingBottom + close.measuredHeight)
-            window.compatSetDecorFitsSystemWindows(false)
+      scrollView.updatePadding(bottom = scrollView.paddingBottom + close.measuredHeight)
+      window.compatSetDecorFitsSystemWindows(false)
 
-            scrollView.applyStatusBarAndNavigationBarInsets()
+      scrollView.applyStatusBarAndNavigationBarInsets()
 
-            close.applyNavigationBarInsetsMargin()
-            close.setHapticClickListener {
-                finish()
-            }
+      close.applyNavigationBarInsetsMargin()
+      close.setHapticClickListener {
+        finish()
+      }
 
-            model.data.observe(this@ReferralsActivatedActivity) { data ->
-                data
-                    .referralInformation
-                    .campaign
-                    .incentive
-                    ?.asMonthlyCostDeduction
-                    ?.amount
-                    ?.fragments
-                    ?.monetaryAmountFragment
-                    ?.toMonetaryAmount()
-                    ?.let { incentive ->
-                        body.show()
-                        body.text =
-                            getString(
-                                R.string.referrals_intro_screen_body,
-                                incentive.format(this@ReferralsActivatedActivity, marketManager.market),
-                            )
-                        body
-                            .animate()
-                            .alpha(1f)
-                            .setDuration(CROSSFADE_DURATION)
-                            .start()
-                        bodyPlaceholder
-                            .animate()
-                            .alpha(0f)
-                            .setDuration(CROSSFADE_DURATION)
-                            .withEndAction { bodyPlaceholder.remove() }
-                            .start()
-                    }
-            }
-        }
+      model.data.observe(this@ReferralsActivatedActivity) { data ->
+        data
+          .referralInformation
+          .campaign
+          .incentive
+          ?.asMonthlyCostDeduction
+          ?.amount
+          ?.fragments
+          ?.monetaryAmountFragment
+          ?.toMonetaryAmount()
+          ?.let { incentive ->
+            body.show()
+            body.text =
+              getString(
+                R.string.referrals_intro_screen_body,
+                incentive.format(this@ReferralsActivatedActivity, marketManager.market),
+              )
+            body
+              .animate()
+              .alpha(1f)
+              .setDuration(CROSSFADE_DURATION)
+              .start()
+            bodyPlaceholder
+              .animate()
+              .alpha(0f)
+              .setDuration(CROSSFADE_DURATION)
+              .withEndAction { bodyPlaceholder.remove() }
+              .start()
+          }
+      }
     }
+  }
 
-    companion object {
-        private const val CROSSFADE_DURATION = 350L
-        fun newInstance(context: Context) = Intent(context, ReferralsActivatedActivity::class.java)
-    }
+  companion object {
+    private const val CROSSFADE_DURATION = 350L
+    fun newInstance(context: Context) = Intent(context, ReferralsActivatedActivity::class.java)
+  }
 }

@@ -11,20 +11,20 @@ import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.viewBinding
 
 class ContractPillAdapter(
-    private val marketManager: MarketManager,
+  private val marketManager: MarketManager,
 ) : ListAdapter<String, ContractPillAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(parent, marketManager)
+  override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(parent, marketManager)
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position))
-    }
+  override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    holder.bind(getItem(position))
+  }
 
-    class ViewHolder(parent: ViewGroup, val marketManager: MarketManager) :
-        RecyclerView.ViewHolder(parent.inflate(R.layout.contract_pill)) {
-        private val binding by viewBinding(ContractPillBinding::bind)
-        fun bind(item: String) {
-            binding.root.text = item
-        }
+  class ViewHolder(parent: ViewGroup, val marketManager: MarketManager) :
+    RecyclerView.ViewHolder(parent.inflate(R.layout.contract_pill)) {
+    private val binding by viewBinding(ContractPillBinding::bind)
+    fun bind(item: String) {
+      binding.root.text = item
     }
+  }
 }

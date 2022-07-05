@@ -14,33 +14,33 @@ import e
 import org.koin.android.ext.android.inject
 
 class DismissiblePageNoTitleFragment : Fragment(R.layout.dismissible_page_no_title_fragment) {
-    private val imageLoader: ImageLoader by inject()
-    private val binding by viewBinding(DismissiblePageNoTitleFragmentBinding::bind)
+  private val imageLoader: ImageLoader by inject()
+  private val binding by viewBinding(DismissiblePageNoTitleFragmentBinding::bind)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
 
-        val model = requireArguments().getParcelable<DismissiblePagerModel.NoTitlePage>("model")
+    val model = requireArguments().getParcelable<DismissiblePagerModel.NoTitlePage>("model")
 
-        if (model == null) {
-            e { "Programmer error: incorrect arguments passed to ${this.javaClass.name}" }
-            return
-        }
-
-        binding.apply {
-            val url = Uri.parse(model.imageUrls.iconByTheme(requireContext()))
-            illustration.load(url, imageLoader)
-            paragraph.text = model.paragraph
-        }
+    if (model == null) {
+      e { "Programmer error: incorrect arguments passed to ${this.javaClass.name}" }
+      return
     }
 
-    companion object {
-        fun newInstance(
-            model: DismissiblePagerModel.NoTitlePage,
-        ) = DismissiblePageNoTitleFragment().also {
-            it.arguments = bundleOf(
-                "model" to model,
-            )
-        }
+    binding.apply {
+      val url = Uri.parse(model.imageUrls.iconByTheme(requireContext()))
+      illustration.load(url, imageLoader)
+      paragraph.text = model.paragraph
     }
+  }
+
+  companion object {
+    fun newInstance(
+      model: DismissiblePagerModel.NoTitlePage,
+    ) = DismissiblePageNoTitleFragment().also {
+      it.arguments = bundleOf(
+        "model" to model,
+      )
+    }
+  }
 }

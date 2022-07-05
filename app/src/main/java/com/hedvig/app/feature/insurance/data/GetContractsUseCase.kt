@@ -9,17 +9,17 @@ import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.safeQuery
 
 class GetContractsUseCase(
-    private val apolloClient: ApolloClient,
-    private val localeManager: LocaleManager,
+  private val apolloClient: ApolloClient,
+  private val localeManager: LocaleManager,
 ) {
-    suspend fun invoke(): Either<ErrorMessage, InsuranceQuery.Data> {
-        return either {
-            val insuranceQueryData = apolloClient
-                .query(InsuranceQuery(localeManager.defaultLocale()))
-                .safeQuery()
-                .toEither(::ErrorMessage)
-                .bind()
-            insuranceQueryData
-        }
+  suspend fun invoke(): Either<ErrorMessage, InsuranceQuery.Data> {
+    return either {
+      val insuranceQueryData = apolloClient
+        .query(InsuranceQuery(localeManager.defaultLocale()))
+        .safeQuery()
+        .toEither(::ErrorMessage)
+        .bind()
+      insuranceQueryData
     }
+  }
 }

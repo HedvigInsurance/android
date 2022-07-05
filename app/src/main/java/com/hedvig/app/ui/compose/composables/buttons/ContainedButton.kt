@@ -17,55 +17,55 @@ import com.hedvig.app.ui.compose.theme.HedvigTheme
 
 @Composable
 fun LargeContainedTextButton(
-    text: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
+  text: String,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+  enabled: Boolean = true,
 ) {
-    LargeContainedButton(
-        onClick = onClick,
-        modifier = modifier,
-        enabled = enabled,
-    ) {
-        Text(text = text)
-    }
+  LargeContainedButton(
+    onClick = onClick,
+    modifier = modifier,
+    enabled = enabled,
+  ) {
+    Text(text = text)
+  }
 }
 
 @Composable
 fun LargeContainedButton(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    colors: ButtonColors = ButtonDefaults.buttonColors(
-        backgroundColor = if (MaterialTheme.colors.isLight) {
-            MaterialTheme.colors.primary
-        } else {
-            MaterialTheme.colors.secondary
-        },
-        contentColor = MaterialTheme.colors.onPrimary,
-    ),
-    content: @Composable RowScope.() -> Unit,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+  enabled: Boolean = true,
+  colors: ButtonColors = ButtonDefaults.buttonColors(
+    backgroundColor = if (MaterialTheme.colors.isLight) {
+      MaterialTheme.colors.primary
+    } else {
+      MaterialTheme.colors.secondary
+    },
+    contentColor = MaterialTheme.colors.onPrimary,
+  ),
+  content: @Composable RowScope.() -> Unit,
 ) {
-    Button(
-        onClick = onClick,
-        enabled = enabled,
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(modifier),
-        shape = MaterialTheme.shapes.large,
-        contentPadding = PaddingValues(dimensionResource(R.dimen.base_margin_double)),
-        colors = colors,
-        content = content,
-    )
+  Button(
+    onClick = onClick,
+    enabled = enabled,
+    modifier = Modifier
+      .fillMaxWidth()
+      .then(modifier),
+    shape = MaterialTheme.shapes.large,
+    contentPadding = PaddingValues(dimensionResource(R.dimen.base_margin_double)),
+    colors = colors,
+    content = content,
+  )
 }
 
 @Preview(
-    name = "Contained Button (Large)",
-    group = "Buttons",
+  name = "Contained Button (Large)",
+  group = "Buttons",
 )
 @Composable
 fun LargeContainedButtonPreview() {
-    HedvigTheme {
-        LargeContainedTextButton(text = "Contained Button (Large)", onClick = {})
-    }
+  HedvigTheme {
+    LargeContainedTextButton(text = "Contained Button (Large)", onClick = {})
+  }
 }

@@ -17,41 +17,41 @@ import org.junit.Rule
 import org.junit.Test
 
 class SingleVariableTest : TestCase() {
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
 
-    @get:Rule
-    val apolloMockServerRule = ApolloMockServerRule(
-        EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(STORY_WITH_GRAPHQL_QUERY_API_AND_SINGLE_VARIABLE)
-        },
-        VARIABLE_QUERY to apolloResponse {
-            success(jsonObjectOf("hello" to variables.getString("variable")))
-        },
+  @get:Rule
+  val apolloMockServerRule = ApolloMockServerRule(
+    EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(STORY_WITH_GRAPHQL_QUERY_API_AND_SINGLE_VARIABLE)
+    },
+    VARIABLE_QUERY to apolloResponse {
+      success(jsonObjectOf("hello" to variables.getString("variable")))
+    },
+  )
+
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
+
+  @Test
+  fun shouldCallGraphQLApiWithVariable() = run {
+    activityRule.launch(
+      EmbarkActivity.newInstance(
+        context(),
+        this.javaClass.name,
+        "",
+      ),
     )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
-
-    @Test
-    fun shouldCallGraphQLApiWithVariable() = run {
-        activityRule.launch(
-            EmbarkActivity.newInstance(
-                context(),
-                this.javaClass.name,
-                "",
-            ),
-        )
-
-        onScreen<EmbarkScreen> {
-            textActionSingleInput { typeText("world") }
-            textActionSubmit { click() }
-            messages {
-                hasSize(1)
-                firstChild<EmbarkScreen.MessageRow> {
-                    text { hasText("api result: world") }
-                }
-            }
+    onScreen<EmbarkScreen> {
+      textActionSingleInput { typeText("world") }
+      textActionSubmit { click() }
+      messages {
+        hasSize(1)
+        firstChild<EmbarkScreen.MessageRow> {
+          text { hasText("api result: world") }
         }
+      }
     }
+  }
 }

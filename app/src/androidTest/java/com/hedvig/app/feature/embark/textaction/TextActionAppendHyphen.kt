@@ -15,30 +15,30 @@ import org.junit.Rule
 import org.junit.Test
 
 class TextActionAppendHyphen : TestCase() {
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(
-                STORY_WITH_TEXT_ACTION_PERSONAL_NUMBER,
-            )
-        },
-    )
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(
+        STORY_WITH_TEXT_ACTION_PERSONAL_NUMBER,
+      )
+    },
+  )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
 
-    @Test
-    fun shouldAddHyphenToInput() = run {
-        activityRule.launch(EmbarkActivity.newInstance(context(), "Story Name", ""))
+  @Test
+  fun shouldAddHyphenToInput() = run {
+    activityRule.launch(EmbarkActivity.newInstance(context(), "Story Name", ""))
 
-        Screen.onScreen<EmbarkScreen> {
-            textActionSubmit { isDisabled() }
-            textActionSingleInput { typeText("9704071234") }
-            textActionSingleInput { hasText("970407-1234") }
-            textActionSubmit { isEnabled() }
-        }
+    Screen.onScreen<EmbarkScreen> {
+      textActionSubmit { isDisabled() }
+      textActionSingleInput { typeText("9704071234") }
+      textActionSingleInput { hasText("970407-1234") }
+      textActionSubmit { isEnabled() }
     }
+  }
 }

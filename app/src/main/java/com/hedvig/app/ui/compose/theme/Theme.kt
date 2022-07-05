@@ -17,41 +17,41 @@ import java.lang.reflect.Method
 
 @Composable
 fun HedvigTheme(
-    colorOverrides: ((Colors) -> Colors)? = null,
-    content: @Composable () -> Unit,
+  colorOverrides: ((Colors) -> Colors)? = null,
+  content: @Composable () -> Unit,
 ) {
-    if (LocalWindowInsets.current == WindowInsets.Empty) {
-        ProvideWindowInsets {
-            InnerTheme(colorOverrides, content)
-        }
-    } else {
-        InnerTheme(colorOverrides, content)
+  if (LocalWindowInsets.current == WindowInsets.Empty) {
+    ProvideWindowInsets {
+      InnerTheme(colorOverrides, content)
     }
+  } else {
+    InnerTheme(colorOverrides, content)
+  }
 }
 
 @Composable
 private fun InnerTheme(colorOverrides: ((Colors) -> Colors)? = null, content: @Composable () -> Unit) {
-    val context = LocalContext.current
-    val key = context.theme.key ?: context.theme
-    val layoutDirection = LocalLayoutDirection.current
-    val themeParameters = remember(key) {
-        createMdcTheme(
-            context = context,
-            layoutDirection = layoutDirection,
-            setDefaultFontFamily = true,
-        )
-    }
-    val colors = themeParameters.colors ?: MaterialTheme.colors
-    MaterialTheme(
-        colors = colorOverrides?.invoke(colors) ?: colors,
-        typography = themeParameters.typography ?: MaterialTheme.typography,
-        shapes = themeParameters.shapes ?: MaterialTheme.shapes,
-    ) {
-        CompositionLocalProvider(
-            LocalContentColor provides MaterialTheme.colors.onBackground,
-            content = content,
-        )
-    }
+  val context = LocalContext.current
+  val key = context.theme.key ?: context.theme
+  val layoutDirection = LocalLayoutDirection.current
+  val themeParameters = remember(key) {
+    createMdcTheme(
+      context = context,
+      layoutDirection = layoutDirection,
+      setDefaultFontFamily = true,
+    )
+  }
+  val colors = themeParameters.colors ?: MaterialTheme.colors
+  MaterialTheme(
+    colors = colorOverrides?.invoke(colors) ?: colors,
+    typography = themeParameters.typography ?: MaterialTheme.typography,
+    shapes = themeParameters.shapes ?: MaterialTheme.shapes,
+  ) {
+    CompositionLocalProvider(
+      LocalContentColor provides MaterialTheme.colors.onBackground,
+      content = content,
+    )
+  }
 }
 
 /*
@@ -78,26 +78,26 @@ private fun InnerTheme(colorOverrides: ((Colors) -> Colors)? = null, content: @C
  * happen on each re-composition.
  */
 private inline val Resources.Theme.key: Any?
-    get() {
-        if (!sThemeGetKeyMethodFetched) {
-            try {
-                @Suppress("PrivateApi", "SoonBlockedPrivateApi")
-                sThemeGetKeyMethod = Resources.Theme::class.java.getDeclaredMethod("getKey")
-                    .apply { isAccessible = true }
-            } catch (e: Exception) {
-                // Failed to retrieve Theme.getKey method
-            }
-            sThemeGetKeyMethodFetched = true
-        }
-        if (sThemeGetKeyMethod != null) {
-            return try {
-                sThemeGetKeyMethod?.invoke(this)
-            } catch (e: ReflectiveOperationException) {
-                // Failed to invoke Theme.getKey()
-            }
-        }
-        return null
+  get() {
+    if (!sThemeGetKeyMethodFetched) {
+      try {
+        @Suppress("PrivateApi", "SoonBlockedPrivateApi")
+        sThemeGetKeyMethod = Resources.Theme::class.java.getDeclaredMethod("getKey")
+          .apply { isAccessible = true }
+      } catch (e: Exception) {
+        // Failed to retrieve Theme.getKey method
+      }
+      sThemeGetKeyMethodFetched = true
     }
+    if (sThemeGetKeyMethod != null) {
+      return try {
+        sThemeGetKeyMethod?.invoke(this)
+      } catch (e: ReflectiveOperationException) {
+        // Failed to invoke Theme.getKey()
+      }
+    }
+    return null
+  }
 
 private var sThemeGetKeyMethodFetched = false
 private var sThemeGetKeyMethod: Method? = null

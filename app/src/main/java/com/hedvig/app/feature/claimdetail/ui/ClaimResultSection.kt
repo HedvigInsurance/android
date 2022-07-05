@@ -30,70 +30,70 @@ import java.util.Locale
 
 @Composable
 fun ClaimResultSection(
-    claimDetailResult: ClaimDetailResult.Closed,
-    locale: Locale,
-    modifier: Modifier = Modifier,
+  claimDetailResult: ClaimDetailResult.Closed,
+  locale: Locale,
+  modifier: Modifier = Modifier,
 ) {
-    Box(modifier) {
-        when (claimDetailResult) {
-            ClaimDetailResult.Closed.NotCompensated -> Pill(
-                stringResource(R.string.claim_decision_not_compensated).uppercase(locale),
-                backgroundColor = MaterialTheme.colors.primary,
+  Box(modifier) {
+    when (claimDetailResult) {
+      ClaimDetailResult.Closed.NotCompensated -> Pill(
+        stringResource(R.string.claim_decision_not_compensated).uppercase(locale),
+        backgroundColor = MaterialTheme.colors.primary,
+      )
+      ClaimDetailResult.Closed.NotCovered -> Pill(
+        stringResource(R.string.claim_decision_not_covered).uppercase(locale),
+        backgroundColor = MaterialTheme.colors.primary,
+      )
+      is ClaimDetailResult.Closed.Paid -> {
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          Pill(
+            stringResource(R.string.claim_decision_paid).uppercase(locale),
+            backgroundColor = ClaimStatusColors.Pill.paid,
+          )
+          if (claimDetailResult.monetaryAmount != null) {
+            Spacer(Modifier.width(12.dp))
+            Text(
+              claimDetailResult.monetaryAmount.formatOnlyNumber(locale),
+              style = MaterialTheme.typography.h4,
+              modifier = Modifier.alignByBaseline(),
             )
-            ClaimDetailResult.Closed.NotCovered -> Pill(
-                stringResource(R.string.claim_decision_not_covered).uppercase(locale),
-                backgroundColor = MaterialTheme.colors.primary,
-            )
-            is ClaimDetailResult.Closed.Paid -> {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Pill(
-                        stringResource(R.string.claim_decision_paid).uppercase(locale),
-                        backgroundColor = ClaimStatusColors.Pill.paid,
-                    )
-                    if (claimDetailResult.monetaryAmount != null) {
-                        Spacer(Modifier.width(12.dp))
-                        Text(
-                            claimDetailResult.monetaryAmount.formatOnlyNumber(locale),
-                            style = MaterialTheme.typography.h4,
-                            modifier = Modifier.alignByBaseline(),
-                        )
-                        Spacer(Modifier.width(2.dp))
-                        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                            Text(
-                                claimDetailResult.monetaryAmount.currency.currencyCode,
-                                style = MaterialTheme.typography.subtitle2,
-                                modifier = Modifier.alignByBaseline(),
-                            )
-                        }
-                    }
-                }
+            Spacer(Modifier.width(2.dp))
+            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+              Text(
+                claimDetailResult.monetaryAmount.currency.currencyCode,
+                style = MaterialTheme.typography.subtitle2,
+                modifier = Modifier.alignByBaseline(),
+              )
             }
+          }
         }
+      }
     }
+  }
 }
 
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun ClaimResultSectionPreview(
-    @PreviewParameter(ClaimDetailResultProvider::class) result: ClaimDetailResult.Closed,
+  @PreviewParameter(ClaimDetailResultProvider::class) result: ClaimDetailResult.Closed,
 ) {
-    HedvigTheme {
-        Surface(
-            color = MaterialTheme.colors.background,
-        ) {
-            ClaimResultSection(result, Locale.getDefault())
-        }
+  HedvigTheme {
+    Surface(
+      color = MaterialTheme.colors.background,
+    ) {
+      ClaimResultSection(result, Locale.getDefault())
     }
+  }
 }
 
 class ClaimDetailResultProvider : CollectionPreviewParameterProvider<ClaimDetailResult.Closed>(
-    listOf(
-        ClaimDetailResult.Closed.Paid(PreviewData.monetaryAmount(2_500.00)),
-        ClaimDetailResult.Closed.Paid(null),
-        ClaimDetailResult.Closed.NotCompensated,
-        ClaimDetailResult.Closed.NotCovered,
-    ),
+  listOf(
+    ClaimDetailResult.Closed.Paid(PreviewData.monetaryAmount(2_500.00)),
+    ClaimDetailResult.Closed.Paid(null),
+    ClaimDetailResult.Closed.NotCompensated,
+    ClaimDetailResult.Closed.NotCovered,
+  ),
 )

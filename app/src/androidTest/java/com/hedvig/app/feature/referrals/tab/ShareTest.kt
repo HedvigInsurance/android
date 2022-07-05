@@ -28,51 +28,51 @@ import org.junit.Test
 
 class ShareTest : TestCase() {
 
-    @get:Rule
-    val activityRule = LazyIntentsActivityScenarioRule(LoggedInActivity::class.java)
+  @get:Rule
+  val activityRule = LazyIntentsActivityScenarioRule(LoggedInActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(LOGGED_IN_DATA)
-        },
-        ReferralsQuery.OPERATION_DOCUMENT to apolloResponse { success(REFERRALS_DATA_WITH_COMPLEX_CODE) },
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(LOGGED_IN_DATA)
+    },
+    ReferralsQuery.OPERATION_DOCUMENT to apolloResponse { success(REFERRALS_DATA_WITH_COMPLEX_CODE) },
+  )
+
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
+
+  @Test
+  fun shouldOpenShareWhenClickingShare() = run {
+    val intent = LoggedInActivity.newInstance(
+      context(),
+      initialTab = LoggedInTabs.REFERRALS,
     )
+    activityRule.launch(intent)
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+    stubExternalIntents()
 
-    @Test
-    fun shouldOpenShareWhenClickingShare() = run {
-        val intent = LoggedInActivity.newInstance(
-            context(),
-            initialTab = LoggedInTabs.REFERRALS,
-        )
-        activityRule.launch(intent)
-
-        stubExternalIntents()
-
-        Screen.onScreen<ReferralTabScreen> {
-            share {
-                isVisible()
-                click()
-            }
-        }
-
-        intended(
-            allOf(
-                hasAction(Intent.ACTION_CHOOSER),
-                hasExtra(
-                    equalTo(Intent.EXTRA_INTENT),
-                    allOf(
-                        hasAction(Intent.ACTION_SEND),
-                        hasExtra(
-                            equalTo(Intent.EXTRA_TEXT),
-                            containsString(Uri.encode(COMPLEX_REFERRAL_CODE)),
-                        ),
-                    ),
-                ),
-            ),
-        )
+    Screen.onScreen<ReferralTabScreen> {
+      share {
+        isVisible()
+        click()
+      }
     }
+
+    intended(
+      allOf(
+        hasAction(Intent.ACTION_CHOOSER),
+        hasExtra(
+          equalTo(Intent.EXTRA_INTENT),
+          allOf(
+            hasAction(Intent.ACTION_SEND),
+            hasExtra(
+              equalTo(Intent.EXTRA_TEXT),
+              containsString(Uri.encode(COMPLEX_REFERRAL_CODE)),
+            ),
+          ),
+        ),
+      ),
+    )
+  }
 }

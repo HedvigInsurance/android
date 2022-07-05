@@ -12,71 +12,71 @@ import com.hedvig.app.feature.keygear.KeyGearValuationViewModel
 import java.time.LocalDate
 
 class MockKeyGearValuationViewModel : KeyGearValuationViewModel() {
-    override val uploadResult = MutableLiveData<KeyGearItemQuery.Data>()
-    override val data = MutableLiveData<KeyGearItemQuery.KeyGearItem>()
+  override val uploadResult = MutableLiveData<KeyGearItemQuery.Data>()
+  override val data = MutableLiveData<KeyGearItemQuery.KeyGearItem>()
 
-    override fun loadItem(id: String) {
-        Handler(getMainLooper()).postDelayed(
-            {
-                data.postValue(
-                    KeyGearItemQuery.KeyGearItem(
-                        __typename = "",
-                        fragments = KeyGearItemQuery.KeyGearItem.Fragments(item),
-                    ),
-                )
-            },
-            250,
-        )
-    }
-
-    override fun updatePurchaseDateAndPrice(
-        id: String,
-        date: LocalDate,
-        price: MonetaryAmountV2Input,
-    ) {
+  override fun loadItem(id: String) {
+    Handler(getMainLooper()).postDelayed(
+      {
         data.postValue(
-            KeyGearItemQuery.KeyGearItem(
-                __typename = "",
-                fragments = KeyGearItemQuery.KeyGearItem.Fragments(
-                    item.copy(
-                        purchasePrice = KeyGearItemFragment.PurchasePrice(
-                            amount = price.amount,
-                        ),
-                    ),
-                ),
-            ),
-        )
-    }
-
-    companion object {
-        val item = KeyGearItemFragment(
+          KeyGearItemQuery.KeyGearItem(
             __typename = "",
-            id = "123",
-            name = "Sak",
-            physicalReferenceHash = null,
-            photos = listOf(
-                KeyGearItemFragment.Photo(
-                    file = KeyGearItemFragment.File(
-                        preSignedUrl = "https://images.unsplash.com/photo-1505156868547-9b49f4df4e04",
-                    ),
-                ),
-            ),
-            receipts = emptyList(),
-            category = KeyGearItemCategory.PHONE,
-            purchasePrice = null,
-            timeOfPurchase = null,
-            deductible = KeyGearItemFragment.Deductible(
-                amount = "1500.00",
-            ),
-            maxInsurableAmount = KeyGearItemFragment.MaxInsurableAmount(
-                amount = "50000",
-            ),
-            deleted = false,
-            fragments = KeyGearItemFragment.Fragments(
-                KeyGearItemValuationFragment(
-                    valuation = null,
-                ),
-            ),
+            fragments = KeyGearItemQuery.KeyGearItem.Fragments(item),
+          ),
         )
-    }
+      },
+      250,
+    )
+  }
+
+  override fun updatePurchaseDateAndPrice(
+    id: String,
+    date: LocalDate,
+    price: MonetaryAmountV2Input,
+  ) {
+    data.postValue(
+      KeyGearItemQuery.KeyGearItem(
+        __typename = "",
+        fragments = KeyGearItemQuery.KeyGearItem.Fragments(
+          item.copy(
+            purchasePrice = KeyGearItemFragment.PurchasePrice(
+              amount = price.amount,
+            ),
+          ),
+        ),
+      ),
+    )
+  }
+
+  companion object {
+    val item = KeyGearItemFragment(
+      __typename = "",
+      id = "123",
+      name = "Sak",
+      physicalReferenceHash = null,
+      photos = listOf(
+        KeyGearItemFragment.Photo(
+          file = KeyGearItemFragment.File(
+            preSignedUrl = "https://images.unsplash.com/photo-1505156868547-9b49f4df4e04",
+          ),
+        ),
+      ),
+      receipts = emptyList(),
+      category = KeyGearItemCategory.PHONE,
+      purchasePrice = null,
+      timeOfPurchase = null,
+      deductible = KeyGearItemFragment.Deductible(
+        amount = "1500.00",
+      ),
+      maxInsurableAmount = KeyGearItemFragment.MaxInsurableAmount(
+        amount = "50000",
+      ),
+      deleted = false,
+      fragments = KeyGearItemFragment.Fragments(
+        KeyGearItemValuationFragment(
+          valuation = null,
+        ),
+      ),
+    )
+  }
 }

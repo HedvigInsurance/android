@@ -25,67 +25,67 @@ import org.junit.Test
 
 class CodeSnackbarTest : TestCase() {
 
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(LOGGED_IN_DATA)
-        },
-        ReferralsQuery.OPERATION_DOCUMENT to apolloResponse { success(REFERRALS_DATA_WITH_NO_DISCOUNTS) },
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(LOGGED_IN_DATA)
+    },
+    ReferralsQuery.OPERATION_DOCUMENT to apolloResponse { success(REFERRALS_DATA_WITH_NO_DISCOUNTS) },
+  )
+
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
+
+  @get:Rule
+  val featureFlagRule = FeatureFlagRule(
+    Feature.REFERRAL_CAMPAIGN to false,
+    Feature.REFERRALS to true,
+    Feature.KEY_GEAR to false,
+  )
+
+  @Before
+  fun setup() {
+    runCatching {
+      context()
+        .getSystemService<ClipboardManager>()
+        ?.clearPrimaryClip()
+    }
+  }
+
+  @Test
+  fun shouldShowSnackbarWhenClickingCode() = run {
+    val intent = LoggedInActivity.newInstance(
+      context(),
+      initialTab = LoggedInTabs.REFERRALS,
     )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+    activityRule.launch(intent)
 
-    @get:Rule
-    val featureFlagRule = FeatureFlagRule(
-        Feature.REFERRAL_CAMPAIGN to false,
-        Feature.REFERRALS to true,
-        Feature.KEY_GEAR to false,
-    )
-
-    @Before
-    fun setup() {
-        runCatching {
-            context()
-                .getSystemService<ClipboardManager>()
-                ?.clearPrimaryClip()
+    Screen.onScreen<ReferralTabScreen> {
+      share { isVisible() }
+      recycler {
+        hasSize(3)
+        childAt<ReferralTabScreen.CodeItem>(2) {
+          placeholder { isGone() }
+          code {
+            isVisible()
+            hasText("TEST123")
+            longClick()
+          }
         }
+      }
+      codeCopied {
+        isDisplayed()
+      }
     }
 
-    @Test
-    fun shouldShowSnackbarWhenClickingCode() = run {
-        val intent = LoggedInActivity.newInstance(
-            context(),
-            initialTab = LoggedInTabs.REFERRALS,
-        )
-
-        activityRule.launch(intent)
-
-        Screen.onScreen<ReferralTabScreen> {
-            share { isVisible() }
-            recycler {
-                hasSize(3)
-                childAt<ReferralTabScreen.CodeItem>(2) {
-                    placeholder { isGone() }
-                    code {
-                        isVisible()
-                        hasText("TEST123")
-                        longClick()
-                    }
-                }
-            }
-            codeCopied {
-                isDisplayed()
-            }
-        }
-
-        activityRule.scenario.onActivity {
-            val clipboardContent = context()
-                .getSystemService<ClipboardManager>()?.primaryClip?.getItemAt(0)?.text
-            assertThat(clipboardContent).isEqualTo("TEST123")
-        }
+    activityRule.scenario.onActivity {
+      val clipboardContent = context()
+        .getSystemService<ClipboardManager>()?.primaryClip?.getItemAt(0)?.text
+      assertThat(clipboardContent).isEqualTo("TEST123")
     }
+  }
 }

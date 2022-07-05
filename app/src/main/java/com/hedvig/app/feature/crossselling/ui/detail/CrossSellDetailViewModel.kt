@@ -16,52 +16,52 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class CrossSellDetailViewModel(
-    private val crossSellAction: CrossSellData.Action,
-    hAnalytics: HAnalytics,
-    private val createQuoteCartUseCase: CreateQuoteCartUseCase,
+  private val crossSellAction: CrossSellData.Action,
+  hAnalytics: HAnalytics,
+  private val createQuoteCartUseCase: CreateQuoteCartUseCase,
 ) : ViewModel() {
 
-    private val _viewState = MutableStateFlow(ViewState())
-    val viewState = _viewState.asStateFlow()
+  private val _viewState = MutableStateFlow(ViewState())
+  val viewState = _viewState.asStateFlow()
 
-    init {
-        hAnalytics.screenView(AppScreen.CROSS_SELL_DETAIL)
+  init {
+    hAnalytics.screenView(AppScreen.CROSS_SELL_DETAIL)
+  }
+
+  data class ViewState(
+    val navigateEmbark: NavigateEmbark? = null,
+    val navigateChat: NavigateChat? = null,
+    val errorMessage: String? = null,
+    val loading: Boolean = false,
+  )
+
+  fun onCtaClick() {
+    viewModelScope.launch {
+      when (val action = crossSellAction) {
+        CrossSellData.Action.Chat -> _viewState.value = ViewState(navigateChat = NavigateChat)
+        is CrossSellData.Action.Embark -> _viewState.value = action.toViewState()
+      }
     }
+  }
 
-    data class ViewState(
-        val navigateEmbark: NavigateEmbark? = null,
-        val navigateChat: NavigateChat? = null,
-        val errorMessage: String? = null,
-        val loading: Boolean = false,
-    )
-
-    fun onCtaClick() {
-        viewModelScope.launch {
-            when (val action = crossSellAction) {
-                CrossSellData.Action.Chat -> _viewState.value = ViewState(navigateChat = NavigateChat)
-                is CrossSellData.Action.Embark -> _viewState.value = action.toViewState()
-            }
-        }
+  private suspend fun CrossSellData.Action.Embark.toViewState(): ViewState {
+    return when (val result = createQuoteCartUseCase.invoke()) {
+      is Either.Left -> ViewState(errorMessage = result.value.message)
+      is Either.Right -> {
+        val embarkStoryId = appendQuoteCartId(embarkStoryId, result.value.id)
+        val navigateEmbark = NavigateEmbark(embarkStoryId, title)
+        ViewState(navigateEmbark = navigateEmbark)
+      }
     }
+  }
 
-    private suspend fun CrossSellData.Action.Embark.toViewState(): ViewState {
-        return when (val result = createQuoteCartUseCase.invoke()) {
-            is Either.Left -> ViewState(errorMessage = result.value.message)
-            is Either.Right -> {
-                val embarkStoryId = appendQuoteCartId(embarkStoryId, result.value.id)
-                val navigateEmbark = NavigateEmbark(embarkStoryId, title)
-                ViewState(navigateEmbark = navigateEmbark)
-            }
-        }
-    }
+  fun actionOpened() {
+    _viewState.value = ViewState()
+  }
 
-    fun actionOpened() {
-        _viewState.value = ViewState()
+  fun dismissError() {
+    _viewState.update {
+      it.copy(errorMessage = null)
     }
-
-    fun dismissError() {
-        _viewState.update {
-            it.copy(errorMessage = null)
-        }
-    }
+  }
 }

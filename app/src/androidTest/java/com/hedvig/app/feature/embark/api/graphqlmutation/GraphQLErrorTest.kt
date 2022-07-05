@@ -22,45 +22,45 @@ import org.junit.Rule
 import org.junit.Test
 
 class GraphQLErrorTest : TestCase() {
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
 
-    @get:Rule
-    val compose = createComposeRule()
+  @get:Rule
+  val compose = createComposeRule()
 
-    @get:Rule
-    val apolloMockServerRule = ApolloMockServerRule(
-        EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse { success(STORY_WITH_GRAPHQL_MUTATION) },
-        HELLO_MUTATION to apolloResponse {
-            graphQLError(jsonObjectOf("message" to "some error"))
-        },
+  @get:Rule
+  val apolloMockServerRule = ApolloMockServerRule(
+    EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse { success(STORY_WITH_GRAPHQL_MUTATION) },
+    HELLO_MUTATION to apolloResponse {
+      graphQLError(jsonObjectOf("message" to "some error"))
+    },
+  )
+
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
+
+  @Test
+  fun shouldRedirectWhenLoadingPassageWithGraphQLMutationApiThatIsError() = run {
+    activityRule.launch(
+      EmbarkActivity.newInstance(
+        context(),
+        this.javaClass.name,
+        "",
+      ),
     )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
-
-    @Test
-    fun shouldRedirectWhenLoadingPassageWithGraphQLMutationApiThatIsError() = run {
-        activityRule.launch(
-            EmbarkActivity.newInstance(
-                context(),
-                this.javaClass.name,
-                "",
-            ),
-        )
-
-        Screen.onScreen<EmbarkScreen> {
-            compose
-                .onNodeWithTag("SelectActionGrid")
-                .onChildren()
-                .onFirst()
-                .performClick()
-            messages {
-                hasSize(1)
-                firstChild<EmbarkScreen.MessageRow> {
-                    text { hasText("a fourth message") }
-                }
-            }
+    Screen.onScreen<EmbarkScreen> {
+      compose
+        .onNodeWithTag("SelectActionGrid")
+        .onChildren()
+        .onFirst()
+        .performClick()
+      messages {
+        hasSize(1)
+        firstChild<EmbarkScreen.MessageRow> {
+          text { hasText("a fourth message") }
         }
+      }
     }
+  }
 }

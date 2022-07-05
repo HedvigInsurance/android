@@ -5,9 +5,9 @@ import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 
 class CharityViewModel(
-    hAnalytics: HAnalytics,
+  hAnalytics: HAnalytics,
 ) : ViewModel() {
-    init {
-        hAnalytics.screenView(AppScreen.CHARITY)
-    }
+  init {
+    hAnalytics.screenView(AppScreen.CHARITY)
+  }
 }

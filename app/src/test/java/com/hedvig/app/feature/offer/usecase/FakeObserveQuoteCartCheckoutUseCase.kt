@@ -7,9 +7,9 @@ import com.hedvig.app.util.apollo.QueryResult
 import kotlinx.coroutines.flow.Flow
 
 class FakeObserveQuoteCartCheckoutUseCase(
-    private val function: (QuoteCartId) -> Flow<Either<QueryResult.Error, Checkout>>,
+  private val function: (QuoteCartId) -> Flow<Either<QueryResult.Error, Checkout>>,
 ) : ObserveQuoteCartCheckoutUseCase {
-    override fun invoke(quoteCartId: QuoteCartId): Flow<Either<QueryResult.Error, Checkout>> {
-        return function(quoteCartId)
-    }
+  override fun invoke(quoteCartId: QuoteCartId): Flow<Either<QueryResult.Error, Checkout>> {
+    return function(quoteCartId)
+  }
 }

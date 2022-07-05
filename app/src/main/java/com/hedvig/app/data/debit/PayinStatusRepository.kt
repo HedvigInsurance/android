@@ -10,29 +10,29 @@ import com.hedvig.android.owldroid.graphql.PayinStatusQuery
 import kotlinx.coroutines.flow.Flow
 
 class PayinStatusRepository(
-    private val apolloClient: ApolloClient,
+  private val apolloClient: ApolloClient,
 ) {
-    private val payinStatusQuery = PayinStatusQuery()
+  private val payinStatusQuery = PayinStatusQuery()
 
-    fun payinStatusFlow(): Flow<ApolloResponse<PayinStatusQuery.Data>> = apolloClient
-        .query(payinStatusQuery)
-        .watch()
+  fun payinStatusFlow(): Flow<ApolloResponse<PayinStatusQuery.Data>> = apolloClient
+    .query(payinStatusQuery)
+    .watch()
 
-    suspend fun refreshPayinStatus() {
-        val response = apolloClient
-            .query(payinStatusQuery)
-            .fetchPolicy(FetchPolicy.NetworkOnly)
-            .execute()
+  suspend fun refreshPayinStatus() {
+    val response = apolloClient
+      .query(payinStatusQuery)
+      .fetchPolicy(FetchPolicy.NetworkOnly)
+      .execute()
 
-        response.data?.let { data ->
-            val cachedData = apolloClient
-                .apolloStore
-                .readOperation(payinStatusQuery)
+    response.data?.let { data ->
+      val cachedData = apolloClient
+        .apolloStore
+        .readOperation(payinStatusQuery)
 
-            val newData = cachedData.copy(payinMethodStatus = data.payinMethodStatus)
-            apolloClient
-                .apolloStore
-                .writeOperation(payinStatusQuery, newData)
-        }
+      val newData = cachedData.copy(payinMethodStatus = data.payinMethodStatus)
+      apolloClient
+        .apolloStore
+        .writeOperation(payinStatusQuery, newData)
     }
+  }
 }

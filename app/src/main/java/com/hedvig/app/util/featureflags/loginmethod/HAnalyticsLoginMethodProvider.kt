@@ -4,9 +4,9 @@ import com.hedvig.hanalytics.HAnalytics
 import com.hedvig.hanalytics.LoginMethod
 
 class HAnalyticsLoginMethodProvider(
-    private val hAnalytics: HAnalytics,
+  private val hAnalytics: HAnalytics,
 ) : LoginMethodProvider {
-    override suspend fun getLoginMethod(): LoginMethod {
-        return hAnalytics.loginMethod()
-    }
+  override suspend fun getLoginMethod(): LoginMethod {
+    return hAnalytics.loginMethod()
+  }
 }

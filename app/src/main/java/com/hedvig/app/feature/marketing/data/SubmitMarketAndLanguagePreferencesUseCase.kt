@@ -11,20 +11,20 @@ import com.hedvig.app.util.LocaleManager
 import com.hedvig.app.util.apollo.safeQuery
 
 class SubmitMarketAndLanguagePreferencesUseCase(
-    private val apolloClient: ApolloClient,
-    private val context: Context,
-    private val localeManager: LocaleManager,
-    private val marketManager: MarketManager,
+  private val apolloClient: ApolloClient,
+  private val context: Context,
+  private val localeManager: LocaleManager,
+  private val marketManager: MarketManager,
 ) {
-    suspend fun invoke(language: Language, market: Market) = apolloClient
-        .mutation(
-            UpdateLanguageMutation(
-                makeLocaleString(language.apply(context), market),
-                localeManager.defaultLocale(),
-            ),
-        )
-        .safeQuery()
-        .toEither()
-        .tap { marketManager.hasSelectedMarket = true }
-        .map { }
+  suspend fun invoke(language: Language, market: Market) = apolloClient
+    .mutation(
+      UpdateLanguageMutation(
+        makeLocaleString(language.apply(context), market),
+        localeManager.defaultLocale(),
+      ),
+    )
+    .safeQuery()
+    .toEither()
+    .tap { marketManager.hasSelectedMarket = true }
+    .map { }
 }

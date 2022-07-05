@@ -17,41 +17,41 @@ import org.junit.Rule
 import org.junit.Test
 
 class SingleVariableTest : TestCase() {
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
 
-    @get:Rule
-    val apolloMockServerRule = ApolloMockServerRule(
-        EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(STORY_WITH_GRAPHQL_MUTATION_AND_SINGLE_VARIABLE)
-        },
-        VARIABLE_MUTATION to apolloResponse {
-            success(jsonObjectOf("hello" to variables.getString("variable")))
-        },
+  @get:Rule
+  val apolloMockServerRule = ApolloMockServerRule(
+    EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(STORY_WITH_GRAPHQL_MUTATION_AND_SINGLE_VARIABLE)
+    },
+    VARIABLE_MUTATION to apolloResponse {
+      success(jsonObjectOf("hello" to variables.getString("variable")))
+    },
+  )
+
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
+
+  @Test
+  fun shouldRedirectWhenLoadingPassageWithGraphQLMutationWithSingleVariable() = run {
+    activityRule.launch(
+      EmbarkActivity.newInstance(
+        context(),
+        this.javaClass.name,
+        "",
+      ),
     )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
-
-    @Test
-    fun shouldRedirectWhenLoadingPassageWithGraphQLMutationWithSingleVariable() = run {
-        activityRule.launch(
-            EmbarkActivity.newInstance(
-                context(),
-                this.javaClass.name,
-                "",
-            ),
-        )
-
-        Screen.onScreen<EmbarkScreen> {
-            textActionSingleInput { typeText("world") }
-            textActionSubmit { click() }
-            messages {
-                hasSize(1)
-                firstChild<EmbarkScreen.MessageRow> {
-                    text { hasText("api result: world") }
-                }
-            }
+    Screen.onScreen<EmbarkScreen> {
+      textActionSingleInput { typeText("world") }
+      textActionSubmit { click() }
+      messages {
+        hasSize(1)
+        firstChild<EmbarkScreen.MessageRow> {
+          text { hasText("api result: world") }
         }
+      }
     }
+  }
 }

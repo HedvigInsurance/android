@@ -21,37 +21,37 @@ import org.junit.Rule
 import org.junit.Test
 
 class UpcomingRenewalTest : TestCase() {
-    @get:Rule
-    val activityRule = LazyIntentsActivityScenarioRule(LoggedInActivity::class.java)
+  @get:Rule
+  val activityRule = LazyIntentsActivityScenarioRule(LoggedInActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(LOGGED_IN_DATA)
-        },
-        HomeQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(HOME_DATA_UPCOMING_RENEWAL)
-        },
-    )
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(LOGGED_IN_DATA)
+    },
+    HomeQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(HOME_DATA_UPCOMING_RENEWAL)
+    },
+  )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
 
-    @Test
-    fun shouldShowRenewalWhenUserHasRenewal() = run {
-        activityRule.launch(LoggedInActivity.newInstance(context()))
-        stubExternalIntents()
-        Screen.onScreen<HomeTabScreen> {
-            recycler {
-                childAt<HomeTabScreen.UpcomingRenewal>(3) {
-                    title { hasText(R.string.DASHBOARD_RENEWAL_PROMPTER_TITLE, HomeDataBuilder.CONTRACT_DISPLAY_NAME) }
-                    button {
-                        hasText(R.string.DASHBOARD_RENEWAL_PROMPTER_CTA)
-                        click()
-                    }
-                    link { intended() }
-                }
-            }
+  @Test
+  fun shouldShowRenewalWhenUserHasRenewal() = run {
+    activityRule.launch(LoggedInActivity.newInstance(context()))
+    stubExternalIntents()
+    Screen.onScreen<HomeTabScreen> {
+      recycler {
+        childAt<HomeTabScreen.UpcomingRenewal>(3) {
+          title { hasText(R.string.DASHBOARD_RENEWAL_PROMPTER_TITLE, HomeDataBuilder.CONTRACT_DISPLAY_NAME) }
+          button {
+            hasText(R.string.DASHBOARD_RENEWAL_PROMPTER_CTA)
+            click()
+          }
+          link { intended() }
         }
+      }
     }
+  }
 }

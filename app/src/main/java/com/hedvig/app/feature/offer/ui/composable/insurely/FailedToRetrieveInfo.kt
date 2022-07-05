@@ -24,54 +24,54 @@ import com.hedvig.app.ui.compose.theme.HedvigTheme
 
 @Composable
 fun FailedToRetrieveInfo(insuranceProviderDisplayName: String?) {
-    Row(
-        verticalAlignment = Alignment.Top,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = Modifier.padding(
-            start = 16.dp,
-            top = 20.dp,
-            end = 16.dp,
-            bottom = 16.dp,
-        ),
+  Row(
+    verticalAlignment = Alignment.Top,
+    horizontalArrangement = Arrangement.spacedBy(12.dp),
+    modifier = Modifier.padding(
+      start = 16.dp,
+      top = 20.dp,
+      end = 16.dp,
+      bottom = 16.dp,
+    ),
+  ) {
+    Icon(painterResource(R.drawable.ic_warning_triangle), null)
+    Column(
+      verticalArrangement = Arrangement.spacedBy(4.dp),
+      modifier = Modifier.fillMaxWidth(),
     ) {
-        Icon(painterResource(R.drawable.ic_warning_triangle), null)
-        Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Text(
-                text = if (insuranceProviderDisplayName != null) {
-                    stringResource(R.string.offer_screen_insurely_error_title, insuranceProviderDisplayName)
-                } else {
-                    stringResource(R.string.offer_screen_insurely_multiple_error_title)
-                },
-                style = MaterialTheme.typography.subtitle1,
-            )
-            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                Text(
-                    text = if (insuranceProviderDisplayName != null) {
-                        stringResource(R.string.offer_screen_insurely_error_description, insuranceProviderDisplayName)
-                    } else {
-                        stringResource(R.string.offer_screen_insurely_multiple_error_description)
-                    },
-                    style = MaterialTheme.typography.body2,
-                )
-            }
-        }
+      Text(
+        text = if (insuranceProviderDisplayName != null) {
+          stringResource(R.string.offer_screen_insurely_error_title, insuranceProviderDisplayName)
+        } else {
+          stringResource(R.string.offer_screen_insurely_multiple_error_title)
+        },
+        style = MaterialTheme.typography.subtitle1,
+      )
+      CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+        Text(
+          text = if (insuranceProviderDisplayName != null) {
+            stringResource(R.string.offer_screen_insurely_error_description, insuranceProviderDisplayName)
+          } else {
+            stringResource(R.string.offer_screen_insurely_multiple_error_description)
+          },
+          style = MaterialTheme.typography.body2,
+        )
+      }
     }
+  }
 }
 
 @Preview
 @Composable
 fun FailedToRetrieveInfoPreview() {
-    HedvigTheme {
-        Surface(
-            color = MaterialTheme.colors.background,
-        ) {
-            Column {
-                FailedToRetrieveInfo(null)
-                FailedToRetrieveInfo("FakeInsuranceProvider")
-            }
-        }
+  HedvigTheme {
+    Surface(
+      color = MaterialTheme.colors.background,
+    ) {
+      Column {
+        FailedToRetrieveInfo(null)
+        FailedToRetrieveInfo("FakeInsuranceProvider")
+      }
     }
+  }
 }

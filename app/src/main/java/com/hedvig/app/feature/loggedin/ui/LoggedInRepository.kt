@@ -8,11 +8,11 @@ import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
 
 class LoggedInRepository(
-    private val apolloClient: ApolloClient,
-    private val localeManager: LocaleManager,
+  private val apolloClient: ApolloClient,
+  private val localeManager: LocaleManager,
 ) {
-    suspend fun loggedInData(): Either<QueryResult.Error, LoggedInQuery.Data> = apolloClient
-        .query(LoggedInQuery(localeManager.defaultLocale()))
-        .safeQuery()
-        .toEither()
+  suspend fun loggedInData(): Either<QueryResult.Error, LoggedInQuery.Data> = apolloClient
+    .query(LoggedInQuery(localeManager.defaultLocale()))
+    .safeQuery()
+    .toEither()
 }

@@ -12,47 +12,47 @@ import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.app.util.featureflags.flags.Feature
 
 class GetAddressChangeStoryIdUseCase(
-    private val createQuoteCartUseCase: CreateQuoteCartUseCase,
-    private val apolloClient: ApolloClient,
-    private val featureManager: FeatureManager,
+  private val createQuoteCartUseCase: CreateQuoteCartUseCase,
+  private val apolloClient: ApolloClient,
+  private val featureManager: FeatureManager,
 ) {
 
-    suspend fun invoke(): SelfChangeEligibilityResult {
-        if (!featureManager.isFeatureEnabled(Feature.MOVING_FLOW)) {
-            return SelfChangeEligibilityResult.Blocked
-        }
-        val activeContractBundlesQueryData = apolloClient.query(ActiveContractBundlesQuery())
-            .safeQuery()
-            .toEither()
-            .getOrHandle { errorQueryResult ->
-                return SelfChangeEligibilityResult.Error(errorQueryResult.message)
-            }
-
-        val storyId = activeContractBundlesQueryData.activeContractBundles
-            .firstOrNull()
-            ?.angelStories
-            ?.addressChangeV2
-            ?: return SelfChangeEligibilityResult.Blocked
-
-        val storyIdWithQuoteCartId = addQuoteCartId(storyId).getOrHandle { errorMessage ->
-            return SelfChangeEligibilityResult.Error(errorMessage.message)
-        }
-        return SelfChangeEligibilityResult.Eligible(storyIdWithQuoteCartId)
+  suspend fun invoke(): SelfChangeEligibilityResult {
+    if (!featureManager.isFeatureEnabled(Feature.MOVING_FLOW)) {
+      return SelfChangeEligibilityResult.Blocked
     }
+    val activeContractBundlesQueryData = apolloClient.query(ActiveContractBundlesQuery())
+      .safeQuery()
+      .toEither()
+      .getOrHandle { errorQueryResult ->
+        return SelfChangeEligibilityResult.Error(errorQueryResult.message)
+      }
 
-    private suspend fun addQuoteCartId(storyId: String): Either<ErrorMessage, String> {
-        return createQuoteCartUseCase.invoke().map { quoteCartId -> appendQuoteCartId(storyId, quoteCartId.id) }
-    }
+    val storyId = activeContractBundlesQueryData.activeContractBundles
+      .firstOrNull()
+      ?.angelStories
+      ?.addressChangeV2
+      ?: return SelfChangeEligibilityResult.Blocked
 
-    sealed class SelfChangeEligibilityResult {
-        data class Eligible(val embarkStoryId: String) : SelfChangeEligibilityResult()
-        object Blocked : SelfChangeEligibilityResult()
-        data class Error(val message: String?) : SelfChangeEligibilityResult()
+    val storyIdWithQuoteCartId = addQuoteCartId(storyId).getOrHandle { errorMessage ->
+      return SelfChangeEligibilityResult.Error(errorMessage.message)
     }
+    return SelfChangeEligibilityResult.Eligible(storyIdWithQuoteCartId)
+  }
+
+  private suspend fun addQuoteCartId(storyId: String): Either<ErrorMessage, String> {
+    return createQuoteCartUseCase.invoke().map { quoteCartId -> appendQuoteCartId(storyId, quoteCartId.id) }
+  }
+
+  sealed class SelfChangeEligibilityResult {
+    data class Eligible(val embarkStoryId: String) : SelfChangeEligibilityResult()
+    object Blocked : SelfChangeEligibilityResult()
+    data class Error(val message: String?) : SelfChangeEligibilityResult()
+  }
 }
 
 fun appendQuoteCartId(embarkStoryId: String, quoteCartId: String) = if (embarkStoryId.contains("?")) {
-    "$embarkStoryId&$QUOTE_CART_ID_KEY=$quoteCartId"
+  "$embarkStoryId&$QUOTE_CART_ID_KEY=$quoteCartId"
 } else {
-    "$embarkStoryId?$QUOTE_CART_ID_KEY=$quoteCartId"
+  "$embarkStoryId?$QUOTE_CART_ID_KEY=$quoteCartId"
 }

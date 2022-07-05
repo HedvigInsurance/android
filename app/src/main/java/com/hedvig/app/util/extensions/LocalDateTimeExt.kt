@@ -6,11 +6,11 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 
 fun Long.epochMillisToLocalDateTime(): LocalDateTime {
-    return LocalDateTime.ofInstant(Instant.ofEpochMilli(this), ZoneId.systemDefault())
+  return LocalDateTime.ofInstant(Instant.ofEpochMilli(this), ZoneId.systemDefault())
 }
 
 fun Long.epochMillisToLocalDate(): LocalDate {
-    return epochMillisToLocalDateTime().toLocalDate()
+  return epochMillisToLocalDateTime().toLocalDate()
 }
 
 fun LocalDateTime.isToday() = toLocalDate().isEqual(LocalDate.now())

@@ -25,39 +25,39 @@ import java.util.Locale
 
 @Composable
 fun LoadingRetrieval(locale: Locale) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 24.dp),
-    ) {
-        val resources = LocalContext.current.resources
-        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-            Text(
-                text = resources.getQuantityString(R.plurals.offer_switcher_title, 2).uppercase(locale),
-                style = MaterialTheme.typography.caption,
-            )
-        }
-        Spacer(Modifier.height(24.dp))
-        CircularProgressIndicator()
-        Spacer(Modifier.height(16.dp))
-        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-            Text(
-                text = stringResource(R.string.offer_screen_insurely_card_loading_support_text),
-                style = MaterialTheme.typography.body2,
-            )
-        }
+  Column(
+    horizontalAlignment = Alignment.CenterHorizontally,
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(horizontal = 16.dp, vertical = 24.dp),
+  ) {
+    val resources = LocalContext.current.resources
+    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+      Text(
+        text = resources.getQuantityString(R.plurals.offer_switcher_title, 2).uppercase(locale),
+        style = MaterialTheme.typography.caption,
+      )
     }
+    Spacer(Modifier.height(24.dp))
+    CircularProgressIndicator()
+    Spacer(Modifier.height(16.dp))
+    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+      Text(
+        text = stringResource(R.string.offer_screen_insurely_card_loading_support_text),
+        style = MaterialTheme.typography.body2,
+      )
+    }
+  }
 }
 
 @Preview
 @Composable
 fun LoadingRetrievalPreview() {
-    HedvigTheme {
-        Surface(
-            color = MaterialTheme.colors.background,
-        ) {
-            LoadingRetrieval(Locale.ENGLISH)
-        }
+  HedvigTheme {
+    Surface(
+      color = MaterialTheme.colors.background,
+    ) {
+      LoadingRetrieval(Locale.ENGLISH)
     }
+  }
 }

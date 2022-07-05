@@ -12,100 +12,100 @@ import com.hedvig.hanalytics.PaymentType
 import java.time.LocalDate
 
 sealed class HomeModel {
-    sealed class BigText : HomeModel() {
-        data class Switching(
-            val name: String,
-        ) : BigText()
+  sealed class BigText : HomeModel() {
+    data class Switching(
+      val name: String,
+    ) : BigText()
 
-        data class Pending(
-            val name: String,
-        ) : BigText()
+    data class Pending(
+      val name: String,
+    ) : BigText()
 
-        data class ActiveInFuture(
-            val name: String,
-            val inception: LocalDate,
-        ) : BigText()
+    data class ActiveInFuture(
+      val name: String,
+      val inception: LocalDate,
+    ) : BigText()
 
-        data class Active(
-            val name: String,
-        ) : BigText()
+    data class Active(
+      val name: String,
+    ) : BigText()
 
-        data class Terminated(
-            val name: String,
-        ) : BigText()
+    data class Terminated(
+      val name: String,
+    ) : BigText()
+  }
+
+  data class UpcomingRenewal(
+    val contractDisplayName: String,
+    val upcomingRenewal: HomeQuery.UpcomingRenewal,
+  ) : HomeModel()
+
+  sealed class BodyText : HomeModel() {
+    object Pending : BodyText()
+    object ActiveInFuture : BodyText()
+    object Terminated : BodyText()
+    object Switching : BodyText()
+  }
+
+  data class ClaimStatus(
+    val claimStatusCardsUiState: NonEmptyList<ClaimStatusCardUiState>,
+  ) : HomeModel()
+
+  data class Space(val height: Dp) : HomeModel()
+
+  sealed class StartClaimOutlined : HomeModel() {
+    @get:StringRes
+    abstract val textId: Int
+
+    object FirstClaim : StartClaimOutlined() {
+      override val textId: Int
+        get() = R.string.home_tab_claim_button_text
     }
 
-    data class UpcomingRenewal(
-        val contractDisplayName: String,
-        val upcomingRenewal: HomeQuery.UpcomingRenewal,
-    ) : HomeModel()
+    object NewClaim : StartClaimOutlined() {
+      override val textId: Int
+        get() = R.string.home_open_claim_start_new_claim_button
+    }
+  }
 
-    sealed class BodyText : HomeModel() {
-        object Pending : BodyText()
-        object ActiveInFuture : BodyText()
-        object Terminated : BodyText()
-        object Switching : BodyText()
+  sealed class StartClaimContained : HomeModel() {
+    @get:StringRes
+    abstract val textId: Int
+
+    object FirstClaim : StartClaimContained() {
+      override val textId: Int
+        get() = R.string.home_tab_claim_button_text
     }
 
-    data class ClaimStatus(
-        val claimStatusCardsUiState: NonEmptyList<ClaimStatusCardUiState>,
-    ) : HomeModel()
-
-    data class Space(val height: Dp) : HomeModel()
-
-    sealed class StartClaimOutlined : HomeModel() {
-        @get:StringRes
-        abstract val textId: Int
-
-        object FirstClaim : StartClaimOutlined() {
-            override val textId: Int
-                get() = R.string.home_tab_claim_button_text
-        }
-
-        object NewClaim : StartClaimOutlined() {
-            override val textId: Int
-                get() = R.string.home_open_claim_start_new_claim_button
-        }
+    object NewClaim : StartClaimContained() {
+      override val textId: Int
+        get() = R.string.home_open_claim_start_new_claim_button
     }
+  }
 
-    sealed class StartClaimContained : HomeModel() {
-        @get:StringRes
-        abstract val textId: Int
+  data class ConnectPayin(
+    val payinType: PaymentType,
+  ) : HomeModel()
 
-        object FirstClaim : StartClaimContained() {
-            override val textId: Int
-                get() = R.string.home_tab_claim_button_text
-        }
+  data class PSA(val inner: HomeQuery.ImportantMessage) : HomeModel()
 
-        object NewClaim : StartClaimContained() {
-            override val textId: Int
-                get() = R.string.home_open_claim_start_new_claim_button
-        }
-    }
+  data class HowClaimsWork(val pages: List<HomeQuery.HowClaimsWork>) : HomeModel()
 
-    data class ConnectPayin(
-        val payinType: PaymentType,
-    ) : HomeModel()
+  object Error : HomeModel()
 
-    data class PSA(val inner: HomeQuery.ImportantMessage) : HomeModel()
+  sealed class CommonClaim : HomeModel() {
+    data class Emergency(
+      val inner: EmergencyData,
+    ) : CommonClaim()
 
-    data class HowClaimsWork(val pages: List<HomeQuery.HowClaimsWork>) : HomeModel()
+    data class TitleAndBulletPoints(
+      val inner: CommonClaimsData,
+    ) : CommonClaim()
+  }
 
-    object Error : HomeModel()
+  data class Header(val stringRes: Int) : HomeModel()
 
-    sealed class CommonClaim : HomeModel() {
-        data class Emergency(
-            val inner: EmergencyData,
-        ) : CommonClaim()
+  data class PendingAddressChange(val address: String) : HomeModel()
 
-        data class TitleAndBulletPoints(
-            val inner: CommonClaimsData,
-        ) : CommonClaim()
-    }
-
-    data class Header(val stringRes: Int) : HomeModel()
-
-    data class PendingAddressChange(val address: String) : HomeModel()
-
-    object ChangeAddress : HomeModel()
+  object ChangeAddress : HomeModel()
 }

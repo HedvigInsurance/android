@@ -6,14 +6,14 @@ import androidx.compose.ui.unit.Dp
 
 @Immutable
 class InsideGridSpace private constructor(
-    @Stable
-    val horizontal: Dp,
-    @Stable
-    val vertical: Dp,
+  @Stable
+  val horizontal: Dp,
+  @Stable
+  val vertical: Dp,
 ) {
-    companion object {
-        operator fun invoke(both: Dp): InsideGridSpace = InsideGridSpace(both, both)
+  companion object {
+    operator fun invoke(both: Dp): InsideGridSpace = InsideGridSpace(both, both)
 
-        operator fun invoke(horizontal: Dp, vertical: Dp): InsideGridSpace = InsideGridSpace(horizontal, vertical)
-    }
+    operator fun invoke(horizontal: Dp, vertical: Dp): InsideGridSpace = InsideGridSpace(horizontal, vertical)
+  }
 }

@@ -19,42 +19,42 @@ import org.junit.Rule
 import org.junit.Test
 
 class HowClaimsWorkTest : TestCase() {
-    @get:Rule
-    val activityRule = LazyIntentsActivityScenarioRule(LoggedInActivity::class.java)
+  @get:Rule
+  val activityRule = LazyIntentsActivityScenarioRule(LoggedInActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(LOGGED_IN_DATA)
-        },
-        HomeQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(HOME_DATA_ACTIVE)
-        },
-    )
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(LOGGED_IN_DATA)
+    },
+    HomeQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(HOME_DATA_ACTIVE)
+    },
+  )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
 
-    @Test
-    fun shouldOpenClaimFromHowClaimsWork() = run {
-        activityRule.launch(LoggedInActivity.newInstance(context()))
-        onScreen<HomeTabScreen> {
-            recycler {
-                childAt<HomeTabScreen.HowClaimsWork>(2) {
-                    button {
-                        hasText(R.string.home_tab_claim_explainer_button)
-                        click()
-                    }
-                }
-            }
+  @Test
+  fun shouldOpenClaimFromHowClaimsWork() = run {
+    activityRule.launch(LoggedInActivity.newInstance(context()))
+    onScreen<HomeTabScreen> {
+      recycler {
+        childAt<HomeTabScreen.HowClaimsWork>(2) {
+          button {
+            hasText(R.string.home_tab_claim_explainer_button)
+            click()
+          }
         }
-        onScreen<HowClaimsWorkScreen> {
-            button {
-                hasText(R.string.claims_explainer_button_next)
-                click()
-                click()
-                hasText(R.string.general_close_button)
-            }
-        }
+      }
     }
+    onScreen<HowClaimsWorkScreen> {
+      button {
+        hasText(R.string.claims_explainer_button_next)
+        click()
+        click()
+        hasText(R.string.general_close_button)
+      }
+    }
+  }
 }

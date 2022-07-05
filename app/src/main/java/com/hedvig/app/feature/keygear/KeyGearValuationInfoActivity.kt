@@ -16,57 +16,57 @@ import com.hedvig.app.util.safeLet
 import java.util.Locale
 
 class KeyGearValuationInfoActivity : BaseActivity(R.layout.activity_key_gear_valuation_info) {
-    private val binding by viewBinding(ActivityKeyGearValuationInfoBinding::bind)
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+  private val binding by viewBinding(ActivityKeyGearValuationInfoBinding::bind)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-        val category = intent.getSerializableExtra(CATEGORY) as? KeyGearItemCategory
-        val valuationData = intent.getParcelableExtra<ValuationData>(VALUATION_DATA)
+    val category = intent.getSerializableExtra(CATEGORY) as? KeyGearItemCategory
+    val valuationData = intent.getParcelableExtra<ValuationData>(VALUATION_DATA)
 
-        safeLet(category, valuationData) { c, vd ->
-            setPercentage(vd.ratio)
-            if (vd.valuationType == ValuationType.FIXED) {
-                binding.body.setMarkdownText(
-                    getString(
-                        R.string.KEY_GEAR_ITEM_VIEW_VALUATION_BODY,
-                        getString(c.label).lowercase(Locale.getDefault()),
-                        vd.ratio,
-                        vd.purchasePrice.toBigDecimal().toInt(),
-                        vd.valuationAmount?.toBigDecimal()?.toInt(),
-                    ),
-                )
-            } else if (vd.valuationType == ValuationType.MARKET_PRICE) {
-                binding.body.setMarkdownText(
-                    getString(
-                        R.string.KEY_GEAR_ITEM_VIEW_VALUATION_MARKET_BODY,
-                        getString(c.label),
-                        vd.ratio,
-                    ),
-                )
-            }
-        }
-
-        binding.close.setHapticClickListener {
-            onBackPressed()
-        }
+    safeLet(category, valuationData) { c, vd ->
+      setPercentage(vd.ratio)
+      if (vd.valuationType == ValuationType.FIXED) {
+        binding.body.setMarkdownText(
+          getString(
+            R.string.KEY_GEAR_ITEM_VIEW_VALUATION_BODY,
+            getString(c.label).lowercase(Locale.getDefault()),
+            vd.ratio,
+            vd.purchasePrice.toBigDecimal().toInt(),
+            vd.valuationAmount?.toBigDecimal()?.toInt(),
+          ),
+        )
+      } else if (vd.valuationType == ValuationType.MARKET_PRICE) {
+        binding.body.setMarkdownText(
+          getString(
+            R.string.KEY_GEAR_ITEM_VIEW_VALUATION_MARKET_BODY,
+            getString(c.label),
+            vd.ratio,
+          ),
+        )
+      }
     }
 
-    private fun setPercentage(percentage: Int) {
-        binding.valuationPercentage.text = "$percentage%"
+    binding.close.setHapticClickListener {
+      onBackPressed()
     }
+  }
 
-    companion object {
-        private const val CATEGORY = "CATEGORY"
-        private const val VALUATION_DATA = "VALUATION_DATA"
+  private fun setPercentage(percentage: Int) {
+    binding.valuationPercentage.text = "$percentage%"
+  }
 
-        fun newInstance(
-            context: Context,
-            category: KeyGearItemCategory,
-            valuationData: ValuationData,
-        ) =
-            Intent(context, KeyGearValuationInfoActivity::class.java).apply {
-                putExtra(CATEGORY, category)
-                putExtra(VALUATION_DATA, valuationData)
-            }
-    }
+  companion object {
+    private const val CATEGORY = "CATEGORY"
+    private const val VALUATION_DATA = "VALUATION_DATA"
+
+    fun newInstance(
+      context: Context,
+      category: KeyGearItemCategory,
+      valuationData: ValuationData,
+    ) =
+      Intent(context, KeyGearValuationInfoActivity::class.java).apply {
+        putExtra(CATEGORY, category)
+        putExtra(VALUATION_DATA, valuationData)
+      }
+  }
 }

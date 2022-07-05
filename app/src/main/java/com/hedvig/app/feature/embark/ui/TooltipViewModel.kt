@@ -5,9 +5,9 @@ import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 
 class TooltipViewModel(
-    hAnalytics: HAnalytics,
+  hAnalytics: HAnalytics,
 ) : ViewModel() {
-    init {
-        hAnalytics.screenView(AppScreen.EMBARK_TOOLTIP)
-    }
+  init {
+    hAnalytics.screenView(AppScreen.EMBARK_TOOLTIP)
+  }
 }

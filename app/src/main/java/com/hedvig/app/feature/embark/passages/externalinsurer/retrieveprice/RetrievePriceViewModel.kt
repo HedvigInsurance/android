@@ -15,116 +15,116 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class RetrievePriceViewModel(
-    private val collectionId: String,
-    private val insurerName: String,
-    marketManager: MarketManager,
-    private val startDataCollectionUseCase: StartDataCollectionUseCase,
-    private val hAnalytics: HAnalytics,
+  private val collectionId: String,
+  private val insurerName: String,
+  marketManager: MarketManager,
+  private val startDataCollectionUseCase: StartDataCollectionUseCase,
+  private val hAnalytics: HAnalytics,
 ) : ViewModel() {
 
-    private val _events = Channel<Event>(Channel.UNLIMITED)
-    val events = _events.receiveAsFlow()
+  private val _events = Channel<Event>(Channel.UNLIMITED)
+  val events = _events.receiveAsFlow()
 
-    sealed class Event {
-        data class AuthInformation(
-            val reference: String,
-        ) : Event()
+  sealed class Event {
+    data class AuthInformation(
+      val reference: String,
+    ) : Event()
+  }
+
+  private val _viewState = MutableStateFlow(ViewState(market = marketManager.market))
+  val viewState: StateFlow<ViewState> = _viewState
+
+  init {
+    hAnalytics.screenView(AppScreen.DATA_COLLECTION_CREDENTIALS)
+  }
+
+  fun onRetrievePriceInfo() {
+    if (viewState.value.inputError != null) {
+      return
     }
 
-    private val _viewState = MutableStateFlow(ViewState(market = marketManager.market))
-    val viewState: StateFlow<ViewState> = _viewState
+    viewModelScope.launch {
+      _viewState.update { it.copy(isLoading = true) }
+      val result = startDataCollectionUseCase.startDataCollection(
+        personalNumber = viewState.value.input,
+        insuranceProvider = collectionId,
+      )
 
-    init {
-        hAnalytics.screenView(AppScreen.DATA_COLLECTION_CREDENTIALS)
-    }
-
-    fun onRetrievePriceInfo() {
-        if (viewState.value.inputError != null) {
-            return
+      when (result) {
+        is DataCollectionResult.Error -> {
+          _viewState.update {
+            it.copy(isLoading = false, error = result)
+          }
         }
-
-        viewModelScope.launch {
-            _viewState.update { it.copy(isLoading = true) }
-            val result = startDataCollectionUseCase.startDataCollection(
-                personalNumber = viewState.value.input,
-                insuranceProvider = collectionId,
-            )
-
-            when (result) {
-                is DataCollectionResult.Error -> {
-                    _viewState.update {
-                        it.copy(isLoading = false, error = result)
-                    }
-                }
-                is DataCollectionResult.Success -> {
-                    _events.trySend(Event.AuthInformation(result.reference))
-                    _viewState.update {
-                        it.copy(isLoading = false)
-                    }
-                }
-            }
+        is DataCollectionResult.Success -> {
+          _events.trySend(Event.AuthInformation(result.reference))
+          _viewState.update {
+            it.copy(isLoading = false)
+          }
         }
+      }
     }
+  }
 
-    fun onIdentityInput(input: String) {
-        val validationResult = validateNationalIdentityNumber(input)
-        _viewState.update {
-            it.copy(
-                input = input,
-                inputError = if (!validationResult.isSuccessful) {
-                    ViewState.InputError(
-                        errorTextKey = validationResult.errorTextKey ?: 0,
-                    )
-                } else {
-                    null
-                },
-            )
-        }
+  fun onIdentityInput(input: String) {
+    val validationResult = validateNationalIdentityNumber(input)
+    _viewState.update {
+      it.copy(
+        input = input,
+        inputError = if (!validationResult.isSuccessful) {
+          ViewState.InputError(
+            errorTextKey = validationResult.errorTextKey ?: 0,
+          )
+        } else {
+          null
+        },
+      )
     }
+  }
 
-    fun onDismissError() {
-        _viewState.update { it.copy(error = null) }
+  fun onDismissError() {
+    _viewState.update { it.copy(error = null) }
+  }
+
+  fun onCollectionStarted(reference: String) {
+    hAnalytics.screenView(AppScreen.DATA_COLLECTION_SUCCESS)
+    _viewState.update { it.copy(collectionStarted = ViewState.CollectionStartedState(reference)) }
+  }
+
+  fun onCollectionFailed() {
+    hAnalytics.screenView(AppScreen.DATA_COLLECTION_FAIL)
+    _viewState.update { it.copy(collectionFailed = ViewState.CollectionFailedState(insurerName)) }
+  }
+
+  fun onRetry() {
+    _viewState.update {
+      it.copy(
+        collectionFailed = null,
+        collectionStarted = null,
+      )
     }
+  }
 
-    fun onCollectionStarted(reference: String) {
-        hAnalytics.screenView(AppScreen.DATA_COLLECTION_SUCCESS)
-        _viewState.update { it.copy(collectionStarted = ViewState.CollectionStartedState(reference)) }
-    }
+  data class ViewState(
+    val input: String = "",
+    val inputError: InputError? = null,
+    val market: Market?,
+    val isLoading: Boolean = false,
+    val error: DataCollectionResult.Error? = null,
+    val collectionStarted: CollectionStartedState? = null,
+    val collectionFailed: CollectionFailedState? = null,
+  ) {
 
-    fun onCollectionFailed() {
-        hAnalytics.screenView(AppScreen.DATA_COLLECTION_FAIL)
-        _viewState.update { it.copy(collectionFailed = ViewState.CollectionFailedState(insurerName)) }
-    }
+    data class CollectionFailedState(
+      val insurerName: String,
+    )
 
-    fun onRetry() {
-        _viewState.update {
-            it.copy(
-                collectionFailed = null,
-                collectionStarted = null,
-            )
-        }
-    }
+    data class CollectionStartedState(
+      val reference: String,
+    )
 
-    data class ViewState(
-        val input: String = "",
-        val inputError: InputError? = null,
-        val market: Market?,
-        val isLoading: Boolean = false,
-        val error: DataCollectionResult.Error? = null,
-        val collectionStarted: CollectionStartedState? = null,
-        val collectionFailed: CollectionFailedState? = null,
-    ) {
-
-        data class CollectionFailedState(
-            val insurerName: String,
-        )
-
-        data class CollectionStartedState(
-            val reference: String,
-        )
-
-        data class InputError(
-            val errorTextKey: Int,
-        )
-    }
+    data class InputError(
+      val errorTextKey: Int,
+    )
+  }
 }

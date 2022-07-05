@@ -33,109 +33,109 @@ import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class KeyGearFragment : Fragment(R.layout.fragment_key_gear) {
-    private val model: KeyGearViewModel by sharedViewModel()
-    private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
-    private val binding by viewBinding(FragmentKeyGearBinding::bind)
-    private var scroll = 0
+  private val model: KeyGearViewModel by sharedViewModel()
+  private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
+  private val binding by viewBinding(FragmentKeyGearBinding::bind)
+  private var scroll = 0
 
-    private var hasSentAutoAddedItems = false
+  private var hasSentAutoAddedItems = false
 
-    override fun onResume() {
-        super.onResume()
-        loggedInViewModel.onScroll(scroll)
-    }
+  override fun onResume() {
+    super.onResume()
+    loggedInViewModel.onScroll(scroll)
+  }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
 
-        with(binding) {
-            scroll = 0
-            keyGearRoot.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, _: Int ->
-                scroll = scrollY
-                if (viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED) {
-                    loggedInViewModel.onScroll(scroll)
-                }
-            }
-
-            errorContainer.retry.setHapticClickListener {
-                model.load()
-            }
-
-            items.adapter =
-                KeyGearItemsAdapter(
-                    { v ->
-                        startActivity(
-                            CreateKeyGearItemActivity.newInstance(requireContext()),
-                            ActivityOptionsCompat.makeSceneTransitionAnimation(
-                                requireActivity(),
-                                transitionPair(v),
-                            ).toBundle(),
-                        )
-                    },
-                    { root, item ->
-                        startActivity(
-                            KeyGearItemDetailActivity.newInstance(
-                                requireContext(),
-                                item.fragments.keyGearItemFragment,
-                            ),
-                            ActivityOptionsCompat.makeSceneTransitionAnimation(
-                                requireActivity(),
-                                Pair(root, ITEM_BACKGROUND_TRANSITION_NAME),
-                            ).toBundle(),
-                        )
-                    },
-                )
-            items.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN))
-            items.itemAnimator = SlideInItemAnimator()
-
-            model
-                .data
-                .flowWithLifecycle(viewLifecycle)
-                .onEach { viewState ->
-                    when (viewState) {
-                        KeyGearViewModel.ViewState.Loading -> {
-                        }
-                        KeyGearViewModel.ViewState.Error -> {
-                            errorContainer.root.isVisible = true
-                            contentContainer.isVisible = false
-                        }
-                        is KeyGearViewModel.ViewState.Success -> {
-                            errorContainer.root.isVisible = false
-                            contentContainer.isVisible = true
-                            bind(viewState.data)
-                        }
-                    }
-                    if (!hasSentAutoAddedItems) {
-                        hasSentAutoAddedItems = true
-                        model.sendAutoAddedItems(requireContext())
-                    }
-                }
-                .launchIn(viewLifecycleScope)
+    with(binding) {
+      scroll = 0
+      keyGearRoot.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, _: Int ->
+        scroll = scrollY
+        if (viewLifecycleOwner.lifecycle.currentState == Lifecycle.State.RESUMED) {
+          loggedInViewModel.onScroll(scroll)
         }
-    }
+      }
 
-    fun bind(data: KeyGearItemsQuery.Data) = with(binding) {
-        binding.loadingSpinner.root.remove()
-        (items.adapter as? KeyGearItemsAdapter)?.submitList(data.keyGearItems)
-        items.show()
+      errorContainer.retry.setHapticClickListener {
+        model.load()
+      }
 
-        if (
-            data.keyGearItems.isEmpty() ||
-            !data.keyGearItems.any { it.fragments.keyGearItemFragment.physicalReferenceHash == null }
-        ) {
-            illustration.show()
-            title.show()
-            description.show()
-            items.updateMargin(top = BASE_MARGIN_QUINTUPLE)
-        } else {
-            illustration.remove()
-            title.remove()
-            description.remove()
-            items.updateMargin(top = BASE_MARGIN_TRIPLE)
+      items.adapter =
+        KeyGearItemsAdapter(
+          { v ->
+            startActivity(
+              CreateKeyGearItemActivity.newInstance(requireContext()),
+              ActivityOptionsCompat.makeSceneTransitionAnimation(
+                requireActivity(),
+                transitionPair(v),
+              ).toBundle(),
+            )
+          },
+          { root, item ->
+            startActivity(
+              KeyGearItemDetailActivity.newInstance(
+                requireContext(),
+                item.fragments.keyGearItemFragment,
+              ),
+              ActivityOptionsCompat.makeSceneTransitionAnimation(
+                requireActivity(),
+                Pair(root, ITEM_BACKGROUND_TRANSITION_NAME),
+              ).toBundle(),
+            )
+          },
+        )
+      items.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN))
+      items.itemAnimator = SlideInItemAnimator()
+
+      model
+        .data
+        .flowWithLifecycle(viewLifecycle)
+        .onEach { viewState ->
+          when (viewState) {
+            KeyGearViewModel.ViewState.Loading -> {
+            }
+            KeyGearViewModel.ViewState.Error -> {
+              errorContainer.root.isVisible = true
+              contentContainer.isVisible = false
+            }
+            is KeyGearViewModel.ViewState.Success -> {
+              errorContainer.root.isVisible = false
+              contentContainer.isVisible = true
+              bind(viewState.data)
+            }
+          }
+          if (!hasSentAutoAddedItems) {
+            hasSentAutoAddedItems = true
+            model.sendAutoAddedItems(requireContext())
+          }
         }
+        .launchIn(viewLifecycleScope)
     }
+  }
 
-    companion object {
-        const val ITEM_BACKGROUND_TRANSITION_NAME = "itemBackground"
+  fun bind(data: KeyGearItemsQuery.Data) = with(binding) {
+    binding.loadingSpinner.root.remove()
+    (items.adapter as? KeyGearItemsAdapter)?.submitList(data.keyGearItems)
+    items.show()
+
+    if (
+      data.keyGearItems.isEmpty() ||
+      !data.keyGearItems.any { it.fragments.keyGearItemFragment.physicalReferenceHash == null }
+    ) {
+      illustration.show()
+      title.show()
+      description.show()
+      items.updateMargin(top = BASE_MARGIN_QUINTUPLE)
+    } else {
+      illustration.remove()
+      title.remove()
+      description.remove()
+      items.updateMargin(top = BASE_MARGIN_TRIPLE)
     }
+  }
+
+  companion object {
+    const val ITEM_BACKGROUND_TRANSITION_NAME = "itemBackground"
+  }
 }

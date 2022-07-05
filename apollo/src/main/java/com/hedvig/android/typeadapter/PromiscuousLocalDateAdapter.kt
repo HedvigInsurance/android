@@ -13,13 +13,13 @@ import java.time.LocalDate
  */
 @Suppress("unused") // Used inside the `apollo` block inside build.gradle.kts
 object PromiscuousLocalDateAdapter : Adapter<LocalDate> {
-    override fun fromJson(reader: JsonReader, customScalarAdapters: CustomScalarAdapters): LocalDate {
-        val date = reader.nextString()!!
-        val dateWithoutTimeInformation = date.take(10)
-        return LocalDate.parse(dateWithoutTimeInformation)
-    }
+  override fun fromJson(reader: JsonReader, customScalarAdapters: CustomScalarAdapters): LocalDate {
+    val date = reader.nextString()!!
+    val dateWithoutTimeInformation = date.take(10)
+    return LocalDate.parse(dateWithoutTimeInformation)
+  }
 
-    override fun toJson(writer: JsonWriter, customScalarAdapters: CustomScalarAdapters, value: LocalDate) {
-        writer.value(value.toString())
-    }
+  override fun toJson(writer: JsonWriter, customScalarAdapters: CustomScalarAdapters, value: LocalDate) {
+    writer.value(value.toString())
+  }
 }

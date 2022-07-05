@@ -27,87 +27,87 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class HomeFragment : Fragment(R.layout.home_fragment) {
-    private val model: HomeViewModel by viewModel()
-    private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
-    private val binding by viewBinding(HomeFragmentBinding::bind)
-    private var scroll = 0
-    private val imageLoader: ImageLoader by inject()
-    private val marketManager: MarketManager by inject()
+  private val model: HomeViewModel by viewModel()
+  private val loggedInViewModel: LoggedInViewModel by sharedViewModel()
+  private val binding by viewBinding(HomeFragmentBinding::bind)
+  private var scroll = 0
+  private val imageLoader: ImageLoader by inject()
+  private val marketManager: MarketManager by inject()
 
-    private val registerForActivityResult: ActivityResultLauncher<Intent> =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            model.reload()
-        }
-
-    override fun onResume() {
-        super.onResume()
-        loggedInViewModel.onScroll(scroll)
+  private val registerForActivityResult: ActivityResultLauncher<Intent> =
+    registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+      model.reload()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        scroll = 0
+  override fun onResume() {
+    super.onResume()
+    loggedInViewModel.onScroll(scroll)
+  }
 
-        val homeAdapter = HomeAdapter(
-            fragmentManager = parentFragmentManager,
-            retry = model::reload,
-            startIntentForResult = ::startEmbarkForResult,
-            imageLoader = imageLoader,
-            marketManager = marketManager,
-            onClaimDetailCardClicked = model::onClaimDetailCardClicked,
-            onClaimDetailCardShown = model::onClaimDetailCardShown,
-            onPaymentCardShown = model::onPaymentCardShown,
-        )
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    scroll = 0
 
-        binding.swipeToRefresh.setOnRefreshListener {
-            model.reload()
-        }
+    val homeAdapter = HomeAdapter(
+      fragmentManager = parentFragmentManager,
+      retry = model::reload,
+      startIntentForResult = ::startEmbarkForResult,
+      imageLoader = imageLoader,
+      marketManager = marketManager,
+      onClaimDetailCardClicked = model::onClaimDetailCardClicked,
+      onClaimDetailCardShown = model::onClaimDetailCardShown,
+      onPaymentCardShown = model::onPaymentCardShown,
+    )
 
-        binding.recycler.apply {
-            applyNavigationBarInsets()
-            applyStatusBarInsets()
+    binding.swipeToRefresh.setOnRefreshListener {
+      model.reload()
+    }
 
-            itemAnimator = ViewHolderReusingDefaultItemAnimator()
-            adapter = homeAdapter
-            (layoutManager as? GridLayoutManager)?.spanSizeLookup =
-                object : GridLayoutManager.SpanSizeLookup() {
-                    override fun getSpanSize(position: Int): Int {
-                        (binding.recycler.adapter as? HomeAdapter)?.currentList?.getOrNull(position)
-                            ?.let { item ->
-                                return when (item) {
-                                    is HomeModel.CommonClaim -> 1
-                                    else -> 2
-                                }
-                            }
-                        return 2
-                    }
+    binding.recycler.apply {
+      applyNavigationBarInsets()
+      applyStatusBarInsets()
+
+      itemAnimator = ViewHolderReusingDefaultItemAnimator()
+      adapter = homeAdapter
+      (layoutManager as? GridLayoutManager)?.spanSizeLookup =
+        object : GridLayoutManager.SpanSizeLookup() {
+          override fun getSpanSize(position: Int): Int {
+            (binding.recycler.adapter as? HomeAdapter)?.currentList?.getOrNull(position)
+              ?.let { item ->
+                return when (item) {
+                  is HomeModel.CommonClaim -> 1
+                  else -> 2
                 }
-            addItemDecoration(HomeItemDecoration(context))
-            addOnScrollListener(
-                ScrollPositionListener(
-                    { scrollPosition ->
-                        scroll = scrollPosition
-                        loggedInViewModel.onScroll(scrollPosition)
-                    },
-                    viewLifecycleOwner,
-                ),
-            )
+              }
+            return 2
+          }
         }
-
-        model.viewState
-            .flowWithLifecycle(lifecycle)
-            .onEach { viewState ->
-                binding.swipeToRefresh.isRefreshing = viewState is HomeViewModel.ViewState.Loading
-
-                when (viewState) {
-                    is HomeViewModel.ViewState.Error -> homeAdapter.submitList(listOf(HomeModel.Error))
-                    HomeViewModel.ViewState.Loading -> binding.swipeToRefresh.isRefreshing = true
-                    is HomeViewModel.ViewState.Success -> homeAdapter.submitList(viewState.homeItems)
-                }
-            }
-            .launchIn(lifecycleScope)
+      addItemDecoration(HomeItemDecoration(context))
+      addOnScrollListener(
+        ScrollPositionListener(
+          { scrollPosition ->
+            scroll = scrollPosition
+            loggedInViewModel.onScroll(scrollPosition)
+          },
+          viewLifecycleOwner,
+        ),
+      )
     }
 
-    private fun startEmbarkForResult(intent: Intent) {
-        registerForActivityResult.launch(intent)
-    }
+    model.viewState
+      .flowWithLifecycle(lifecycle)
+      .onEach { viewState ->
+        binding.swipeToRefresh.isRefreshing = viewState is HomeViewModel.ViewState.Loading
+
+        when (viewState) {
+          is HomeViewModel.ViewState.Error -> homeAdapter.submitList(listOf(HomeModel.Error))
+          HomeViewModel.ViewState.Loading -> binding.swipeToRefresh.isRefreshing = true
+          is HomeViewModel.ViewState.Success -> homeAdapter.submitList(viewState.homeItems)
+        }
+      }
+      .launchIn(lifecycleScope)
+  }
+
+  private fun startEmbarkForResult(intent: Intent) {
+    registerForActivityResult.launch(intent)
+  }
 }

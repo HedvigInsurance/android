@@ -13,28 +13,28 @@ import kotlinx.coroutines.flow.update
 import kotlin.time.Duration.Companion.seconds
 
 class EmbarkAddressAutoCompleteViewModel(
-    initialAddress: DanishAddress?,
+  initialAddress: DanishAddress?,
 ) : ViewModel() {
 
-    data class ViewState(
-        val address: DanishAddress?,
-    ) {
-        val canProceed: Boolean
-            get() = address != null
-    }
+  data class ViewState(
+    val address: DanishAddress?,
+  ) {
+    val canProceed: Boolean
+      get() = address != null
+  }
 
-    private val address: MutableStateFlow<DanishAddress?> = MutableStateFlow(initialAddress)
-    val viewState: StateFlow<ViewState> = address.map { address ->
-        ViewState(address)
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5.seconds),
-        initialValue = ViewState(initialAddress),
-    )
+  private val address: MutableStateFlow<DanishAddress?> = MutableStateFlow(initialAddress)
+  val viewState: StateFlow<ViewState> = address.map { address ->
+    ViewState(address)
+  }.stateIn(
+    scope = viewModelScope,
+    started = SharingStarted.WhileSubscribed(5.seconds),
+    initialValue = ViewState(initialAddress),
+  )
 
-    fun updateAddressSelected(newAddress: DanishAddress?) {
-        address.update {
-            newAddress
-        }
+  fun updateAddressSelected(newAddress: DanishAddress?) {
+    address.update {
+      newAddress
     }
+  }
 }

@@ -21,45 +21,45 @@ import org.junit.Test
 
 class ShowTooltipTest : TestCase() {
 
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(LOGGED_IN_DATA)
-        },
-        HomeQuery.OPERATION_DOCUMENT to apolloResponse { success(HOME_DATA_ACTIVE) },
-    )
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(LOGGED_IN_DATA)
+    },
+    HomeQuery.OPERATION_DOCUMENT to apolloResponse { success(HOME_DATA_ACTIVE) },
+  )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
 
-    var lastOpenPrevValue: Long = 0
+  var lastOpenPrevValue: Long = 0
 
-    @Before
-    fun setUp() {
-        lastOpenPrevValue =
-            context().getSharedPreferences("hedvig_shared_preference", Context.MODE_PRIVATE)
-                .getLong("shared_preference_last_open", 0)
+  @Before
+  fun setUp() {
+    lastOpenPrevValue =
+      context().getSharedPreferences("hedvig_shared_preference", Context.MODE_PRIVATE)
+        .getLong("shared_preference_last_open", 0)
 
-        context().getSharedPreferences("hedvig_shared_preference", Context.MODE_PRIVATE).edit()
-            .putLong("shared_preference_last_open", 0).commit()
+    context().getSharedPreferences("hedvig_shared_preference", Context.MODE_PRIVATE).edit()
+      .putLong("shared_preference_last_open", 0).commit()
+  }
+
+  @Test
+  fun shouldShowTooltipAfterThirtyDays() = run {
+    activityRule.launch(LoggedInActivity.newInstance(context()))
+    Screen.onScreen<LoggedInScreen> {
+      tooltip {
+        isVisible()
+      }
     }
+  }
 
-    @Test
-    fun shouldShowTooltipAfterThirtyDays() = run {
-        activityRule.launch(LoggedInActivity.newInstance(context()))
-        Screen.onScreen<LoggedInScreen> {
-            tooltip {
-                isVisible()
-            }
-        }
-    }
-
-    @After
-    fun teardown() {
-        context().getSharedPreferences("hedvig_shared_preference", Context.MODE_PRIVATE).edit()
-            .putLong("shared_preference_last_open", lastOpenPrevValue).commit()
-    }
+  @After
+  fun teardown() {
+    context().getSharedPreferences("hedvig_shared_preference", Context.MODE_PRIVATE).edit()
+      .putLong("shared_preference_last_open", lastOpenPrevValue).commit()
+  }
 }

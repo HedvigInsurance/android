@@ -7,15 +7,15 @@ import com.hedvig.app.feature.perils.Peril
 import com.hedvig.app.feature.perils.PerilItem
 
 fun buildPerils(quote: QuoteBundleFragment.Quote) = quote
-    .contractPerils
-    .map { PerilItem.Peril(Peril.from(it.fragments.perilFragment)) }
+  .contractPerils
+  .map { PerilItem.Peril(Peril.from(it.fragments.perilFragment)) }
 
 fun buildInsurableLimits(quote: QuoteBundleFragment.Quote) = quote
-    .insurableLimits
-    .map {
-        InsurableLimitItem.InsurableLimit.from(it.fragments.insurableLimitsFragment)
-    }
+  .insurableLimits
+  .map {
+    InsurableLimitItem.InsurableLimit.from(it.fragments.insurableLimitsFragment)
+  }
 
 fun buildDocuments(quote: QuoteBundleFragment.Quote) = quote
-    .insuranceTerms
-    .map { DocumentItems.Document.from(it.fragments.insuranceTermFragment) }
+  .insuranceTerms
+  .map { DocumentItems.Document.from(it.fragments.insuranceTermFragment) }

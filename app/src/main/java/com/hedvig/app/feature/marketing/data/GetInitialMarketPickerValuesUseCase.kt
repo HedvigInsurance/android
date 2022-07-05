@@ -12,33 +12,33 @@ import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.app.util.featureflags.flags.Feature
 
 class GetInitialMarketPickerValuesUseCase(
-    private val marketManager: MarketManager,
-    private val context: Context,
-    private val apolloClient: ApolloClient,
-    private val featureManager: FeatureManager,
+  private val marketManager: MarketManager,
+  private val context: Context,
+  private val apolloClient: ApolloClient,
+  private val featureManager: FeatureManager,
 ) {
-    suspend operator fun invoke(): Pair<Market, Language?> {
-        val currentMarket = marketManager.market
-        if (currentMarket != null) {
-            val currentLanguage = Language.fromSettings(context, currentMarket)
-            return currentMarket to currentLanguage
-        }
-
-        val marketOrDefault = apolloClient
-            .query(GeoQuery())
-            .safeQuery()
-            .toEither()
-            .map { runCatching { Market.valueOf(it.geo.countryISOCode) }.getOrNull() }
-            .map { market ->
-                if (market == Market.FR && !featureManager.isFeatureEnabled(Feature.FRANCE_MARKET)) {
-                    null
-                } else {
-                    market
-                }
-            }
-            .fold({ null }, ::identity)
-            ?: Market.SE
-
-        return Pair(marketOrDefault, null)
+  suspend operator fun invoke(): Pair<Market, Language?> {
+    val currentMarket = marketManager.market
+    if (currentMarket != null) {
+      val currentLanguage = Language.fromSettings(context, currentMarket)
+      return currentMarket to currentLanguage
     }
+
+    val marketOrDefault = apolloClient
+      .query(GeoQuery())
+      .safeQuery()
+      .toEither()
+      .map { runCatching { Market.valueOf(it.geo.countryISOCode) }.getOrNull() }
+      .map { market ->
+        if (market == Market.FR && !featureManager.isFeatureEnabled(Feature.FRANCE_MARKET)) {
+          null
+        } else {
+          market
+        }
+      }
+      .fold({ null }, ::identity)
+      ?: Market.SE
+
+    return Pair(marketOrDefault, null)
+  }
 }

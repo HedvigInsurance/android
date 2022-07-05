@@ -8,21 +8,21 @@ import com.hedvig.hanalytics.HAnalytics
 import org.koin.android.ext.android.inject
 
 class NotificationOpenedTrackingActivity : AppCompatActivity() {
-    private val hAnalytics: HAnalytics by inject()
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+  private val hAnalytics: HAnalytics by inject()
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-        intent.getStringExtra(NOTIFICATION_TYPE)?.let { hAnalytics.notificationOpened(it) }
-        finish()
-    }
+    intent.getStringExtra(NOTIFICATION_TYPE)?.let { hAnalytics.notificationOpened(it) }
+    finish()
+  }
 
-    companion object {
-        private const val NOTIFICATION_TYPE = "NOTIFICATION_TYPE"
-        fun newInstance(context: Context, type: String) = Intent(
-            context,
-            NotificationOpenedTrackingActivity::class.java,
-        ).apply {
-            putExtra(NOTIFICATION_TYPE, type)
-        }
+  companion object {
+    private const val NOTIFICATION_TYPE = "NOTIFICATION_TYPE"
+    fun newInstance(context: Context, type: String) = Intent(
+      context,
+      NotificationOpenedTrackingActivity::class.java,
+    ).apply {
+      putExtra(NOTIFICATION_TYPE, type)
     }
+  }
 }

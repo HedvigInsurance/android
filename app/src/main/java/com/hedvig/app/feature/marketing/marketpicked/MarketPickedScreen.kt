@@ -32,70 +32,70 @@ import com.hedvig.hanalytics.LoginMethod
 
 @Composable
 fun MarketPickedScreen(
-    onClickMarket: () -> Unit,
-    onClickSignUp: () -> Unit,
-    onClickLogIn: () -> Unit,
-    data: MarketPicked.Loaded,
+  onClickMarket: () -> Unit,
+  onClickSignUp: () -> Unit,
+  onClickLogIn: () -> Unit,
+  data: MarketPicked.Loaded,
 ) {
-    val insets = LocalWindowInsets.current
-    val statusBarHeight = with(LocalDensity.current) { insets.statusBars.top.toDp() }
-    val navigationBarHeight = with(LocalDensity.current) { insets.navigationBars.bottom.toDp() }
-    Box(modifier = Modifier.fillMaxSize()) {
-        IconButton(
-            onClick = onClickMarket,
-            modifier = Modifier
-                .padding(
-                    start = 8.dp,
-                    top = statusBarHeight,
-                ),
-        ) {
-            Image(
-                painter = painterResource(data.selectedMarket.flag),
-                contentDescription = null,
-            )
-        }
-        Image(
-            painter = painterResource(R.drawable.ic_wordmark_h),
-            contentDescription = stringResource(R.string.HEDVIG_LOGO_ACCESSIBILITY),
-            modifier = Modifier.align(Alignment.Center),
-            colorFilter = ColorFilter.tint(hedvigOffWhite),
-        )
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(horizontal = 16.dp),
-        ) {
-            LargeContainedButton(
-                onClick = onClickSignUp,
-                colors = ButtonDefaults.buttonColors(
-                    backgroundColor = MaterialTheme.colors.primary,
-                ),
-            ) {
-                Text(
-                    text = stringResource(R.string.MARKETING_GET_HEDVIG),
-                )
-            }
-            Spacer(Modifier.height(8.dp))
-            LargeOutlinedButton(onClick = onClickLogIn) {
-                Text(text = stringResource(R.string.MARKETING_SCREEN_LOGIN))
-            }
-            Spacer(Modifier.height(8.dp + navigationBarHeight))
-        }
+  val insets = LocalWindowInsets.current
+  val statusBarHeight = with(LocalDensity.current) { insets.statusBars.top.toDp() }
+  val navigationBarHeight = with(LocalDensity.current) { insets.navigationBars.bottom.toDp() }
+  Box(modifier = Modifier.fillMaxSize()) {
+    IconButton(
+      onClick = onClickMarket,
+      modifier = Modifier
+        .padding(
+          start = 8.dp,
+          top = statusBarHeight,
+        ),
+    ) {
+      Image(
+        painter = painterResource(data.selectedMarket.flag),
+        contentDescription = null,
+      )
     }
+    Image(
+      painter = painterResource(R.drawable.ic_wordmark_h),
+      contentDescription = stringResource(R.string.HEDVIG_LOGO_ACCESSIBILITY),
+      modifier = Modifier.align(Alignment.Center),
+      colorFilter = ColorFilter.tint(hedvigOffWhite),
+    )
+    Column(
+      modifier = Modifier
+        .align(Alignment.BottomCenter)
+        .padding(horizontal = 16.dp),
+    ) {
+      LargeContainedButton(
+        onClick = onClickSignUp,
+        colors = ButtonDefaults.buttonColors(
+          backgroundColor = MaterialTheme.colors.primary,
+        ),
+      ) {
+        Text(
+          text = stringResource(R.string.MARKETING_GET_HEDVIG),
+        )
+      }
+      Spacer(Modifier.height(8.dp))
+      LargeOutlinedButton(onClick = onClickLogIn) {
+        Text(text = stringResource(R.string.MARKETING_SCREEN_LOGIN))
+      }
+      Spacer(Modifier.height(8.dp + navigationBarHeight))
+    }
+  }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun MarketPickedPreview() {
-    HedvigTheme {
-        MarketPickedScreen(
-            onClickMarket = {},
-            onClickSignUp = {},
-            onClickLogIn = {},
-            data = MarketPicked.Loaded(
-                selectedMarket = Market.SE,
-                loginMethod = LoginMethod.BANK_ID_SWEDEN,
-            ),
-        )
-    }
+  HedvigTheme {
+    MarketPickedScreen(
+      onClickMarket = {},
+      onClickSignUp = {},
+      onClickLogIn = {},
+      data = MarketPicked.Loaded(
+        selectedMarket = Market.SE,
+        loginMethod = LoginMethod.BANK_ID_SWEDEN,
+      ),
+    )
+  }
 }

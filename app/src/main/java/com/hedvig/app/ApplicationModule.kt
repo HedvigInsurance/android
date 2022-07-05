@@ -247,540 +247,540 @@ import kotlin.math.pow
 fun isDebug() = BuildConfig.DEBUG || BuildConfig.APPLICATION_ID == "com.hedvig.test.app"
 
 val applicationModule = module {
-    single { androidApplication() as HedvigApplication }
-    single<NormalizedCacheFactory> {
-        MemoryCacheFactory(maxSizeBytes = 10 * 1024 * 1024)
-    }
-    single<OkHttpClient> {
-        val marketManager = get<MarketManager>()
-        val context = get<Context>()
-        val builder = OkHttpClient.Builder()
-            // Temporary fix until back-end problems are handled
-            .readTimeout(30, TimeUnit.SECONDS)
-            .addInterceptor { chain ->
-                val original = chain.request()
-                val builder = original
-                    .newBuilder()
-                    .method(original.method, original.body)
+  single { androidApplication() as HedvigApplication }
+  single<NormalizedCacheFactory> {
+    MemoryCacheFactory(maxSizeBytes = 10 * 1024 * 1024)
+  }
+  single<OkHttpClient> {
+    val marketManager = get<MarketManager>()
+    val context = get<Context>()
+    val builder = OkHttpClient.Builder()
+      // Temporary fix until back-end problems are handled
+      .readTimeout(30, TimeUnit.SECONDS)
+      .addInterceptor { chain ->
+        val original = chain.request()
+        val builder = original
+          .newBuilder()
+          .method(original.method, original.body)
 
-                get<AuthenticationTokenService>().authenticationToken?.let { token ->
-                    builder.header("Authorization", token)
-                }
-                chain.proceed(builder.build())
-            }
-            .addInterceptor { chain ->
-                chain.proceed(
-                    chain
-                        .request()
-                        .newBuilder()
-                        .header("User-Agent", makeUserAgent(context, marketManager.market))
-                        .header("Accept-Language", makeLocaleString(context, marketManager.market))
-                        .header("apollographql-client-name", BuildConfig.APPLICATION_ID)
-                        .header("apollographql-client-version", BuildConfig.VERSION_NAME)
-                        .header("X-Build-Version", BuildConfig.VERSION_CODE.toString())
-                        .header("X-App-Version", BuildConfig.VERSION_NAME)
-                        .header("X-System-Version", Build.VERSION.SDK_INT.toString())
-                        .header("X-Platform", "ANDROID")
-                        .header("X-Model", "${Build.MANUFACTURER} ${Build.MODEL}")
-                        .build(),
-                )
-            }
-            .addInterceptor(DeviceIdInterceptor(get()))
-        if (isDebug()) {
-            val logger = HttpLoggingInterceptor { message ->
-                if (message.contains("Content-Disposition")) {
-                    Timber.tag("OkHttp").i("File upload omitted from log")
-                } else {
-                    Timber.tag("OkHttp").i(message)
-                }
-            }
-            logger.level = HttpLoggingInterceptor.Level.BODY
-            builder.addInterceptor(logger)
+        get<AuthenticationTokenService>().authenticationToken?.let { token ->
+          builder.header("Authorization", token)
         }
-        builder.build()
+        chain.proceed(builder.build())
+      }
+      .addInterceptor { chain ->
+        chain.proceed(
+          chain
+            .request()
+            .newBuilder()
+            .header("User-Agent", makeUserAgent(context, marketManager.market))
+            .header("Accept-Language", makeLocaleString(context, marketManager.market))
+            .header("apollographql-client-name", BuildConfig.APPLICATION_ID)
+            .header("apollographql-client-version", BuildConfig.VERSION_NAME)
+            .header("X-Build-Version", BuildConfig.VERSION_CODE.toString())
+            .header("X-App-Version", BuildConfig.VERSION_NAME)
+            .header("X-System-Version", Build.VERSION.SDK_INT.toString())
+            .header("X-Platform", "ANDROID")
+            .header("X-Model", "${Build.MANUFACTURER} ${Build.MODEL}")
+            .build(),
+        )
+      }
+      .addInterceptor(DeviceIdInterceptor(get()))
+    if (isDebug()) {
+      val logger = HttpLoggingInterceptor { message ->
+        if (message.contains("Content-Disposition")) {
+          Timber.tag("OkHttp").i("File upload omitted from log")
+        } else {
+          Timber.tag("OkHttp").i(message)
+        }
+      }
+      logger.level = HttpLoggingInterceptor.Level.BODY
+      builder.addInterceptor(logger)
     }
-    single<SunsettingInterceptor> { SunsettingInterceptor(get()) } bind ApolloInterceptor::class
-    single<ApolloClient.Builder> {
-        val interceptors = getAll<ApolloInterceptor>().distinct()
-        ApolloClient.Builder()
-            .httpServerUrl(get<HedvigApplication>().graphqlUrl)
-            .webSocketServerUrl(get<HedvigApplication>().graphqlSubscriptionUrl)
-            .okHttpClient(get<OkHttpClient>())
-            .webSocketReopenWhen { throwable, reconnectAttempt ->
-                if (throwable is ReopenSubscriptionException) {
-                    return@webSocketReopenWhen true
-                }
-                if (reconnectAttempt < 3) {
-                    delay(2.0.pow(reconnectAttempt.toDouble()).toLong()) // Retry after 1 - 2 - 4 seconds
-                    return@webSocketReopenWhen true
-                }
-                false
-            }
-            .wsProtocol(
-                SubscriptionWsProtocol.Factory(
-                    connectionPayload = {
-                        mapOf("Authorization" to get<AuthenticationTokenService>().authenticationToken)
-                    },
-                ),
-            )
-            .normalizedCache(get<NormalizedCacheFactory>())
-            .addInterceptors(interceptors)
-    }
+    builder.build()
+  }
+  single<SunsettingInterceptor> { SunsettingInterceptor(get()) } bind ApolloInterceptor::class
+  single<ApolloClient.Builder> {
+    val interceptors = getAll<ApolloInterceptor>().distinct()
+    ApolloClient.Builder()
+      .httpServerUrl(get<HedvigApplication>().graphqlUrl)
+      .webSocketServerUrl(get<HedvigApplication>().graphqlSubscriptionUrl)
+      .okHttpClient(get<OkHttpClient>())
+      .webSocketReopenWhen { throwable, reconnectAttempt ->
+        if (throwable is ReopenSubscriptionException) {
+          return@webSocketReopenWhen true
+        }
+        if (reconnectAttempt < 3) {
+          delay(2.0.pow(reconnectAttempt.toDouble()).toLong()) // Retry after 1 - 2 - 4 seconds
+          return@webSocketReopenWhen true
+        }
+        false
+      }
+      .wsProtocol(
+        SubscriptionWsProtocol.Factory(
+          connectionPayload = {
+            mapOf("Authorization" to get<AuthenticationTokenService>().authenticationToken)
+          },
+        ),
+      )
+      .normalizedCache(get<NormalizedCacheFactory>())
+      .addInterceptors(interceptors)
+  }
 }
 
 val apolloClientModule = module {
-    single<ApolloClient> {
-        val builder: ApolloClient.Builder = get()
-        builder.build()
-    }
+  single<ApolloClient> {
+    val builder: ApolloClient.Builder = get()
+    builder.build()
+  }
 }
 
 fun makeUserAgent(context: Context, market: Market?) =
-    "${
-    BuildConfig.APPLICATION_ID
-    } ${
-    BuildConfig.VERSION_NAME
-    } (Android ${
-    Build.VERSION.RELEASE
-    }; ${
-    Build.BRAND
-    } ${
-    Build.MODEL
-    }; ${
-    Build.DEVICE
-    }; ${
-    getLocale(context, market).language
-    })"
+  "${
+  BuildConfig.APPLICATION_ID
+  } ${
+  BuildConfig.VERSION_NAME
+  } (Android ${
+  Build.VERSION.RELEASE
+  }; ${
+  Build.BRAND
+  } ${
+  Build.MODEL
+  }; ${
+  Build.DEVICE
+  }; ${
+  getLocale(context, market).language
+  })"
 
 fun makeLocaleString(context: Context, market: Market?): String =
-    getLocale(context, market).toLanguageTag()
+  getLocale(context, market).toLanguageTag()
 
 fun getLocale(context: Context, market: Market?): Locale {
-    val locale = if (market == null) {
-        Language.from(Language.SETTING_EN_SE)
-    } else {
-        Language.fromSettings(context, market)
-    }
+  val locale = if (market == null) {
+    Language.from(Language.SETTING_EN_SE)
+  } else {
+    Language.fromSettings(context, market)
+  }
 
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        locale.apply(context).resources.configuration.locales.get(0)
-    } else {
-        @Suppress("DEPRECATION")
-        locale.apply(context).resources.configuration.locale
-    }
+  return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+    locale.apply(context).resources.configuration.locales.get(0)
+  } else {
+    @Suppress("DEPRECATION")
+    locale.apply(context).resources.configuration.locale
+  }
 }
 
 val viewModelModule = module {
-    viewModel { ClaimsViewModel(get(), get()) }
-    viewModel { ChatViewModel(get(), get(), get(), get(), get(), get()) }
-    viewModel { (quoteCartId: QuoteCartId?) -> RedeemCodeViewModel(quoteCartId, get(), get()) }
-    viewModel { UserViewModel(get(), get(), get(), get(), get(), get()) }
-    viewModel { WelcomeViewModel(get()) }
-    viewModel { SettingsViewModel(get(), get(), get()) }
-    viewModel { DatePickerViewModel() }
-    viewModel { params -> SimpleSignAuthenticationViewModel(params.get(), get(), get(), get(), get(), get(), get()) }
-    viewModel { (data: MultiActionParams) -> MultiActionViewModel(data) }
-    viewModel { (componentState: MultiActionItem.Component?, multiActionParams: MultiActionParams) ->
-        AddComponentViewModel(
-            componentState,
-            multiActionParams,
-        )
-    }
-    viewModel { TerminatedContractsViewModel(get()) }
-    viewModel { (quoteCartId: QuoteCartId) ->
-        SwedishBankIdSignViewModel(quoteCartId, get(), get(), get(), get())
-    }
-    viewModel { AudioRecorderViewModel(get()) }
-    viewModel { (crossSell: CrossSellData) ->
-        CrossSellFaqViewModel(crossSell, get(), get())
-    }
-    viewModel { (crossSell: CrossSellData) ->
-        CrossSellDetailViewModel(crossSell.action, get(), get())
-    }
-    viewModel { GenericAuthViewModel(get()) }
-    viewModel { (otpId: String, credential: String) ->
-        OtpInputViewModel(
-            otpId,
-            credential,
-            get(),
-            get(),
-            get(),
-        )
-    }
-    viewModel { parametersHolder: ParametersHolder ->
-        EmbarkAddressAutoCompleteViewModel(
-            parametersHolder.getOrNull(),
-        )
-    }
-    viewModel { parametersHolder ->
-        AddressAutoCompleteViewModel(
-            parametersHolder.getOrNull(),
-            get(),
-            get(),
-        )
-    }
-    viewModel { (claimId: String) -> ClaimDetailViewModel(claimId, get(), get(), get()) }
-    viewModel { HonestyPledgeViewModel(get()) }
-    viewModel { CommonClaimViewModel(get()) }
-    viewModel { SplashViewModel(get()) }
-    viewModel { TooltipViewModel(get()) }
-    viewModel { (collectionId: String) -> AskForPriceInfoViewModel(collectionId, get()) }
-    viewModel { CharityViewModel(get()) }
-    viewModel { MyInfoViewModel(get()) }
-    viewModel { AboutAppViewModel(get()) }
-    viewModel { MarketingViewModel(get(), get(), get(), get(), get(), get(), get()) }
+  viewModel { ClaimsViewModel(get(), get()) }
+  viewModel { ChatViewModel(get(), get(), get(), get(), get(), get()) }
+  viewModel { (quoteCartId: QuoteCartId?) -> RedeemCodeViewModel(quoteCartId, get(), get()) }
+  viewModel { UserViewModel(get(), get(), get(), get(), get(), get()) }
+  viewModel { WelcomeViewModel(get()) }
+  viewModel { SettingsViewModel(get(), get(), get()) }
+  viewModel { DatePickerViewModel() }
+  viewModel { params -> SimpleSignAuthenticationViewModel(params.get(), get(), get(), get(), get(), get(), get()) }
+  viewModel { (data: MultiActionParams) -> MultiActionViewModel(data) }
+  viewModel { (componentState: MultiActionItem.Component?, multiActionParams: MultiActionParams) ->
+    AddComponentViewModel(
+      componentState,
+      multiActionParams,
+    )
+  }
+  viewModel { TerminatedContractsViewModel(get()) }
+  viewModel { (quoteCartId: QuoteCartId) ->
+    SwedishBankIdSignViewModel(quoteCartId, get(), get(), get(), get())
+  }
+  viewModel { AudioRecorderViewModel(get()) }
+  viewModel { (crossSell: CrossSellData) ->
+    CrossSellFaqViewModel(crossSell, get(), get())
+  }
+  viewModel { (crossSell: CrossSellData) ->
+    CrossSellDetailViewModel(crossSell.action, get(), get())
+  }
+  viewModel { GenericAuthViewModel(get()) }
+  viewModel { (otpId: String, credential: String) ->
+    OtpInputViewModel(
+      otpId,
+      credential,
+      get(),
+      get(),
+      get(),
+    )
+  }
+  viewModel { parametersHolder: ParametersHolder ->
+    EmbarkAddressAutoCompleteViewModel(
+      parametersHolder.getOrNull(),
+    )
+  }
+  viewModel { parametersHolder ->
+    AddressAutoCompleteViewModel(
+      parametersHolder.getOrNull(),
+      get(),
+      get(),
+    )
+  }
+  viewModel { (claimId: String) -> ClaimDetailViewModel(claimId, get(), get(), get()) }
+  viewModel { HonestyPledgeViewModel(get()) }
+  viewModel { CommonClaimViewModel(get()) }
+  viewModel { SplashViewModel(get()) }
+  viewModel { TooltipViewModel(get()) }
+  viewModel { (collectionId: String) -> AskForPriceInfoViewModel(collectionId, get()) }
+  viewModel { CharityViewModel(get()) }
+  viewModel { MyInfoViewModel(get()) }
+  viewModel { AboutAppViewModel(get()) }
+  viewModel { MarketingViewModel(get(), get(), get(), get(), get(), get(), get()) }
 }
 
 val choosePlanModule = module {
-    viewModel { ChoosePlanViewModel(get(), get(), get()) }
+  viewModel { ChoosePlanViewModel(get(), get(), get()) }
 }
 
 val onboardingModule = module {
-    viewModel<MemberIdViewModel> { MemberIdViewModelImpl(get()) }
+  viewModel<MemberIdViewModel> { MemberIdViewModelImpl(get()) }
 }
 
 val loggedInModule = module {
-    viewModel<LoggedInViewModel> { LoggedInViewModelImpl(get(), get(), get(), get(), get()) }
+  viewModel<LoggedInViewModel> { LoggedInViewModelImpl(get(), get(), get(), get(), get()) }
 }
 
 val whatsNewModule = module {
-    viewModel<WhatsNewViewModel> { WhatsNewViewModelImpl(get()) }
+  viewModel<WhatsNewViewModel> { WhatsNewViewModelImpl(get()) }
 }
 
 val insuranceModule = module {
-    viewModel { InsuranceViewModel(get(), get(), get(), get()) }
-    viewModel<ContractDetailViewModel> { (contractId: String) ->
-        ContractDetailViewModelImpl(contractId, get(), get(), get())
-    }
+  viewModel { InsuranceViewModel(get(), get(), get(), get()) }
+  viewModel<ContractDetailViewModel> { (contractId: String) ->
+    ContractDetailViewModelImpl(contractId, get(), get(), get())
+  }
 }
 
 val offerModule = module {
-    single<OfferRepository> { OfferRepository(get(), get(), get(), get()) }
-    viewModel<OfferViewModel> { parametersHolder: ParametersHolder ->
-        OfferViewModelImpl(
-            quoteCartId = parametersHolder.get(),
-            selectedContractTypes = parametersHolder.get(),
-            offerRepository = get(),
-            loginStatusService = get(),
-            startCheckoutUseCase = get(),
-            shouldShowOnNextAppStart = parametersHolder.get(),
-            chatRepository = get(),
-            editCampaignUseCase = get(),
-            featureManager = get(),
-            addPaymentTokenUseCase = get(),
-            getExternalInsuranceProviderUseCase = get(),
-            getBundleVariantUseCase = get(),
-            getQuoteCartCheckoutUseCase = get(),
-        )
-    }
-    single { SubscribeToDataCollectionStatusUseCase(get()) }
-    single { GetProviderDisplayNameUseCase(get()) }
-    single { GetDataCollectionResultUseCase(get()) }
-    single { QuoteCartFragmentToOfferModelMapper(get()) }
-    single<GetQuoteCartCheckoutUseCase> { GetQuoteCartCheckoutUseCase(get()) }
-    single<ObserveQuoteCartCheckoutUseCase> { ObserveQuoteCartCheckoutUseCaseImpl(get()) }
+  single<OfferRepository> { OfferRepository(get(), get(), get(), get()) }
+  viewModel<OfferViewModel> { parametersHolder: ParametersHolder ->
+    OfferViewModelImpl(
+      quoteCartId = parametersHolder.get(),
+      selectedContractTypes = parametersHolder.get(),
+      offerRepository = get(),
+      loginStatusService = get(),
+      startCheckoutUseCase = get(),
+      shouldShowOnNextAppStart = parametersHolder.get(),
+      chatRepository = get(),
+      editCampaignUseCase = get(),
+      featureManager = get(),
+      addPaymentTokenUseCase = get(),
+      getExternalInsuranceProviderUseCase = get(),
+      getBundleVariantUseCase = get(),
+      getQuoteCartCheckoutUseCase = get(),
+    )
+  }
+  single { SubscribeToDataCollectionStatusUseCase(get()) }
+  single { GetProviderDisplayNameUseCase(get()) }
+  single { GetDataCollectionResultUseCase(get()) }
+  single { QuoteCartFragmentToOfferModelMapper(get()) }
+  single<GetQuoteCartCheckoutUseCase> { GetQuoteCartCheckoutUseCase(get()) }
+  single<ObserveQuoteCartCheckoutUseCase> { ObserveQuoteCartCheckoutUseCaseImpl(get()) }
 }
 
 val profileModule = module {
-    single<ProfileQueryDataToProfileUiStateMapper> { ProfileQueryDataToProfileUiStateMapper(get(), get(), get()) }
-    single<ProfileRepository> { ProfileRepository(get()) }
-    viewModel<ProfileViewModel> { ProfileViewModel(get(), get(), get()) }
+  single<ProfileQueryDataToProfileUiStateMapper> { ProfileQueryDataToProfileUiStateMapper(get(), get(), get()) }
+  single<ProfileRepository> { ProfileRepository(get()) }
+  viewModel<ProfileViewModel> { ProfileViewModel(get(), get(), get()) }
 }
 
 val keyGearModule = module {
-    viewModel<KeyGearViewModel> { KeyGearViewModelImpl(get(), get()) }
-    viewModel<KeyGearItemDetailViewModel> { KeyGearItemDetailViewModelImpl(get()) }
-    viewModel<CreateKeyGearItemViewModel> { CreateKeyGearItemViewModelImpl(get()) }
-    viewModel<KeyGearValuationViewModel> { KeyGearValuationViewModelImpl(get()) }
+  viewModel<KeyGearViewModel> { KeyGearViewModelImpl(get(), get()) }
+  viewModel<KeyGearItemDetailViewModel> { KeyGearItemDetailViewModelImpl(get()) }
+  viewModel<CreateKeyGearItemViewModel> { CreateKeyGearItemViewModelImpl(get()) }
+  viewModel<KeyGearValuationViewModel> { KeyGearValuationViewModelImpl(get()) }
 }
 
 val paymentModule = module {
-    viewModel<PaymentViewModel> { PaymentViewModelImpl(get(), get(), get(), get()) }
+  viewModel<PaymentViewModel> { PaymentViewModelImpl(get(), get(), get(), get()) }
 }
 
 val adyenModule = module {
-    viewModel<AdyenConnectPayinViewModel> { AdyenConnectPayinViewModelImpl(get(), get()) }
-    viewModel<AdyenConnectPayoutViewModel> { AdyenConnectPayoutViewModelImpl(get()) }
+  viewModel<AdyenConnectPayinViewModel> { AdyenConnectPayinViewModelImpl(get(), get()) }
+  viewModel<AdyenConnectPayoutViewModel> { AdyenConnectPayoutViewModelImpl(get()) }
 }
 
 val embarkModule = module {
-    viewModel<EmbarkViewModel> { (storyName: String) ->
-        EmbarkViewModelImpl(
-            embarkRepository = get(),
-            loginStatusService = get(),
-            graphQLQueryUseCase = get(),
-            chatRepository = get(),
-            valueStore = get(),
-            hAnalytics = get(),
-            storyName = storyName,
-        )
-    }
+  viewModel<EmbarkViewModel> { (storyName: String) ->
+    EmbarkViewModelImpl(
+      embarkRepository = get(),
+      loginStatusService = get(),
+      graphQLQueryUseCase = get(),
+      chatRepository = get(),
+      valueStore = get(),
+      hAnalytics = get(),
+      storyName = storyName,
+    )
+  }
 }
 
 val valueStoreModule = module {
-    factory<ValueStore> { ValueStoreImpl() }
+  factory<ValueStore> { ValueStoreImpl() }
 }
 
 val textActionSetModule = module {
-    viewModel { (data: TextActionParameter) -> TextActionViewModel(data) }
+  viewModel { (data: TextActionParameter) -> TextActionViewModel(data) }
 }
 
 val numberActionSetModule = module {
-    viewModel { (data: NumberActionParams) -> NumberActionViewModel(data) }
+  viewModel { (data: NumberActionParams) -> NumberActionViewModel(data) }
 }
 
 val referralsModule = module {
-    viewModel<ReferralsViewModel> { ReferralsViewModelImpl(get()) }
-    viewModel<ReferralsActivatedViewModel> { ReferralsActivatedViewModelImpl(get()) }
-    viewModel<ReferralsEditCodeViewModel> { ReferralsEditCodeViewModelImpl(get()) }
+  viewModel<ReferralsViewModel> { ReferralsViewModelImpl(get()) }
+  viewModel<ReferralsActivatedViewModel> { ReferralsActivatedViewModelImpl(get()) }
+  viewModel<ReferralsEditCodeViewModel> { ReferralsEditCodeViewModelImpl(get()) }
 }
 
 val homeModule = module {
-    single<HomeItemsBuilder> { HomeItemsBuilder(get()) }
-    viewModel<HomeViewModel> { HomeViewModelImpl(get(), get(), get()) }
+  single<HomeItemsBuilder> { HomeItemsBuilder(get()) }
+  viewModel<HomeViewModel> { HomeViewModelImpl(get(), get(), get()) }
 }
 
 val connectPaymentModule = module {
-    viewModel { ConnectPaymentViewModel(get(), get(), get()) }
+  viewModel { ConnectPaymentViewModel(get(), get(), get()) }
 }
 
 val trustlyModule = module {
-    viewModel<TrustlyViewModel> { TrustlyViewModelImpl(get(), get()) }
+  viewModel<TrustlyViewModel> { TrustlyViewModelImpl(get(), get()) }
 }
 
 val changeAddressModule = module {
-    viewModel<ChangeAddressViewModel> { ChangeAddressViewModelImpl(get(), get(), get(), get()) }
+  viewModel<ChangeAddressViewModel> { ChangeAddressViewModelImpl(get(), get(), get(), get()) }
 }
 
 val changeDateBottomSheetModule = module {
-    viewModel { (data: ChangeDateBottomSheetData) -> ChangeDateBottomSheetViewModel(get(), data, get()) }
+  viewModel { (data: ChangeDateBottomSheetData) -> ChangeDateBottomSheetViewModel(get(), data, get()) }
 }
 
 val checkoutModule = module {
-    viewModel { (selectedVariantId: String, quoteCartId: QuoteCartId) ->
-        CheckoutViewModel(
-            selectedVariantId = selectedVariantId,
-            quoteCartId = quoteCartId,
-            signQuotesUseCase = get(),
-            editQuotesUseCase = get(),
-            createAccessTokenUseCase = get(),
-            marketManager = get(),
-            loginStatusService = get(),
-            offerRepository = get(),
-            featureManager = get(),
-            bundleVariantUseCase = get(),
-        )
-    }
+  viewModel { (selectedVariantId: String, quoteCartId: QuoteCartId) ->
+    CheckoutViewModel(
+      selectedVariantId = selectedVariantId,
+      quoteCartId = quoteCartId,
+      signQuotesUseCase = get(),
+      editQuotesUseCase = get(),
+      createAccessTokenUseCase = get(),
+      marketManager = get(),
+      loginStatusService = get(),
+      offerRepository = get(),
+      featureManager = get(),
+      bundleVariantUseCase = get(),
+    )
+  }
 }
 
 val retrievePriceModule = module {
-    viewModel { (data: InsuranceProviderParameter) ->
-        RetrievePriceViewModel(
-            collectionId = data.selectedInsuranceProviderCollectionId,
-            insurerName = data.selectedInsuranceProviderName,
-            marketManager = get(),
-            startDataCollectionUseCase = get(),
-            hAnalytics = get(),
-        )
-    }
+  viewModel { (data: InsuranceProviderParameter) ->
+    RetrievePriceViewModel(
+      collectionId = data.selectedInsuranceProviderCollectionId,
+      insurerName = data.selectedInsuranceProviderName,
+      marketManager = get(),
+      startDataCollectionUseCase = get(),
+      hAnalytics = get(),
+    )
+  }
 }
 
 val externalInsuranceModule = module {
-    viewModel { ExternalInsurerViewModel(get(), get()) }
+  viewModel { ExternalInsurerViewModel(get(), get()) }
 }
 
 val insurelyAuthModule = module {
-    viewModel { (reference: String) ->
-        InsurelyAuthViewModel(
-            reference,
-            get(),
-            get(),
-        )
-    }
+  viewModel { (reference: String) ->
+    InsurelyAuthViewModel(
+      reference,
+      get(),
+      get(),
+    )
+  }
 }
 
 val serviceModule = module {
-    single { FileService(get()) }
-    single<LoginStatusService> { SharedPreferencesLoginStatusService(get(), get(), get()) }
-    single<AuthenticationTokenService> { SharedPreferencesAuthenticationTokenService(get()) }
+  single { FileService(get()) }
+  single<LoginStatusService> { SharedPreferencesLoginStatusService(get(), get(), get()) }
+  single<AuthenticationTokenService> { SharedPreferencesAuthenticationTokenService(get()) }
 
-    single { TabNotificationService(get(), get()) }
-    single { CrossSellNotificationBadgeService(get(), get()) }
-    single { ReferralsNotificationBadgeService(get(), get()) }
-    single { NotificationBadgeService(get()) }
+  single { TabNotificationService(get(), get()) }
+  single { CrossSellNotificationBadgeService(get(), get()) }
+  single { ReferralsNotificationBadgeService(get(), get()) }
+  single { NotificationBadgeService(get()) }
 
-    single { DeviceInformationService(get()) }
+  single { DeviceInformationService(get()) }
 }
 
 val repositoriesModule = module {
-    single { ChatRepository(get(), get(), get()) }
-    single { PayinStatusRepository(get()) }
-    single { ClaimsRepository(get(), get()) }
-    single { RedeemReferralCodeRepository(get(), get()) }
-    single { UserRepository(get()) }
-    single { WhatsNewRepository(get(), get(), get()) }
-    single { WelcomeRepository(get(), get()) }
-    single { LanguageRepository(get()) }
-    single { KeyGearItemsRepository(get(), get(), get(), get()) }
-    single { MarketingRepository(get(), get()) }
-    single { AdyenRepository(get(), get()) }
-    single { EmbarkRepository(get(), get()) }
-    single { ReferralsRepository(get()) }
-    single { LoggedInRepository(get(), get()) }
-    single { GetHomeUseCase(get(), get()) }
-    single { TrustlyRepository(get()) }
-    single { GetMemberIdUseCase(get()) }
-    single { PaymentRepository(get(), get()) }
-    single { GetBundlesUseCase(get(), get()) }
+  single { ChatRepository(get(), get(), get()) }
+  single { PayinStatusRepository(get()) }
+  single { ClaimsRepository(get(), get()) }
+  single { RedeemReferralCodeRepository(get(), get()) }
+  single { UserRepository(get()) }
+  single { WhatsNewRepository(get(), get(), get()) }
+  single { WelcomeRepository(get(), get()) }
+  single { LanguageRepository(get()) }
+  single { KeyGearItemsRepository(get(), get(), get(), get()) }
+  single { MarketingRepository(get(), get()) }
+  single { AdyenRepository(get(), get()) }
+  single { EmbarkRepository(get(), get()) }
+  single { ReferralsRepository(get()) }
+  single { LoggedInRepository(get(), get()) }
+  single { GetHomeUseCase(get(), get()) }
+  single { TrustlyRepository(get()) }
+  single { GetMemberIdUseCase(get()) }
+  single { PaymentRepository(get(), get()) }
+  single { GetBundlesUseCase(get(), get()) }
 }
 
 val trackerModule = module {
-    single<HAnalytics> { HAnalyticsImpl(get(), get()) }
-    single<SendHAnalyticsEventUseCase> {
-        // Workaround for https://github.com/InsertKoinIO/koin/issues/1146
-        val allAnalyticsSinks = getAll<HAnalyticsSink>().distinct()
-        SendHAnalyticsEventUseCaseImpl(allAnalyticsSinks)
-    }
-    single<HAnalyticsExperimentManager> { HAnalyticsExperimentManagerImpl(get(), get()) }
-    single<NetworkHAnalyticsSink> { NetworkHAnalyticsSink(get()) } bind HAnalyticsSink::class
-    single<HAnalyticsService> {
-        HAnalyticsServiceImpl(get(), get(), get(), get<Context>().getString(R.string.HANALYTICS_URL))
-    }
-    single<ApplicationLifecycleTracker> { ApplicationLifecycleTracker(get()) }
-    single<ClearHAnalyticsExperimentsCacheUseCase> { ClearHAnalyticsExperimentsCacheUseCase(get()) }
+  single<HAnalytics> { HAnalyticsImpl(get(), get()) }
+  single<SendHAnalyticsEventUseCase> {
+    // Workaround for https://github.com/InsertKoinIO/koin/issues/1146
+    val allAnalyticsSinks = getAll<HAnalyticsSink>().distinct()
+    SendHAnalyticsEventUseCaseImpl(allAnalyticsSinks)
+  }
+  single<HAnalyticsExperimentManager> { HAnalyticsExperimentManagerImpl(get(), get()) }
+  single<NetworkHAnalyticsSink> { NetworkHAnalyticsSink(get()) } bind HAnalyticsSink::class
+  single<HAnalyticsService> {
+    HAnalyticsServiceImpl(get(), get(), get(), get<Context>().getString(R.string.HANALYTICS_URL))
+  }
+  single<ApplicationLifecycleTracker> { ApplicationLifecycleTracker(get()) }
+  single<ClearHAnalyticsExperimentsCacheUseCase> { ClearHAnalyticsExperimentsCacheUseCase(get()) }
 }
 
 val localeBroadcastManagerModule = module {
-    single<LocaleBroadcastManager> { LocaleBroadcastManager(get()) }
+  single<LocaleBroadcastManager> { LocaleBroadcastManager(get()) }
 }
 
 val marketManagerModule = module {
-    single<MarketManager> { MarketManagerImpl(get()) }
+  single<MarketManager> { MarketManagerImpl(get()) }
 }
 
 val notificationModule = module {
-    single { PaymentNotificationSender(get(), get(), get()) } bind NotificationSender::class
-    single { CrossSellNotificationSender(get(), get()) } bind NotificationSender::class
-    single { ChatNotificationSender(get()) } bind NotificationSender::class
-    single { ReferralsNotificationSender(get()) } bind NotificationSender::class
-    single { GenericNotificationSender(get()) } bind NotificationSender::class
+  single { PaymentNotificationSender(get(), get(), get()) } bind NotificationSender::class
+  single { CrossSellNotificationSender(get(), get()) } bind NotificationSender::class
+  single { ChatNotificationSender(get()) } bind NotificationSender::class
+  single { ReferralsNotificationSender(get()) } bind NotificationSender::class
+  single { GenericNotificationSender(get()) } bind NotificationSender::class
 }
 
 val clockModule = module { single { Clock.systemDefaultZone() } }
 
 val localeManagerModule = module {
-    single { LocaleManager(get(), get()) }
+  single { LocaleManager(get(), get()) }
 }
 
 val useCaseModule = module {
-    single { GetUpcomingAgreementUseCase(get(), get()) }
-    single { GetAddressChangeStoryIdUseCase(get(), get(), get()) }
-    single { StartDanishAuthUseCase(get()) }
-    single { StartNorwegianAuthUseCase(get()) }
-    single { SubscribeToAuthStatusUseCase(get()) }
-    single { StartCheckoutUseCase(get(), get(), get()) }
-    single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get()) }
-    single { GetContractsUseCase(get(), get()) }
-    single { GetCrossSellsContractTypesUseCase(get(), get()) }
-    single { GraphQLQueryUseCase(get()) }
-    single { GetCrossSellsUseCase(get(), get()) }
-    single { StartDataCollectionUseCase(get(), get()) }
-    single { GetInsuranceProvidersUseCase(get(), get()) }
-    single { CreateOtpAttemptUseCase(get()) }
-    single<SendOtpCodeUseCase> { SendOtpCodeUseCaseImpl(get()) }
-    single<ReSendOtpCodeUseCase> { ReSendOtpCodeUseCaseImpl(get()) }
-    single { GetDataCollectionUseCase(get(), get()) }
-    single { GetClaimDetailUseCase(get(), get()) }
-    single { GetClaimDetailUiStateFlowUseCase(get()) }
-    single { GetContractDetailsUseCase(get(), get()) }
-    single<GetDanishAddressAutoCompletionUseCase> { GetDanishAddressAutoCompletionUseCase(get()) }
-    single<GetFinalDanishAddressSelectionUseCase> { GetFinalDanishAddressSelectionUseCase(get()) }
-    single { CreateQuoteCartUseCase(get(), get(), get()) }
-    single { SubmitMarketAndLanguagePreferencesUseCase(get(), get(), get(), get()) }
-    single { GetMarketingBackgroundUseCase(get(), get()) }
-    single { UpdateApplicationLanguageUseCase(get(), get(), get()) }
-    single { GetInitialMarketPickerValuesUseCase(get(), get(), get(), get()) }
-    single<EditCheckoutUseCase> { EditCheckoutUseCase(get(), get()) }
-    single<QuoteCartEditStartDateUseCase> { QuoteCartEditStartDateUseCase(get(), get()) }
-    single<CreateAccessTokenUseCase> { CreateAccessTokenUseCaseImpl(get(), get()) }
-    single<EditCampaignUseCase> { EditCampaignUseCase(get(), get()) }
-    single<AddPaymentTokenUseCase> { AddPaymentTokenUseCase(get()) }
-    single<ConnectPaymentUseCase> { ConnectPaymentUseCase(get(), get(), get()) }
-    single<ConnectPayoutUseCase> { ConnectPayoutUseCase(get(), get()) }
-    single<GetExternalInsuranceProviderUseCase> { GetExternalInsuranceProviderUseCase(get(), get(), get()) }
-    single<ObserveOfferStateUseCase> { ObserveOfferStateUseCase(get()) }
+  single { GetUpcomingAgreementUseCase(get(), get()) }
+  single { GetAddressChangeStoryIdUseCase(get(), get(), get()) }
+  single { StartDanishAuthUseCase(get()) }
+  single { StartNorwegianAuthUseCase(get()) }
+  single { SubscribeToAuthStatusUseCase(get()) }
+  single { StartCheckoutUseCase(get(), get(), get()) }
+  single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get()) }
+  single { GetContractsUseCase(get(), get()) }
+  single { GetCrossSellsContractTypesUseCase(get(), get()) }
+  single { GraphQLQueryUseCase(get()) }
+  single { GetCrossSellsUseCase(get(), get()) }
+  single { StartDataCollectionUseCase(get(), get()) }
+  single { GetInsuranceProvidersUseCase(get(), get()) }
+  single { CreateOtpAttemptUseCase(get()) }
+  single<SendOtpCodeUseCase> { SendOtpCodeUseCaseImpl(get()) }
+  single<ReSendOtpCodeUseCase> { ReSendOtpCodeUseCaseImpl(get()) }
+  single { GetDataCollectionUseCase(get(), get()) }
+  single { GetClaimDetailUseCase(get(), get()) }
+  single { GetClaimDetailUiStateFlowUseCase(get()) }
+  single { GetContractDetailsUseCase(get(), get()) }
+  single<GetDanishAddressAutoCompletionUseCase> { GetDanishAddressAutoCompletionUseCase(get()) }
+  single<GetFinalDanishAddressSelectionUseCase> { GetFinalDanishAddressSelectionUseCase(get()) }
+  single { CreateQuoteCartUseCase(get(), get(), get()) }
+  single { SubmitMarketAndLanguagePreferencesUseCase(get(), get(), get(), get()) }
+  single { GetMarketingBackgroundUseCase(get(), get()) }
+  single { UpdateApplicationLanguageUseCase(get(), get(), get()) }
+  single { GetInitialMarketPickerValuesUseCase(get(), get(), get(), get()) }
+  single<EditCheckoutUseCase> { EditCheckoutUseCase(get(), get()) }
+  single<QuoteCartEditStartDateUseCase> { QuoteCartEditStartDateUseCase(get(), get()) }
+  single<CreateAccessTokenUseCase> { CreateAccessTokenUseCaseImpl(get(), get()) }
+  single<EditCampaignUseCase> { EditCampaignUseCase(get(), get()) }
+  single<AddPaymentTokenUseCase> { AddPaymentTokenUseCase(get()) }
+  single<ConnectPaymentUseCase> { ConnectPaymentUseCase(get(), get(), get()) }
+  single<ConnectPayoutUseCase> { ConnectPayoutUseCase(get(), get()) }
+  single<GetExternalInsuranceProviderUseCase> { GetExternalInsuranceProviderUseCase(get(), get(), get()) }
+  single<ObserveOfferStateUseCase> { ObserveOfferStateUseCase(get()) }
 }
 
 val cacheManagerModule = module {
-    single { CacheManager(get()) }
+  single { CacheManager(get()) }
 }
 
 val pushTokenManagerModule = module {
-    single { PushTokenManager(FirebaseMessaging.getInstance()) }
+  single { PushTokenManager(FirebaseMessaging.getInstance()) }
 }
 
 val sharedPreferencesModule = module {
-    single<SharedPreferences> {
-        get<Context>().getSharedPreferences(
-            "hedvig_shared_preference",
-            MODE_PRIVATE,
-        )
-    }
+  single<SharedPreferences> {
+    get<Context>().getSharedPreferences(
+      "hedvig_shared_preference",
+      MODE_PRIVATE,
+    )
+  }
 }
 
 val featureManagerModule = module {
-    single<FeatureManager> {
-        if (BuildConfig.DEBUG) {
-            FeatureManagerImpl(
-                DevFeatureFlagProvider(get()),
-                DevLoginMethodProvider(get()),
-                DevPaymentTypeProvider(get()),
-                get(),
-            )
-        } else {
-            FeatureManagerImpl(
-                HAnalyticsFeatureFlagProvider(get()),
-                HAnalyticsLoginMethodProvider(get()),
-                HAnalyticsPaymentTypeProvider(get()),
-                get(),
-            )
-        }
+  single<FeatureManager> {
+    if (BuildConfig.DEBUG) {
+      FeatureManagerImpl(
+        DevFeatureFlagProvider(get()),
+        DevLoginMethodProvider(get()),
+        DevPaymentTypeProvider(get()),
+        get(),
+      )
+    } else {
+      FeatureManagerImpl(
+        HAnalyticsFeatureFlagProvider(get()),
+        HAnalyticsLoginMethodProvider(get()),
+        HAnalyticsPaymentTypeProvider(get()),
+        get(),
+      )
     }
+  }
 }
 
 val coilModule = module {
-    single {
-        ImageLoader.Builder(get())
-            .components {
-                add(SvgDecoder.Factory())
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                    add(ImageDecoderDecoder.Factory())
-                } else {
-                    add(GifDecoder.Factory())
-                }
-            }
-            .build()
-    }
+  single {
+    ImageLoader.Builder(get())
+      .components {
+        add(SvgDecoder.Factory())
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+          add(ImageDecoderDecoder.Factory())
+        } else {
+          add(GifDecoder.Factory())
+        }
+      }
+      .build()
+  }
 }
 
 val chatEventModule = module {
-    single<ChatEventStore> { ChatEventDataStore(get()) }
+  single<ChatEventStore> { ChatEventDataStore(get()) }
 }
 
 val dataStoreModule = module {
-    single<DataStore<Preferences>> {
-        PreferenceDataStoreFactory.create(
-            produceFile = {
-                get<Context>().preferencesDataStoreFile("hedvig_data_store_preferences")
-            },
-        )
-    }
+  single<DataStore<Preferences>> {
+    PreferenceDataStoreFactory.create(
+      produceFile = {
+        get<Context>().preferencesDataStoreFile("hedvig_data_store_preferences")
+      },
+    )
+  }
 }
 
 val deviceIdStoreModule = module {
-    single<DeviceIdStore> { DeviceIdDataStore(get()) }
+  single<DeviceIdStore> { DeviceIdDataStore(get()) }
 }
 
 val graphQLQueryModule = module {
-    single<GraphQLQueryHandler> { GraphQLQueryHandler(get(), get(), get()) }
+  single<GraphQLQueryHandler> { GraphQLQueryHandler(get(), get(), get()) }
 }

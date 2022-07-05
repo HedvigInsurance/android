@@ -22,39 +22,39 @@ import org.junit.Test
 
 class PayinNotConnectedTest : TestCase() {
 
-    @get:Rule
-    val activityRule = LazyIntentsActivityScenarioRule(PaymentActivity::class.java)
+  @get:Rule
+  val activityRule = LazyIntentsActivityScenarioRule(PaymentActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        PaymentQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYMENT_DATA_NOT_CONNECTED) },
-        PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_NEEDS_SETUP) },
-    )
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    PaymentQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYMENT_DATA_NOT_CONNECTED) },
+    PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_NEEDS_SETUP) },
+  )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
 
-    @get:Rule
-    val marketRule = MarketRule(Market.SE)
+  @get:Rule
+  val marketRule = MarketRule(Market.SE)
 
-    @get:Rule
-    val featureFlagRule = FeatureFlagRule(
-        paymentType = PaymentType.TRUSTLY,
-    )
+  @get:Rule
+  val featureFlagRule = FeatureFlagRule(
+    paymentType = PaymentType.TRUSTLY,
+  )
 
-    @Test
-    fun shouldShowConnectPayinWhenPayinIsNotConnected() = run {
-        activityRule.launch(PaymentActivity.newInstance(context()))
+  @Test
+  fun shouldShowConnectPayinWhenPayinIsNotConnected() = run {
+    activityRule.launch(PaymentActivity.newInstance(context()))
 
-        onScreen<PaymentScreen> {
-            trustlyConnectPayin { stub() }
-            recycler {
-                childAt<PaymentScreen.ConnectPayin>(1) {
-                    connect { click() }
-                }
-            }
-
-            trustlyConnectPayin { intended() }
+    onScreen<PaymentScreen> {
+      trustlyConnectPayin { stub() }
+      recycler {
+        childAt<PaymentScreen.ConnectPayin>(1) {
+          connect { click() }
         }
+      }
+
+      trustlyConnectPayin { intended() }
     }
+  }
 }

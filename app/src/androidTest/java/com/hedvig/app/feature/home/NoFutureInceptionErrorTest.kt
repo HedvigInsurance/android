@@ -20,44 +20,44 @@ import org.junit.Rule
 import org.junit.Test
 
 class NoFutureInceptionErrorTest : TestCase() {
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
-    var shouldFail = true
+  var shouldFail = true
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(LOGGED_IN_DATA)
-        },
-        HomeQuery.OPERATION_DOCUMENT to apolloResponse {
-            if (shouldFail) {
-                shouldFail = false
-                success(HOME_DATA_ACTIVE_IN_FUTURE_NO_INCEPTION)
-            } else {
-                success(HOME_DATA_PENDING)
-            }
-        },
-    )
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(LOGGED_IN_DATA)
+    },
+    HomeQuery.OPERATION_DOCUMENT to apolloResponse {
+      if (shouldFail) {
+        shouldFail = false
+        success(HOME_DATA_ACTIVE_IN_FUTURE_NO_INCEPTION)
+      } else {
+        success(HOME_DATA_PENDING)
+      }
+    },
+  )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
 
-    @Test
-    fun shouldShowErrorWhenUserHasNoFutureInception() = run {
-        activityRule.launch(LoggedInActivity.newInstance(context()))
+  @Test
+  fun shouldShowErrorWhenUserHasNoFutureInception() = run {
+    activityRule.launch(LoggedInActivity.newInstance(context()))
 
-        onScreen<HomeTabScreen> {
-            recycler {
-                childAt<HomeTabScreen.BodyTextItem>(0) {
-                    text {
-                        hasText(
-                            R.string.home_tab_active_in_future_body,
-                            "Test",
-                        )
-                    }
-                }
-            }
+    onScreen<HomeTabScreen> {
+      recycler {
+        childAt<HomeTabScreen.BodyTextItem>(0) {
+          text {
+            hasText(
+              R.string.home_tab_active_in_future_body,
+              "Test",
+            )
+          }
         }
+      }
     }
+  }
 }

@@ -20,5 +20,5 @@ object ReopenSubscriptionException : Exception("ReopenSubscriptionException")
  * ```
  */
 fun ApolloClient.reconnectSubscriptions() {
-    subscriptionNetworkTransport.closeConnection(ReopenSubscriptionException)
+  subscriptionNetworkTransport.closeConnection(ReopenSubscriptionException)
 }

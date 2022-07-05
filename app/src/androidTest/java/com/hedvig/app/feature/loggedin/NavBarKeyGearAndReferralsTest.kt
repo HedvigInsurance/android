@@ -17,33 +17,33 @@ import org.junit.Rule
 import org.junit.Test
 
 class NavBarKeyGearAndReferralsTest : TestCase() {
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(LOGGED_IN_DATA)
-        },
-    )
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(LOGGED_IN_DATA)
+    },
+  )
 
-    @get:Rule
-    val featureFlagRule = FeatureFlagRule(
-        Feature.KEY_GEAR to true,
-        Feature.REFERRALS to true,
-    )
+  @get:Rule
+  val featureFlagRule = FeatureFlagRule(
+    Feature.KEY_GEAR to true,
+    Feature.REFERRALS to true,
+  )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
 
-    @Test
-    fun shouldAllIconsIncludingKeyGear() = run {
-        activityRule.launch(LoggedInActivity.newInstance(context()))
+  @Test
+  fun shouldAllIconsIncludingKeyGear() = run {
+    activityRule.launch(LoggedInActivity.newInstance(context()))
 
-        onScreen<LoggedInScreen> {
-            bottomTabs {
-                hasNumberOfMenuItems(5)
-            }
-        }
+    onScreen<LoggedInScreen> {
+      bottomTabs {
+        hasNumberOfMenuItems(5)
+      }
     }
+  }
 }

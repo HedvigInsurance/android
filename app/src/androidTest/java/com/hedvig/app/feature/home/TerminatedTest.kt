@@ -20,42 +20,42 @@ import org.junit.Rule
 import org.junit.Test
 
 class TerminatedTest : TestCase() {
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(LOGGED_IN_DATA)
-        },
-        HomeQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(HOME_DATA_TERMINATED)
-        },
-    )
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(LOGGED_IN_DATA)
+    },
+    HomeQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(HOME_DATA_TERMINATED)
+    },
+  )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
 
-    @Test
-    fun shouldShowMessageWhenUserHasAllContractsInTerminatedState() = run {
-        activityRule.launch(LoggedInActivity.newInstance(context()))
+  @Test
+  fun shouldShowMessageWhenUserHasAllContractsInTerminatedState() = run {
+    activityRule.launch(LoggedInActivity.newInstance(context()))
 
-        onScreen<HomeTabScreen> {
-            recycler {
-                childAt<HomeTabScreen.BigTextItem>(0) {
-                    text { hasText(R.string.home_tab_terminated_welcome_title, "Test") }
-                }
-                childAt<HomeTabScreen.BodyTextItem>(1) {
-                    text { hasText(R.string.home_tab_terminated_body) }
-                }
-                childAt<HomeTabScreen.StartClaimItem>(2) {
-                    button { click() }
-                }
-            }
+    onScreen<HomeTabScreen> {
+      recycler {
+        childAt<HomeTabScreen.BigTextItem>(0) {
+          text { hasText(R.string.home_tab_terminated_welcome_title, "Test") }
         }
-
-        onScreen<HonestyPledgeSheetScreen> {
-            claim { isVisible() }
+        childAt<HomeTabScreen.BodyTextItem>(1) {
+          text { hasText(R.string.home_tab_terminated_body) }
         }
+        childAt<HomeTabScreen.StartClaimItem>(2) {
+          button { click() }
+        }
+      }
     }
+
+    onScreen<HonestyPledgeSheetScreen> {
+      claim { isVisible() }
+    }
+  }
 }

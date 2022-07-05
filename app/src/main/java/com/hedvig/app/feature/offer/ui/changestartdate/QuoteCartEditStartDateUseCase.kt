@@ -16,68 +16,68 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class QuoteCartEditStartDateUseCase(
-    private val apolloClient: ApolloClient,
-    private val localeManager: LocaleManager,
+  private val apolloClient: ApolloClient,
+  private val localeManager: LocaleManager,
 ) {
 
-    object Success
+  object Success
 
-    suspend fun removeStartDate(
-        quoteCartId: QuoteCartId,
-        quoteId: String,
-    ): Either<ErrorMessage, Success> {
-        return mutateQuoteCartAndUpdate(
-            quoteCartId,
-            quoteId,
-            null,
-        )
+  suspend fun removeStartDate(
+    quoteCartId: QuoteCartId,
+    quoteId: String,
+  ): Either<ErrorMessage, Success> {
+    return mutateQuoteCartAndUpdate(
+      quoteCartId,
+      quoteId,
+      null,
+    )
+  }
+
+  suspend fun setStartDate(
+    quoteCartId: QuoteCartId,
+    quoteId: String,
+    date: LocalDate,
+  ): Either<ErrorMessage, Success> {
+    return mutateQuoteCartAndUpdate(
+      quoteCartId,
+      quoteId,
+      date,
+    )
+  }
+
+  private suspend fun mutateQuoteCartAndUpdate(
+    quoteCartId: QuoteCartId,
+    quoteId: String,
+    startDate: LocalDate?,
+  ): Either<ErrorMessage, Success> {
+    val json = createPayload(startDate)
+    val mutation = QuoteCartEditQuoteMutation(quoteCartId.id, quoteId, json, localeManager.defaultLocale())
+
+    return either {
+      val result = apolloClient.mutation(mutation)
+        .safeQuery()
+        .toEither(::ErrorMessage)
+        .bind()
+
+      ensureNotNull(result.quoteCart_editQuote.asQuoteCart) {
+        result.quoteCart_editQuote.asQuoteBundleError?.let { asQuoteBundleError ->
+          asQuoteBundleError.limits?.let {
+            ErrorMessage(it.joinToString())
+          } ?: ErrorMessage(asQuoteBundleError.message)
+        } ?: ErrorMessage()
+      }
+
+      Success
     }
+  }
 
-    suspend fun setStartDate(
-        quoteCartId: QuoteCartId,
-        quoteId: String,
-        date: LocalDate,
-    ): Either<ErrorMessage, Success> {
-        return mutateQuoteCartAndUpdate(
-            quoteCartId,
-            quoteId,
-            date,
-        )
-    }
-
-    private suspend fun mutateQuoteCartAndUpdate(
-        quoteCartId: QuoteCartId,
-        quoteId: String,
-        startDate: LocalDate?,
-    ): Either<ErrorMessage, Success> {
-        val json = createPayload(startDate)
-        val mutation = QuoteCartEditQuoteMutation(quoteCartId.id, quoteId, json, localeManager.defaultLocale())
-
-        return either {
-            val result = apolloClient.mutation(mutation)
-                .safeQuery()
-                .toEither(::ErrorMessage)
-                .bind()
-
-            ensureNotNull(result.quoteCart_editQuote.asQuoteCart) {
-                result.quoteCart_editQuote.asQuoteBundleError?.let { asQuoteBundleError ->
-                    asQuoteBundleError.limits?.let {
-                        ErrorMessage(it.joinToString())
-                    } ?: ErrorMessage(asQuoteBundleError.message)
-                } ?: ErrorMessage()
-            }
-
-            Success
-        }
-    }
-
-    private fun createPayload(startDate: LocalDate?): String {
-        val formattedStartDate = startDate?.format(DateTimeFormatter.ISO_DATE)
-        return buildJsonObject {
-            put("startDate", formattedStartDate)
-            putJsonObject("data") {
-                put("startDate", formattedStartDate)
-            }
-        }.toString()
-    }
+  private fun createPayload(startDate: LocalDate?): String {
+    val formattedStartDate = startDate?.format(DateTimeFormatter.ISO_DATE)
+    return buildJsonObject {
+      put("startDate", formattedStartDate)
+      putJsonObject("data") {
+        put("startDate", formattedStartDate)
+      }
+    }.toString()
+  }
 }

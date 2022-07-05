@@ -5,9 +5,9 @@ import com.hedvig.hanalytics.AppScreen
 import com.hedvig.hanalytics.HAnalytics
 
 class MyInfoViewModel(
-    hAnalytics: HAnalytics,
+  hAnalytics: HAnalytics,
 ) : ViewModel() {
-    init {
-        hAnalytics.screenView(AppScreen.CONTACT_INFO)
-    }
+  init {
+    hAnalytics.screenView(AppScreen.CONTACT_INFO)
+  }
 }

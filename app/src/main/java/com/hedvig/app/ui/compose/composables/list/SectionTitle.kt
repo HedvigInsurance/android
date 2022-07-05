@@ -23,53 +23,53 @@ import com.hedvig.app.ui.compose.theme.HedvigTheme
  */
 @Composable
 fun SectionTitle(
-    text: String,
-    modifier: Modifier = Modifier,
-    notification: Boolean = false,
+  text: String,
+  modifier: Modifier = Modifier,
+  notification: Boolean = false,
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(top = 24.dp, bottom = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        val colorError = MaterialTheme.colors.error
-        AnimatedVisibility(visible = notification) {
-            Canvas(modifier = Modifier.size(8.dp)) {
-                drawCircle(color = colorError)
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-        }
-        Text(
-            text = text,
-            style = MaterialTheme.typography.h6,
-        )
+  Row(
+    modifier = modifier
+      .fillMaxWidth()
+      .padding(top = 24.dp, bottom = 8.dp),
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    val colorError = MaterialTheme.colors.error
+    AnimatedVisibility(visible = notification) {
+      Canvas(modifier = Modifier.size(8.dp)) {
+        drawCircle(color = colorError)
+      }
+      Spacer(modifier = Modifier.width(8.dp))
     }
+    Text(
+      text = text,
+      style = MaterialTheme.typography.h6,
+    )
+  }
 }
 
 @Preview(
-    name = "Section Title, Notification = False",
-    group = "List",
+  name = "Section Title, Notification = False",
+  group = "List",
 )
 @Composable
 fun SectionTitlePreviewNoNotification() {
-    HedvigTheme {
-        SectionTitle(
-            text = "Section Title",
-        )
-    }
+  HedvigTheme {
+    SectionTitle(
+      text = "Section Title",
+    )
+  }
 }
 
 @Preview(
-    name = "Section Title, Notification = True",
-    group = "List",
+  name = "Section Title, Notification = True",
+  group = "List",
 )
 @Composable
 fun SectionTitlePreviewNotification() {
-    HedvigTheme {
-        SectionTitle(
-            text = "Section Title",
-            notification = true,
-        )
-    }
+  HedvigTheme {
+    SectionTitle(
+      text = "Section Title",
+      notification = true,
+    )
+  }
 }

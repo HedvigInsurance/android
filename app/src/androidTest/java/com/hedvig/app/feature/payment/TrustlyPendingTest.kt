@@ -23,50 +23,50 @@ import org.junit.Test
 
 class TrustlyPendingTest : TestCase() {
 
-    @get:Rule
-    val activityRule = LazyIntentsActivityScenarioRule(PaymentActivity::class.java)
+  @get:Rule
+  val activityRule = LazyIntentsActivityScenarioRule(PaymentActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        PaymentQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYMENT_DATA_TRUSTLY_CONNECTED) },
-        PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_PENDING) },
-    )
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    PaymentQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYMENT_DATA_TRUSTLY_CONNECTED) },
+    PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_PENDING) },
+  )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
 
-    @get:Rule
-    val marketRule = MarketRule(Market.SE)
+  @get:Rule
+  val marketRule = MarketRule(Market.SE)
 
-    @get:Rule
-    val featureFlagRule = FeatureFlagRule(
-        paymentType = PaymentType.TRUSTLY,
-    )
+  @get:Rule
+  val featureFlagRule = FeatureFlagRule(
+    paymentType = PaymentType.TRUSTLY,
+  )
 
-    @Test
-    fun shouldShowPendingStatusWhenUserHasRecentlyChangedBankAccount() = run {
-        activityRule.launch(PaymentActivity.newInstance(context()))
+  @Test
+  fun shouldShowPendingStatusWhenUserHasRecentlyChangedBankAccount() = run {
+    activityRule.launch(PaymentActivity.newInstance(context()))
 
-        onScreen<PaymentScreen> {
-            trustlyConnectPayin { stub() }
-            recycler {
-                childAt<PaymentScreen.TrustlyPayinDetails>(3) {
-                    bank { hasText(R.string.PAYMENTS_DIRECT_DEBIT_PENDING) }
-                    accountNumber {
-                        containsText(
-                            PAYMENT_DATA_TRUSTLY_CONNECTED.bankAccount!!.fragments.bankAccountFragment.descriptor,
-                        )
-                    }
-                    pending { isVisible() }
-                }
-                childAt<PaymentScreen.Link>(4) {
-                    button {
-                        hasText(R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT)
-                        click()
-                    }
-                }
-            }
-            trustlyConnectPayin { intended() }
+    onScreen<PaymentScreen> {
+      trustlyConnectPayin { stub() }
+      recycler {
+        childAt<PaymentScreen.TrustlyPayinDetails>(3) {
+          bank { hasText(R.string.PAYMENTS_DIRECT_DEBIT_PENDING) }
+          accountNumber {
+            containsText(
+              PAYMENT_DATA_TRUSTLY_CONNECTED.bankAccount!!.fragments.bankAccountFragment.descriptor,
+            )
+          }
+          pending { isVisible() }
         }
+        childAt<PaymentScreen.Link>(4) {
+          button {
+            hasText(R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT)
+            click()
+          }
+        }
+      }
+      trustlyConnectPayin { intended() }
     }
+  }
 }
