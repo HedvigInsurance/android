@@ -18,7 +18,7 @@ class CreateQuoteCartUseCase(
 
     private fun mutation() = CreateOnboardingQuoteCartMutation(
         localeManager.defaultLocale().toString(),
-        marketManager.market?.toGraphQLMarket() ?: Market.SWEDEN
+        marketManager.market?.toGraphQLMarket() ?: Market.SWEDEN,
     )
 
     suspend fun invoke(): Either<ErrorMessage, QuoteCartId> {

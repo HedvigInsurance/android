@@ -60,7 +60,7 @@ fun PickMarketScreen(
     onSubmit: () -> Unit,
     onSelectMarket: (Market) -> Unit,
     onSelectLanguage: (Language) -> Unit,
-    data: PickMarket
+    data: PickMarket,
 ) {
     var sheet by rememberSaveable { mutableStateOf<PickMarketSheet?>(null) }
     val coroutineScope = rememberCoroutineScope()
@@ -88,7 +88,7 @@ fun PickMarketScreen(
                                 onSelectMarket(market)
                             }
                         },
-                        data = data
+                        data = data,
                     )
                     PickMarketSheet.COUNTRY -> PickLanguageSheetContent(
                         onSelectLanguage = { language ->
@@ -97,7 +97,7 @@ fun PickMarketScreen(
                                 onSelectLanguage(language)
                             }
                         },
-                        data = data
+                        data = data,
                     )
                     null -> {}
                 }
@@ -113,7 +113,7 @@ fun PickMarketScreen(
                 modifier = Modifier.align(Alignment.Center),
             )
             Column(
-                modifier = Modifier.align(Alignment.BottomCenter)
+                modifier = Modifier.align(Alignment.BottomCenter),
             ) {
                 PickerRow(
                     onClick = {
@@ -174,8 +174,8 @@ fun BottomSheetHandle(modifier: Modifier = Modifier) {
             .size(width = 32.dp, height = 4.dp)
             .background(
                 color = MaterialTheme.colors.separator,
-                shape = RoundedCornerShape(20.dp)
-            )
+                shape = RoundedCornerShape(20.dp),
+            ),
 
     )
 }
@@ -268,7 +268,7 @@ fun PickerRow(
     Row(
         modifier = Modifier
             .clickable(enabled = enabled, onClick = onClick)
-            .padding(vertical = 8.dp)
+            .padding(vertical = 8.dp),
     ) {
         Spacer(Modifier.width(16.dp))
         if (icon != null) {

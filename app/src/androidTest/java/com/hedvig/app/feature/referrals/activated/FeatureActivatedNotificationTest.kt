@@ -24,7 +24,7 @@ class FeatureActivatedNotificationTest : TestCase() {
     val mockServerRule = ApolloMockServerRule(
         LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
             success(LOGGED_IN_DATA)
-        }
+        },
     )
 
     @get:Rule
@@ -35,7 +35,7 @@ class FeatureActivatedNotificationTest : TestCase() {
         run {
             val intent = LoggedInActivity.newInstance(
                 context(),
-                initialTab = LoggedInTabs.REFERRALS
+                initialTab = LoggedInTabs.REFERRALS,
             )
 
             activityRule.launch(intent)

@@ -35,7 +35,7 @@ class MarketingViewModel(
             MarketPicked.Loading
         } else {
             PICK_MARKET_INITIAL
-        }
+        },
     )
     val state = _state.asStateFlow()
 
@@ -73,7 +73,7 @@ class MarketingViewModel(
                 Market.FR
             } else {
                 null
-            }
+            },
         )
 
         val initialValues = getInitialMarketPickerValuesUseCase.invoke()
@@ -106,7 +106,7 @@ class MarketingViewModel(
             ?: throw IllegalStateException("Cannot update market picker state when not on market picker")
         val newState = transform(oldState)
         val newStateWithLanguage = newState.copy(
-            language = languageFromState(newState)
+            language = languageFromState(newState),
         )
         return _state.updateAndGet {
             newStateWithLanguage.copy(
@@ -201,5 +201,5 @@ sealed interface MarketPicked : ViewState {
 }
 
 data class Background(
-    val data: MarketingBackground?
+    val data: MarketingBackground?,
 )

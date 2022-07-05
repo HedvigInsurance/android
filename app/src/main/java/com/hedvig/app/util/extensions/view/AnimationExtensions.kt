@@ -11,13 +11,13 @@ fun View.animateExpand(
     duration: Long = 200,
     interpolator: TimeInterpolator = DecelerateInterpolator(),
     updateCallback: (() -> Unit)? = null,
-    withOpacity: Boolean = false
+    withOpacity: Boolean = false,
 ) {
     show()
     val parentWidth = (parent as View).measuredWidth
     measure(
         View.MeasureSpec.makeMeasureSpec(parentWidth, View.MeasureSpec.EXACTLY),
-        ViewGroup.LayoutParams.WRAP_CONTENT
+        ViewGroup.LayoutParams.WRAP_CONTENT,
     )
     val targetHeight = measuredHeight + if (this is TextView) paint.fontSpacing.toInt() else 0
 
@@ -41,7 +41,7 @@ fun View.animateCollapse(
     targetHeight: Int = 0,
     duration: Long = 200,
     interpolator: TimeInterpolator = DecelerateInterpolator(),
-    withOpacity: Boolean = false
+    withOpacity: Boolean = false,
 ) {
     measure(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
 

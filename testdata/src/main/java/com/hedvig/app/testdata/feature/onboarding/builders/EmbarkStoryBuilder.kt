@@ -13,10 +13,10 @@ class EmbarkStoryBuilder(
             __typename = EmbarkStoryMetadataEntryDiscount.type.name,
             asEmbarkStoryMetadataEntryDiscount = ChoosePlanQuery.AsEmbarkStoryMetadataEntryDiscount(
                 __typename = EmbarkStoryMetadataEntryDiscount.type.name,
-                discount = "25%"
+                discount = "25%",
             ),
             asEmbarkStoryMetaDataEntryWebUrlPath = null,
-        )
+        ),
     ),
 ) {
     fun build() = ChoosePlanQuery.EmbarkStory(
@@ -24,7 +24,7 @@ class EmbarkStoryBuilder(
         title = title,
         type = EmbarkStoryType.APP_ONBOARDING,
         description = description,
-        metadata = metadata
+        metadata = metadata,
     )
 
     companion object {

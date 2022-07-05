@@ -16,8 +16,8 @@ class PerilBuilder {
                     add(
                         InsuranceQuery.ContractPeril(
                             __typename = PerilV2.type.name,
-                            fragments = InsuranceQuery.ContractPeril.Fragments(PERIL_FRAGMENT)
-                        )
+                            fragments = InsuranceQuery.ContractPeril.Fragments(PERIL_FRAGMENT),
+                        ),
                     )
                 }
             }
@@ -30,12 +30,12 @@ class PerilBuilder {
             icon = PerilFragment.Icon(
                 variants = PerilFragment.Variants(
                     dark = PerilFragment.Dark(
-                        svgUrl = "/app-content-service/fire_dark.svg"
+                        svgUrl = "/app-content-service/fire_dark.svg",
                     ),
                     light = PerilFragment.Light(
-                        svgUrl = "/app-content-service/fire.svg"
-                    )
-                )
+                        svgUrl = "/app-content-service/fire.svg",
+                    ),
+                ),
             ),
             covered = listOf(
                 "Covered",
@@ -43,17 +43,17 @@ class PerilBuilder {
                 "Covered",
                 "Covered",
                 "Covered",
-                "Covered"
+                "Covered",
             ).toArrayList(),
             exceptions = listOf(
                 "Exceptions",
                 "Exceptions",
                 "Exceptions",
                 "Exceptions",
-                "Exceptions"
+                "Exceptions",
             ).toArrayList(),
             info = "Du kan få ersättning om tvättmaskinen säckar ihop eller om annan elektrisk " +
-                "maskin eller apparat går sönder p.g.a. kortslutning, överslag eller överspänning."
+                "maskin eller apparat går sönder p.g.a. kortslutning, överslag eller överspänning.",
 
         )
     }

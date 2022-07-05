@@ -8,7 +8,7 @@ import java.time.LocalDate
 data class ChargeHistoryBuilder(
     private val amount: String = "139.00",
     private val currency: String = "SEK",
-    private val date: LocalDate = LocalDate.now() - 1.months
+    private val date: LocalDate = LocalDate.now() - 1.months,
 ) {
     fun build() = PaymentQuery.ChargeHistory(
         amount = PaymentQuery.Amount(
@@ -16,10 +16,10 @@ data class ChargeHistoryBuilder(
             fragments = PaymentQuery.Amount.Fragments(
                 MonetaryAmountFragment(
                     amount = amount,
-                    currency = currency
-                )
-            )
+                    currency = currency,
+                ),
+            ),
         ),
-        date = date
+        date = date,
     )
 }

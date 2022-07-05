@@ -4,7 +4,7 @@ import androidx.recyclerview.widget.DiffUtil
 
 class PhotoDiffCallback(
     private val old: List<Photo>,
-    private val new: List<Photo>
+    private val new: List<Photo>,
 ) : DiffUtil.Callback() {
 
     override fun getOldListSize() = old.size

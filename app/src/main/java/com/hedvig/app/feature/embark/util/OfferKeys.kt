@@ -12,7 +12,7 @@ fun EmbarkStoryQuery.Passage.getOfferKeyOrNull(valueStore: ValueStore): String? 
         ?.firstOrNull {
             evaluateExpression(
                 it.data.expression.fragments.expressionFragment,
-                valueStore
+                valueStore,
             ) is ExpressionResult.True
         }?.data?.id
 }
@@ -23,7 +23,7 @@ fun EmbarkStoryQuery.Passage.getSelectedContractTypes(valueStore: ValueStore): L
         ?.firstOrNull {
             evaluateExpression(
                 it.data.expression.fragments.expressionFragment,
-                valueStore
+                valueStore,
             ) is ExpressionResult.True
         }
         ?.data

@@ -90,7 +90,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 setupToolbarMenu(
                     progressToolbar,
                     viewState.passageState.hasTooltips,
-                    viewState.isLoggedIn
+                    viewState.isLoggedIn,
                 )
                 progressToolbar.setProgress(viewState.passageState.progressPercentage)
 
@@ -122,8 +122,8 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                                     context = this@EmbarkActivity,
                                     quoteCartId = event.quoteCartId,
                                     selectedContractTypes = event.selectedContractTypes,
-                                    shouldShowOnNextAppStart = true
-                                )
+                                    shouldShowOnNextAppStart = true,
+                                ),
                             )
                         }
                         is EmbarkViewModel.Event.Error -> {
@@ -163,7 +163,8 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         R.id.tooltip -> {
             viewModel.viewState.value?.passageState?.passage?.tooltips?.let {
                 TooltipBottomSheet.newInstance(it).show(
-                    supportFragmentManager, TooltipBottomSheet.TAG
+                    supportFragmentManager,
+                    TooltipBottomSheet.TAG,
                 )
             }
             true
@@ -234,7 +235,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
             val parameter = TextActionParameter.from(
                 passage.messages.map { it.fragments.messageFragment.text },
                 textAction.textData,
-                passage.name
+                passage.name,
             )
             return TextActionFragment.newInstance(parameter)
         }
@@ -244,7 +245,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 val parameter = TextActionParameter.from(
                     passage.messages.map { it.fragments.messageFragment.text },
                     data,
-                    passage.name
+                    passage.name,
                 )
                 return TextActionFragment.newInstance(parameter)
             }
@@ -253,7 +254,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         passage?.action?.asEmbarkPreviousInsuranceProviderAction?.let { previousInsuranceAction ->
             val parameter = PreviousInsurerParameter.from(
                 passage.messages.map { it.fragments.messageFragment.text },
-                previousInsuranceAction
+                previousInsuranceAction,
             )
             return PreviousInsurerFragment.newInstance(parameter)
         }
@@ -261,7 +262,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         passage?.action?.asEmbarkExternalInsuranceProviderAction?.let { externalInsuranceAction ->
             val parameter = ExternalInsurerParameter.from(
                 passage.messages.map { it.fragments.messageFragment.text },
-                externalInsuranceAction
+                externalInsuranceAction,
             )
             return ExternalInsurerFragment.newInstance(parameter)
         }
@@ -278,13 +279,13 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                             placeholder = numberAction.fragments.embarkNumberActionFragment.placeholder,
                             unit = numberAction.fragments.embarkNumberActionFragment.unit,
                             maxValue = numberAction.fragments.embarkNumberActionFragment.maxValue,
-                            minValue = numberAction.fragments.embarkNumberActionFragment.minValue
-                        )
+                            minValue = numberAction.fragments.embarkNumberActionFragment.minValue,
+                        ),
                     ),
                     link = numberAction.fragments.embarkNumberActionFragment.link.fragments.embarkLinkFragment.name,
                     submitLabel = numberAction.fragments.embarkNumberActionFragment
                         .link.fragments.embarkLinkFragment.label,
-                )
+                ),
             )
         }
 
@@ -300,12 +301,12 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                             placeholder = numberAction.data!!.placeholder,
                             unit = numberAction.data!!.unit,
                             maxValue = numberAction.data!!.maxValue,
-                            minValue = numberAction.data!!.minValue
+                            minValue = numberAction.data!!.minValue,
                         )
                     },
                     link = numberActionSet.link.fragments.embarkLinkFragment.name,
                     submitLabel = numberActionSet.link.fragments.embarkLinkFragment.label,
-                )
+                ),
             )
         }
 
@@ -316,7 +317,7 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                 datePickerAction.storeKey,
                 datePickerAction.label,
                 datePickerAction.label,
-                datePickerAction.next.fragments.embarkLinkFragment.name
+                datePickerAction.next.fragments.embarkLinkFragment.name,
             )
             return DatePickerFragment.newInstance(params)
         }
@@ -340,22 +341,22 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
                             dropDownActionData.label,
                             dropDownActionData.options.map {
                                 MultiActionComponent.Dropdown.Option(it.text, it.value)
-                            }
+                            },
                         )
                         switchActionData != null -> MultiActionComponent.Switch(
                             switchActionData.key,
                             switchActionData.label,
-                            switchActionData.defaultValue
+                            switchActionData.defaultValue,
                         )
 
                         numberActionData != null -> MultiActionComponent.Number(
                             numberActionData.key,
                             numberActionData.placeholder,
                             numberActionData.unit,
-                            numberActionData.label
+                            numberActionData.label,
                         )
                         else -> throw IllegalArgumentException(
-                            "Could not match $it to a component"
+                            "Could not match $it to a component",
                         )
                     }
                 },
@@ -386,7 +387,6 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
         }
 
         if (passage?.messages?.isNotEmpty() == true) {
-
             val params = NoActionParameter(passage.messages.map { it.fragments.messageFragment.text })
             return NoActionFragment.newInstance(params)
         }

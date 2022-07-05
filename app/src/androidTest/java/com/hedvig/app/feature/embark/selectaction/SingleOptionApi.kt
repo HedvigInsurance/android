@@ -26,7 +26,7 @@ class SingleOptionApi : TestCase() {
         EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse { success(STORY_WITH_SELECT_ACTION_API_SINGLE_OPTION) },
         HELLO_QUERY to apolloResponse {
             success(jsonObjectOf("hello" to "world"))
-        }
+        },
     )
 
     @get:Rule

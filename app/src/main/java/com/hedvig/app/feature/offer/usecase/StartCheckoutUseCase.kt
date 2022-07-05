@@ -20,7 +20,7 @@ class StartCheckoutUseCase(
 
     suspend fun startCheckoutAndClearCache(
         quoteCartId: QuoteCartId?,
-        quoteIds: List<String>
+        quoteIds: List<String>,
     ): Either<ErrorMessage, Success> = either {
         ensureNotNull(quoteCartId) { ErrorMessage("Quote cart id not found") }
 
@@ -35,7 +35,7 @@ class StartCheckoutUseCase(
 
     private suspend fun mutateQuoteCart(
         quoteCartId: QuoteCartId,
-        quoteIds: List<String>
+        quoteIds: List<String>,
     ): Either<ErrorMessage, QuoteCartStartCheckoutMutation.Data> = apolloClient
         .mutation(QuoteCartStartCheckoutMutation(quoteCartId.id, quoteIds))
         .safeQuery()

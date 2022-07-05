@@ -12,7 +12,7 @@ data class LoggedInDataBuilder(
 ) {
     fun build() = LoggedInQuery.Data(
         referralTerms = LoggedInQuery.ReferralTerms(
-            url = referralTermsUrl
+            url = referralTermsUrl,
         ),
         referralInformation = LoggedInQuery.ReferralInformation(
             campaign = LoggedInQuery.Campaign(
@@ -25,13 +25,13 @@ data class LoggedInDataBuilder(
                             fragments = LoggedInQuery.Amount.Fragments(
                                 MonetaryAmountFragment(
                                     amount = campaignIncentiveAmount,
-                                    currency = campaignIncentiveCurrency
-                                )
-                            )
-                        )
-                    )
-                )
-            )
-        )
+                                    currency = campaignIncentiveCurrency,
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        ),
     )
 }

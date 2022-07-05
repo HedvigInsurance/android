@@ -30,7 +30,7 @@ class ProfileQueryDataToProfileUiStateMapper(
                 priceCaptionResId = marketManager.market?.getPriceCaption(
                     from.bankAccount?.directDebitStatus,
                     from.activePaymentMethodsV2?.fragments?.activePaymentMethodsFragment,
-                )
+                ),
             )
         } else {
             PaymentState.DontShow

@@ -33,7 +33,8 @@ class LoginDialog : AuthenticateDialog() {
         AuthState.INITIATED -> binding.authTitle.setText(R.string.BANK_ID_AUTH_TITLE_INITIATED)
         AuthState.IN_PROGRESS -> binding.authTitle.setText(R.string.BANK_ID_LOG_IN_TITLE_IN_PROGRESS)
         AuthState.UNKNOWN__,
-        AuthState.FAILED -> {
+        AuthState.FAILED,
+        -> {
             binding.authTitle.setText(R.string.BANK_ID_LOG_IN_TITLE_FAILED)
             dialog?.setCanceledOnTouchOutside(true)
         }
@@ -41,7 +42,7 @@ class LoginDialog : AuthenticateDialog() {
             binding.authTitle.setText(R.string.BANK_ID_LOG_IN_TITLE_SUCCESS)
             dismissAllowingStateLoss()
             startActivity(
-                LoggedInActivity.newInstance(requireContext(), withoutHistory = true)
+                LoggedInActivity.newInstance(requireContext(), withoutHistory = true),
             )
         }
     }

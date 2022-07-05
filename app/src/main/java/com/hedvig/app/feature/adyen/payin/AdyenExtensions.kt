@@ -25,7 +25,7 @@ fun Activity.startAdyenPayment(market: Market?, paymentMethods: PaymentMethodsAp
                 AdyenConnectPayinActivity.GOOGLE_WALLET_ENVIRONMENT_TEST
             } else {
                 AdyenConnectPayinActivity.GOOGLE_WALLET_ENVIRONMENT_PRODUCTION
-            }
+            },
         )
         .build()
 
@@ -33,7 +33,7 @@ fun Activity.startAdyenPayment(market: Market?, paymentMethods: PaymentMethodsAp
         .Builder(
             this,
             AdyenPayinDropInService::class.java,
-            getString(R.string.ADYEN_CLIENT_KEY)
+            getString(R.string.ADYEN_CLIENT_KEY),
         )
         .addCardConfiguration(cardConfig)
         .addGooglePayConfiguration(googlePayConfig)

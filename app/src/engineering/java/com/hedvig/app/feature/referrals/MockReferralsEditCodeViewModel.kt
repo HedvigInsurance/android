@@ -33,10 +33,10 @@ class MockReferralsEditCodeViewModel : ReferralsEditCodeViewModel() {
                         EditCodeDataBuilder.ResultVariant.TOO_LONG -> EDIT_CODE_DATA_TOO_LONG
                         EditCodeDataBuilder.ResultVariant.EXCEEDED_MAX_UPDATES -> EDIT_CODE_DATA_TOO_MANY_CHANGES
                         EditCodeDataBuilder.ResultVariant.UNKNOWN -> EDIT_CODE_DATA_UNKNOWN_RESULT
-                    }
+                    },
                 )
             },
-            1000
+            1000,
         )
     }
 

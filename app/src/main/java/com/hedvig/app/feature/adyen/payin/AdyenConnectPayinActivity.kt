@@ -55,7 +55,7 @@ class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activ
                         .beginTransaction()
                         .replace(
                             R.id.container,
-                            PostSignExplainerFragment.newInstance(ConnectPayinType.ADYEN)
+                            PostSignExplainerFragment.newInstance(ConnectPayinType.ADYEN),
                         )
                         .commitAllowingStateLoss()
                 is ConnectPaymentScreenState.Connect -> startAdyenPayment(marketManager.market, paymentMethods)
@@ -66,8 +66,8 @@ class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activ
                             R.id.container,
                             ConnectPaymentResultFragment.newInstance(
                                 state.success,
-                                ConnectPayinType.ADYEN
-                            )
+                                ConnectPayinType.ADYEN,
+                            ),
                         )
                         .commitAllowingStateLoss()
             }
@@ -80,8 +80,8 @@ class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activ
                         LoggedInActivity.newInstance(
                             this,
                             withoutHistory = true,
-                            isFromOnboarding = true
-                        )
+                            isFromOnboarding = true,
+                        ),
                     )
                     return@observe
                 }
@@ -112,7 +112,7 @@ class AdyenConnectPayinActivity : BaseActivity(R.layout.fragment_container_activ
             is DropInResult.Error,
             null,
             -> connectPaymentViewModel.navigateTo(
-                ConnectPaymentScreenState.Result(success = false)
+                ConnectPaymentScreenState.Result(success = false),
             )
         }
     }

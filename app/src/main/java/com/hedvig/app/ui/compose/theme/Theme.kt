@@ -38,7 +38,7 @@ private fun InnerTheme(colorOverrides: ((Colors) -> Colors)? = null, content: @C
         createMdcTheme(
             context = context,
             layoutDirection = layoutDirection,
-            setDefaultFontFamily = true
+            setDefaultFontFamily = true,
         )
     }
     val colors = themeParameters.colors ?: MaterialTheme.colors
@@ -49,7 +49,7 @@ private fun InnerTheme(colorOverrides: ((Colors) -> Colors)? = null, content: @C
     ) {
         CompositionLocalProvider(
             LocalContentColor provides MaterialTheme.colors.onBackground,
-            content = content
+            content = content,
         )
     }
 }

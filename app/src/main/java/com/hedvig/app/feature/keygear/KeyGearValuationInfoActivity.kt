@@ -32,16 +32,16 @@ class KeyGearValuationInfoActivity : BaseActivity(R.layout.activity_key_gear_val
                         getString(c.label).lowercase(Locale.getDefault()),
                         vd.ratio,
                         vd.purchasePrice.toBigDecimal().toInt(),
-                        vd.valuationAmount?.toBigDecimal()?.toInt()
-                    )
+                        vd.valuationAmount?.toBigDecimal()?.toInt(),
+                    ),
                 )
             } else if (vd.valuationType == ValuationType.MARKET_PRICE) {
                 binding.body.setMarkdownText(
                     getString(
                         R.string.KEY_GEAR_ITEM_VIEW_VALUATION_MARKET_BODY,
                         getString(c.label),
-                        vd.ratio
-                    )
+                        vd.ratio,
+                    ),
                 )
             }
         }
@@ -62,7 +62,7 @@ class KeyGearValuationInfoActivity : BaseActivity(R.layout.activity_key_gear_val
         fun newInstance(
             context: Context,
             category: KeyGearItemCategory,
-            valuationData: ValuationData
+            valuationData: ValuationData,
         ) =
             Intent(context, KeyGearValuationInfoActivity::class.java).apply {
                 putExtra(CATEGORY, category)

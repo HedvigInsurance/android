@@ -35,7 +35,7 @@ fun FullScreenProgressOverlay(show: Boolean) {
     AnimatedVisibility(
         visible = show,
         enter = fadeIn(animationSpec = tween(500)),
-        exit = fadeOut(animationSpec = tween(500, delayMillis = 400))
+        exit = fadeOut(animationSpec = tween(500, delayMillis = 400)),
     ) {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -43,15 +43,15 @@ fun FullScreenProgressOverlay(show: Boolean) {
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Center,
             ) {
                 val infiniteTransition = rememberInfiniteTransition()
                 val angle by infiniteTransition.animateFloat(
                     initialValue = 0F,
                     targetValue = 360F,
                     animationSpec = infiniteRepeatable(
-                        animation = tween(1200, easing = LinearEasing)
-                    )
+                        animation = tween(1200, easing = LinearEasing),
+                    ),
                 )
 
                 Icon(
@@ -60,11 +60,11 @@ fun FullScreenProgressOverlay(show: Boolean) {
                         .rotate(angle)
                         .animateEnterExit(
                             enter = fadeIn(animationSpec = tween(200, delayMillis = 700)),
-                            exit = fadeOut(animationSpec = tween(200))
+                            exit = fadeOut(animationSpec = tween(200)),
                         )
                         .width(32.dp)
                         .height(32.dp),
-                    contentDescription = stringResource(R.string.login_smedium_button_active_resend_code)
+                    contentDescription = stringResource(R.string.login_smedium_button_active_resend_code),
                 )
             }
         }

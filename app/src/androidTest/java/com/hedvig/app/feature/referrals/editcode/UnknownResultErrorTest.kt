@@ -23,9 +23,9 @@ class UnknownResultErrorTest : TestCase() {
     val mockServerRule = ApolloMockServerRule(
         UpdateReferralCampaignCodeMutation.OPERATION_DOCUMENT to apolloResponse {
             success(
-                EDIT_CODE_DATA_UNKNOWN_RESULT
+                EDIT_CODE_DATA_UNKNOWN_RESULT,
             )
-        }
+        },
     )
 
     @get:Rule
@@ -36,8 +36,8 @@ class UnknownResultErrorTest : TestCase() {
         activityRule.launch(
             ReferralsEditCodeActivity.newInstance(
                 context(),
-                "TEST123"
-            )
+                "TEST123",
+            ),
         )
 
         onScreen<ReferralsEditCodeScreen> {

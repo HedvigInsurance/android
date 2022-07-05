@@ -10,7 +10,7 @@ import com.google.zxing.qrcode.QRCodeWriter
 import com.hedvig.app.R
 
 class QR private constructor(
-    context: Context
+    context: Context,
 ) {
     private val defaultQRSize = context.resources.getDimensionPixelSize(R.dimen.default_qr_code_size)
 
@@ -20,12 +20,13 @@ class QR private constructor(
         for (x in 0 until width) {
             for (y in 0 until height) {
                 bitmap.setPixel(
-                    x, y,
+                    x,
+                    y,
                     if (matrix.get(x, y)) {
                         Color.BLACK
                     } else {
                         Color.WHITE
-                    }
+                    },
                 )
             }
         }
@@ -37,7 +38,7 @@ class QR private constructor(
     }
 
     class QRBitmap(
-        private val bitmap: Bitmap
+        private val bitmap: Bitmap,
     ) {
         fun into(imageView: ImageView) = imageView.setImageBitmap(bitmap)
     }

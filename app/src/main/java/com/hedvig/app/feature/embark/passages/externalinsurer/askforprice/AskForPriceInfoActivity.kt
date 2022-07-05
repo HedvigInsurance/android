@@ -35,7 +35,7 @@ class AskForPriceInfoActivity : BaseActivity() {
             if (result.resultCode == RESULT_CONTINUE) {
                 finishWithResult(
                     result.data?.getStringExtra(REFERENCE_RESULT),
-                    result.data?.getStringExtra(SSN_RESULT)
+                    result.data?.getStringExtra(SSN_RESULT),
                 )
             }
         }
@@ -48,9 +48,9 @@ class AskForPriceInfoActivity : BaseActivity() {
                     topBar = {
                         TopAppBarWithBack(
                             onClick = { onBackPressed() },
-                            title = stringResource(R.string.insurely_title)
+                            title = stringResource(R.string.insurely_title),
                         )
-                    }
+                    },
                 ) {
                     AskForPriceScreen(
                         parameter.selectedInsuranceProviderName,
@@ -58,7 +58,7 @@ class AskForPriceInfoActivity : BaseActivity() {
                             model.onSkipRetrievePriceInfo()
                             finishWithResult(null, null)
                         },
-                        onNavigateToRetrievePrice = ::startRetrievePriceActivity
+                        onNavigateToRetrievePrice = ::startRetrievePriceActivity,
                     )
                 }
             }
@@ -99,7 +99,7 @@ fun AskForPriceScreen(
     IntroContent(
         selectedInsurance = selectedInsurance,
         onNavigateToRetrievePriceInfo = { onNavigateToRetrievePrice() },
-        onSkipRetrievePriceInfo = onSkipRetrievePriceInfo
+        onSkipRetrievePriceInfo = onSkipRetrievePriceInfo,
     )
 }
 
@@ -110,7 +110,7 @@ fun AskForPriceScreenPreview() {
         AskForPriceScreen(
             "Test",
             onSkipRetrievePriceInfo = { },
-            onNavigateToRetrievePrice = { }
+            onNavigateToRetrievePrice = { },
         )
     }
 }

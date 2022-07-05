@@ -35,7 +35,7 @@ class AttachPickerDialog(context: Context) : Dialog(context, R.style.Transparent
     init {
         window?.addFlags(
             WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-                WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
+                WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS,
         )
     }
 
@@ -54,7 +54,7 @@ class AttachPickerDialog(context: Context) : Dialog(context, R.style.Transparent
         takePhotoCallback: () -> Unit,
         showUploadBottomSheetCallback: () -> Unit,
         dismissCallback: (MotionEvent?) -> Unit,
-        uploadFileCallback: (Uri) -> Unit
+        uploadFileCallback: (Uri) -> Unit,
     ) {
         this.takePhotoCallback = takePhotoCallback
         this.showUploadBottomSheetCallback = showUploadBottomSheetCallback
@@ -84,18 +84,20 @@ class AttachPickerDialog(context: Context) : Dialog(context, R.style.Transparent
         // maybe we should create a better animation but this is something
         val animation =
             loadAnimation(context, if (show) R.anim.slide_in_up else R.anim.slide_out_down)
-        animation.setAnimationListener(object : Animation.AnimationListener {
-            override fun onAnimationEnd(animation: Animation?) {
-                if (!show) {
-                    preventDismiss = false
-                    dismiss()
-                    runningDismissAnimation = false
+        animation.setAnimationListener(
+            object : Animation.AnimationListener {
+                override fun onAnimationEnd(animation: Animation?) {
+                    if (!show) {
+                        preventDismiss = false
+                        dismiss()
+                        runningDismissAnimation = false
+                    }
                 }
-            }
 
-            override fun onAnimationRepeat(animation: Animation?) = Unit
-            override fun onAnimationStart(animation: Animation?) = Unit
-        })
+                override fun onAnimationRepeat(animation: Animation?) = Unit
+                override fun onAnimationStart(animation: Animation?) = Unit
+            },
+        )
         binding.attachPickerBottomSheet.startAnimation(animation)
     }
 
@@ -136,7 +138,7 @@ class AttachPickerDialog(context: Context) : Dialog(context, R.style.Transparent
             pickerHeight,
             takePhotoCallback,
             showUploadBottomSheetCallback,
-            uploadFileCallback
+            uploadFileCallback,
         )
         binding.apply {
             attachFileRecyclerView.adapter = adapter

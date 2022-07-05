@@ -28,7 +28,7 @@ class PassedKeyValueRedirectTest : TestCase() {
 
     @get:Rule
     val apolloMockServerRule = ApolloMockServerRule(
-        EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse { success(STORY_WITH_PASSED_KEY_VALUE) }
+        EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse { success(STORY_WITH_PASSED_KEY_VALUE) },
     )
 
     @get:Rule
@@ -41,7 +41,7 @@ class PassedKeyValueRedirectTest : TestCase() {
                 context(),
                 this.javaClass.name,
                 "",
-            )
+            ),
         )
 
         onScreen<EmbarkScreen> {

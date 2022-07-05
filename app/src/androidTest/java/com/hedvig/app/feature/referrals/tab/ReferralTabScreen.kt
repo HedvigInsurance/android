@@ -29,7 +29,7 @@ class ReferralTabScreen : Screen<ReferralTabScreen>() {
             itemType(ReferralTabScreen::InvitesHeaderItem)
             itemType(ReferralTabScreen::ReferralItem)
             itemType(ReferralTabScreen::ErrorItem)
-        }
+        },
     )
 
     class HeaderItem(parent: Matcher<View>) : KRecyclerItem<HeaderItem>(parent) {

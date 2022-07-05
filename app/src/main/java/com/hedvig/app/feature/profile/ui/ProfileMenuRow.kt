@@ -16,7 +16,7 @@ class ProfileMenuRow : ConstraintLayout {
     constructor(
         context: Context,
         attributeSet: AttributeSet?,
-        defStyle: Int
+        defStyle: Int,
     ) : super(context, attributeSet, defStyle) {
         this.attributeSet = attributeSet
         this.defStyle = defStyle
@@ -26,7 +26,7 @@ class ProfileMenuRow : ConstraintLayout {
 
     constructor(
         context: Context,
-        attributeSet: AttributeSet?
+        attributeSet: AttributeSet?,
     ) : super(context, attributeSet) {
         this.attributeSet = attributeSet
         inflate(context, R.layout.profile_row, this)

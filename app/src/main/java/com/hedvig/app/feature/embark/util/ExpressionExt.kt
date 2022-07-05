@@ -13,7 +13,7 @@ fun EmbarkStoryQuery.Redirect.toExpressionFragment() = ExpressionFragment(
                 BasicExpressionFragment.AsEmbarkExpressionUnary(
                     __typename = "",
                     unaryType = it.unaryType,
-                    text = null
+                    text = null,
                 )
             },
             asEmbarkExpressionBinary = asEmbarkRedirectBinaryExpression?.let {
@@ -22,10 +22,10 @@ fun EmbarkStoryQuery.Redirect.toExpressionFragment() = ExpressionFragment(
                     binaryType = it.binaryType,
                     key = it.key,
                     value = it.value,
-                    text = null
+                    text = null,
                 )
             },
-        )
+        ),
     ),
     asEmbarkExpressionMultiple = asEmbarkRedirectMultipleExpressions?.let {
         ExpressionFragment.AsEmbarkExpressionMultiple(
@@ -36,7 +36,7 @@ fun EmbarkStoryQuery.Redirect.toExpressionFragment() = ExpressionFragment(
                 ExpressionFragment.SubExpression2(
                     __typename = "",
                     fragments = ExpressionFragment.SubExpression2.Fragments(
-                        se.fragments.expressionFragment.fragments.basicExpressionFragment
+                        se.fragments.expressionFragment.fragments.basicExpressionFragment,
                     ),
                     asEmbarkExpressionMultiple1 = se
                         .fragments.expressionFragment.asEmbarkExpressionMultiple?.let { asMulti ->
@@ -48,7 +48,7 @@ fun EmbarkStoryQuery.Redirect.toExpressionFragment() = ExpressionFragment(
                                     ExpressionFragment.SubExpression1(
                                         __typename = "",
                                         fragments = ExpressionFragment.SubExpression1.Fragments(
-                                            se2.fragments.basicExpressionFragment
+                                            se2.fragments.basicExpressionFragment,
                                         ),
                                         asEmbarkExpressionMultiple2 = se2
                                             .asEmbarkExpressionMultiple1?.let { asMulti2 ->
@@ -62,18 +62,18 @@ fun EmbarkStoryQuery.Redirect.toExpressionFragment() = ExpressionFragment(
                                                             fragments = ExpressionFragment
                                                                 .SubExpression
                                                                 .Fragments(
-                                                                    se3.fragments.basicExpressionFragment
-                                                                )
+                                                                    se3.fragments.basicExpressionFragment,
+                                                                ),
                                                         )
-                                                    }
+                                                    },
                                                 )
-                                            }
+                                            },
                                     )
-                                }
+                                },
                             )
-                        }
+                        },
                 )
-            }
+            },
         )
-    }
+    },
 )

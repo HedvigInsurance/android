@@ -23,7 +23,7 @@ class StartDataCollectionUseCase(
         val mutation = createMutation(
             reference = reference,
             personalNumber = personalNumber,
-            insuranceProvider = insuranceProvider
+            insuranceProvider = insuranceProvider,
         )
 
         return when (val result = apolloClient.mutate(mutation).safeQuery()) {
@@ -40,14 +40,14 @@ class StartDataCollectionUseCase(
         Market.NO -> InitiateDataCollectionNOMutation(
             reference = reference,
             insuranceProvider = insuranceProvider,
-            personalNumber = personalNumber
+            personalNumber = personalNumber,
         )
         null,
         Market.SE,
         -> InitiateDataCollectionSEMutation(
             reference = reference,
             insuranceProvider = insuranceProvider,
-            personalNumber = personalNumber
+            personalNumber = personalNumber,
         )
         Market.DK,
         Market.FR,

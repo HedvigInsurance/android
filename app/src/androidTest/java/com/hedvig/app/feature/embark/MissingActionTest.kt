@@ -21,7 +21,7 @@ class MissingActionTest : TestCase() {
 
     @get:Rule
     val apolloMockServerRule = ApolloMockServerRule(
-        EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse { success(STORY_WITH_INCOMPATIBLE_ACTION) }
+        EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse { success(STORY_WITH_INCOMPATIBLE_ACTION) },
     )
 
     @get:Rule
@@ -34,7 +34,7 @@ class MissingActionTest : TestCase() {
                 context(),
                 this.javaClass.name,
                 "",
-            )
+            ),
         )
 
         stubExternalIntents()

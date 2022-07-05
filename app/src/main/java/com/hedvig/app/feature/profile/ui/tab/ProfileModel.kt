@@ -8,7 +8,7 @@ sealed class ProfileModel {
         val title: String,
         val caption: String?,
         @DrawableRes val icon: Int,
-        val onClick: () -> Unit
+        val onClick: () -> Unit,
     ) : ProfileModel()
 
     object Subtitle : ProfileModel()

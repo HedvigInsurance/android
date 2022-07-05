@@ -23,7 +23,7 @@ class GenericErrorTest : TestCase() {
     val mockServerRule = ApolloMockServerRule(
         UpdateReferralCampaignCodeMutation.OPERATION_DOCUMENT to apolloResponse {
             graphQLError(jsonObjectOf("message" to "example message"))
-        }
+        },
     )
 
     @get:Rule
@@ -34,8 +34,8 @@ class GenericErrorTest : TestCase() {
         activityRule.launch(
             ReferralsEditCodeActivity.newInstance(
                 context(),
-                "TEST123"
-            )
+                "TEST123",
+            ),
         )
 
         onScreen<ReferralsEditCodeScreen> {

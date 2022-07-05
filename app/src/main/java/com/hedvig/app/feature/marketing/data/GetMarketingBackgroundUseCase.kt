@@ -20,7 +20,7 @@ class GetMarketingBackgroundUseCase(
             safeLet(
                 appMarketingImage.image?.url,
                 appMarketingImage.blurhash,
-                appMarketingImage.userInterfaceStyle
+                appMarketingImage.userInterfaceStyle,
             ) { url, blurHash, userInterfaceStyle ->
                 MarketingBackground(
                     url = url,
@@ -29,7 +29,7 @@ class GetMarketingBackgroundUseCase(
                         UserInterfaceStyle.Light -> MarketingBackground.Theme.LIGHT
                         UserInterfaceStyle.Dark -> MarketingBackground.Theme.DARK
                         else -> MarketingBackground.Theme.DARK
-                    }
+                    },
                 )
             }
         }

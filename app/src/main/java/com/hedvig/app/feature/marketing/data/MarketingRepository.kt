@@ -6,7 +6,7 @@ import com.hedvig.app.util.LocaleManager
 
 class MarketingRepository(
     private val apolloClient: ApolloClient,
-    private val localeManager: LocaleManager
+    private val localeManager: LocaleManager,
 ) {
     suspend fun marketingBackground() = apolloClient
         .query(MarketingBackgroundQuery(localeManager.defaultLocale().rawValue))

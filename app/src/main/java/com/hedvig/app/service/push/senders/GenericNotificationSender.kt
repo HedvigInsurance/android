@@ -24,7 +24,7 @@ class GenericNotificationSender(
         setupNotificationChannel(
             context,
             GENERIC_CHANNEL_ID,
-            context.resources.getString(R.string.NOTIFICATION_CHANNEL_GENERIC_TITLE)
+            context.resources.getString(R.string.NOTIFICATION_CHANNEL_GENERIC_TITLE),
         )
     }
 
@@ -37,18 +37,18 @@ class GenericNotificationSender(
                 addNextIntentWithParentStack(
                     Intent(
                         context,
-                        SplashActivity::class.java
-                    )
+                        SplashActivity::class.java,
+                    ),
                 )
                 addNextIntentWithParentStack(
-                    NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_TYPE_GENERIC_COMMUNICATION)
+                    NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_TYPE_GENERIC_COMMUNICATION),
                 )
                 getPendingIntent(0, getImmutablePendingIntentFlags())
             }
         val notification = NotificationCompat
             .Builder(
                 context,
-                GENERIC_CHANNEL_ID
+                GENERIC_CHANNEL_ID,
             )
             .setSmallIcon(R.drawable.ic_hedvig_h)
             .setContentTitle(title)
@@ -63,7 +63,7 @@ class GenericNotificationSender(
             .from(context)
             .notify(
                 id.getAndIncrement(),
-                notification
+                notification,
             )
     }
 

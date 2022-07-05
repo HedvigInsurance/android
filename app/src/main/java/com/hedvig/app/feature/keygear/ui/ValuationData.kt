@@ -9,14 +9,14 @@ data class ValuationData(
     val purchasePrice: String,
     val valuationType: ValuationType,
     val ratio: Int,
-    val valuationAmount: String?
+    val valuationAmount: String?,
 ) : Parcelable {
     companion object {
         fun from(
             purchasePrice: String,
             valuationType: ValuationType,
             ratio: Int,
-            valuationAmount: String? = null
+            valuationAmount: String? = null,
         ) = ValuationData(purchasePrice, valuationType, ratio, valuationAmount)
     }
 }

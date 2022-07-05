@@ -11,23 +11,27 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 
 fun ImageView.avdSetLooping() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        (drawable as? AnimatedVectorDrawable)?.registerAnimationCallback(object :
+        (drawable as? AnimatedVectorDrawable)?.registerAnimationCallback(
+            object :
                 Animatable2.AnimationCallback() {
                 override fun onAnimationEnd(drawable: Drawable?) {
                     this@avdSetLooping.post {
                         avdStart()
                     }
                 }
-            })
+            },
+        )
     } else {
-        (drawable as? AnimatedVectorDrawableCompat)?.registerAnimationCallback(object :
+        (drawable as? AnimatedVectorDrawableCompat)?.registerAnimationCallback(
+            object :
                 Animatable2Compat.AnimationCallback() {
                 override fun onAnimationEnd(drawable: Drawable?) {
                     this@avdSetLooping.post {
                         avdStart()
                     }
                 }
-            })
+            },
+        )
     }
 }
 
@@ -41,17 +45,21 @@ fun ImageView.avdStop() {
 
 inline fun ImageView.avdDoOnEnd(crossinline action: () -> Unit) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        (drawable as? AnimatedVectorDrawable)?.registerAnimationCallback(object : Animatable2.AnimationCallback() {
-            override fun onAnimationEnd(drawable: Drawable?) {
-                action()
-            }
-        })
-    } else {
-        (drawable as? AnimatedVectorDrawableCompat)
-            ?.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
+        (drawable as? AnimatedVectorDrawable)?.registerAnimationCallback(
+            object : Animatable2.AnimationCallback() {
                 override fun onAnimationEnd(drawable: Drawable?) {
                     action()
                 }
-            })
+            },
+        )
+    } else {
+        (drawable as? AnimatedVectorDrawableCompat)
+            ?.registerAnimationCallback(
+                object : Animatable2Compat.AnimationCallback() {
+                    override fun onAnimationEnd(drawable: Drawable?) {
+                        action()
+                    }
+                },
+            )
     }
 }

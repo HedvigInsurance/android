@@ -26,7 +26,7 @@ class GenericAuthViewModel(
             error = ViewState.TextFieldError.EMPTY,
             dirty = false,
             touched = false,
-        )
+        ),
     )
     val viewState = _viewState.asStateFlow()
 

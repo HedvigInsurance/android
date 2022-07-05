@@ -13,17 +13,17 @@ class JSONObjectTest {
         val map = mapOf(
             "foo" to mapOf(
                 "bar" to mapOf(
-                    "baz" to "bat"
-                )
-            )
+                    "baz" to "bat",
+                ),
+            ),
         )
 
         val expected = jsonObjectOf(
             "foo" to jsonObjectOf(
                 "bar" to jsonObjectOf(
-                    "baz" to "bat"
-                )
-            )
+                    "baz" to "bat",
+                ),
+            ),
         )
 
         val actual = map.toJsonObject()
@@ -65,8 +65,8 @@ class JSONObjectTest {
 
         val actual = jsonObjectOf(
             "foo" to mapOf(
-                "bar" to "baz"
-            )
+                "bar" to "baz",
+            ),
         )
 
         assertThat(actual.toString()).isEqualTo(expected.toString())
@@ -80,7 +80,7 @@ class JSONObjectTest {
         val expected = expectedObject["foo"]
 
         val actual = jsonObjectOf(
-            "foo" to listOf("1", "2", "3")
+            "foo" to listOf("1", "2", "3"),
         )["foo"]
 
         assertThat(actual.javaClass).isEqualTo(expected.javaClass)
@@ -113,7 +113,7 @@ class JSONObjectTest {
         val actual = jsonObjectOf(
             "foo" to "bar",
             "baz" to mapOf(
-                "asd" to "efg"
+                "asd" to "efg",
             ),
         ).asMap()
 

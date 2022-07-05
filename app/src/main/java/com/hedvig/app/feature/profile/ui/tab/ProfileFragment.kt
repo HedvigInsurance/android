@@ -43,7 +43,6 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
 
         val adapter = ProfileAdapter(viewLifecycleOwner, model::reload, model::onLogout)
         binding.recycler.apply {
-
             scroll = 0
             addOnScrollListener(
                 ScrollPositionListener(
@@ -51,8 +50,8 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                         scroll = scrollPosition
                         loggedInViewModel.onScroll(scrollPosition)
                     },
-                    viewLifecycleOwner
-                )
+                    viewLifecycleOwner,
+                ),
             )
             this.adapter = adapter
         }
@@ -79,7 +78,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                     is ProfileViewModel.Event.Error -> requireContext().showAlert(
                         title = R.string.error_dialog_title,
                         message = R.string.component_error,
-                        positiveAction = {}
+                        positiveAction = {},
                     )
                 }
             }
@@ -96,8 +95,8 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                     icon = R.drawable.ic_contact_information,
                     onClick = {
                         startActivity(Intent(requireContext(), MyInfoActivity::class.java))
-                    }
-                )
+                    },
+                ),
             )
             when (val charityState = profileUiState.charityState) {
                 CharityState.DontShow -> {}
@@ -113,8 +112,8 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                             icon = R.drawable.ic_payment,
                             onClick = {
                                 startActivity(Intent(requireContext(), PaymentActivity::class.java))
-                            }
-                        )
+                            },
+                        ),
                     )
                 }
                 PaymentState.DontShow -> {}
@@ -127,8 +126,8 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                     icon = R.drawable.ic_profile_settings,
                     onClick = {
                         startActivity(SettingsActivity.newInstance(requireContext()))
-                    }
-                )
+                    },
+                ),
             )
             add(
                 ProfileModel.Row(
@@ -137,8 +136,8 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
                     icon = R.drawable.ic_info_toolbar,
                     onClick = {
                         startActivity(Intent(requireContext(), AboutAppActivity::class.java))
-                    }
-                )
+                    },
+                ),
             )
             add(ProfileModel.Logout)
         }
@@ -151,7 +150,7 @@ class ProfileFragment : Fragment(R.layout.profile_fragment) {
             icon = R.drawable.ic_profile_charity,
             onClick = {
                 startActivity(Intent(requireContext(), CharityActivity::class.java))
-            }
+            },
         )
     }
 

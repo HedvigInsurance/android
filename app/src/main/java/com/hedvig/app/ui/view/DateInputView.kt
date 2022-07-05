@@ -19,7 +19,7 @@ import com.hedvig.app.util.spring
 class DateInputView @JvmOverloads constructor(
     context: Context,
     attributeSet: AttributeSet? = null,
-    defStyle: Int = 0
+    defStyle: Int = 0,
 ) : FrameLayout(context, attributeSet, defStyle) {
     private val binding by viewBinding(DatePickLayoutBinding::bind)
 
@@ -34,7 +34,7 @@ class DateInputView @JvmOverloads constructor(
 
         val color = typedArray.getColor(
             R.styleable.DateInputView_dateHintBackground,
-            context.colorAttr(android.R.attr.colorBackground)
+            context.colorAttr(android.R.attr.colorBackground),
         )
         setHintBackgroundColor(color)
         typedArray.recycle()
@@ -55,7 +55,7 @@ class DateInputView @JvmOverloads constructor(
         binding.dateHint.spring(
             SpringAnimation.TRANSLATION_Y,
             SpringForce.STIFFNESS_HIGH,
-            SpringForce.DAMPING_RATIO_NO_BOUNCY
+            SpringForce.DAMPING_RATIO_NO_BOUNCY,
         ).animateToFinalPosition(-animateDistance)
     }
 
@@ -66,7 +66,7 @@ class DateInputView @JvmOverloads constructor(
     private fun getViewHeight(): Int {
         this.measure(
             MeasureSpec.makeMeasureSpec((parent as View).width, MeasureSpec.AT_MOST),
-            MeasureSpec.makeMeasureSpec((parent as View).height, MeasureSpec.AT_MOST)
+            MeasureSpec.makeMeasureSpec((parent as View).height, MeasureSpec.AT_MOST),
         )
         return this.measuredHeight
     }

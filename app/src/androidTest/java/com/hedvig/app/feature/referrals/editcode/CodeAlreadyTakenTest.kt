@@ -22,9 +22,9 @@ class CodeAlreadyTakenTest : TestCase() {
     val mockServerRule = ApolloMockServerRule(
         UpdateReferralCampaignCodeMutation.OPERATION_DOCUMENT to apolloResponse {
             success(
-                EDIT_CODE_DATA_ALREADY_TAKEN
+                EDIT_CODE_DATA_ALREADY_TAKEN,
             )
-        }
+        },
     )
 
     @get:Rule
@@ -35,8 +35,8 @@ class CodeAlreadyTakenTest : TestCase() {
         activityRule.launch(
             ReferralsEditCodeActivity.newInstance(
                 context(),
-                "TEST123"
-            )
+                "TEST123",
+            ),
         )
 
         onScreen<ReferralsEditCodeScreen> {

@@ -48,7 +48,7 @@ fun ConnectPayinCard(
         Column {
             Spacer(Modifier.height(16.dp))
             Row(
-                modifier = Modifier.padding(horizontal = 16.dp)
+                modifier = Modifier.padding(horizontal = 16.dp),
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_warning_triangle),
@@ -77,10 +77,10 @@ fun ConnectPayinCard(
                     .align(Alignment.End),
                 colors = ButtonDefaults.textButtonColors(
                     contentColor = hedvigContentColorFor(colorWarning),
-                )
+                ),
             ) {
                 Text(
-                    text = stringResource(R.string.info_card_missing_payment_button_text)
+                    text = stringResource(R.string.info_card_missing_payment_button_text),
                 )
             }
         }

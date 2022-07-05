@@ -11,11 +11,11 @@ import kotlinx.coroutines.flow.map
 
 class GetDataCollectionUseCase(
     val apolloClient: ApolloClient,
-    val marketManager: MarketManager
+    val marketManager: MarketManager,
 ) {
 
     fun getCollectionStatus(
-        reference: String
+        reference: String,
     ): Flow<DataCollectionResult> {
         val subscription = ExternalInsuranceProviderV2Subscription(reference)
         return apolloClient.subscription(subscription).safeSubscription().map { result ->
@@ -28,15 +28,15 @@ class GetDataCollectionUseCase(
                     when {
                         swedishAutoStartToken != null -> DataCollectionResult.Success.SwedishBankId(
                             swedishAutoStartToken,
-                            collectionStatus
+                            collectionStatus,
                         )
                         norwegianBankIdWords != null -> DataCollectionResult.Success.NorwegianBankId(
                             norwegianBankIdWords,
-                            collectionStatus
+                            collectionStatus,
                         )
                         else -> DataCollectionResult.Success.SwedishBankId(
                             null,
-                            collectionStatus
+                            collectionStatus,
                         )
                     }
                 }
@@ -50,12 +50,15 @@ class GetDataCollectionUseCase(
         DataCollectionStatus.LOGIN -> DataCollectionResult.Success.CollectionStatus.LOGIN
         DataCollectionStatus.COLLECTING -> DataCollectionResult.Success.CollectionStatus.COLLECTING
         DataCollectionStatus.COMPLETED,
-        DataCollectionStatus.COMPLETED_PARTIAL -> DataCollectionResult.Success.CollectionStatus.COMPLETED
+        DataCollectionStatus.COMPLETED_PARTIAL,
+        -> DataCollectionResult.Success.CollectionStatus.COMPLETED
         DataCollectionStatus.COMPLETED_EMPTY,
         DataCollectionStatus.WAITING_FOR_AUTHENTICATION,
-        DataCollectionStatus.FAILED -> DataCollectionResult.Success.CollectionStatus.FAILED
+        DataCollectionStatus.FAILED,
+        -> DataCollectionResult.Success.CollectionStatus.FAILED
         DataCollectionStatus.USER_INPUT,
-        DataCollectionStatus.UNKNOWN__ -> DataCollectionResult.Success.CollectionStatus.UNKNOWN
+        DataCollectionStatus.UNKNOWN__,
+        -> DataCollectionResult.Success.CollectionStatus.UNKNOWN
     }
 }
 
@@ -63,12 +66,12 @@ sealed class DataCollectionResult {
     sealed class Success : DataCollectionResult() {
         data class SwedishBankId(
             val autoStartToken: String?,
-            val status: CollectionStatus
+            val status: CollectionStatus,
         ) : Success()
 
         data class NorwegianBankId(
             val norwegianBankIdWords: String,
-            val status: CollectionStatus
+            val status: CollectionStatus,
         ) : Success()
 
         enum class CollectionStatus {

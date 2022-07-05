@@ -18,7 +18,7 @@ object MoreOptionsScreen : KScreen<MoreOptionsScreen>() {
         { withId(R.id.recycler) },
         {
             itemType(::Row)
-        }
+        },
     )
 
     class Row(parent: Matcher<View>) : KRecyclerItem<Row>(parent) {

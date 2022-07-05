@@ -32,7 +32,7 @@ class ConnectPaymentUseCase(
         .graphQLQuery(
             query = ConnectPaymentMutation.OPERATION_DOCUMENT,
             variables = createConnectPaymentVariables(data),
-            files = emptyList()
+            files = emptyList(),
         )
         .toEither()
         .mapLeft { Error.ErrorMessage(null) }

@@ -48,7 +48,7 @@ class ChangeDateBottomSheetViewModel(
         val state = quoteCartEditStartDateUseCase.removeStartDate(quoteCartId, quoteId)
             .fold(
                 ifLeft = { ViewState.Error(it.message) },
-                ifRight = { ViewState.Loading(false) }
+                ifRight = { ViewState.Loading(false) },
             )
         _viewState.value = state
     }
@@ -74,7 +74,7 @@ class ChangeDateBottomSheetViewModel(
                 ifRight = {
                     offerRepository.queryAndEmitOffer(data.quoteCartId)
                     _viewState.value = ViewState.Dismiss
-                }
+                },
             )
     }
 
@@ -83,7 +83,7 @@ class ChangeDateBottomSheetViewModel(
         data class Loading(val showLoading: Boolean) : ViewState()
         data class Error(val message: String? = null) : ViewState()
         data class Inceptions(
-            val inceptions: List<ChangeDateBottomSheetData.Inception>
+            val inceptions: List<ChangeDateBottomSheetData.Inception>,
         ) : ViewState()
     }
 }

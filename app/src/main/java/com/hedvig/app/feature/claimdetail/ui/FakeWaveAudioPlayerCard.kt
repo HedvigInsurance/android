@@ -64,11 +64,11 @@ fun FakeWaveAudioPlayerCard(
 ) {
     val color by animateColorAsState(
         cardColorForState(audioPlayerState),
-        animationSpec = tween(500)
+        animationSpec = tween(500),
     )
     val contentColor by animateColorAsState(
         cardContentColorForState(audioPlayerState),
-        animationSpec = tween(500)
+        animationSpec = tween(500),
     )
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -124,7 +124,7 @@ private fun FakeWaveAudioPlayerCardContent(
                     modifier = Modifier
                         .height(64.dp)
                         .padding(horizontal = 4.dp, vertical = 8.dp)
-                        .animateContentSize(animationSpec = spring(stiffness = Spring.StiffnessLow))
+                        .animateContentSize(animationSpec = spring(stiffness = Spring.StiffnessLow)),
                 ) {
                     AudioPlayerActionOrLoadingIcon(
                         audioPlayerState = audioPlayerState,
@@ -142,7 +142,7 @@ private fun FakeWaveAudioPlayerCardContent(
                             },
                             notPlayedColor = LocalContentColor.current,
                             waveInteraction = waveInteraction,
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier.weight(1f),
                         )
                         Spacer(Modifier.width(20.dp))
                     }
@@ -162,13 +162,13 @@ private fun AudioPlayerActionOrLoadingIcon(
     require(audioPlayerState !is AudioPlayerState.Failed)
     Box(
         modifier = modifier,
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         when (audioPlayerState) {
             is AudioPlayerState.Preparing -> {
                 CircularProgressIndicator(
                     color = LocalContentColor.current,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp),
                 )
             }
             is AudioPlayerState.Ready -> {
@@ -176,7 +176,7 @@ private fun AudioPlayerActionOrLoadingIcon(
                     onClick = when (audioPlayerState.readyState) {
                         is ReadyState.Playing -> pause
                         else -> startPlaying
-                    }
+                    },
                 ) {
                     Icon(
                         painter = painterResource(
@@ -184,7 +184,7 @@ private fun AudioPlayerActionOrLoadingIcon(
                                 ReadyState.Playing -> R.drawable.ic_pause
                                 ReadyState.Seeking -> R.drawable.ic_pause
                                 else -> R.drawable.ic_play
-                            }
+                            },
                         ),
                         contentDescription = null,
                     )
@@ -215,7 +215,7 @@ fun FakeWaveAudioPlayerCardAnimationPreview() {
                         AudioPlayerState.Preparing -> AudioPlayerState.Ready.done()
                         is AudioPlayerState.Ready -> AudioPlayerState.Failed
                     }
-                }
+                },
             )
         }
     }
@@ -241,5 +241,5 @@ class AudioPlayerStateProvider : CollectionPreviewParameterProvider<AudioPlayerS
         AudioPlayerState.Failed,
         AudioPlayerState.Ready(ReadyState.Paused, ProgressPercentage(0.4f)),
         AudioPlayerState.Ready(ReadyState.Playing, ProgressPercentage(0.6f)),
-    )
+    ),
 )

@@ -10,7 +10,7 @@ data class DataCollectionStatus(
         fun fromDto(dto: DataCollectionStatusSubscription.Data): DataCollectionStatus {
             return DataCollectionStatus(
                 dto.dataCollectionStatusV2.insuranceCompany,
-                DataCollectionSubscriptionStatus.fromDto(dto.dataCollectionStatusV2.status)
+                DataCollectionSubscriptionStatus.fromDto(dto.dataCollectionStatusV2.status),
             )
         }
     }

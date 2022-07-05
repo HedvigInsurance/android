@@ -37,12 +37,12 @@ class MarketingViewModelTest {
         marketManager: MarketManager = mockk(relaxed = true),
         hAnalytics: HAnalytics = mockk(relaxed = true),
         submitMarketAndLanguagePreferencesUseCase: SubmitMarketAndLanguagePreferencesUseCase = mockk(
-            relaxed = true
+            relaxed = true,
         ),
         getMarketingBackgroundUseCase: GetMarketingBackgroundUseCase = mockk(relaxed = true),
         updateApplicationLanguageUseCase: UpdateApplicationLanguageUseCase = mockk(relaxed = true),
         getInitialMarketPickerValuesUseCase: GetInitialMarketPickerValuesUseCase = mockk(relaxed = true),
-        featureManager: FeatureManager = mockk(relaxed = true)
+        featureManager: FeatureManager = mockk(relaxed = true),
     ) = MarketingViewModel(
         marketManager = marketManager,
         hAnalytics = hAnalytics,

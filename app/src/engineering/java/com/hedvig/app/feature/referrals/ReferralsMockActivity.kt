@@ -36,7 +36,7 @@ class ReferralsMockActivity : MockActivity() {
             viewModel<LoggedInViewModel> { MockLoggedInViewModel() }
             viewModel<ReferralsActivatedViewModel> { MockReferralsActivatedViewModel() }
             viewModel<ReferralsEditCodeViewModel> { MockReferralsEditCodeViewModel() }
-        }
+        },
     )
 
     private val referralsNotificationSender: ReferralsNotificationSender by inject()
@@ -119,8 +119,8 @@ class ReferralsMockActivity : MockActivity() {
             startActivity(
                 ReferralsEditCodeActivity.newInstance(
                     this@ReferralsMockActivity,
-                    "TEST123"
-                )
+                    "TEST123",
+                ),
             )
         }
         clickableItem("Success") {
@@ -132,8 +132,8 @@ class ReferralsMockActivity : MockActivity() {
             startActivity(
                 ReferralsEditCodeActivity.newInstance(
                     this@ReferralsMockActivity,
-                    "TEST123"
-                )
+                    "TEST123",
+                ),
             )
         }
         clickableItem("Error") {
@@ -145,8 +145,8 @@ class ReferralsMockActivity : MockActivity() {
             startActivity(
                 ReferralsEditCodeActivity.newInstance(
                     this@ReferralsMockActivity,
-                    "TEST123"
-                )
+                    "TEST123",
+                ),
             )
         }
         clickableItem("Code already taken") {
@@ -158,8 +158,8 @@ class ReferralsMockActivity : MockActivity() {
             startActivity(
                 ReferralsEditCodeActivity.newInstance(
                     this@ReferralsMockActivity,
-                    "TEST123"
-                )
+                    "TEST123",
+                ),
             )
         }
         clickableItem("Code too short") {
@@ -171,8 +171,8 @@ class ReferralsMockActivity : MockActivity() {
             startActivity(
                 ReferralsEditCodeActivity.newInstance(
                     this@ReferralsMockActivity,
-                    "TEST123"
-                )
+                    "TEST123",
+                ),
             )
         }
         clickableItem("Code too long") {
@@ -184,8 +184,8 @@ class ReferralsMockActivity : MockActivity() {
             startActivity(
                 ReferralsEditCodeActivity.newInstance(
                     this@ReferralsMockActivity,
-                    "TEST123"
-                )
+                    "TEST123",
+                ),
             )
         }
         clickableItem("Too many code changes") {
@@ -197,8 +197,8 @@ class ReferralsMockActivity : MockActivity() {
             startActivity(
                 ReferralsEditCodeActivity.newInstance(
                     this@ReferralsMockActivity,
-                    "TEST123"
-                )
+                    "TEST123",
+                ),
             )
         }
         clickableItem("Unknown result type") {
@@ -210,8 +210,8 @@ class ReferralsMockActivity : MockActivity() {
             startActivity(
                 ReferralsEditCodeActivity.newInstance(
                     this@ReferralsMockActivity,
-                    "TEST123"
-                )
+                    "TEST123",
+                ),
             )
         }
         header("Notifications")
@@ -219,9 +219,9 @@ class ReferralsMockActivity : MockActivity() {
             referralsNotificationSender.sendReferralSuccessfulNotification(
                 RemoteMessage(
                     bundleOf(
-                        DATA_MESSAGE_REFERRED_SUCCESS_NAME to "William"
-                    )
-                )
+                        DATA_MESSAGE_REFERRED_SUCCESS_NAME to "William",
+                    ),
+                ),
             )
         }
         header("Deep Links")
@@ -230,7 +230,7 @@ class ReferralsMockActivity : MockActivity() {
                 Intent(Intent.ACTION_VIEW).apply {
                     data =
                         Uri.parse("https://${getString(R.string.FIREBASE_LINK_DOMAIN)}/forever")
-                }
+                },
             )
         }
     }
@@ -238,7 +238,7 @@ class ReferralsMockActivity : MockActivity() {
     private fun startReferralsTab() = startActivity(
         LoggedInActivity.newInstance(
             this,
-            initialTab = LoggedInTabs.REFERRALS
-        )
+            initialTab = LoggedInTabs.REFERRALS,
+        ),
     )
 }

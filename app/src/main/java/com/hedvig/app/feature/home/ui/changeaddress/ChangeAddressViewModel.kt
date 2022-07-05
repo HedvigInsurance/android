@@ -55,7 +55,7 @@ class ChangeAddressViewModelImpl(
 
     private suspend fun createViewState(): ViewState {
         return getUpComingAgreementState(
-            onNoUpcomingChange = ::getSelfChangeState
+            onNoUpcomingChange = ::getSelfChangeState,
         )
     }
 
@@ -95,7 +95,7 @@ sealed class ViewState {
     data class UpcomingAgreementError(val error: UpcomingAgreementResult.Error) : ViewState()
     data class SelfChangeError(val error: SelfChangeEligibilityResult.Error) : ViewState()
     data class ChangeAddressInProgress(
-        val upcomingAgreementResult: UpcomingAgreementResult.UpcomingAgreement
+        val upcomingAgreementResult: UpcomingAgreementResult.UpcomingAgreement,
     ) : ViewState()
 }
 

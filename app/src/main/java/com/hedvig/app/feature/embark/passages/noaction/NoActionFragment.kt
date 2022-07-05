@@ -37,7 +37,7 @@ class NoActionFragment : Fragment(R.layout.fragment_embark_no_action) {
         fun newInstance(data: NoActionParameter) =
             NoActionFragment().apply {
                 arguments = bundleOf(
-                    DATA to data
+                    DATA to data,
                 )
             }
     }

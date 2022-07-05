@@ -32,7 +32,7 @@ class ErrorTest : TestCase() {
             } else {
                 success(INSURANCE_DATA_ONE_ACTIVE_ONE_TERMINATED)
             }
-        }
+        },
     )
 
     @get:Rule

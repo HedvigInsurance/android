@@ -46,8 +46,8 @@ object TemplateExpressionCalculator {
             tokenStream.add(
                 Token(
                     matchingTokenChecker.first,
-                    payload = matchResult?.value ?: ""
-                )
+                    payload = matchResult?.value ?: "",
+                ),
             )
 
             cursor += matchResult?.groups?.get(0)?.value?.length ?: subExpr.length
@@ -72,7 +72,7 @@ object TemplateExpressionCalculator {
                     abstractExpression = Expression.BinaryOperatorExpression(
                         operatorField = token.payload,
                         left = abstractExpression,
-                        right = null
+                        right = null,
                     )
                 }
                 TokenType.STORE_KEY -> {
@@ -131,7 +131,7 @@ object TemplateExpressionCalculator {
             is Expression.BinaryOperatorExpression -> {
                 if (expression.left == null || expression.right == null) {
                     throw InvalidOperator(
-                        "Invalid use of operator \"${expression.operatorField}\", must have expressions on both sides"
+                        "Invalid use of operator \"${expression.operatorField}\", must have expressions on both sides",
                     )
                 } else {
                     val left: Expression = expression.left
@@ -166,7 +166,7 @@ object TemplateExpressionCalculator {
 
     data class Token(
         val type: TokenType,
-        val payload: String
+        val payload: String,
     )
 
     sealed class Expression {
@@ -174,19 +174,19 @@ object TemplateExpressionCalculator {
         data class BinaryOperatorExpression(
             val left: Expression?,
             val right: Expression?,
-            val operatorField: String
+            val operatorField: String,
         ) : Expression()
 
         data class StringConstantExpression(
-            val constant: String
+            val constant: String,
         ) : Expression()
 
         data class NumberConstantExpression(
-            val constant: Float
+            val constant: Float,
         ) : Expression()
 
         data class StoreKeyExpression(
-            val key: String
+            val key: String,
         ) : Expression()
     }
 

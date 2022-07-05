@@ -82,7 +82,7 @@ class InsuranceAdapter(
         abstract fun bind(
             data: InsuranceModel,
             retry: () -> Unit,
-            marketManager: MarketManager
+            marketManager: MarketManager,
         )
 
         class CrossSellViewHolder(
@@ -97,7 +97,7 @@ class InsuranceAdapter(
             override fun bind(
                 data: InsuranceModel,
                 retry: () -> Unit,
-                marketManager: MarketManager
+                marketManager: MarketManager,
             ) {
                 if (data !is InsuranceModel.CrossSellCard) {
                     return invalid(data)
@@ -114,7 +114,7 @@ class InsuranceAdapter(
                             },
                             onCtaClick = {
                                 onClickCrossSellAction(data.inner)
-                            }
+                            },
                         )
                     }
                 }
@@ -122,14 +122,14 @@ class InsuranceAdapter(
         }
 
         class ContractViewHolder(parent: ViewGroup, private val imageLoader: ImageLoader) : ViewHolder(
-            parent.inflate(R.layout.insurance_contract_card)
+            parent.inflate(R.layout.insurance_contract_card),
         ) {
             private val binding by viewBinding(InsuranceContractCardBinding::bind)
 
             override fun bind(
                 data: InsuranceModel,
                 retry: () -> Unit,
-                marketManager: MarketManager
+                marketManager: MarketManager,
             ) = with(binding) {
                 if (data !is InsuranceModel.Contract) {
                     return invalid(data)
@@ -145,13 +145,13 @@ class InsuranceAdapter(
                         card.context.startActivity(
                             ContractDetailActivity.newInstance(
                                 card.context,
-                                data.contractCardViewState.id
+                                data.contractCardViewState.id,
                             ),
                             ActivityOptionsCompat.makeSceneTransitionAnimation(
                                 activity,
                                 card,
-                                TRANSITION_NAME
-                            ).toBundle()
+                                TRANSITION_NAME,
+                            ).toBundle(),
                         )
                     }
                 }
@@ -163,7 +163,7 @@ class InsuranceAdapter(
             override fun bind(
                 data: InsuranceModel,
                 retry: () -> Unit,
-                marketManager: MarketManager
+                marketManager: MarketManager,
             ) = Unit
         }
 
@@ -174,7 +174,7 @@ class InsuranceAdapter(
             override fun bind(
                 data: InsuranceModel,
                 retry: () -> Unit,
-                marketManager: MarketManager
+                marketManager: MarketManager,
             ) = with(binding) {
                 this.retry.setHapticClickListener {
                     retry()
@@ -191,7 +191,7 @@ class InsuranceAdapter(
             override fun bind(
                 data: InsuranceModel,
                 retry: () -> Unit,
-                marketManager: MarketManager
+                marketManager: MarketManager,
             ) {
                 if (data !is InsuranceModel.TerminatedContractsHeader) {
                     return invalid(data)
@@ -215,7 +215,7 @@ class InsuranceAdapter(
                     HedvigTheme {
                         NotificationSubheading(
                             text = stringResource(R.string.insurance_tab_cross_sells_title),
-                            showNotification = data.showNotificationBadge
+                            showNotification = data.showNotificationBadge,
                         )
                     }
                 }
@@ -224,7 +224,7 @@ class InsuranceAdapter(
             override fun bind(
                 data: InsuranceModel,
                 retry: () -> Unit,
-                marketManager: MarketManager
+                marketManager: MarketManager,
             ) {
                 if (data !is InsuranceModel.CrossSellHeader) {
                     return invalid(data)
@@ -239,7 +239,7 @@ class InsuranceAdapter(
             override fun bind(
                 data: InsuranceModel,
                 retry: () -> Unit,
-                marketManager: MarketManager
+                marketManager: MarketManager,
             ) = with(binding) {
                 if (data !is InsuranceModel.TerminatedContracts) {
                     return invalid(data)
@@ -248,7 +248,7 @@ class InsuranceAdapter(
                 caption.text = caption.resources.getQuantityString(
                     R.plurals.insurances_tab_terminated_insurance_subtitile,
                     data.quantity,
-                    data.quantity
+                    data.quantity,
                 )
                 root.setHapticClickListener {
                     root.context.getActivity()?.let { activity ->
@@ -258,7 +258,7 @@ class InsuranceAdapter(
                             MaterialSharedAxis(MaterialSharedAxis.X, false)
                         root.context.startActivity(
                             TerminatedContractsActivity.newInstance(root.context),
-                            ActivityOptionsCompat.makeSceneTransitionAnimation(activity).toBundle()
+                            ActivityOptionsCompat.makeSceneTransitionAnimation(activity).toBundle(),
                         )
                     }
                 }
@@ -284,7 +284,7 @@ class InsuranceAdapter(
 
             override fun areContentsTheSame(
                 oldItem: InsuranceModel,
-                newItem: InsuranceModel
+                newItem: InsuranceModel,
             ): Boolean = oldItem == newItem
         }
     }

@@ -35,7 +35,7 @@ class MultipleOptionApi : TestCase() {
         },
         HELLO_QUERY to apolloResponse {
             success(jsonObjectOf("hello" to "world"))
-        }
+        },
     )
 
     @get:Rule

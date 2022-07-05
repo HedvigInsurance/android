@@ -25,14 +25,14 @@ data class ProfileDataBuilder(
             firstName = firstName,
             lastName = lastName,
             email = email,
-            phoneNumber = phoneNumber
+            phoneNumber = phoneNumber,
         ),
         insuranceCost = ProfileQuery.InsuranceCost(
             __typename = "",
             freeUntil = null,
             fragments = ProfileQuery.InsuranceCost.Fragments(
-                costFragment = cost
-            )
+                costFragment = cost,
+            ),
         ),
         cashback = ProfileQuery.Cashback(
             __typename = "",
@@ -41,9 +41,9 @@ data class ProfileDataBuilder(
                     id = UUID.randomUUID().toString(),
                     name = "Example Charity",
                     imageUrl = null,
-                    description = null
-                )
-            )
+                    description = null,
+                ),
+            ),
         ),
         cashbackOptions = emptyList(),
         bankAccount = ProfileQuery.BankAccount(directDebitStatus = directDebitStatus),
@@ -58,11 +58,11 @@ data class ProfileDataBuilder(
                             brand = "test",
                             lastFourDigits = "1234",
                             expiryMonth = "1",
-                            expiryYear = "2022"
+                            expiryYear = "2022",
                         ),
-                        asStoredThirdPartyDetails = null
-                    )
-                )
+                        asStoredThirdPartyDetails = null,
+                    ),
+                ),
             )
         } else {
             null

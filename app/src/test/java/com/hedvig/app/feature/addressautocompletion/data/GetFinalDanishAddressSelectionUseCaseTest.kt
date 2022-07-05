@@ -19,7 +19,7 @@ class GetFinalDanishAddressSelectionUseCaseTest {
             coEvery { this@apply.invoke(any(), any()) }.coAnswers {
                 AddressAutoCompleteResults(fetchNewResultsReturnValue).right()
             }
-        }
+        },
     )
 
     @Test
@@ -161,7 +161,7 @@ class GetFinalDanishAddressSelectionUseCaseTest {
                 apartment = null,
                 postalCode = "9330",
                 city = "Dronninglund",
-            )
+            ),
         )
     }
 }

@@ -41,11 +41,11 @@ class UpcomingAgreementQueryParsing {
                                                     TableFragment.Row(
                                                         title = "Address",
                                                         subtitle = "Subtitle",
-                                                        value = "Testgatan 123"
-                                                    )
-                                                )
-                                            )
-                                        )
+                                                        value = "Testgatan 123",
+                                                    ),
+                                                ),
+                                            ),
+                                        ),
                                     ),
                                 ),
                             ),
@@ -62,19 +62,19 @@ class UpcomingAgreementQueryParsing {
                                                     asAgreementCore = UpcomingAgreementChangeFragment.AsAgreementCore(
                                                         __typename = SwedishHouseAgreement.type.name, // ktlint-disable max-line-length // This *must* be set
                                                         activeFrom = LocalDate.of(2021, 4, 11),
-                                                    )
-                                                )
-                                            )
-                                        )
-                                    )
+                                                    ),
+                                                ),
+                                            ),
+                                        ),
+                                    ),
                                 ),
                                 asTerminatedInFutureStatus = null,
                                 asTerminatedTodayStatus = null,
-                            )
-                        )
-                    )
-                )
-            )
+                            ),
+                        ),
+                    ),
+                ),
+            ),
         )
     }
 
@@ -93,9 +93,9 @@ class UpcomingAgreementQueryParsing {
                                         this.title = "Address"
                                         this.subtitle = "Subtitle"
                                         this.value = "Testgatan 123"
-                                    }
+                                    },
                                 )
-                            }
+                            },
                         )
                     }
                     this.status = this.activeStatusStatus {
@@ -103,12 +103,12 @@ class UpcomingAgreementQueryParsing {
                             this.newAgreement = this.agreementCoreNewAgreement {
                                 this.__typename = "SwedishHouseAgreement"
                                 this.activeFrom = PromiscuousLocalDateAdapter.toJsonStringForTestBuilder(
-                                    LocalDate.of(2021, 4, 11)
+                                    LocalDate.of(2021, 4, 11),
                                 )
                             }
                         }
                     }
-                }
+                },
             )
         }
     }
@@ -129,7 +129,7 @@ class UpcomingAgreementQueryParsing {
             assertThat(
                 response.data!!.contracts.first().fragments.upcomingAgreementFragment.status.asActiveStatus!!
                     .upcomingAgreementChange!!.fragments.upcomingAgreementChangeFragment.newAgreement.asAgreementCore!!
-                    .activeFrom
+                    .activeFrom,
             ).isEqualTo(LocalDate.of(2021, 4, 11))
         }
 
@@ -149,7 +149,7 @@ class UpcomingAgreementQueryParsing {
             assertThat(
                 response.data!!.contracts.first().fragments.upcomingAgreementFragment.status.asActiveStatus!!
                     .upcomingAgreementChange!!.fragments.upcomingAgreementChangeFragment.newAgreement.asAgreementCore!!
-                    .activeFrom
+                    .activeFrom,
             ).isEqualTo(LocalDate.of(2021, 4, 11))
         }
 

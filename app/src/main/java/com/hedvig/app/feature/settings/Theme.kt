@@ -51,7 +51,7 @@ enum class Theme {
                 PreferenceManager
                     .getDefaultSharedPreferences(context)
                     .getString("theme", SETTING_SYSTEM_DEFAULT)
-                    ?: SETTING_SYSTEM_DEFAULT
+                    ?: SETTING_SYSTEM_DEFAULT,
             )
         }
     }

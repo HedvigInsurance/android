@@ -26,9 +26,8 @@ class GraphQLQueryHandler(
     suspend fun graphQLQuery(
         query: String,
         variables: JSONObject? = null,
-        files: List<FileVariable>
+        files: List<FileVariable>,
     ): QueryResult<JSONObject> {
-
         var requestBody = createVariableRequestBody(query, variables, files)
         requestBody = if (files.isNotEmpty()) {
             createFileUploadRequestBody(requestBody, files)
@@ -50,16 +49,15 @@ class GraphQLQueryHandler(
                     .url(application.graphqlUrl)
                     .header("Content-Type", "application/json")
                     .post(requestBody)
-                    .build()
+                    .build(),
             ).safeGraphqlCall()
     }
 
     private fun createVariableRequestBody(
         query: String,
         variables: JSONObject?,
-        files: List<FileVariable>
+        files: List<FileVariable>,
     ): RequestBody {
-
         val jsonObject = variables ?: JSONObject()
 
         files.map { it.key }
@@ -67,7 +65,7 @@ class GraphQLQueryHandler(
 
         return jsonObjectOfNotNull(
             "query" to query,
-            "variables" to jsonObject
+            "variables" to jsonObject,
         )
             .toString()
             .toRequestBody()
@@ -81,7 +79,7 @@ class GraphQLQueryHandler(
             .addFormDataPart(
                 name = "operations",
                 filename = null,
-                body = request
+                body = request,
             )
             .addFormDataPart(
                 name = "map",
@@ -95,7 +93,7 @@ class GraphQLQueryHandler(
             multipartBodyBuilder.addFormDataPart(
                 i.toString(),
                 file.name,
-                file.asRequestBody(mediaType)
+                file.asRequestBody(mediaType),
             )
         }
 

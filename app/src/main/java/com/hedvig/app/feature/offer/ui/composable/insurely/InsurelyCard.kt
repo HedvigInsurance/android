@@ -37,7 +37,7 @@ fun InsurelyCard(
             colorResource(R.color.colorWarning)
         } else {
             MaterialTheme.colors.surface
-        }
+        },
     )
     Card(
         border = BorderStroke(1.dp, hedvigBlack12percent),

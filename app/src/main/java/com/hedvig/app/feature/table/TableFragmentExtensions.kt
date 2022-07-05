@@ -11,9 +11,9 @@ fun TableFragment.intoTable() = Table(
                 Table.Row(
                     title = row.title,
                     value = row.value,
-                    subtitle = row.subtitle
+                    subtitle = row.subtitle,
                 )
-            }
+            },
         )
-    }
+    },
 )

@@ -32,20 +32,20 @@ fun RadioButton(
     val radioButtonDotSize = remember(size) { size - 8.dp }
     val dotRadius = animateDpAsState(
         targetValue = if (selected) radioButtonDotSize / 2 else 0.dp,
-        animationSpec = tween(durationMillis = RadioAnimationDuration)
+        animationSpec = tween(durationMillis = RadioAnimationDuration),
     )
     val radioColor = colors.radioColor(enabled, selected)
     Canvas(
         modifier
             .wrapContentSize(Alignment.Center)
             .padding(RadioButtonPadding)
-            .requiredSize(size)
+            .requiredSize(size),
     ) {
         val strokeWidth = RadioStrokeWidth.toPx()
         drawCircle(
             radioColor.value,
             radioRadius.toPx() - strokeWidth / 2,
-            style = Stroke(strokeWidth)
+            style = Stroke(strokeWidth),
         )
         if (dotRadius.value > 0.dp) {
             drawCircle(radioColor.value, dotRadius.value.toPx() - strokeWidth / 2, style = Fill)

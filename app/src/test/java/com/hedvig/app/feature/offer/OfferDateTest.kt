@@ -17,7 +17,7 @@ class OfferDateTest {
     fun `should show todays date for new offers`() {
         val concurrentInception = ConcurrentInceptionBuilder(
             startDate = null,
-            currentInsurer = null
+            currentInsurer = null,
         ).build()
 
         val independentInception = QuoteBundleFragment.Inception1(
@@ -34,14 +34,14 @@ class OfferDateTest {
                                 CurrentInsurerFragment(
                                     id = "currentinsurerid",
                                     displayName = "Test current insurer",
-                                    switchable = false
-                                )
-                            )
-                        )
-                    )
-                )
+                                    switchable = false,
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
             ),
-            asConcurrentInception = null
+            asConcurrentInception = null,
         )
 
         assertThat(concurrentInception.getStartDate()).isDataClassEqualTo(OfferStartDate.AtDate(LocalDate.now()))
@@ -58,10 +58,10 @@ class OfferDateTest {
                     CurrentInsurerFragment(
                         id = "testId",
                         displayName = "Test insurer",
-                        switchable = false
-                    )
-                )
-            )
+                        switchable = false,
+                    ),
+                ),
+            ),
         ).build()
 
         assertThat(inception.getStartDate()).isEqualTo(OfferStartDate.AtDate(LocalDate.now()))
@@ -77,10 +77,10 @@ class OfferDateTest {
                     CurrentInsurerFragment(
                         id = "testId",
                         displayName = "Test insurer",
-                        switchable = true
-                    )
-                )
-            )
+                        switchable = true,
+                    ),
+                ),
+            ),
         ).build()
 
         assertThat(inception.getStartDate()).isEqualTo(OfferStartDate.WhenCurrentPlanExpires)
@@ -102,10 +102,10 @@ class OfferDateTest {
                                 CurrentInsurerFragment(
                                     id = "currentinsurerid",
                                     displayName = "Test current insurer",
-                                    switchable = false
-                                )
-                            )
-                        )
+                                    switchable = false,
+                                ),
+                            ),
+                        ),
                     ),
                     QuoteBundleFragment.Inception(
                         correspondingQuoteId = "ea656f5f-40b2-4953-85d9-752b33e69e37",
@@ -116,10 +116,10 @@ class OfferDateTest {
                                 CurrentInsurerFragment(
                                     id = "currentinsurerid2",
                                     displayName = "Test current insurer 2",
-                                    switchable = false
-                                )
-                            )
-                        )
+                                    switchable = false,
+                                ),
+                            ),
+                        ),
                     ),
                     QuoteBundleFragment.Inception(
                         correspondingQuoteId = "ea656f5f-40b2-4953-85d9-752b33e69e36",
@@ -130,12 +130,12 @@ class OfferDateTest {
                                 CurrentInsurerFragment(
                                     id = "currentinsurerid3",
                                     displayName = "Test current insurer 3",
-                                    switchable = false
-                                )
-                            )
-                        )
-                    )
-                )
+                                    switchable = false,
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
 
             ),
             asConcurrentInception = null,
@@ -159,10 +159,10 @@ class OfferDateTest {
                                 CurrentInsurerFragment(
                                     id = "currentinsurerid",
                                     displayName = "Test current insurer",
-                                    switchable = false
-                                )
-                            )
-                        )
+                                    switchable = false,
+                                ),
+                            ),
+                        ),
                     ),
                     QuoteBundleFragment.Inception(
                         correspondingQuoteId = "ea656f5f-40b2-4953-85d9-752b33e69e37",
@@ -173,10 +173,10 @@ class OfferDateTest {
                                 CurrentInsurerFragment(
                                     id = "currentinsurerid2",
                                     displayName = "Test current insurer 2",
-                                    switchable = true
-                                )
-                            )
-                        )
+                                    switchable = true,
+                                ),
+                            ),
+                        ),
                     ),
                     QuoteBundleFragment.Inception(
                         correspondingQuoteId = "ea656f5f-40b2-4953-85d9-752b33e69e36",
@@ -187,12 +187,12 @@ class OfferDateTest {
                                 CurrentInsurerFragment(
                                     id = "currentinsurerid3",
                                     displayName = "Test current insurer 3",
-                                    switchable = false
-                                )
-                            )
-                        )
-                    )
-                )
+                                    switchable = false,
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
 
             ),
             asConcurrentInception = null,
@@ -216,10 +216,10 @@ class OfferDateTest {
                                 CurrentInsurerFragment(
                                     id = "currentinsurerid",
                                     displayName = "Test current insurer",
-                                    switchable = true
-                                )
-                            )
-                        )
+                                    switchable = true,
+                                ),
+                            ),
+                        ),
                     ),
                     QuoteBundleFragment.Inception(
                         correspondingQuoteId = "ea656f5f-40b2-4953-85d9-752b33e69e37",
@@ -230,10 +230,10 @@ class OfferDateTest {
                                 CurrentInsurerFragment(
                                     id = "currentinsurerid2",
                                     displayName = "Test current insurer 2",
-                                    switchable = true
-                                )
-                            )
-                        )
+                                    switchable = true,
+                                ),
+                            ),
+                        ),
                     ),
                     QuoteBundleFragment.Inception(
                         correspondingQuoteId = "ea656f5f-40b2-4953-85d9-752b33e69e36",
@@ -244,12 +244,12 @@ class OfferDateTest {
                                 CurrentInsurerFragment(
                                     id = "currentinsurerid3",
                                     displayName = "Test current insurer 3",
-                                    switchable = true
-                                )
-                            )
-                        )
-                    )
-                )
+                                    switchable = true,
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
 
             ),
             asConcurrentInception = null,

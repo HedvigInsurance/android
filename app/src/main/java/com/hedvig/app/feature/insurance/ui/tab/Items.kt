@@ -7,7 +7,7 @@ import com.hedvig.app.feature.insurance.ui.detail.toContractCardViewState
 
 fun items(
     data: InsuranceQuery.Data,
-    showCrossSellNotificationBadge: Boolean = false
+    showCrossSellNotificationBadge: Boolean = false,
 ): List<InsuranceModel> = ArrayList<InsuranceModel>().apply {
     add(InsuranceModel.Header)
     val contracts = data.contracts
@@ -31,7 +31,7 @@ fun items(
         addAll(
             potentialCrossSells.map {
                 crossSell(it)
-            }
+            },
         )
     }
 
@@ -54,5 +54,5 @@ private fun crossSell(potentialCrossSell: InsuranceQuery.PotentialCrossSell) =
     InsuranceModel.CrossSellCard(
         CrossSellData.from(
             potentialCrossSell.fragments.crossSellFragment,
-        )
+        ),
     )

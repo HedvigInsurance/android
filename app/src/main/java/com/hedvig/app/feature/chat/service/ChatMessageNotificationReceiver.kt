@@ -26,7 +26,7 @@ class ChatMessageNotificationReceiver : BroadcastReceiver() {
                     .Builder()
                     .putString(REPLY_TEXT, replyText.toString())
                     .putInt(NOTIFICATION_ID, notificationId)
-                    .build()
+                    .build(),
             )
             .build()
 

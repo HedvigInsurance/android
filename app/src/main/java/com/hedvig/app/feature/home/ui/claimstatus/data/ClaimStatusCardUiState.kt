@@ -20,7 +20,7 @@ data class ClaimStatusCardUiState(
                 title = claimStatusCard.title,
                 subtitle = claimStatusCard.subtitle,
                 claimProgressItemsUiState = ClaimProgressUiState.fromProgressSegments(
-                    claimStatusCard.progressSegments.map { it.fragments.progressSegments }
+                    claimStatusCard.progressSegments.map { it.fragments.progressSegments },
                 ),
             )
         }

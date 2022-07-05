@@ -62,7 +62,7 @@ fun CrossSell(
             .height(200.dp)
             .clickable(
                 onClick = onCardClick,
-            )
+            ),
     ) {
         Image(
             painter = rememberImagePainter(
@@ -75,7 +75,7 @@ fun CrossSell(
             ),
             contentDescription = null,
             contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
         )
         Column(
             verticalArrangement = Arrangement.SpaceBetween,
@@ -87,7 +87,7 @@ fun CrossSell(
                             Color(0x7F000000),
                             Color(0x00000000),
                         ),
-                    )
+                    ),
                 )
                 .padding(16.dp),
         ) {
@@ -114,7 +114,7 @@ fun CrossSell(
                         backgroundColor = whiteHighEmphasis,
                         contentColor = hedvigBlack,
                     ),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text(
                         text = data.callToAction,

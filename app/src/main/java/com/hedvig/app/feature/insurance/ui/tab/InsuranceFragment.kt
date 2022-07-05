@@ -40,8 +40,8 @@ class InsuranceFragment : Fragment(R.layout.fragment_insurance) {
                         scroll = scrollPosition
                         loggedInViewModel.onScroll(scrollPosition)
                     },
-                    lifecycleOwner = viewLifecycleOwner
-                )
+                    lifecycleOwner = viewLifecycleOwner,
+                ),
             )
             itemAnimator = ViewHolderReusingDefaultItemAnimator()
             adapter = InsuranceAdapter(

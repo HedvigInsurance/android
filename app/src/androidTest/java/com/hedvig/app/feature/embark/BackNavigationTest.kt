@@ -28,7 +28,7 @@ class BackNavigationTest : TestCase() {
 
     @get:Rule
     val apolloMockServerRule = ApolloMockServerRule(
-        EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse { success(STANDARD_STORY) }
+        EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse { success(STANDARD_STORY) },
     )
 
     @get:Rule
@@ -41,7 +41,7 @@ class BackNavigationTest : TestCase() {
                 ApplicationProvider.getApplicationContext(),
                 this.javaClass.name,
                 "",
-            )
+            ),
         )
 
         onScreen<EmbarkScreen> {

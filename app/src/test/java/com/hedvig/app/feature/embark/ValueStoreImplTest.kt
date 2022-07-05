@@ -18,8 +18,8 @@ class ValueStoreImplTest {
                 mapOf(
                     "foo" to "bar",
                     "baz" to "bat",
-                )
-            )
+                ),
+            ),
         )
     }
 
@@ -42,8 +42,8 @@ class ValueStoreImplTest {
                 mapOf(
                     "foo" to "car",
                     "baz" to "cat",
-                )
-            )
+                ),
+            ),
         )
     }
 
@@ -58,8 +58,8 @@ class ValueStoreImplTest {
                 mapOf(
                     "foo" to "bar",
                     "baz" to "bat",
-                )
-            )
+                ),
+            ),
         )
     }
 

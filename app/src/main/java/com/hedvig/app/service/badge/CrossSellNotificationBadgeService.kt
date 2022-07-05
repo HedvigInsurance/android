@@ -24,7 +24,7 @@ class CrossSellNotificationBadgeService(
                     }
                     .map { seenCrossSells ->
                         potentialCrossSells subtract seenCrossSells
-                    }
+                    },
             )
         }
     }
@@ -37,7 +37,7 @@ class CrossSellNotificationBadgeService(
             .first()
         notificationBadgeService.setValue(
             associatedBadge,
-            potentialCrossSells + alreadySeenCrossSells
+            potentialCrossSells + alreadySeenCrossSells,
         )
     }
 

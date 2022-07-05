@@ -27,7 +27,7 @@ class GetCrossSellsUseCase(
     }
 
     private fun getCrossSellsContractTypes(
-        crossSellData: CrossSellsQuery.Data
+        crossSellData: CrossSellsQuery.Data,
     ) = crossSellData
         .activeContractBundles
         .flatMap { contractBundle ->

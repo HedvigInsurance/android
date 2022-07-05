@@ -44,7 +44,7 @@ class ChangeAddressResultActivity : BaseActivity(R.layout.change_address_result_
                     } else {
                         getString(
                             R.string.moving_confirmation_success_paragraph,
-                            DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(result.date)
+                            DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(result.date),
                         )
                     }
 
@@ -77,8 +77,8 @@ class ChangeAddressResultActivity : BaseActivity(R.layout.change_address_result_
             LoggedInActivity.newInstance(
                 this@ChangeAddressResultActivity,
                 withoutHistory = true,
-                showRatingDialog = true
-            )
+                showRatingDialog = true,
+            ),
         )
     }
 

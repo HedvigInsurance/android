@@ -53,7 +53,7 @@ class CheckoutActivity : BaseActivity(R.layout.activity_checkout) {
             emailEditText.addTextChangedListener {
                 viewModel.onEmailChanged(
                     input = it?.toString() ?: "",
-                    hasError = emailInputContainer.error != null
+                    hasError = emailInputContainer.error != null,
                 )
             }
             emailEditText.setOnFocusChangeListener { _, hasFocus ->
@@ -64,7 +64,7 @@ class CheckoutActivity : BaseActivity(R.layout.activity_checkout) {
             identityNumberEditText.addTextChangedListener {
                 viewModel.onIdentityNumberChanged(
                     input = it?.toString() ?: "",
-                    hasError = identityNumberInputContainer.error != null
+                    hasError = identityNumberInputContainer.error != null,
                 )
             }
             identityNumberEditText.setOnFocusChangeListener { _, hasFocus ->
@@ -108,14 +108,15 @@ class CheckoutActivity : BaseActivity(R.layout.activity_checkout) {
 
     private fun setContainerInputState(
         textInputLayout: TextInputLayout,
-        state: CheckoutViewModel.InputViewState.InputState
+        state: CheckoutViewModel.InputViewState.InputState,
     ) {
         when (state) {
             is CheckoutViewModel.InputViewState.InputState.Invalid -> {
                 textInputLayout.error = getString(state.stringRes ?: R.string.component_error)
             }
             CheckoutViewModel.InputViewState.InputState.NoInput,
-            is CheckoutViewModel.InputViewState.InputState.Valid -> textInputLayout.error = null
+            is CheckoutViewModel.InputViewState.InputState.Valid,
+            -> textInputLayout.error = null
         }
     }
 
@@ -150,8 +151,8 @@ class CheckoutActivity : BaseActivity(R.layout.activity_checkout) {
                 LoggedInActivity.newInstance(
                     context = this,
                     isFromOnboarding = true,
-                    withoutHistory = true
-                )
+                    withoutHistory = true,
+                ),
             )
             CheckoutViewModel.Event.Loading -> progressDialog.show()
         }

@@ -66,8 +66,8 @@ class ChoosePlanActivity : BaseActivity(R.layout.activity_choose_plan) {
                                 EmbarkActivity.newInstance(
                                     this@ChoosePlanActivity,
                                     event.storyName,
-                                    event.storyTitle
-                                )
+                                    event.storyTitle,
+                                ),
                             )
                         }
                     }

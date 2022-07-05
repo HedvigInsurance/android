@@ -45,7 +45,7 @@ class PaymentHistoryActivity : BaseActivity(R.layout.activity_payment_history) {
                 .onEach { (data, _) ->
                     data?.chargeHistory?.let { chargeHistory ->
                         (paymentHistory.adapter as? PaymentHistoryAdapter)?.submitList(
-                            listOf(ChargeWrapper.Title) + wrapCharges(chargeHistory)
+                            listOf(ChargeWrapper.Title) + wrapCharges(chargeHistory),
                         )
                     }
                 }

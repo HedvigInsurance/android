@@ -38,7 +38,7 @@ class GraphQLErrorTest : TestCase() {
             } else {
                 success(HOME_DATA_PENDING)
             }
-        }
+        },
     )
 
     @get:Rule
@@ -59,7 +59,7 @@ class GraphQLErrorTest : TestCase() {
                     text {
                         hasText(
                             R.string.home_tab_pending_unknown_title,
-                            "Test"
+                            "Test",
                         )
                     }
                 }

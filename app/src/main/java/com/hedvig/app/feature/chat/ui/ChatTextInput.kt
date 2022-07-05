@@ -16,7 +16,7 @@ class ChatTextInput : AppCompatEditText {
     constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(
         context,
         attrs,
-        defStyleAttr
+        defStyleAttr,
     )
 
     private var sendIsDisabled = true
@@ -50,25 +50,25 @@ class ChatTextInput : AppCompatEditText {
         left: Drawable?,
         top: Drawable?,
         right: Drawable?,
-        bottom: Drawable?
+        bottom: Drawable?,
     ) {
         right?.let { rightDrawable ->
             val gravityDrawable = BottomRightCompoundDrawableWrapper(
                 rightDrawable,
                 this.paddingEnd,
-                this.paddingBottom
+                this.paddingBottom,
             )
             rightDrawable.setBounds(
                 0,
                 0,
                 rightDrawable.intrinsicWidth,
-                rightDrawable.intrinsicHeight
+                rightDrawable.intrinsicHeight,
             )
             gravityDrawable.setBounds(
                 0,
                 0,
                 rightDrawable.intrinsicWidth,
-                rightDrawable.intrinsicHeight
+                rightDrawable.intrinsicHeight,
             )
 
             return super.setCompoundDrawables(left, top, gravityDrawable, bottom)
@@ -83,7 +83,7 @@ class ChatTextInput : AppCompatEditText {
                 tapBounds.left - EXTRA_TAP_AREA,
                 tapBounds.top - EXTRA_TAP_AREA,
                 tapBounds.right + EXTRA_TAP_AREA,
-                tapBounds.bottom + EXTRA_TAP_AREA
+                tapBounds.bottom + EXTRA_TAP_AREA,
             )
 
             val offset = height - sendDrawable.bounds.height()

@@ -32,7 +32,7 @@ class ReferralsActivatedActivity : BaseActivity(R.layout.activity_referrals_acti
         binding.apply {
             close.measure(
                 View.MeasureSpec.makeMeasureSpec(root.width, View.MeasureSpec.EXACTLY),
-                View.MeasureSpec.makeMeasureSpec(root.height, View.MeasureSpec.UNSPECIFIED)
+                View.MeasureSpec.makeMeasureSpec(root.height, View.MeasureSpec.UNSPECIFIED),
             )
 
             scrollView.updatePadding(bottom = scrollView.paddingBottom + close.measuredHeight)
@@ -60,7 +60,7 @@ class ReferralsActivatedActivity : BaseActivity(R.layout.activity_referrals_acti
                         body.text =
                             getString(
                                 R.string.referrals_intro_screen_body,
-                                incentive.format(this@ReferralsActivatedActivity, marketManager.market)
+                                incentive.format(this@ReferralsActivatedActivity, marketManager.market),
                             )
                         body
                             .animate()

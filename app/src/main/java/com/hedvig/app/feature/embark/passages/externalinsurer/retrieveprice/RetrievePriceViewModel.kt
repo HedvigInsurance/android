@@ -27,7 +27,7 @@ class RetrievePriceViewModel(
 
     sealed class Event {
         data class AuthInformation(
-            val reference: String
+            val reference: String,
         ) : Event()
     }
 
@@ -47,7 +47,7 @@ class RetrievePriceViewModel(
             _viewState.update { it.copy(isLoading = true) }
             val result = startDataCollectionUseCase.startDataCollection(
                 personalNumber = viewState.value.input,
-                insuranceProvider = collectionId
+                insuranceProvider = collectionId,
             )
 
             when (result) {
@@ -73,7 +73,7 @@ class RetrievePriceViewModel(
                 input = input,
                 inputError = if (!validationResult.isSuccessful) {
                     ViewState.InputError(
-                        errorTextKey = validationResult.errorTextKey ?: 0
+                        errorTextKey = validationResult.errorTextKey ?: 0,
                     )
                 } else {
                     null
@@ -100,7 +100,7 @@ class RetrievePriceViewModel(
         _viewState.update {
             it.copy(
                 collectionFailed = null,
-                collectionStarted = null
+                collectionStarted = null,
             )
         }
     }
@@ -116,11 +116,11 @@ class RetrievePriceViewModel(
     ) {
 
         data class CollectionFailedState(
-            val insurerName: String
+            val insurerName: String,
         )
 
         data class CollectionStartedState(
-            val reference: String
+            val reference: String,
         )
 
         data class InputError(

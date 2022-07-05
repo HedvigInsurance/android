@@ -13,14 +13,14 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
 
 class ObserveOfferStateUseCase(
-    private val offerRepository: OfferRepository
+    private val offerRepository: OfferRepository,
 ) {
 
     private val selectedVariantId = MutableStateFlow<String?>(null)
 
     fun observeOfferState(
         quoteCartId: QuoteCartId,
-        selectedContractTypes: List<SelectedContractType>
+        selectedContractTypes: List<SelectedContractType>,
     ): Flow<Either<ErrorMessage, OfferState>> = offerRepository
         .offerFlow
         .combine(selectedVariantId) { offer: Either<ErrorMessage, OfferModel>, selectedVariantId: String? ->
@@ -34,7 +34,7 @@ class ObserveOfferStateUseCase(
 
     private fun OfferModel.getBundleVariant(
         selectedVariantId: String?,
-        selectedContractTypes: List<SelectedContractType>
+        selectedContractTypes: List<SelectedContractType>,
     ): QuoteBundleVariant {
         val bundleVariant = if (selectedVariantId != null) {
             variants.find { it.id == selectedVariantId }
@@ -45,7 +45,7 @@ class ObserveOfferStateUseCase(
     }
 
     private fun OfferModel.getPreselectedBundleVariant(
-        selectedContractTypes: List<SelectedContractType>
+        selectedContractTypes: List<SelectedContractType>,
     ) = variants.find {
         val insuranceTypesInBundle = it.bundle.quotes.map { it.insuranceType }.toSet()
         val selectedContractTypeIds = selectedContractTypes.map { it.id }.toSet()
@@ -59,7 +59,7 @@ class ObserveOfferStateUseCase(
 
 data class OfferState(
     val offerModel: OfferModel,
-    val selectedVariant: QuoteBundleVariant
+    val selectedVariant: QuoteBundleVariant,
 ) {
     val selectedQuoteIds = selectedVariant.bundle.quotes.map { it.id }
 

@@ -19,13 +19,13 @@ class MockReferralsViewModel : ReferralsViewModel() {
                     if (!hasLoadedOnce) {
                         hasLoadedOnce = true
                         _data.value = ViewState.Success(
-                            data = referralsData
+                            data = referralsData,
                         )
                     } else {
                         _data.value = ViewState.Error
                     }
                 },
-                1000
+                1000,
             )
         } else {
             shouldSucceed = true

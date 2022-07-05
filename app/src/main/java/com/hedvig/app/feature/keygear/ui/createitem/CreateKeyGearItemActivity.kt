@@ -80,10 +80,10 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
                     {
                         askForPermissions(
                             arrayOf(Manifest.permission.CAMERA),
-                            PHOTO_PERMISSION_REQUEST_CODE
+                            PHOTO_PERMISSION_REQUEST_CODE,
                         )
                     },
-                    model::deletePhoto
+                    model::deletePhoto,
                 )
             photos.addItemDecoration(CenterItemDecoration())
             photos.itemAnimator = SlideInItemAnimator(Gravity.START)
@@ -93,7 +93,7 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
             }
 
             categories.adapter = CategoryAdapter(
-                model::setActiveCategory
+                model::setActiveCategory,
             )
             categories.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN_HALF))
 
@@ -175,7 +175,7 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
                 saveContainer.centerX,
                 saveContainer.centerY,
                 0f,
-                finalRadius
+                finalRadius,
             ).apply {
                 duration = POST_CREATE_REVEAL_DURATION
                 interpolator = AccelerateDecelerateInterpolator()
@@ -206,13 +206,13 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
                             startActivity(
                                 KeyGearItemDetailActivity.newInstance(
                                     this@CreateKeyGearItemActivity,
-                                    data.createKeyGearItem.fragments.keyGearItemFragment
+                                    data.createKeyGearItem.fragments.keyGearItemFragment,
                                 ),
                                 ActivityOptionsCompat.makeCustomAnimation(
                                     this@CreateKeyGearItemActivity,
                                     0,
-                                    R.anim.fade_out
-                                ).toBundle()
+                                    R.anim.fade_out,
+                                ).toBundle(),
                             )
                         }
                         .start()
@@ -225,7 +225,7 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
                                 }
                                 .animateToFinalPosition(0f)
                         },
-                        POST_CREATE_LABEL_REVEAL_DELAY
+                        POST_CREATE_LABEL_REVEAL_DELAY,
                     )
                 }
                 start()
@@ -244,7 +244,7 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
             File.createTempFile(
                 "JPEG_${System.currentTimeMillis()}_",
                 ".jpg",
-                storageDir
+                storageDir,
             )
         } catch (ex: IOException) {
             e { "Error occurred while creating the photo file" }
@@ -258,11 +258,11 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
                         FileProvider.getUriForFile(
                             this,
                             getString(R.string.file_provider_authority),
-                            tempPhotoFile
-                        )
+                            tempPhotoFile,
+                        ),
                     )
                 },
-                PHOTO_REQUEST_CODE
+                PHOTO_REQUEST_CODE,
             )
         }
     }
@@ -274,8 +274,8 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
                 FileProvider.getUriForFile(
                     this,
                     getString(R.string.file_provider_authority),
-                    File(tempPhotoPath)
-                )
+                    File(tempPhotoPath),
+                ),
             )
         }
     }
@@ -283,7 +283,7 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
-        grantResults: IntArray
+        grantResults: IntArray,
     ) {
         if (requestCode == PHOTO_PERMISSION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
@@ -306,7 +306,7 @@ class CreateKeyGearItemActivity : BaseActivity(R.layout.activity_create_key_gear
                 R.string.KEY_GEAR_ADD_ITEM_PAGE_CLOSE_ALERT_DISMISS_BUTTON,
                 positiveAction = {
                     super.onBackPressed()
-                }
+                },
             )
         } else {
             super.onBackPressed()

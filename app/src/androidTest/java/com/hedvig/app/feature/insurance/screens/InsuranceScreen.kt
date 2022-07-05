@@ -20,7 +20,7 @@ class InsuranceScreen : Screen<InsuranceScreen>() {
                 itemType(::Error)
                 itemType(::TerminatedContractsHeader)
                 itemType(::TerminatedContracts)
-            }
+            },
         )
 
     class ContractCard(parent: Matcher<View>) : KRecyclerItem<ContractCard>(parent) {
@@ -28,10 +28,11 @@ class InsuranceScreen : Screen<InsuranceScreen>() {
         val firstStatusPill = KTextView(parent) { withId(R.id.firstStatusPill) }
         val secondStatusPill = KTextView(parent) { withId(R.id.secondStatusPill) }
         val contractPills = KRecyclerView(
-            parent, { withId(R.id.contractPills) },
+            parent,
+            { withId(R.id.contractPills) },
             {
                 itemType(::ContractPill)
-            }
+            },
         )
 
         class ContractPill(parent: Matcher<View>) : KRecyclerItem<ContractPill>(parent) {

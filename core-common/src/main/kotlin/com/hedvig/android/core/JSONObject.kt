@@ -110,7 +110,7 @@ fun JSONArray.values() = object : Iterable<Any> {
 }
 
 class JSONArrayEntryIterator(
-    private val jsonArray: JSONArray
+    private val jsonArray: JSONArray,
 ) : Iterator<Any> {
 
     private var current = 0
@@ -129,7 +129,6 @@ class JSONArrayEntryIterator(
 }
 
 fun JSONObject.createAndAddWithLodashNotation(value: Any?, key: String, currentKey: String): JSONObject {
-
     fun String.isArray() = contains("[") && contains("]")
     fun String.getArrayField() = substringBefore("[")
     fun String.getField() = if (isArray()) getArrayField() else substringBefore(".")

@@ -20,10 +20,10 @@ class MockCreateKeyGearItemViewModel : CreateKeyGearItemViewModel() {
                                 CreateKeyGearItemMutation.CreateKeyGearItem(
                                     "KeyGearItem",
                                     CreateKeyGearItemMutation.CreateKeyGearItem.Fragments(
-                                        MockKeyGearItemDetailViewModel.items["123"]!!
-                                    )
-                                )
-                            )
+                                        MockKeyGearItemDetailViewModel.items["123"]!!,
+                                    ),
+                                ),
+                            ),
                         )
                     }
                     KeyGearItemCategory.COMPUTER -> {
@@ -32,17 +32,17 @@ class MockCreateKeyGearItemViewModel : CreateKeyGearItemViewModel() {
                                 CreateKeyGearItemMutation.CreateKeyGearItem(
                                     "KeyGearItem",
                                     CreateKeyGearItemMutation.CreateKeyGearItem.Fragments(
-                                        MockKeyGearItemDetailViewModel.items["234"]!!
-                                    )
-                                )
-                            )
+                                        MockKeyGearItemDetailViewModel.items["234"]!!,
+                                    ),
+                                ),
+                            ),
                         )
                     }
                     else -> {
                     }
                 }
             },
-            3000
+            3000,
         )
     }
 }

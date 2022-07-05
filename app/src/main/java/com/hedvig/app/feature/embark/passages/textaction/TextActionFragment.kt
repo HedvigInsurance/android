@@ -59,7 +59,7 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
                 inputContainer.setupInsetsForIme(
                     root = root,
                     textActionSubmit,
-                    inputLayout
+                    inputLayout,
                 )
             }
             val views = createInputViews()
@@ -95,7 +95,7 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
     private suspend fun saveAndAnimate(data: TextActionParameter) {
         context?.hideKeyboardWithDelay(
             inputView = binding.inputContainer,
-            delayDuration = KEYBOARD_HIDE_DELAY_DURATION
+            delayDuration = KEYBOARD_HIDE_DELAY_DURATION,
         )
 
         textActionViewModel.inputs.value?.let { inputs ->
@@ -178,7 +178,7 @@ class TextActionFragment : Fragment(R.layout.fragment_text_action_set) {
         private const val DATA = "DATA"
         fun newInstance(data: TextActionParameter) = TextActionFragment().apply {
             arguments = bundleOf(
-                DATA to data
+                DATA to data,
             )
         }
     }

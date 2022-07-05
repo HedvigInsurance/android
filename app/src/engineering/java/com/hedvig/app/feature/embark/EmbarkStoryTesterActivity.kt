@@ -78,7 +78,7 @@ class EmbarkStoryTesterActivity : AppCompatActivity() {
                         this@EmbarkStoryTesterActivity,
                         selectedStoryName,
                         selectedStoryName,
-                    )
+                    ),
                 )
             }
 
@@ -98,18 +98,18 @@ class EmbarkStoryTesterActivity : AppCompatActivity() {
                         },
                         backgroundColor = MaterialTheme.colors.background,
                         elevation = 0.dp,
-                        modifier = Modifier.systemBarsPadding(top = true)
+                        modifier = Modifier.systemBarsPadding(top = true),
                     )
                     Text(text = "Optional auth token or payments url")
                     TextField(value = viewState.authTokenInput ?: "", onValueChange = {
                         model.onAuthToken(it)
-                    })
+                    },)
                     Button(
                         onClick = {
                             viewState.authTokenInput?.let {
                                 model.setAuthToken(it)
                             }
-                        }
+                        },
                     ) {
                         Text("Set token")
                     }
@@ -118,20 +118,20 @@ class EmbarkStoryTesterActivity : AppCompatActivity() {
                             viewState.authTokenInput?.let {
                                 model.generateAuthTokenFromPaymentsLink(it)
                             }
-                        }
+                        },
                     ) {
                         Text("Generate and set token from payments url")
                     }
                     Text(text = "Custom Story")
                     TextField(value = viewState.storyNameInput ?: "", onValueChange = {
                         model.onStoryName(it)
-                    })
+                    },)
                     Button(
                         onClick = {
                             viewState.storyNameInput?.let {
                                 model.onStorySelected(it)
                             }
-                        }
+                        },
                     ) {
                         Text("Start story")
                     }
@@ -170,7 +170,7 @@ class EmbarkStoryTesterActivity : AppCompatActivity() {
     fun EmbarkStoryItem(bundle: BundlesResult.Success.Bundle, onClick: () -> Unit) {
         Surface(
             shape = MaterialTheme.shapes.medium,
-            modifier = Modifier.clickable { onClick() }
+            modifier = Modifier.clickable { onClick() },
         ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -195,7 +195,7 @@ class EmbarkStoryTesterActivity : AppCompatActivity() {
     fun MarketItem(market: Market, onClick: () -> Unit) {
         Surface(
             shape = MaterialTheme.shapes.medium,
-            modifier = Modifier.clickable { onClick() }
+            modifier = Modifier.clickable { onClick() },
         ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -230,7 +230,7 @@ class EmbarkStoryTesterViewModel(
     private val authenticationTokenService: AuthenticationTokenService,
     private val apolloClient: ApolloClient,
     private val context: Context,
-    private val createQuoteCartUseCase: CreateQuoteCartUseCase
+    private val createQuoteCartUseCase: CreateQuoteCartUseCase,
 ) : ViewModel() {
 
     data class ViewState(
@@ -240,7 +240,7 @@ class EmbarkStoryTesterViewModel(
         val authTokenInput: String? = null,
         val availableMarkets: List<Market> = emptyList(),
         val authorization: String? = null,
-        val errorMessage: String? = null
+        val errorMessage: String? = null,
     )
 
     private val _viewState = MutableStateFlow(ViewState())

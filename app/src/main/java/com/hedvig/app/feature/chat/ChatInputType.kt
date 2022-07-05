@@ -16,14 +16,14 @@ sealed class ChatInputType {
                 return TextInput(
                     messageBodyText.keyboard,
                     messageBodyText.placeholder,
-                    message.fragments.chatMessageFragment.header.richTextChatCompatible
+                    message.fragments.chatMessageFragment.header.richTextChatCompatible,
                 )
             }
             body.asMessageBodyNumber?.let { messageBodyNumber ->
                 return TextInput(
                     messageBodyNumber.keyboard,
                     messageBodyNumber.placeholder,
-                    false
+                    false,
                 )
             }
             body.asMessageBodySingleSelect?.let { messageBodySingleSelect ->
@@ -45,7 +45,7 @@ sealed class ChatInputType {
 data class TextInput(
     val keyboardType: KeyboardType? = null,
     val hint: String? = null,
-    val richTextSupport: Boolean = false
+    val richTextSupport: Boolean = false,
 ) : ChatInputType()
 
 data class SingleSelect(val options: List<ChatMessageFragment.Choice>) : ChatInputType()

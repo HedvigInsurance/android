@@ -32,7 +32,7 @@ class NetworkErrorTest : TestCase() {
         EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse { success(STORY_WITH_GRAPHQL_QUERY_API) },
         HELLO_QUERY to apolloResponse {
             internalServerError()
-        }
+        },
     )
 
     @get:Rule
@@ -45,7 +45,7 @@ class NetworkErrorTest : TestCase() {
                 context(),
                 this.javaClass.name,
                 "",
-            )
+            ),
         )
 
         onScreen<EmbarkScreen> {

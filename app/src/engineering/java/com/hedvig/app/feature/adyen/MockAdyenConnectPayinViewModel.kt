@@ -61,9 +61,9 @@ class MockAdyenConnectPayinViewModel : AdyenConnectPayinViewModel() {
     }
   ]
 }
-                    """
-                )
-            )
+                    """,
+                ),
+            ),
         )
     }
 }

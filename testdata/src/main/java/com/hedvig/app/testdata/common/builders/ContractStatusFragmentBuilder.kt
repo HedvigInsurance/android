@@ -13,7 +13,7 @@ data class ContractStatusFragmentBuilder(
         asPendingStatus = if (status == ContractStatus.PENDING) {
             ContractStatusFragment.AsPendingStatus(
                 __typename = status.typename,
-                pendingSince = null
+                pendingSince = null,
             )
         } else {
             null
@@ -21,11 +21,11 @@ data class ContractStatusFragmentBuilder(
         asActiveInFutureStatus = when (status) {
             ContractStatus.ACTIVE_IN_FUTURE -> ContractStatusFragment.AsActiveInFutureStatus(
                 __typename = status.typename,
-                futureInception = LocalDate.of(2025, 1, 1)
+                futureInception = LocalDate.of(2025, 1, 1),
             )
             ContractStatus.ACTIVE_IN_FUTURE_INVALID -> ContractStatusFragment.AsActiveInFutureStatus(
                 __typename = status.typename,
-                futureInception = null
+                futureInception = null,
             )
             else -> null
         },
@@ -38,10 +38,10 @@ data class ContractStatusFragmentBuilder(
                         __typename = SwedishApartmentAgreement.type.name,
                         asSwedishApartmentAgreement = ContractStatusFragment.AsSwedishApartmentAgreement(
                             __typename = SwedishApartmentAgreement.type.name,
-                            activeFrom = LocalDate.of(2021, 4, 6)
-                        )
-                    )
-                )
+                            activeFrom = LocalDate.of(2021, 4, 6),
+                        ),
+                    ),
+                ),
             )
         } else {
             null
@@ -52,7 +52,7 @@ data class ContractStatusFragmentBuilder(
             ContractStatusFragment.AsActiveInFutureAndTerminatedInFutureStatus(
                 __typename = status.typename,
                 futureInception = LocalDate.of(2024, 1, 1),
-                futureTermination = LocalDate.of(2034, 1, 1)
+                futureTermination = LocalDate.of(2034, 1, 1),
             )
         } else {
             null
@@ -61,7 +61,7 @@ data class ContractStatusFragmentBuilder(
         asTerminatedTodayStatus = if (status == ContractStatus.TERMINATED_TODAY) {
             ContractStatusFragment.AsTerminatedTodayStatus(
                 __typename = status.typename,
-                today = LocalDate.now()
+                today = LocalDate.now(),
             )
         } else {
             null
@@ -69,10 +69,10 @@ data class ContractStatusFragmentBuilder(
         asTerminatedStatus = if (status == ContractStatus.TERMINATED) {
             ContractStatusFragment.AsTerminatedStatus(
                 __typename = status.typename,
-                termination = null
+                termination = null,
             )
         } else {
             null
-        }
+        },
     )
 }

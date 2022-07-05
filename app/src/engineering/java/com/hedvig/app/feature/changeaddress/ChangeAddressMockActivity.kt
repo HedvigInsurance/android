@@ -18,7 +18,7 @@ import java.time.LocalDate
 class ChangeAddressMockActivity : MockActivity() {
     override val original = listOf(changeAddressModule)
     override val mocks = listOf(
-        module { viewModel<ChangeAddressViewModel> { MockChangeAddressViewModel() } }
+        module { viewModel<ChangeAddressViewModel> { MockChangeAddressViewModel() } },
     )
 
     override fun adapter() = genericDevelopmentAdapter {
@@ -32,9 +32,9 @@ class ChangeAddressMockActivity : MockActivity() {
                 ViewState.SelfChangeError(
                     GetAddressChangeStoryIdUseCase.SelfChangeEligibilityResult.Error(
                         message = "Test error message, this can happen" +
-                            " because of no internet connection, backend errors etc."
-                    )
-                )
+                            " because of no internet connection, backend errors etc.",
+                    ),
+                ),
             )
             startActivity(ChangeAddressActivity.newInstance(context))
         }
@@ -56,19 +56,19 @@ class ChangeAddressMockActivity : MockActivity() {
                                         Table.Row(
                                             title = "Address",
                                             value = "Test Address 12",
-                                            subtitle = null
+                                            subtitle = null,
                                         ),
                                         Table.Row(
                                             title = "Postal code",
                                             value = "11234",
-                                            subtitle = null
+                                            subtitle = null,
                                         ),
                                         Table.Row(
                                             title = "City",
                                             value = "Test city",
-                                            subtitle = null
-                                        )
-                                    )
+                                            subtitle = null,
+                                        ),
+                                    ),
                                 ),
                                 Table.Section(
                                     title = "Extra buildings",
@@ -76,19 +76,19 @@ class ChangeAddressMockActivity : MockActivity() {
                                         Table.Row(
                                             title = "Garage",
                                             value = "22 sqm",
-                                            subtitle = null
+                                            subtitle = null,
                                         ),
                                         Table.Row(
                                             title = "Attefall",
                                             value = "15 sqm",
-                                            subtitle = null
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
+                                            subtitle = null,
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
             )
             startActivity(ChangeAddressActivity.newInstance(context))
         }
@@ -101,8 +101,8 @@ class ChangeAddressMockActivity : MockActivity() {
             startActivity(
                 ChangeAddressResultActivity.newInstance(
                     context,
-                    ChangeAddressResultActivity.Result.Success(LocalDate.of(2021, 2, 21))
-                )
+                    ChangeAddressResultActivity.Result.Success(LocalDate.of(2021, 2, 21)),
+                ),
             )
         }
     }

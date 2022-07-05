@@ -31,7 +31,7 @@ class OneRefereeTest : TestCase() {
         LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
             success(LOGGED_IN_DATA)
         },
-        ReferralsQuery.OPERATION_DOCUMENT to apolloResponse { success(REFERRALS_DATA_WITH_ONE_REFEREE) }
+        ReferralsQuery.OPERATION_DOCUMENT to apolloResponse { success(REFERRALS_DATA_WITH_ONE_REFEREE) },
     )
 
     @get:Rule
@@ -48,7 +48,7 @@ class OneRefereeTest : TestCase() {
     fun shouldShowActiveStateWhenUserHasOneReferee() = run {
         val intent = LoggedInActivity.newInstance(
             context(),
-            initialTab = LoggedInTabs.REFERRALS
+            initialTab = LoggedInTabs.REFERRALS,
         )
 
         activityRule.launch(intent)
@@ -62,7 +62,7 @@ class OneRefereeTest : TestCase() {
                         isVisible()
                         hasText(
                             Money.of(349, "SEK")
-                                .format(context(), market())
+                                .format(context(), market()),
                         )
                     }
                     discountPerMonthPlaceholder { isGone() }
@@ -71,14 +71,14 @@ class OneRefereeTest : TestCase() {
                         isVisible()
                         hasText(
                             Money.of(-10, "SEK")
-                                .format(context(), market())
+                                .format(context(), market()),
                         )
                     }
                     newPrice {
                         isVisible()
                         hasText(
                             Money.of(339, "SEK")
-                                .format(context(), market())
+                                .format(context(), market()),
                         )
                     }
                     discountPerMonthLabel { isVisible() }
@@ -112,7 +112,7 @@ class OneRefereeTest : TestCase() {
                     status {
                         hasText(
                             Money.of(-10, "SEK")
-                                .format(context(), market())
+                                .format(context(), market()),
                         )
                     }
                 }

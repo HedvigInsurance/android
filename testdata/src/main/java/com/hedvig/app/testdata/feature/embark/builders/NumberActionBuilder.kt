@@ -35,12 +35,12 @@ data class NumberActionBuilder(
                         link = EmbarkNumberActionFragment.Link(
                             __typename = "",
                             fragments = EmbarkNumberActionFragment.Link.Fragments(
-                                embarkLinkFragment = link
-                            )
-                        )
-                    )
-                )
-            )
+                                embarkLinkFragment = link,
+                            ),
+                        ),
+                    ),
+                ),
+            ),
         ),
         asEmbarkNumberActionSet = null,
         asEmbarkDatePickerAction = null,

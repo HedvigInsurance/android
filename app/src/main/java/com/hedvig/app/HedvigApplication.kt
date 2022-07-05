@@ -50,7 +50,7 @@ open class HedvigApplication : Application() {
                 sharedPreferences.edit()
                     .putString(
                         SettingsActivity.SETTING_LANGUAGE,
-                        Language.getAvailableLanguages(market).first().toString()
+                        Language.getAvailableLanguages(market).first().toString(),
                     ).commit()
             }
         }
@@ -58,7 +58,7 @@ open class HedvigApplication : Application() {
         Language.fromSettings(this, marketManager.market).apply(this)
 
         if (authenticationTokenService.authenticationToken == null && !getStoredBoolean(
-                SHARED_PREFERENCE_TRIED_MIGRATION_OF_TOKEN
+                SHARED_PREFERENCE_TRIED_MIGRATION_OF_TOKEN,
             )
         ) {
             tryToMigrateTokenFromReactDB()

@@ -27,19 +27,19 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                     photos = listOf(
                                         KeyGearItemFragment.Photo(
                                             file = KeyGearItemFragment.File(
-                                                preSignedUrl = UNSPLASH_ONE
-                                            )
-                                        )
+                                                preSignedUrl = UNSPLASH_ONE,
+                                            ),
+                                        ),
                                     ),
                                     receipts = emptyList(),
                                     category = KeyGearItemCategory.PHONE,
                                     purchasePrice = null,
                                     timeOfPurchase = null,
                                     deductible = KeyGearItemFragment.Deductible(
-                                        amount = "1500.00"
+                                        amount = "1500.00",
                                     ),
                                     maxInsurableAmount = KeyGearItemFragment.MaxInsurableAmount(
-                                        amount = "50000"
+                                        amount = "50000",
                                     ),
                                     deleted = false,
                                     fragments = KeyGearItemFragment.Fragments(
@@ -51,15 +51,15 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                                         __typename = "",
                                                         ratio = 31,
                                                         valuation = KeyGearItemValuationFragment.Valuation(
-                                                            amount = "1234.00"
-                                                        )
+                                                            amount = "1234.00",
+                                                        ),
                                                     ),
-                                                asKeyGearItemValuationMarketValue = null
-                                            )
-                                        )
-                                    )
-                                )
-                            )
+                                                asKeyGearItemValuationMarketValue = null,
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            ),
                         ),
                         KeyGearItemsQuery.KeyGearItem(
                             __typename = "",
@@ -72,19 +72,19 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                     photos = listOf(
                                         KeyGearItemFragment.Photo(
                                             file = KeyGearItemFragment.File(
-                                                preSignedUrl = UNSPLASH_TWO
-                                            )
-                                        )
+                                                preSignedUrl = UNSPLASH_TWO,
+                                            ),
+                                        ),
                                     ),
                                     receipts = emptyList(),
                                     category = KeyGearItemCategory.COMPUTER,
                                     purchasePrice = null,
                                     timeOfPurchase = null,
                                     deductible = KeyGearItemFragment.Deductible(
-                                        amount = "1500.00"
+                                        amount = "1500.00",
                                     ),
                                     maxInsurableAmount = KeyGearItemFragment.MaxInsurableAmount(
-                                        amount = "50000"
+                                        amount = "50000",
                                     ),
                                     deleted = false,
                                     fragments = KeyGearItemFragment.Fragments(
@@ -96,15 +96,15 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                                         __typename = "",
                                                         ratio = 31,
                                                         valuation = KeyGearItemValuationFragment.Valuation(
-                                                            amount = "1234.00"
-                                                        )
+                                                            amount = "1234.00",
+                                                        ),
                                                     ),
-                                                asKeyGearItemValuationMarketValue = null
-                                            )
-                                        )
-                                    )
-                                )
-                            )
+                                                asKeyGearItemValuationMarketValue = null,
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            ),
                         ),
 
                         KeyGearItemsQuery.KeyGearItem(
@@ -121,10 +121,10 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                     purchasePrice = null,
                                     timeOfPurchase = null,
                                     deductible = KeyGearItemFragment.Deductible(
-                                        amount = "1500.00"
+                                        amount = "1500.00",
                                     ),
                                     maxInsurableAmount = KeyGearItemFragment.MaxInsurableAmount(
-                                        amount = "50000"
+                                        amount = "50000",
                                     ),
                                     deleted = false,
                                     fragments = KeyGearItemFragment.Fragments(
@@ -136,18 +136,18 @@ class MockKeyGearViewModel : KeyGearViewModel() {
                                                         __typename = "",
                                                         ratio = 31,
                                                         valuation = KeyGearItemValuationFragment.Valuation(
-                                                            amount = "1234.00"
-                                                        )
+                                                            amount = "1234.00",
+                                                        ),
                                                     ),
-                                                asKeyGearItemValuationMarketValue = null
-                                            )
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
+                                                asKeyGearItemValuationMarketValue = null,
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
             )
             )
     }

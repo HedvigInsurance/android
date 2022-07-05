@@ -29,7 +29,7 @@ class ShowTooltipTest : TestCase() {
         LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
             success(LOGGED_IN_DATA)
         },
-        HomeQuery.OPERATION_DOCUMENT to apolloResponse { success(HOME_DATA_ACTIVE) }
+        HomeQuery.OPERATION_DOCUMENT to apolloResponse { success(HOME_DATA_ACTIVE) },
     )
 
     @get:Rule

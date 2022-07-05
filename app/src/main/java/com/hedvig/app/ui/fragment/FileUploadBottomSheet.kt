@@ -28,7 +28,7 @@ abstract class FileUploadBottomSheet : BottomSheetDialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? = inflater.inflate(R.layout.file_upload_dialog, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -57,9 +57,9 @@ abstract class FileUploadBottomSheet : BottomSheetDialogFragment() {
         startActivityForResult(
             Intent(
                 Intent.ACTION_PICK,
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
             ),
-            SELECT_IMAGE_REQUEST_CODE
+            SELECT_IMAGE_REQUEST_CODE,
         )
     }
 
@@ -69,7 +69,7 @@ abstract class FileUploadBottomSheet : BottomSheetDialogFragment() {
                 addCategory(Intent.CATEGORY_OPENABLE)
                 type = "*/*"
             },
-            SELECT_FILE_REQUEST_CODE
+            SELECT_FILE_REQUEST_CODE,
         )
     }
 

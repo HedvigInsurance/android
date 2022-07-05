@@ -49,7 +49,6 @@ class KeyGearFragment : Fragment(R.layout.fragment_key_gear) {
         super.onViewCreated(view, savedInstanceState)
 
         with(binding) {
-
             scroll = 0
             keyGearRoot.setOnScrollChangeListener { _: NestedScrollView?, _: Int, scrollY: Int, _: Int, _: Int ->
                 scroll = scrollY
@@ -69,22 +68,22 @@ class KeyGearFragment : Fragment(R.layout.fragment_key_gear) {
                             CreateKeyGearItemActivity.newInstance(requireContext()),
                             ActivityOptionsCompat.makeSceneTransitionAnimation(
                                 requireActivity(),
-                                transitionPair(v)
-                            ).toBundle()
+                                transitionPair(v),
+                            ).toBundle(),
                         )
                     },
                     { root, item ->
                         startActivity(
                             KeyGearItemDetailActivity.newInstance(
                                 requireContext(),
-                                item.fragments.keyGearItemFragment
+                                item.fragments.keyGearItemFragment,
                             ),
                             ActivityOptionsCompat.makeSceneTransitionAnimation(
                                 requireActivity(),
-                                Pair(root, ITEM_BACKGROUND_TRANSITION_NAME)
-                            ).toBundle()
+                                Pair(root, ITEM_BACKGROUND_TRANSITION_NAME),
+                            ).toBundle(),
                         )
-                    }
+                    },
                 )
             items.addItemDecoration(GridSpacingItemDecoration(BASE_MARGIN))
             items.itemAnimator = SlideInItemAnimator()

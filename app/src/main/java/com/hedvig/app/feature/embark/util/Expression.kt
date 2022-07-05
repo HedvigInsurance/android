@@ -91,7 +91,7 @@ fun evaluateExpression(expression: ExpressionFragment, valueStore: ValueStore): 
                                     ExpressionFragment.SubExpression2(
                                         __typename = "",
                                         fragments = ExpressionFragment.SubExpression2.Fragments(
-                                            se.fragments.basicExpressionFragment
+                                            se.fragments.basicExpressionFragment,
                                         ),
                                         asEmbarkExpressionMultiple1 = se
                                             .asEmbarkExpressionMultiple2?.let { asMulti2 ->
@@ -103,15 +103,15 @@ fun evaluateExpression(expression: ExpressionFragment, valueStore: ValueStore): 
                                                         ExpressionFragment.SubExpression1(
                                                             __typename = "",
                                                             fragments = ExpressionFragment.SubExpression1.Fragments(
-                                                                se2.fragments.basicExpressionFragment
+                                                                se2.fragments.basicExpressionFragment,
                                                             ),
                                                             asEmbarkExpressionMultiple2 = null,
                                                         )
-                                                    }
+                                                    },
                                                 )
-                                            }
+                                            },
                                     )
-                                }
+                                },
                             )
                         },
                     ),

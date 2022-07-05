@@ -37,7 +37,7 @@ class ErrorTest : TestCase() {
             } else {
                 success(INSURANCE_DATA)
             }
-        }
+        },
     )
 
     @get:Rule
@@ -47,7 +47,7 @@ class ErrorTest : TestCase() {
     fun shouldShowErrorOnGraphQLError() = run {
         val intent = LoggedInActivity.newInstance(
             context(),
-            initialTab = LoggedInTabs.INSURANCE
+            initialTab = LoggedInTabs.INSURANCE,
         )
         activityRule.launch(intent)
 

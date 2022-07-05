@@ -30,7 +30,7 @@ class AttachFileAdapter(
     private val pickerHeight: Int,
     private val takePhoto: () -> Unit,
     private val showUploadFileDialog: () -> Unit,
-    private val uploadFile: (Uri) -> Unit
+    private val uploadFile: (Uri) -> Unit,
 ) : RecyclerView.Adapter<AttachFileAdapter.ViewHolder>() {
 
     private val roundedCornersRadius =
@@ -91,14 +91,14 @@ class AttachFileAdapter(
             LayoutInflater.from(parent.context).inflate(
                 R.layout.camera_and_misc_item,
                 parent,
-                false
-            )
+                false,
+            ),
         ) {
             val binding by viewBinding(CameraAndMiscItemBinding::bind)
             fun bind(
                 isUploadingTakenPicture: Boolean,
                 takePhoto: () -> Unit,
-                showUploadFileDialog: () -> Unit
+                showUploadFileDialog: () -> Unit,
             ) {
                 binding.apply {
                     if (isUploadingTakenPicture) {
@@ -122,15 +122,15 @@ class AttachFileAdapter(
             LayoutInflater.from(parent.context).inflate(
                 R.layout.attach_file_image_item,
                 parent,
-                false
-            )
+                false,
+            ),
         ) {
             val binding by viewBinding(AttachFileImageItemBinding::bind)
             fun bind(
                 attachImageData: List<AttachImageData>,
                 pickerHeight: Int,
                 roundedCornersRadius: Float,
-                uploadFile: (Uri) -> Unit
+                uploadFile: (Uri) -> Unit,
             ) {
                 binding.apply {
                     val image = attachImageData[bindingAdapterPosition - 1]
@@ -160,19 +160,18 @@ class AttachFileAdapter(
                     attachFileContainer.context.theme.resolveAttribute(
                         android.R.attr.selectableItemBackgroundBorderless,
                         outValue,
-                        true
+                        true,
                     )
                     attachFileContainer.foreground =
                         attachFileContainer.context.compatDrawable(outValue.resourceId)
 
                     attachFileContainer.setHapticClickListener {
-
                         attachFileSendButton.show()
                         attachFileSendButton.fadeIn(
                             endAction = {
                                 attachFileContainer.foreground = null
                                 attachFileContainer.setOnClickListener(null)
-                            }
+                            },
                         )
                     }
                 }

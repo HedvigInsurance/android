@@ -8,6 +8,6 @@ sealed class YourInfoModel {
     object ChangeAddressButton : YourInfoModel()
 
     data class PendingAddressChange(
-        val upcomingAgreement: GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement
+        val upcomingAgreement: GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement,
     ) : YourInfoModel()
 }

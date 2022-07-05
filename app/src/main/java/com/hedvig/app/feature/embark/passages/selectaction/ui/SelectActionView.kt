@@ -34,7 +34,7 @@ fun SelectActionView(
     SelectActionGrid(
         modifier = modifier,
         contentPadding = PaddingValues(16.dp),
-        insideGridSpace = InsideGridSpace(8.dp)
+        insideGridSpace = InsideGridSpace(8.dp),
     ) {
         selectActions.forEachIndexed { index, selectAction ->
             SelectActionCard(
@@ -58,7 +58,7 @@ private fun SelectActionCard(
 ) {
     Card(
         onClick = onClick,
-        modifier = modifier.heightIn(min = dimensionResource(R.dimen.embark_select_action_min_height))
+        modifier = modifier.heightIn(min = dimensionResource(R.dimen.embark_select_action_min_height)),
     ) {
         CenteredContentWithTopBadge(
             modifier = Modifier.padding(dimensionResource(R.dimen.base_margin)),
@@ -67,12 +67,12 @@ private fun SelectActionCard(
                     text = text,
                     style = MaterialTheme.typography.subtitle2,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(vertical = 8.dp)
+                    modifier = Modifier.padding(vertical = 8.dp),
                 )
             },
             topContent = badge?.let {
                 { BadgeText(badge) }
-            }
+            },
         )
     }
 }
@@ -105,10 +105,10 @@ fun SelectActionViewPreview(
                         label = text,
                         keys = emptyList(),
                         values = emptyList(),
-                        badge = badge
+                        badge = badge,
                     )
                 },
-                onActionClick = { _, _ -> }
+                onActionClick = { _, _ -> },
             )
         }
     }

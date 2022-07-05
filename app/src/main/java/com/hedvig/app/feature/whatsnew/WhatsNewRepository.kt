@@ -18,8 +18,8 @@ class WhatsNewRepository(
             .query(
                 WhatsNewQuery(
                     locale = localeManager.defaultLocale(),
-                    sinceVersion = sinceVersion ?: latestSeenNews()
-                )
+                    sinceVersion = sinceVersion ?: latestSeenNews(),
+                ),
             )
             .safeQuery()
     }

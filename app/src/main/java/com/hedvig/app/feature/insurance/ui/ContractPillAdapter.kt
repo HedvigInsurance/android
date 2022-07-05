@@ -11,7 +11,7 @@ import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.viewBinding
 
 class ContractPillAdapter(
-    private val marketManager: MarketManager
+    private val marketManager: MarketManager,
 ) : ListAdapter<String, ContractPillAdapter.ViewHolder>(GenericDiffUtilItemCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(parent, marketManager)

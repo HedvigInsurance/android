@@ -28,7 +28,7 @@ class PostSignTest : TestCase() {
         },
         WelcomeQuery.OPERATION_DOCUMENT to apolloResponse {
             success(WELCOME_DATA_ONE_PAGE)
-        }
+        },
     )
 
     @get:Rule
@@ -38,7 +38,7 @@ class PostSignTest : TestCase() {
     fun shouldOpenWelcomeWhenNavigatingFromOnboarding() = run {
         activityRule.launch(
             LoggedInActivity.newInstance(context())
-                .apply { putExtra(EXTRA_IS_FROM_ONBOARDING, true) }
+                .apply { putExtra(EXTRA_IS_FROM_ONBOARDING, true) },
         )
 
         onScreen<WelcomeScreen> {

@@ -43,7 +43,7 @@ class AddComponentBottomSheet : BottomSheetDialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? = inflater.inflate(R.layout.add_component_bottom_sheet, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -78,14 +78,15 @@ class AddComponentBottomSheet : BottomSheetDialogFragment() {
         return LayoutComponentDropdownBinding.inflate(
             LayoutInflater.from(requireContext()),
             binding.componentContainer,
-            false
+            false,
         ).apply {
             val dropDownText = dropdown.options.map { it.text }
             val dropdownValues = dropdown.options.map { it.value }
             val adapter = ArrayAdapter(
                 requireContext(),
                 R.layout.dropdown_menu_popup_item,
-                R.id.dropdown_popup, dropDownText
+                R.id.dropdown_popup,
+                dropDownText,
             )
 
             dropdownLayout.hint = dropdown.label
@@ -105,7 +106,7 @@ class AddComponentBottomSheet : BottomSheetDialogFragment() {
         return LayoutComponentNumberBinding.inflate(
             LayoutInflater.from(requireContext()),
             binding.componentContainer,
-            false
+            false,
         ).apply {
             numberLayout.hint = number.unit
             numberLayout.placeholderText = number.placeholder
@@ -128,7 +129,7 @@ class AddComponentBottomSheet : BottomSheetDialogFragment() {
         return LayoutComponentSwitchBinding.inflate(
             LayoutInflater.from(requireContext()),
             binding.componentContainer,
-            false
+            false,
         ).apply {
             componentSwitch.text = switch.label
             componentSwitch.isChecked = switch.defaultValue
@@ -152,11 +153,11 @@ class AddComponentBottomSheet : BottomSheetDialogFragment() {
 
         fun newInstance(
             component: MultiActionItem.Component?,
-            multiActionParams: MultiActionParams
+            multiActionParams: MultiActionParams,
         ) = AddComponentBottomSheet().apply {
             arguments = bundleOf(
                 COMPONENT_STATE to component,
-                MULTI_ACTION_PARAMS to multiActionParams
+                MULTI_ACTION_PARAMS to multiActionParams,
             )
         }
     }

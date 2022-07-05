@@ -22,7 +22,7 @@ class AdyenMockActivity : MockActivity() {
             viewModel<AdyenConnectPayinViewModel> { MockAdyenConnectPayinViewModel() }
             viewModel<AdyenConnectPayoutViewModel> { MockAdyenConnectPayoutViewModel() }
             single<MarketManager> { marketManager }
-        }
+        },
     )
 
     override fun adapter() = genericDevelopmentAdapter {
@@ -39,8 +39,8 @@ class AdyenMockActivity : MockActivity() {
             startActivity(
                 AdyenConnectPayinActivity.newInstance(
                     this@AdyenMockActivity,
-                    currency.getOrThrow()
-                )
+                    currency.getOrThrow(),
+                ),
             )
         }
         clickableItem("Post-Sign") {
@@ -56,8 +56,8 @@ class AdyenMockActivity : MockActivity() {
                 AdyenConnectPayinActivity.newInstance(
                     this@AdyenMockActivity,
                     currency.getOrThrow(),
-                    isPostSign = true
-                )
+                    isPostSign = true,
+                ),
             )
         }
         header("Adyen Connect Payout Screen")
@@ -73,8 +73,8 @@ class AdyenMockActivity : MockActivity() {
             startActivity(
                 AdyenConnectPayoutActivity.newInstance(
                     context,
-                    currency.getOrThrow()
-                )
+                    currency.getOrThrow(),
+                ),
             )
         }
         header("Market")

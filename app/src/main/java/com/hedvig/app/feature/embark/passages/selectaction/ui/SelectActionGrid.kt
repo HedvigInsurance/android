@@ -45,7 +45,7 @@ fun SelectActionGrid(
         modifier = modifier
             .padding(contentPadding)
             .testTag("SelectActionGrid"),
-        content = content
+        content = content,
     ) { measurables, constraints ->
         val horizontalSpacingInPx = insideGridSpace.horizontal.roundToPx()
         val width = (constraints.maxWidth / 2) - (horizontalSpacingInPx / 2)
@@ -54,7 +54,7 @@ fun SelectActionGrid(
             minHeight = height,
             maxHeight = height,
             maxWidth = width,
-            minWidth = width
+            minWidth = width,
         )
         val placeables = measurables.map { measurable ->
             measurable.measure(itemConstraint)
@@ -68,22 +68,22 @@ fun SelectActionGrid(
                     add(
                         placeable.withCoordinates(
                             (constraints.maxWidth / 2) - (placeable.width / 2),
-                            yPosition
-                        )
+                            yPosition,
+                        ),
                     )
                 } else if (placeables.size == 2) {
                     val (placeableStart, placeableEnd) = placeables
                     add(
                         placeableStart.withCoordinates(
                             x = 0,
-                            y = yPosition
-                        )
+                            y = yPosition,
+                        ),
                     )
                     add(
                         placeableEnd.withCoordinates(
                             x = (constraints.maxWidth / 2) + (horizontalSpacingInPx / 2),
-                            y = yPosition
-                        )
+                            y = yPosition,
+                        ),
                     )
                 }
                 yPosition += placeables.maxOf(Placeable::height) + insideGridSpace.vertical.roundToPx()

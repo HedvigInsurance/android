@@ -71,7 +71,7 @@ class YourInfoAdapter(
                     data.upcomingAgreement.table?.let {
                         UpcomingChangeBottomSheet.newInstance(it).show(
                             fragmentManager,
-                            UpcomingChangeBottomSheet.TAG
+                            UpcomingChangeBottomSheet.TAG,
                         )
                     }
                 }

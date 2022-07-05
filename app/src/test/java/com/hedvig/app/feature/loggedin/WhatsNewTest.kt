@@ -38,8 +38,8 @@ class WhatsNewTest {
                 context = mockk(),
                 localeManager = mockk {
                     every { this@mockk.defaultLocale() } returns Locale.sv_SE
-                }
-            )
+                },
+            ),
         )
 
         var eventData: WhatsNewQuery.Data? = null

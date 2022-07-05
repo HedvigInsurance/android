@@ -29,8 +29,8 @@ class ValuationBinder(
                 binding.root.context.startActivity(
                     KeyGearValuationActivity.newInstance(
                         binding.root.context,
-                        data.fragments.keyGearItemFragment.id
-                    )
+                        data.fragments.keyGearItemFragment.id,
+                    ),
                 )
             }
         }
@@ -46,7 +46,7 @@ class ValuationBinder(
                 scale(2.0f) {
                     append(
                         data.fragments.keyGearItemFragment.deductible.amount.toBigDecimal().toInt()
-                            .toString()
+                            .toString(),
                     )
                 }
             }
@@ -76,7 +76,7 @@ class ValuationBinder(
         binding.valuationMoreInfo.setHapticClickListener {
             safeLet(
                 data.fragments.keyGearItemFragment.purchasePrice?.amount,
-                data
+                data,
             ) { amount, item ->
                 val type = valuationType(item)
                 if (type != null) {
@@ -98,10 +98,10 @@ class ValuationBinder(
                                     amount,
                                     type,
                                     valuation.ratio,
-                                    valuation.valuation.amount
-                                )
+                                    valuation.valuation.amount,
+                                ),
                             ),
-                            null
+                            null,
                         )
                     } else if (type == ValuationType.MARKET_PRICE) {
                         val valuation =
@@ -120,10 +120,10 @@ class ValuationBinder(
                                 ValuationData.from(
                                     amount,
                                     type,
-                                    valuation.ratio
-                                )
+                                    valuation.ratio,
+                                ),
                             ),
-                            null
+                            null,
                         )
                     }
                 }

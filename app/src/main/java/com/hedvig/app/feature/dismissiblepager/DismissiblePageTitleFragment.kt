@@ -41,7 +41,7 @@ class DismissiblePageTitleFragment : Fragment(R.layout.dismissible_page_title_fr
             model: DismissiblePagerModel.TitlePage,
         ) = DismissiblePageTitleFragment().also {
             it.arguments = bundleOf(
-                "model" to model
+                "model" to model,
             )
         }
     }

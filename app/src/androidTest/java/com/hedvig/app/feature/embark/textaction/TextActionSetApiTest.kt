@@ -27,7 +27,7 @@ class TextActionSetApiTest : TestCase() {
         EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse { success(STORY_WITH_TEXT_ACTION_SET_API) },
         HELLO_QUERY to apolloResponse {
             success(jsonObjectOf("hello" to "world"))
-        }
+        },
     )
 
     @get:Rule

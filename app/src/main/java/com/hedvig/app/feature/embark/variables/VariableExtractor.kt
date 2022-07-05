@@ -18,7 +18,7 @@ object VariableExtractor {
                 if (storeValue != null && singleVariable.`as` == EmbarkAPIGraphQLSingleVariableCasting.file) {
                     FileVariable(
                         key = singleVariable.key,
-                        path = storeValue
+                        path = storeValue,
                     )
                 } else {
                     null
@@ -38,12 +38,12 @@ object VariableExtractor {
                 is Variable.Constant -> acc.createAndAddWithLodashNotation(
                     value = variable.castAs.cast(variable.value),
                     key = variable.key,
-                    currentKey = variable.key.substringBefore(".")
+                    currentKey = variable.key.substringBefore("."),
                 )
                 is Variable.Single -> acc.createAndAddWithLodashNotation(
                     value = variable.castAs.cast(getValue(variable.from)),
                     key = variable.key,
-                    currentKey = variable.key.substringBefore(".")
+                    currentKey = variable.key.substringBefore("."),
                 )
                 is Variable.Generated -> {
                     val generatedValue = UUID.randomUUID().toString()
@@ -51,7 +51,7 @@ object VariableExtractor {
                     acc.createAndAddWithLodashNotation(
                         value = generatedValue,
                         key = variable.key,
-                        currentKey = variable.key.substringBefore(".")
+                        currentKey = variable.key.substringBefore("."),
                     )
                 }
                 is Variable.Multi -> {
@@ -62,14 +62,14 @@ object VariableExtractor {
                             variable.variables,
                             map::get,
                             setValue,
-                            getMultiActionItems
+                            getMultiActionItems,
                         )
                         multiActionArray.put(index, multiActionJson)
                     }
                     acc.createAndAddWithLodashNotation(
                         value = multiActionArray,
                         key = variable.key,
-                        currentKey = variable.key.substringBefore(".")
+                        currentKey = variable.key.substringBefore("."),
                     )
                 }
             }

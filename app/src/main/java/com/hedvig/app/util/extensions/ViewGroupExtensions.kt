@@ -40,7 +40,8 @@ fun ViewGroup.calculateNonFullscreenHeightDiff(): Int {
     val resourceId = resources
         .getIdentifier(
             "status_bar_height",
-            "dimen", "android"
+            "dimen",
+            "android",
         )
     if (resourceId > 0) {
         heightDifference -= resources

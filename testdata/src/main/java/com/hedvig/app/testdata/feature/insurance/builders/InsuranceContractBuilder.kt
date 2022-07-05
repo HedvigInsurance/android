@@ -20,7 +20,7 @@ class InsuranceContractBuilder(
     private val renewal: InsuranceQuery.UpcomingRenewal? =
         InsuranceQuery.UpcomingRenewal(
             renewalDate = LocalDate.now(),
-            draftCertificateUrl = "https://www.example.com"
+            draftCertificateUrl = "https://www.example.com",
         ),
     private val agreementStatus: AgreementStatus = AgreementStatus.ACTIVE,
     private val showUpcomingAgreement: Boolean = false,
@@ -47,18 +47,18 @@ class InsuranceContractBuilder(
                                     __typename = SwedishApartmentAgreement.type.name,
                                     asSwedishApartmentAgreement = ContractStatusFragment.AsSwedishApartmentAgreement(
                                         __typename = SwedishApartmentAgreement.type.name,
-                                        activeFrom = LocalDate.of(2021, 4, 6)
-                                    )
-                                )
+                                        activeFrom = LocalDate.of(2021, 4, 6),
+                                    ),
+                                ),
                             )
-                        } else null
+                        } else null,
                     ),
                     asActiveInFutureAndTerminatedInFutureStatus = null,
                     asTerminatedInFutureStatus = null,
                     asTerminatedTodayStatus = null,
-                    asTerminatedStatus = null
-                )
-            )
+                    asTerminatedStatus = null,
+                ),
+            ),
         ),
         displayName = "Hemförsäkring",
         upcomingRenewal = renewal,
@@ -82,14 +82,14 @@ class InsuranceContractBuilder(
                     InsurableLimitsFragment(
                         label = "Utstyrene dine er forsikrat till",
                         limit = "1 000 000 kr",
-                        description = "Dina prylar är försäkrade till"
-                    )
-                )
-            )
+                        description = "Dina prylar är försäkrade till",
+                    ),
+                ),
+            ),
         ),
         termsAndConditions = InsuranceQuery.TermsAndConditions(
             displayName = "Terms and Conditions",
-            url = "https://cdn.hedvig.com/info/insurance-terms-tenant-owners-2019-05.pdf"
+            url = "https://cdn.hedvig.com/info/insurance-terms-tenant-owners-2019-05.pdf",
         ),
         statusPills = emptyList(),
         detailPills = emptyList(),
@@ -110,24 +110,24 @@ class InsuranceContractBuilder(
                                             __typename = SwedishApartmentAgreement.type.name,
                                             asAgreementCore = UpcomingAgreementChangeFragment.AsAgreementCore(
                                                 __typename = SwedishApartmentAgreement.type.name,
-                                                activeFrom = LocalDate.of(2021, 4, 6)
-                                            )
-                                        )
-                                    )
-                                )
+                                                activeFrom = LocalDate.of(2021, 4, 6),
+                                            ),
+                                        ),
+                                    ),
+                                ),
                             )
-                        } else null
+                        } else null,
                     ),
                     asTerminatedTodayStatus = null,
-                    asTerminatedInFutureStatus = null
+                    asTerminatedInFutureStatus = null,
                 ),
                 upcomingAgreementDetailsTable = UpcomingAgreementFragment.UpcomingAgreementDetailsTable(
                     __typename = "",
                     fragments = UpcomingAgreementFragment.UpcomingAgreementDetailsTable.Fragments(
-                        TableFragmentBuilder().build()
-                    )
-                )
-            )
+                        TableFragmentBuilder().build(),
+                    ),
+                ),
+            ),
         ),
         logo = InsuranceQuery.Logo(
             variants = InsuranceQuery.Variants(
@@ -135,10 +135,10 @@ class InsuranceContractBuilder(
                 fragments = InsuranceQuery.Variants.Fragments(
                     IconVariantsFragment(
                         dark = IconVariantsFragment.Dark(svgUrl = "https://www.example.com"),
-                        light = IconVariantsFragment.Light(svgUrl = "https://www.example.com")
-                    )
-                )
-            )
-        )
+                        light = IconVariantsFragment.Light(svgUrl = "https://www.example.com"),
+                    ),
+                ),
+            ),
+        ),
     )
 }

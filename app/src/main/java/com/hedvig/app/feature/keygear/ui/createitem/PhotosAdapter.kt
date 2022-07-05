@@ -24,14 +24,14 @@ import com.hedvig.app.util.extensions.viewBinding
 class PhotosAdapter(
     private val takePhoto: () -> Unit,
     private val requestPhotoPermissionsAndTakePhoto: () -> Unit,
-    private val deletePhoto: (photo: Photo) -> Unit
+    private val deletePhoto: (photo: Photo) -> Unit,
 ) : RecyclerView.Adapter<PhotosAdapter.ViewHolder>() {
     var photos: List<Photo> = listOf()
         set(value) {
             val callback =
                 PhotoDiffCallback(
                     field,
-                    value
+                    value,
                 )
             val result = DiffUtil.calculateDiff(callback)
             field = value
@@ -44,12 +44,12 @@ class PhotosAdapter(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.create_key_gear_item_new_photo,
                     parent,
-                    false
+                    false,
                 ).apply {
                     layoutParams =
                         FrameLayout.LayoutParams(
                             (parent.measuredWidth * ITEM_WIDTH).toInt(),
-                            ITEM_HEIGHT.dp
+                            ITEM_HEIGHT.dp,
                         )
                 },
             )
@@ -57,12 +57,12 @@ class PhotosAdapter(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.create_key_gear_item_photo,
                     parent,
-                    false
+                    false,
                 ).apply {
                     layoutParams =
                         ViewGroup.LayoutParams(
                             (parent.measuredWidth * ITEM_WIDTH).toInt(),
-                            ITEM_HEIGHT.dp
+                            ITEM_HEIGHT.dp,
                         )
                 },
             )
@@ -99,7 +99,7 @@ class PhotosAdapter(
             private val binding by viewBinding(CreateKeyGearItemPhotoBinding::bind)
             fun bind(
                 data: com.hedvig.app.feature.keygear.ui.createitem.Photo,
-                deletePhoto: (photo: com.hedvig.app.feature.keygear.ui.createitem.Photo) -> Unit
+                deletePhoto: (photo: com.hedvig.app.feature.keygear.ui.createitem.Photo) -> Unit,
             ) {
                 binding.apply {
                     photo.load(data.uri) {
@@ -128,7 +128,7 @@ class PhotosAdapter(
 
             fun bind(
                 takePhoto: () -> Unit,
-                requestPhotoPermissionsAndTakePhoto: () -> Unit
+                requestPhotoPermissionsAndTakePhoto: () -> Unit,
             ) {
                 binding.addPhoto.apply {
                     setHapticClickListener {

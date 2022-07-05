@@ -17,7 +17,7 @@ interface DeviceIdStore {
 }
 
 class DeviceIdDataStore(
-    private val dataStore: DataStore<Preferences>
+    private val dataStore: DataStore<Preferences>,
 ) : DeviceIdStore {
 
     private val key = stringPreferencesKey("hedvig-device-id")

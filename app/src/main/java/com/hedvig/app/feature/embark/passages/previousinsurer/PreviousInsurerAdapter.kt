@@ -29,8 +29,8 @@ class PreviousInsurerAdapter(
                 name = context.getString(R.string.EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION),
                 icon = null,
                 id = context.getString(R.string.EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION),
-                collectionId = context.getString(R.string.EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION)
-            )
+                collectionId = context.getString(R.string.EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION),
+            ),
         )
     }
 
@@ -39,7 +39,7 @@ class PreviousInsurerAdapter(
         R.layout.previous_insurer_item -> PreviousInsurerViewHolder.InsurerViewHolder(
             parent,
             imageLoader,
-            onInsurerClicked
+            onInsurerClicked,
         )
         else -> throw Error("No view type found for: $viewType")
     }
@@ -77,7 +77,7 @@ class PreviousInsurerAdapter(
                     }
                 }
                     ?: throw IllegalArgumentException(
-                        "Can only bind with PreviousInsurerItem.Insurer, not ${item.javaClass.name}"
+                        "Can only bind with PreviousInsurerItem.Insurer, not ${item.javaClass.name}",
                     )
             }
         }
@@ -100,5 +100,5 @@ private fun PreviousInsurerParameter.PreviousInsurer.toListItem() = PreviousInsu
     name = name,
     icon = icon,
     id = id,
-    collectionId = collectionId
+    collectionId = collectionId,
 )

@@ -12,11 +12,11 @@ import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.app.util.featureflags.flags.Feature
 
 class HomeItemsBuilder(
-    private val featureManager: FeatureManager
+    private val featureManager: FeatureManager,
 ) {
 
     suspend fun buildItems(
-        homeData: HomeQuery.Data
+        homeData: HomeQuery.Data,
     ): List<HomeModel> = when {
         homeData.isActive() -> buildActiveItems(homeData)
         homeData.isSwitching() && (homeData.isPending() || homeData.isActiveInFuture()) -> buildSwitchingItems(homeData)
@@ -50,9 +50,9 @@ class HomeItemsBuilder(
                 listOfNotNull(
                     *commonClaimsItems(
                         homeData.commonClaims,
-                        homeData.isEligibleToCreateClaim
-                    ).toTypedArray()
-                )
+                        homeData.isEligibleToCreateClaim,
+                    ).toTypedArray(),
+                ),
             )
         }
 

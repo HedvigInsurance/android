@@ -29,7 +29,7 @@ class PaymentNotificationSender(
             context,
             PAYMENTS_CHANNEL_ID,
             context.resources.getString(R.string.NOTIFICATION_CHANNEL_PAYMENT_TITLE),
-            context.resources.getString(R.string.NOTIFICATION_CHANNEL_PAYMENT_DESCRIPTION)
+            context.resources.getString(R.string.NOTIFICATION_CHANNEL_PAYMENT_DESCRIPTION),
         )
     }
 
@@ -49,8 +49,8 @@ class PaymentNotificationSender(
                     addNextIntentWithParentStack(
                         Intent(
                             context,
-                            LoggedInActivity::class.java
-                        )
+                            LoggedInActivity::class.java,
+                        ),
                     )
                     addNextIntentWithParentStack(
                         connectPayinIntent(
@@ -58,10 +58,10 @@ class PaymentNotificationSender(
                             featureManager.getPaymentType(),
                             market,
                             false,
-                        )
+                        ),
                     )
                     addNextIntentWithParentStack(
-                        NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_TYPE_CONNECT_DIRECT_DEBIT)
+                        NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_TYPE_CONNECT_DIRECT_DEBIT),
                     )
                     getPendingIntent(0, getImmutablePendingIntentFlags())
                 }
@@ -69,7 +69,7 @@ class PaymentNotificationSender(
             val notification = NotificationCompat
                 .Builder(
                     context,
-                    PAYMENTS_CHANNEL_ID
+                    PAYMENTS_CHANNEL_ID,
                 )
                 .setSmallIcon(R.drawable.ic_hedvig_h)
                 .setContentTitle(context.getString(R.string.NOTIFICATION_CONNECT_DD_TITLE))
@@ -93,17 +93,17 @@ class PaymentNotificationSender(
                 addNextIntentWithParentStack(
                     Intent(
                         context,
-                        LoggedInActivity::class.java
-                    )
+                        LoggedInActivity::class.java,
+                    ),
                 )
                 addNextIntentWithParentStack(
                     Intent(
                         context,
-                        PaymentActivity::class.java
-                    )
+                        PaymentActivity::class.java,
+                    ),
                 )
                 addNextIntentWithParentStack(
-                    NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_TYPE_PAYMENT_FAILED)
+                    NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_TYPE_PAYMENT_FAILED),
                 )
                 getPendingIntent(0, getImmutablePendingIntentFlags())
             }
@@ -111,7 +111,7 @@ class PaymentNotificationSender(
         val notification = NotificationCompat
             .Builder(
                 context,
-                PAYMENTS_CHANNEL_ID
+                PAYMENTS_CHANNEL_ID,
             )
             .setSmallIcon(R.drawable.ic_hedvig_h)
             .setContentTitle(context.getString(R.string.NOTIFICATION_PAYMENT_FAILED_TITLE))
@@ -129,7 +129,8 @@ class PaymentNotificationSender(
 
     override fun handlesNotificationType(notificationType: String) = when (notificationType) {
         NOTIFICATION_TYPE_CONNECT_DIRECT_DEBIT,
-        NOTIFICATION_TYPE_PAYMENT_FAILED -> true
+        NOTIFICATION_TYPE_PAYMENT_FAILED,
+        -> true
         else -> false
     }
 

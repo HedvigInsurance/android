@@ -29,7 +29,7 @@ class QuoteCartEditStartDateUseCase(
         return mutateQuoteCartAndUpdate(
             quoteCartId,
             quoteId,
-            null
+            null,
         )
     }
 
@@ -41,7 +41,7 @@ class QuoteCartEditStartDateUseCase(
         return mutateQuoteCartAndUpdate(
             quoteCartId,
             quoteId,
-            date
+            date,
         )
     }
 

@@ -175,15 +175,15 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                                 R.string.NEWS_DISMISS
                             } else {
                                 R.string.NEWS_PROCEED
-                            }
-                        )
+                            },
+                        ),
                     )
-                }
+                },
             )
                 .show(supportFragmentManager, WelcomeDialog.TAG)
             binding.loggedInRoot.postDelayed(
                 { binding.loggedInRoot.show() },
-                resources.getInteger(R.integer.slide_in_animation_duration).toLong()
+                resources.getInteger(R.integer.slide_in_animation_duration).toLong(),
             )
         }
         intent.removeExtra(EXTRA_IS_FROM_ONBOARDING)
@@ -202,7 +202,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putSerializable(
             "tab",
-            LoggedInTabs.fromId(binding.bottomNavigation.selectedItemId)
+            LoggedInTabs.fromId(binding.bottomNavigation.selectedItemId),
         )
         super.onSaveInstanceState(outState)
     }
@@ -250,7 +250,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                                 12.dp,
                                 12.dp,
                                 12.dp,
-                                15.dp
+                                15.dp,
                             )
                             .position(ViewTooltip.Position.BOTTOM)
                             .color(compatColor(R.color.colorTooltip))
@@ -262,7 +262,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                             }
                             .show()
                     },
-                    2000
+                    2000,
                 )
             }
         }
@@ -286,8 +286,8 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                         ReferralsInformationActivity.newInstance(
                             this,
                             referralTermsUrl,
-                            referralsIncentive
-                        )
+                            referralsIncentive,
+                        ),
                     )
                 }
             }
@@ -310,10 +310,10 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                                     R.string.NEWS_DISMISS
                                 } else {
                                     R.string.NEWS_PROCEED
-                                }
-                            )
+                                },
+                            ),
                         )
-                    }
+                    },
                 ).show(supportFragmentManager, WhatsNewDialog.TAG)
             }
         }
@@ -328,7 +328,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                         setupBottomNav(
                             isKeyGearEnabled = viewState.isKeyGearEnabled,
                             isReferralsEnabled = viewState.isReferralsEnabled,
-                            unseenTabNotifications = viewState.unseenTabNotifications
+                            unseenTabNotifications = viewState.unseenTabNotifications,
                         )
                         setupToolBar()
                         binding.loggedInRoot.show()
@@ -399,7 +399,7 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                 GradientDrawableWrapper().apply {
                     mutate()
                     colors = newTab.backgroundGradient(resources)
-                }
+                },
             )
             if (gradient.context.isDarkThemeActive) {
                 gradient.drawable.alpha = 127
@@ -421,17 +421,17 @@ class LoggedInActivity : BaseActivity(R.layout.activity_logged_in) {
                         val first = evaluator.evaluate(
                             progress,
                             initialGradientComponents[0],
-                            newGradientComponents[0]
+                            newGradientComponents[0],
                         ) as Int
                         val second = evaluator.evaluate(
                             progress,
                             initialGradientComponents[1],
-                            newGradientComponents[1]
+                            newGradientComponents[1],
                         ) as Int
                         val third = evaluator.evaluate(
                             progress,
                             initialGradientComponents[2],
-                            newGradientComponents[2]
+                            newGradientComponents[2],
                         ) as Int
 
                         (gradient.drawable.mutate() as? GradientDrawableWrapper)

@@ -36,7 +36,7 @@ class PushNotificationService : FirebaseMessagingService() {
             .setInputData(
                 Data.Builder()
                     .putString(PushNotificationWorker.PUSH_TOKEN, token)
-                    .build()
+                    .build(),
             )
             .build()
         WorkManager

@@ -54,8 +54,8 @@ class CheckoutViewModel(
         InputViewState(
             enableSign = false,
             emailInputState = InputViewState.InputState.NoInput,
-            identityInputState = InputViewState.InputState.NoInput
-        )
+            identityInputState = InputViewState.InputState.NoInput,
+        ),
     )
     val inputViewState: StateFlow<InputViewState> = _inputViewState
 
@@ -78,7 +78,7 @@ class CheckoutViewModel(
             ifRight = {
                 handleCheckoutStatus(it.offerModel)
                 _titleViewState.value = it.selectedVariant.mapToViewState()
-            }
+            },
         )
     }
 
@@ -89,7 +89,8 @@ class CheckoutViewModel(
             Checkout.CheckoutStatus.SIGNED -> createAccessToken()
             Checkout.CheckoutStatus.COMPLETED -> _events.trySend(onSignSuccess())
             Checkout.CheckoutStatus.FAILED,
-            Checkout.CheckoutStatus.UNKNOWN -> _events.trySend(Event.Error(checkout.statusText))
+            Checkout.CheckoutStatus.UNKNOWN,
+            -> _events.trySend(Event.Error(checkout.statusText))
             null -> {}
         }
     }
@@ -105,13 +106,13 @@ class CheckoutViewModel(
         netAmount = bundle.cost.netMonthlyCost,
         grossAmount = bundle.cost.grossMonthlyCost,
         market = marketManager.market,
-        email = bundle.quotes.firstNotNullOfOrNull(QuoteBundle.Quote::email)
+        email = bundle.quotes.firstNotNullOfOrNull(QuoteBundle.Quote::email),
     )
 
     fun validateInput() {
         _inputViewState.value = _inputViewState.value.copy(
             emailInputState = createInputState(emailInput, ::validateEmail),
-            identityInputState = createInputState(identityNumberInput, ::validateNationalIdentityNumber)
+            identityInputState = createInputState(identityNumberInput, ::validateNationalIdentityNumber),
         )
     }
 
@@ -147,7 +148,7 @@ class CheckoutViewModel(
 
     private fun setEnabledState() {
         _inputViewState.value = _inputViewState.value.copy(
-            enableSign = emailInput.isNotBlank() && identityNumberInput.isNotBlank()
+            enableSign = emailInput.isNotBlank() && identityNumberInput.isNotBlank(),
         )
     }
 
@@ -166,13 +167,13 @@ class CheckoutViewModel(
                     quoteIds = quoteIds,
                     quoteCartId = quoteCartId,
                     ssn = identityNumberInput,
-                    email = emailInput
+                    email = emailInput,
                 )
                 editQuotesUseCase.editQuotes(parameter).bind()
                 signQuotesUseCase.startCheckoutAndClearCache(quoteCartId, quoteIds).bind()
             }.fold(
                 ifLeft = { _events.trySend(Event.Error(it.message)) },
-                ifRight = { offerRepository.queryAndEmitOffer(quoteCartId) }
+                ifRight = { offerRepository.queryAndEmitOffer(quoteCartId) },
             )
         }
     }
@@ -204,7 +205,7 @@ class CheckoutViewModel(
     data class InputViewState(
         val enableSign: Boolean,
         val emailInputState: InputState,
-        val identityInputState: InputState
+        val identityInputState: InputState,
     ) {
         sealed class InputState {
             data class Valid(val input: String) : InputState()

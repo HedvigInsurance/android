@@ -19,16 +19,16 @@ data class TextActionSetBuilder(
             textSetData = EmbarkStoryQuery.TextSetData(
                 link = EmbarkStoryQuery.Link2(
                     __typename = "",
-                    fragments = EmbarkStoryQuery.Link2.Fragments(link)
+                    fragments = EmbarkStoryQuery.Link2.Fragments(link),
                 ),
                 textActions = textActions,
                 api = api?.let {
                     EmbarkStoryQuery.Api2(
                         __typename = it.__typename,
-                        fragments = EmbarkStoryQuery.Api2.Fragments(it)
+                        fragments = EmbarkStoryQuery.Api2.Fragments(it),
                     )
                 },
-            )
+            ),
         ),
         asEmbarkPreviousInsuranceProviderAction = null,
         asEmbarkNumberAction = null,

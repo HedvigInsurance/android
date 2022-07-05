@@ -78,7 +78,7 @@ class ChatViewModel(
                         if (isSubscriptionAllowedToWrite) {
                             chatRepository
                                 .writeNewMessage(
-                                    message.fragments.chatMessageFragment
+                                    message.fragments.chatMessageFragment,
                                 )
                         }
                     }
@@ -118,7 +118,7 @@ class ChatViewModel(
                     {
                         load()
                     },
-                    { e(it) }
+                    { e(it) },
                 )
         } else {
             networkError.postValue(true)
@@ -140,8 +140,9 @@ class ChatViewModel(
             ?: 0L
 
     private fun waitForParagraph(delay: Long) {
-        if (isWaitingForParagraph)
+        if (isWaitingForParagraph) {
             return
+        }
 
         isWaitingForParagraph = true
         disposables += Observable
@@ -152,7 +153,7 @@ class ChatViewModel(
                     load()
                     isWaitingForParagraph = false
                 },
-                {}
+                {},
             )
     }
 
@@ -197,7 +198,7 @@ class ChatViewModel(
             response.getOrNull()?.data?.uploadFile?.key?.let { key ->
                 respondWithFile(
                     key,
-                    uri
+                    uri,
                 )
             }
             response.getOrNull()?.data?.let(uploadBottomSheetResponse::postValue)

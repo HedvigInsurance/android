@@ -27,8 +27,8 @@ class AdyenRepository(
         .mutation(
             TokenizePayoutDetailsMutation(
                 data.getJSONObject("paymentMethod").toString(),
-                RedirectComponent.getReturnUrl(context)
-            )
+                RedirectComponent.getReturnUrl(context),
+            ),
         )
         .execute()
 

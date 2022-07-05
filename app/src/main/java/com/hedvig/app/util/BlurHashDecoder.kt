@@ -93,7 +93,7 @@ object BlurHashDecoder {
         return floatArrayOf(
             signedPow2((r - 9) / 9.0f) * maxAc,
             signedPow2((g - 9) / 9.0f) * maxAc,
-            signedPow2((b - 9) / 9.0f) * maxAc
+            signedPow2((b - 9) / 9.0f) * maxAc,
         )
     }
 
@@ -104,7 +104,7 @@ object BlurHashDecoder {
         height: Int,
         numCompX: Int,
         numCompY: Int,
-        colors: Array<FloatArray>
+        colors: Array<FloatArray>,
     ): Bitmap {
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         for (y in 0 until height) {
@@ -141,7 +141,7 @@ object BlurHashDecoder {
         'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
         'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
         'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '#', '$', '%', '*', '+', ',',
-        '-', '.', ':', ';', '=', '?', '@', '[', ']', '^', '_', '{', '|', '}', '~'
+        '-', '.', ':', ';', '=', '?', '@', '[', ']', '^', '_', '{', '|', '}', '~',
     )
         .mapIndexed { i, c -> c to i }
         .toMap()

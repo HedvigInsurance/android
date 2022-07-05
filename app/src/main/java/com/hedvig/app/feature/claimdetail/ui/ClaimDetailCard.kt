@@ -47,12 +47,12 @@ fun ClaimDetailCard(
                         top = 16.dp,
                         end = 16.dp,
                         bottom = 20.dp,
-                    )
+                    ),
             )
             Divider()
             BottomSection(
                 onChatClick = onChatClick,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(16.dp),
             )
         }
     }
@@ -118,9 +118,9 @@ fun ClaimDetailCardPreview() {
             ClaimDetailCard(
                 ClaimDetailCardUiState(
                     claimProgressItemsUiState = ClaimProgressUiState.previewList(),
-                    statusParagraph = "StatusParagraph"
+                    statusParagraph = "StatusParagraph",
                 ),
-                {}
+                {},
             )
         }
     }

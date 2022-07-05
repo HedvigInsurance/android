@@ -59,7 +59,7 @@ class ClaimDetailViewModel(
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5.seconds),
-        ClaimDetailViewState.Loading
+        ClaimDetailViewState.Loading,
     )
 
     fun retry() {

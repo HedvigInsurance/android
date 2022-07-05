@@ -38,7 +38,7 @@ class LodashSetTest {
 
         assertThat(json.toString())
             .isEqualTo(
-                JSONObject("{\"input\":{\"other\":\"value\", \"address\":{\"data\":\"Hello World\"}}}").toString()
+                JSONObject("{\"input\":{\"other\":\"value\", \"address\":{\"data\":\"Hello World\"}}}").toString(),
             )
     }
 

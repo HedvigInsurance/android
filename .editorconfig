@@ -4,6 +4,12 @@ insert_final_newline=true
 max_line_length=120
 end_of_line = lf
 
+ij_kotlin_allow_trailing_comma = true
+ij_kotlin_allow_trailing_comma_on_call_site = true
+
+# noinspection EditorConfigKeyCorrectness
+disabled_rules= enum-entry-name-case,filename
+
 [*.graphql]
 indent_size=2
 end_of_line=lf

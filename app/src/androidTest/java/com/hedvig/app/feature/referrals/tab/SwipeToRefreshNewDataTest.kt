@@ -39,7 +39,7 @@ class SwipeToRefreshNewDataTest : TestCase() {
             } else {
                 success(REFERRALS_DATA_WITH_ONE_REFEREE)
             }
-        }
+        },
     )
 
     @get:Rule
@@ -56,7 +56,7 @@ class SwipeToRefreshNewDataTest : TestCase() {
     fun shouldRefreshDataWhenSwipingDownToRefreshWithWhenDataHasChanged() = run {
         val intent = LoggedInActivity.newInstance(
             context(),
-            initialTab = LoggedInTabs.REFERRALS
+            initialTab = LoggedInTabs.REFERRALS,
         )
 
         activityRule.launch(intent)

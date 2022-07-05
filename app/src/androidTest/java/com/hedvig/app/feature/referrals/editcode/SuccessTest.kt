@@ -33,9 +33,9 @@ class SuccessTest : TestCase() {
         ReferralsQuery.OPERATION_DOCUMENT to apolloResponse { success(REFERRALS_DATA_WITH_NO_DISCOUNTS) },
         UpdateReferralCampaignCodeMutation.OPERATION_DOCUMENT to apolloResponse {
             success(
-                EDIT_CODE_DATA_SUCCESS
+                EDIT_CODE_DATA_SUCCESS,
             )
-        }
+        },
     )
 
     @get:Rule
@@ -47,8 +47,8 @@ class SuccessTest : TestCase() {
         activityRule.launch(
             LoggedInActivity.newInstance(
                 context(),
-                initialTab = LoggedInTabs.REFERRALS
-            )
+                initialTab = LoggedInTabs.REFERRALS,
+            ),
         )
 
         onScreen<ReferralTabScreen> {

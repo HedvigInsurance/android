@@ -44,8 +44,8 @@ fun TextView.setMarkdownText(text: String) {
                     override fun configureTheme(builder: MarkwonTheme.Builder) {
                         builder.isLinkUnderlined(false)
                     }
-                }
-            )
+                },
+            ),
         )
         .build()
         .setMarkdown(this, text)
@@ -61,7 +61,7 @@ fun TextView.putCompoundDrawablesRelativeWithIntrinsicBounds(
         start,
         top,
         end,
-        bottom
+        bottom,
     )
 }
 
@@ -81,6 +81,6 @@ fun TextView.onImeAction(
                 return@OnEditorActionListener true
             }
             false
-        }
+        },
     )
 }

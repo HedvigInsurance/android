@@ -69,12 +69,12 @@ enum class MaskType {
     BIRTH_DATE_REVERSE {
         override fun mask(text: String): String = LocalDate.parse(
             text,
-            ISO_8601_DATE
+            ISO_8601_DATE,
         ).format(REVERSE_DATE)
 
         override fun unMask(text: String): String = LocalDate.parse(
             text,
-            REVERSE_DATE
+            REVERSE_DATE,
         ).format(ISO_8601_DATE)
 
         override fun isValid(text: String): Boolean = BIRTH_DATE_REVERSE_REGEX.matcher(text).find()

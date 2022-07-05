@@ -18,7 +18,7 @@ abstract class HomeViewModel(
     sealed class ViewState {
         data class Success(
             val homeData: HomeQuery.Data,
-            val homeItems: List<HomeModel>
+            val homeItems: List<HomeModel>,
         ) : ViewState()
 
         data class Error(val message: String?) : ViewState()
@@ -83,8 +83,8 @@ class HomeViewModelImpl(
             is Either.Right -> ViewState.Success(
                 homeData = result.value,
                 homeItems = homeItemsBuilder.buildItems(
-                    homeData = result.value
-                )
+                    homeData = result.value,
+                ),
             )
         }
     }

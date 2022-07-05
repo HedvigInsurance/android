@@ -31,10 +31,10 @@ class SunsettingTest : TestCase() {
                     "errorCode" to SunsettingInterceptor.SUNSETTING_ERROR_CODE,
                     "supportPhoneNumber" to "+4670 123 45 67",
                     "supportEmail" to "info@hedvig.com",
-                )
+                ),
             )
         },
-        HomeQuery.OPERATION_DOCUMENT to apolloResponse { success(HOME_DATA_PENDING) }
+        HomeQuery.OPERATION_DOCUMENT to apolloResponse { success(HOME_DATA_PENDING) },
     )
 
     @get:Rule

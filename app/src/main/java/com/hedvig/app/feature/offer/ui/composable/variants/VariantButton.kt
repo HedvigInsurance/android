@@ -53,8 +53,9 @@ fun VariantButton(
     ) {
         Row(modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 12.dp, bottom = 16.dp)) {
             RadioButton(
-                selected = selected, size = 24.dp,
-                colors = RadioButtonDefaults.colors(selectedColor = MaterialTheme.colors.primary)
+                selected = selected,
+                size = 24.dp,
+                colors = RadioButtonDefaults.colors(selectedColor = MaterialTheme.colors.primary),
             )
             Spacer(Modifier.width(12.dp))
             Column {
@@ -110,7 +111,7 @@ fun VariantButtonPreview(
                 description = "Test description",
                 cost = "12923 NOK",
                 selected = selected,
-                onClick = {}
+                onClick = {},
             )
         }
     }
@@ -122,5 +123,5 @@ class VariantButtonInputsProvider : CollectionPreviewParameterProvider<Triple<St
         Triple("Title".repeat(5), "Subtitle", false),
         Triple("Title", "Subtitle".repeat(5), false),
         Triple("Title".repeat(10), "Subtitle".repeat(10), true),
-    )
+    ),
 )

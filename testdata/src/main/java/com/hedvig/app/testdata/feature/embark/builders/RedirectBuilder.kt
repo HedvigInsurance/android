@@ -54,7 +54,7 @@ data class RedirectBuilder(
                     unaryType = it.unaryType,
                     to = to,
                     passedExpressionKey = passedExpressionKey,
-                    passedExpressionValue = passedExpressionValue
+                    passedExpressionValue = passedExpressionValue,
                 )
             },
             asEmbarkRedirectBinaryExpression = embarkRedirectExpressionType.binary?.let {
@@ -65,7 +65,7 @@ data class RedirectBuilder(
                     key = it.key,
                     value = it.value,
                     passedExpressionKey = passedExpressionKey,
-                    passedExpressionValue = passedExpressionValue
+                    passedExpressionValue = passedExpressionValue,
                 )
             },
             asEmbarkRedirectMultipleExpressions = embarkRedirectExpressionType.multiple?.let {
@@ -82,13 +82,13 @@ data class RedirectBuilder(
                                 ExpressionFragment(
                                     __typename = "",
                                     fragments = ExpressionFragment.Fragments(se.fragments.basicExpressionFragment),
-                                    asEmbarkExpressionMultiple = null
-                                )
-                            )
+                                    asEmbarkExpressionMultiple = null,
+                                ),
+                            ),
                         )
-                    }
+                    },
                 )
-            }
+            },
         )
     }
 }

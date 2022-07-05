@@ -27,7 +27,7 @@ class ExpressionTest {
         val expression = ExpressionBuilder(
             type = ExpressionBuilder.ExpressionType.EQUALS,
             key = "FOO",
-            value = "BAR"
+            value = "BAR",
         ).build()
 
         val valueStore = ValueStoreImpl()
@@ -42,7 +42,7 @@ class ExpressionTest {
         val expression = ExpressionBuilder(
             type = ExpressionBuilder.ExpressionType.EQUALS,
             key = "FOO",
-            value = "BAR"
+            value = "BAR",
         ).build()
 
         val valueStore = ValueStoreImpl()
@@ -57,7 +57,7 @@ class ExpressionTest {
         val expression = ExpressionBuilder(
             type = ExpressionBuilder.ExpressionType.EQUALS,
             key = "FOO",
-            value = "null"
+            value = "null",
         ).build()
 
         assertThat(evaluateExpression(expression, ValueStoreImpl())).isInstanceOf(ExpressionResult.True::class)
@@ -68,7 +68,7 @@ class ExpressionTest {
         val expression = ExpressionBuilder(
             type = ExpressionBuilder.ExpressionType.EQUALS,
             key = "FOO",
-            value = "null"
+            value = "null",
         ).build()
 
         val valueStore = ValueStoreImpl()
@@ -82,7 +82,7 @@ class ExpressionTest {
         val expression = ExpressionBuilder(
             type = ExpressionBuilder.ExpressionType.GREATER_THAN,
             key = "FOO",
-            value = "4"
+            value = "4",
         ).build()
 
         val valueStore = ValueStoreImpl()
@@ -97,7 +97,7 @@ class ExpressionTest {
         val expression = ExpressionBuilder(
             type = ExpressionBuilder.ExpressionType.GREATER_THAN,
             key = "FOO",
-            value = "6"
+            value = "6",
         ).build()
 
         val valueStore = ValueStoreImpl()
@@ -112,7 +112,7 @@ class ExpressionTest {
         val expression = ExpressionBuilder(
             type = ExpressionBuilder.ExpressionType.GREATER_THAN_OR_EQUALS,
             key = "FOO",
-            value = "5"
+            value = "5",
         ).build()
 
         val valueStore = ValueStoreImpl()
@@ -127,7 +127,7 @@ class ExpressionTest {
         val expression = ExpressionBuilder(
             type = ExpressionBuilder.ExpressionType.GREATER_THAN_OR_EQUALS,
             key = "FOO",
-            value = "6"
+            value = "6",
         ).build()
 
         val valueStore = ValueStoreImpl()
@@ -142,7 +142,7 @@ class ExpressionTest {
         val expression = ExpressionBuilder(
             type = ExpressionBuilder.ExpressionType.LESS_THAN,
             key = "FOO",
-            value = "6"
+            value = "6",
         ).build()
 
         val valueStore = ValueStoreImpl()
@@ -157,7 +157,7 @@ class ExpressionTest {
         val expression = ExpressionBuilder(
             type = ExpressionBuilder.ExpressionType.LESS_THAN,
             key = "FOO",
-            value = "4"
+            value = "4",
         ).build()
 
         val valueStore = ValueStoreImpl()
@@ -172,7 +172,7 @@ class ExpressionTest {
         val expression = ExpressionBuilder(
             type = ExpressionBuilder.ExpressionType.LESS_THAN_OR_EQUALS,
             key = "FOO",
-            value = "5"
+            value = "5",
         ).build()
 
         val valueStore = ValueStoreImpl()
@@ -187,7 +187,7 @@ class ExpressionTest {
         val expression = ExpressionBuilder(
             type = ExpressionBuilder.ExpressionType.LESS_THAN_OR_EQUALS,
             key = "FOO",
-            value = "4"
+            value = "4",
         ).build()
 
         val valueStore = ValueStoreImpl()
@@ -202,7 +202,7 @@ class ExpressionTest {
         val expression = ExpressionBuilder(
             type = ExpressionBuilder.ExpressionType.NOT_EQUALS,
             key = "FOO",
-            value = "BAZ"
+            value = "BAZ",
         ).build()
 
         val valueStore = ValueStoreImpl()
@@ -217,7 +217,7 @@ class ExpressionTest {
         val expression = ExpressionBuilder(
             type = ExpressionBuilder.ExpressionType.NOT_EQUALS,
             key = "FOO",
-            value = "null"
+            value = "null",
         ).build()
 
         val valueStore = ValueStoreImpl()
@@ -232,7 +232,7 @@ class ExpressionTest {
         val expression = ExpressionBuilder(
             type = ExpressionBuilder.ExpressionType.NOT_EQUALS,
             key = "FOO",
-            value = "null"
+            value = "null",
         ).build()
 
         assertThat(evaluateExpression(expression, ValueStoreImpl())).isInstanceOf(ExpressionResult.False::class)
@@ -243,7 +243,7 @@ class ExpressionTest {
         val expression = ExpressionBuilder(
             type = ExpressionBuilder.ExpressionType.NOT_EQUALS,
             key = "FOO",
-            value = "BAZ"
+            value = "BAZ",
         ).build()
 
         val valueStore = ValueStoreImpl()

@@ -36,7 +36,7 @@ class ErrorTest : TestCase() {
             } else {
                 success(REFERRALS_DATA_WITH_NO_DISCOUNTS)
             }
-        }
+        },
     )
 
     @get:Rule
@@ -53,7 +53,7 @@ class ErrorTest : TestCase() {
     fun shouldShowErrorWhenAnErrorOccurs() = run {
         val intent = LoggedInActivity.newInstance(
             context(),
-            initialTab = LoggedInTabs.REFERRALS
+            initialTab = LoggedInTabs.REFERRALS,
         )
 
         activityRule.launch(intent)

@@ -30,7 +30,7 @@ class ChatNotificationSender(
             context,
             CHAT_CHANNEL_ID,
             context.resources.getString(R.string.NOTIFICATION_CHAT_CHANNEL_NAME),
-            context.resources.getString(R.string.NOTIFICATION_CHAT_CHANNEL_DESCRIPTION)
+            context.resources.getString(R.string.NOTIFICATION_CHAT_CHANNEL_DESCRIPTION),
         )
     }
 
@@ -45,7 +45,7 @@ class ChatNotificationSender(
         val message = NotificationCompat.MessagingStyle.Message(
             messageText,
             System.currentTimeMillis(),
-            hedvigPerson
+            hedvigPerson,
         )
 
         val messagingStyle = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -66,20 +66,20 @@ class ChatNotificationSender(
 
         sendChatNotificationInner(
             context,
-            messagingStyle
+            messagingStyle,
         )
     }
 
     override fun handlesNotificationType(notificationType: String) = notificationType == NOTIFICATION_TYPE_NEW_MESSAGE
 
     private fun defaultMessagingStyle(
-        message: NotificationCompat.MessagingStyle.Message
+        message: NotificationCompat.MessagingStyle.Message,
     ) = NotificationCompat.MessagingStyle(youPerson()).addMessage(message)
 
     private fun sendChatNotificationInner(
         context: Context,
         style: NotificationCompat.MessagingStyle,
-        alertOnlyOnce: Boolean = false
+        alertOnlyOnce: Boolean = false,
     ) {
         val chatIntent = Intent(context, ChatActivity::class.java)
         chatIntent.putExtra(ChatActivity.EXTRA_SHOW_CLOSE, true)
@@ -91,7 +91,7 @@ class ChatNotificationSender(
             .run {
                 addNextIntentWithParentStack(chatIntent)
                 addNextIntentWithParentStack(
-                    NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_TYPE_NEW_MESSAGE)
+                    NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_TYPE_NEW_MESSAGE),
                 )
                 getPendingIntent(0, flags)
             }
@@ -105,7 +105,7 @@ class ChatNotificationSender(
             Intent(context, ChatMessageNotificationReceiver::class.java).apply {
                 putExtra(
                     CHAT_REPLY_DATA_NOTIFICATION_ID,
-                    CHAT_NOTIFICATION_ID
+                    CHAT_NOTIFICATION_ID,
                 )
             },
             flags,
@@ -114,7 +114,7 @@ class ChatNotificationSender(
         val replyAction = NotificationCompat.Action.Builder(
             android.R.drawable.ic_menu_send,
             context.getString(R.string.notifications_chat_reply_action),
-            replyPendingIntent
+            replyPendingIntent,
         )
             .addRemoteInput(replyRemoteInput)
             .build()
@@ -122,7 +122,7 @@ class ChatNotificationSender(
         val notification = NotificationCompat
             .Builder(
                 context,
-                CHAT_CHANNEL_ID
+                CHAT_CHANNEL_ID,
             )
             .setSmallIcon(R.drawable.ic_hedvig_h)
             .setStyle(style)
@@ -145,7 +145,7 @@ class ChatNotificationSender(
     fun addReplyToExistingChatNotification(
         context: Context,
         notificationId: Int,
-        replyText: CharSequence
+        replyText: CharSequence,
     ) {
         val notificationManager = context.getSystemService<NotificationManager>() ?: return
 
@@ -155,14 +155,14 @@ class ChatNotificationSender(
             ?.notification ?: return
 
         val style = NotificationCompat.MessagingStyle.extractMessagingStyleFromNotification(
-            existingChatNotification
+            existingChatNotification,
         ) ?: return
         style.addMessage(replyText, System.currentTimeMillis(), style.user)
 
         sendChatNotificationInner(
             context,
             style,
-            alertOnlyOnce = true
+            alertOnlyOnce = true,
         )
     }
 

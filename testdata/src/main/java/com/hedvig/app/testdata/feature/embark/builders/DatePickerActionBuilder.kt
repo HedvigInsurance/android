@@ -23,8 +23,8 @@ data class DatePickerActionBuilder(
             label = label,
             next = EmbarkStoryQuery.Next2(
                 __typename = "",
-                fragments = EmbarkStoryQuery.Next2.Fragments(link)
-            )
+                fragments = EmbarkStoryQuery.Next2.Fragments(link),
+            ),
         ),
         asEmbarkMultiAction = null,
         asEmbarkAudioRecorderAction = null,

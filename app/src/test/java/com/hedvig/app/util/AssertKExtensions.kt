@@ -13,7 +13,7 @@ inline fun <reified T> Assert<Iterable<*>>.containsNoneOfType() = given { actual
 
     expected(
         "to contain none of type:${show(T::class)} but was:${show(actual)}" +
-            "\nelements not expected:${show(notExpected)}"
+            "\nelements not expected:${show(notExpected)}",
     )
 }
 
@@ -25,7 +25,7 @@ inline fun <reified T> Assert<Iterable<*>>.containsOfType(amount: Int? = null) =
             if (expected.size != amount) {
                 expected(
                     "to contain $amount of type:${show(T::class)}" +
-                        " but was ${expected.size} of type:${show(actual)}"
+                        " but was ${expected.size} of type:${show(actual)}",
                 )
             }
         }

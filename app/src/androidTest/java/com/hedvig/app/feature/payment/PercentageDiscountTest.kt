@@ -23,7 +23,7 @@ class PercentageDiscountTest : TestCase() {
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
         PaymentQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYMENT_DATA_PERCENTAGE_CAMPAIGN) },
-        PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_ACTIVE) }
+        PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_ACTIVE) },
     )
 
     @get:Rule
@@ -47,7 +47,7 @@ class PercentageDiscountTest : TestCase() {
                                 .asPercentageDiscountMonths!!
                                 .percentageDiscount
                                 .toInt()
-                                .toString()
+                                .toString(),
                         )
                     }
                 }

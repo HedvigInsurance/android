@@ -15,7 +15,7 @@ suspend fun DynamicLink.startActivity(
     context: Context,
     marketManager: MarketManager,
     featureManager: FeatureManager,
-    onDefault: () -> Unit
+    onDefault: () -> Unit,
 ) {
     when (this) {
         DynamicLink.DirectDebit -> {
@@ -28,21 +28,21 @@ suspend fun DynamicLink.startActivity(
                         featureManager.getPaymentType(),
                         market,
                         false,
-                    )
-                )
+                    ),
+                ),
             )
         }
         DynamicLink.Forever -> context.startActivity(
             LoggedInActivity.newInstance(
                 context,
-                initialTab = LoggedInTabs.REFERRALS
-            )
+                initialTab = LoggedInTabs.REFERRALS,
+            ),
         )
         DynamicLink.Insurance -> context.startActivity(
             LoggedInActivity.newInstance(
                 context,
-                initialTab = LoggedInTabs.INSURANCE
-            )
+                initialTab = LoggedInTabs.INSURANCE,
+            ),
         )
         is DynamicLink.Referrals -> {
             when (marketManager.market) {
@@ -52,9 +52,9 @@ suspend fun DynamicLink.startActivity(
                         ReferralsReceiverActivity.newInstance(
                             context,
                             code,
-                            incentive
+                            incentive,
                         ),
-                        null
+                        null,
                     )
                 }
                 else -> context.startActivity(Intent(context, MarketingActivity::class.java))

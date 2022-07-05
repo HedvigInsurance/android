@@ -36,7 +36,7 @@ class PerilBottomSheet : ExpandableBottomSheet() {
                     peril.exception,
                     peril.darkUrl,
                     peril.lightUrl,
-                )
+                ),
             )
         }
     }
@@ -71,7 +71,7 @@ class PerilBottomSheet : ExpandableBottomSheet() {
             } else {
                 emptyArray()
             }
-            )
+            ),
 
     )
 

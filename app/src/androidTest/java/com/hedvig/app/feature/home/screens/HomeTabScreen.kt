@@ -28,7 +28,7 @@ class HomeTabScreen : Screen<HomeTabScreen>() {
                 itemType(::CommonClaimItem)
                 itemType(::ErrorItem)
                 itemType(::ChangeAddressItem)
-            }
+            },
         )
 
     class HomePSAItem(parent: Matcher<View>) : KRecyclerItem<HomePSAItem>(parent) {

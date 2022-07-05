@@ -27,7 +27,7 @@ class ProfileToolbarMenuTest : TestCase() {
         },
         TriggerFreeTextChatMutation.OPERATION_DOCUMENT to apolloResponse {
             success(TriggerFreeTextChatMutation.Data(true))
-        }
+        },
     )
 
     @get:Rule

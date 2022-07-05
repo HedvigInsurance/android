@@ -88,7 +88,7 @@ class ComputedValuesTest {
         val expression = "myKey"
         val result = TemplateExpressionCalculator.evaluateTemplateExpression(
             expression,
-            hashMapOf("myKey" to "my value")
+            hashMapOf("myKey" to "my value"),
         )
         assertThat(result).isEqualTo("my value")
     }
@@ -98,7 +98,7 @@ class ComputedValuesTest {
         val expression = "myKey + 1"
         val result = TemplateExpressionCalculator.evaluateTemplateExpression(
             expression,
-            hashMapOf("myKey" to "41")
+            hashMapOf("myKey" to "41"),
         )
         assertThat(result).isEqualTo("42")
     }

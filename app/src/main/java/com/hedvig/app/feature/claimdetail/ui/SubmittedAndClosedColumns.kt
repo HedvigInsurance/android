@@ -50,12 +50,12 @@ fun SubmittedAndClosedColumns(
         SubmittedAndClosedColumn(
             topText = stringResource(R.string.claim_status_detail_submitted).uppercase(locale),
             bottomText = submittedText,
-            modifier = Modifier.weight(0.5f)
+            modifier = Modifier.weight(0.5f),
         )
         SubmittedAndClosedColumn(
             topText = stringResource(R.string.claim_status_detail_closed).uppercase(locale),
             bottomText = closedText,
-            modifier = Modifier.weight(0.5f)
+            modifier = Modifier.weight(0.5f),
         )
     }
 }

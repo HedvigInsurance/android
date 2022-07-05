@@ -46,13 +46,13 @@ class AdyenConnectPayoutActivity : BaseActivity(R.layout.fragment_container_acti
                         Environment.TEST
                     } else {
                         Environment.EUROPE
-                    }
+                    },
                 )
                 .setAmount(
                     Amount().apply {
                         currency = adyenCurrency.toString()
                         value = 0
-                    }
+                    },
                 )
                 .build()
 

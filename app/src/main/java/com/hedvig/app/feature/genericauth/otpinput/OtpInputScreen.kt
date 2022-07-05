@@ -61,19 +61,19 @@ fun OtpInputScreen(
     otpErrorMessage: String?,
     networkErrorMessage: String?,
     loadingResend: Boolean,
-    loadingCode: Boolean
+    loadingCode: Boolean,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
     Box(
         modifier = Modifier
             .padding(horizontal = 16.dp)
-            .fillMaxSize()
+            .fillMaxSize(),
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(rememberScrollState()),
         ) {
             Spacer(Modifier.height(60.dp))
             Text(
@@ -107,17 +107,17 @@ fun OtpInputScreen(
                         letterSpacing = TextUnit(20f, TextUnitType.Sp),
                         fontWeight = FontWeight(400),
                         fontSize = TextUnit(28f, TextUnitType.Sp),
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
                     ),
                     keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number
-                    )
+                        keyboardType = KeyboardType.Number,
+                    ),
                 )
             }
 
             Column(
                 modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Spacer(Modifier.height(8.dp))
                 AnimatedVisibility(visible = otpErrorMessage != null) {
@@ -127,7 +127,7 @@ fun OtpInputScreen(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(horizontal = 16.dp),
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
                     )
                 }
 
@@ -139,25 +139,24 @@ fun OtpInputScreen(
                                 onResendCode()
                                 keyboardController?.hide()
                             },
-                            enabled = !loadingResend
+                            enabled = !loadingResend,
                         )
                         .padding(8.dp),
                     horizontalArrangement = Arrangement.Center,
                 ) {
-
                     val infiniteTransition = rememberInfiniteTransition()
                     val angle by infiniteTransition.animateFloat(
                         initialValue = 0F,
                         targetValue = 360F,
                         animationSpec = infiniteRepeatable(
-                            animation = tween(2000, easing = LinearEasing)
-                        )
+                            animation = tween(2000, easing = LinearEasing),
+                        ),
                     )
 
                     Icon(
                         modifier = if (loadingResend) Modifier.rotate(angle) else Modifier,
                         painter = painterResource(id = R.drawable.ic_refresh),
-                        contentDescription = stringResource(R.string.login_smedium_button_active_resend_code)
+                        contentDescription = stringResource(R.string.login_smedium_button_active_resend_code),
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
@@ -174,7 +173,7 @@ fun OtpInputScreen(
             onClick = onOpenExternalApp,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 16.dp)
+                .padding(bottom = 16.dp),
         ) {
             Text(text = stringResource(R.string.login_open_email_app_button))
         }
@@ -202,7 +201,7 @@ fun OtpInputScreenValidPreview() {
             otpErrorMessage = null,
             networkErrorMessage = null,
             loadingResend = false,
-            loadingCode = false
+            loadingCode = false,
         )
     }
 }
@@ -222,7 +221,7 @@ fun OtpInputScreenInvalidPreview() {
             otpErrorMessage = "Code has expired",
             networkErrorMessage = null,
             loadingResend = false,
-            loadingCode = false
+            loadingCode = false,
         )
     }
 }

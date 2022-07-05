@@ -5,7 +5,7 @@ import kotlinx.parcelize.Parcelize
 
 sealed class MultiActionItem {
     data class AddButton(
-        val label: String
+        val label: String,
     ) : MultiActionItem()
 
     @Parcelize

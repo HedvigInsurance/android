@@ -31,7 +31,7 @@ class EmptyTest : TestCase() {
         LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
             success(LOGGED_IN_DATA)
         },
-        ReferralsQuery.OPERATION_DOCUMENT to apolloResponse { success(REFERRALS_DATA_WITH_NO_DISCOUNTS) }
+        ReferralsQuery.OPERATION_DOCUMENT to apolloResponse { success(REFERRALS_DATA_WITH_NO_DISCOUNTS) },
     )
 
     @get:Rule
@@ -48,7 +48,7 @@ class EmptyTest : TestCase() {
     fun shouldShowEmptyStateWhenLoadedWithNoItems() = run {
         val intent = LoggedInActivity.newInstance(
             context(),
-            initialTab = LoggedInTabs.REFERRALS
+            initialTab = LoggedInTabs.REFERRALS,
         )
 
         activityRule.launch(intent)
@@ -62,7 +62,7 @@ class EmptyTest : TestCase() {
                         isVisible()
                         hasText(
                             Money.of(349, "SEK")
-                                .format(context(), market())
+                                .format(context(), market()),
                         )
                     }
                     discountPerMonthPlaceholder { isGone() }

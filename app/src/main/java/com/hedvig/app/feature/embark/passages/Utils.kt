@@ -41,7 +41,7 @@ suspend fun animateResponse(
                         start = BASE_MARGIN,
                         top = BASE_MARGIN_HALF,
                         end = BASE_MARGIN,
-                        bottom = BASE_MARGIN_HALF
+                        bottom = BASE_MARGIN_HALF,
                     )
                     updateLayoutParams<ViewGroup.MarginLayoutParams> {
                         topMargin = BASE_MARGIN

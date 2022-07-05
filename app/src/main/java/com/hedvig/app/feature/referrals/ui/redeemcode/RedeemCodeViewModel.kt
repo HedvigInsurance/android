@@ -23,7 +23,7 @@ class RedeemCodeViewModel(
         val quoteCartId: QuoteCartId? = null,
         val data: RedeemReferralCodeMutation.Data? = null,
         val loading: Boolean = false,
-        val errorMessage: String? = null
+        val errorMessage: String? = null,
     )
 
     private val _viewState = MutableStateFlow(ViewState())
@@ -43,7 +43,7 @@ class RedeemCodeViewModel(
         val state = editCampaignUseCase.addCampaignToQuoteCart(code, quoteCartId)
             .fold(
                 ifLeft = { error -> _viewState.value.copy(errorMessage = error.message) },
-                ifRight = { id -> _viewState.value.copy(quoteCartId = id) }
+                ifRight = { id -> _viewState.value.copy(quoteCartId = id) },
             )
         _viewState.update { state }
     }
@@ -52,7 +52,7 @@ class RedeemCodeViewModel(
         val state = redeemReferralCodeRepository.redeemReferralCode(code)
             .fold(
                 ifLeft = { error -> _viewState.value.copy(errorMessage = error.message) },
-                ifRight = { data -> _viewState.value.copy(data = data) }
+                ifRight = { data -> _viewState.value.copy(data = data) },
             )
         _viewState.update { state }
     }

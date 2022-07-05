@@ -27,7 +27,7 @@ class PaymentHistoryTest : TestCase() {
     @get:Rule
     val mockServerRule = ApolloMockServerRule(
         PaymentQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYMENT_DATA_HISTORIC_PAYMENTS) },
-        PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_ACTIVE) }
+        PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_ACTIVE) },
     )
 
     @get:Rule
@@ -49,14 +49,14 @@ class PaymentHistoryTest : TestCase() {
                                 .fragments
                                 .monetaryAmountFragment
                                 .toMonetaryAmount()
-                                .format(context(), market())
+                                .format(context(), market()),
                         )
                     }
                     date {
                         hasText(
                             PAYMENT_DATA_HISTORIC_PAYMENTS.chargeHistory[0].date.format(
-                                PaymentActivity.DATE_FORMAT
-                            )
+                                PaymentActivity.DATE_FORMAT,
+                            ),
                         )
                     }
                 }
@@ -69,14 +69,14 @@ class PaymentHistoryTest : TestCase() {
                                 .fragments
                                 .monetaryAmountFragment
                                 .toMonetaryAmount()
-                                .format(context(), market())
+                                .format(context(), market()),
                         )
                     }
                     date {
                         hasText(
                             PAYMENT_DATA_HISTORIC_PAYMENTS.chargeHistory[1].date.format(
-                                PaymentActivity.DATE_FORMAT
-                            )
+                                PaymentActivity.DATE_FORMAT,
+                            ),
                         )
                     }
                 }

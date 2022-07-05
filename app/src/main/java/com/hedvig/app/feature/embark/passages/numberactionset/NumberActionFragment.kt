@@ -128,7 +128,7 @@ class NumberActionFragment : Fragment(R.layout.number_action_set_fragment) {
     private suspend fun saveAndAnimate() {
         context?.hideKeyboardWithDelay(
             inputView = binding.inputLayout,
-            delayDuration = KEYBOARD_HIDE_DELAY_DURATION
+            delayDuration = KEYBOARD_HIDE_DELAY_DURATION,
         )
         numberActionViewModel.onContinue(model::putInStore)
         val allInput = numberActionViewModel.getAllInput()
@@ -143,7 +143,7 @@ class NumberActionFragment : Fragment(R.layout.number_action_set_fragment) {
         private const val PARAMS = "PARAMS"
         fun newInstance(params: NumberActionParams) = NumberActionFragment().apply {
             arguments = bundleOf(
-                PARAMS to params
+                PARAMS to params,
             )
         }
     }

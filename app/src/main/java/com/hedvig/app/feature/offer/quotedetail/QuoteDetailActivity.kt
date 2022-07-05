@@ -50,7 +50,7 @@ class QuoteDetailActivity : BaseActivity(R.layout.quote_detail_activity) {
             Insetter.builder()
                 .setOnApplyInsetsListener { view, insets, initialState ->
                     view.updatePadding(
-                        top = initialState.paddings.top + insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
+                        top = initialState.paddings.top + insets.getInsets(WindowInsetsCompat.Type.systemBars()).top,
                     )
                 }
                 .applyToView(toolbar)
@@ -63,21 +63,21 @@ class QuoteDetailActivity : BaseActivity(R.layout.quote_detail_activity) {
             ).also {
                 it.submitList(
                     listOf(
-                        PerilItem.Header.Simple(getString(R.string.cross_sell_info_coverage_title))
-                    ) + perils
+                        PerilItem.Header.Simple(getString(R.string.cross_sell_info_coverage_title)),
+                    ) + perils,
                 )
             }
 
             val insurableLimitAdapter = InsurableLimitsAdapter(
-                fragmentManager = supportFragmentManager
+                fragmentManager = supportFragmentManager,
             ).also { it.submitList(listOf(InsurableLimitItem.Header.Details) + insurableLimits) }
 
             val documentAdapter = DocumentAdapter()
                 .also {
                     it.submitList(
                         listOf(
-                            DocumentItems.Header(R.string.OFFER_DOCUMENTS_SECTION_TITLE)
-                        ) + documents
+                            DocumentItems.Header(R.string.OFFER_DOCUMENTS_SECTION_TITLE),
+                        ) + documents,
                     )
                 }
 
@@ -93,7 +93,7 @@ class QuoteDetailActivity : BaseActivity(R.layout.quote_detail_activity) {
                 .setOnApplyInsetsListener { view, insets, initialState ->
                     view.updatePadding(
                         bottom = initialState.paddings.bottom +
-                            insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
+                            insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom,
                     )
                 }
                 .applyToView(recycler)
@@ -111,7 +111,7 @@ class QuoteDetailActivity : BaseActivity(R.layout.quote_detail_activity) {
             title: String,
             perils: List<PerilItem.Peril>,
             insurableLimits: List<InsurableLimitItem.InsurableLimit>,
-            documents: List<DocumentItems.Document>
+            documents: List<DocumentItems.Document>,
         ) = Intent(context, QuoteDetailActivity::class.java).apply {
             putExtra(TITLE, title)
             putParcelableArrayListExtra(PERILS, perils.toArrayList())

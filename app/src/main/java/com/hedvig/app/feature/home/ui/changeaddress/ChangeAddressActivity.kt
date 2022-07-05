@@ -90,17 +90,17 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
                         EmbarkActivity.newInstance(
                             context = this,
                             storyName = viewState.embarkStoryId,
-                            storyTitle = getString(R.string.moving_embark_title)
-                        )
+                            storyTitle = getString(R.string.moving_embark_title),
+                        ),
                     )
-                }
+                },
             )
             ManualChangeAddress -> setContent(
                 titleText = getString(R.string.moving_intro_title),
                 subtitleText = getString(R.string.moving_intro_manual_handling_description),
                 buttonText = getString(R.string.moving_intro_manual_handling_button_text),
                 buttonIcon = R.drawable.ic_chat_white,
-                onContinue = { startChat() }
+                onContinue = { startChat() },
             )
             is ChangeAddressInProgress -> setUpcomingChangeContent(
                 titleText = getString(R.string.moving_intro_existing_move_title),
@@ -112,7 +112,7 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
                         model.triggerFreeTextChat()
                     }
                 },
-                viewState.upcomingAgreementResult
+                viewState.upcomingAgreementResult,
             )
             is UpcomingAgreementError -> setContent(
                 titleText = getString(R.string.error_dialog_title),
@@ -122,14 +122,14 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
                 },
                 buttonText = "Try again",
                 buttonIcon = null,
-                onContinue = { model.reload() }
+                onContinue = { model.reload() },
             )
             is SelfChangeError -> setContent(
                 titleText = getString(R.string.error_dialog_title),
                 subtitleText = viewState.error.message ?: "Could not continue, please try again later",
                 buttonText = "Try again",
                 buttonIcon = null,
-                onContinue = { model.reload() }
+                onContinue = { model.reload() },
             )
         }
     }
@@ -139,7 +139,7 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
         subtitleText: String,
         buttonText: String?,
         @DrawableRes buttonIcon: Int?,
-        onContinue: () -> Unit
+        onContinue: () -> Unit,
     ) = with(binding) {
         spinner.loadingSpinner.remove()
         contentScrollView.show()
@@ -160,7 +160,7 @@ class ChangeAddressActivity : BaseActivity(R.layout.change_address_activity) {
         buttonText: String?,
         @DrawableRes buttonIcon: Int?,
         onContinue: () -> Unit,
-        upcomingAgreementResult: GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement
+        upcomingAgreementResult: GetUpcomingAgreementUseCase.UpcomingAgreementResult.UpcomingAgreement,
     ) = with(binding) {
         spinner.loadingSpinner.remove()
         contentScrollView.show()

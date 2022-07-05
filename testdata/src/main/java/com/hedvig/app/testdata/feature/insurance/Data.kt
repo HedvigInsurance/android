@@ -9,17 +9,17 @@ val INSURANCE_DATA_SWEDISH_APARTMENT =
 val INSURANCE_DATA_SWEDISH_APARTMENT_NO_RENEWAL =
     InsuranceQuery.Data(
         contracts = listOf(InsuranceContractBuilder(renewal = null).build()),
-        activeContractBundles = emptyList()
+        activeContractBundles = emptyList(),
     )
 val INSURANCE_DATA_SWEDISH_HOUSE =
     InsuranceQuery.Data(
         contracts = listOf(InsuranceContractBuilder().build()),
-        activeContractBundles = emptyList()
+        activeContractBundles = emptyList(),
     )
 val INSURANCE_DATA_NORWEGIAN_TRAVEL =
     InsuranceQuery.Data(
         contracts = listOf(InsuranceContractBuilder().build()),
-        activeContractBundles = emptyList()
+        activeContractBundles = emptyList(),
     )
 val INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS =
     InsuranceQuery.Data(
@@ -39,7 +39,7 @@ val INSURANCE_DATA_MULTIPLE_DANISH_CONTRACTS = InsuranceQuery.Data(
         InsuranceContractBuilder().build(),
         InsuranceContractBuilder().build(),
     ),
-    activeContractBundles = emptyList()
+    activeContractBundles = emptyList(),
 )
 val INSURANCE_DATA_PENDING_CONTRACT = InsuranceQuery.Data(
     contracts = listOf(
@@ -50,5 +50,5 @@ val INSURANCE_DATA_PENDING_CONTRACT = InsuranceQuery.Data(
             agreementStatus = AgreementStatus.ACTIVE,
         ).build(),
     ),
-    activeContractBundles = emptyList()
+    activeContractBundles = emptyList(),
 )

@@ -16,7 +16,7 @@ class ValidationDialog : DialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? =
         inflater.inflate(R.layout.dialog_validation, container, false)
 
@@ -44,12 +44,12 @@ class ValidationDialog : DialogFragment() {
         fun newInstance(
             @StringRes title: Int,
             @StringRes paragraph: Int,
-            @StringRes dismiss: Int
+            @StringRes dismiss: Int,
         ) = ValidationDialog().apply {
             arguments = bundleOf(
                 TITLE to title,
                 PARAGRAPH to paragraph,
-                DISMISS to dismiss
+                DISMISS to dismiss,
             )
         }
     }

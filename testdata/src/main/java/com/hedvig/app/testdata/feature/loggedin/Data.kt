@@ -6,7 +6,7 @@ import com.hedvig.app.testdata.feature.loggedin.builders.WelcomeDataBuilder
 import com.hedvig.app.testdata.feature.loggedin.builders.WhatsNewDataBuilder
 
 val CONTRACT_STATUS_DATA_ONE_TERMINATED_CONTRACT = ContractStatusDataBuilder(
-    listOf(ContractStatus.TERMINATED)
+    listOf(ContractStatus.TERMINATED),
 ).build()
 
 val WELCOME_DATA_ONE_PAGE = WelcomeDataBuilder().build()

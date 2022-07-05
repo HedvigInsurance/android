@@ -23,9 +23,9 @@ class CodeTooShortErrorTest : TestCase() {
     val mockServerRule = ApolloMockServerRule(
         UpdateReferralCampaignCodeMutation.OPERATION_DOCUMENT to apolloResponse {
             success(
-                EDIT_CODE_DATA_TOO_SHORT
+                EDIT_CODE_DATA_TOO_SHORT,
             )
-        }
+        },
     )
 
     @get:Rule
@@ -36,8 +36,8 @@ class CodeTooShortErrorTest : TestCase() {
         activityRule.launch(
             ReferralsEditCodeActivity.newInstance(
                 context(),
-                "TEST123"
-            )
+                "TEST123",
+            ),
         )
 
         onScreen<ReferralsEditCodeScreen> {

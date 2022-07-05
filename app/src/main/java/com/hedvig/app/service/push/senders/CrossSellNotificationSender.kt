@@ -30,7 +30,7 @@ class CrossSellNotificationSender(
         setupNotificationChannel(
             context,
             CROSS_SELL_CHANNEL_ID,
-            context.resources.getString(R.string.NOTIFICATION_CHANNEL_CROSS_SELL_TITLE)
+            context.resources.getString(R.string.NOTIFICATION_CHANNEL_CROSS_SELL_TITLE),
         )
     }
 
@@ -52,7 +52,7 @@ class CrossSellNotificationSender(
                 context = context,
                 title = title,
                 body = body,
-                pendingIntent = intent
+                pendingIntent = intent,
             )
             notify(context, notification)
         }
@@ -71,7 +71,7 @@ class CrossSellNotificationSender(
         )
         builder.addNextIntentWithParentStack(intent)
         builder.addNextIntentWithParentStack(
-            NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_CROSS_SELL)
+            NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_CROSS_SELL),
         )
         return builder.getPendingIntent(0, getImmutablePendingIntentFlags())
     }
@@ -81,11 +81,11 @@ class CrossSellNotificationSender(
         val intent = LoggedInActivity.newInstance(
             context = context,
             initialTab = LoggedInTabs.INSURANCE,
-            withoutHistory = true
+            withoutHistory = true,
         )
         builder.addNextIntentWithParentStack(intent)
         builder.addNextIntentWithParentStack(
-            NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_CROSS_SELL)
+            NotificationOpenedTrackingActivity.newInstance(context, NOTIFICATION_CROSS_SELL),
         )
         return builder.getPendingIntent(0, getImmutablePendingIntentFlags())
     }
@@ -94,12 +94,12 @@ class CrossSellNotificationSender(
         context: Context,
         title: String?,
         body: String?,
-        pendingIntent: PendingIntent?
+        pendingIntent: PendingIntent?,
     ): Notification {
         return NotificationCompat
             .Builder(
                 context,
-                CROSS_SELL_CHANNEL_ID
+                CROSS_SELL_CHANNEL_ID,
             )
             .setSmallIcon(R.drawable.ic_hedvig_h)
             .setContentTitle(title)
@@ -116,7 +116,7 @@ class CrossSellNotificationSender(
             .from(context)
             .notify(
                 CROSS_SELL_NOTIFICATION_ID,
-                notification
+                notification,
             )
     }
 

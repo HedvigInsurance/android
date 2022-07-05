@@ -10,8 +10,8 @@ data class NavigateEmbark(val embarkStoryId: String, val embarkTitle: String) {
             EmbarkActivity.newInstance(
                 context = context,
                 storyName = embarkStoryId,
-                storyTitle = embarkTitle
-            )
+                storyTitle = embarkTitle,
+            ),
         )
     }
 }

@@ -19,11 +19,11 @@ data class QuoteBundleVariant(
 
 fun QuoteCartFragment.PossibleVariation.toQuoteBundleVariant(
     quoteCartId: QuoteCartId,
-    checkoutMethods: List<CheckoutMethod>
+    checkoutMethods: List<CheckoutMethod>,
 ) = QuoteBundleVariant(
     id = id,
     title = bundle.fragments.quoteBundleFragment.displayName,
     tag = tag,
     description = description,
-    bundle = bundle.fragments.quoteBundleFragment.toQuoteBundle(quoteCartId, checkoutMethods)
+    bundle = bundle.fragments.quoteBundleFragment.toQuoteBundle(quoteCartId, checkoutMethods),
 )

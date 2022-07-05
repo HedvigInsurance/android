@@ -59,10 +59,10 @@ class AboutAppActivity : BaseActivity(R.layout.activity_about_app) {
                                         R.string.NEWS_DISMISS
                                     } else {
                                         R.string.NEWS_PROCEED
-                                    }
-                                )
+                                    },
+                                ),
                             )
-                        }
+                        },
                     )
                         .show(supportFragmentManager, WhatsNewDialog.TAG)
                 }

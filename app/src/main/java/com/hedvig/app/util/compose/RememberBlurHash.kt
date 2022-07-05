@@ -13,14 +13,14 @@ fun rememberBlurHash(
     blurHash: String,
     width: Int,
     height: Int,
-    context: Context = LocalContext.current
+    context: Context = LocalContext.current,
 ) = remember(blurHash) {
     mutableStateOf(
         BlurHashDecoder.decode(blurHash, width, height)?.let {
             BitmapDrawable(
                 context.resources,
-                it
+                it,
             )
-        }
+        },
     )
 }

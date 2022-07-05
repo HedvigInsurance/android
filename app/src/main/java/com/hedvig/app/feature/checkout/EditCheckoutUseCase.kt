@@ -30,7 +30,7 @@ class EditCheckoutUseCase(
     }
 
     private suspend fun editQuoteCart(
-        parameter: EditAndSignParameter
+        parameter: EditAndSignParameter,
     ): Either<ErrorMessage, Success> = either {
         ensureNotNull(parameter.quoteCartId) { ErrorMessage("No quote cart id found") }
         val results = parameter.quoteIds
@@ -44,7 +44,7 @@ class EditCheckoutUseCase(
         quoteCartId: QuoteCartId,
         quoteId: String,
         ssn: String,
-        email: String
+        email: String,
     ): Either<ErrorMessage, Success> {
         val json = buildJsonObject {
             put("quoteCartId", quoteCartId.id)
@@ -63,7 +63,7 @@ class EditCheckoutUseCase(
         return graphQLQueryHandler.graphQLQuery(
             query = QuoteCartEditQuoteMutation.OPERATION_DOCUMENT,
             variables = JSONObject(json),
-            files = emptyList()
+            files = emptyList(),
         )
             .toEither()
             .mapLeft { ErrorMessage(it.message) }

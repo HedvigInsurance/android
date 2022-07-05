@@ -13,7 +13,7 @@ class RedeemReferralCodeRepository(
     private val localeManager: LocaleManager,
 ) {
     suspend fun redeemReferralCode(
-        campaignCode: CampaignCode
+        campaignCode: CampaignCode,
     ): Either<ErrorMessage, RedeemReferralCodeMutation.Data?> {
         return apolloClient
             .mutation(RedeemReferralCodeMutation(campaignCode.code, localeManager.defaultLocale()))

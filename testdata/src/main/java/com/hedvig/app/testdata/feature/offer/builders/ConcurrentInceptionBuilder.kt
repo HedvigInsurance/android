@@ -14,9 +14,9 @@ class ConcurrentInceptionBuilder(
             currentInsurerFragment = CurrentInsurerFragment(
                 id = "currentinsurerid",
                 displayName = "Test current insurer",
-                switchable = false
-            )
-        )
+                switchable = false,
+            ),
+        ),
     ),
 ) {
     fun build() = QuoteBundleFragment.Inception1(
@@ -25,8 +25,8 @@ class ConcurrentInceptionBuilder(
             __typename = ConcurrentInception.type.name,
             correspondingQuoteIds = quoteIds,
             startDate = startDate,
-            currentInsurer = currentInsurer
+            currentInsurer = currentInsurer,
         ),
-        asIndependentInceptions = null
+        asIndependentInceptions = null,
     )
 }

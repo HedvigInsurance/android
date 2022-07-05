@@ -39,8 +39,8 @@ abstract class AuthenticateDialog : DialogFragment() {
             startActivity(
                 Intent(
                     Intent.ACTION_VIEW,
-                    bankIdUri
-                )
+                    bankIdUri,
+                ),
             )
         } else {
             QR

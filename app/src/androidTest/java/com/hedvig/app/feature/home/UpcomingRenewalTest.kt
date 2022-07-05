@@ -31,7 +31,7 @@ class UpcomingRenewalTest : TestCase() {
         },
         HomeQuery.OPERATION_DOCUMENT to apolloResponse {
             success(HOME_DATA_UPCOMING_RENEWAL)
-        }
+        },
     )
 
     @get:Rule

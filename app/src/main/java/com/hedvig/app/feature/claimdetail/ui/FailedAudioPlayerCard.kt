@@ -39,7 +39,7 @@ fun FailedAudioPlayerCard(
         Row(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.Top,
-            modifier = Modifier.padding(horizontal = 16.dp)
+            modifier = Modifier.padding(horizontal = 16.dp),
         ) {
             Icon(
                 painter = painterResource(R.drawable.ic_warning_triangle),
@@ -48,7 +48,7 @@ fun FailedAudioPlayerCard(
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(
                     text = stringResource(R.string.claim_status_detail_info_error_title),
-                    style = MaterialTheme.typography.body1
+                    style = MaterialTheme.typography.body1,
                 )
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                     Text(
@@ -65,11 +65,11 @@ fun FailedAudioPlayerCard(
             modifier = Modifier
                 .align(Alignment.End)
                 .padding(horizontal = 8.dp, vertical = 5.dp),
-            colors = ButtonDefaults.textButtonColors(contentColor = LocalContentColor.current)
+            colors = ButtonDefaults.textButtonColors(contentColor = LocalContentColor.current),
         ) {
             Text(
                 text = stringResource(R.string.claim_status_detail_info_error_button),
-                style = MaterialTheme.typography.body2
+                style = MaterialTheme.typography.body2,
             )
         }
     }

@@ -26,17 +26,18 @@ class ContractDetailScreen : Screen<ContractDetailScreen>() {
             itemType(::YourInfoTab)
             itemType(::CoverageTab)
             itemType(::DocumentsTab)
-        }
+        },
     )
 
     class CoverageTab(parent: Matcher<View>) : KViewPagerItem<CoverageTab>(parent) {
         val recycler = KRecyclerView(
-            parent, { withId(R.id.recycler) },
+            parent,
+            { withId(R.id.recycler) },
             {
                 itemType(::Header)
                 itemType(::PerilRecyclerItem)
                 itemType(::InsurableLimitRecyclerItem)
-            }
+            },
         )
 
         class Header(parent: Matcher<View>) : KRecyclerItem<Header>(parent) {
@@ -48,7 +49,7 @@ class ContractDetailScreen : Screen<ContractDetailScreen>() {
                 { withId(R.id.recycler) },
                 {
                     itemType(::Title)
-                }
+                },
             )
             val chevron = KImageView { withId(R.id.chevron) }
 
@@ -60,12 +61,13 @@ class ContractDetailScreen : Screen<ContractDetailScreen>() {
 
     class YourInfoTab(parent: Matcher<View>) : KViewPagerItem<YourInfoTab>(parent) {
         val recycler = KRecyclerView(
-            parent, { withId(R.id.recycler) },
+            parent,
+            { withId(R.id.recycler) },
             {
                 itemType(::CoInsured)
                 itemType(::Home)
                 itemType(::ChangeAddressButton)
-            }
+            },
         )
 
         class CoInsured(parent: Matcher<View>) : KRecyclerItem<CoInsured>(parent) {
@@ -83,10 +85,11 @@ class ContractDetailScreen : Screen<ContractDetailScreen>() {
 
     class DocumentsTab(parent: Matcher<View>) : KViewPagerItem<DocumentsTab>(parent) {
         val recycler = KRecyclerView(
-            parent, { withId(R.id.recycler) },
+            parent,
+            { withId(R.id.recycler) },
             {
                 itemType(::DocumentRecyclerItem)
-            }
+            },
         )
 
         val agreementUrl = KIntent {

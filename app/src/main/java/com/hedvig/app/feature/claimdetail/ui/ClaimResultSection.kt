@@ -38,11 +38,11 @@ fun ClaimResultSection(
         when (claimDetailResult) {
             ClaimDetailResult.Closed.NotCompensated -> Pill(
                 stringResource(R.string.claim_decision_not_compensated).uppercase(locale),
-                backgroundColor = MaterialTheme.colors.primary
+                backgroundColor = MaterialTheme.colors.primary,
             )
             ClaimDetailResult.Closed.NotCovered -> Pill(
                 stringResource(R.string.claim_decision_not_covered).uppercase(locale),
-                backgroundColor = MaterialTheme.colors.primary
+                backgroundColor = MaterialTheme.colors.primary,
             )
             is ClaimDetailResult.Closed.Paid -> {
                 Row(
@@ -50,21 +50,21 @@ fun ClaimResultSection(
                 ) {
                     Pill(
                         stringResource(R.string.claim_decision_paid).uppercase(locale),
-                        backgroundColor = ClaimStatusColors.Pill.paid
+                        backgroundColor = ClaimStatusColors.Pill.paid,
                     )
                     if (claimDetailResult.monetaryAmount != null) {
                         Spacer(Modifier.width(12.dp))
                         Text(
                             claimDetailResult.monetaryAmount.formatOnlyNumber(locale),
                             style = MaterialTheme.typography.h4,
-                            modifier = Modifier.alignByBaseline()
+                            modifier = Modifier.alignByBaseline(),
                         )
                         Spacer(Modifier.width(2.dp))
                         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
                             Text(
                                 claimDetailResult.monetaryAmount.currency.currencyCode,
                                 style = MaterialTheme.typography.subtitle2,
-                                modifier = Modifier.alignByBaseline()
+                                modifier = Modifier.alignByBaseline(),
                             )
                         }
                     }
@@ -95,5 +95,5 @@ class ClaimDetailResultProvider : CollectionPreviewParameterProvider<ClaimDetail
         ClaimDetailResult.Closed.Paid(null),
         ClaimDetailResult.Closed.NotCompensated,
         ClaimDetailResult.Closed.NotCovered,
-    )
+    ),
 )

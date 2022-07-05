@@ -27,31 +27,31 @@ data class GraphQLApiBuilder(
                         ApiFragment.Result(
                             __typename = "",
                             fragments = ApiFragment.Result.Fragments(
-                                it
-                            )
+                                it,
+                            ),
                         )
                     },
                     errors = errors.map {
                         ApiFragment.Error(
                             __typename = "",
                             fragments = ApiFragment.Error.Fragments(
-                                it
-                            )
+                                it,
+                            ),
                         )
                     },
                     variables = variables.map {
                         ApiFragment.Variable(
                             __typename = it.__typename,
                             fragments = ApiFragment.Variable.Fragments(
-                                it
-                            )
+                                it,
+                            ),
                         )
                     },
                     next = ApiFragment.Next(
                         __typename = "",
-                        fragments = ApiFragment.Next.Fragments(next)
-                    )
-                )
+                        fragments = ApiFragment.Next.Fragments(next),
+                    ),
+                ),
             )
         } else {
             null
@@ -65,35 +65,35 @@ data class GraphQLApiBuilder(
                         ApiFragment.Result1(
                             __typename = "",
                             fragments = ApiFragment.Result1.Fragments(
-                                it
-                            )
+                                it,
+                            ),
                         )
                     },
                     errors = errors.map {
                         ApiFragment.Error1(
                             __typename = "",
                             fragments = ApiFragment.Error1.Fragments(
-                                it
-                            )
+                                it,
+                            ),
                         )
                     },
                     variables = variables.map {
                         ApiFragment.Variable1(
                             __typename = it.__typename,
                             fragments = ApiFragment.Variable1.Fragments(
-                                it
-                            )
+                                it,
+                            ),
                         )
                     },
                     next = ApiFragment.Next1(
                         __typename = "",
-                        fragments = ApiFragment.Next1.Fragments(next)
-                    )
-                )
+                        fragments = ApiFragment.Next1.Fragments(next),
+                    ),
+                ),
             )
         } else {
             null
-        }
+        },
     )
 
     enum class Type {

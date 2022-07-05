@@ -37,7 +37,7 @@ fun ClaimDetailScreen(
                 onClick = onUpClick,
                 title = stringResource(R.string.claim_status_title),
             )
-        }
+        },
     ) { paddingValues ->
         when (viewState) {
             is ClaimDetailViewState.Content -> ClaimDetailScreen(
@@ -45,11 +45,11 @@ fun ClaimDetailScreen(
                 locale = locale,
                 onChatClick = onChatClick,
                 onPlayClick = onPlayClick,
-                modifier = Modifier.padding(paddingValues)
+                modifier = Modifier.padding(paddingValues),
             )
             ClaimDetailViewState.Error -> GenericErrorScreen(
                 onRetryButtonClicked = retry,
-                modifier = Modifier.padding(paddingValues)
+                modifier = Modifier.padding(paddingValues),
             )
             ClaimDetailViewState.Loading -> CenteredProgressIndicator()
         }
@@ -91,7 +91,7 @@ private fun ClaimDetailScreen(
         if (uiState.signedAudioURL != null) {
             AudioPlayBackItem(
                 onPlayClick = onPlayClick,
-                uiState.signedAudioURL
+                uiState.signedAudioURL,
             )
         }
         // TODO claim detail screen v2.1, actually show files here

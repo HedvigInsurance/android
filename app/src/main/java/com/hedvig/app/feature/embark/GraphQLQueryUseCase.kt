@@ -13,24 +13,24 @@ import org.json.JSONObject
 sealed class GraphQLQueryResult {
     data class Error(
         val message: String?,
-        val passageName: String
+        val passageName: String,
     ) : GraphQLQueryResult()
 
     data class ValuesFromResponse(
         val arrayValues: List<Pair<String, List<String>>>,
         val objectValues: List<Pair<String, String?>>,
-        val passageName: String?
+        val passageName: String?,
     ) : GraphQLQueryResult()
 }
 
 class GraphQLQueryUseCase(
-    private val graphQLQueryHandler: GraphQLQueryHandler
+    private val graphQLQueryHandler: GraphQLQueryHandler,
 ) {
 
     suspend fun executeQuery(
         graphQLQuery: ApiFragment.AsEmbarkApiGraphQLQuery,
         variables: JSONObject?,
-        fileVariables: List<FileVariable>
+        fileVariables: List<FileVariable>,
     ): GraphQLQueryResult {
         return when (
             val result =
@@ -43,11 +43,11 @@ class GraphQLQueryUseCase(
 
     private fun handleQueryCallSuccess(
         graphQLQuery: ApiFragment.AsEmbarkApiGraphQLQuery,
-        result: QueryResult.Success<JSONObject>
+        result: QueryResult.Success<JSONObject>,
     ) = when {
         hasErrors(graphQLQuery) || result.data.isNull(DATA_TITLE) -> GraphQLQueryResult.Error(
             result.getErrorMessage(),
-            graphQLQuery.getErrorPassageName()
+            graphQLQuery.getErrorPassageName(),
         )
         else -> parseValuesFromJsonResult(result, graphQLQuery)
     }
@@ -55,7 +55,7 @@ class GraphQLQueryUseCase(
     suspend fun executeMutation(
         graphQLMutation: ApiFragment.AsEmbarkApiGraphQLMutation,
         variables: JSONObject?,
-        fileVariables: List<FileVariable>
+        fileVariables: List<FileVariable>,
     ): GraphQLQueryResult {
         return when (
             val result =
@@ -68,20 +68,19 @@ class GraphQLQueryUseCase(
 
     private fun handleMutationCallSuccess(
         graphQLMutation: ApiFragment.AsEmbarkApiGraphQLMutation,
-        result: QueryResult.Success<JSONObject>
+        result: QueryResult.Success<JSONObject>,
     ) = when {
         hasErrors(graphQLMutation) || result.data.isNull(DATA_TITLE) -> GraphQLQueryResult.Error(
             result.getErrorMessage(),
-            graphQLMutation.getErrorPassageName()
+            graphQLMutation.getErrorPassageName(),
         )
         else -> parseValuesFromJsonResult(result, graphQLMutation)
     }
 
     private fun parseValuesFromJsonResult(
         result: QueryResult.Success<JSONObject>,
-        graphQLQuery: ApiFragment.AsEmbarkApiGraphQLQuery
+        graphQLQuery: ApiFragment.AsEmbarkApiGraphQLQuery,
     ): GraphQLQueryResult.ValuesFromResponse {
-
         val response = result.data.getJSONObject(DATA_TITLE)
         val arrayValues = mutableListOf<Pair<String, List<String>>>()
         val objectValues = mutableListOf<Pair<String, String?>>()
@@ -92,19 +91,19 @@ class GraphQLQueryUseCase(
                 r.fragments.graphQLResultsFragment.`as`,
                 response,
                 arrayValues,
-                objectValues
+                objectValues,
             )
         }
         return GraphQLQueryResult.ValuesFromResponse(
             arrayValues,
             objectValues,
-            graphQLQuery.getSuccessPassageName()
+            graphQLQuery.getSuccessPassageName(),
         )
     }
 
     private fun parseValuesFromJsonResult(
         result: QueryResult.Success<JSONObject>,
-        graphQLMutation: ApiFragment.AsEmbarkApiGraphQLMutation
+        graphQLMutation: ApiFragment.AsEmbarkApiGraphQLMutation,
     ): GraphQLQueryResult.ValuesFromResponse {
         val response = result.data.getJSONObject(DATA_TITLE)
 
@@ -117,7 +116,7 @@ class GraphQLQueryUseCase(
                 r.fragments.graphQLResultsFragment.`as`,
                 response,
                 arrayValues,
-                objectValues
+                objectValues,
             )
         }
         return GraphQLQueryResult.ValuesFromResponse(arrayValues, objectValues, graphQLMutation.getSuccessPassageName())
@@ -128,7 +127,7 @@ class GraphQLQueryUseCase(
         key: String,
         response: JSONObject,
         arrayValues: MutableList<Pair<String, List<String>>>,
-        objectValues: MutableList<Pair<String, String?>>
+        objectValues: MutableList<Pair<String, String?>>,
     ) {
         when (val value = response.getWithDotNotation(accessor)) {
             is JSONArray -> arrayValues.add(Pair(key, value.toStringArray()))

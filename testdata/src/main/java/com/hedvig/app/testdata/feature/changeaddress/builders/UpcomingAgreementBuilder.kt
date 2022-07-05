@@ -16,15 +16,15 @@ class UpcomingAgreementBuilder(
             asAgreementCore = UpcomingAgreementChangeFragment.AsAgreementCore(
                 __typename = SwedishHouseAgreement.type.name,
                 activeFrom = activeFrom,
-            )
+            ),
         ),
     private val table: TableFragment = TableFragmentBuilder(
         title = "Details",
         sections = listOf(
             "Details" to listOf(
-                Triple("Address", "Subtitle", "Testgatan 123")
-            )
-        )
+                Triple("Address", "Subtitle", "Testgatan 123"),
+            ),
+        ),
     ).build(),
 ) {
 
@@ -32,8 +32,8 @@ class UpcomingAgreementBuilder(
         upcomingAgreementDetailsTable = UpcomingAgreementFragment.UpcomingAgreementDetailsTable(
             __typename = "",
             fragments = UpcomingAgreementFragment.UpcomingAgreementDetailsTable.Fragments(
-                table
-            )
+                table,
+            ),
         ),
         status = UpcomingAgreementFragment.Status(
             __typename = ActiveStatus.type.name,
@@ -43,13 +43,13 @@ class UpcomingAgreementBuilder(
                     __typename = "",
                     fragments = UpcomingAgreementFragment.UpcomingAgreementChange.Fragments(
                         upcomingAgreementChangeFragment = UpcomingAgreementChangeFragment(
-                            newAgreement = newAgreement
-                        )
-                    )
-                )
+                            newAgreement = newAgreement,
+                        ),
+                    ),
+                ),
             ),
             asTerminatedInFutureStatus = null,
             asTerminatedTodayStatus = null,
-        )
+        ),
     )
 }

@@ -36,16 +36,16 @@ class MarketingActivity : BaseActivity() {
                         primary = hedvigOffWhite,
                         onPrimary = hedvigBlack,
                         secondary = hedvigOffWhite,
-                        onBackground = hedvigOffWhite
+                        onBackground = hedvigOffWhite,
                     )
-                }
+                },
             ) {
                 val background by viewModel.background.collectAsState()
                 BackgroundImage(background) {
                     val state by viewModel.state.collectAsState()
                     when (val s = state) {
                         Loading, MarketPicked.Loading -> CircularProgressIndicator(
-                            Modifier.align(Alignment.Center)
+                            Modifier.align(Alignment.Center),
                         )
                         is MarketPicked.Loaded -> MarketPickedScreen(
                             onClickMarket = viewModel::goToMarketPicker,
@@ -58,14 +58,14 @@ class MarketingActivity : BaseActivity() {
                                 when (s.loginMethod) {
                                     LoginMethod.BANK_ID_SWEDEN -> LoginDialog().show(
                                         supportFragmentManager,
-                                        LoginDialog.TAG
+                                        LoginDialog.TAG,
                                     )
                                     LoginMethod.NEM_ID, LoginMethod.BANK_ID_NORWAY -> {
                                         startActivity(
                                             SimpleSignAuthenticationActivity.newInstance(
                                                 this@MarketingActivity,
-                                                s.selectedMarket
-                                            )
+                                                s.selectedMarket,
+                                            ),
                                         )
                                     }
                                     LoginMethod.OTP -> {
@@ -78,7 +78,7 @@ class MarketingActivity : BaseActivity() {
                         is PickMarket -> {
                             if (s.isLoading) {
                                 CircularProgressIndicator(
-                                    Modifier.align(Alignment.Center)
+                                    Modifier.align(Alignment.Center),
                                 )
                             } else {
                                 PickMarketScreen(

@@ -68,7 +68,7 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
                         when (event) {
                             is ExternalInsurerViewModel.Event.Error -> context?.showErrorDialog(
                                 message = getString(event.errorResult.getStringRes()),
-                                positiveAction = {}
+                                positiveAction = {},
                             )
                             is ExternalInsurerViewModel.Event.AskForPrice -> {
                                 startAskForPrice(event.collectionId, event.providerName)
@@ -135,15 +135,15 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
             InsuranceProvider(
                 id = id,
                 collectionId = collectionId,
-                name = name
-            )
+                name = name,
+            ),
         )
     }
 
     private fun startAskForPrice(collectionId: String, name: String) {
         val intent = AskForPriceInfoActivity.createIntent(
             requireContext(),
-            InsuranceProviderParameter(collectionId, name)
+            InsuranceProviderParameter(collectionId, name),
         )
         askForPriceActivityResultLauncher.launch(intent)
     }
@@ -157,7 +157,7 @@ class ExternalInsurerFragment : Fragment(R.layout.previous_or_external_insurer_f
                     id = it.id,
                     collectionId = it.collectionId,
                 )
-            }
+            },
         )
         fragment.show(parentFragmentManager, InsurerProviderBottomSheet.TAG)
     }

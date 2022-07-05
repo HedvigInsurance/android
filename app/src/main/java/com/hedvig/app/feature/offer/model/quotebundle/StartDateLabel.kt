@@ -18,7 +18,7 @@ fun StartDateLabel.toString(context: Context) = when (this) {
 }
 
 fun QuoteBundleFragment.Inception1.getStartDateLabel(
-    startDateTerminology: QuoteBundleAppConfigurationStartDateTerminology
+    startDateTerminology: QuoteBundleAppConfigurationStartDateTerminology,
 ) = when (startDateTerminology) {
     QuoteBundleAppConfigurationStartDateTerminology.START_DATE -> {
         when {

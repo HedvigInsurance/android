@@ -37,7 +37,7 @@ fun ClaimProgressRow(
             ClaimProgress(
                 text = claimProgressUiState.text,
                 type = claimProgressUiState.type,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
             )
         }
     }
@@ -87,7 +87,7 @@ private fun ClaimProgress(
             Canvas(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(4.dp)
+                    .height(4.dp),
             ) {
                 fillWithColor(progressColor)
             }
@@ -96,7 +96,7 @@ private fun ClaimProgress(
                 text = text,
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.caption,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
         }
     }
@@ -113,15 +113,15 @@ fun ClaimProgressRowPreview() {
                 listOf(
                     ClaimProgressUiState(
                         "Submitted",
-                        ClaimProgressUiState.ClaimProgressType.PAST_INACTIVE
+                        ClaimProgressUiState.ClaimProgressType.PAST_INACTIVE,
                     ),
                     ClaimProgressUiState(
                         "Being Handled",
-                        ClaimProgressUiState.ClaimProgressType.REOPENED
+                        ClaimProgressUiState.ClaimProgressType.REOPENED,
                     ),
                     ClaimProgressUiState(
                         "Closed",
-                        ClaimProgressUiState.ClaimProgressType.FUTURE_INACTIVE
+                        ClaimProgressUiState.ClaimProgressType.FUTURE_INACTIVE,
                     ),
                 ),
             )

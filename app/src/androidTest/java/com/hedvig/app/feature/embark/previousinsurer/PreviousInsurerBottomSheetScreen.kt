@@ -19,7 +19,7 @@ object PreviousInsurerBottomSheetScreen : KScreen<PreviousInsurerBottomSheetScre
         },
         {
             itemType(::PreviousInsurer)
-        }
+        },
     )
 
     class PreviousInsurer(parent: Matcher<View>) : KRecyclerItem<PreviousInsurer>(parent) {

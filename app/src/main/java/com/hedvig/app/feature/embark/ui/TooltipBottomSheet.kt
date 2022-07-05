@@ -34,7 +34,7 @@ class TooltipBottomSheet : BottomSheetDialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View = inflater.inflate(R.layout.tooltip_bottom_sheet, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -51,14 +51,14 @@ class TooltipBottomSheet : BottomSheetDialogFragment() {
                     if (tooltips.size == 1) {
                         listOf(
                             TooltipModel.Header(tooltips.first().title),
-                            *getTooltipsWithoutTitles(tooltips)
+                            *getTooltipsWithoutTitles(tooltips),
                         )
                     } else {
                         listOf(
                             TooltipModel.Header(),
-                            *getTooltipsWithTitles(tooltips)
+                            *getTooltipsWithTitles(tooltips),
                         )
-                    }
+                    },
                 )
             }
 
@@ -70,11 +70,11 @@ class TooltipBottomSheet : BottomSheetDialogFragment() {
 
                     recycler.measure(
                         FrameLayout.LayoutParams.MATCH_PARENT,
-                        FrameLayout.LayoutParams.MATCH_PARENT
+                        FrameLayout.LayoutParams.MATCH_PARENT,
                     )
                     val sheetContentHeight =
                         recycler.measuredHeight + recycler.marginTop + recycler.marginBottom + resources.getDimension(
-                            R.dimen.peril_bottom_sheet_close_icon_size
+                            R.dimen.peril_bottom_sheet_close_icon_size,
                         )
                             .toInt().dp
                     val shouldPeekAtContentHeight = sheetContentHeight < windowHeight
@@ -89,7 +89,7 @@ class TooltipBottomSheet : BottomSheetDialogFragment() {
                     if (!shouldPeekAtContentHeight) {
                         chevronContainer.measure(
                             FrameLayout.LayoutParams.MATCH_PARENT,
-                            FrameLayout.LayoutParams.WRAP_CONTENT
+                            FrameLayout.LayoutParams.WRAP_CONTENT,
                         )
                         val chevronContainerHeight = chevronContainer.measuredHeight
                         val startTranslation = (defaultPeekHeight - chevronContainerHeight).toFloat()
@@ -121,7 +121,8 @@ class TooltipBottomSheet : BottomSheetDialogFragment() {
                                         }
                                         BottomSheetBehavior.STATE_HALF_EXPANDED,
                                         BottomSheetBehavior.STATE_HIDDEN,
-                                        BottomSheetBehavior.STATE_SETTLING -> {
+                                        BottomSheetBehavior.STATE_SETTLING,
+                                        -> {
                                             // No-op
                                         }
                                     }
@@ -133,12 +134,13 @@ class TooltipBottomSheet : BottomSheetDialogFragment() {
                                         boundedLerp(
                                             startTranslation,
                                             (binding.root.height - chevronContainer.height).toFloat(),
-                                            slideOffset
+                                            slideOffset,
                                         )
                                     binding.root.height
                                     chevronContainer.alpha = 1 - slideOffset
                                 }
-                            })
+                            },
+                        )
                     }
                     chevron.setHapticClickListener {
                         close.show()
@@ -163,8 +165,8 @@ class TooltipBottomSheet : BottomSheetDialogFragment() {
                         add(
                             Tooltip(
                                 title = it.title,
-                                description = it.description
-                            )
+                                description = it.description,
+                            ),
                         )
                     }
                 }

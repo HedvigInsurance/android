@@ -13,7 +13,7 @@ class LaunchTrackingInitializer : Initializer<Unit>, KoinComponent {
     override fun create(context: Context) {
         hAnalytics.identify()
         hAnalytics.notificationPermission(
-            NotificationManagerCompat.from(context).areNotificationsEnabled()
+            NotificationManagerCompat.from(context).areNotificationsEnabled(),
         )
     }
 

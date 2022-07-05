@@ -34,7 +34,7 @@ class ReferralsInformationActivityTest : TestCase() {
     val mockServerRule = ApolloMockServerRule(
         LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
             success(LOGGED_IN_DATA)
-        }
+        },
     )
 
     @get:Rule
@@ -44,7 +44,7 @@ class ReferralsInformationActivityTest : TestCase() {
     fun shouldOpenInformationActivityWhenClickingMoreInformationAction() = run {
         val intent = LoggedInActivity.newInstance(
             context(),
-            initialTab = LoggedInTabs.REFERRALS
+            initialTab = LoggedInTabs.REFERRALS,
         )
 
         activityRule.launch(intent)
@@ -58,7 +58,7 @@ class ReferralsInformationActivityTest : TestCase() {
         onScreen<ReferralsInformationScreen> {
             body {
                 containsText(
-                    Money.of(10, "SEK").format(context(), market())
+                    Money.of(10, "SEK").format(context(), market()),
                 )
             }
             termsAndConditions { click() }

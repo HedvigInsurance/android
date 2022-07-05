@@ -8,7 +8,7 @@ import com.hedvig.app.getLocale
 
 class LocaleManager(
     private val marketManager: MarketManager,
-    private val context: Context
+    private val context: Context,
 ) {
     fun defaultLocale(): Locale {
         val locale = getJavaUtilLocale()

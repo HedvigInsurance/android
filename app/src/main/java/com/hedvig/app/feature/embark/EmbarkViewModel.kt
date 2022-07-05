@@ -61,14 +61,14 @@ abstract class EmbarkViewModel(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
-            initialValue = null
+            initialValue = null,
         )
 
     val viewState: LiveData<ViewState> = passageState.asFlow()
         .combine(loginStatus.filterNotNull()) { passageState, loginStatus ->
             ViewState(
                 passageState,
-                loginStatus == LoginStatus.LoggedIn
+                loginStatus == LoginStatus.LoggedIn,
             )
         }
         .asLiveData()
@@ -378,9 +378,9 @@ abstract class EmbarkViewModel(
                     expressions = exp.expressions.map {
                         MessageFragment.Expression(
                             __typename = it.__typename,
-                            fragments = MessageFragment.Expression.Fragments(it.fragments.expressionFragment)
+                            fragments = MessageFragment.Expression.Fragments(it.fragments.expressionFragment),
                         )
-                    }
+                    },
                 ),
                 valueStore,
             )?.let { return Response.SingleResponse(it.text) }
@@ -394,9 +394,9 @@ abstract class EmbarkViewModel(
                     expressions = titleExpression.expressions.map {
                         MessageFragment.Expression(
                             __typename = it.__typename,
-                            fragments = MessageFragment.Expression.Fragments(it.fragments.expressionFragment)
+                            fragments = MessageFragment.Expression.Fragments(it.fragments.expressionFragment),
                         )
-                    }
+                    },
                 ),
                 valueStore,
             )?.text
@@ -418,7 +418,7 @@ abstract class EmbarkViewModel(
 
             return Response.GroupedResponse(
                 title = title,
-                groups = items
+                groups = items,
             )
         }
         return null
@@ -434,9 +434,9 @@ abstract class EmbarkViewModel(
                 val messageFragment =
                     preProcessMessage(message.fragments.messageFragment, valueStore) ?: return@mapNotNull null
                 message.copy(
-                    fragments = EmbarkStoryQuery.Message.Fragments(messageFragment)
+                    fragments = EmbarkStoryQuery.Message.Fragments(messageFragment),
                 )
-            }
+            },
         )
     }
 
@@ -464,7 +464,7 @@ abstract class EmbarkViewModel(
     ): MessageFragment? {
         if (message.expressions.isEmpty()) {
             return message.copy(
-                text = interpolateMessage(message.text, valueStoreView)
+                text = interpolateMessage(message.text, valueStoreView),
             )
         }
 
@@ -477,7 +477,7 @@ abstract class EmbarkViewModel(
             ?: return null
 
         return message.copy(
-            text = interpolateMessage(expressionText)
+            text = interpolateMessage(expressionText),
         )
     }
 
@@ -507,19 +507,19 @@ abstract class EmbarkViewModel(
                 asEmbarkRedirectUnaryExpression?.let { asUnary ->
                     return safeLet(
                         asUnary.passedExpressionKey,
-                        asUnary.passedExpressionValue
+                        asUnary.passedExpressionValue,
                     ) { key, value -> Pair(key, value) }
                 }
                 asEmbarkRedirectBinaryExpression?.let { asBinary ->
                     return safeLet(
                         asBinary.passedExpressionKey,
-                        asBinary.passedExpressionValue
+                        asBinary.passedExpressionValue,
                     ) { key, value -> Pair(key, value) }
                 }
                 asEmbarkRedirectMultipleExpressions?.let { asMultiple ->
                     return safeLet(
                         asMultiple.passedExpressionKey,
-                        asMultiple.passedExpressionValue
+                        asMultiple.passedExpressionValue,
                     ) { key, value -> Pair(key, value) }
                 }
                 return null
@@ -555,7 +555,7 @@ class EmbarkViewModelImpl(
                 ifRight = {
                     storyData = it
                     setInitialState()
-                }
+                },
             )
         }
     }

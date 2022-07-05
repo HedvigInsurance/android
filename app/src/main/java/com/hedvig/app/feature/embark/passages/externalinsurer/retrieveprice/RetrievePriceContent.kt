@@ -42,12 +42,12 @@ fun RetrievePriceContent(
         modifier = modifier
             .padding(baseMarginDouble)
             .fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(baseMarginDouble)
+        verticalArrangement = Arrangement.spacedBy(baseMarginDouble),
     ) {
         Text(
             modifier = Modifier.padding(top = baseMargin),
             text = title,
-            style = MaterialTheme.typography.h6
+            style = MaterialTheme.typography.h6,
         )
         TextField(
             modifier = Modifier.fillMaxWidth(),
@@ -63,7 +63,7 @@ fun RetrievePriceContent(
                 Text(inputErrorMessage ?: label)
             },
             colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = MaterialTheme.colors.background
+                backgroundColor = MaterialTheme.colors.background,
             ),
             isError = inputErrorMessage != null,
             visualTransformation = SwedishSSNVisualTransformation(),
@@ -73,12 +73,12 @@ fun RetrievePriceContent(
             ),
             keyboardActions = KeyboardActions(
                 onSend = { onRetrievePriceInfo() },
-            )
+            ),
         )
         LargeContainedTextButton(
             modifier = Modifier.padding(top = baseMarginQuadruple),
             text = stringResource(R.string.insurely_ssn_continue_button_text),
-            onClick = onRetrievePriceInfo
+            onClick = onRetrievePriceInfo,
         )
     }
 

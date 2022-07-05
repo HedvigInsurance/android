@@ -46,7 +46,7 @@ fun TopAppBarWithClose(
         TopAppBarActionType.CLOSE,
         modifier,
         backgroundColor,
-        contentPadding
+        contentPadding,
     )
 }
 
@@ -68,7 +68,7 @@ private inline fun TopAppBar(
         title = {
             Text(
                 text = title,
-                style = MaterialTheme.typography.h6
+                style = MaterialTheme.typography.h6,
             )
         },
         contentPadding = contentPadding,
@@ -81,9 +81,9 @@ private inline fun TopAppBar(
                             TopAppBarActionType.BACK -> Icons.Filled.ArrowBack
                             TopAppBarActionType.CLOSE -> Icons.Filled.Close
                         },
-                        contentDescription = null
+                        contentDescription = null,
                     )
-                }
+                },
             )
         },
         backgroundColor = backgroundColor,

@@ -33,7 +33,7 @@ class GraphQLErrorTest : TestCase() {
         EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse { success(STORY_WITH_GRAPHQL_MUTATION) },
         HELLO_MUTATION to apolloResponse {
             graphQLError(jsonObjectOf("message" to "some error"))
-        }
+        },
     )
 
     @get:Rule
@@ -46,7 +46,7 @@ class GraphQLErrorTest : TestCase() {
                 context(),
                 this.javaClass.name,
                 "",
-            )
+            ),
         )
 
         Screen.onScreen<EmbarkScreen> {

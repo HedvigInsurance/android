@@ -6,15 +6,15 @@ sealed class InsuranceModel {
     object Header : InsuranceModel()
 
     data class Contract(
-        val contractCardViewState: ContractCardViewState
+        val contractCardViewState: ContractCardViewState,
     ) : InsuranceModel()
 
     data class CrossSellHeader(
-        val showNotificationBadge: Boolean = false
+        val showNotificationBadge: Boolean = false,
     ) : InsuranceModel()
 
     data class CrossSellCard(
-        val inner: CrossSellData
+        val inner: CrossSellData,
     ) : InsuranceModel()
 
     object Error : InsuranceModel()

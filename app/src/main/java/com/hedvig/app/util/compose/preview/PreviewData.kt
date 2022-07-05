@@ -64,8 +64,8 @@ fun OfferItems.InsurelyCard.Retrieved.Companion.previewData(): OfferItems.Insure
                 "SmthInsrnce",
                 Money.of(
                     (it + 1) * 12,
-                    fakeSekCurrency
-                )
+                    fakeSekCurrency,
+                ),
             )
         },
         savedWithHedvig = Money.of(19, fakeSekCurrency),
@@ -162,8 +162,8 @@ object PreviewData {
             money,
             CurrencyUnitBuilder.of(
                 currencyText,
-                "default"
-            ).build()
+                "default",
+            ).build(),
         )
     }
 }

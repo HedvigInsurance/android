@@ -37,9 +37,9 @@ class ReferralsRepository(
             val newData = oldData.copy(
                 referralInformation = oldData.referralInformation.copy(
                     campaign = oldData.referralInformation.campaign.copy(
-                        code = updatedCode
-                    )
-                )
+                        code = updatedCode,
+                    ),
+                ),
             )
 
             apolloClient

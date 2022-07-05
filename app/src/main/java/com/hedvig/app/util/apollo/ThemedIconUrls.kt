@@ -9,7 +9,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class ThemedIconUrls(
     private val darkUrl: String,
-    private val lightUrl: String
+    private val lightUrl: String,
 ) : Parcelable {
 
     fun iconByTheme(context: Context) = if (context.isDarkThemeActive) {
@@ -22,7 +22,7 @@ data class ThemedIconUrls(
         fun from(variants: IconVariantsFragment) =
             ThemedIconUrls(
                 variants.dark.svgUrl,
-                variants.light.svgUrl
+                variants.light.svgUrl,
             )
     }
 }

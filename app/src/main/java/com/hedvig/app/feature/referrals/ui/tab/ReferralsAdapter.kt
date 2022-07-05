@@ -70,14 +70,14 @@ class ReferralsAdapter(
         abstract fun bind(
             data: ReferralsModel,
             reload: () -> Unit,
-            marketManager: MarketManager
+            marketManager: MarketManager,
         )
 
         class TitleViewHolder(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.referrals_title)) {
             override fun bind(
                 data: ReferralsModel,
                 reload: () -> Unit,
-                marketManager: MarketManager
+                marketManager: MarketManager,
             ) =
                 Unit
         }
@@ -87,7 +87,7 @@ class ReferralsAdapter(
             override fun bind(
                 data: ReferralsModel,
                 reload: () -> Unit,
-                marketManager: MarketManager
+                marketManager: MarketManager,
             ) {
                 binding.apply {
                     when (data) {
@@ -97,8 +97,8 @@ class ReferralsAdapter(
                                 PieChartSegment(
                                     LOADING_SLICE,
                                     100f,
-                                    piechart.context.colorAttr(R.attr.colorPlaceholder)
-                                )
+                                    piechart.context.colorAttr(R.attr.colorPlaceholder),
+                                ),
                             )
                             piechartPlaceholder.showShimmer(true)
                             grossPrice.hide()
@@ -126,7 +126,7 @@ class ReferralsAdapter(
                                         R.string.referrals_empty_body,
                                         incentiveAmount.format(emptyBody.context, marketManager.market),
                                         Money.of(0, incentiveAmount.currency.currencyCode)
-                                            .format(emptyBody.context, marketManager.market)
+                                            .format(emptyBody.context, marketManager.market),
                                     )
                                 }
                             emptyTexts.show()
@@ -223,7 +223,7 @@ class ReferralsAdapter(
                     safeLet(
                         grossPriceAmount,
                         potentialDiscountAmount,
-                        currentDiscountAmount
+                        currentDiscountAmount,
                     ) { gpa, pda, cda ->
                         val pdaAsPercentage =
                             (pda.number.doubleValueExact() / gpa.number.doubleValueExact()).toFloat() * 100
@@ -240,7 +240,7 @@ class ReferralsAdapter(
                                 PieChartSegment(
                                     CURRENT_DISCOUNT_SLICE,
                                     cdaAsPercentage,
-                                    piechart.context.colorAttr(R.attr.colorSurface)
+                                    piechart.context.colorAttr(R.attr.colorSurface),
                                 )
                             } else {
                                 null
@@ -248,16 +248,16 @@ class ReferralsAdapter(
                             PieChartSegment(
                                 POTENTIAL_DISCOUNT_SLICE,
                                 pdaAsPercentage,
-                                potentialDiscountColor
+                                potentialDiscountColor,
                             ),
                             PieChartSegment(
                                 REST_SLICE,
                                 rest,
-                                restColor
-                            )
+                                restColor,
+                            ),
                         )
                         piechart.reveal(
-                            segments
+                            segments,
                         ) {
                             ValueAnimator.ofFloat(1f, 0f).apply {
                                 duration = SLICE_BLINK_DURATION
@@ -271,8 +271,8 @@ class ReferralsAdapter(
                                                 color = boundedColorLerp(
                                                     potentialDiscountColor,
                                                     restColor,
-                                                    va.animatedFraction
-                                                )
+                                                    va.animatedFraction,
+                                                ),
                                             )
                                         }
                                         segment
@@ -302,7 +302,7 @@ class ReferralsAdapter(
             override fun bind(
                 data: ReferralsModel,
                 reload: () -> Unit,
-                marketManager: MarketManager
+                marketManager: MarketManager,
             ) {
                 binding.apply {
                     when (data) {
@@ -321,7 +321,7 @@ class ReferralsAdapter(
                                     .make(
                                         code,
                                         R.string.referrals_active__toast_text,
-                                        Snackbar.LENGTH_SHORT
+                                        Snackbar.LENGTH_SHORT,
                                     )
                                     .setAnchorView(R.id.bottomNavigation)
                                     .show()
@@ -340,15 +340,15 @@ class ReferralsAdapter(
                                 ?.let { incentiveAmount ->
                                     codeFootnote.text = codeFootnote.resources.getString(
                                         R.string.referrals_empty_code_footer,
-                                        incentiveAmount.format(codeFootnote.context, marketManager.market)
+                                        incentiveAmount.format(codeFootnote.context, marketManager.market),
                                     )
                                 }
                             edit.setHapticClickListener {
                                 edit.context.startActivity(
                                     ReferralsEditCodeActivity.newInstance(
                                         edit.context,
-                                        data.inner.referralInformation.campaign.code
-                                    )
+                                        data.inner.referralInformation.campaign.code,
+                                    ),
                                 )
                             }
                             edit.show()
@@ -366,7 +366,7 @@ class ReferralsAdapter(
             override fun bind(
                 data: ReferralsModel,
                 reload: () -> Unit,
-                marketManager: MarketManager
+                marketManager: MarketManager,
             ) = Unit
         }
 
@@ -375,7 +375,7 @@ class ReferralsAdapter(
             override fun bind(
                 data: ReferralsModel,
                 reload: () -> Unit,
-                marketManager: MarketManager
+                marketManager: MarketManager,
             ) {
                 binding.apply {
                     when (data) {
@@ -451,7 +451,7 @@ class ReferralsAdapter(
             override fun bind(
                 data: ReferralsModel,
                 reload: () -> Unit,
-                marketManager: MarketManager
+                marketManager: MarketManager,
             ) {
                 binding.retry.setHapticClickListener {
                     reload()

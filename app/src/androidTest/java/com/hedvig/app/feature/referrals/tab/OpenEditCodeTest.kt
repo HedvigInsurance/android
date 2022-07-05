@@ -30,7 +30,7 @@ class OpenEditCodeTest : TestCase() {
         LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
             success(LOGGED_IN_DATA)
         },
-        ReferralsQuery.OPERATION_DOCUMENT to apolloResponse { success(REFERRALS_DATA_WITH_NO_DISCOUNTS) }
+        ReferralsQuery.OPERATION_DOCUMENT to apolloResponse { success(REFERRALS_DATA_WITH_NO_DISCOUNTS) },
     )
 
     @get:Rule
@@ -49,8 +49,8 @@ class OpenEditCodeTest : TestCase() {
         activityRule.launch(
             LoggedInActivity.newInstance(
                 context(),
-                initialTab = LoggedInTabs.REFERRALS
-            )
+                initialTab = LoggedInTabs.REFERRALS,
+            ),
         )
 
         onScreen<ReferralTabScreen> {

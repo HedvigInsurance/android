@@ -30,7 +30,7 @@ fun TextInputEditText.setInputType(mask: MaskType) {
                 MaskType.NORWEGIAN_POSTAL_CODE -> "0123456789"
                 MaskType.POSTAL_CODE -> "0123456789 "
                 else -> "0123456789- "
-            }
+            },
         )
     }
 }
@@ -43,57 +43,59 @@ fun TextInputEditText.setValidationFormatter(mask: MaskType) {
         mask == MaskType.NORWEGIAN_POSTAL_CODE
     ) {
         var prevLength = 0
-        addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(
-                charSequence: CharSequence,
-                i: Int,
-                i1: Int,
-                i2: Int,
-            ) {
-                prevLength = text.toString().length
-            }
+        addTextChangedListener(
+            object : TextWatcher {
+                override fun beforeTextChanged(
+                    charSequence: CharSequence,
+                    i: Int,
+                    i1: Int,
+                    i2: Int,
+                ) {
+                    prevLength = text.toString().length
+                }
 
-            override fun onTextChanged(
-                charSequence: CharSequence,
-                i: Int,
-                i1: Int,
-                i2: Int,
-            ) {
-            }
+                override fun onTextChanged(
+                    charSequence: CharSequence,
+                    i: Int,
+                    i1: Int,
+                    i2: Int,
+                ) {
+                }
 
-            override fun afterTextChanged(editable: Editable) {
-                val length = editable.length
-                when (mask) {
-                    MaskType.PERSONAL_NUMBER -> {
-                        if (prevLength < length && length == 6) {
-                            editable.append("-")
+                override fun afterTextChanged(editable: Editable) {
+                    val length = editable.length
+                    when (mask) {
+                        MaskType.PERSONAL_NUMBER -> {
+                            if (prevLength < length && length == 6) {
+                                editable.append("-")
+                            }
                         }
-                    }
-                    MaskType.POSTAL_CODE -> {
-                        if (prevLength < length && length == 3) {
-                            editable.append(" ")
+                        MaskType.POSTAL_CODE -> {
+                            if (prevLength < length && length == 3) {
+                                editable.append(" ")
+                            }
                         }
-                    }
-                    MaskType.BIRTH_DATE -> {
-                        if (prevLength < length && (length == 4 || length == 7)) {
-                            editable.append("-")
+                        MaskType.BIRTH_DATE -> {
+                            if (prevLength < length && (length == 4 || length == 7)) {
+                                editable.append("-")
+                            }
                         }
-                    }
-                    MaskType.BIRTH_DATE_REVERSE -> {
-                        if (prevLength < length && (length == 2 || length == 5)) {
-                            editable.append("-")
+                        MaskType.BIRTH_DATE_REVERSE -> {
+                            if (prevLength < length && (length == 2 || length == 5)) {
+                                editable.append("-")
+                            }
                         }
-                    }
-                    MaskType.NORWEGIAN_PERSONAL_NUMBER,
-                    MaskType.DANISH_PERSONAL_NUMBER,
-                    MaskType.EMAIL,
-                    MaskType.NORWEGIAN_POSTAL_CODE,
-                    MaskType.DIGITS,
-                    MaskType.UNKNOWN,
-                    -> {
+                        MaskType.NORWEGIAN_PERSONAL_NUMBER,
+                        MaskType.DANISH_PERSONAL_NUMBER,
+                        MaskType.EMAIL,
+                        MaskType.NORWEGIAN_POSTAL_CODE,
+                        MaskType.DIGITS,
+                        MaskType.UNKNOWN,
+                        -> {
+                        }
                     }
                 }
-            }
-        })
+            },
+        )
     }
 }

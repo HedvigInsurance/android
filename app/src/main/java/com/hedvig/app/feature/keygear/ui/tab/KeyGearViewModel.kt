@@ -30,7 +30,7 @@ abstract class KeyGearViewModel : ViewModel() {
 
 class KeyGearViewModelImpl(
     private val repository: KeyGearItemsRepository,
-    private val deviceInformationService: DeviceInformationService
+    private val deviceInformationService: DeviceInformationService,
 ) : KeyGearViewModel() {
     init {
         load()
@@ -66,7 +66,7 @@ class KeyGearViewModelImpl(
                     deviceType.into(),
                     listOf(),
                     deviceFingerprint,
-                    deviceName
+                    deviceName,
                 )
             }
             if (result.isFailure) {

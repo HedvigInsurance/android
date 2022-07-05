@@ -108,7 +108,7 @@ class HomeAdapter(
         holder.bind(
             getItem(position),
             fragmentManager,
-            marketManager
+            marketManager,
         )
     }
 
@@ -128,8 +128,8 @@ class HomeAdapter(
 
         class BigText(parent: ViewGroup) : ViewHolder(
             parent.inflate(
-                R.layout.home_big_text
-            )
+                R.layout.home_big_text,
+            ),
         ) {
             private val binding by viewBinding(HomeBigTextBinding::bind)
             private val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
@@ -145,21 +145,21 @@ class HomeAdapter(
                 val textRes = when (data) {
                     is HomeModel.BigText.Pending -> root.resources.getString(
                         R.string.home_tab_pending_unknown_title,
-                        data.name
+                        data.name,
                     )
                     is HomeModel.BigText.ActiveInFuture -> root.resources.getString(
                         R.string.home_tab_active_in_future_welcome_title,
                         data.name,
-                        formatter.format(data.inception)
+                        formatter.format(data.inception),
                     )
                     is HomeModel.BigText.Active -> root.resources.getString(R.string.home_tab_welcome_title, data.name)
                     is HomeModel.BigText.Terminated -> root.resources.getString(
                         R.string.home_tab_terminated_welcome_title,
-                        data.name
+                        data.name,
                     )
                     is HomeModel.BigText.Switching -> root.resources.getString(
                         R.string.home_tab_pending_switchable_welcome_title,
-                        data.name
+                        data.name,
                     )
                 }
                 root.text = textRes
@@ -200,7 +200,7 @@ class HomeAdapter(
             private fun goToClaimDetailScreen(claimId: String) {
                 onClaimDetailCardClicked(claimId)
                 composeView.context.startActivity(
-                    ClaimDetailActivity.newInstance(composeView.context, claimId)
+                    ClaimDetailActivity.newInstance(composeView.context, claimId),
                 )
             }
 
@@ -235,7 +235,7 @@ class HomeAdapter(
             override fun bind(
                 data: HomeModel,
                 fragmentManager: FragmentManager,
-                marketManager: MarketManager
+                marketManager: MarketManager,
             ) {
                 if (data !is HomeModel.Space) return invalid(data)
                 composeView.setContent {
@@ -304,11 +304,11 @@ class HomeAdapter(
                 val upcomingRenewal = data.upcomingRenewal
                 title.text = title.context.getString(
                     R.string.DASHBOARD_RENEWAL_PROMPTER_TITLE,
-                    data.contractDisplayName
+                    data.contractDisplayName,
                 )
                 body.text = body.context.getString(
                     R.string.DASHBOARD_RENEWAL_PROMPTER_BODY,
-                    daysLeft(upcomingRenewal.renewalDate)
+                    daysLeft(upcomingRenewal.renewalDate),
                 )
 
                 val maybeLinkUri = runCatching {
@@ -353,7 +353,7 @@ class HomeAdapter(
                                         data.payinType,
                                         market,
                                         false,
-                                    )
+                                    ),
                                 )
                             },
                             onShown = onPaymentCardShown,
@@ -405,8 +405,8 @@ class HomeAdapter(
                             root.context.startActivity(
                                 EmergencyActivity.newInstance(
                                     root.context,
-                                    data.inner
-                                )
+                                    data.inner,
+                                ),
                             )
                         }
                     }
@@ -417,8 +417,8 @@ class HomeAdapter(
                             root.context.startActivity(
                                 CommonClaimActivity.newInstance(
                                     root.context,
-                                    data.inner
-                                )
+                                    data.inner,
+                                ),
                             )
                         }
                     }
@@ -447,8 +447,8 @@ class HomeAdapter(
                                 R.string.claims_explainer_button_start_claim
                             } else {
                                 R.string.claims_explainer_button_next
-                            }
-                        )
+                            },
+                        ),
                     )
                 }
                 button.setHapticClickListener {

@@ -97,7 +97,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
                         title = R.string.error_dialog_title,
                         message = R.string.component_error,
                         positiveAction = {},
-                        negativeLabel = null
+                        negativeLabel = null,
                     )
                 }
             }
@@ -153,7 +153,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
                             experimentManager.invalidateExperiments()
                         }
                         startActivity(MarketingActivity.newInstance(this, true))
-                    }
+                    },
                 )
             },
             openAttachFile = {
@@ -164,7 +164,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
                     } else {
                         askForPermissions(
                             arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                            REQUEST_WRITE_PERMISSION
+                            REQUEST_WRITE_PERMISSION,
                         )
                     }
                 }
@@ -187,10 +187,10 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
                     negativeLabel = R.string.CHAT_EDIT_MESSAGE_CANCEL,
                     positiveAction = {
                         chatViewModel.editLastResponse()
-                    }
+                    },
                 )
             },
-            imageLoader = imageLoader
+            imageLoader = imageLoader,
         )
         binding.messages.adapter = adapter
     }
@@ -248,7 +248,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
                     R.string.NETWORK_ERROR_ALERT_CANCEL_ACTION,
                     positiveAction = {
                         chatViewModel.load()
-                    }
+                    },
                 )
             }
         }
@@ -262,7 +262,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             (binding.messages.layoutManager as LinearLayoutManager).smoothScrollToPosition(
                 binding.messages,
                 null,
-                0
+                0,
             )
         } else {
             (binding.messages.layoutManager as LinearLayoutManager).scrollToPosition(0)
@@ -273,7 +273,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
         var triggerScrollToBottom = false
         val firstMessage = data.messages.firstOrNull()?.let {
             ChatInputType.from(
-                it
+                it,
             )
         }
         binding.input.message = firstMessage
@@ -302,7 +302,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
                 } else {
                     askForPermissions(
                         arrayOf(Manifest.permission.CAMERA),
-                        REQUEST_CAMERA_PERMISSION
+                        REQUEST_CAMERA_PERMISSION,
                     )
                 }
             },
@@ -311,7 +311,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
                     .newInstance()
                     .show(
                         supportFragmentManager,
-                        ChatFileUploadBottomSheet.TAG
+                        ChatFileUploadBottomSheet.TAG,
                     )
             },
             dismissCallback = { motionEvent ->
@@ -329,7 +329,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             },
             uploadFileCallback = { uri ->
                 chatViewModel.uploadFile(uri)
-            }
+            },
         )
         chatViewModel.fileUploadOutcome.observe(this) { data ->
             data?.uri?.path?.let { path ->
@@ -355,7 +355,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             .newInstance(isKeyboardShown)
             .show(
                 supportFragmentManager,
-                GifPickerBottomSheet.TAG
+                GifPickerBottomSheet.TAG,
             )
     }
 
@@ -371,7 +371,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             File.createTempFile(
                 "JPEG_${System.currentTimeMillis()}_",
                 ".jpg",
-                storageDir
+                storageDir,
             ).apply {
                 currentPhotoPath = absolutePath
             }
@@ -384,12 +384,12 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             val photoURI: Uri = FileProvider.getUriForFile(
                 this,
                 getString(R.string.file_provider_authority),
-                file
+                file,
             )
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
             startActivityForResult(
                 takePictureIntent,
-                TAKE_PICTURE_REQUEST_CODE
+                TAKE_PICTURE_REQUEST_CODE,
             )
         }
     }
@@ -418,7 +418,7 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
             projection,
             null,
             null,
-            "${MediaColumns.DATE_ADDED} DESC"
+            "${MediaColumns.DATE_ADDED} DESC",
         )
 
         cursor?.let {
@@ -435,15 +435,17 @@ class ChatActivity : BaseActivity(R.layout.activity_chat) {
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
-        grantResults: IntArray
+        grantResults: IntArray,
     ) {
         when (requestCode) {
             REQUEST_WRITE_PERMISSION ->
-                if ((grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }))
+                if ((grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED })) {
                     openAttachPicker()
+                }
             REQUEST_CAMERA_PERMISSION ->
-                if ((grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }))
+                if ((grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED })) {
                     startTakePicture()
+                }
             else -> {
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults)
             }

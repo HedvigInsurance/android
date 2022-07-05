@@ -282,7 +282,7 @@ val applicationModule = module {
                         .header("X-System-Version", Build.VERSION.SDK_INT.toString())
                         .header("X-Platform", "ANDROID")
                         .header("X-Model", "${Build.MANUFACTURER} ${Build.MODEL}")
-                        .build()
+                        .build(),
                 )
             }
             .addInterceptor(DeviceIdInterceptor(get()))
@@ -320,8 +320,8 @@ val applicationModule = module {
                 SubscriptionWsProtocol.Factory(
                     connectionPayload = {
                         mapOf("Authorization" to get<AuthenticationTokenService>().authenticationToken)
-                    }
-                )
+                    },
+                ),
             )
             .normalizedCache(get<NormalizedCacheFactory>())
             .addInterceptors(interceptors)
@@ -383,7 +383,7 @@ val viewModelModule = module {
     viewModel { (componentState: MultiActionItem.Component?, multiActionParams: MultiActionParams) ->
         AddComponentViewModel(
             componentState,
-            multiActionParams
+            multiActionParams,
         )
     }
     viewModel { TerminatedContractsViewModel(get()) }
@@ -404,19 +404,19 @@ val viewModelModule = module {
             credential,
             get(),
             get(),
-            get()
+            get(),
         )
     }
     viewModel { parametersHolder: ParametersHolder ->
         EmbarkAddressAutoCompleteViewModel(
-            parametersHolder.getOrNull()
+            parametersHolder.getOrNull(),
         )
     }
     viewModel { parametersHolder ->
         AddressAutoCompleteViewModel(
             parametersHolder.getOrNull(),
             get(),
-            get()
+            get(),
         )
     }
     viewModel { (claimId: String) -> ClaimDetailViewModel(claimId, get(), get(), get()) }
@@ -594,7 +594,7 @@ val insurelyAuthModule = module {
         InsurelyAuthViewModel(
             reference,
             get(),
-            get()
+            get(),
         )
     }
 }
@@ -723,7 +723,7 @@ val sharedPreferencesModule = module {
     single<SharedPreferences> {
         get<Context>().getSharedPreferences(
             "hedvig_shared_preference",
-            MODE_PRIVATE
+            MODE_PRIVATE,
         )
     }
 }
@@ -772,7 +772,7 @@ val dataStoreModule = module {
         PreferenceDataStoreFactory.create(
             produceFile = {
                 get<Context>().preferencesDataStoreFile("hedvig_data_store_preferences")
-            }
+            },
         )
     }
 }

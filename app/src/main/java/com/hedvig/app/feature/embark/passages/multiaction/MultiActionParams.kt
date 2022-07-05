@@ -12,7 +12,7 @@ data class MultiActionParams(
     val addLabel: String,
     val maxAmount: Int,
     val components: List<MultiActionComponent>,
-    val submitLabel: String
+    val submitLabel: String,
 ) : Parcelable
 
 sealed class MultiActionComponent : Parcelable {
@@ -20,12 +20,12 @@ sealed class MultiActionComponent : Parcelable {
     data class Dropdown(
         val key: String,
         val label: String,
-        val options: List<Option>
+        val options: List<Option>,
     ) : MultiActionComponent() {
         @Parcelize
         data class Option(
             val text: String,
-            val value: String
+            val value: String,
         ) : Parcelable
     }
 
@@ -33,7 +33,7 @@ sealed class MultiActionComponent : Parcelable {
     data class Switch(
         val key: String,
         val label: String,
-        val defaultValue: Boolean
+        val defaultValue: Boolean,
     ) : MultiActionComponent()
 
     @Parcelize
@@ -41,6 +41,6 @@ sealed class MultiActionComponent : Parcelable {
         val key: String,
         val placeholder: String,
         val unit: String?,
-        val label: String?
+        val label: String?,
     ) : MultiActionComponent()
 }

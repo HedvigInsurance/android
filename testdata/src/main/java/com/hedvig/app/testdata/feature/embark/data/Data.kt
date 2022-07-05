@@ -29,16 +29,16 @@ import com.hedvig.app.testdata.feature.embark.builders.TrackBuilder
 import org.json.JSONObject
 
 val STANDARD_FIRST_MESSAGE = MessageBuilder(
-    text = "test message"
+    text = "test message",
 ).build()
 val STANDARD_SECOND_MESSAGE = MessageBuilder(
-    text = "another test message"
+    text = "another test message",
 ).build()
 val STANDARD_THIRD_MESSAGE = MessageBuilder(
-    text = "a third message"
+    text = "a third message",
 ).build()
 val STANDARD_FOURTH_MESSAGE = MessageBuilder(
-    text = "a fourth message"
+    text = "a fourth message",
 ).build()
 
 val STANDARD_FIRST_LINK = EmbarkLinkFragment(
@@ -71,23 +71,23 @@ val STANDARD_FIRST_PASSAGE_BUILDER =
         id = "1",
         response = MessageBuilder(text = "{TestPassageResult}").buildMessageResponse(),
         messages = listOf(
-            STANDARD_FIRST_MESSAGE
+            STANDARD_FIRST_MESSAGE,
         ),
         action = SelectActionBuilder(
             listOf(
                 SelectOptionBuilder(
                     link = STANDARD_FIRST_LINK,
-                    badge = "Badge #1"
+                    badge = "Badge #1",
                 ).build(),
                 SelectOptionBuilder(
                     link = STANDARD_SECOND_LINK,
-                    badge = "Badge #2"
+                    badge = "Badge #2",
                 ).build(),
                 SelectOptionBuilder(
                     link = STANDARD_FIRST_LINK,
                 ).build(),
-            )
-        ).build()
+            ),
+        ).build(),
     )
 
 val STANDARD_SECOND_PASSAGE_BUILDER =
@@ -98,13 +98,13 @@ val STANDARD_SECOND_PASSAGE_BUILDER =
         action = SelectActionBuilder(
             listOf(
                 SelectOptionBuilder(
-                    link = STANDARD_SECOND_LINK
+                    link = STANDARD_SECOND_LINK,
                 ).build(),
                 SelectOptionBuilder(
-                    link = STANDARD_SECOND_LINK
-                ).build()
-            )
-        ).build()
+                    link = STANDARD_SECOND_LINK,
+                ).build(),
+            ),
+        ).build(),
     )
 
 val STANDARD_THIRD_PASSAGE_BUILDER =
@@ -115,10 +115,10 @@ val STANDARD_THIRD_PASSAGE_BUILDER =
         action = SelectActionBuilder(
             listOf(
                 SelectOptionBuilder(
-                    link = STANDARD_SECOND_LINK
-                ).build()
-            )
-        ).build()
+                    link = STANDARD_SECOND_LINK,
+                ).build(),
+            ),
+        ).build(),
     )
 
 val STANDARD_FOURTH_PASSAGE_BUILDER = PassageBuilder(
@@ -128,10 +128,10 @@ val STANDARD_FOURTH_PASSAGE_BUILDER = PassageBuilder(
     action = SelectActionBuilder(
         listOf(
             SelectOptionBuilder(
-                link = STANDARD_SECOND_LINK
-            ).build()
-        )
-    ).build()
+                link = STANDARD_SECOND_LINK,
+            ).build(),
+        ),
+    ).build(),
 )
 
 val STORY_WITH_SINGLE_TOOLTIP = EmbarkStoryDataBuilder(
@@ -141,12 +141,12 @@ val STORY_WITH_SINGLE_TOOLTIP = EmbarkStoryDataBuilder(
                 EmbarkStoryQuery.Tooltip(
                     title = "Number of co-insured",
                     description = "E.g. partner, children or roomies that should be covered." +
-                        " Co-insured must live together with you to be covered by your insurance"
-                )
-            )
+                        " Co-insured must live together with you to be covered by your insurance",
+                ),
+            ),
         ).build(),
-        STANDARD_SECOND_PASSAGE_BUILDER.build()
-    )
+        STANDARD_SECOND_PASSAGE_BUILDER.build(),
+    ),
 ).build()
 
 val STORY_WITH_FOUR_TOOLTIP = EmbarkStoryDataBuilder(
@@ -155,25 +155,25 @@ val STORY_WITH_FOUR_TOOLTIP = EmbarkStoryDataBuilder(
             tooltip = listOf(
                 EmbarkStoryQuery.Tooltip(
                     title = "Apartment",
-                    description = "For those of you who rent or own an apartment"
+                    description = "For those of you who rent or own an apartment",
                 ),
                 EmbarkStoryQuery.Tooltip(
                     title = "House",
                     description = "For those of you who live in a detached" +
-                        " or terraced house. We don't insure holiday homes"
+                        " or terraced house. We don't insure holiday homes",
                 ),
                 EmbarkStoryQuery.Tooltip(
                     title = "Student housing",
-                    description = "For those of you who rent a student apartment or a room in a student corridor"
+                    description = "For those of you who rent a student apartment or a room in a student corridor",
                 ),
                 EmbarkStoryQuery.Tooltip(
                     title = "Renting a room",
-                    description = "For those of you who rent one or several rooms in an apartment or house"
-                )
-            )
+                    description = "For those of you who rent one or several rooms in an apartment or house",
+                ),
+            ),
         ).build(),
-        STANDARD_SECOND_PASSAGE_BUILDER.build()
-    )
+        STANDARD_SECOND_PASSAGE_BUILDER.build(),
+    ),
 ).build()
 
 val STORY_WITH_MANY_TOOLTIP = EmbarkStoryDataBuilder(
@@ -182,66 +182,66 @@ val STORY_WITH_MANY_TOOLTIP = EmbarkStoryDataBuilder(
             tooltip = listOf(
                 EmbarkStoryQuery.Tooltip(
                     title = "Apartment",
-                    description = "For those of you who rent or own an apartment"
+                    description = "For those of you who rent or own an apartment",
                 ),
                 EmbarkStoryQuery.Tooltip(
                     title = "House",
                     description = "For those of you who live in a detached" +
-                        " or terraced house. We don't insure holiday homes"
+                        " or terraced house. We don't insure holiday homes",
                 ),
                 EmbarkStoryQuery.Tooltip(
                     title = "Student housing",
-                    description = "For those of you who rent a student apartment or a room in a student corridor"
+                    description = "For those of you who rent a student apartment or a room in a student corridor",
                 ),
                 EmbarkStoryQuery.Tooltip(
                     title = "Renting a room",
-                    description = "For those of you who rent one or several rooms in an apartment or house"
+                    description = "For those of you who rent one or several rooms in an apartment or house",
                 ),
                 EmbarkStoryQuery.Tooltip(
                     title = "Apartment",
-                    description = "For those of you who rent or own an apartment"
+                    description = "For those of you who rent or own an apartment",
                 ),
                 EmbarkStoryQuery.Tooltip(
                     title = "House",
                     description = "For those of you who live in a" +
-                        " detached or terraced house. We don't insure holiday homes"
+                        " detached or terraced house. We don't insure holiday homes",
                 ),
                 EmbarkStoryQuery.Tooltip(
                     title = "Student housing",
-                    description = "For those of you who rent a student apartment or a room in a student corridor"
+                    description = "For those of you who rent a student apartment or a room in a student corridor",
                 ),
                 EmbarkStoryQuery.Tooltip(
                     title = "Renting a room",
-                    description = "For those of you who rent one or several rooms in an apartment or house"
+                    description = "For those of you who rent one or several rooms in an apartment or house",
                 ),
                 EmbarkStoryQuery.Tooltip(
                     title = "Apartment",
-                    description = "For those of you who rent or own an apartment"
+                    description = "For those of you who rent or own an apartment",
                 ),
                 EmbarkStoryQuery.Tooltip(
                     title = "House",
                     description = "For those of you who live in a" +
-                        " detached or terraced house. We don't insure holiday homes"
+                        " detached or terraced house. We don't insure holiday homes",
                 ),
                 EmbarkStoryQuery.Tooltip(
                     title = "Student housing",
-                    description = "For those of you who rent a student apartment or a room in a student corridor"
+                    description = "For those of you who rent a student apartment or a room in a student corridor",
                 ),
                 EmbarkStoryQuery.Tooltip(
                     title = "Renting a room",
-                    description = "For those of you who rent one or several rooms in an apartment or house"
+                    description = "For those of you who rent one or several rooms in an apartment or house",
                 ),
-            )
+            ),
         ).build(),
-        STANDARD_SECOND_PASSAGE_BUILDER.build()
-    )
+        STANDARD_SECOND_PASSAGE_BUILDER.build(),
+    ),
 ).build()
 
 val STANDARD_STORY = EmbarkStoryDataBuilder(
     passages = listOf(
         STANDARD_FIRST_PASSAGE_BUILDER.build(),
-        STANDARD_SECOND_PASSAGE_BUILDER.build()
-    )
+        STANDARD_SECOND_PASSAGE_BUILDER.build(),
+    ),
 ).build()
 
 val STORY_WITH_TEXT_ACTION = EmbarkStoryDataBuilder(
@@ -250,16 +250,16 @@ val STORY_WITH_TEXT_ACTION = EmbarkStoryDataBuilder(
             action = TextActionBuilder(
                 key = "BAR",
                 link = STANDARD_FIRST_LINK,
-                placeholder = "Test hint"
-            ).build()
+                placeholder = "Test hint",
+            ).build(),
         ).build(),
         STANDARD_SECOND_PASSAGE_BUILDER.copy(
             messages = listOf(
                 MessageBuilder("{BAR} was entered")
-                    .build()
-            )
-        ).build()
-    )
+                    .build(),
+            ),
+        ).build(),
+    ),
 ).build()
 
 val STORY_WITH_TEXT_ACTION_EMAIL_VALIDATION = EmbarkStoryDataBuilder(
@@ -269,16 +269,16 @@ val STORY_WITH_TEXT_ACTION_EMAIL_VALIDATION = EmbarkStoryDataBuilder(
                 key = "BAR",
                 link = STANDARD_FIRST_LINK,
                 placeholder = "Test hint",
-                mask = TextActionBuilder.EMAIL
-            ).build()
+                mask = TextActionBuilder.EMAIL,
+            ).build(),
         ).build(),
         STANDARD_SECOND_PASSAGE_BUILDER.copy(
             messages = listOf(
                 MessageBuilder("{BAR} was entered")
-                    .build()
-            )
-        ).build()
-    )
+                    .build(),
+            ),
+        ).build(),
+    ),
 ).build()
 
 val STORY_WITH_TEXT_ACTION_PERSONAL_NUMBER = EmbarkStoryDataBuilder(
@@ -288,16 +288,16 @@ val STORY_WITH_TEXT_ACTION_PERSONAL_NUMBER = EmbarkStoryDataBuilder(
                 key = "BAR",
                 link = STANDARD_FIRST_LINK,
                 placeholder = "970407-1234",
-                mask = TextActionBuilder.PERSONAL_NUMBER
-            ).build()
+                mask = TextActionBuilder.PERSONAL_NUMBER,
+            ).build(),
         ).build(),
         STANDARD_SECOND_PASSAGE_BUILDER.copy(
             messages = listOf(
                 MessageBuilder("{BAR} was entered")
-                    .build()
-            )
-        ).build()
-    )
+                    .build(),
+            ),
+        ).build(),
+    ),
 ).build()
 
 val STORY_WITH_TEXT_ACTION_BIRTH_DATE = EmbarkStoryDataBuilder(
@@ -307,16 +307,16 @@ val STORY_WITH_TEXT_ACTION_BIRTH_DATE = EmbarkStoryDataBuilder(
                 key = "BAR",
                 link = STANDARD_FIRST_LINK,
                 placeholder = "9999-99-99",
-                mask = TextActionBuilder.BIRTH_DATE
-            ).build()
+                mask = TextActionBuilder.BIRTH_DATE,
+            ).build(),
         ).build(),
         STANDARD_SECOND_PASSAGE_BUILDER.copy(
             messages = listOf(
                 MessageBuilder("{BAR} was entered")
-                    .build()
-            )
-        ).build()
-    )
+                    .build(),
+            ),
+        ).build(),
+    ),
 ).build()
 
 val STORY_WITH_TEXT_ACTION_BIRTH_DATE_REVERSE = EmbarkStoryDataBuilder(
@@ -326,16 +326,16 @@ val STORY_WITH_TEXT_ACTION_BIRTH_DATE_REVERSE = EmbarkStoryDataBuilder(
                 key = "BAR",
                 link = STANDARD_FIRST_LINK,
                 placeholder = "99-99-9999",
-                mask = TextActionBuilder.BIRTH_DATE_REVERSE
-            ).build()
+                mask = TextActionBuilder.BIRTH_DATE_REVERSE,
+            ).build(),
         ).build(),
         STANDARD_SECOND_PASSAGE_BUILDER.copy(
             messages = listOf(
                 MessageBuilder("{BAR} was entered. {BAR.Age} was derived.")
                     .build(),
-            )
-        ).build()
-    )
+            ),
+        ).build(),
+    ),
 ).build()
 
 val STORY_WITH_TEXT_ACTION_NORWEGIAN_POSTAL_CODE = EmbarkStoryDataBuilder(
@@ -345,16 +345,16 @@ val STORY_WITH_TEXT_ACTION_NORWEGIAN_POSTAL_CODE = EmbarkStoryDataBuilder(
                 key = "BAR",
                 link = STANDARD_FIRST_LINK,
                 placeholder = "9999",
-                mask = TextActionBuilder.NORWEGIAN_POSTAL_CODE
-            ).build()
+                mask = TextActionBuilder.NORWEGIAN_POSTAL_CODE,
+            ).build(),
         ).build(),
         STANDARD_SECOND_PASSAGE_BUILDER.copy(
             messages = listOf(
                 MessageBuilder("{BAR} was entered")
-                    .build()
-            )
-        ).build()
-    )
+                    .build(),
+            ),
+        ).build(),
+    ),
 ).build()
 
 val STORY_WITH_TEXT_ACTION_SWEDISH_POSTAL_CODE = EmbarkStoryDataBuilder(
@@ -364,16 +364,16 @@ val STORY_WITH_TEXT_ACTION_SWEDISH_POSTAL_CODE = EmbarkStoryDataBuilder(
                 key = "BAR",
                 link = STANDARD_FIRST_LINK,
                 placeholder = "999 99",
-                mask = TextActionBuilder.SWEDISH_POSTAL_CODE
-            ).build()
+                mask = TextActionBuilder.SWEDISH_POSTAL_CODE,
+            ).build(),
         ).build(),
         STANDARD_SECOND_PASSAGE_BUILDER.copy(
             messages = listOf(
                 MessageBuilder("{BAR} was entered")
-                    .build()
-            )
-        ).build()
-    )
+                    .build(),
+            ),
+        ).build(),
+    ),
 ).build()
 
 val PREVIOUS_INSURER_STORY = EmbarkStoryDataBuilder(
@@ -381,16 +381,16 @@ val PREVIOUS_INSURER_STORY = EmbarkStoryDataBuilder(
         STANDARD_FIRST_PASSAGE_BUILDER.copy(
             action = PreviousInsurerActionBuilder(
                 storeKey = "BAR",
-                next = STANDARD_FIRST_LINK
-            ).build()
+                next = STANDARD_FIRST_LINK,
+            ).build(),
         ).build(),
         STANDARD_SECOND_PASSAGE_BUILDER.copy(
             messages = listOf(
                 MessageBuilder("{BAR} was entered")
-                    .build()
-            )
-        ).build()
-    )
+                    .build(),
+            ),
+        ).build(),
+    ),
 ).build()
 
 val STORY_WITH_TEXT_ACTION_SET = EmbarkStoryDataBuilder(
@@ -403,24 +403,24 @@ val STORY_WITH_TEXT_ACTION_SET = EmbarkStoryDataBuilder(
                         placeholder = "Placeholder",
                         title = "Hint",
                         key = "FOO",
-                        mask = null
+                        mask = null,
                     ).buildTextActionSetAction(),
                     TextActionBuilder(
                         placeholder = "Second Placeholder",
                         title = "Second Hint",
                         key = "BAR",
-                        mask = null
+                        mask = null,
                     ).buildTextActionSetAction(),
-                )
-            ).build()
+                ),
+            ).build(),
         ).build(),
         STANDARD_SECOND_PASSAGE_BUILDER.copy(
             messages = listOf(
                 MessageBuilder("{FOO} {BAR} was entered")
-                    .build()
-            )
-        ).build()
-    )
+                    .build(),
+            ),
+        ).build(),
+    ),
 ).build()
 
 val STORY_WITH_TEXT_ACTION_SET_FIRST_TEXT_PERSONAL_NUMBER_SECOND_TEXT_EMAIL_VALIDATION = EmbarkStoryDataBuilder(
@@ -433,24 +433,24 @@ val STORY_WITH_TEXT_ACTION_SET_FIRST_TEXT_PERSONAL_NUMBER_SECOND_TEXT_EMAIL_VALI
                         placeholder = "901124-1234",
                         title = "Personal number",
                         key = "FOO",
-                        mask = TextActionBuilder.PERSONAL_NUMBER
+                        mask = TextActionBuilder.PERSONAL_NUMBER,
                     ).buildTextActionSetAction(),
                     TextActionBuilder(
                         placeholder = "example@email.com",
                         title = "Email",
                         key = "BAR",
-                        mask = TextActionBuilder.EMAIL
+                        mask = TextActionBuilder.EMAIL,
                     ).buildTextActionSetAction(),
-                )
-            ).build()
+                ),
+            ).build(),
         ).build(),
         STANDARD_SECOND_PASSAGE_BUILDER.copy(
             messages = listOf(
                 MessageBuilder("{FOO} {BAR} was entered")
-                    .build()
-            )
-        ).build()
-    )
+                    .build(),
+            ),
+        ).build(),
+    ),
 ).build()
 
 val STORY_WITH_INCOMPATIBLE_ACTION = EmbarkStoryDataBuilder(
@@ -470,10 +470,10 @@ val STORY_WITH_INCOMPATIBLE_ACTION = EmbarkStoryDataBuilder(
                     asEmbarkAudioRecorderAction = null,
                     asEmbarkExternalInsuranceProviderAction = null,
                     asEmbarkAddressAutocompleteAction = null,
-                )
+                ),
             )
-            .build()
-    )
+            .build(),
+    ),
 ).build()
 
 val STORY_WITH_TEXT_ACTION_AND_CUSTOM_RESPONSE = EmbarkStoryDataBuilder(
@@ -482,12 +482,13 @@ val STORY_WITH_TEXT_ACTION_AND_CUSTOM_RESPONSE = EmbarkStoryDataBuilder(
             .copy(
                 response = MessageBuilder(text = "{BAR} response").buildMessageResponse(),
                 action = TextActionBuilder(
-                    key = "BAR", link = STANDARD_FIRST_LINK
-                ).build()
+                    key = "BAR",
+                    link = STANDARD_FIRST_LINK,
+                ).build(),
             )
             .build(),
-        STANDARD_SECOND_PASSAGE_BUILDER.build()
-    )
+        STANDARD_SECOND_PASSAGE_BUILDER.build(),
+    ),
 ).build()
 
 val STORY_WITH_SELECT_ACTION_AND_CUSTOM_RESPONSE = EmbarkStoryDataBuilder(
@@ -499,14 +500,14 @@ val STORY_WITH_SELECT_ACTION_AND_CUSTOM_RESPONSE = EmbarkStoryDataBuilder(
                     options = listOf(
                         SelectOptionBuilder(
                             link = STANDARD_FIRST_LINK,
-                            keyValues = listOf("FOO" to "BAR")
-                        ).build()
-                    )
-                ).build()
+                            keyValues = listOf("FOO" to "BAR"),
+                        ).build(),
+                    ),
+                ).build(),
             )
             .build(),
-        STANDARD_SECOND_PASSAGE_BUILDER.build()
-    )
+        STANDARD_SECOND_PASSAGE_BUILDER.build(),
+    ),
 ).build()
 
 val STORY_WITH_UNARY_EXPRESSIONS = EmbarkStoryDataBuilder(
@@ -519,23 +520,23 @@ val STORY_WITH_UNARY_EXPRESSIONS = EmbarkStoryDataBuilder(
                         expressions = listOf(
                             ExpressionBuilder(
                                 type = ExpressionBuilder.ExpressionType.ALWAYS,
-                                text = "Unary true test"
-                            ).build()
-                        )
+                                text = "Unary true test",
+                            ).build(),
+                        ),
                     ).build(),
                     MessageBuilder(
                         text = "Unary false test",
                         expressions = listOf(
                             ExpressionBuilder(
                                 type = ExpressionBuilder.ExpressionType.NEVER,
-                                text = "Unary false test"
-                            ).build()
-                        )
-                    ).build()
-                )
+                                text = "Unary false test",
+                            ).build(),
+                        ),
+                    ).build(),
+                ),
             )
-            .build()
-    )
+            .build(),
+    ),
 ).build()
 
 val STORY_WITH_EQUALS_EXPRESSION = EmbarkStoryDataBuilder(
@@ -546,10 +547,10 @@ val STORY_WITH_EQUALS_EXPRESSION = EmbarkStoryDataBuilder(
                     options = listOf(
                         SelectOptionBuilder(
                             link = STANDARD_FIRST_LINK,
-                            keyValues = listOf("FOO" to "BAR")
-                        ).build()
-                    )
-                ).build()
+                            keyValues = listOf("FOO" to "BAR"),
+                        ).build(),
+                    ),
+                ).build(),
             )
             .build(),
         STANDARD_SECOND_PASSAGE_BUILDER
@@ -562,9 +563,9 @@ val STORY_WITH_EQUALS_EXPRESSION = EmbarkStoryDataBuilder(
                                 type = ExpressionBuilder.ExpressionType.EQUALS,
                                 text = "Binary equals test message that evaluates to true",
                                 key = "FOO",
-                                value = "BAR"
-                            ).build()
-                        )
+                                value = "BAR",
+                            ).build(),
+                        ),
                     ).build(),
                     MessageBuilder(
                         text = "Binary equals test message that evaluates to false",
@@ -573,14 +574,14 @@ val STORY_WITH_EQUALS_EXPRESSION = EmbarkStoryDataBuilder(
                                 type = ExpressionBuilder.ExpressionType.EQUALS,
                                 text = "Binary equals test message that evaluates to false",
                                 key = "BAZ",
-                                value = "4"
-                            ).build()
-                        )
-                    ).build()
-                )
+                                value = "4",
+                            ).build(),
+                        ),
+                    ).build(),
+                ),
             )
-            .build()
-    )
+            .build(),
+    ),
 ).build()
 
 val STORY_WITH_NOT_EQUALS_EXPRESSION = EmbarkStoryDataBuilder(
@@ -593,11 +594,11 @@ val STORY_WITH_NOT_EQUALS_EXPRESSION = EmbarkStoryDataBuilder(
                             link = STANDARD_FIRST_LINK,
                             keyValues = listOf(
                                 "FOO" to "BAR",
-                                "BAZ" to "5"
-                            )
-                        ).build()
-                    )
-                ).build()
+                                "BAZ" to "5",
+                            ),
+                        ).build(),
+                    ),
+                ).build(),
             )
             .build(),
         STANDARD_SECOND_PASSAGE_BUILDER
@@ -610,9 +611,9 @@ val STORY_WITH_NOT_EQUALS_EXPRESSION = EmbarkStoryDataBuilder(
                                 type = ExpressionBuilder.ExpressionType.NOT_EQUALS,
                                 text = "Not equals test message that evaluates to true",
                                 key = "FOO",
-                                value = "BAZ"
-                            ).build()
-                        )
+                                value = "BAZ",
+                            ).build(),
+                        ),
                     ).build(),
                     MessageBuilder(
                         text = "Not equals test message that evaluates to false",
@@ -621,14 +622,14 @@ val STORY_WITH_NOT_EQUALS_EXPRESSION = EmbarkStoryDataBuilder(
                                 type = ExpressionBuilder.ExpressionType.NOT_EQUALS,
                                 text = "Not equals test message that evaluates to false",
                                 key = "BAZ",
-                                value = "5"
-                            ).build()
-                        )
-                    ).build()
-                )
+                                value = "5",
+                            ).build(),
+                        ),
+                    ).build(),
+                ),
             )
-            .build()
-    )
+            .build(),
+    ),
 ).build()
 
 val STORY_WITH_GREATER_THAN_EXPRESSION = EmbarkStoryDataBuilder(
@@ -639,10 +640,10 @@ val STORY_WITH_GREATER_THAN_EXPRESSION = EmbarkStoryDataBuilder(
                     options = listOf(
                         SelectOptionBuilder(
                             link = STANDARD_FIRST_LINK,
-                            keyValues = listOf("FOO" to "5")
-                        ).build()
-                    )
-                ).build()
+                            keyValues = listOf("FOO" to "5"),
+                        ).build(),
+                    ),
+                ).build(),
             )
             .build(),
         STANDARD_SECOND_PASSAGE_BUILDER
@@ -655,9 +656,9 @@ val STORY_WITH_GREATER_THAN_EXPRESSION = EmbarkStoryDataBuilder(
                                 type = ExpressionBuilder.ExpressionType.GREATER_THAN,
                                 text = "Binary greater than test message that evaluates to true",
                                 key = "FOO",
-                                value = "4"
-                            ).build()
-                        )
+                                value = "4",
+                            ).build(),
+                        ),
                     ).build(),
                     MessageBuilder(
                         text = "Binary greater than test message that evaluates to false",
@@ -666,14 +667,14 @@ val STORY_WITH_GREATER_THAN_EXPRESSION = EmbarkStoryDataBuilder(
                                 type = ExpressionBuilder.ExpressionType.GREATER_THAN,
                                 text = "Binary greater than test message that evaluates to false",
                                 key = "FOO",
-                                value = "6"
-                            ).build()
-                        )
-                    ).build()
-                )
+                                value = "6",
+                            ).build(),
+                        ),
+                    ).build(),
+                ),
             )
-            .build()
-    )
+            .build(),
+    ),
 ).build()
 
 val STORY_WITH_GREATER_THAN_OR_EQUALS_EXPRESSION = EmbarkStoryDataBuilder(
@@ -684,10 +685,10 @@ val STORY_WITH_GREATER_THAN_OR_EQUALS_EXPRESSION = EmbarkStoryDataBuilder(
                     options = listOf(
                         SelectOptionBuilder(
                             link = STANDARD_FIRST_LINK,
-                            keyValues = listOf("FOO" to "5")
-                        ).build()
-                    )
-                ).build()
+                            keyValues = listOf("FOO" to "5"),
+                        ).build(),
+                    ),
+                ).build(),
             )
             .build(),
         STANDARD_SECOND_PASSAGE_BUILDER
@@ -700,9 +701,9 @@ val STORY_WITH_GREATER_THAN_OR_EQUALS_EXPRESSION = EmbarkStoryDataBuilder(
                                 type = ExpressionBuilder.ExpressionType.GREATER_THAN_OR_EQUALS,
                                 text = "Binary greater than or equals test message that evaluates to true",
                                 key = "FOO",
-                                value = "5"
-                            ).build()
-                        )
+                                value = "5",
+                            ).build(),
+                        ),
                     ).build(),
                     MessageBuilder(
                         text = "Binary greater than or equals test message that evaluates to false",
@@ -711,14 +712,14 @@ val STORY_WITH_GREATER_THAN_OR_EQUALS_EXPRESSION = EmbarkStoryDataBuilder(
                                 type = ExpressionBuilder.ExpressionType.GREATER_THAN_OR_EQUALS,
                                 text = "Binary greater than or equals test message that evaluates to false",
                                 key = "FOO",
-                                value = "6"
-                            ).build()
-                        )
-                    ).build()
-                )
+                                value = "6",
+                            ).build(),
+                        ),
+                    ).build(),
+                ),
             )
-            .build()
-    )
+            .build(),
+    ),
 ).build()
 
 val STORY_WITH_LESS_THAN_EXPRESSION = EmbarkStoryDataBuilder(
@@ -729,10 +730,10 @@ val STORY_WITH_LESS_THAN_EXPRESSION = EmbarkStoryDataBuilder(
                     options = listOf(
                         SelectOptionBuilder(
                             link = STANDARD_FIRST_LINK,
-                            keyValues = listOf("FOO" to "5")
-                        ).build()
-                    )
-                ).build()
+                            keyValues = listOf("FOO" to "5"),
+                        ).build(),
+                    ),
+                ).build(),
             )
             .build(),
         STANDARD_SECOND_PASSAGE_BUILDER
@@ -745,9 +746,9 @@ val STORY_WITH_LESS_THAN_EXPRESSION = EmbarkStoryDataBuilder(
                                 type = ExpressionBuilder.ExpressionType.LESS_THAN,
                                 text = "Less than test message that evaluates to true",
                                 key = "FOO",
-                                value = "6"
-                            ).build()
-                        )
+                                value = "6",
+                            ).build(),
+                        ),
                     ).build(),
                     MessageBuilder(
                         text = "Less than test message that evaluates to true",
@@ -756,14 +757,14 @@ val STORY_WITH_LESS_THAN_EXPRESSION = EmbarkStoryDataBuilder(
                                 type = ExpressionBuilder.ExpressionType.LESS_THAN,
                                 text = "Less than test message that evaluates to true",
                                 key = "FOO",
-                                value = "4"
-                            ).build()
-                        )
-                    ).build()
-                )
+                                value = "4",
+                            ).build(),
+                        ),
+                    ).build(),
+                ),
             )
-            .build()
-    )
+            .build(),
+    ),
 ).build()
 
 val STORY_WITH_OR_EXPRESSION = EmbarkStoryDataBuilder(
@@ -781,14 +782,14 @@ val STORY_WITH_OR_EXPRESSION = EmbarkStoryDataBuilder(
                                 text = "Or test message that evaluates to true",
                                 subExpressions = listOf(
                                     ExpressionBuilder(
-                                        type = ExpressionBuilder.ExpressionType.ALWAYS
+                                        type = ExpressionBuilder.ExpressionType.ALWAYS,
                                     ).build(),
                                     ExpressionBuilder(
-                                        type = ExpressionBuilder.ExpressionType.NEVER
-                                    ).build()
-                                )
-                            ).build()
-                        )
+                                        type = ExpressionBuilder.ExpressionType.NEVER,
+                                    ).build(),
+                                ),
+                            ).build(),
+                        ),
                     ).build(),
                     MessageBuilder(
                         text = "Or test message that evaluates to false",
@@ -798,19 +799,19 @@ val STORY_WITH_OR_EXPRESSION = EmbarkStoryDataBuilder(
                                 text = "Or test message that evaluates to false",
                                 subExpressions = listOf(
                                     ExpressionBuilder(
-                                        type = ExpressionBuilder.ExpressionType.NEVER
+                                        type = ExpressionBuilder.ExpressionType.NEVER,
                                     ).build(),
                                     ExpressionBuilder(
-                                        type = ExpressionBuilder.ExpressionType.NEVER
-                                    ).build()
-                                )
-                            ).build()
-                        )
-                    ).build()
-                )
+                                        type = ExpressionBuilder.ExpressionType.NEVER,
+                                    ).build(),
+                                ),
+                            ).build(),
+                        ),
+                    ).build(),
+                ),
             )
-            .build()
-    )
+            .build(),
+    ),
 ).build()
 
 val STORY_WITH_AND_EXPRESSION = EmbarkStoryDataBuilder(
@@ -828,14 +829,14 @@ val STORY_WITH_AND_EXPRESSION = EmbarkStoryDataBuilder(
                                 text = "And test message that evaluates to true",
                                 subExpressions = listOf(
                                     ExpressionBuilder(
-                                        type = ExpressionBuilder.ExpressionType.ALWAYS
+                                        type = ExpressionBuilder.ExpressionType.ALWAYS,
                                     ).build(),
                                     ExpressionBuilder(
-                                        type = ExpressionBuilder.ExpressionType.ALWAYS
-                                    ).build()
-                                )
-                            ).build()
-                        )
+                                        type = ExpressionBuilder.ExpressionType.ALWAYS,
+                                    ).build(),
+                                ),
+                            ).build(),
+                        ),
                     ).build(),
                     MessageBuilder(
                         text = "And test message that evaluates to false",
@@ -845,19 +846,19 @@ val STORY_WITH_AND_EXPRESSION = EmbarkStoryDataBuilder(
                                 text = "And test message that evaluates to false",
                                 subExpressions = listOf(
                                     ExpressionBuilder(
-                                        type = ExpressionBuilder.ExpressionType.ALWAYS
+                                        type = ExpressionBuilder.ExpressionType.ALWAYS,
                                     ).build(),
                                     ExpressionBuilder(
-                                        type = ExpressionBuilder.ExpressionType.NEVER
-                                    ).build()
-                                )
-                            ).build()
-                        )
-                    ).build()
-                )
+                                        type = ExpressionBuilder.ExpressionType.NEVER,
+                                    ).build(),
+                                ),
+                            ).build(),
+                        ),
+                    ).build(),
+                ),
             )
-            .build()
-    )
+            .build(),
+    ),
 ).build()
 
 val STORY_WITH_LESS_THAN_OR_EQUALS_EXPRESSION = EmbarkStoryDataBuilder(
@@ -868,10 +869,10 @@ val STORY_WITH_LESS_THAN_OR_EQUALS_EXPRESSION = EmbarkStoryDataBuilder(
                     options = listOf(
                         SelectOptionBuilder(
                             link = STANDARD_FIRST_LINK,
-                            keyValues = listOf("FOO" to "5")
-                        ).build()
-                    )
-                ).build()
+                            keyValues = listOf("FOO" to "5"),
+                        ).build(),
+                    ),
+                ).build(),
             )
             .build(),
         STANDARD_SECOND_PASSAGE_BUILDER
@@ -884,9 +885,9 @@ val STORY_WITH_LESS_THAN_OR_EQUALS_EXPRESSION = EmbarkStoryDataBuilder(
                                 type = ExpressionBuilder.ExpressionType.LESS_THAN_OR_EQUALS,
                                 text = "Less than or equals test message that evaluates to true",
                                 key = "FOO",
-                                value = "5"
-                            ).build()
-                        )
+                                value = "5",
+                            ).build(),
+                        ),
                     ).build(),
                     MessageBuilder(
                         text = "Less than or equals test message that evaluates to false",
@@ -895,14 +896,14 @@ val STORY_WITH_LESS_THAN_OR_EQUALS_EXPRESSION = EmbarkStoryDataBuilder(
                                 type = ExpressionBuilder.ExpressionType.LESS_THAN_OR_EQUALS,
                                 text = "Less than or equals test message that evaluates to false",
                                 key = "FOO",
-                                value = "4"
-                            ).build()
-                        )
-                    ).build()
-                )
+                                value = "4",
+                            ).build(),
+                        ),
+                    ).build(),
+                ),
             )
-            .build()
-    )
+            .build(),
+    ),
 ).build()
 
 val STORY_WITH_TEMPLATE_MESSAGE = EmbarkStoryDataBuilder(
@@ -913,19 +914,19 @@ val STORY_WITH_TEMPLATE_MESSAGE = EmbarkStoryDataBuilder(
                     options = listOf(
                         SelectOptionBuilder(
                             link = STANDARD_FIRST_LINK,
-                            keyValues = listOf("FOO" to "BAR")
-                        ).build()
-                    )
-                ).build()
+                            keyValues = listOf("FOO" to "BAR"),
+                        ).build(),
+                    ),
+                ).build(),
             )
             .build(),
         STANDARD_SECOND_PASSAGE_BUILDER
             .copy(
                 messages = listOf(
-                    MessageBuilder(text = "{FOO} test").build()
-                )
-            ).build()
-    )
+                    MessageBuilder(text = "{FOO} test").build(),
+                ),
+            ).build(),
+    ),
 ).build()
 
 val STORY_WITH_UNARY_REDIRECT = EmbarkStoryDataBuilder(
@@ -938,15 +939,15 @@ val STORY_WITH_UNARY_REDIRECT = EmbarkStoryDataBuilder(
                 redirects = listOf(
                     RedirectBuilder(
                         to = "TestPassage3",
-                        expression = ExpressionBuilder(type = ExpressionBuilder.ExpressionType.ALWAYS).build()
-                    ).build()
-                )
+                        expression = ExpressionBuilder(type = ExpressionBuilder.ExpressionType.ALWAYS).build(),
+                    ).build(),
+                ),
             )
             .build(),
         STANDARD_THIRD_PASSAGE_BUILDER
             .copy()
-            .build()
-    )
+            .build(),
+    ),
 ).build()
 
 val STORY_WITH_BINARY_REDIRECT = EmbarkStoryDataBuilder(
@@ -957,10 +958,10 @@ val STORY_WITH_BINARY_REDIRECT = EmbarkStoryDataBuilder(
                     options = listOf(
                         SelectOptionBuilder(
                             link = STANDARD_FIRST_LINK,
-                            keyValues = listOf("FOO" to "BAR")
-                        ).build()
-                    )
-                ).build()
+                            keyValues = listOf("FOO" to "BAR"),
+                        ).build(),
+                    ),
+                ).build(),
             )
             .build(),
         STANDARD_SECOND_PASSAGE_BUILDER
@@ -971,16 +972,16 @@ val STORY_WITH_BINARY_REDIRECT = EmbarkStoryDataBuilder(
                         expression = ExpressionBuilder(
                             type = ExpressionBuilder.ExpressionType.EQUALS,
                             key = "FOO",
-                            value = "BAR"
-                        ).build()
-                    ).build()
-                )
+                            value = "BAR",
+                        ).build(),
+                    ).build(),
+                ),
             )
             .build(),
         STANDARD_THIRD_PASSAGE_BUILDER
             .copy()
-            .build()
-    )
+            .build(),
+    ),
 ).build()
 
 val STORY_WITH_MULTIPLE_REDIRECTS = EmbarkStoryDataBuilder(
@@ -997,16 +998,16 @@ val STORY_WITH_MULTIPLE_REDIRECTS = EmbarkStoryDataBuilder(
                             subExpressions = listOf(
                                 ExpressionBuilder(type = ExpressionBuilder.ExpressionType.ALWAYS).build(),
                                 ExpressionBuilder(type = ExpressionBuilder.ExpressionType.ALWAYS).build(),
-                            )
-                        ).build()
-                    ).build()
-                )
+                            ),
+                        ).build(),
+                    ).build(),
+                ),
             )
             .build(),
         STANDARD_THIRD_PASSAGE_BUILDER
             .copy()
-            .build()
-    )
+            .build(),
+    ),
 ).build()
 
 val STORY_WITH_PASSED_KEY_VALUE = EmbarkStoryDataBuilder(
@@ -1021,9 +1022,9 @@ val STORY_WITH_PASSED_KEY_VALUE = EmbarkStoryDataBuilder(
                         to = "TestPassage3",
                         expression = ExpressionBuilder(type = ExpressionBuilder.ExpressionType.ALWAYS).build(),
                         passedExpressionKey = "FOO",
-                        passedExpressionValue = "BAR"
-                    ).build()
-                )
+                        passedExpressionValue = "BAR",
+                    ).build(),
+                ),
             )
             .build(),
         STANDARD_THIRD_PASSAGE_BUILDER
@@ -1036,14 +1037,14 @@ val STORY_WITH_PASSED_KEY_VALUE = EmbarkStoryDataBuilder(
                                 type = ExpressionBuilder.ExpressionType.EQUALS,
                                 key = "FOO",
                                 value = "BAR",
-                                text = "conditionally shown message"
-                            ).build()
-                        )
-                    ).build()
-                )
+                                text = "conditionally shown message",
+                            ).build(),
+                        ),
+                    ).build(),
+                ),
             )
-            .build()
-    )
+            .build(),
+    ),
 ).build()
 
 const val HELLO_QUERY = """
@@ -1062,8 +1063,9 @@ val STORY_WITH_GRAPHQL_QUERY_API = EmbarkStoryDataBuilder(
                     query = HELLO_QUERY,
                     results = listOf(
                         GraphQLResultsFragment(
-                            key = "hello", `as` = "HELLO"
-                        )
+                            key = "hello",
+                            `as` = "HELLO",
+                        ),
                     ),
                     errors = listOf(
                         GraphQLErrorsFragment(
@@ -1071,25 +1073,25 @@ val STORY_WITH_GRAPHQL_QUERY_API = EmbarkStoryDataBuilder(
                             next = GraphQLErrorsFragment.Next(
                                 __typename = "",
                                 fragments = GraphQLErrorsFragment.Next.Fragments(
-                                    LINK_TO_FOURTH_PASSAGE
-                                )
-                            )
-                        )
+                                    LINK_TO_FOURTH_PASSAGE,
+                                ),
+                            ),
+                        ),
                     ),
-                    next = LINK_TO_THIRD_PASSAGE
-                ).build()
+                    next = LINK_TO_THIRD_PASSAGE,
+                ).build(),
             )
             .build(),
         STANDARD_THIRD_PASSAGE_BUILDER
             .copy(
                 messages = listOf(
-                    MessageBuilder("api result: {HELLO}").build()
-                )
+                    MessageBuilder("api result: {HELLO}").build(),
+                ),
             )
             .build(),
         STANDARD_FOURTH_PASSAGE_BUILDER
-            .build()
-    )
+            .build(),
+    ),
 ).build()
 
 const val VARIABLE_QUERY = """
@@ -1104,8 +1106,8 @@ val STORY_WITH_GRAPHQL_QUERY_API_AND_SINGLE_VARIABLE = EmbarkStoryDataBuilder(
             .copy(
                 action = TextActionBuilder(
                     key = "input",
-                    link = STANDARD_FIRST_LINK
-                ).build()
+                    link = STANDARD_FIRST_LINK,
+                ).build(),
             )
             .build(),
         STANDARD_SECOND_PASSAGE_BUILDER
@@ -1114,30 +1116,30 @@ val STORY_WITH_GRAPHQL_QUERY_API_AND_SINGLE_VARIABLE = EmbarkStoryDataBuilder(
                     type = GraphQLApiBuilder.Type.QUERY,
                     query = VARIABLE_QUERY,
                     results = listOf(
-                        GraphQLResultsFragment(key = "hello", `as` = "VARIABLE")
+                        GraphQLResultsFragment(key = "hello", `as` = "VARIABLE"),
                     ),
                     variables = listOf(
                         GraphQLVariableBuilder(
                             kind = GraphQLVariableBuilder.VariableKind.SINGLE,
                             key = "variable",
                             from = "input",
-                            singleType = EmbarkAPIGraphQLSingleVariableCasting.string
-                        ).build()
+                            singleType = EmbarkAPIGraphQLSingleVariableCasting.string,
+                        ).build(),
                     ),
-                    next = LINK_TO_THIRD_PASSAGE
-                ).build()
+                    next = LINK_TO_THIRD_PASSAGE,
+                ).build(),
             )
             .build(),
         STANDARD_THIRD_PASSAGE_BUILDER
             .copy(
                 messages = listOf(
-                    MessageBuilder("api result: {VARIABLE}").build()
-                )
+                    MessageBuilder("api result: {VARIABLE}").build(),
+                ),
             )
             .build(),
         STANDARD_FOURTH_PASSAGE_BUILDER
-            .build()
-    )
+            .build(),
+    ),
 ).build()
 
 val STORY_WITH_GRAPHQL_QUERY_API_AND_GENERATED_VARIABLE: EmbarkStoryQuery.Data = EmbarkStoryDataBuilder(
@@ -1150,31 +1152,31 @@ val STORY_WITH_GRAPHQL_QUERY_API_AND_GENERATED_VARIABLE: EmbarkStoryQuery.Data =
                     type = GraphQLApiBuilder.Type.QUERY,
                     query = VARIABLE_QUERY,
                     results = listOf(
-                        GraphQLResultsFragment(key = "hello", `as` = "VARIABLE")
+                        GraphQLResultsFragment(key = "hello", `as` = "VARIABLE"),
                     ),
                     variables = listOf(
                         GraphQLVariableBuilder(
                             kind = GraphQLVariableBuilder.VariableKind.GENERATED,
                             key = "variable",
                             storeAs = "STORED",
-                            generatedType = EmbarkAPIGraphQLVariableGeneratedType.uuid
-                        ).build()
+                            generatedType = EmbarkAPIGraphQLVariableGeneratedType.uuid,
+                        ).build(),
                     ),
-                    next = LINK_TO_THIRD_PASSAGE
-                ).build()
+                    next = LINK_TO_THIRD_PASSAGE,
+                ).build(),
             )
             .build(),
         STANDARD_THIRD_PASSAGE_BUILDER
             .copy(
                 messages = listOf(
                     MessageBuilder(text = "api result: {VARIABLE}").build(),
-                    MessageBuilder(text = "stored: {STORED}").build()
-                )
+                    MessageBuilder(text = "stored: {STORED}").build(),
+                ),
             )
             .build(),
         STANDARD_FOURTH_PASSAGE_BUILDER
-            .build()
-    )
+            .build(),
+    ),
 ).build()
 
 val HELLO_MUTATION = """
@@ -1193,8 +1195,9 @@ val STORY_WITH_GRAPHQL_MUTATION = EmbarkStoryDataBuilder(
                     query = HELLO_MUTATION,
                     results = listOf(
                         GraphQLResultsFragment(
-                            key = "hello", `as` = "HELLO"
-                        )
+                            key = "hello",
+                            `as` = "HELLO",
+                        ),
                     ),
                     errors = listOf(
                         GraphQLErrorsFragment(
@@ -1202,25 +1205,25 @@ val STORY_WITH_GRAPHQL_MUTATION = EmbarkStoryDataBuilder(
                             next = GraphQLErrorsFragment.Next(
                                 __typename = "",
                                 fragments = GraphQLErrorsFragment.Next.Fragments(
-                                    LINK_TO_FOURTH_PASSAGE
-                                )
-                            )
-                        )
+                                    LINK_TO_FOURTH_PASSAGE,
+                                ),
+                            ),
+                        ),
                     ),
-                    next = LINK_TO_THIRD_PASSAGE
-                ).build()
+                    next = LINK_TO_THIRD_PASSAGE,
+                ).build(),
             )
             .build(),
         STANDARD_THIRD_PASSAGE_BUILDER
             .copy(
                 messages = listOf(
-                    MessageBuilder("api result: {HELLO}").build()
-                )
+                    MessageBuilder("api result: {HELLO}").build(),
+                ),
             )
             .build(),
         STANDARD_FOURTH_PASSAGE_BUILDER
-            .build()
-    )
+            .build(),
+    ),
 ).build()
 
 val VARIABLE_MUTATION = """
@@ -1235,8 +1238,8 @@ val STORY_WITH_GRAPHQL_MUTATION_AND_SINGLE_VARIABLE = EmbarkStoryDataBuilder(
             .copy(
                 action = TextActionBuilder(
                     key = "input",
-                    link = STANDARD_FIRST_LINK
-                ).build()
+                    link = STANDARD_FIRST_LINK,
+                ).build(),
             )
             .build(),
         STANDARD_SECOND_PASSAGE_BUILDER
@@ -1246,8 +1249,9 @@ val STORY_WITH_GRAPHQL_MUTATION_AND_SINGLE_VARIABLE = EmbarkStoryDataBuilder(
                     query = VARIABLE_MUTATION,
                     results = listOf(
                         GraphQLResultsFragment(
-                            key = "hello", `as` = "VARIABLE"
-                        )
+                            key = "hello",
+                            `as` = "VARIABLE",
+                        ),
                     ),
                     errors = listOf(
                         GraphQLErrorsFragment(
@@ -1255,33 +1259,33 @@ val STORY_WITH_GRAPHQL_MUTATION_AND_SINGLE_VARIABLE = EmbarkStoryDataBuilder(
                             next = GraphQLErrorsFragment.Next(
                                 __typename = "",
                                 fragments = GraphQLErrorsFragment.Next.Fragments(
-                                    LINK_TO_FOURTH_PASSAGE
-                                )
-                            )
-                        )
+                                    LINK_TO_FOURTH_PASSAGE,
+                                ),
+                            ),
+                        ),
                     ),
                     variables = listOf(
                         GraphQLVariableBuilder(
                             kind = GraphQLVariableBuilder.VariableKind.SINGLE,
                             key = "variable",
                             from = "input",
-                            singleType = EmbarkAPIGraphQLSingleVariableCasting.string
-                        ).build()
+                            singleType = EmbarkAPIGraphQLSingleVariableCasting.string,
+                        ).build(),
                     ),
-                    next = LINK_TO_THIRD_PASSAGE
-                ).build()
+                    next = LINK_TO_THIRD_PASSAGE,
+                ).build(),
             )
             .build(),
         STANDARD_THIRD_PASSAGE_BUILDER
             .copy(
                 messages = listOf(
-                    MessageBuilder("api result: {VARIABLE}").build()
-                )
+                    MessageBuilder("api result: {VARIABLE}").build(),
+                ),
             )
             .build(),
         STANDARD_FOURTH_PASSAGE_BUILDER
-            .build()
-    )
+            .build(),
+    ),
 ).build()
 
 val STORY_WITH_NUMBER_ACTION = EmbarkStoryDataBuilder(
@@ -1301,10 +1305,10 @@ val STORY_WITH_NUMBER_ACTION = EmbarkStoryDataBuilder(
         STANDARD_SECOND_PASSAGE_BUILDER.copy(
             messages = listOf(
                 MessageBuilder("{BAR} was entered")
-                    .build()
-            )
-        ).build()
-    )
+                    .build(),
+            ),
+        ).build(),
+    ),
 ).build()
 
 val STORY_WITH_NUMBER_ACTION_AND_CUSTOM_RESPONSE = EmbarkStoryDataBuilder(
@@ -1325,10 +1329,10 @@ val STORY_WITH_NUMBER_ACTION_AND_CUSTOM_RESPONSE = EmbarkStoryDataBuilder(
         STANDARD_SECOND_PASSAGE_BUILDER.copy(
             messages = listOf(
                 MessageBuilder("{BAR} was entered")
-                    .build()
-            )
-        ).build()
-    )
+                    .build(),
+            ),
+        ).build(),
+    ),
 ).build()
 
 val STORY_WITH_NUMBER_ACTION_SET = EmbarkStoryDataBuilder(
@@ -1354,19 +1358,19 @@ val STORY_WITH_NUMBER_ACTION_SET = EmbarkStoryDataBuilder(
                             maxValue = 75,
                             minValue = 1,
                             title = "House size",
-                        )
+                        ),
                     ),
-                    link = STANDARD_FIRST_LINK
-                ).build()
+                    link = STANDARD_FIRST_LINK,
+                ).build(),
             )
             .build(),
         STANDARD_SECOND_PASSAGE_BUILDER.copy(
             messages = listOf(
                 MessageBuilder("{BAR} was entered")
-                    .build()
-            )
-        ).build()
-    )
+                    .build(),
+            ),
+        ).build(),
+    ),
 ).build()
 
 val STORY_WITCH_DATE_PICKER = EmbarkStoryDataBuilder(
@@ -1375,10 +1379,10 @@ val STORY_WITCH_DATE_PICKER = EmbarkStoryDataBuilder(
             action = DatePickerActionBuilder(
                 label = "Move in date",
                 key = "BAR",
-                link = STANDARD_FIRST_LINK
-            ).build()
-        ).build()
-    )
+                link = STANDARD_FIRST_LINK,
+            ).build(),
+        ).build(),
+    ),
 ).build()
 
 val STORY_WITH_TRACK = EmbarkStoryDataBuilder(
@@ -1392,13 +1396,13 @@ val STORY_WITH_TRACK = EmbarkStoryDataBuilder(
                             keyValues = listOf(
                                 "FOO" to "BAR",
                                 "BAZ" to "BAT",
-                            )
-                        ).build()
-                    )
+                            ),
+                        ).build(),
+                    ),
                 ).build(),
                 tracks = listOf(
-                    TrackBuilder("Enter Passage").build()
-                )
+                    TrackBuilder("Enter Passage").build(),
+                ),
             )
             .build(),
         STANDARD_SECOND_PASSAGE_BUILDER
@@ -1407,12 +1411,12 @@ val STORY_WITH_TRACK = EmbarkStoryDataBuilder(
                     options = listOf(
                         SelectOptionBuilder(
                             link = LINK_TO_THIRD_PASSAGE,
-                        ).build()
-                    )
+                        ).build(),
+                    ),
                 ).build(),
                 tracks = listOf(
-                    TrackBuilder("Enter second passage", includeAllKeys = true).build()
-                )
+                    TrackBuilder("Enter second passage", includeAllKeys = true).build(),
+                ),
             )
             .build(),
         STANDARD_THIRD_PASSAGE_BUILDER
@@ -1421,12 +1425,12 @@ val STORY_WITH_TRACK = EmbarkStoryDataBuilder(
                     TrackBuilder(
                         "Enter third passage",
                         keys = listOf("FOO"),
-                        customData = JSONObject("{\"CUSTOM\": \"DATA\"}")
-                    ).build()
-                )
+                        customData = JSONObject("{\"CUSTOM\": \"DATA\"}"),
+                    ).build(),
+                ),
             )
-            .build()
-    )
+            .build(),
+    ),
 ).build()
 
 val STORY_WITH_OFFER_REDIRECT = EmbarkStoryDataBuilder(
@@ -1434,49 +1438,49 @@ val STORY_WITH_OFFER_REDIRECT = EmbarkStoryDataBuilder(
         STANDARD_FIRST_PASSAGE_BUILDER.build(),
         STANDARD_SECOND_PASSAGE_BUILDER
             .copy(offerRedirectKeys = listOf("123", "123"))
-            .build()
-    )
+            .build(),
+    ),
 ).build()
 
 val STORY_WITH_COMPUTED_VALUE = EmbarkStoryDataBuilder(
     computedStoreValues = listOf(
-        EmbarkStoryQuery.ComputedStoreValue(key = "BAR", value = "FOO + 3")
+        EmbarkStoryQuery.ComputedStoreValue(key = "BAR", value = "FOO + 3"),
     ),
     passages = listOf(
         PassageBuilder(
             name = "TestPassage",
             id = "1",
             response = MessageBuilder(
-                text = "{TestPassageResult}"
+                text = "{TestPassageResult}",
             ).buildMessageResponse(),
             messages = listOf(
                 MessageFragment(
                     text = "Text on input in next passage will have added 3 to your input",
-                    expressions = emptyList()
-                )
+                    expressions = emptyList(),
+                ),
             ),
             action = NumberActionBuilder(
                 "FOO",
-                link = STANDARD_FIRST_LINK
-            ).build()
+                link = STANDARD_FIRST_LINK,
+            ).build(),
         ).build(),
         PassageBuilder(
             name = "TestPassage2",
             id = "2",
             response = MessageBuilder(
-                text = "{TestPassageResult}"
+                text = "{TestPassageResult}",
             ).buildMessageResponse(),
             messages = listOf(
                 MessageBuilder(
-                    text = "Computed value is previous input + 3 = {BAR}"
-                ).build()
+                    text = "Computed value is previous input + 3 = {BAR}",
+                ).build(),
             ),
             action = TextActionBuilder(
                 link = STANDARD_SECOND_LINK,
-                key = "BAR"
-            ).build()
+                key = "BAR",
+            ).build(),
         ).build(),
-    )
+    ),
 ).build()
 
 val STORY_FOR_STORE_VERSIONING = EmbarkStoryDataBuilder(
@@ -1486,9 +1490,9 @@ val STORY_FOR_STORE_VERSIONING = EmbarkStoryDataBuilder(
                 action = SelectActionBuilder(
                     options = listOf(
                         SelectOptionBuilder(link = STANDARD_FIRST_LINK, keyValues = listOf("FOO" to "BAR")).build(),
-                        SelectOptionBuilder(link = STANDARD_FIRST_LINK).build()
-                    )
-                ).build()
+                        SelectOptionBuilder(link = STANDARD_FIRST_LINK).build(),
+                    ),
+                ).build(),
             )
             .build(),
         STANDARD_SECOND_PASSAGE_BUILDER
@@ -1499,14 +1503,14 @@ val STORY_FOR_STORE_VERSIONING = EmbarkStoryDataBuilder(
                         expression = ExpressionBuilder(
                             ExpressionBuilder.ExpressionType.EQUALS,
                             key = "FOO",
-                            value = "BAR"
-                        ).build()
-                    ).build()
-                )
+                            value = "BAR",
+                        ).build(),
+                    ).build(),
+                ),
             )
             .build(),
-        STANDARD_THIRD_PASSAGE_BUILDER.build()
-    )
+        STANDARD_THIRD_PASSAGE_BUILDER.build(),
+    ),
 ).build()
 
 val STORY_WITH_MULTI_ACTION = EmbarkStoryDataBuilder(
@@ -1517,42 +1521,42 @@ val STORY_WITH_MULTI_ACTION = EmbarkStoryDataBuilder(
             response = GroupedResponseBuilder(
                 title = "Test title",
                 each = "FOO" to MessageBuilder(
-                    text = "Building: {Building}, size: {size}, water connected: {water}"
-                ).build()
+                    text = "Building: {Building}, size: {size}, water connected: {water}",
+                ).build(),
             ).build(),
             messages = listOf(
                 MessageFragment(
                     text = "OK. We need some information about any extra buildings on the site," +
                         "if you want them to be covered by the insurance",
-                    expressions = emptyList()
+                    expressions = emptyList(),
                 ),
                 MessageFragment(
                     text = "If you don't want to insure any extra buildings, just press Continue",
-                    expressions = emptyList()
-                )
+                    expressions = emptyList(),
+                ),
             ),
             action = MultiActionBuilder(
                 "FOO",
-                link = STANDARD_FIRST_LINK
-            ).build()
+                link = STANDARD_FIRST_LINK,
+            ).build(),
         ).build(),
         PassageBuilder(
             name = "TestPassage2",
             id = "2",
             response = MessageBuilder(
-                text = "{TestPassageResult}"
+                text = "{TestPassageResult}",
             ).buildMessageResponse(),
             messages = listOf(
                 MessageBuilder(
-                    text = "Computed value is previous input + 3 = {BAR}"
-                ).build()
+                    text = "Computed value is previous input + 3 = {BAR}",
+                ).build(),
             ),
             action = TextActionBuilder(
                 link = STANDARD_SECOND_LINK,
-                key = "BAR"
-            ).build()
+                key = "BAR",
+            ).build(),
         ).build(),
-    )
+    ),
 ).build()
 
 val STORY_WITH_MARKDOWN_MESSAGE = EmbarkStoryDataBuilder(
@@ -1567,10 +1571,10 @@ val STORY_WITH_MARKDOWN_MESSAGE = EmbarkStoryDataBuilder(
                     MessageBuilder(text = "`code`").build(),
                     MessageBuilder(text = "1. one\n2. two").build(),
                     MessageBuilder(text = "- one\n- two").build(),
-                )
+                ),
             )
-            .build()
-    )
+            .build(),
+    ),
 ).build()
 
 val STORY_WITH_GRAPHQL_MUTATION_AND_OFFER_REDIRECT = EmbarkStoryDataBuilder(
@@ -1579,8 +1583,8 @@ val STORY_WITH_GRAPHQL_MUTATION_AND_OFFER_REDIRECT = EmbarkStoryDataBuilder(
             .copy(
                 action = TextActionBuilder(
                     key = "input",
-                    link = STANDARD_FIRST_LINK
-                ).build()
+                    link = STANDARD_FIRST_LINK,
+                ).build(),
             )
             .build(),
         STANDARD_SECOND_PASSAGE_BUILDER
@@ -1590,8 +1594,9 @@ val STORY_WITH_GRAPHQL_MUTATION_AND_OFFER_REDIRECT = EmbarkStoryDataBuilder(
                     query = VARIABLE_MUTATION,
                     results = listOf(
                         GraphQLResultsFragment(
-                            key = "hello", `as` = "VARIABLE"
-                        )
+                            key = "hello",
+                            `as` = "VARIABLE",
+                        ),
                     ),
                     errors = listOf(
                         GraphQLErrorsFragment(
@@ -1599,34 +1604,34 @@ val STORY_WITH_GRAPHQL_MUTATION_AND_OFFER_REDIRECT = EmbarkStoryDataBuilder(
                             next = GraphQLErrorsFragment.Next(
                                 __typename = "",
                                 fragments = GraphQLErrorsFragment.Next.Fragments(
-                                    LINK_TO_FOURTH_PASSAGE
-                                )
-                            )
-                        )
+                                    LINK_TO_FOURTH_PASSAGE,
+                                ),
+                            ),
+                        ),
                     ),
                     variables = listOf(
                         GraphQLVariableBuilder(
                             kind = GraphQLVariableBuilder.VariableKind.SINGLE,
                             key = "variable",
                             from = "input",
-                            singleType = EmbarkAPIGraphQLSingleVariableCasting.string
-                        ).build()
+                            singleType = EmbarkAPIGraphQLSingleVariableCasting.string,
+                        ).build(),
                     ),
-                    next = LINK_TO_THIRD_PASSAGE
-                ).build()
+                    next = LINK_TO_THIRD_PASSAGE,
+                ).build(),
             )
             .build(),
         STANDARD_THIRD_PASSAGE_BUILDER
             .copy(
                 offerRedirectKeys = listOf("VARIABLE"),
                 messages = listOf(
-                    MessageBuilder("api result: {VARIABLE}").build()
-                )
+                    MessageBuilder("api result: {VARIABLE}").build(),
+                ),
             )
             .build(),
         STANDARD_FOURTH_PASSAGE_BUILDER
-            .build()
-    )
+            .build(),
+    ),
 ).build()
 
 val STORY_WITH_CLOSE_AND_CHAT = EmbarkStoryDataBuilder(
@@ -1637,19 +1642,19 @@ val STORY_WITH_CLOSE_AND_CHAT = EmbarkStoryDataBuilder(
                     options = listOf(
                         SelectOptionBuilder(link = STANDARD_FIRST_LINK.copy(label = "Chat")).build(),
                         SelectOptionBuilder(link = LINK_TO_THIRD_PASSAGE.copy(label = "Close")).build(),
-                    )
-                ).build()
+                    ),
+                ).build(),
             )
             .build(),
         STANDARD_SECOND_PASSAGE_BUILDER
             .copy(
-                externalRedirect = EmbarkExternalRedirectLocation.Chat
+                externalRedirect = EmbarkExternalRedirectLocation.Chat,
             )
             .build(),
         STANDARD_THIRD_PASSAGE_BUILDER
             .copy(externalRedirect = EmbarkExternalRedirectLocation.Close)
-            .build()
-    )
+            .build(),
+    ),
 ).build()
 
 val STORY_WITH_TEXT_ACTION_SET_API = EmbarkStoryDataBuilder(
@@ -1662,8 +1667,9 @@ val STORY_WITH_TEXT_ACTION_SET_API = EmbarkStoryDataBuilder(
                         query = HELLO_QUERY,
                         results = listOf(
                             GraphQLResultsFragment(
-                                key = "hello", `as` = "HELLO"
-                            )
+                                key = "hello",
+                                `as` = "HELLO",
+                            ),
                         ),
                         errors = listOf(
                             GraphQLErrorsFragment(
@@ -1671,28 +1677,28 @@ val STORY_WITH_TEXT_ACTION_SET_API = EmbarkStoryDataBuilder(
                                 next = GraphQLErrorsFragment.Next(
                                     __typename = "",
                                     fragments = GraphQLErrorsFragment.Next.Fragments(
-                                        LINK_TO_FOURTH_PASSAGE
-                                    )
-                                )
-                            )
+                                        LINK_TO_FOURTH_PASSAGE,
+                                    ),
+                                ),
+                            ),
                         ),
-                        next = LINK_TO_THIRD_PASSAGE
+                        next = LINK_TO_THIRD_PASSAGE,
                     ).build(),
                     link = STANDARD_SECOND_LINK,
                     textActions = listOf(
                         TextActionBuilder(
                             key = "",
-                        ).buildTextActionSetAction()
-                    )
-                ).build()
+                        ).buildTextActionSetAction(),
+                    ),
+                ).build(),
             )
             .build(),
         STANDARD_SECOND_PASSAGE_BUILDER
             .build(),
         STANDARD_THIRD_PASSAGE_BUILDER
             .copy()
-            .build()
-    )
+            .build(),
+    ),
 ).build()
 
 val STORY_WITH_TEXT_ACTION_API = EmbarkStoryDataBuilder(
@@ -1705,8 +1711,9 @@ val STORY_WITH_TEXT_ACTION_API = EmbarkStoryDataBuilder(
                         query = HELLO_QUERY,
                         results = listOf(
                             GraphQLResultsFragment(
-                                key = "hello", `as` = "HELLO"
-                            )
+                                key = "hello",
+                                `as` = "HELLO",
+                            ),
                         ),
                         errors = listOf(
                             GraphQLErrorsFragment(
@@ -1714,24 +1721,24 @@ val STORY_WITH_TEXT_ACTION_API = EmbarkStoryDataBuilder(
                                 next = GraphQLErrorsFragment.Next(
                                     __typename = "",
                                     fragments = GraphQLErrorsFragment.Next.Fragments(
-                                        LINK_TO_FOURTH_PASSAGE
-                                    )
-                                )
-                            )
+                                        LINK_TO_FOURTH_PASSAGE,
+                                    ),
+                                ),
+                            ),
                         ),
-                        next = LINK_TO_THIRD_PASSAGE
+                        next = LINK_TO_THIRD_PASSAGE,
                     ).build(),
                     link = STANDARD_SECOND_LINK,
                     key = "",
-                ).build()
+                ).build(),
             )
             .build(),
         STANDARD_SECOND_PASSAGE_BUILDER
             .build(),
         STANDARD_THIRD_PASSAGE_BUILDER
             .copy()
-            .build()
-    )
+            .build(),
+    ),
 ).build()
 
 val STORY_WITH_SELECT_ACTION_API_SINGLE_OPTION = EmbarkStoryDataBuilder(
@@ -1746,8 +1753,9 @@ val STORY_WITH_SELECT_ACTION_API_SINGLE_OPTION = EmbarkStoryDataBuilder(
                                 query = HELLO_QUERY,
                                 results = listOf(
                                     GraphQLResultsFragment(
-                                        key = "hello", `as` = "HELLO"
-                                    )
+                                        key = "hello",
+                                        `as` = "HELLO",
+                                    ),
                                 ),
                                 errors = listOf(
                                     GraphQLErrorsFragment(
@@ -1755,25 +1763,25 @@ val STORY_WITH_SELECT_ACTION_API_SINGLE_OPTION = EmbarkStoryDataBuilder(
                                         next = GraphQLErrorsFragment.Next(
                                             __typename = "",
                                             fragments = GraphQLErrorsFragment.Next.Fragments(
-                                                LINK_TO_FOURTH_PASSAGE
-                                            )
-                                        )
-                                    )
+                                                LINK_TO_FOURTH_PASSAGE,
+                                            ),
+                                        ),
+                                    ),
                                 ),
-                                next = LINK_TO_THIRD_PASSAGE
+                                next = LINK_TO_THIRD_PASSAGE,
                             ).build(),
-                            link = STANDARD_SECOND_LINK
-                        ).build()
-                    )
-                ).build()
+                            link = STANDARD_SECOND_LINK,
+                        ).build(),
+                    ),
+                ).build(),
             )
             .build(),
         STANDARD_SECOND_PASSAGE_BUILDER
             .build(),
         STANDARD_THIRD_PASSAGE_BUILDER
             .copy()
-            .build()
-    )
+            .build(),
+    ),
 ).build()
 
 val STORY_WITH_SELECT_ACTION_API_MULTIPLE_OPTIONS = EmbarkStoryDataBuilder(
@@ -1788,8 +1796,9 @@ val STORY_WITH_SELECT_ACTION_API_MULTIPLE_OPTIONS = EmbarkStoryDataBuilder(
                                 query = HELLO_QUERY,
                                 results = listOf(
                                     GraphQLResultsFragment(
-                                        key = "hello", `as` = "HELLO"
-                                    )
+                                        key = "hello",
+                                        `as` = "HELLO",
+                                    ),
                                 ),
                                 errors = listOf(
                                     GraphQLErrorsFragment(
@@ -1797,14 +1806,14 @@ val STORY_WITH_SELECT_ACTION_API_MULTIPLE_OPTIONS = EmbarkStoryDataBuilder(
                                         next = GraphQLErrorsFragment.Next(
                                             __typename = "",
                                             fragments = GraphQLErrorsFragment.Next.Fragments(
-                                                LINK_TO_FOURTH_PASSAGE
-                                            )
-                                        )
-                                    )
+                                                LINK_TO_FOURTH_PASSAGE,
+                                            ),
+                                        ),
+                                    ),
                                 ),
-                                next = LINK_TO_FOURTH_PASSAGE
+                                next = LINK_TO_FOURTH_PASSAGE,
                             ).build(),
-                            link = STANDARD_SECOND_LINK
+                            link = STANDARD_SECOND_LINK,
                         ).build(),
                         SelectOptionBuilder(
                             api = GraphQLApiBuilder(
@@ -1812,8 +1821,9 @@ val STORY_WITH_SELECT_ACTION_API_MULTIPLE_OPTIONS = EmbarkStoryDataBuilder(
                                 query = HELLO_QUERY,
                                 results = listOf(
                                     GraphQLResultsFragment(
-                                        key = "hello", `as` = "HELLO"
-                                    )
+                                        key = "hello",
+                                        `as` = "HELLO",
+                                    ),
                                 ),
                                 errors = listOf(
                                     GraphQLErrorsFragment(
@@ -1821,25 +1831,25 @@ val STORY_WITH_SELECT_ACTION_API_MULTIPLE_OPTIONS = EmbarkStoryDataBuilder(
                                         next = GraphQLErrorsFragment.Next(
                                             __typename = "",
                                             fragments = GraphQLErrorsFragment.Next.Fragments(
-                                                LINK_TO_FOURTH_PASSAGE
-                                            )
-                                        )
-                                    )
+                                                LINK_TO_FOURTH_PASSAGE,
+                                            ),
+                                        ),
+                                    ),
                                 ),
-                                next = LINK_TO_THIRD_PASSAGE
+                                next = LINK_TO_THIRD_PASSAGE,
                             ).build(),
-                            link = STANDARD_SECOND_LINK
-                        ).build()
-                    )
-                ).build()
+                            link = STANDARD_SECOND_LINK,
+                        ).build(),
+                    ),
+                ).build(),
             )
             .build(),
         STANDARD_SECOND_PASSAGE_BUILDER
             .build(),
         STANDARD_THIRD_PASSAGE_BUILDER
             .copy()
-            .build()
-    )
+            .build(),
+    ),
 ).build()
 
 val STORY_WITH_SELECT_ACTION_BADGE = EmbarkStoryDataBuilder(
@@ -1855,10 +1865,10 @@ val STORY_WITH_SELECT_ACTION_BADGE = EmbarkStoryDataBuilder(
                         SelectOptionBuilder(
                             link = STANDARD_FIRST_LINK,
                         ).build(),
-                    )
-                ).build()
+                    ),
+                ).build(),
             )
             .build(),
-        STANDARD_SECOND_PASSAGE_BUILDER.build()
-    )
+        STANDARD_SECOND_PASSAGE_BUILDER.build(),
+    ),
 ).build()

@@ -19,7 +19,7 @@ class GetUpcomingAgreementUseCase(
 ) {
 
     private fun upcomingAgreementQuery() = UpcomingAgreementQuery(
-        locale = localeManager.defaultLocale()
+        locale = localeManager.defaultLocale(),
     )
 
     suspend fun invoke(): UpcomingAgreementResult {

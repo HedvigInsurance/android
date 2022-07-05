@@ -9,7 +9,7 @@ import kotlinx.parcelize.Parcelize
 data class BulletPoint(
     val title: String,
     val description: String,
-    val iconUrls: ThemedIconUrls
+    val iconUrls: ThemedIconUrls,
 ) : Parcelable {
     companion object {
 
@@ -17,7 +17,7 @@ data class BulletPoint(
             BulletPoint(
                 bp.title,
                 bp.description,
-                ThemedIconUrls.from(bp.icon.variants.fragments.iconVariantsFragment)
+                ThemedIconUrls.from(bp.icon.variants.fragments.iconVariantsFragment),
             )
         }
     }

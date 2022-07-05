@@ -68,7 +68,7 @@ class ProfileViewModel(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5.seconds),
-            initialValue = ViewState.Loading
+            initialValue = ViewState.Loading,
         )
 
     fun saveInputs(emailInput: String, phoneNumberInput: String) {

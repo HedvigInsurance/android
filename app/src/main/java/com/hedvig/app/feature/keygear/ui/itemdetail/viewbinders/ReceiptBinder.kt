@@ -19,8 +19,8 @@ class ReceiptBinder(
                 binding.root.context.startActivity(
                     ReceiptActivity.newInstance(
                         binding.root.context,
-                        receipt.file.preSignedUrl
-                    )
+                        receipt.file.preSignedUrl,
+                    ),
                 )
             }
         } ?: run {

@@ -36,9 +36,9 @@ abstract class CreateKeyGearItemViewModel : ViewModel() {
             photos.postValue(
                 listOf(
                     Photo(
-                        uri
-                    )
-                )
+                        uri,
+                    ),
+                ),
             )
         }
         photos.value = photos.value?.toMutableList()?.apply {
@@ -65,7 +65,7 @@ abstract class CreateKeyGearItemViewModel : ViewModel() {
         categories.value = categories.value?.map { c ->
             Category(
                 c.category,
-                selected = category.category == c.category
+                selected = category.category == c.category,
             )
         }
 
@@ -80,7 +80,7 @@ abstract class CreateKeyGearItemViewModel : ViewModel() {
 }
 
 class CreateKeyGearItemViewModelImpl(
-    private val keyGearItemsRepository: KeyGearItemsRepository
+    private val keyGearItemsRepository: KeyGearItemsRepository,
 ) : CreateKeyGearItemViewModel() {
     override val createResult = MutableLiveData<CreateKeyGearItemMutation.Data>()
 
@@ -107,7 +107,7 @@ class CreateKeyGearItemViewModelImpl(
                 uploads?.let { uploads ->
                     keyGearItemsRepository.createKeyGearItemAsync(
                         category,
-                        uploads
+                        uploads,
                     )
                 }
             }

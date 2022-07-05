@@ -35,7 +35,7 @@ abstract class ReferralsEditCodeViewModel : ViewModel() {
 }
 
 class ReferralsEditCodeViewModelImpl(
-    private val referralsRepository: ReferralsRepository
+    private val referralsRepository: ReferralsRepository,
 ) : ReferralsEditCodeViewModel() {
     override fun changeCode(newCode: String) {
         viewModelScope.launch {

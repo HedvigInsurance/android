@@ -6,7 +6,7 @@ import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
 
 class GetMemberIdUseCase(
-    private val apolloClient: ApolloClient
+    private val apolloClient: ApolloClient,
 ) {
     suspend fun memberId() = when (val result = apolloClient.query(MemberIdQuery()).safeQuery()) {
         is QueryResult.Error -> MemberIdResult.Error

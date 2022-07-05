@@ -22,7 +22,7 @@ class NavBarKeyGearEnabledTest : TestCase() {
     val mockServerRule = ApolloMockServerRule(
         LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
             success(LOGGED_IN_DATA)
-        }
+        },
     )
 
     @get:Rule

@@ -33,7 +33,7 @@ fun ChatIcon(
         color = MaterialTheme.colors.background,
         shape = MaterialTheme.shapes.medium,
         modifier = Modifier.size(40.dp),
-        onClick = onClick
+        onClick = onClick,
     ) {
         val paddingAroundRedDot = 2
         Layout(
@@ -44,7 +44,7 @@ fun ChatIcon(
                     contentDescription = contentDescription,
                     modifier = Modifier
                         .layoutId("chatImage")
-                        .size(24.dp)
+                        .size(24.dp),
                 )
                 if (showRedDot) {
                     Box(
@@ -92,8 +92,8 @@ fun ChatIconPreview() {
         Surface(
             color = MaterialTheme.colors.surface,
         ) {
-            Column() {
-                ChatIcon({}, null,)
+            Column {
+                ChatIcon({}, null)
                 ChatIcon({}, null, false)
             }
         }

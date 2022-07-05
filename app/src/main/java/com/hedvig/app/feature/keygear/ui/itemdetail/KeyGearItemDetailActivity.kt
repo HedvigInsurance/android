@@ -55,7 +55,7 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
             photosBinder = PhotosBinder(
                 photosSection,
                 intent.getStringExtra(FIRST_PHOTO_URL),
-                intent.getSerializableExtra(CATEGORY) as KeyGearItemCategory
+                intent.getSerializableExtra(CATEGORY) as KeyGearItemCategory,
             ) { supportStartPostponedEnterTransition() }
             valuationBinder = ValuationBinder(valuationSection)
             nameBinder = NameBinder(nameSection, model)
@@ -118,8 +118,8 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
                     boundedColorLerp(
                         Color.TRANSPARENT,
                         compatColor(R.color.translucent_tool_bar),
-                        percentage
-                    )
+                        percentage,
+                    ),
                 )
             }
         }
@@ -165,7 +165,7 @@ class KeyGearItemDetailActivity : BaseActivity(R.layout.activity_key_gear_item_d
                 item.photos.getOrNull(0)?.file?.preSignedUrl?.let {
                     putExtra(
                         FIRST_PHOTO_URL,
-                        it
+                        it,
                     )
                 }
                 putExtra(CATEGORY, item.category)

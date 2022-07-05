@@ -44,7 +44,7 @@ class RetrievePriceInfoActivity : BaseActivity() {
 
         supportFragmentManager.setFragmentResultListener(
             InsurelyDialog.REQUEST_KEY,
-            this
+            this,
         ) { _, result ->
             val success = result.getBoolean(InsurelyDialog.RESULT_KEY)
             val reference = result.getString(InsurelyDialog.RESULT_REFERENCE) ?: ""
@@ -74,14 +74,14 @@ class RetrievePriceInfoActivity : BaseActivity() {
                     topBar = {
                         TopAppBarWithBack(
                             onClick = ::onBackPressed,
-                            title = stringResource(R.string.insurely_title)
+                            title = stringResource(R.string.insurely_title),
                         )
-                    }
+                    },
                 ) { paddingValues ->
                     RetrievePriceScreen(
                         modifier = Modifier.padding(paddingValues),
                         viewModel = viewModel,
-                        onContinue = ::onContinue
+                        onContinue = ::onContinue,
                     )
                 }
             }
@@ -118,12 +118,12 @@ fun RetrievePriceScreen(
 
     when {
         viewState.collectionStarted != null -> RetrievePriceSuccess(
-            onContinue = { onContinue(viewState.collectionStarted!!.reference, viewState.input) }
+            onContinue = { onContinue(viewState.collectionStarted!!.reference, viewState.input) },
         )
         viewState.collectionFailed != null -> RetrievePriceFailed(
             onRetry = viewModel::onRetry,
             onSkip = { onContinue(null, null) },
-            viewState.collectionFailed!!.insurerName
+            viewState.collectionFailed!!.insurerName,
         )
         else -> {
             FadeWhen(visible = viewState.isLoading) {
@@ -154,19 +154,22 @@ private fun Market.titleRes() = when (this) {
     Market.SE -> R.string.insurely_se_ssn_title
     Market.NO -> R.string.insurely_no_ssn_title
     Market.FR,
-    Market.DK -> throw IllegalArgumentException("No string resource for $this")
+    Market.DK,
+    -> throw IllegalArgumentException("No string resource for $this")
 }
 
 private fun Market.placeHolderRes() = when (this) {
     Market.SE -> R.string.insurely_se_ssn_assistive_text
     Market.NO -> R.string.insurely_no_ssn_assistive_text
     Market.FR,
-    Market.DK -> throw IllegalArgumentException("No string resource for $this")
+    Market.DK,
+    -> throw IllegalArgumentException("No string resource for $this")
 }
 
 private fun Market.labelRes() = when (this) {
     Market.SE -> R.string.insurely_se_ssn_input_label
     Market.NO -> R.string.insurely_no_ssn_input_label
     Market.FR,
-    Market.DK -> throw IllegalArgumentException("No string resource for $this")
+    Market.DK,
+    -> throw IllegalArgumentException("No string resource for $this")
 }

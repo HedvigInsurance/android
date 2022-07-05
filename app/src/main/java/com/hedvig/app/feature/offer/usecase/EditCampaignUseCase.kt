@@ -20,7 +20,7 @@ class EditCampaignUseCase(
 ) {
     suspend fun addCampaignToQuoteCart(
         campaignCode: CampaignCode,
-        quoteCartId: QuoteCartId
+        quoteCartId: QuoteCartId,
     ): Either<ErrorMessage, QuoteCartId> = apolloClient
         .mutation(QuoteCartAddCampaignMutation(campaignCode.code, quoteCartId.id))
         .safeQuery()
@@ -35,7 +35,7 @@ class EditCampaignUseCase(
         .tap { offerRepository.queryAndEmitOffer(quoteCartId) }
 
     suspend fun removeCampaignFromQuoteCart(
-        quoteCartId: QuoteCartId
+        quoteCartId: QuoteCartId,
     ): Either<ErrorMessage, QuoteCartId> = apolloClient
         .mutation(QuoteCartRemoveCampaignMutation(quoteCartId.id))
         .safeQuery()

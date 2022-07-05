@@ -63,12 +63,12 @@ fun EmailInputScreen(
             },
             backgroundColor = MaterialTheme.colors.background,
             elevation = 0.dp,
-            modifier = Modifier.systemBarsPadding(top = true)
+            modifier = Modifier.systemBarsPadding(top = true),
         )
         Box(
             modifier = Modifier
                 .padding(horizontal = 16.dp)
-                .fillMaxSize()
+                .fillMaxSize(),
         ) {
             Column(
                 modifier = Modifier
@@ -122,7 +122,7 @@ fun EmailInputScreen(
                     Text(
                         text = error,
                         style = MaterialTheme.typography.caption.copy(color = MaterialTheme.colors.error),
-                        modifier = Modifier.padding(horizontal = 16.dp)
+                        modifier = Modifier.padding(horizontal = 16.dp),
                     )
                 }
                 Spacer(Modifier.height(144.dp))

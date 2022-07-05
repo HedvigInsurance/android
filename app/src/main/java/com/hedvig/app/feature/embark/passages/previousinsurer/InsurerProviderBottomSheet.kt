@@ -24,7 +24,7 @@ class InsurerProviderBottomSheet : ExpandableBottomSheet() {
             context = requireContext(),
             previousInsurers = insurers,
             imageLoader,
-            onInsurerClicked = ::onInsurerSelected
+            onInsurerClicked = ::onInsurerSelected,
         )
     }
 
@@ -34,8 +34,8 @@ class InsurerProviderBottomSheet : ExpandableBottomSheet() {
             bundleOf(
                 Pair(INSURER_ID_KEY, item.id),
                 Pair(INSURER_COLLECTION_ID_KEY, item.collectionId),
-                Pair(INSURER_NAME_KEY, item.name)
-            )
+                Pair(INSURER_NAME_KEY, item.name),
+            ),
         )
         dismiss()
     }

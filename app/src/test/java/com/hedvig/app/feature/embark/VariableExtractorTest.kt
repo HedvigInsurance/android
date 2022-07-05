@@ -21,7 +21,7 @@ class VariableExtractorTest {
             variables,
             valueStore::get,
             valueStore::put,
-            valueStore::getMultiActionItems
+            valueStore::getMultiActionItems,
         )
 
         assertThat(json.getString("street")).isEqualTo("Est")
@@ -58,19 +58,19 @@ class VariableExtractorTest {
                     Variable.Single(
                         key = "type",
                         from = "type",
-                        castAs = CastType.STRING
+                        castAs = CastType.STRING,
                     ),
                     Variable.Single(
                         key = "area",
                         from = "area",
-                        castAs = CastType.INT
+                        castAs = CastType.INT,
                     ),
                     Variable.Single(
                         key = "hasWaterConnected",
                         from = "hasWaterConnected",
-                        castAs = CastType.BOOLEAN
-                    )
-                )
+                        castAs = CastType.BOOLEAN,
+                    ),
+                ),
             ),
         )
 
@@ -78,7 +78,7 @@ class VariableExtractorTest {
             variables,
             valueStore::get,
             valueStore::put,
-            valueStore::getMultiActionItems
+            valueStore::getMultiActionItems,
         )
 
         val payload = (json.getJSONObject("input").getJSONArray("payload").get(0) as JSONObject)
@@ -93,27 +93,27 @@ class VariableExtractorTest {
             Variable.Single(
                 key = "input.payload[0].firstName",
                 from = "firstName",
-                castAs = CastType.STRING
+                castAs = CastType.STRING,
             ),
             Variable.Single(
                 key = "input.payload[1].firstName",
                 from = "firstName",
-                castAs = CastType.STRING
+                castAs = CastType.STRING,
             ),
             Variable.Single(
                 key = "lastName",
                 from = "lastName",
-                castAs = CastType.STRING
+                castAs = CastType.STRING,
             ),
             Variable.Single(
                 key = "input.payload[1].data.address",
                 from = "streetAddress",
-                castAs = CastType.STRING
+                castAs = CastType.STRING,
             ),
             Variable.Constant(
                 key = "input.payload[0].data.type",
                 value = "SWEDISH_APARTMENT",
-                castAs = CastType.STRING
+                castAs = CastType.STRING,
             ),
         )
 
@@ -141,14 +141,14 @@ class VariableExtractorTest {
                 "        ]," +
                 "      }," +
                 "      lastName: 'Doe'" +
-                "    }"
+                "    }",
         )
 
         val extractedVariables = VariableExtractor.reduceVariables(
             variables,
             valueStore::get,
             valueStore::put,
-            valueStore::getMultiActionItems
+            valueStore::getMultiActionItems,
         )
         assertThat(extractedVariables.toString()).isEqualTo(expected.toString())
     }
@@ -171,7 +171,7 @@ class VariableExtractorTest {
             Variable.Single(
                 key = booleanKey,
                 from = booleanKey,
-                castAs = CastType.BOOLEAN
+                castAs = CastType.BOOLEAN,
             ),
         )
 
@@ -179,7 +179,7 @@ class VariableExtractorTest {
             variables,
             emptyStore::get,
             emptyStore::put,
-            emptyStore::getMultiActionItems
+            emptyStore::getMultiActionItems,
         )
 
         assertThat(result.getBoolean(booleanKey)).isEqualTo(false)
@@ -197,20 +197,20 @@ class VariableExtractorTest {
             Variable.Single(
                 key = trueBooleanKey,
                 from = trueBooleanKey,
-                castAs = CastType.BOOLEAN
+                castAs = CastType.BOOLEAN,
             ),
             Variable.Single(
                 key = falseBooleanKey,
                 from = falseBooleanKey,
-                castAs = CastType.BOOLEAN
-            )
+                castAs = CastType.BOOLEAN,
+            ),
         )
 
         val result = VariableExtractor.reduceVariables(
             variables,
             storeWithBooleanKey::get,
             storeWithBooleanKey::put,
-            storeWithBooleanKey::getMultiActionItems
+            storeWithBooleanKey::getMultiActionItems,
         )
 
         assertThat(result.getBoolean(trueBooleanKey)).isEqualTo(true)
@@ -227,15 +227,15 @@ class VariableExtractorTest {
             Variable.Single(
                 key = testKey,
                 from = testKey,
-                castAs = CastType.INT
-            )
+                castAs = CastType.INT,
+            ),
         )
 
         val result = VariableExtractor.reduceVariables(
             variables,
             store::get,
             store::put,
-            store::getMultiActionItems
+            store::getMultiActionItems,
         )
 
         assertThat(result.getInt(testKey)).isEqualTo(5)
@@ -282,67 +282,67 @@ class VariableExtractorTest {
             Variable.Single(
                 key = "contractBundleId",
                 from = "contractBundleId",
-                castAs = CastType.STRING
+                castAs = CastType.STRING,
             ),
             Variable.Single(
                 key = "type",
                 from = "homeType",
-                castAs = CastType.STRING
+                castAs = CastType.STRING,
             ),
             Variable.Single(
                 key = "street",
                 from = "streetAddress",
-                castAs = CastType.STRING
+                castAs = CastType.STRING,
             ),
             Variable.Single(
                 key = "zip",
                 from = "postalNumber",
-                castAs = CastType.STRING
+                castAs = CastType.STRING,
             ),
             Variable.Single(
                 key = "livingSpace",
                 from = "livingSpace",
-                castAs = CastType.INT
+                castAs = CastType.INT,
             ),
             Variable.Single(
                 key = "numberCoInsured",
                 from = "householdSize",
-                castAs = CastType.INT
+                castAs = CastType.INT,
             ),
             Variable.Single(
                 key = "ownerShip",
                 from = "apartmentType",
-                castAs = CastType.STRING
+                castAs = CastType.STRING,
             ),
             Variable.Single(
                 key = "startDate",
                 from = "movingDate",
-                castAs = CastType.STRING
+                castAs = CastType.STRING,
             ),
             Variable.Single(
                 key = "isStudent",
                 from = "isStudent",
-                castAs = CastType.BOOLEAN
+                castAs = CastType.BOOLEAN,
             ),
             Variable.Single(
                 key = "ancillaryArea",
                 from = "ancillaryArea",
-                castAs = CastType.INT
+                castAs = CastType.INT,
             ),
             Variable.Single(
                 key = "yearOfConstruction",
                 from = "yearOfConstruction",
-                castAs = CastType.INT
+                castAs = CastType.INT,
             ),
             Variable.Single(
                 key = "input.payload[0].numberOfBathrooms",
                 from = "numberOfBathrooms",
-                castAs = CastType.INT
+                castAs = CastType.INT,
             ),
             Variable.Single(
                 key = "input.payload[0].isSubleted",
                 from = "isSubleted",
-                castAs = CastType.BOOLEAN
+                castAs = CastType.BOOLEAN,
             ),
             Variable.Multi(
                 key = "input.payload[0].extraBuildings",
@@ -351,25 +351,25 @@ class VariableExtractorTest {
                     Variable.Single(
                         key = "type",
                         from = "type",
-                        castAs = CastType.STRING
+                        castAs = CastType.STRING,
                     ),
                     Variable.Single(
                         key = "area",
                         from = "area",
-                        castAs = CastType.INT
+                        castAs = CastType.INT,
                     ),
                     Variable.Single(
                         key = "hasWaterConnected",
                         from = "hasWaterConnected",
-                        castAs = CastType.BOOLEAN
-                    )
-                )
+                        castAs = CastType.BOOLEAN,
+                    ),
+                ),
             ),
             Variable.Constant(
                 key = "input.payload[0].data.type",
                 value = "SWEDISH_APARTMENT",
-                castAs = CastType.STRING
-            )
+                castAs = CastType.STRING,
+            ),
         )
     }
 
@@ -381,12 +381,12 @@ class VariableExtractorTest {
                     __typename = "EmbarkAPIGraphQLSingleVariable",
                     key = "audioRecording",
                     from = "audioRecording",
-                    `as` = EmbarkAPIGraphQLSingleVariableCasting.`file`
+                    `as` = EmbarkAPIGraphQLSingleVariableCasting.`file`,
                 ),
                 asEmbarkAPIGraphQLGeneratedVariable = null,
                 asEmbarkAPIGraphQLMultiActionVariable = null,
                 asEmbarkAPIGraphQLConstantVariable = null,
-            )
+            ),
         )
     }
 }

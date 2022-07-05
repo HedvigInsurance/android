@@ -82,7 +82,7 @@ fun AddressAutoCompleteScreen(
         topBar = {
             TopAppBar(viewState, cancelAutoCompletion, setNewTextInput, focusRequester, closeKeyboard)
         },
-        backgroundColor = MaterialTheme.colors.surface
+        backgroundColor = MaterialTheme.colors.surface,
     ) { paddingValues ->
         val ime = LocalWindowInsets.current.ime
         val navBars = LocalWindowInsets.current.navigationBars
@@ -100,7 +100,7 @@ fun AddressAutoCompleteScreen(
                 applyEnd = true,
                 applyBottom = true,
             ),
-            modifier = Modifier.padding(paddingValues)
+            modifier = Modifier.padding(paddingValues),
         )
     }
 }
@@ -123,7 +123,7 @@ private fun TopAppBar(
                 backgroundColor = MaterialTheme.colors.background,
                 contentPadding = rememberInsetsPaddingValues(
                     insets = LocalWindowInsets.current.statusBars,
-                    applyBottom = false
+                    applyBottom = false,
                 ),
             )
             AddressInput(
@@ -131,7 +131,7 @@ private fun TopAppBar(
                 setNewTextInput = setNewTextInput,
                 focusRequester = focusRequester,
                 closeKeyboard = closeKeyboard,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             )
         }
     }
@@ -147,7 +147,7 @@ private fun AddressInput(
 ) {
     Card(
         border = BorderStroke(1.dp, MaterialTheme.colors.primary.copy(alpha = 0.12f)),
-        modifier = modifier
+        modifier = modifier,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -158,8 +158,8 @@ private fun AddressInput(
                 mutableStateOf(
                     TextFieldValue(
                         text = text,
-                        selection = TextRange(text.length)
-                    )
+                        selection = TextRange(text.length),
+                    ),
                 )
             }
             LaunchedEffect(viewState.input.selectedAddress) {
@@ -181,16 +181,16 @@ private fun AddressInput(
                 },
                 textStyle = LocalTextStyle.current.copy(
                     textAlign = TextAlign.Center,
-                    color = LocalContentColor.current.copy(LocalContentAlpha.current)
+                    color = LocalContentColor.current.copy(LocalContentAlpha.current),
                 ),
                 keyboardActions = KeyboardActions(
-                    onDone = { closeKeyboard() }
+                    onDone = { closeKeyboard() },
                 ),
                 singleLine = true,
                 cursorBrush = SolidColor(LocalContentColor.current),
                 modifier = Modifier
                     .focusRequester(focusRequester)
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
             )
             val numberAndCity = viewState.input.selectedAddress?.toPresentableTextPair()?.second
             AnimatedVisibility(numberAndCity != null) {
@@ -226,7 +226,7 @@ private fun SuggestionsList(
     ) {
         items(
             items = viewState.results,
-            key = { item -> item.id ?: item.address }
+            key = { item -> item.id ?: item.address },
         ) { address: DanishAddress ->
             val (primaryText, secondaryText) = address.toPresentableTextPair()
             ListItem(
@@ -235,7 +235,7 @@ private fun SuggestionsList(
                 singleLineSecondaryText = true,
                 modifier = Modifier.clickable {
                     selectAddress(address)
-                }
+                },
             )
         }
         if (viewState.showCantFindAddressItem) {
@@ -247,7 +247,7 @@ private fun SuggestionsList(
                             color = MaterialTheme.colors.error,
                         )
                     },
-                    modifier = Modifier.clickable { cantFindAddress() }
+                    modifier = Modifier.clickable { cantFindAddress() },
                 )
             }
         }

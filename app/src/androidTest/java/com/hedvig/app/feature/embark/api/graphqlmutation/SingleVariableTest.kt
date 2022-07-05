@@ -27,7 +27,7 @@ class SingleVariableTest : TestCase() {
         },
         VARIABLE_MUTATION to apolloResponse {
             success(jsonObjectOf("hello" to variables.getString("variable")))
-        }
+        },
     )
 
     @get:Rule
@@ -40,7 +40,7 @@ class SingleVariableTest : TestCase() {
                 context(),
                 this.javaClass.name,
                 "",
-            )
+            ),
         )
 
         Screen.onScreen<EmbarkScreen> {

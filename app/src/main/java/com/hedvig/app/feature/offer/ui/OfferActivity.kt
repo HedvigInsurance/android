@@ -98,28 +98,30 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
         binding.signButton.applyNavigationBarInsetsMargin()
 
         binding.appbar.background.alpha = 0
-        binding.offerScroll.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            private var scrollY = 0
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                scrollY += dy
-                val percentage = scrollY.toFloat() / binding.offerToolbar.height
-                binding.appbar.background.alpha = (percentage * 40).toInt().coerceAtMost(255)
+        binding.offerScroll.addOnScrollListener(
+            object : RecyclerView.OnScrollListener() {
+                private var scrollY = 0
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    scrollY += dy
+                    val percentage = scrollY.toFloat() / binding.offerToolbar.height
+                    binding.appbar.background.alpha = (percentage * 40).toInt().coerceAtMost(255)
 
-                if (percentage >= 9) {
-                    binding.appbar.elevation = 5f
-                } else {
-                    binding.appbar.elevation = 0f
-                }
+                    if (percentage >= 9) {
+                        binding.appbar.elevation = 5f
+                    } else {
+                        binding.appbar.elevation = 0f
+                    }
 
-                if (percentage > 4 && !binding.signButton.isVisible) {
-                    TransitionManager.beginDelayedTransition(binding.offerRoot)
-                    binding.signButton.show()
-                } else if (percentage < 4 && binding.signButton.isVisible) {
-                    TransitionManager.beginDelayedTransition(binding.offerRoot)
-                    binding.signButton.hide()
+                    if (percentage > 4 && !binding.signButton.isVisible) {
+                        TransitionManager.beginDelayedTransition(binding.offerRoot)
+                        binding.signButton.show()
+                    } else if (percentage < 4 && binding.signButton.isVisible) {
+                        TransitionManager.beginDelayedTransition(binding.offerRoot)
+                        binding.signButton.hide()
+                    }
                 }
-            }
-        })
+            },
+        )
 
         binding.offerToolbar.setNavigationOnClickListener { onBackPressed() }
         binding.offerToolbar.setOnMenuItemClickListener(::handleMenuItem)
@@ -139,7 +141,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             imageLoader = imageLoader,
         )
         val insurableLimitsAdapter = InsurableLimitsAdapter(
-            fragmentManager = supportFragmentManager
+            fragmentManager = supportFragmentManager,
         )
         val documentAdapter = DocumentAdapter()
         val bottomOfferAdapter = OfferAdapter(
@@ -177,7 +179,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 when (viewState) {
                     is OfferViewModel.ViewState.Loading -> {}
                     is OfferViewModel.ViewState.Error -> showErrorDialog(
-                        viewState.message ?: getString(R.string.NETWORK_ERROR_ALERT_MESSAGE)
+                        viewState.message ?: getString(R.string.NETWORK_ERROR_ALERT_MESSAGE),
                     ) {}
                     is OfferViewModel.ViewState.Content -> {
                         topOfferAdapter.submitList(viewState.createTopOfferItems())
@@ -188,7 +190,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                         setSignButtonState(
                             viewState.offerModel.checkoutMethod,
                             viewState.bundleVariant.bundle.checkoutLabel,
-                            viewState.paymentMethods
+                            viewState.paymentMethods,
                         )
 
                         TransitionManager.beginDelayedTransition(binding.offerToolbar)
@@ -223,7 +225,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
     private fun setSignButtonState(
         checkoutMethod: CheckoutMethod,
         checkoutLabel: CheckoutLabel,
-        paymentMethods: PaymentMethodsApiResponse?
+        paymentMethods: PaymentMethodsApiResponse?,
     ) {
         binding.signButton.text = checkoutLabel.toString(this)
         binding.signButton.icon = checkoutMethod.checkoutIconRes()?.let(::compatDrawable)
@@ -250,16 +252,16 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 startActivity(
                     ChangeAddressResultActivity.newInstance(
                         this@OfferActivity,
-                        ChangeAddressResultActivity.Result.Error
-                    )
+                        ChangeAddressResultActivity.Result.Error,
+                    ),
                 )
             }
             PostSignScreen.CROSS_SELL -> {
                 startActivity(
                     CrossSellingResultActivity.newInstance(
                         this@OfferActivity,
-                        CrossSellingResult.Error
-                    )
+                        CrossSellingResult.Error,
+                    ),
                 )
             }
         }
@@ -274,8 +276,8 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                         this,
                         event.payinType,
                         market,
-                        true
-                    )
+                        true,
+                    ),
                 )
             }
             PostSignScreen.MOVE -> {
@@ -283,15 +285,15 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                     ChangeAddressResultActivity.newInstance(
                         this@OfferActivity,
                         ChangeAddressResultActivity.Result.Success(event.startDate),
-                    )
+                    ),
                 )
             }
             PostSignScreen.CROSS_SELL -> {
                 startActivity(
                     CrossSellingResultActivity.newInstance(
                         this@OfferActivity,
-                        CrossSellingResult.Success.from(event)
-                    )
+                        CrossSellingResult.Success.from(event),
+                    ),
                 )
             }
         }
@@ -309,7 +311,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 perils = event.quoteDetailItems.perils,
                 insurableLimits = event.quoteDetailItems.insurableLimits,
                 documents = event.quoteDetailItems.documents,
-            )
+            ),
         )
     }
 
@@ -320,7 +322,8 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 binding.toolbarTitle.isVisible = false
             }
             ViewConfiguration.Title.UPDATE,
-            ViewConfiguration.Title.UNKNOWN -> {
+            ViewConfiguration.Title.UNKNOWN,
+            -> {
                 binding.toolbarTitle.isVisible = true
                 binding.toolbarLogo.isVisible = false
             }
@@ -412,7 +415,7 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
                 positiveLabel = R.string.general_back_button,
                 negativeLabel = R.string.general_discard_button,
                 positiveAction = {},
-                negativeAction = { model.onDiscardOffer() }
+                negativeAction = { model.onDiscardOffer() },
             )
             true
         }
@@ -430,7 +433,8 @@ class OfferActivity : BaseActivity(R.layout.activity_offer) {
             selectedContractTypes: List<SelectedContractType> = emptyList(),
             shouldShowOnNextAppStart: Boolean = false,
         ) = Intent(
-            context, OfferActivity::class.java
+            context,
+            OfferActivity::class.java,
         ).apply {
             putExtra(QUOTE_CART_ID, quoteCartId)
             putExtra(SELECTED_CONTRACT_TYPES, selectedContractTypes.toArrayList())

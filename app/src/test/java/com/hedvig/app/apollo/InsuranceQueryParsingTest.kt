@@ -39,14 +39,14 @@ class InsuranceQueryParsingTest {
                     }
                     status = activeStatusStatus {
                         pastInception = PromiscuousLocalDateAdapter.toJsonStringForTestBuilder(
-                            LocalDate.of(2021, 1, 6)
+                            LocalDate.of(2021, 1, 6),
                         )
                         upcomingAgreementChange = null
                     }
                     displayName = "Hemförsäkring"
                     upcomingRenewal = upcomingRenewal {
                         renewalDate = PromiscuousLocalDateAdapter.toJsonStringForTestBuilder(
-                            LocalDate.of(2021, 5, 6)
+                            LocalDate.of(2021, 5, 6),
                         )
                         draftCertificateUrl = "https://www.example.com"
                     }
@@ -90,7 +90,7 @@ class InsuranceQueryParsingTest {
                                         title = "Insured people"
                                         subtitle = null
                                         value = "You + 1 person"
-                                    }
+                                    },
                                 )
                             },
                         )
@@ -124,7 +124,7 @@ class InsuranceQueryParsingTest {
                             label = "Utstyrene dine er forsikrat till"
                             limit = "1 000 000 kr"
                             description = "Dina prylar är försäkrade till"
-                        }
+                        },
                     )
                     termsAndConditions = termsAndConditions {
                         displayName = "Terms and Conditions"
@@ -136,7 +136,7 @@ class InsuranceQueryParsingTest {
                         this.title = "Title"
                         this.sections = emptyList()
                     }
-                }
+                },
             )
         }
     }

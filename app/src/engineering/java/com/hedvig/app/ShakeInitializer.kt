@@ -17,7 +17,7 @@ class ShakeInitializer : Initializer<Unit> {
         Shake.start(
             context.applicationContext as Application,
             context.getString(R.string.SHAKE_CLIENT_ID),
-            context.getString(R.string.SHAKE_CLIENT_SECRET)
+            context.getString(R.string.SHAKE_CLIENT_SECRET),
         )
     }
 

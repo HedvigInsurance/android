@@ -23,9 +23,9 @@ class TextActionSetValidation : TestCase() {
     val apolloMockServerRule = ApolloMockServerRule(
         EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse {
             success(
-                STORY_WITH_TEXT_ACTION_SET_FIRST_TEXT_PERSONAL_NUMBER_SECOND_TEXT_EMAIL_VALIDATION
+                STORY_WITH_TEXT_ACTION_SET_FIRST_TEXT_PERSONAL_NUMBER_SECOND_TEXT_EMAIL_VALIDATION,
             )
-        }
+        },
     )
 
     @get:Rule
@@ -38,7 +38,7 @@ class TextActionSetValidation : TestCase() {
                 context(),
                 this.javaClass.name,
                 "",
-            )
+            ),
         )
 
         TextActionSetScreen {

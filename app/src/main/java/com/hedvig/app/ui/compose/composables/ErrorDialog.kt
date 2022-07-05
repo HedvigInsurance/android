@@ -11,7 +11,7 @@ import com.hedvig.app.R
 fun ErrorDialog(
     onDismiss: () -> Unit,
     title: String = stringResource(R.string.error_dialog_title),
-    message: String?
+    message: String?,
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -25,6 +25,6 @@ fun ErrorDialog(
             TextButton(onClick = onDismiss) {
                 Text(stringResource(R.string.error_dialog_button))
             }
-        }
+        },
     )
 }

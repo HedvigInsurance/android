@@ -15,7 +15,7 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 class DeviceInformationService(
-    private val context: Context
+    private val context: Context,
 ) {
     @SuppressLint("HardwareIds")
     fun getDeviceFingerprint(): String {

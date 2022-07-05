@@ -22,7 +22,7 @@ import com.hedvig.app.ui.compose.theme.hedvigBlack12percent
 fun InfoBanner(
     onClick: () -> Unit,
     text: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val backgroundColor = if (isSystemInDarkTheme()) {
         colorResource(R.color.lavender_400)
@@ -35,7 +35,7 @@ fun InfoBanner(
             .fillMaxWidth()
             .clickable { onClick() },
         color = backgroundColor,
-        border = BorderStroke(1.dp, hedvigBlack12percent)
+        border = BorderStroke(1.dp, hedvigBlack12percent),
     ) {
         Text(
             modifier = Modifier.padding(16.dp),

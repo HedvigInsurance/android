@@ -41,7 +41,7 @@ class ConnectPaymentResultFragment : Fragment(R.layout.connect_payment_result_fr
                     when (payinType) {
                         ConnectPayinType.ADYEN -> R.string.pay_in_confirmation_headline
                         ConnectPayinType.TRUSTLY -> R.string.pay_in_confirmation_direct_debit_headline
-                    }
+                    },
                 )
                 doItLater.isVisible = false
                 close.setText(R.string.pay_in_confirmation_continue_button)
@@ -55,7 +55,7 @@ class ConnectPaymentResultFragment : Fragment(R.layout.connect_payment_result_fr
                     when (payinType) {
                         ConnectPayinType.TRUSTLY -> R.string.pay_in_error_direct_debit_body
                         ConnectPayinType.ADYEN -> R.string.pay_in_error_body
-                    }
+                    },
                 )
                 body.isVisible = true
                 doItLater.isVisible = true
@@ -66,8 +66,8 @@ class ConnectPaymentResultFragment : Fragment(R.layout.connect_payment_result_fr
                 close.setHapticClickListener {
                     connectPaymentViewModel.navigateTo(
                         ConnectPaymentScreenState.Connect(
-                            TransitionType.ENTER_RIGHT_EXIT_RIGHT
-                        )
+                            TransitionType.ENTER_RIGHT_EXIT_RIGHT,
+                        ),
                     )
                 }
             }
@@ -82,7 +82,7 @@ class ConnectPaymentResultFragment : Fragment(R.layout.connect_payment_result_fr
             ConnectPaymentResultFragment().apply {
                 arguments = bundleOf(
                     SUCCESS to success,
-                    PAYIN_TYPE to payinType
+                    PAYIN_TYPE to payinType,
                 )
             }
     }

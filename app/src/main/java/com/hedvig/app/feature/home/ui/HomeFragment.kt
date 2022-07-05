@@ -88,8 +88,8 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
                         scroll = scrollPosition
                         loggedInViewModel.onScroll(scrollPosition)
                     },
-                    viewLifecycleOwner
-                )
+                    viewLifecycleOwner,
+                ),
             )
         }
 

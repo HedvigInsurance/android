@@ -17,16 +17,16 @@ class TabNotificationServiceTest {
     @Test
     fun `when all notifications have been seen, should not show notification for any tab`() {
         val mockedCrossSellNotificationBadgeService = mockedCrossSellNotificationBadgeService(
-            showNotification = false
+            showNotification = false,
         )
 
         val mockedReferralsNotificationBadgeService = mockedReferralsNotificationBadgeService(
-            showNotification = false
+            showNotification = false,
         )
 
         val sut = TabNotificationService(
             mockedCrossSellNotificationBadgeService,
-            mockedReferralsNotificationBadgeService
+            mockedReferralsNotificationBadgeService,
         )
 
         runBlockingTest {
@@ -37,16 +37,16 @@ class TabNotificationServiceTest {
     @Test
     fun `when there is an unseen cross-sell notification, should show notification for insurance tab`() {
         val mockedCrossSellNotificationBadgeService = mockedCrossSellNotificationBadgeService(
-            showNotification = true
+            showNotification = true,
         )
 
         val mockedReferralsNotificationBadgeService = mockedReferralsNotificationBadgeService(
-            showNotification = false
+            showNotification = false,
         )
 
         val sut = TabNotificationService(
             mockedCrossSellNotificationBadgeService,
-            mockedReferralsNotificationBadgeService
+            mockedReferralsNotificationBadgeService,
         )
 
         runBlockingTest {
@@ -57,16 +57,16 @@ class TabNotificationServiceTest {
     @Test
     fun `when there is an unseen referral notification, should show notification for referral tab`() {
         val mockedCrossSellNotificationBadgeService = mockedCrossSellNotificationBadgeService(
-            showNotification = false
+            showNotification = false,
         )
 
         val mockedReferralsNotificationBadgeService = mockedReferralsNotificationBadgeService(
-            showNotification = true
+            showNotification = true,
         )
 
         val sut = TabNotificationService(
             mockedCrossSellNotificationBadgeService,
-            mockedReferralsNotificationBadgeService
+            mockedReferralsNotificationBadgeService,
         )
 
         runBlockingTest {
@@ -75,7 +75,7 @@ class TabNotificationServiceTest {
     }
 
     private fun mockedCrossSellNotificationBadgeService(
-        showNotification: Boolean
+        showNotification: Boolean,
     ): CrossSellNotificationBadgeService {
         val mock = mockk<CrossSellNotificationBadgeService>()
         coEvery { mock.shouldShowTabNotification() } returns flowOf(showNotification)
@@ -83,7 +83,7 @@ class TabNotificationServiceTest {
     }
 
     private fun mockedReferralsNotificationBadgeService(
-        showNotification: Boolean
+        showNotification: Boolean,
     ): ReferralsNotificationBadgeService {
         val mock = mockk<ReferralsNotificationBadgeService>()
         coEvery { mock.shouldShowNotification() } returns flowOf(showNotification)

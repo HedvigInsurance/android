@@ -22,9 +22,9 @@ class TextActionAppendHyphen : TestCase() {
     val mockServerRule = ApolloMockServerRule(
         EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse {
             success(
-                STORY_WITH_TEXT_ACTION_PERSONAL_NUMBER
+                STORY_WITH_TEXT_ACTION_PERSONAL_NUMBER,
             )
-        }
+        },
     )
 
     @get:Rule

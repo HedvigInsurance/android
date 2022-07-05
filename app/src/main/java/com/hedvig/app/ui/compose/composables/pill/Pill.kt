@@ -26,12 +26,12 @@ fun Pill(
         shape = MaterialTheme.shapes.small,
         color = backgroundColor,
         contentColor = hedvigContentColorFor(backgroundColor),
-        modifier = Modifier.heightIn(min = 24.dp)
+        modifier = Modifier.heightIn(min = 24.dp),
     ) {
         Row(
             Modifier.padding(
                 horizontal = 8.dp,
-                vertical = 5.dp
+                vertical = 5.dp,
             ),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
@@ -39,7 +39,7 @@ fun Pill(
             Text(
                 text,
                 style = MaterialTheme.typography.caption,
-                maxLines = 1
+                maxLines = 1,
             )
         }
     }

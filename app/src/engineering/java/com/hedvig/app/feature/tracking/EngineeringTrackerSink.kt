@@ -15,7 +15,7 @@ class EngineeringTrackerSink : HAnalyticsSink {
     override fun send(event: HAnalyticsEvent) {
         _tracks.update {
             listOf(
-                TrackEvent(event.name, event.properties.toJsonObject().toString(2), LocalDateTime.now())
+                TrackEvent(event.name, event.properties.toJsonObject().toString(2), LocalDateTime.now()),
             ) + it
         }
     }

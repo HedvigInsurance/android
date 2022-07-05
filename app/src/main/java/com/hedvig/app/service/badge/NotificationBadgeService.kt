@@ -12,7 +12,7 @@ class NotificationBadgeService(
 
     @JvmName("getValueOrEmptySetIfItsNull")
     fun <SetOfT : Set<T>, T> getValue(
-        notificationBadge: NotificationBadge<SetOfT>
+        notificationBadge: NotificationBadge<SetOfT>,
     ): Flow<Set<T>> {
         return dataStore
             .data
@@ -23,7 +23,7 @@ class NotificationBadgeService(
     }
 
     fun <T> getValue(
-        notificationBadge: NotificationBadge<T>
+        notificationBadge: NotificationBadge<T>,
     ): Flow<T?> {
         return dataStore
             .data
@@ -34,7 +34,7 @@ class NotificationBadgeService(
 
     suspend fun <T> setValue(
         notificationBadge: NotificationBadge<T>,
-        newStatus: T
+        newStatus: T,
     ) {
         dataStore.edit { preferences ->
             preferences[notificationBadge.key] = newStatus

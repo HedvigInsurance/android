@@ -34,7 +34,7 @@ class SwedishSSNVisualTransformation : VisualTransformation {
 
         return TransformedText(
             AnnotatedString(output),
-            swedishSSNOffsetTranslator
+            swedishSSNOffsetTranslator,
         )
     }
 }

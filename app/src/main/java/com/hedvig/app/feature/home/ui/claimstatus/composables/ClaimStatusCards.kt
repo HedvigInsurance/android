@@ -44,7 +44,7 @@ fun ClaimStatusCards(
             count = claimStatusCardsUiState.size,
             state = pagerState,
             itemSpacing = 0.dp,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) { page: Int ->
             val claimStatusUiState = claimStatusCardsUiState[page]
             val itemWidth = screenWidth - (16 * 2).dp
@@ -61,7 +61,7 @@ fun ClaimStatusCards(
                         enabled = areCardsClickable,
                         onClick = {
                             goToDetailScreen?.invoke(claimStatusUiState.id)
-                        }
+                        },
                     ),
                 isClickable = areCardsClickable,
                 onClaimCardShown = onClaimCardShown,
@@ -74,7 +74,7 @@ fun ClaimStatusCards(
 
             HorizontalPagerIndicator(
                 pagerState = pagerState,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+                modifier = Modifier.align(Alignment.CenterHorizontally),
             )
         }
     }

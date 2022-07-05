@@ -28,7 +28,7 @@ value class ProgressPercentage(
             target: Dp,
         ): ProgressPercentage {
             return ProgressPercentage(
-                (current / target).coerceIn(0f, 1f)
+                (current / target).coerceIn(0f, 1f),
             )
         }
     }

@@ -20,9 +20,9 @@ data class ContractStatusDataBuilder(
                         ContractStatus.TERMINATED_TODAY -> "TerminatedTodayStatus"
                         ContractStatus.TERMINATED -> "TerminatedStatus"
                         ContractStatus.TERMINATED_IN_FUTURE -> "TerminatedInFuture"
-                    }
-                )
+                    },
+                ),
             )
-        }
+        },
     )
 }

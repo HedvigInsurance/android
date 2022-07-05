@@ -21,14 +21,14 @@ abstract class KeyGearValuationViewModel : ViewModel() {
     abstract fun updatePurchaseDateAndPrice(
         id: String,
         date: LocalDate,
-        price: MonetaryAmountV2Input
+        price: MonetaryAmountV2Input,
     )
 
     abstract fun loadItem(id: String)
 }
 
 class KeyGearValuationViewModelImpl(
-    private val repository: KeyGearItemsRepository
+    private val repository: KeyGearItemsRepository,
 ) :
     KeyGearValuationViewModel() {
     override val uploadResult = MutableLiveData<KeyGearItemQuery.Data>()
@@ -37,7 +37,7 @@ class KeyGearValuationViewModelImpl(
     override fun updatePurchaseDateAndPrice(
         id: String,
         date: LocalDate,
-        price: MonetaryAmountV2Input
+        price: MonetaryAmountV2Input,
     ) {
         viewModelScope.launch {
             val result = runCatching { repository.updatePurchasePriceAndDateAsync(id, date, price) }

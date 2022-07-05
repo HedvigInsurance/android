@@ -24,7 +24,7 @@ class ExplanationBottomSheet : BottomSheetDialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? = inflater.inflate(R.layout.bottom_sheet_explanation, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -89,7 +89,7 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
                             placeholderText = data.placeholder,
                             onClick = {
                                 addressActivityResultLauncher.launch(viewState.address)
-                            }
+                            },
                         )
                     }
                 }
@@ -119,8 +119,8 @@ class EmbarkAddressAutoCompleteFragment : Fragment(R.layout.fragment_embark_addr
             Response.SingleResponse(
                 address?.toPresentableTextPair()?.toList()?.filterNotNull()
                     ?.joinToString(separator = System.lineSeparator())
-                    ?: getString(R.string.EMBARK_ADDRESS_AUTOCOMPLETE_NO_ADDRESS)
-            )
+                    ?: getString(R.string.EMBARK_ADDRESS_AUTOCOMPLETE_NO_ADDRESS),
+            ),
         )
         delay(EmbarkActivity.PASSAGE_ANIMATION_DELAY_DURATION)
     }

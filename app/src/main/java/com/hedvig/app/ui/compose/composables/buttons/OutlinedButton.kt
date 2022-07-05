@@ -27,7 +27,7 @@ fun LargeOutlinedTextButton(
         content = {
             Text(text = text)
         },
-        onClick = onClick
+        onClick = onClick,
     )
 }
 

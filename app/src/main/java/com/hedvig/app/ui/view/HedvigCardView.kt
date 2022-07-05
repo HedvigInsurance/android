@@ -13,7 +13,7 @@ import com.hedvig.app.util.extensions.compatDrawable
 open class HedvigCardView @JvmOverloads constructor(
     context: Context,
     attributeSet: AttributeSet? = null,
-    defStyle: Int = 0
+    defStyle: Int = 0,
 ) : FrameLayout(context, attributeSet, defStyle) {
     init {
         background = context.compatDrawable(R.drawable.hedvig_card_view_ripple)
@@ -21,7 +21,7 @@ open class HedvigCardView @JvmOverloads constructor(
             attributeSet,
             R.styleable.HedvigCardView,
             defStyle,
-            0
+            0,
         )
         if (!attributes.hasValue(R.styleable.HedvigCardView_android_elevation)) {
             elevation = resources.getDimension(R.dimen.hedvig_card_view_elevation)

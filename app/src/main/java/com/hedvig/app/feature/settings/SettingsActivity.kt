@@ -67,7 +67,7 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
                         is UserViewModel.Event.Error -> requireContext().showAlert(
                             title = R.string.error_dialog_title,
                             message = R.string.component_error,
-                            positiveAction = {}
+                            positiveAction = {},
                         )
                     }
                 }
@@ -103,7 +103,7 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
                         R.string.SETTINGS_ALERT_CHANGE_MARKET_TEXT,
                         positiveLabel = R.string.ALERT_OK,
                         negativeLabel = R.string.SETTINGS_ALERT_CHANGE_MARKET_CANCEL,
-                        positiveAction = { userViewModel.logout() }
+                        positiveAction = { userViewModel.logout() },
                     )
                     true
                 }
@@ -149,14 +149,14 @@ class SettingsActivity : BaseActivity(R.layout.activity_settings) {
                             Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
                                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                 putExtra(Settings.EXTRA_APP_PACKAGE, requireContext().packageName)
-                            }
+                            },
                         )
                     } else {
                         startActivity(
                             Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                 data = Uri.fromParts("package", requireContext().packageName, null)
-                            }
+                            },
                         )
                     }
                     true

@@ -35,8 +35,8 @@ class PaymentRepository(
             .writeOperation(
                 paymentQuery,
                 cachedData.copy(
-                    activePayoutMethods = PaymentQuery.ActivePayoutMethods(status = status)
-                )
+                    activePayoutMethods = PaymentQuery.ActivePayoutMethods(status = status),
+                ),
             )
     }
 }

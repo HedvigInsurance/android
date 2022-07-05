@@ -14,8 +14,8 @@ class MockLoggedInViewModel : LoggedInViewModel() {
             loggedInQueryData = LoggedInDataBuilder().build(),
             isKeyGearEnabled = true,
             isReferralsEnabled = true,
-            unseenTabNotifications = emptySet()
-        )
+            unseenTabNotifications = emptySet(),
+        ),
     )
 
     override fun onReviewByChatComplete() {}

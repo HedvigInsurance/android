@@ -51,7 +51,7 @@ class MultiActionAdapter(
             fun bind(
                 item: MultiActionItem.Component,
                 onComponentClick: (Long) -> Unit,
-                onComponentRemove: (Long) -> Unit
+                onComponentRemove: (Long) -> Unit,
             ) {
                 binding.title.text = item.selectedDropDowns.joinToString { it.text }
 
@@ -76,7 +76,7 @@ class MultiActionAdapter(
 
         class ButtonViewHolder(
             parent: ViewGroup,
-            onClick: () -> Unit
+            onClick: () -> Unit,
         ) : MultiActionViewHolder(parent.inflate(R.layout.view_multi_action_add)) {
             private val binding by viewBinding(ViewMultiActionAddBinding::bind)
 

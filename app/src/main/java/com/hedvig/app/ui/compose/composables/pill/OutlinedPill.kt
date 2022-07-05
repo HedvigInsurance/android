@@ -30,14 +30,14 @@ fun OutlinedPill(
         contentColor = hedvigContentColorFor(backgroundColor),
         border = BorderStroke(
             width = ButtonDefaults.OutlinedBorderSize,
-            color = MaterialTheme.colors.onSurface
+            color = MaterialTheme.colors.onSurface,
         ),
-        modifier = Modifier.heightIn(min = 24.dp)
+        modifier = Modifier.heightIn(min = 24.dp),
     ) {
         Row(
             Modifier.padding(
                 horizontal = 8.dp,
-                vertical = 5.dp
+                vertical = 5.dp,
             ),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
@@ -45,7 +45,7 @@ fun OutlinedPill(
             Text(
                 text,
                 style = MaterialTheme.typography.caption,
-                maxLines = 1
+                maxLines = 1,
             )
         }
     }

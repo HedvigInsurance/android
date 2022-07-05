@@ -21,7 +21,7 @@ import com.hedvig.app.ui.compose.theme.HedvigTheme
 @Composable
 fun NotificationSubheading(
     text: String,
-    showNotification: Boolean
+    showNotification: Boolean,
 ) {
     Row(
         modifier = Modifier
@@ -32,7 +32,7 @@ fun NotificationSubheading(
                 end = 16.dp,
                 bottom = 8.dp,
             ),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         AnimatedVisibility(showNotification) {
             Row {

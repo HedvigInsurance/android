@@ -17,7 +17,7 @@ sealed class Variable {
 
     data class Generated(
         override val key: String,
-        val storeAs: String
+        val storeAs: String,
     ) : Variable()
 
     data class Multi(

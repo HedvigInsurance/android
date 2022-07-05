@@ -59,7 +59,7 @@ import androidx.annotation.RequiresApi
 class RootViewDeferringInsetsCallback(
     val persistentInsetTypes: Int,
     val deferredInsetTypes: Int,
-    val setPaddingTop: Boolean = true
+    val setPaddingTop: Boolean = true,
 ) : WindowInsetsAnimation.Callback(DISPATCH_MODE_CONTINUE_ON_SUBTREE),
     View.OnApplyWindowInsetsListener {
     init {
@@ -107,7 +107,7 @@ class RootViewDeferringInsetsCallback(
 
     override fun onProgress(
         insets: WindowInsets,
-        runningAnims: List<WindowInsetsAnimation>
+        runningAnims: List<WindowInsetsAnimation>,
     ): WindowInsets {
         // This is a no-op. We don't actually want to handle any WindowInsetsAnimations
         return insets

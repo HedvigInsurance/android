@@ -12,7 +12,7 @@ import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 
 class GenericDevelopmentAdapter(
-    private val items: List<Item>
+    private val items: List<Item>,
 ) : RecyclerView.Adapter<GenericDevelopmentAdapter.ViewHolder>() {
 
     override fun getItemViewType(position: Int) = when (items[position]) {
@@ -66,7 +66,7 @@ class GenericDevelopmentAdapter(
                 root.adapter = ArrayAdapter<String>(
                     root.context,
                     android.R.layout.simple_spinner_dropdown_item,
-                    Market.values().map(Market::toString)
+                    Market.values().map(Market::toString),
                 )
             }
 
@@ -78,7 +78,7 @@ class GenericDevelopmentAdapter(
                                 parent: AdapterView<*>,
                                 view: View?,
                                 position: Int,
-                                id: Long
+                                id: Long,
                             ) {
                                 data.select(Market.valueOf(parent.getItemAtPosition(position) as String))
                             }
@@ -92,16 +92,16 @@ class GenericDevelopmentAdapter(
 
     sealed class Item {
         data class Header(
-            val title: String
+            val title: String,
         ) : Item()
 
         data class ClickableItem(
             val title: String,
-            val open: () -> Unit
+            val open: () -> Unit,
         ) : Item()
 
         data class MarketSpinner(
-            val select: (Market) -> Unit
+            val select: (Market) -> Unit,
         ) : Item()
     }
 }
@@ -123,7 +123,7 @@ class GenericDevelopmentAdapterBuilder {
 }
 
 inline fun genericDevelopmentAdapter(
-    crossinline function: GenericDevelopmentAdapterBuilder.() -> Unit
+    crossinline function: GenericDevelopmentAdapterBuilder.() -> Unit,
 ): GenericDevelopmentAdapter {
     val builder = GenericDevelopmentAdapterBuilder()
     function(builder)

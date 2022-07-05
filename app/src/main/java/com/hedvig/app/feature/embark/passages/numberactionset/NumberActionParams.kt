@@ -18,6 +18,6 @@ data class NumberActionParams(
         val placeholder: String,
         val unit: String?,
         val maxValue: Int?,
-        val minValue: Int?
+        val minValue: Int?,
     ) : Parcelable
 }

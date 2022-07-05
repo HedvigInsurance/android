@@ -20,9 +20,9 @@ import org.koin.core.context.loadKoinModules
 import org.koin.core.context.unloadKoinModules
 
 class DevelopmentScreenAdapter(
-    private val authenticationTokenService: AuthenticationTokenService
+    private val authenticationTokenService: AuthenticationTokenService,
 ) : ListAdapter<DevelopmentScreenAdapter.DevelopmentScreenItem, DevelopmentScreenAdapter.ViewHolder>(
-    GenericDiffUtilItemCallback()
+    GenericDiffUtilItemCallback(),
 ) {
     override fun getItemViewType(position: Int) = when (getItem(position)) {
         DevelopmentScreenItem.Header -> R.layout.development_header
@@ -55,11 +55,11 @@ class DevelopmentScreenAdapter(
                                 parent: AdapterView<*>?,
                                 view: View?,
                                 position: Int,
-                                id: Long
+                                id: Long,
                             ) {
                                 mockPersona.context.getSharedPreferences(
                                     DEVELOPMENT_PREFERENCES,
-                                    Context.MODE_PRIVATE
+                                    Context.MODE_PRIVATE,
                                 )
                                     .edit()
                                     .putInt("mockPersona", position)
@@ -68,7 +68,7 @@ class DevelopmentScreenAdapter(
                         }
                     val persona = mockPersona.context.getSharedPreferences(
                         DEVELOPMENT_PREFERENCES,
-                        Context.MODE_PRIVATE
+                        Context.MODE_PRIVATE,
                     )
                         .getInt("mockPersona", 0)
                     mockPersona.setSelection(persona)
@@ -79,7 +79,7 @@ class DevelopmentScreenAdapter(
                             loadKoinModules(mockModule)
                             useMockData.context.getSharedPreferences(
                                 DEVELOPMENT_PREFERENCES,
-                                Context.MODE_PRIVATE
+                                Context.MODE_PRIVATE,
                             )
                                 .edit()
                                 .putBoolean("useMockData", true)
@@ -89,7 +89,7 @@ class DevelopmentScreenAdapter(
                             loadKoinModules(REAL_MODULES)
                             useMockData.context.getSharedPreferences(
                                 DEVELOPMENT_PREFERENCES,
-                                Context.MODE_PRIVATE
+                                Context.MODE_PRIVATE,
                             )
                                 .edit()
                                 .putBoolean("useMockData", false)
@@ -98,7 +98,7 @@ class DevelopmentScreenAdapter(
                     }
                     useMockData.isChecked = useMockData.context.getSharedPreferences(
                         DEVELOPMENT_PREFERENCES,
-                        Context.MODE_PRIVATE
+                        Context.MODE_PRIVATE,
                     )
                         .getBoolean("useMockData", false)
                 }
@@ -112,7 +112,7 @@ class DevelopmentScreenAdapter(
                         offerModule,
                         paymentModule,
                         keyGearModule,
-                        adyenModule
+                        adyenModule,
                     )
             }
         }
@@ -133,7 +133,7 @@ class DevelopmentScreenAdapter(
 
         class Footer(
             parent: ViewGroup,
-            private val authenticationTokenService: AuthenticationTokenService
+            private val authenticationTokenService: AuthenticationTokenService,
         ) : ViewHolder(parent.inflate(R.layout.development_footer)) {
             private val binding by viewBinding(DevelopmentFooterBinding::bind)
             override fun bind(data: DevelopmentScreenItem) {
@@ -152,7 +152,7 @@ class DevelopmentScreenAdapter(
         object Header : DevelopmentScreenItem()
         data class Row(
             val title: String,
-            val open: () -> Unit
+            val open: () -> Unit,
         ) : DevelopmentScreenItem()
 
         object Footer : DevelopmentScreenItem()
