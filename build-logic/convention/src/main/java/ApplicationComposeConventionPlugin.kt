@@ -10,6 +10,7 @@ class ApplicationComposeConventionPlugin : Plugin<Project> {
       with(pluginManager) {
         apply("com.android.application")
       }
+
       extensions.configure<BaseAppModuleExtension> {
         configureAndroidCompose(this)
       }

@@ -10,6 +10,7 @@ class LibraryComposeConventionPlugin : Plugin<Project> {
       with(pluginManager) {
         apply("com.android.library")
       }
+
       extensions.configure<LibraryExtension> {
         configureAndroidCompose(this)
       }
