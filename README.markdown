@@ -20,6 +20,12 @@ $ ./gradlew app:downloadStrings
 ```
 7. Build and install via Android Studio
 
+## Formatting
+
+Formatting is handled with ktlint with extra configuration defined in [`.editorconfig`](.editorconfig)
+run `./gradlew ktlintCheck` to check that the files follow the rules
+run `./gradlew ktlintFormat` to make ktlint to format all files according to the rules 
+
 ## Build Types
 
 * Release: `com.hedvig.app` Build for the customer on Play Store. Using production backend
