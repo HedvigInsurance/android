@@ -62,6 +62,7 @@ internal fun Project.configureKotlinAndroid(
                 "-Xjvm-default=enable",
             )
 
+            @Suppress("MISSING_DEPENDENCY_SUPERCLASS")
             jvmTarget = JavaVersion.VERSION_11.toString()
         }
     }

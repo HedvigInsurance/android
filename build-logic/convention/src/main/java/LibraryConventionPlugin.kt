@@ -19,6 +19,7 @@ class LibraryConventionPlugin : Plugin<Project> {
 
             extensions.configure<LibraryExtension> {
                 configureKotlinAndroid(this, addStandardBuildTypes = true)
+                @Suppress("MISSING_DEPENDENCY_SUPERCLASS")
                 defaultConfig.targetSdk = libs.targetSdkVersion
                 @Suppress("UnstableApiUsage")
                 buildFeatures {
