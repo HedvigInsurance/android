@@ -6,6 +6,7 @@ import java.util.Properties
 plugins {
     id("hedvig.android.application")
     id("hedvig.android.application.compose")
+    id("hedvig.android.ktlint")
     alias(libs.plugins.googleServices)
     alias(libs.plugins.crashlytics)
     id("kotlin-parcelize")
@@ -64,8 +65,8 @@ android {
             setProguardFiles(
                 listOf(
                     getDefaultProguardFile("proguard-android.txt"),
-                    "proguard-rules.pro"
-                )
+                    "proguard-rules.pro",
+                ),
             )
         }
 
@@ -78,8 +79,8 @@ android {
             setProguardFiles(
                 listOf(
                     getDefaultProguardFile("proguard-android.txt"),
-                    "proguard-rules.pro"
-                )
+                    "proguard-rules.pro",
+                ),
             )
         }
 
@@ -93,8 +94,8 @@ android {
                 listOf(
                     getDefaultProguardFile("proguard-android.txt"),
                     "proguard-rules.pro",
-                    "proguard-rules-showkase.pro"
-                )
+                    "proguard-rules-showkase.pro",
+                ),
             )
         }
 
@@ -129,7 +130,7 @@ android {
         resolutionStrategy.force(
             "org.hamcrest:hamcrest-core:2.1",
             "org.hamcrest:hamcrest-library:2.1",
-            "org.hamcrest:hamcrest:2.1"
+            "org.hamcrest:hamcrest:2.1",
         )
     }
 }
