@@ -19,15 +19,15 @@ gradlePlugin {
     plugins {
         register("hedvigAndroidApplicationCompose") {
             id = "hedvig.android.application.compose"
-            implementationClass = "HedvigAndroidApplicationComposeConventionPlugin"
+            implementationClass = "ApplicationComposeConventionPlugin"
         }
         register("hedvigAndroidApplication") {
             id = "hedvig.android.application"
-            implementationClass = "HedvigAndroidApplicationConventionPlugin"
+            implementationClass = "ApplicationConventionPlugin"
         }
         register("hedvigAndroidLibraryCompose") {
-            id = "nowinandroid.android.library.compose"
-            implementationClass = "HedvigAndroidLibraryComposeConventionPlugin"
+            id = "hedvig.android.library.compose"
+            implementationClass = "LibraryComposeConventionPlugin"
         }
         register("hedvigAndroidLibrary") {
             id = "hedvig.android.library"
