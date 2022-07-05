@@ -13,6 +13,8 @@ crashlytics = "2.9.1"
 doctor = "0.8.1"
 googleServices = "4.3.13"
 kotlin = "1.6.10"
+ktlint = "0.45.2"
+ktlintGradlePlugin = "10.3.0"
 license = "0.9.0"
 lokalise = "1.4.1"
 
@@ -83,6 +85,7 @@ zXing = "3.5.0"
 # Plugins
 android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "androidBuildTools" }
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+ktlint-gradlePlugin = { module = "org.jlleitschuh.gradle:ktlint-gradle", version.ref = "ktlintGradlePlugin" }
 
 # Libraries listed alphabetically
 accompanist-insets = { module = "com.google.accompanist:accompanist-insets", version.ref = "accompanist" }
