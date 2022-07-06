@@ -21,49 +21,49 @@ import org.junit.Rule
 import org.junit.Test
 
 class GraphQLErrorTest : TestCase() {
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
-    var shouldFail = true
+  var shouldFail = true
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(LOGGED_IN_DATA)
-        },
-        HomeQuery.OPERATION_DOCUMENT to apolloResponse {
-            if (shouldFail) {
-                shouldFail = false
-                graphQLError(jsonObjectOf("message" to "example"))
-            } else {
-                success(HOME_DATA_PENDING)
-            }
-        },
-    )
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(LOGGED_IN_DATA)
+    },
+    HomeQuery.OPERATION_DOCUMENT to apolloResponse {
+      if (shouldFail) {
+        shouldFail = false
+        graphQLError(jsonObjectOf("message" to "example"))
+      } else {
+        success(HOME_DATA_PENDING)
+      }
+    },
+  )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
 
-    @Test
-    fun shouldShowErrorWhenGraphQLErrorOccurs() = run {
-        activityRule.launch(LoggedInActivity.newInstance(context()))
+  @Test
+  fun shouldShowErrorWhenGraphQLErrorOccurs() = run {
+    activityRule.launch(LoggedInActivity.newInstance(context()))
 
-        onScreen<HomeTabScreen> {
-            recycler {
-                childAt<ErrorItem>(0) {
-                    retry {
-                        click()
-                    }
-                }
-                childAt<HomeTabScreen.BigTextItem>(0) {
-                    text {
-                        hasText(
-                            R.string.home_tab_pending_unknown_title,
-                            "Test",
-                        )
-                    }
-                }
-            }
+    onScreen<HomeTabScreen> {
+      recycler {
+        childAt<ErrorItem>(0) {
+          retry {
+            click()
+          }
         }
+        childAt<HomeTabScreen.BigTextItem>(0) {
+          text {
+            hasText(
+              R.string.home_tab_pending_unknown_title,
+              "Test",
+            )
+          }
+        }
+      }
     }
+  }
 }

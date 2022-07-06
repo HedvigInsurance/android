@@ -18,48 +18,48 @@ import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 
 abstract class AuthenticateDialog : DialogFragment() {
 
-    val binding by viewBinding(DialogAuthenticateBinding::bind)
+  val binding by viewBinding(DialogAuthenticateBinding::bind)
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View? = inflater.inflate(R.layout.dialog_authenticate, container, false)
+  override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?,
+  ): View? = inflater.inflate(R.layout.dialog_authenticate, container, false)
 
-    override fun onCreateDialog(savedInstanceState: Bundle?) =
-        super.onCreateDialog(savedInstanceState).apply {
-            window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            setCanceledOnTouchOutside(false)
-        }
-
-    fun handleAutoStartToken(autoStartToken: String) {
-        val autoStartUrl = "bankid:///?autostarttoken=$autoStartToken"
-        val bankIdUri = Uri.parse("$autoStartUrl&redirect=null")
-        if (requireContext().canOpenUri(bankIdUri)) {
-            startActivity(
-                Intent(
-                    Intent.ACTION_VIEW,
-                    bankIdUri,
-                ),
-            )
-        } else {
-            QR
-                .with(requireContext())
-                .load(autoStartUrl)
-                .into(binding.qrCode)
-        }
+  override fun onCreateDialog(savedInstanceState: Bundle?) =
+    super.onCreateDialog(savedInstanceState).apply {
+      window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+      setCanceledOnTouchOutside(false)
     }
 
-    fun redirect() {
-        val bankIdUri = Uri.parse("bankid://?redirectUrl=hedvig://")
-        if (requireContext().canOpenUri(bankIdUri)) {
-            val intent = Intent(Intent.ACTION_VIEW, bankIdUri)
-            intent.flags = FLAG_ACTIVITY_NEW_TASK
-            startActivity(intent)
-        }
+  fun handleAutoStartToken(autoStartToken: String) {
+    val autoStartUrl = "bankid:///?autostarttoken=$autoStartToken"
+    val bankIdUri = Uri.parse("$autoStartUrl&redirect=null")
+    if (requireContext().canOpenUri(bankIdUri)) {
+      startActivity(
+        Intent(
+          Intent.ACTION_VIEW,
+          bankIdUri,
+        ),
+      )
+    } else {
+      QR
+        .with(requireContext())
+        .load(autoStartUrl)
+        .into(binding.qrCode)
     }
+  }
 
-    companion object {
-        const val TAG = "AuthenticateDialog"
+  fun redirect() {
+    val bankIdUri = Uri.parse("bankid://?redirectUrl=hedvig://")
+    if (requireContext().canOpenUri(bankIdUri)) {
+      val intent = Intent(Intent.ACTION_VIEW, bankIdUri)
+      intent.flags = FLAG_ACTIVITY_NEW_TASK
+      startActivity(intent)
     }
+  }
+
+  companion object {
+    const val TAG = "AuthenticateDialog"
+  }
 }

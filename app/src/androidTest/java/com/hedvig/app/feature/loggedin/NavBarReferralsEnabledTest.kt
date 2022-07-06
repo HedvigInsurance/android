@@ -15,27 +15,27 @@ import org.junit.Rule
 import org.junit.Test
 
 class NavBarReferralsEnabledTest : TestCase() {
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(LOGGED_IN_DATA)
-        },
-    )
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(LOGGED_IN_DATA)
+    },
+  )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
 
-    @Test
-    fun shouldAllIconsExcludingKeyGear() = run {
-        activityRule.launch(LoggedInActivity.newInstance(context()))
+  @Test
+  fun shouldAllIconsExcludingKeyGear() = run {
+    activityRule.launch(LoggedInActivity.newInstance(context()))
 
-        Screen.onScreen<LoggedInScreen> {
-            bottomTabs {
-                hasNumberOfMenuItems(4)
-            }
-        }
+    Screen.onScreen<LoggedInScreen> {
+      bottomTabs {
+        hasNumberOfMenuItems(4)
+      }
     }
+  }
 }

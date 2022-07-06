@@ -15,26 +15,26 @@ import org.junit.Rule
 import org.junit.Test
 
 class NotTerminatedTest : TestCase() {
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(LOGGED_IN_DATA)
-        },
-    )
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(LOGGED_IN_DATA)
+    },
+  )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
 
-    @Test
-    fun shouldOpenWithHomeTabWhenUserIsNotTerminated() = run {
-        activityRule.launch(LoggedInActivity.newInstance(context()))
+  @Test
+  fun shouldOpenWithHomeTabWhenUserIsNotTerminated() = run {
+    activityRule.launch(LoggedInActivity.newInstance(context()))
 
-        onScreen<LoggedInScreen> {
-            root { isVisible() }
-            bottomTabs { hasSelectedItem(R.id.home) }
-        }
+    onScreen<LoggedInScreen> {
+      root { isVisible() }
+      bottomTabs { hasSelectedItem(R.id.home) }
     }
+  }
 }

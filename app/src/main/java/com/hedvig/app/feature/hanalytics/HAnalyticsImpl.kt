@@ -6,24 +6,24 @@ import com.hedvig.hanalytics.HAnalyticsExperiment
 import i
 
 class HAnalyticsImpl(
-    private val sendHAnalyticsEventUseCase: SendHAnalyticsEventUseCase,
-    private val HAnalyticsExperimentManager: HAnalyticsExperimentManager,
+  private val sendHAnalyticsEventUseCase: SendHAnalyticsEventUseCase,
+  private val HAnalyticsExperimentManager: HAnalyticsExperimentManager,
 ) : HAnalytics() {
-    override suspend fun getExperiment(name: String): HAnalyticsExperiment {
-        val experiment = HAnalyticsExperimentManager.getExperiment(name)
-        i { "Experiment requested: $experiment" }
-        return experiment
-    }
+  override suspend fun getExperiment(name: String): HAnalyticsExperiment {
+    val experiment = HAnalyticsExperimentManager.getExperiment(name)
+    i { "Experiment requested: $experiment" }
+    return experiment
+  }
 
-    override fun identify() {
-        sendHAnalyticsEventUseCase.identify()
-    }
+  override fun identify() {
+    sendHAnalyticsEventUseCase.identify()
+  }
 
-    override suspend fun invalidateExperiments() {
-        HAnalyticsExperimentManager.invalidateExperiments()
-    }
+  override suspend fun invalidateExperiments() {
+    HAnalyticsExperimentManager.invalidateExperiments()
+  }
 
-    override fun send(event: HAnalyticsEvent) {
-        sendHAnalyticsEventUseCase.send(event)
-    }
+  override fun send(event: HAnalyticsEvent) {
+    sendHAnalyticsEventUseCase.send(event)
+  }
 }

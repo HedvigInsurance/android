@@ -15,36 +15,36 @@ import org.junit.Rule
 import org.junit.Test
 
 class TemplateValuesTest : TestCase() {
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
 
-    @get:Rule
-    val apolloMockServerRule = ApolloMockServerRule(
-        EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse { success(STORY_WITH_TEMPLATE_MESSAGE) },
+  @get:Rule
+  val apolloMockServerRule = ApolloMockServerRule(
+    EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse { success(STORY_WITH_TEMPLATE_MESSAGE) },
+  )
+
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
+
+  @Test
+  fun shouldResolveTemplateValuesProvidedBySelectAction() = run {
+    activityRule.launch(
+      EmbarkActivity.newInstance(
+        context(),
+        this.javaClass.name,
+        "",
+      ),
     )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
-
-    @Test
-    fun shouldResolveTemplateValuesProvidedBySelectAction() = run {
-        activityRule.launch(
-            EmbarkActivity.newInstance(
-                context(),
-                this.javaClass.name,
-                "",
-            ),
-        )
-
-        Screen.onScreen<EmbarkScreen> {
-            singleSelectAction { click() }
-            messages {
-                firstChild<EmbarkScreen.MessageRow> {
-                    text {
-                        hasText("BAR test")
-                    }
-                }
-            }
+    Screen.onScreen<EmbarkScreen> {
+      singleSelectAction { click() }
+      messages {
+        firstChild<EmbarkScreen.MessageRow> {
+          text {
+            hasText("BAR test")
+          }
         }
+      }
     }
+  }
 }

@@ -12,61 +12,61 @@ import com.hedvig.hanalytics.HAnalytics
 import kotlinx.coroutines.launch
 
 class ConnectPaymentViewModel(
-    private val payinStatusRepository: PayinStatusRepository,
-    private val paymentRepository: PaymentRepository,
-    private val hAnalytics: HAnalytics,
+  private val payinStatusRepository: PayinStatusRepository,
+  private val paymentRepository: PaymentRepository,
+  private val hAnalytics: HAnalytics,
 ) : ViewModel() {
-    private val _navigationState = MutableLiveData<ConnectPaymentScreenState>()
-    val navigationState: LiveData<ConnectPaymentScreenState> = _navigationState
+  private val _navigationState = MutableLiveData<ConnectPaymentScreenState>()
+  val navigationState: LiveData<ConnectPaymentScreenState> = _navigationState
 
-    private val _readyToStart = MutableLiveData<Boolean>()
-    val readyToStart: LiveData<Boolean> = _readyToStart
+  private val _readyToStart = MutableLiveData<Boolean>()
+  val readyToStart: LiveData<Boolean> = _readyToStart
 
-    val shouldClose = LiveEvent<Boolean>()
+  val shouldClose = LiveEvent<Boolean>()
 
-    fun navigateTo(screen: ConnectPaymentScreenState) {
-        _navigationState.postValue(screen)
-        if (screen is ConnectPaymentScreenState.Result) {
-            if (screen.success) {
-                hAnalytics.screenView(AppScreen.CONNECT_PAYMENT_SUCCESS)
-                viewModelScope.launch {
-                    runCatching {
-                        payinStatusRepository.refreshPayinStatus()
-                        paymentRepository.refresh()
-                    }
-                }
-            } else {
-                hAnalytics.screenView(AppScreen.CONNECT_PAYMENT_FAILED)
-            }
+  fun navigateTo(screen: ConnectPaymentScreenState) {
+    _navigationState.postValue(screen)
+    if (screen is ConnectPaymentScreenState.Result) {
+      if (screen.success) {
+        hAnalytics.screenView(AppScreen.CONNECT_PAYMENT_SUCCESS)
+        viewModelScope.launch {
+          runCatching {
+            payinStatusRepository.refreshPayinStatus()
+            paymentRepository.refresh()
+          }
         }
+      } else {
+        hAnalytics.screenView(AppScreen.CONNECT_PAYMENT_FAILED)
+      }
     }
+  }
 
-    fun isReadyToStart() {
-        _readyToStart.postValue(true)
-    }
+  fun isReadyToStart() {
+    _readyToStart.postValue(true)
+  }
 
-    fun setInitialNavigationDestination(screen: ConnectPaymentScreenState) {
-        if (_navigationState.value == null) {
-            _navigationState.postValue(screen)
-        }
+  fun setInitialNavigationDestination(screen: ConnectPaymentScreenState) {
+    if (_navigationState.value == null) {
+      _navigationState.postValue(screen)
     }
+  }
 
-    fun close() {
-        shouldClose.postValue(true)
-    }
+  fun close() {
+    shouldClose.postValue(true)
+  }
 }
 
 sealed class ConnectPaymentScreenState {
-    object Explainer : ConnectPaymentScreenState()
-    data class Connect(
-        val transitionType: TransitionType,
-    ) : ConnectPaymentScreenState()
+  object Explainer : ConnectPaymentScreenState()
+  data class Connect(
+    val transitionType: TransitionType,
+  ) : ConnectPaymentScreenState()
 
-    data class Result(val success: Boolean) : ConnectPaymentScreenState()
+  data class Result(val success: Boolean) : ConnectPaymentScreenState()
 }
 
 enum class TransitionType {
-    NO_ENTER_EXIT_RIGHT,
-    ENTER_LEFT_EXIT_RIGHT,
-    ENTER_RIGHT_EXIT_RIGHT
+  NO_ENTER_EXIT_RIGHT,
+  ENTER_LEFT_EXIT_RIGHT,
+  ENTER_RIGHT_EXIT_RIGHT
 }

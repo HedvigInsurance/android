@@ -24,84 +24,84 @@ import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 class MarketingActivity : BaseActivity() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-        window.compatSetDecorFitsSystemWindows(false)
-        val viewModel = getViewModel<MarketingViewModel>()
-        setContent {
-            HedvigTheme(
-                colorOverrides = {
-                    it.copy(
-                        primary = hedvigOffWhite,
-                        onPrimary = hedvigBlack,
-                        secondary = hedvigOffWhite,
-                        onBackground = hedvigOffWhite,
+    window.compatSetDecorFitsSystemWindows(false)
+    val viewModel = getViewModel<MarketingViewModel>()
+    setContent {
+      HedvigTheme(
+        colorOverrides = {
+          it.copy(
+            primary = hedvigOffWhite,
+            onPrimary = hedvigBlack,
+            secondary = hedvigOffWhite,
+            onBackground = hedvigOffWhite,
+          )
+        },
+      ) {
+        val background by viewModel.background.collectAsState()
+        BackgroundImage(background) {
+          val state by viewModel.state.collectAsState()
+          when (val s = state) {
+            Loading, MarketPicked.Loading -> CircularProgressIndicator(
+              Modifier.align(Alignment.Center),
+            )
+            is MarketPicked.Loaded -> MarketPickedScreen(
+              onClickMarket = viewModel::goToMarketPicker,
+              onClickSignUp = {
+                viewModel.onClickSignUp()
+                s.selectedMarket.openOnboarding(this@MarketingActivity)
+              },
+              onClickLogIn = {
+                viewModel.onClickLogIn()
+                when (s.loginMethod) {
+                  LoginMethod.BANK_ID_SWEDEN -> LoginDialog().show(
+                    supportFragmentManager,
+                    LoginDialog.TAG,
+                  )
+                  LoginMethod.NEM_ID, LoginMethod.BANK_ID_NORWAY -> {
+                    startActivity(
+                      SimpleSignAuthenticationActivity.newInstance(
+                        this@MarketingActivity,
+                        s.selectedMarket,
+                      ),
                     )
-                },
-            ) {
-                val background by viewModel.background.collectAsState()
-                BackgroundImage(background) {
-                    val state by viewModel.state.collectAsState()
-                    when (val s = state) {
-                        Loading, MarketPicked.Loading -> CircularProgressIndicator(
-                            Modifier.align(Alignment.Center),
-                        )
-                        is MarketPicked.Loaded -> MarketPickedScreen(
-                            onClickMarket = viewModel::goToMarketPicker,
-                            onClickSignUp = {
-                                viewModel.onClickSignUp()
-                                s.selectedMarket.openOnboarding(this@MarketingActivity)
-                            },
-                            onClickLogIn = {
-                                viewModel.onClickLogIn()
-                                when (s.loginMethod) {
-                                    LoginMethod.BANK_ID_SWEDEN -> LoginDialog().show(
-                                        supportFragmentManager,
-                                        LoginDialog.TAG,
-                                    )
-                                    LoginMethod.NEM_ID, LoginMethod.BANK_ID_NORWAY -> {
-                                        startActivity(
-                                            SimpleSignAuthenticationActivity.newInstance(
-                                                this@MarketingActivity,
-                                                s.selectedMarket,
-                                            ),
-                                        )
-                                    }
-                                    LoginMethod.OTP -> {
-                                        // Not implemented
-                                    }
-                                }
-                            },
-                            data = s,
-                        )
-                        is PickMarket -> {
-                            if (s.isLoading) {
-                                CircularProgressIndicator(
-                                    Modifier.align(Alignment.Center),
-                                )
-                            } else {
-                                PickMarketScreen(
-                                    onSubmit = viewModel::submitMarketAndLanguage,
-                                    onSelectMarket = viewModel::setMarket,
-                                    onSelectLanguage = viewModel::setLanguage,
-                                    data = s,
-                                )
-                            }
-                        }
-                    }
+                  }
+                  LoginMethod.OTP -> {
+                    // Not implemented
+                  }
                 }
+              },
+              data = s,
+            )
+            is PickMarket -> {
+              if (s.isLoading) {
+                CircularProgressIndicator(
+                  Modifier.align(Alignment.Center),
+                )
+              } else {
+                PickMarketScreen(
+                  onSubmit = viewModel::submitMarketAndLanguage,
+                  onSelectMarket = viewModel::setMarket,
+                  onSelectLanguage = viewModel::setLanguage,
+                  data = s,
+                )
+              }
             }
+          }
         }
+      }
     }
+  }
 
-    companion object {
-        fun newInstance(context: Context, withoutHistory: Boolean = false) =
-            Intent(context, MarketingActivity::class.java).apply {
-                if (withoutHistory) {
-                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                }
-            }
-    }
+  companion object {
+    fun newInstance(context: Context, withoutHistory: Boolean = false) =
+      Intent(context, MarketingActivity::class.java).apply {
+        if (withoutHistory) {
+          addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+          addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        }
+      }
+  }
 }

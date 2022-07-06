@@ -5,5 +5,5 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class NoActionParameter(
-    val messages: List<String>,
+  val messages: List<String>,
 ) : Parcelable

@@ -13,19 +13,19 @@ import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
 
 class GetQuoteCartCheckoutUseCase(
-    private val apolloClient: ApolloClient,
+  private val apolloClient: ApolloClient,
 ) {
-    suspend fun invoke(quoteCartId: QuoteCartId): Either<QueryResult.Error, Checkout?> {
-        return either {
-            val checkout = apolloClient.query(QuoteCartCheckoutStatusQuery(quoteCartId.id))
-                .fetchPolicy(FetchPolicy.NetworkOnly)
-                .safeQuery()
-                .toEither()
-                .bind()
-                .quoteCart
-                .checkout
+  suspend fun invoke(quoteCartId: QuoteCartId): Either<QueryResult.Error, Checkout?> {
+    return either {
+      val checkout = apolloClient.query(QuoteCartCheckoutStatusQuery(quoteCartId.id))
+        .fetchPolicy(FetchPolicy.NetworkOnly)
+        .safeQuery()
+        .toEither()
+        .bind()
+        .quoteCart
+        .checkout
 
-            checkout?.toCheckout()
-        }
+      checkout?.toCheckout()
     }
+  }
 }

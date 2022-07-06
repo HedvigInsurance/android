@@ -16,39 +16,39 @@ import org.junit.Test
 
 class GenericErrorTest : TestCase() {
 
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(ReferralsEditCodeActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(ReferralsEditCodeActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        UpdateReferralCampaignCodeMutation.OPERATION_DOCUMENT to apolloResponse {
-            graphQLError(jsonObjectOf("message" to "example message"))
-        },
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    UpdateReferralCampaignCodeMutation.OPERATION_DOCUMENT to apolloResponse {
+      graphQLError(jsonObjectOf("message" to "example message"))
+    },
+  )
+
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
+
+  @Test
+  fun shouldShowErrorWhenNetworkErrorOccurs() = run {
+    activityRule.launch(
+      ReferralsEditCodeActivity.newInstance(
+        context(),
+        "TEST123",
+      ),
     )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
-
-    @Test
-    fun shouldShowErrorWhenNetworkErrorOccurs() = run {
-        activityRule.launch(
-            ReferralsEditCodeActivity.newInstance(
-                context(),
-                "TEST123",
-            ),
-        )
-
-        onScreen<ReferralsEditCodeScreen> {
-            editLayout {
-                edit {
-                    replaceText("EDITEDCODE123")
-                }
-            }
-            save { click() }
-            editLayout {
-                isErrorEnabled()
-                hasError(R.string.referrals_change_code_sheet_general_error)
-            }
+    onScreen<ReferralsEditCodeScreen> {
+      editLayout {
+        edit {
+          replaceText("EDITEDCODE123")
         }
+      }
+      save { click() }
+      editLayout {
+        isErrorEnabled()
+        hasError(R.string.referrals_change_code_sheet_general_error)
+      }
     }
+  }
 }

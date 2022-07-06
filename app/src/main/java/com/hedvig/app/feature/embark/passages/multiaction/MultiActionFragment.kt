@@ -28,89 +28,89 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.core.parameter.parametersOf
 
 class MultiActionFragment : Fragment(R.layout.fragment_embark_multi_action) {
-    private val model: EmbarkViewModel by sharedViewModel()
+  private val model: EmbarkViewModel by sharedViewModel()
 
-    private val multiActionParams: MultiActionParams by lazy {
-        requireArguments().getParcelable<MultiActionParams>(DATA)
-            ?: throw Error("Programmer error: No PARAMS provided to ${this.javaClass.name}")
-    }
+  private val multiActionParams: MultiActionParams by lazy {
+    requireArguments().getParcelable<MultiActionParams>(DATA)
+      ?: throw Error("Programmer error: No PARAMS provided to ${this.javaClass.name}")
+  }
 
-    private val multiActionViewModel: MultiActionViewModel by sharedViewModel { parametersOf(multiActionParams) }
-    private val binding by viewBinding(FragmentEmbarkMultiActionBinding::bind)
+  private val multiActionViewModel: MultiActionViewModel by sharedViewModel { parametersOf(multiActionParams) }
+  private val binding by viewBinding(FragmentEmbarkMultiActionBinding::bind)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        postponeEnterTransition()
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
+    postponeEnterTransition()
 
-        binding.continueButton.applyNavigationBarInsetsMargin()
+    binding.continueButton.applyNavigationBarInsetsMargin()
 
-        setFragmentResultListener(ADD_COMPONENT_REQUEST_KEY) { requestKey: String, bundle: Bundle ->
-            if (requestKey == ADD_COMPONENT_REQUEST_KEY) {
-                bundle.getParcelable<MultiActionItem.Component>(AddComponentBottomSheet.RESULT)?.let {
-                    multiActionViewModel.onComponentCreated(it)
-                }
-            }
+    setFragmentResultListener(ADD_COMPONENT_REQUEST_KEY) { requestKey: String, bundle: Bundle ->
+      if (requestKey == ADD_COMPONENT_REQUEST_KEY) {
+        bundle.getParcelable<MultiActionItem.Component>(AddComponentBottomSheet.RESULT)?.let {
+          multiActionViewModel.onComponentCreated(it)
         }
+      }
+    }
 
-        val adapter = MultiActionAdapter(
-            multiActionViewModel::onComponentClicked,
-            multiActionViewModel::onComponentRemoved,
-            multiActionViewModel::createNewComponent,
-        )
-        binding.apply {
-            messages.adapter = MessageAdapter(multiActionParams.messages)
-            componentContainer.adapter = adapter
-            continueButton.text = multiActionParams.submitLabel
+    val adapter = MultiActionAdapter(
+      multiActionViewModel::onComponentClicked,
+      multiActionViewModel::onComponentRemoved,
+      multiActionViewModel::createNewComponent,
+    )
+    binding.apply {
+      messages.adapter = MessageAdapter(multiActionParams.messages)
+      componentContainer.adapter = adapter
+      continueButton.text = multiActionParams.submitLabel
 
-            messages.doOnNextLayout {
-                startPostponedEnterTransition()
-            }
+      messages.doOnNextLayout {
+        startPostponedEnterTransition()
+      }
+    }
+
+    multiActionViewModel
+      .components
+      .flowWithLifecycle(viewLifecycle)
+      .onEach(adapter::submitList)
+      .launchIn(viewLifecycleScope)
+
+    multiActionViewModel
+      .newComponent
+      .flowWithLifecycle(viewLifecycle)
+      .onEach(::showAddBuildingSheet)
+      .launchIn(viewLifecycleScope)
+
+    binding.continueButton
+      .hapticClicks()
+      .mapLatest { saveAndAnimate() }
+      .onEach {
+        model.submitAction(multiActionParams.link)
+      }
+      .launchIn(viewLifecycleScope)
+  }
+
+  private suspend fun saveAndAnimate() {
+    multiActionViewModel.onContinue(model::putInStore)
+    val response =
+      model.preProcessResponse(multiActionParams.passageName) ?: Response.SingleResponse("")
+    animateResponse(binding.responseContainer, response)
+    delay(PASSAGE_ANIMATION_DELAY_DURATION)
+  }
+
+  private fun showAddBuildingSheet(componentState: MultiActionItem.Component?) {
+    AddComponentBottomSheet
+      .newInstance(componentState, multiActionParams)
+      .show(parentFragmentManager, BOTTOM_SHEET_TAG)
+  }
+
+  companion object {
+    private const val DATA = "DATA"
+    private const val BOTTOM_SHEET_TAG = "BOTTOM_SHEET_TAG"
+
+    fun newInstance(data: MultiActionParams) =
+      MultiActionFragment().apply {
+        arguments = Bundle().apply {
+          putParcelable(DATA, data)
         }
-
-        multiActionViewModel
-            .components
-            .flowWithLifecycle(viewLifecycle)
-            .onEach(adapter::submitList)
-            .launchIn(viewLifecycleScope)
-
-        multiActionViewModel
-            .newComponent
-            .flowWithLifecycle(viewLifecycle)
-            .onEach(::showAddBuildingSheet)
-            .launchIn(viewLifecycleScope)
-
-        binding.continueButton
-            .hapticClicks()
-            .mapLatest { saveAndAnimate() }
-            .onEach {
-                model.submitAction(multiActionParams.link)
-            }
-            .launchIn(viewLifecycleScope)
-    }
-
-    private suspend fun saveAndAnimate() {
-        multiActionViewModel.onContinue(model::putInStore)
-        val response =
-            model.preProcessResponse(multiActionParams.passageName) ?: Response.SingleResponse("")
-        animateResponse(binding.responseContainer, response)
-        delay(PASSAGE_ANIMATION_DELAY_DURATION)
-    }
-
-    private fun showAddBuildingSheet(componentState: MultiActionItem.Component?) {
-        AddComponentBottomSheet
-            .newInstance(componentState, multiActionParams)
-            .show(parentFragmentManager, BOTTOM_SHEET_TAG)
-    }
-
-    companion object {
-        private const val DATA = "DATA"
-        private const val BOTTOM_SHEET_TAG = "BOTTOM_SHEET_TAG"
-
-        fun newInstance(data: MultiActionParams) =
-            MultiActionFragment().apply {
-                arguments = Bundle().apply {
-                    putParcelable(DATA, data)
-                }
-            }
-    }
+      }
+  }
 }

@@ -22,44 +22,44 @@ import org.junit.Test
 
 class TerminatedAndActiveContractsTest : TestCase() {
 
-    @get:Rule
-    val activityRule = LazyIntentsActivityScenarioRule(LoggedInActivity::class.java)
+  @get:Rule
+  val activityRule = LazyIntentsActivityScenarioRule(LoggedInActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(LOGGED_IN_DATA)
-        },
-        InsuranceQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(INSURANCE_DATA_ONE_ACTIVE_ONE_TERMINATED)
-        },
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(LOGGED_IN_DATA)
+    },
+    InsuranceQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(INSURANCE_DATA_ONE_ACTIVE_ONE_TERMINATED)
+    },
+  )
+
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
+
+  @Test
+  fun shouldShowTerminatedContractsRowWhenUserHasTerminatedContracts() = run {
+    val intent = LoggedInActivity.newInstance(
+      context(),
+      initialTab = LoggedInTabs.INSURANCE,
     )
+    activityRule.launch(intent)
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
-
-    @Test
-    fun shouldShowTerminatedContractsRowWhenUserHasTerminatedContracts() = run {
-        val intent = LoggedInActivity.newInstance(
-            context(),
-            initialTab = LoggedInTabs.INSURANCE,
-        )
-        activityRule.launch(intent)
-
-        onScreen<InsuranceScreen> {
-            terminatedContractsScreen { stub() }
-            insuranceRecycler {
-                childAt<InsuranceScreen.ContractCard>(1) {
-                    firstStatusPill { isGone() }
-                }
-                childAt<InsuranceScreen.TerminatedContracts>(3) {
-                    caption {
-                        hasPluralText(R.plurals.insurances_tab_terminated_insurance_subtitile, 1, 1)
-                    }
-                    click()
-                }
-            }
-            terminatedContractsScreen { intended() }
+    onScreen<InsuranceScreen> {
+      terminatedContractsScreen { stub() }
+      insuranceRecycler {
+        childAt<InsuranceScreen.ContractCard>(1) {
+          firstStatusPill { isGone() }
         }
+        childAt<InsuranceScreen.TerminatedContracts>(3) {
+          caption {
+            hasPluralText(R.plurals.insurances_tab_terminated_insurance_subtitile, 1, 1)
+          }
+          click()
+        }
+      }
+      terminatedContractsScreen { intended() }
     }
+  }
 }

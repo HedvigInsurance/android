@@ -24,76 +24,76 @@ import org.junit.Rule
 import org.junit.Test
 
 class ActiveTest : TestCase() {
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(LOGGED_IN_DATA)
-        },
-        HomeQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(HOME_DATA_ACTIVE)
-        },
-    )
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(LOGGED_IN_DATA)
+    },
+    HomeQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(HOME_DATA_ACTIVE)
+    },
+  )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
 
-    @get:Rule
-    val marketRule = MarketRule(Market.SE)
+  @get:Rule
+  val marketRule = MarketRule(Market.SE)
 
-    @Test
-    fun shouldShowTitleClaimButtonAndCommonClaimsWhenUserHasOneActiveContract() = run {
-        activityRule.launch(LoggedInActivity.newInstance(context()))
+  @Test
+  fun shouldShowTitleClaimButtonAndCommonClaimsWhenUserHasOneActiveContract() = run {
+    activityRule.launch(LoggedInActivity.newInstance(context()))
 
-        onScreen<HomeTabScreen> {
-            recycler {
-                childAt<HomeTabScreen.BigTextItem>(0) {
-                    text { hasText(R.string.home_tab_welcome_title, "Test") }
-                }
-                childAt<HomeTabScreen.CommonClaimTitleItem>(3) {
-                    isVisible()
-                }
-                childAt<HomeTabScreen.CommonClaimItem>(4) {
-                    text { hasText("Det är kris!") }
-                    click()
-                }
-            }
+    onScreen<HomeTabScreen> {
+      recycler {
+        childAt<HomeTabScreen.BigTextItem>(0) {
+          text { hasText(R.string.home_tab_welcome_title, "Test") }
         }
-
-        onScreen<EmergencyScreen> {
-            title { hasTitle("Det är kris!") }
-            pressBack()
+        childAt<HomeTabScreen.CommonClaimTitleItem>(3) {
+          isVisible()
         }
-
-        onScreen<HomeTabScreen> {
-            recycler {
-                childAt<HomeTabScreen.CommonClaimItem>(5) {
-                    text { hasText("Trasig telefon") }
-                }
-                childAt<HomeTabScreen.CommonClaimItem>(6) {
-                    text { hasText("Försenat bagage") }
-                    click()
-                }
-            }
+        childAt<HomeTabScreen.CommonClaimItem>(4) {
+          text { hasText("Det är kris!") }
+          click()
         }
-
-        onScreen<CommonClaimScreen> {
-            firstMessage { hasText("Försenat bagage") }
-            pressBack()
-        }
-
-        onScreen<HomeTabScreen> {
-            recycler {
-                childAt<HomeTabScreen.StartClaimItem>(1) {
-                    button { click() }
-                }
-            }
-        }
-
-        onScreen<HonestyPledgeSheetScreen> {
-            claim { isDisplayed() }
-        }
+      }
     }
+
+    onScreen<EmergencyScreen> {
+      title { hasTitle("Det är kris!") }
+      pressBack()
+    }
+
+    onScreen<HomeTabScreen> {
+      recycler {
+        childAt<HomeTabScreen.CommonClaimItem>(5) {
+          text { hasText("Trasig telefon") }
+        }
+        childAt<HomeTabScreen.CommonClaimItem>(6) {
+          text { hasText("Försenat bagage") }
+          click()
+        }
+      }
+    }
+
+    onScreen<CommonClaimScreen> {
+      firstMessage { hasText("Försenat bagage") }
+      pressBack()
+    }
+
+    onScreen<HomeTabScreen> {
+      recycler {
+        childAt<HomeTabScreen.StartClaimItem>(1) {
+          button { click() }
+        }
+      }
+    }
+
+    onScreen<HonestyPledgeSheetScreen> {
+      claim { isDisplayed() }
+    }
+  }
 }

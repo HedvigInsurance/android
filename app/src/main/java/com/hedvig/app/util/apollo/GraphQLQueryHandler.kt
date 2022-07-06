@@ -18,100 +18,100 @@ import java.io.File
 import java.util.concurrent.TimeUnit
 
 class GraphQLQueryHandler(
-    private val okHttpClient: OkHttpClient,
-    private val application: HedvigApplication,
-    private val fileService: FileService,
+  private val okHttpClient: OkHttpClient,
+  private val application: HedvigApplication,
+  private val fileService: FileService,
 ) {
 
-    suspend fun graphQLQuery(
-        query: String,
-        variables: JSONObject? = null,
-        files: List<FileVariable>,
-    ): QueryResult<JSONObject> {
-        var requestBody = createVariableRequestBody(query, variables, files)
-        requestBody = if (files.isNotEmpty()) {
-            createFileUploadRequestBody(requestBody, files)
-        } else {
-            requestBody
-        }
-
-        val modifiedOkHttpClient = if (files.isNotEmpty()) {
-            okHttpClient.newBuilder()
-                .readTimeout(0, TimeUnit.SECONDS)
-                .build()
-        } else {
-            okHttpClient
-        }
-
-        return modifiedOkHttpClient
-            .newCall(
-                Request.Builder()
-                    .url(application.graphqlUrl)
-                    .header("Content-Type", "application/json")
-                    .post(requestBody)
-                    .build(),
-            ).safeGraphqlCall()
+  suspend fun graphQLQuery(
+    query: String,
+    variables: JSONObject? = null,
+    files: List<FileVariable>,
+  ): QueryResult<JSONObject> {
+    var requestBody = createVariableRequestBody(query, variables, files)
+    requestBody = if (files.isNotEmpty()) {
+      createFileUploadRequestBody(requestBody, files)
+    } else {
+      requestBody
     }
 
-    private fun createVariableRequestBody(
-        query: String,
-        variables: JSONObject?,
-        files: List<FileVariable>,
-    ): RequestBody {
-        val jsonObject = variables ?: JSONObject()
-
-        files.map { it.key }
-            .forEach { jsonObject.put(it, JSONObject.NULL) }
-
-        return jsonObjectOfNotNull(
-            "query" to query,
-            "variables" to jsonObject,
-        )
-            .toString()
-            .toRequestBody()
+    val modifiedOkHttpClient = if (files.isNotEmpty()) {
+      okHttpClient.newBuilder()
+        .readTimeout(0, TimeUnit.SECONDS)
+        .build()
+    } else {
+      okHttpClient
     }
 
-    private fun createFileUploadRequestBody(request: RequestBody, variables: List<FileVariable>): RequestBody {
-        val buffer = createFileMap(variables)
+    return modifiedOkHttpClient
+      .newCall(
+        Request.Builder()
+          .url(application.graphqlUrl)
+          .header("Content-Type", "application/json")
+          .post(requestBody)
+          .build(),
+      ).safeGraphqlCall()
+  }
 
-        val multipartBodyBuilder = MultipartBody.Builder()
-            .setType(MultipartBody.FORM)
-            .addFormDataPart(
-                name = "operations",
-                filename = null,
-                body = request,
-            )
-            .addFormDataPart(
-                name = "map",
-                filename = null,
-                body = buffer.readByteString().toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull()),
-            )
+  private fun createVariableRequestBody(
+    query: String,
+    variables: JSONObject?,
+    files: List<FileVariable>,
+  ): RequestBody {
+    val jsonObject = variables ?: JSONObject()
 
-        variables.forEachIndexed { i, variable ->
-            val file = File(variable.path)
-            val mediaType = fileService.getMimeType(variable.path).toMediaType()
-            multipartBodyBuilder.addFormDataPart(
-                i.toString(),
-                file.name,
-                file.asRequestBody(mediaType),
-            )
-        }
+    files.map { it.key }
+      .forEach { jsonObject.put(it, JSONObject.NULL) }
 
-        return multipartBodyBuilder.build()
+    return jsonObjectOfNotNull(
+      "query" to query,
+      "variables" to jsonObject,
+    )
+      .toString()
+      .toRequestBody()
+  }
+
+  private fun createFileUploadRequestBody(request: RequestBody, variables: List<FileVariable>): RequestBody {
+    val buffer = createFileMap(variables)
+
+    val multipartBodyBuilder = MultipartBody.Builder()
+      .setType(MultipartBody.FORM)
+      .addFormDataPart(
+        name = "operations",
+        filename = null,
+        body = request,
+      )
+      .addFormDataPart(
+        name = "map",
+        filename = null,
+        body = buffer.readByteString().toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull()),
+      )
+
+    variables.forEachIndexed { i, variable ->
+      val file = File(variable.path)
+      val mediaType = fileService.getMimeType(variable.path).toMediaType()
+      multipartBodyBuilder.addFormDataPart(
+        i.toString(),
+        file.name,
+        file.asRequestBody(mediaType),
+      )
     }
 
-    private fun createFileMap(fileVariables: List<FileVariable>): Buffer {
-        val buffer = Buffer()
-        val jsonWriter = BufferedSinkJsonWriter(buffer)
-        jsonWriter.beginObject()
-        fileVariables.forEachIndexed { i, variable ->
-            jsonWriter.name(i.toString()).beginArray()
-            jsonWriter.value("variables." + variable.key)
-            jsonWriter.endArray()
-        }
+    return multipartBodyBuilder.build()
+  }
 
-        jsonWriter.endObject()
-        jsonWriter.close()
-        return buffer
+  private fun createFileMap(fileVariables: List<FileVariable>): Buffer {
+    val buffer = Buffer()
+    val jsonWriter = BufferedSinkJsonWriter(buffer)
+    jsonWriter.beginObject()
+    fileVariables.forEachIndexed { i, variable ->
+      jsonWriter.name(i.toString()).beginArray()
+      jsonWriter.value("variables." + variable.key)
+      jsonWriter.endArray()
     }
+
+    jsonWriter.endObject()
+    jsonWriter.close()
+    return buffer
+  }
 }

@@ -5,6 +5,6 @@ import androidx.annotation.ColorInt
 import androidx.core.graphics.drawable.DrawableCompat
 
 fun Drawable.compatSetTint(@ColorInt color: Int) {
-    val drawableWrap = DrawableCompat.wrap(this).mutate()
-    DrawableCompat.setTint(drawableWrap, color)
+  val drawableWrap = DrawableCompat.wrap(this).mutate()
+  DrawableCompat.setTint(drawableWrap, color)
 }

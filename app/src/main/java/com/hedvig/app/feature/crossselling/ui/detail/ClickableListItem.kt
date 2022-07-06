@@ -21,39 +21,39 @@ import com.hedvig.app.ui.compose.theme.HedvigTheme
 
 @Composable
 fun ClickableListItem(
-    onClick: () -> Unit,
-    @DrawableRes icon: Int,
-    text: String,
-    modifier: Modifier = Modifier,
+  onClick: () -> Unit,
+  @DrawableRes icon: Int,
+  text: String,
+  modifier: Modifier = Modifier,
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .clickable(onClick = onClick)
-            .padding(16.dp)
-            .fillMaxWidth(),
-    ) {
-        Image(
-            painter = painterResource(icon),
-            contentDescription = null,
-            modifier = Modifier.size(24.dp),
-        )
-        Spacer(Modifier.size(16.dp))
-        Text(
-            text = text,
-            style = MaterialTheme.typography.subtitle1,
-        )
-    }
+  Row(
+    verticalAlignment = Alignment.CenterVertically,
+    modifier = modifier
+      .clickable(onClick = onClick)
+      .padding(16.dp)
+      .fillMaxWidth(),
+  ) {
+    Image(
+      painter = painterResource(icon),
+      contentDescription = null,
+      modifier = Modifier.size(24.dp),
+    )
+    Spacer(Modifier.size(16.dp))
+    Text(
+      text = text,
+      style = MaterialTheme.typography.subtitle1,
+    )
+  }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun ClickableListItemPreview() {
-    HedvigTheme {
-        ClickableListItem(
-            onClick = {},
-            icon = R.drawable.ic_info,
-            text = "Full coverage",
-        )
-    }
+  HedvigTheme {
+    ClickableListItem(
+      onClick = {},
+      icon = R.drawable.ic_info,
+      text = "Full coverage",
+    )
+  }
 }

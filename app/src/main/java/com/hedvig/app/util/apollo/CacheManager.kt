@@ -6,14 +6,14 @@ import d
 import e
 
 class CacheManager(
-    private val apolloClient: ApolloClient,
+  private val apolloClient: ApolloClient,
 ) {
-    fun clearCache() {
-        val didClearAllRecords = apolloClient.apolloStore.clearAll()
-        if (didClearAllRecords) {
-            d { "Did clear entire apolloStore cache" }
-        } else {
-            e { "Failed to clear apolloStore cache" }
-        }
+  fun clearCache() {
+    val didClearAllRecords = apolloClient.apolloStore.clearAll()
+    if (didClearAllRecords) {
+      d { "Did clear entire apolloStore cache" }
+    } else {
+      e { "Failed to clear apolloStore cache" }
     }
+  }
 }

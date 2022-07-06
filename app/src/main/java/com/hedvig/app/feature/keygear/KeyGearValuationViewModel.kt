@@ -15,48 +15,48 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 abstract class KeyGearValuationViewModel : ViewModel() {
-    abstract val uploadResult: LiveData<KeyGearItemQuery.Data>
-    abstract val data: LiveData<KeyGearItemQuery.KeyGearItem>
+  abstract val uploadResult: LiveData<KeyGearItemQuery.Data>
+  abstract val data: LiveData<KeyGearItemQuery.KeyGearItem>
 
-    abstract fun updatePurchaseDateAndPrice(
-        id: String,
-        date: LocalDate,
-        price: MonetaryAmountV2Input,
-    )
+  abstract fun updatePurchaseDateAndPrice(
+    id: String,
+    date: LocalDate,
+    price: MonetaryAmountV2Input,
+  )
 
-    abstract fun loadItem(id: String)
+  abstract fun loadItem(id: String)
 }
 
 class KeyGearValuationViewModelImpl(
-    private val repository: KeyGearItemsRepository,
+  private val repository: KeyGearItemsRepository,
 ) :
-    KeyGearValuationViewModel() {
-    override val uploadResult = MutableLiveData<KeyGearItemQuery.Data>()
-    override val data = MutableLiveData<KeyGearItemQuery.KeyGearItem>()
+  KeyGearValuationViewModel() {
+  override val uploadResult = MutableLiveData<KeyGearItemQuery.Data>()
+  override val data = MutableLiveData<KeyGearItemQuery.KeyGearItem>()
 
-    override fun updatePurchaseDateAndPrice(
-        id: String,
-        date: LocalDate,
-        price: MonetaryAmountV2Input,
-    ) {
-        viewModelScope.launch {
-            val result = runCatching { repository.updatePurchasePriceAndDateAsync(id, date, price) }
-            if (result.isFailure) {
-                result.exceptionOrNull()?.let { e(it) }
-            }
-            result.getOrNull()?.let { uploadResult.postValue(it) }
-        }
+  override fun updatePurchaseDateAndPrice(
+    id: String,
+    date: LocalDate,
+    price: MonetaryAmountV2Input,
+  ) {
+    viewModelScope.launch {
+      val result = runCatching { repository.updatePurchasePriceAndDateAsync(id, date, price) }
+      if (result.isFailure) {
+        result.exceptionOrNull()?.let { e(it) }
+      }
+      result.getOrNull()?.let { uploadResult.postValue(it) }
     }
+  }
 
-    override fun loadItem(id: String) {
-        viewModelScope.launch {
-            repository
-                .keyGearItem(id)
-                .onEach { response ->
-                    response.data?.keyGearItem?.let { data.postValue(it) }
-                }
-                .catch { e -> e(e) }
-                .collect()
+  override fun loadItem(id: String) {
+    viewModelScope.launch {
+      repository
+        .keyGearItem(id)
+        .onEach { response ->
+          response.data?.keyGearItem?.let { data.postValue(it) }
         }
+        .catch { e -> e(e) }
+        .collect()
     }
+  }
 }

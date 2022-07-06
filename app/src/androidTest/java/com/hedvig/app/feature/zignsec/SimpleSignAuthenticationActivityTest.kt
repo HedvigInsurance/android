@@ -14,52 +14,52 @@ import org.junit.Rule
 import org.junit.Test
 
 class SimpleSignAuthenticationActivityTest : TestCase() {
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(SimpleSignAuthenticationActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(SimpleSignAuthenticationActivity::class.java)
 
-    @get:Rule
-    val apolloMockServerRule = ApolloMockServerRule()
+  @get:Rule
+  val apolloMockServerRule = ApolloMockServerRule()
 
-    @Test
-    fun shouldValidatePersonalIdentificationNumbersForDenmark() = run {
-        activityRule.launch(SimpleSignAuthenticationActivity.newInstance(context(), Market.DK))
+  @Test
+  fun shouldValidatePersonalIdentificationNumbersForDenmark() = run {
+    activityRule.launch(SimpleSignAuthenticationActivity.newInstance(context(), Market.DK))
 
-        SimpleSignAuthenticationScreen {
-            signIn {
-                isDisabled()
-                hasText(R.string.simple_sign_sign_in_dk)
-            }
-            input {
-                hasHint(R.string.simple_sign_login_text_field_label_dk)
-                edit { typeText("1212121212") }
-            }
-            signIn { isEnabled() }
-        }
+    SimpleSignAuthenticationScreen {
+      signIn {
+        isDisabled()
+        hasText(R.string.simple_sign_sign_in_dk)
+      }
+      input {
+        hasHint(R.string.simple_sign_login_text_field_label_dk)
+        edit { typeText("1212121212") }
+      }
+      signIn { isEnabled() }
     }
+  }
 
-    @Test
-    fun shouldValidateNationalIdentityNumbersForNorway() = run {
-        activityRule.launch(SimpleSignAuthenticationActivity.newInstance(context(), Market.NO))
+  @Test
+  fun shouldValidateNationalIdentityNumbersForNorway() = run {
+    activityRule.launch(SimpleSignAuthenticationActivity.newInstance(context(), Market.NO))
 
-        SimpleSignAuthenticationScreen {
-            signIn {
-                isDisabled()
-                hasText(R.string.simple_sign_sign_in)
-            }
-            input {
-                hasHint(R.string.simple_sign_login_text_field_label)
-                hasHelperText(R.string.simple_sign_login_text_field_helper_text)
-                edit { typeText("12121212121") }
-            }
-            signIn { isEnabled() }
-        }
+    SimpleSignAuthenticationScreen {
+      signIn {
+        isDisabled()
+        hasText(R.string.simple_sign_sign_in)
+      }
+      input {
+        hasHint(R.string.simple_sign_login_text_field_label)
+        hasHelperText(R.string.simple_sign_login_text_field_helper_text)
+        edit { typeText("12121212121") }
+      }
+      signIn { isEnabled() }
     }
+  }
 }
 
 object SimpleSignAuthenticationScreen : KScreen<SimpleSignAuthenticationScreen>() {
-    override val layoutId = R.layout.identity_input_fragment
-    override val viewClass = SimpleSignAuthenticationActivity::class.java
+  override val layoutId = R.layout.identity_input_fragment
+  override val viewClass = SimpleSignAuthenticationActivity::class.java
 
-    val signIn = KButton { withId(R.id.signIn) }
-    val input = KTextInputLayout { withId(R.id.input) }
+  val signIn = KButton { withId(R.id.signIn) }
+  val input = KTextInputLayout { withId(R.id.input) }
 }

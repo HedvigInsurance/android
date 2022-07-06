@@ -23,52 +23,52 @@ import org.json.JSONObject
 import java.io.IOException
 
 suspend fun <D : Operation.Data> ApolloCall<D>.safeQuery(): QueryResult<D> {
-    return try {
-        execute().toQueryResult()
-    } catch (apolloException: ApolloException) {
-        QueryResult.Error.NetworkError(apolloException.localizedMessage)
-    } catch (throwable: Throwable) {
-        if (throwable is CancellationException) {
-            throw throwable
-        }
-        QueryResult.Error.GeneralError(throwable.localizedMessage)
+  return try {
+    execute().toQueryResult()
+  } catch (apolloException: ApolloException) {
+    QueryResult.Error.NetworkError(apolloException.localizedMessage)
+  } catch (throwable: Throwable) {
+    if (throwable is CancellationException) {
+      throw throwable
     }
+    QueryResult.Error.GeneralError(throwable.localizedMessage)
+  }
 }
 
 fun <D : Subscription.Data> ApolloCall<D>.safeSubscription(): Flow<QueryResult<D>> {
-    return try {
-        toFlow().map(ApolloResponse<D>::toQueryResult)
-    } catch (apolloException: ApolloException) {
-        flowOf(QueryResult.Error.NetworkError(apolloException.localizedMessage))
-    } catch (throwable: Throwable) {
-        if (throwable is CancellationException) {
-            throw throwable
-        }
-        flowOf(QueryResult.Error.GeneralError(throwable.localizedMessage))
+  return try {
+    toFlow().map(ApolloResponse<D>::toQueryResult)
+  } catch (apolloException: ApolloException) {
+    flowOf(QueryResult.Error.NetworkError(apolloException.localizedMessage))
+  } catch (throwable: Throwable) {
+    if (throwable is CancellationException) {
+      throw throwable
     }
+    flowOf(QueryResult.Error.GeneralError(throwable.localizedMessage))
+  }
 }
 
 fun <D : Query.Data> ApolloCall<D>.safeWatch(): Flow<QueryResult<D>> {
-    return try {
-        watch(null)
-        watch().map(ApolloResponse<D>::toQueryResult)
-    } catch (apolloException: ApolloException) {
-        flowOf(QueryResult.Error.NetworkError(apolloException.localizedMessage))
-    } catch (throwable: Throwable) {
-        if (throwable is CancellationException) {
-            throw throwable
-        }
-        flowOf(QueryResult.Error.GeneralError(throwable.localizedMessage))
+  return try {
+    watch(null)
+    watch().map(ApolloResponse<D>::toQueryResult)
+  } catch (apolloException: ApolloException) {
+    flowOf(QueryResult.Error.NetworkError(apolloException.localizedMessage))
+  } catch (throwable: Throwable) {
+    if (throwable is CancellationException) {
+      throw throwable
     }
+    flowOf(QueryResult.Error.GeneralError(throwable.localizedMessage))
+  }
 }
 
 private fun <D : Operation.Data> ApolloResponse<D>.toQueryResult(): QueryResult<D> {
-    val data = data
-    return when {
-        hasErrors() -> QueryResult.Error.QueryError(errors?.first()?.message)
-        data != null -> QueryResult.Success(data)
-        else -> QueryResult.Error.NoDataError("No data")
-    }
+  val data = data
+  return when {
+    hasErrors() -> QueryResult.Error.QueryError(errors?.first()?.message)
+    data != null -> QueryResult.Success(data)
+    else -> QueryResult.Error.NoDataError("No data")
+  }
 }
 
 /**
@@ -78,49 +78,49 @@ private fun <D : Operation.Data> ApolloResponse<D>.toQueryResult(): QueryResult<
  */
 @Suppress("BlockingMethodInNonBlockingContext")
 suspend fun Call.safeGraphqlCall(): QueryResult<JSONObject> = withContext(Dispatchers.IO) {
-    try {
-        val response = await()
-        if (response.isSuccessful.not()) return@withContext QueryResult.Error.NetworkError(response.message)
+  try {
+    val response = await()
+    if (response.isSuccessful.not()) return@withContext QueryResult.Error.NetworkError(response.message)
 
-        val responseBody = response.body ?: return@withContext QueryResult.Error.NoDataError("No data")
-        val jsonObject = JSONObject(responseBody.string())
+    val responseBody = response.body ?: return@withContext QueryResult.Error.NoDataError("No data")
+    val jsonObject = JSONObject(responseBody.string())
 
-        val errorJsonObject = jsonObject.optJSONArray("errors")?.getJSONObject(0)
-        if (errorJsonObject != null) {
-            val errorMessage = errorJsonObject.optString("message")
-            return@withContext QueryResult.Error.QueryError(errorMessage)
-        }
-
-        QueryResult.Success(jsonObject)
-    } catch (ioException: IOException) {
-        QueryResult.Error.GeneralError(ioException.localizedMessage)
+    val errorJsonObject = jsonObject.optJSONArray("errors")?.getJSONObject(0)
+    if (errorJsonObject != null) {
+      val errorMessage = errorJsonObject.optString("message")
+      return@withContext QueryResult.Error.QueryError(errorMessage)
     }
+
+    QueryResult.Success(jsonObject)
+  } catch (ioException: IOException) {
+    QueryResult.Error.GeneralError(ioException.localizedMessage)
+  }
 }
 
 sealed class QueryResult<out T> {
-    data class Success<T>(val data: T) : QueryResult<T>()
-    sealed class Error : QueryResult<Nothing>() {
+  data class Success<T>(val data: T) : QueryResult<T>()
+  sealed class Error : QueryResult<Nothing>() {
 
-        abstract val message: String?
+    abstract val message: String?
 
-        data class NoDataError(override val message: String?) : Error()
-        data class GeneralError(override val message: String?) : Error()
-        data class QueryError(override val message: String?) : Error()
-        data class NetworkError(override val message: String?) : Error()
-    }
+    data class NoDataError(override val message: String?) : Error()
+    data class GeneralError(override val message: String?) : Error()
+    data class QueryError(override val message: String?) : Error()
+    data class NetworkError(override val message: String?) : Error()
+  }
 
-    fun toOption(): Option<T> = when (this) {
-        is Error -> None
-        is Success -> Some(this.data)
-    }
+  fun toOption(): Option<T> = when (this) {
+    is Error -> None
+    is Success -> Some(this.data)
+  }
 
-    fun toEither(): Either<Error, T> = when (this) {
-        is Error -> Either.Left(this)
-        is Success -> Either.Right(this.data)
-    }
+  fun toEither(): Either<Error, T> = when (this) {
+    is Error -> Either.Left(this)
+    is Success -> Either.Right(this.data)
+  }
 
-    inline fun <ErrorType> toEither(ifEmpty: (message: String?) -> ErrorType): Either<ErrorType, T> = when (this) {
-        is Error -> Either.Left(ifEmpty(message))
-        is Success -> Either.Right(this.data)
-    }
+  inline fun <ErrorType> toEither(ifEmpty: (message: String?) -> ErrorType): Either<ErrorType, T> = when (this) {
+    is Error -> Either.Left(ifEmpty(message))
+    is Success -> Either.Right(this.data)
+  }
 }

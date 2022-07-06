@@ -21,75 +21,75 @@ import org.junit.Test
 
 class ErrorTest : TestCase() {
 
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
-    var shouldFail = true
+  var shouldFail = true
 
-    @get:Rule
-    val apolloMockServerRule = ApolloMockServerRule(
-        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse { success(LOGGED_IN_DATA) },
-        ReferralsQuery.OPERATION_DOCUMENT to apolloResponse {
-            if (shouldFail) {
-                shouldFail = false
-                graphQLError(jsonObjectOf("message" to "example message"))
-            } else {
-                success(REFERRALS_DATA_WITH_NO_DISCOUNTS)
-            }
-        },
+  @get:Rule
+  val apolloMockServerRule = ApolloMockServerRule(
+    LoggedInQuery.OPERATION_DOCUMENT to apolloResponse { success(LOGGED_IN_DATA) },
+    ReferralsQuery.OPERATION_DOCUMENT to apolloResponse {
+      if (shouldFail) {
+        shouldFail = false
+        graphQLError(jsonObjectOf("message" to "example message"))
+      } else {
+        success(REFERRALS_DATA_WITH_NO_DISCOUNTS)
+      }
+    },
+  )
+
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
+
+  @get:Rule
+  val featureFlagRule = FeatureFlagRule(
+    Feature.REFERRAL_CAMPAIGN to false,
+    Feature.KEY_GEAR to false,
+    Feature.REFERRALS to true,
+  )
+
+  @Test
+  fun shouldShowErrorWhenAnErrorOccurs() = run {
+    val intent = LoggedInActivity.newInstance(
+      context(),
+      initialTab = LoggedInTabs.REFERRALS,
     )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+    activityRule.launch(intent)
 
-    @get:Rule
-    val featureFlagRule = FeatureFlagRule(
-        Feature.REFERRAL_CAMPAIGN to false,
-        Feature.KEY_GEAR to false,
-        Feature.REFERRALS to true,
-    )
-
-    @Test
-    fun shouldShowErrorWhenAnErrorOccurs() = run {
-        val intent = LoggedInActivity.newInstance(
-            context(),
-            initialTab = LoggedInTabs.REFERRALS,
-        )
-
-        activityRule.launch(intent)
-
-        onScreen<ReferralTabScreen> {
-            share { isGone() }
-            recycler {
-                hasSize(2)
-                childAt<ReferralTabScreen.ErrorItem>(1) {
-                    errorTitle { isVisible() }
-                    errorParagraph { isVisible() }
-                    retry {
-                        isVisible()
-                        click()
-                    }
-                }
-                hasSize(3)
-                childAt<ReferralTabScreen.HeaderItem>(1) {
-                    discountPerMonthPlaceholder { isGone() }
-                    newPricePlaceholder { isGone() }
-                    discountPerMonth { isGone() }
-                    newPrice { isGone() }
-                    discountPerMonthLabel { isGone() }
-                    newPriceLabel { isGone() }
-                    emptyHeadline { isVisible() }
-                    emptyBody { isVisible() }
-                    otherDiscountBox { isGone() }
-                }
-                childAt<ReferralTabScreen.CodeItem>(2) {
-                    placeholder { isGone() }
-                    code {
-                        isVisible()
-                        hasText("TEST123")
-                    }
-                }
-            }
+    onScreen<ReferralTabScreen> {
+      share { isGone() }
+      recycler {
+        hasSize(2)
+        childAt<ReferralTabScreen.ErrorItem>(1) {
+          errorTitle { isVisible() }
+          errorParagraph { isVisible() }
+          retry {
+            isVisible()
+            click()
+          }
         }
+        hasSize(3)
+        childAt<ReferralTabScreen.HeaderItem>(1) {
+          discountPerMonthPlaceholder { isGone() }
+          newPricePlaceholder { isGone() }
+          discountPerMonth { isGone() }
+          newPrice { isGone() }
+          discountPerMonthLabel { isGone() }
+          newPriceLabel { isGone() }
+          emptyHeadline { isVisible() }
+          emptyBody { isVisible() }
+          otherDiscountBox { isGone() }
+        }
+        childAt<ReferralTabScreen.CodeItem>(2) {
+          placeholder { isGone() }
+          code {
+            isVisible()
+            hasText("TEST123")
+          }
+        }
+      }
     }
+  }
 }

@@ -15,63 +15,63 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ExternalInsurerViewModel(
-    private val getInsuranceProvidersUseCase: GetInsuranceProvidersUseCase,
-    private val featureManager: FeatureManager,
+  private val getInsuranceProvidersUseCase: GetInsuranceProvidersUseCase,
+  private val featureManager: FeatureManager,
 ) : ViewModel() {
 
-    private val _events = Channel<Event>(Channel.UNLIMITED)
-    val events = _events.receiveAsFlow()
+  private val _events = Channel<Event>(Channel.UNLIMITED)
+  val events = _events.receiveAsFlow()
 
-    private val _viewState = MutableStateFlow(ViewState(isLoading = true))
+  private val _viewState = MutableStateFlow(ViewState(isLoading = true))
 
-    val viewState: StateFlow<ViewState> = _viewState.asStateFlow()
+  val viewState: StateFlow<ViewState> = _viewState.asStateFlow()
 
-    init {
-        viewModelScope.launch {
-            when (val result = getInsuranceProvidersUseCase.getInsuranceProviders()) {
-                is InsuranceProvidersResult.Success -> _viewState.update {
-                    it.copy(isLoading = false, insuranceProviders = result.providers)
-                }
-                is InsuranceProvidersResult.Error -> {
-                    _viewState.update { it.copy(isLoading = false) }
-                    _events.trySend(Event.Error(result))
-                }
-            }
+  init {
+    viewModelScope.launch {
+      when (val result = getInsuranceProvidersUseCase.getInsuranceProviders()) {
+        is InsuranceProvidersResult.Success -> _viewState.update {
+          it.copy(isLoading = false, insuranceProviders = result.providers)
         }
-    }
-
-    fun selectInsuranceProvider(provider: InsuranceProvider) {
-        _viewState.update { it.copy(selectedProvider = provider) }
-    }
-
-    fun continueWithProvider(provider: InsuranceProvider, resources: Resources) {
-        viewModelScope.launch {
-            if (provider.collectionId == null ||
-                provider.collectionId == resources.getString(R.string.EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION)
-            ) {
-                _events.trySend(Event.CantAutomaticallyMoveInsurance)
-                return@launch
-            }
-            if (featureManager.isFeatureEnabled(Feature.EXTERNAL_DATA_COLLECTION).not()) {
-                _events.trySend(Event.SkipDataCollection)
-                return@launch
-            }
-            _events.trySend(Event.AskForPrice(provider.collectionId, provider.name))
+        is InsuranceProvidersResult.Error -> {
+          _viewState.update { it.copy(isLoading = false) }
+          _events.trySend(Event.Error(result))
         }
+      }
     }
+  }
 
-    sealed class Event {
-        data class Error(val errorResult: InsuranceProvidersResult.Error) : Event()
-        data class AskForPrice(val collectionId: String, val providerName: String) : Event()
-        object CantAutomaticallyMoveInsurance : Event()
-        object SkipDataCollection : Event()
-    }
+  fun selectInsuranceProvider(provider: InsuranceProvider) {
+    _viewState.update { it.copy(selectedProvider = provider) }
+  }
 
-    data class ViewState(
-        val isLoading: Boolean = false,
-        val insuranceProviders: List<InsuranceProvider>? = null,
-        val selectedProvider: InsuranceProvider? = null,
-    ) {
-        fun canContinue() = selectedProvider != null
+  fun continueWithProvider(provider: InsuranceProvider, resources: Resources) {
+    viewModelScope.launch {
+      if (provider.collectionId == null ||
+        provider.collectionId == resources.getString(R.string.EXTERNAL_INSURANCE_PROVIDER_OTHER_OPTION)
+      ) {
+        _events.trySend(Event.CantAutomaticallyMoveInsurance)
+        return@launch
+      }
+      if (featureManager.isFeatureEnabled(Feature.EXTERNAL_DATA_COLLECTION).not()) {
+        _events.trySend(Event.SkipDataCollection)
+        return@launch
+      }
+      _events.trySend(Event.AskForPrice(provider.collectionId, provider.name))
     }
+  }
+
+  sealed class Event {
+    data class Error(val errorResult: InsuranceProvidersResult.Error) : Event()
+    data class AskForPrice(val collectionId: String, val providerName: String) : Event()
+    object CantAutomaticallyMoveInsurance : Event()
+    object SkipDataCollection : Event()
+  }
+
+  data class ViewState(
+    val isLoading: Boolean = false,
+    val insuranceProviders: List<InsuranceProvider>? = null,
+    val selectedProvider: InsuranceProvider? = null,
+  ) {
+    fun canContinue() = selectedProvider != null
+  }
 }

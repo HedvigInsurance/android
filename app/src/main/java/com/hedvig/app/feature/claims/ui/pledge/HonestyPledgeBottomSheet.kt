@@ -14,46 +14,46 @@ import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 class HonestyPledgeBottomSheet(
-    private val customActivityLaunch: ((Intent) -> Unit)? = null,
+  private val customActivityLaunch: ((Intent) -> Unit)? = null,
 ) : BottomSheetDialogFragment() {
-    private val binding by viewBinding(BottomSheetHonestyPledgeBinding::bind)
+  private val binding by viewBinding(BottomSheetHonestyPledgeBinding::bind)
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View? = inflater.inflate(R.layout.bottom_sheet_honesty_pledge, container, false)
+  override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?,
+  ): View? = inflater.inflate(R.layout.bottom_sheet_honesty_pledge, container, false)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        getViewModel<HonestyPledgeViewModel>()
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    getViewModel<HonestyPledgeViewModel>()
 
-        binding.bottomSheetHonestyPledgeButton.setHapticClickListener {
-            startClaimsFlow()
-            dismiss()
-        }
+    binding.bottomSheetHonestyPledgeButton.setHapticClickListener {
+      startClaimsFlow()
+      dismiss()
     }
+  }
 
-    private fun startClaimsFlow() {
-        if (customActivityLaunch != null) {
-            customActivityLaunch.invoke(getEmbarkIntent())
-        } else {
-            startActivity(getEmbarkIntent())
-        }
+  private fun startClaimsFlow() {
+    if (customActivityLaunch != null) {
+      customActivityLaunch.invoke(getEmbarkIntent())
+    } else {
+      startActivity(getEmbarkIntent())
     }
+  }
 
-    private fun getEmbarkIntent(): Intent {
-        return EmbarkActivity.newInstance(
-            requireContext(),
-            "claims",
-            getString(R.string.CLAIMS_HONESTY_PLEDGE_BOTTOM_SHEET_BUTTON_LABEL),
-        )
-    }
+  private fun getEmbarkIntent(): Intent {
+    return EmbarkActivity.newInstance(
+      requireContext(),
+      "claims",
+      getString(R.string.CLAIMS_HONESTY_PLEDGE_BOTTOM_SHEET_BUTTON_LABEL),
+    )
+  }
 
-    companion object {
-        const val TAG = "HonestyPledgeBottomSheet"
+  companion object {
+    const val TAG = "HonestyPledgeBottomSheet"
 
-        fun newInstance(
-            customActivityLaunch: ((Intent) -> Unit)? = null,
-        ): HonestyPledgeBottomSheet = HonestyPledgeBottomSheet(customActivityLaunch)
-    }
+    fun newInstance(
+      customActivityLaunch: ((Intent) -> Unit)? = null,
+    ): HonestyPledgeBottomSheet = HonestyPledgeBottomSheet(customActivityLaunch)
+  }
 }

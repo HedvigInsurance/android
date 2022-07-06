@@ -23,66 +23,66 @@ import org.junit.Test
 
 class EmptyTest : TestCase() {
 
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(LOGGED_IN_DATA)
-        },
-        ReferralsQuery.OPERATION_DOCUMENT to apolloResponse { success(REFERRALS_DATA_WITH_NO_DISCOUNTS) },
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(LOGGED_IN_DATA)
+    },
+    ReferralsQuery.OPERATION_DOCUMENT to apolloResponse { success(REFERRALS_DATA_WITH_NO_DISCOUNTS) },
+  )
+
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
+
+  @get:Rule
+  val featureFlagRule = FeatureFlagRule(
+    Feature.REFERRAL_CAMPAIGN to false,
+    Feature.KEY_GEAR to false,
+    Feature.REFERRALS to true,
+  )
+
+  @Test
+  fun shouldShowEmptyStateWhenLoadedWithNoItems() = run {
+    val intent = LoggedInActivity.newInstance(
+      context(),
+      initialTab = LoggedInTabs.REFERRALS,
     )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+    activityRule.launch(intent)
 
-    @get:Rule
-    val featureFlagRule = FeatureFlagRule(
-        Feature.REFERRAL_CAMPAIGN to false,
-        Feature.KEY_GEAR to false,
-        Feature.REFERRALS to true,
-    )
-
-    @Test
-    fun shouldShowEmptyStateWhenLoadedWithNoItems() = run {
-        val intent = LoggedInActivity.newInstance(
-            context(),
-            initialTab = LoggedInTabs.REFERRALS,
-        )
-
-        activityRule.launch(intent)
-
-        Screen.onScreen<ReferralTabScreen> {
-            share { isVisible() }
-            recycler {
-                hasSize(3)
-                childAt<ReferralTabScreen.HeaderItem>(1) {
-                    grossPrice {
-                        isVisible()
-                        hasText(
-                            Money.of(349, "SEK")
-                                .format(context(), market()),
-                        )
-                    }
-                    discountPerMonthPlaceholder { isGone() }
-                    newPricePlaceholder { isGone() }
-                    discountPerMonth { isGone() }
-                    newPrice { isGone() }
-                    discountPerMonthLabel { isGone() }
-                    newPriceLabel { isGone() }
-                    emptyHeadline { isVisible() }
-                    emptyBody { isVisible() }
-                    otherDiscountBox { isGone() }
-                }
-                childAt<ReferralTabScreen.CodeItem>(2) {
-                    placeholder { isGone() }
-                    code {
-                        isVisible()
-                        hasText("TEST123")
-                    }
-                }
-            }
+    Screen.onScreen<ReferralTabScreen> {
+      share { isVisible() }
+      recycler {
+        hasSize(3)
+        childAt<ReferralTabScreen.HeaderItem>(1) {
+          grossPrice {
+            isVisible()
+            hasText(
+              Money.of(349, "SEK")
+                .format(context(), market()),
+            )
+          }
+          discountPerMonthPlaceholder { isGone() }
+          newPricePlaceholder { isGone() }
+          discountPerMonth { isGone() }
+          newPrice { isGone() }
+          discountPerMonthLabel { isGone() }
+          newPriceLabel { isGone() }
+          emptyHeadline { isVisible() }
+          emptyBody { isVisible() }
+          otherDiscountBox { isGone() }
         }
+        childAt<ReferralTabScreen.CodeItem>(2) {
+          placeholder { isGone() }
+          code {
+            isVisible()
+            hasText("TEST123")
+          }
+        }
+      }
     }
+  }
 }

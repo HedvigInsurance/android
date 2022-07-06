@@ -12,55 +12,55 @@ import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.featureflags.FeatureManager
 
 suspend fun DynamicLink.startActivity(
-    context: Context,
-    marketManager: MarketManager,
-    featureManager: FeatureManager,
-    onDefault: () -> Unit,
+  context: Context,
+  marketManager: MarketManager,
+  featureManager: FeatureManager,
+  onDefault: () -> Unit,
 ) {
-    when (this) {
-        DynamicLink.DirectDebit -> {
-            val market = marketManager.market ?: return onDefault()
-            context.startActivities(
-                arrayOf(
-                    Intent(context, LoggedInActivity::class.java),
-                    connectPayinIntent(
-                        context,
-                        featureManager.getPaymentType(),
-                        market,
-                        false,
-                    ),
-                ),
-            )
-        }
-        DynamicLink.Forever -> context.startActivity(
-            LoggedInActivity.newInstance(
-                context,
-                initialTab = LoggedInTabs.REFERRALS,
-            ),
-        )
-        DynamicLink.Insurance -> context.startActivity(
-            LoggedInActivity.newInstance(
-                context,
-                initialTab = LoggedInTabs.INSURANCE,
-            ),
-        )
-        is DynamicLink.Referrals -> {
-            when (marketManager.market) {
-                null -> context.startActivity(MarketingActivity.newInstance(context))
-                Market.SE -> {
-                    context.startActivity(
-                        ReferralsReceiverActivity.newInstance(
-                            context,
-                            code,
-                            incentive,
-                        ),
-                        null,
-                    )
-                }
-                else -> context.startActivity(Intent(context, MarketingActivity::class.java))
-            }
-        }
-        DynamicLink.None -> onDefault()
-        DynamicLink.Unknown -> onDefault()
+  when (this) {
+    DynamicLink.DirectDebit -> {
+      val market = marketManager.market ?: return onDefault()
+      context.startActivities(
+        arrayOf(
+          Intent(context, LoggedInActivity::class.java),
+          connectPayinIntent(
+            context,
+            featureManager.getPaymentType(),
+            market,
+            false,
+          ),
+        ),
+      )
     }
+    DynamicLink.Forever -> context.startActivity(
+      LoggedInActivity.newInstance(
+        context,
+        initialTab = LoggedInTabs.REFERRALS,
+      ),
+    )
+    DynamicLink.Insurance -> context.startActivity(
+      LoggedInActivity.newInstance(
+        context,
+        initialTab = LoggedInTabs.INSURANCE,
+      ),
+    )
+    is DynamicLink.Referrals -> {
+      when (marketManager.market) {
+        null -> context.startActivity(MarketingActivity.newInstance(context))
+        Market.SE -> {
+          context.startActivity(
+            ReferralsReceiverActivity.newInstance(
+              context,
+              code,
+              incentive,
+            ),
+            null,
+          )
+        }
+        else -> context.startActivity(Intent(context, MarketingActivity::class.java))
+      }
+    }
+    DynamicLink.None -> onDefault()
+    DynamicLink.Unknown -> onDefault()
+  }
 }

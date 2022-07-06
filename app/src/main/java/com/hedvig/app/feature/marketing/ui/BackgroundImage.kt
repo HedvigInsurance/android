@@ -18,30 +18,30 @@ import com.hedvig.app.util.compose.rememberBlurHash
 
 @Composable
 fun BackgroundImage(background: Background, content: @Composable BoxScope.() -> Unit) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        background.data?.let { bg ->
-            val systemUiController = rememberSystemUiController()
-            SideEffect {
-                systemUiController.statusBarDarkContentEnabled = when (bg.theme) {
-                    MarketingBackground.Theme.LIGHT -> false
-                    MarketingBackground.Theme.DARK -> true
-                }
-            }
-            val placeholder by rememberBlurHash(bg.blurHash, 32, 32)
-            Image(
-                painter = rememberImagePainter(
-                    data = bg.url,
-                    builder = {
-                        placeholder(placeholder)
-                        crossfade(true)
-                        scale(Scale.FILL)
-                    },
-                ),
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop,
-            )
+  Box(modifier = Modifier.fillMaxSize()) {
+    background.data?.let { bg ->
+      val systemUiController = rememberSystemUiController()
+      SideEffect {
+        systemUiController.statusBarDarkContentEnabled = when (bg.theme) {
+          MarketingBackground.Theme.LIGHT -> false
+          MarketingBackground.Theme.DARK -> true
         }
-        content()
+      }
+      val placeholder by rememberBlurHash(bg.blurHash, 32, 32)
+      Image(
+        painter = rememberImagePainter(
+          data = bg.url,
+          builder = {
+            placeholder(placeholder)
+            crossfade(true)
+            scale(Scale.FILL)
+          },
+        ),
+        contentDescription = null,
+        modifier = Modifier.fillMaxSize(),
+        contentScale = ContentScale.Crop,
+      )
     }
+    content()
+  }
 }

@@ -10,32 +10,32 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 
 interface ChatEventStore {
-    suspend fun increaseChatClosedCounter()
-    suspend fun resetChatClosedCounter()
-    fun observeChatClosedCounter(): Flow<Int>
+  suspend fun increaseChatClosedCounter()
+  suspend fun resetChatClosedCounter()
+  fun observeChatClosedCounter(): Flow<Int>
 }
 
 class ChatEventDataStore(
-    private val dataStore: DataStore<Preferences>,
+  private val dataStore: DataStore<Preferences>,
 ) : ChatEventStore {
 
-    override suspend fun increaseChatClosedCounter() {
-        dataStore.edit {
-            it[CHAT_CLOSED_COUNTER] = (it[CHAT_CLOSED_COUNTER] ?: 0) + 1
-        }
+  override suspend fun increaseChatClosedCounter() {
+    dataStore.edit {
+      it[CHAT_CLOSED_COUNTER] = (it[CHAT_CLOSED_COUNTER] ?: 0) + 1
     }
+  }
 
-    override suspend fun resetChatClosedCounter() {
-        dataStore.edit {
-            it[CHAT_CLOSED_COUNTER] = 0
-        }
+  override suspend fun resetChatClosedCounter() {
+    dataStore.edit {
+      it[CHAT_CLOSED_COUNTER] = 0
     }
+  }
 
-    override fun observeChatClosedCounter() = dataStore.data
-        .catch { e(it) }
-        .map { it[CHAT_CLOSED_COUNTER] ?: 0 }
+  override fun observeChatClosedCounter() = dataStore.data
+    .catch { e(it) }
+    .map { it[CHAT_CLOSED_COUNTER] ?: 0 }
 
-    companion object {
-        private val CHAT_CLOSED_COUNTER = intPreferencesKey("CHAT_CLOSED_COUNTER")
-    }
+  companion object {
+    private val CHAT_CLOSED_COUNTER = intPreferencesKey("CHAT_CLOSED_COUNTER")
+  }
 }

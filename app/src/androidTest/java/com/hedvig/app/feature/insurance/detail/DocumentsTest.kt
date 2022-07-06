@@ -16,43 +16,43 @@ import org.junit.Rule
 import org.junit.Test
 
 class DocumentsTest : TestCase() {
-    @get:Rule
-    val activityRule = LazyIntentsActivityScenarioRule(ContractDetailActivity::class.java)
+  @get:Rule
+  val activityRule = LazyIntentsActivityScenarioRule(ContractDetailActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        InsuranceQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(
-                INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS,
-            )
-        },
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    InsuranceQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(
+        INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS,
+      )
+    },
+  )
+
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
+
+  @Test
+  fun shouldShowDocuments() = run {
+    activityRule.launch(
+      ContractDetailActivity.newInstance(
+        context(),
+        INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS.contracts[0].id,
+      ),
     )
+    stubExternalIntents()
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
-
-    @Test
-    fun shouldShowDocuments() = run {
-        activityRule.launch(
-            ContractDetailActivity.newInstance(
-                context(),
-                INSURANCE_DATA_NORWEGIAN_HOME_CONTENTS.contracts[0].id,
-            ),
-        )
-        stubExternalIntents()
-
-        onScreen<ContractDetailScreen> {
-            tabContent {
-                childAt<ContractDetailScreen.DocumentsTab>(2) {
-                    recycler {
-                        hasSize(2)
-                        childAt<DocumentRecyclerItem>(0) {
-                            button { click() }
-                        }
-                    }
-                    agreementUrl { intended() }
-                }
+    onScreen<ContractDetailScreen> {
+      tabContent {
+        childAt<ContractDetailScreen.DocumentsTab>(2) {
+          recycler {
+            hasSize(2)
+            childAt<DocumentRecyclerItem>(0) {
+              button { click() }
             }
+          }
+          agreementUrl { intended() }
         }
+      }
     }
+  }
 }

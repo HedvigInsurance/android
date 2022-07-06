@@ -14,28 +14,28 @@ import com.hedvig.app.util.extensions.view.setHapticClickListener
 
 @Composable
 fun GenericErrorScreen(
-    onRetryButtonClicked: () -> Unit,
-    modifier: Modifier = Modifier,
+  onRetryButtonClicked: () -> Unit,
+  modifier: Modifier = Modifier,
 ) {
-    AndroidViewBinding(
-        factory = GenericErrorBinding::inflate,
-        modifier = modifier.fillMaxSize(),
-    ) {
-        retry.setHapticClickListener {
-            onRetryButtonClicked()
-        }
+  AndroidViewBinding(
+    factory = GenericErrorBinding::inflate,
+    modifier = modifier.fillMaxSize(),
+  ) {
+    retry.setHapticClickListener {
+      onRetryButtonClicked()
     }
+  }
 }
 
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun GenericErrorScreenPreview() {
-    HedvigTheme {
-        Surface(
-            color = MaterialTheme.colors.background,
-        ) {
-            GenericErrorScreen({})
-        }
+  HedvigTheme {
+    Surface(
+      color = MaterialTheme.colors.background,
+    ) {
+      GenericErrorScreen({})
     }
+  }
 }

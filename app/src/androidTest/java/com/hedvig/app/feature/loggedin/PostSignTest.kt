@@ -18,37 +18,37 @@ import org.junit.Rule
 import org.junit.Test
 
 class PostSignTest : TestCase() {
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(LOGGED_IN_DATA)
-        },
-        WelcomeQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(WELCOME_DATA_ONE_PAGE)
-        },
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(LOGGED_IN_DATA)
+    },
+    WelcomeQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(WELCOME_DATA_ONE_PAGE)
+    },
+  )
+
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
+
+  @Test
+  fun shouldOpenWelcomeWhenNavigatingFromOnboarding() = run {
+    activityRule.launch(
+      LoggedInActivity.newInstance(context())
+        .apply { putExtra(EXTRA_IS_FROM_ONBOARDING, true) },
     )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
-
-    @Test
-    fun shouldOpenWelcomeWhenNavigatingFromOnboarding() = run {
-        activityRule.launch(
-            LoggedInActivity.newInstance(context())
-                .apply { putExtra(EXTRA_IS_FROM_ONBOARDING, true) },
-        )
-
-        onScreen<WelcomeScreen> {
-            pressBack()
-        }
-        onScreen<LoggedInScreen> {
-            root { isVisible() }
-            bottomTabs {
-                hasSelectedItem(R.id.home)
-            }
-        }
+    onScreen<WelcomeScreen> {
+      pressBack()
     }
+    onScreen<LoggedInScreen> {
+      root { isVisible() }
+      bottomTabs {
+        hasSelectedItem(R.id.home)
+      }
+    }
+  }
 }

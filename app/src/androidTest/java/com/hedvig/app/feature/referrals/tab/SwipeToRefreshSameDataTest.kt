@@ -20,44 +20,44 @@ import org.junit.Test
 
 class SwipeToRefreshSameDataTest : TestCase() {
 
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(LOGGED_IN_DATA)
-        },
-        ReferralsQuery.OPERATION_DOCUMENT to apolloResponse { success(REFERRALS_DATA_WITH_NO_DISCOUNTS) },
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(LOGGED_IN_DATA)
+    },
+    ReferralsQuery.OPERATION_DOCUMENT to apolloResponse { success(REFERRALS_DATA_WITH_NO_DISCOUNTS) },
+  )
+
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
+
+  @get:Rule
+  val featureFlagRule = FeatureFlagRule(
+    Feature.REFERRAL_CAMPAIGN to false,
+    Feature.KEY_GEAR to false,
+    Feature.REFERRALS to true,
+  )
+
+  @Test
+  fun shouldRefreshDataWhenSwipingDownToRefreshWhenDataHasNotChanged() = run {
+    val intent = LoggedInActivity.newInstance(
+      context(),
+      initialTab = LoggedInTabs.REFERRALS,
     )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+    activityRule.launch(intent)
 
-    @get:Rule
-    val featureFlagRule = FeatureFlagRule(
-        Feature.REFERRAL_CAMPAIGN to false,
-        Feature.KEY_GEAR to false,
-        Feature.REFERRALS to true,
-    )
-
-    @Test
-    fun shouldRefreshDataWhenSwipingDownToRefreshWhenDataHasNotChanged() = run {
-        val intent = LoggedInActivity.newInstance(
-            context(),
-            initialTab = LoggedInTabs.REFERRALS,
-        )
-
-        activityRule.launch(intent)
-
-        Screen.onScreen<ReferralTabScreen> {
-            share { isVisible() }
-            recycler {
-                hasSize(3)
-            }
-            swipeToRefresh { swipeDown() }
-            recycler { hasSize(3) }
-            swipeToRefresh { isNotRefreshing() }
-        }
+    Screen.onScreen<ReferralTabScreen> {
+      share { isVisible() }
+      recycler {
+        hasSize(3)
+      }
+      swipeToRefresh { swipeDown() }
+      recycler { hasSize(3) }
+      swipeToRefresh { isNotRefreshing() }
     }
+  }
 }

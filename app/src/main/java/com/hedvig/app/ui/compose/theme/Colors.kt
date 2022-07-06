@@ -27,31 +27,31 @@ val surfaceDark = Color(0xffBE9BF3)
 
 @Composable
 fun hedvigContentColorFor(backgroundColor: Color): Color {
-    return when (backgroundColor) {
-        colorResource(R.color.lavender_200) -> colorResource(R.color.hedvig_black)
-        colorResource(R.color.lavender_400) -> colorResource(R.color.hedvig_black)
-        colorResource(R.color.forever_orange_500) -> colorResource(R.color.hedvig_black)
-        colorResource(R.color.colorWarning) -> colorResource(R.color.hedvig_black)
-        Color.Transparent -> contentColorFor(MaterialTheme.colors.background)
-        else -> contentColorFor(backgroundColor)
-    }
+  return when (backgroundColor) {
+    colorResource(R.color.lavender_200) -> colorResource(R.color.hedvig_black)
+    colorResource(R.color.lavender_400) -> colorResource(R.color.hedvig_black)
+    colorResource(R.color.forever_orange_500) -> colorResource(R.color.hedvig_black)
+    colorResource(R.color.colorWarning) -> colorResource(R.color.hedvig_black)
+    Color.Transparent -> contentColorFor(MaterialTheme.colors.background)
+    else -> contentColorFor(backgroundColor)
+  }
 }
 
 @Suppress("unused")
 val Colors.warning: Color
-    @Composable
-    @ReadOnlyComposable
-    get() = colorResource(R.color.colorWarning)
+  @Composable
+  @ReadOnlyComposable
+  get() = colorResource(R.color.colorWarning)
 
 @Suppress("unused")
 val Colors.onWarning: Color
-    @Composable
-    @ReadOnlyComposable
-    get() = colorResource(R.color.hedvig_black)
+  @Composable
+  @ReadOnlyComposable
+  get() = colorResource(R.color.hedvig_black)
 
 val Colors.separator: Color
-    get() = if (isLight) {
-        hedvigBlack.copy(alpha = 0.12f)
-    } else {
-        hedvigOffWhite.copy(alpha = 0.12f)
-    }
+  get() = if (isLight) {
+    hedvigBlack.copy(alpha = 0.12f)
+  } else {
+    hedvigOffWhite.copy(alpha = 0.12f)
+  }

@@ -11,42 +11,42 @@ import com.hedvig.android.owldroid.graphql.UpdateReferralCampaignCodeMutation
 import kotlinx.coroutines.flow.Flow
 
 class ReferralsRepository(
-    private val apolloClient: ApolloClient,
+  private val apolloClient: ApolloClient,
 ) {
-    private val referralsQuery = ReferralsQuery()
+  private val referralsQuery = ReferralsQuery()
 
-    fun referrals(): Flow<ApolloResponse<ReferralsQuery.Data>> = apolloClient
-        .query(referralsQuery)
-        .watch()
+  fun referrals(): Flow<ApolloResponse<ReferralsQuery.Data>> = apolloClient
+    .query(referralsQuery)
+    .watch()
 
-    suspend fun reloadReferrals(): ApolloResponse<ReferralsQuery.Data> = apolloClient
-        .query(referralsQuery)
-        .fetchPolicy(FetchPolicy.NetworkOnly)
-        .execute()
+  suspend fun reloadReferrals(): ApolloResponse<ReferralsQuery.Data> = apolloClient
+    .query(referralsQuery)
+    .fetchPolicy(FetchPolicy.NetworkOnly)
+    .execute()
 
-    suspend fun updateCode(newCode: String): ApolloResponse<UpdateReferralCampaignCodeMutation.Data> {
-        val response = apolloClient
-            .mutation(UpdateReferralCampaignCodeMutation(newCode))
-            .execute()
+  suspend fun updateCode(newCode: String): ApolloResponse<UpdateReferralCampaignCodeMutation.Data> {
+    val response = apolloClient
+      .mutation(UpdateReferralCampaignCodeMutation(newCode))
+      .execute()
 
-        response.data?.updateReferralCampaignCode?.asSuccessfullyUpdatedCode?.code?.let { updatedCode ->
-            val oldData = apolloClient
-                .apolloStore
-                .readOperation(referralsQuery)
+    response.data?.updateReferralCampaignCode?.asSuccessfullyUpdatedCode?.code?.let { updatedCode ->
+      val oldData = apolloClient
+        .apolloStore
+        .readOperation(referralsQuery)
 
-            val newData = oldData.copy(
-                referralInformation = oldData.referralInformation.copy(
-                    campaign = oldData.referralInformation.campaign.copy(
-                        code = updatedCode,
-                    ),
-                ),
-            )
+      val newData = oldData.copy(
+        referralInformation = oldData.referralInformation.copy(
+          campaign = oldData.referralInformation.campaign.copy(
+            code = updatedCode,
+          ),
+        ),
+      )
 
-            apolloClient
-                .apolloStore
-                .writeOperation(referralsQuery, newData)
-        }
-
-        return response
+      apolloClient
+        .apolloStore
+        .writeOperation(referralsQuery, newData)
     }
+
+    return response
+  }
 }

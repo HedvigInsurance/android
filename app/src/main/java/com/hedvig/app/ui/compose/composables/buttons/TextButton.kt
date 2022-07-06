@@ -10,16 +10,16 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun LargeTextButton(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    content: @Composable RowScope.() -> Unit,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+  content: @Composable RowScope.() -> Unit,
 ) {
-    TextButton(
-        onClick = onClick,
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(modifier),
-        contentPadding = PaddingValues(16.dp),
-        content = content,
-    )
+  TextButton(
+    onClick = onClick,
+    modifier = Modifier
+      .fillMaxWidth()
+      .then(modifier),
+    contentPadding = PaddingValues(16.dp),
+    content = content,
+  )
 }

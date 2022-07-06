@@ -19,77 +19,77 @@ import org.json.JSONException
 import org.json.JSONObject
 
 class EditCheckoutUseCase(
-    private val localeManager: LocaleManager,
-    private val graphQLQueryHandler: GraphQLQueryHandler,
+  private val localeManager: LocaleManager,
+  private val graphQLQueryHandler: GraphQLQueryHandler,
 ) {
 
-    object Success
+  object Success
 
-    suspend fun editQuotes(parameter: EditAndSignParameter): Either<ErrorMessage, Success> {
-        return editQuoteCart(parameter)
-    }
+  suspend fun editQuotes(parameter: EditAndSignParameter): Either<ErrorMessage, Success> {
+    return editQuoteCart(parameter)
+  }
 
-    private suspend fun editQuoteCart(
-        parameter: EditAndSignParameter,
-    ): Either<ErrorMessage, Success> = either {
-        ensureNotNull(parameter.quoteCartId) { ErrorMessage("No quote cart id found") }
-        val results = parameter.quoteIds
-            .map { mutateQuoteCart(parameter.quoteCartId, it, parameter.ssn, parameter.email) }
-            .sequence()
-            .bind()
-        results.first()
-    }
+  private suspend fun editQuoteCart(
+    parameter: EditAndSignParameter,
+  ): Either<ErrorMessage, Success> = either {
+    ensureNotNull(parameter.quoteCartId) { ErrorMessage("No quote cart id found") }
+    val results = parameter.quoteIds
+      .map { mutateQuoteCart(parameter.quoteCartId, it, parameter.ssn, parameter.email) }
+      .sequence()
+      .bind()
+    results.first()
+  }
 
-    private suspend fun mutateQuoteCart(
-        quoteCartId: QuoteCartId,
-        quoteId: String,
-        ssn: String,
-        email: String,
-    ): Either<ErrorMessage, Success> {
-        val json = buildJsonObject {
-            put("quoteCartId", quoteCartId.id)
-            put("quoteId", quoteId)
-            put("locale", localeManager.defaultLocale().rawValue)
-            putJsonObject("payload") {
-                put("ssn", ssn)
-                put("email", email)
-                putJsonObject("data") {
-                    put("ssn", ssn)
-                    put("email", email)
-                }
-            }
-        }.toString()
+  private suspend fun mutateQuoteCart(
+    quoteCartId: QuoteCartId,
+    quoteId: String,
+    ssn: String,
+    email: String,
+  ): Either<ErrorMessage, Success> {
+    val json = buildJsonObject {
+      put("quoteCartId", quoteCartId.id)
+      put("quoteId", quoteId)
+      put("locale", localeManager.defaultLocale().rawValue)
+      putJsonObject("payload") {
+        put("ssn", ssn)
+        put("email", email)
+        putJsonObject("data") {
+          put("ssn", ssn)
+          put("email", email)
+        }
+      }
+    }.toString()
 
-        return graphQLQueryHandler.graphQLQuery(
-            query = QuoteCartEditQuoteMutation.OPERATION_DOCUMENT,
-            variables = JSONObject(json),
-            files = emptyList(),
-        )
-            .toEither()
-            .mapLeft { ErrorMessage(it.message) }
-            .flatMap { jsonResponse ->
-                val errorCode = try {
-                    jsonResponse.getJSONObject("data")
-                        .getJSONObject("quoteCart_editQuote")
-                        .getJSONArray("limits")
-                        .getJSONObject(0)
-                        .getString("code")
-                } catch (exception: JSONException) {
-                    null
-                }
+    return graphQLQueryHandler.graphQLQuery(
+      query = QuoteCartEditQuoteMutation.OPERATION_DOCUMENT,
+      variables = JSONObject(json),
+      files = emptyList(),
+    )
+      .toEither()
+      .mapLeft { ErrorMessage(it.message) }
+      .flatMap { jsonResponse ->
+        val errorCode = try {
+          jsonResponse.getJSONObject("data")
+            .getJSONObject("quoteCart_editQuote")
+            .getJSONArray("limits")
+            .getJSONObject(0)
+            .getString("code")
+        } catch (exception: JSONException) {
+          null
+        }
 
-                if (errorCode != null) {
-                    ErrorMessage(errorCode).left()
-                } else {
-                    Success.right()
-                }
-            }
-    }
+        if (errorCode != null) {
+          ErrorMessage(errorCode).left()
+        } else {
+          Success.right()
+        }
+      }
+  }
 }
 
 data class EditAndSignParameter(
-    val quoteIds: List<String>,
-    val quoteCartId: QuoteCartId?,
-    val ssn: String,
-    val email: String,
+  val quoteIds: List<String>,
+  val quoteCartId: QuoteCartId?,
+  val ssn: String,
+  val email: String,
 )

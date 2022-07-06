@@ -5,14 +5,14 @@ import com.hedvig.app.feature.adyen.AdyenRepository
 import kotlinx.coroutines.launch
 
 class AdyenConnectPayoutViewModelImpl(
-    private val repository: AdyenRepository,
+  private val repository: AdyenRepository,
 ) : AdyenConnectPayoutViewModel() {
-    init {
-        viewModelScope.launch {
-            val response = runCatching { repository.payoutMethods() }
-            response.getOrNull()?.data?.let {
-                _payoutMethods.postValue(it.availablePayoutMethods.paymentMethodsResponse)
-            }
-        }
+  init {
+    viewModelScope.launch {
+      val response = runCatching { repository.payoutMethods() }
+      response.getOrNull()?.data?.let {
+        _payoutMethods.postValue(it.availablePayoutMethods.paymentMethodsResponse)
+      }
     }
+  }
 }

@@ -21,96 +21,96 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 class AskForPriceInfoActivity : BaseActivity() {
-    private val parameter by lazy {
-        intent.getParcelableExtra<InsuranceProviderParameter>(PARAMETER)
-            ?: throw Error("Programmer error: DATA is null in ${this.javaClass.name}")
+  private val parameter by lazy {
+    intent.getParcelableExtra<InsuranceProviderParameter>(PARAMETER)
+      ?: throw Error("Programmer error: DATA is null in ${this.javaClass.name}")
+  }
+
+  private val model: AskForPriceInfoViewModel by viewModel {
+    parametersOf(parameter.selectedInsuranceProviderCollectionId)
+  }
+
+  private val retrievePriceActivityResultLauncher =
+    registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+      if (result.resultCode == RESULT_CONTINUE) {
+        finishWithResult(
+          result.data?.getStringExtra(REFERENCE_RESULT),
+          result.data?.getStringExtra(SSN_RESULT),
+        )
+      }
     }
 
-    private val model: AskForPriceInfoViewModel by viewModel {
-        parametersOf(parameter.selectedInsuranceProviderCollectionId)
-    }
-
-    private val retrievePriceActivityResultLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            if (result.resultCode == RESULT_CONTINUE) {
-                finishWithResult(
-                    result.data?.getStringExtra(REFERENCE_RESULT),
-                    result.data?.getStringExtra(SSN_RESULT),
-                )
-            }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContent {
+      HedvigTheme {
+        Scaffold(
+          topBar = {
+            TopAppBarWithBack(
+              onClick = { onBackPressed() },
+              title = stringResource(R.string.insurely_title),
+            )
+          },
+        ) {
+          AskForPriceScreen(
+            parameter.selectedInsuranceProviderName,
+            onSkipRetrievePriceInfo = {
+              model.onSkipRetrievePriceInfo()
+              finishWithResult(null, null)
+            },
+            onNavigateToRetrievePrice = ::startRetrievePriceActivity,
+          )
         }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            HedvigTheme {
-                Scaffold(
-                    topBar = {
-                        TopAppBarWithBack(
-                            onClick = { onBackPressed() },
-                            title = stringResource(R.string.insurely_title),
-                        )
-                    },
-                ) {
-                    AskForPriceScreen(
-                        parameter.selectedInsuranceProviderName,
-                        onSkipRetrievePriceInfo = {
-                            model.onSkipRetrievePriceInfo()
-                            finishWithResult(null, null)
-                        },
-                        onNavigateToRetrievePrice = ::startRetrievePriceActivity,
-                    )
-                }
-            }
-        }
+      }
     }
+  }
 
-    private fun startRetrievePriceActivity() {
-        retrievePriceActivityResultLauncher.launch(RetrievePriceInfoActivity.createIntent(this, parameter))
+  private fun startRetrievePriceActivity() {
+    retrievePriceActivityResultLauncher.launch(RetrievePriceInfoActivity.createIntent(this, parameter))
+  }
+
+  private fun finishWithResult(reference: String?, ssn: String?) {
+    val intent = Intent()
+    intent.putExtra(REFERENCE_RESULT, reference)
+    intent.putExtra(SSN_RESULT, ssn)
+    setResult(RESULT_CONTINUE, intent)
+    finish()
+  }
+
+  companion object {
+    const val RESULT_CONTINUE = 1242
+    private const val PARAMETER = "parameter"
+
+    fun createIntent(
+      context: Context,
+      parameter: InsuranceProviderParameter,
+    ) = Intent(context, AskForPriceInfoActivity::class.java).apply {
+      putExtra(PARAMETER, parameter)
     }
-
-    private fun finishWithResult(reference: String?, ssn: String?) {
-        val intent = Intent()
-        intent.putExtra(REFERENCE_RESULT, reference)
-        intent.putExtra(SSN_RESULT, ssn)
-        setResult(RESULT_CONTINUE, intent)
-        finish()
-    }
-
-    companion object {
-        const val RESULT_CONTINUE = 1242
-        private const val PARAMETER = "parameter"
-
-        fun createIntent(
-            context: Context,
-            parameter: InsuranceProviderParameter,
-        ) = Intent(context, AskForPriceInfoActivity::class.java).apply {
-            putExtra(PARAMETER, parameter)
-        }
-    }
+  }
 }
 
 @Composable
 fun AskForPriceScreen(
-    selectedInsurance: String,
-    onSkipRetrievePriceInfo: () -> Unit,
-    onNavigateToRetrievePrice: () -> Unit,
+  selectedInsurance: String,
+  onSkipRetrievePriceInfo: () -> Unit,
+  onNavigateToRetrievePrice: () -> Unit,
 ) {
-    IntroContent(
-        selectedInsurance = selectedInsurance,
-        onNavigateToRetrievePriceInfo = { onNavigateToRetrievePrice() },
-        onSkipRetrievePriceInfo = onSkipRetrievePriceInfo,
-    )
+  IntroContent(
+    selectedInsurance = selectedInsurance,
+    onNavigateToRetrievePriceInfo = { onNavigateToRetrievePrice() },
+    onSkipRetrievePriceInfo = onSkipRetrievePriceInfo,
+  )
 }
 
 @Preview(showBackground = true)
 @Composable
 fun AskForPriceScreenPreview() {
-    HedvigTheme {
-        AskForPriceScreen(
-            "Test",
-            onSkipRetrievePriceInfo = { },
-            onNavigateToRetrievePrice = { },
-        )
-    }
+  HedvigTheme {
+    AskForPriceScreen(
+      "Test",
+      onSkipRetrievePriceInfo = { },
+      onNavigateToRetrievePrice = { },
+    )
+  }
 }

@@ -15,22 +15,22 @@ import com.hedvig.app.ui.compose.theme.HedvigTheme
 
 @Composable
 fun VariantHeader() {
-    Text(
-        text = stringResource(id = R.string.offer_screen_varianted_offers_header),
-        style = MaterialTheme.typography.h6,
-        modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .padding(bottom = 4.dp, top = 40.dp),
-    )
+  Text(
+    text = stringResource(id = R.string.offer_screen_varianted_offers_header),
+    style = MaterialTheme.typography.h6,
+    modifier = Modifier
+      .padding(horizontal = 16.dp)
+      .padding(bottom = 4.dp, top = 40.dp),
+  )
 }
 
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun VariantHeaderPreview() {
-    HedvigTheme {
-        Surface(color = MaterialTheme.colors.background) {
-            VariantHeader()
-        }
+  HedvigTheme {
+    Surface(color = MaterialTheme.colors.background) {
+      VariantHeader()
     }
+  }
 }

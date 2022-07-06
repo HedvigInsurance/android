@@ -5,9 +5,9 @@ import com.apollographql.apollo3.api.ApolloResponse
 import com.hedvig.android.owldroid.graphql.StartDirectDebitRegistrationMutation
 
 class TrustlyRepository(
-    private val apolloClient: ApolloClient,
+  private val apolloClient: ApolloClient,
 ) {
-    suspend fun startTrustlySession(): ApolloResponse<StartDirectDebitRegistrationMutation.Data> = apolloClient
-        .mutation(StartDirectDebitRegistrationMutation())
-        .execute()
+  suspend fun startTrustlySession(): ApolloResponse<StartDirectDebitRegistrationMutation.Data> = apolloClient
+    .mutation(StartDirectDebitRegistrationMutation())
+    .execute()
 }

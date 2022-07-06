@@ -10,21 +10,21 @@ import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeQuery
 
 class GetHomeUseCase(
-    private val apolloClient: ApolloClient,
-    private val localeManager: LocaleManager,
+  private val apolloClient: ApolloClient,
+  private val localeManager: LocaleManager,
 ) {
 
-    suspend operator fun invoke(forceReload: Boolean): Either<QueryResult.Error, HomeQuery.Data> {
-        val apolloCall = apolloClient.query(homeQuery())
-        if (forceReload) {
-            apolloCall.fetchPolicy(FetchPolicy.NetworkOnly)
-        }
-        return apolloCall
-            .safeQuery()
-            .toEither()
+  suspend operator fun invoke(forceReload: Boolean): Either<QueryResult.Error, HomeQuery.Data> {
+    val apolloCall = apolloClient.query(homeQuery())
+    if (forceReload) {
+      apolloCall.fetchPolicy(FetchPolicy.NetworkOnly)
     }
+    return apolloCall
+      .safeQuery()
+      .toEither()
+  }
 
-    private fun homeQuery() = HomeQuery(localeManager.defaultLocale(), localeManager.defaultLocale().rawValue)
+  private fun homeQuery() = HomeQuery(localeManager.defaultLocale(), localeManager.defaultLocale().rawValue)
 
-    data class Error(val message: String?)
+  data class Error(val message: String?)
 }

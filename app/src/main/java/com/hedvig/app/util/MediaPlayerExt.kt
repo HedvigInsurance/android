@@ -9,24 +9,24 @@ import kotlin.coroutines.resume
  * replace it when this method is called, and set it as null right before this suspending function returns.
  */
 suspend fun MediaPlayer.seekToPercent(
-    percentage: ProgressPercentage,
+  percentage: ProgressPercentage,
 ) = suspendCancellableCoroutine<Unit> { cont ->
-    val callback = MediaPlayer.OnSeekCompleteListener {
-        this.setOnSeekCompleteListener(null)
-        cont.resume(Unit)
-    }
-    setOnSeekCompleteListener(callback)
-    cont.invokeOnCancellation { setOnSeekCompleteListener(null) }
-    val positionToSeekTo = (duration.toFloat() * percentage.value).toInt()
-    if (cont.isActive) {
-        seekTo(positionToSeekTo)
-    }
+  val callback = MediaPlayer.OnSeekCompleteListener {
+    this.setOnSeekCompleteListener(null)
+    cont.resume(Unit)
+  }
+  setOnSeekCompleteListener(callback)
+  cont.invokeOnCancellation { setOnSeekCompleteListener(null) }
+  val positionToSeekTo = (duration.toFloat() * percentage.value).toInt()
+  if (cont.isActive) {
+    seekTo(positionToSeekTo)
+  }
 }
 
 fun MediaPlayer.hasReachedTheEnd(): Boolean {
-    return getProgressPercentage().isDone
+  return getProgressPercentage().isDone
 }
 
 fun MediaPlayer.getProgressPercentage(): ProgressPercentage {
-    return ProgressPercentage.safeValue(currentPosition.toFloat() / duration.toFloat())
+  return ProgressPercentage.safeValue(currentPosition.toFloat() / duration.toFloat())
 }

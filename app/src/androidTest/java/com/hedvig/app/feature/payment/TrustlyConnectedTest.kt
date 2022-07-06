@@ -23,58 +23,58 @@ import org.junit.Test
 
 class TrustlyConnectedTest : TestCase() {
 
-    @get:Rule
-    val activityRule = LazyIntentsActivityScenarioRule(PaymentActivity::class.java)
+  @get:Rule
+  val activityRule = LazyIntentsActivityScenarioRule(PaymentActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        PaymentQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYMENT_DATA_TRUSTLY_CONNECTED) },
-        PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_ACTIVE) },
-    )
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    PaymentQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYMENT_DATA_TRUSTLY_CONNECTED) },
+    PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_ACTIVE) },
+  )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
 
-    @get:Rule
-    val marketRule = MarketRule(Market.SE)
+  @get:Rule
+  val marketRule = MarketRule(Market.SE)
 
-    @get:Rule
-    val featureFlagRule = FeatureFlagRule(
-        paymentType = PaymentType.TRUSTLY,
-    )
+  @get:Rule
+  val featureFlagRule = FeatureFlagRule(
+    paymentType = PaymentType.TRUSTLY,
+  )
 
-    @Test
-    fun shouldShowBankAccountInformationWhenTrustlyIsConnected() = run {
-        activityRule.launch(PaymentActivity.newInstance(context()))
+  @Test
+  fun shouldShowBankAccountInformationWhenTrustlyIsConnected() = run {
+    activityRule.launch(PaymentActivity.newInstance(context()))
 
-        onScreen<PaymentScreen> {
-            trustlyConnectPayin { stub() }
-            recycler {
-                childAt<PaymentScreen.TrustlyPayinDetails>(3) {
-                    accountNumber {
-                        containsText(
-                            PAYMENT_DATA_TRUSTLY_CONNECTED
-                                .bankAccount!!
-                                .fragments
-                                .bankAccountFragment
-                                .descriptor,
-                        )
-                    }
-                    bank {
-                        hasText(
-                            PAYMENT_DATA_TRUSTLY_CONNECTED.bankAccount!!.fragments.bankAccountFragment.bankName,
-                        )
-                    }
-                    pending { isGone() }
-                }
-                childAt<PaymentScreen.Link>(4) {
-                    button {
-                        hasText(R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT)
-                        click()
-                    }
-                }
-            }
-            trustlyConnectPayin { intended() }
+    onScreen<PaymentScreen> {
+      trustlyConnectPayin { stub() }
+      recycler {
+        childAt<PaymentScreen.TrustlyPayinDetails>(3) {
+          accountNumber {
+            containsText(
+              PAYMENT_DATA_TRUSTLY_CONNECTED
+                .bankAccount!!
+                .fragments
+                .bankAccountFragment
+                .descriptor,
+            )
+          }
+          bank {
+            hasText(
+              PAYMENT_DATA_TRUSTLY_CONNECTED.bankAccount!!.fragments.bankAccountFragment.bankName,
+            )
+          }
+          pending { isGone() }
         }
+        childAt<PaymentScreen.Link>(4) {
+          button {
+            hasText(R.string.PROFILE_PAYMENT_CHANGE_BANK_ACCOUNT)
+            click()
+          }
+        }
+      }
+      trustlyConnectPayin { intended() }
     }
+  }
 }

@@ -8,22 +8,22 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 class ReferralsNotificationBadgeService(
-    private val notificationBadgeService: NotificationBadgeService,
-    private val featureManager: FeatureManager,
+  private val notificationBadgeService: NotificationBadgeService,
+  private val featureManager: FeatureManager,
 ) {
-    fun shouldShowNotification(): Flow<Boolean> {
-        return flow {
-            emitAll(
-                notificationBadgeService.getValue(NotificationBadge.BottomNav.ReferralCampaign)
-                    .map { it ?: false }
-                    .map { hasSeenCampaign ->
-                        !hasSeenCampaign && featureManager.isFeatureEnabled(Feature.REFERRAL_CAMPAIGN)
-                    },
-            )
-        }
+  fun shouldShowNotification(): Flow<Boolean> {
+    return flow {
+      emitAll(
+        notificationBadgeService.getValue(NotificationBadge.BottomNav.ReferralCampaign)
+          .map { it ?: false }
+          .map { hasSeenCampaign ->
+            !hasSeenCampaign && featureManager.isFeatureEnabled(Feature.REFERRAL_CAMPAIGN)
+          },
+      )
     }
+  }
 
-    suspend fun markAsSeen() {
-        notificationBadgeService.setValue(NotificationBadge.BottomNav.ReferralCampaign, true)
-    }
+  suspend fun markAsSeen() {
+    notificationBadgeService.setValue(NotificationBadge.BottomNav.ReferralCampaign, true)
+  }
 }

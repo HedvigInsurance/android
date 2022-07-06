@@ -8,18 +8,18 @@ import com.hedvig.app.feature.referrals.ui.activated.ReferralsActivatedViewModel
 import com.hedvig.app.testdata.feature.referrals.LOGGED_IN_DATA
 
 class MockReferralsActivatedViewModel : ReferralsActivatedViewModel() {
-    override val data = MutableLiveData<LoggedInQuery.Data>()
+  override val data = MutableLiveData<LoggedInQuery.Data>()
 
-    init {
-        Handler(getMainLooper()).postDelayed(
-            {
-                data.postValue(LOGGED_IN_DATA)
-            },
-            loadDelay,
-        )
-    }
+  init {
+    Handler(getMainLooper()).postDelayed(
+      {
+        data.postValue(LOGGED_IN_DATA)
+      },
+      loadDelay,
+    )
+  }
 
-    companion object {
-        var loadDelay = 1000L
-    }
+  companion object {
+    var loadDelay = 1000L
+  }
 }

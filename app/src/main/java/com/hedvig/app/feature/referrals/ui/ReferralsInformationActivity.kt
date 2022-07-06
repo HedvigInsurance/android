@@ -24,64 +24,64 @@ import java.math.BigDecimal
 import javax.money.MonetaryAmount
 
 class ReferralsInformationActivity : BaseActivity(R.layout.activity_referrals_information) {
-    private val binding by viewBinding(ActivityReferralsInformationBinding::bind)
-    private val marketManager: MarketManager by inject()
+  private val binding by viewBinding(ActivityReferralsInformationBinding::bind)
+  private val marketManager: MarketManager by inject()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-        val termsUrl = intent.getStringExtra(TERMS_URL)
-        val incentiveAmount = intent.getSerializableExtra(INCENTIVE_AMOUNT) as? BigDecimal
-        val incentiveCurrency = intent.getStringExtra(INCENTIVE_CURRENCY)
+    val termsUrl = intent.getStringExtra(TERMS_URL)
+    val incentiveAmount = intent.getSerializableExtra(INCENTIVE_AMOUNT) as? BigDecimal
+    val incentiveCurrency = intent.getStringExtra(INCENTIVE_CURRENCY)
 
-        if (termsUrl == null || incentiveAmount == null || incentiveCurrency == null) {
-            e {
-                "Programmer error: TERMS_URL ||" +
-                    "INCENTIVE_AMOUNT ||" +
-                    "INCENTIVE_CURRENCY not provided to ${this.javaClass.name}"
-            }
-            return
-        }
-
-        binding.apply {
-            window.compatSetDecorFitsSystemWindows(false)
-
-            toolbar.applyStatusBarInsets()
-            toolbar.setNavigationOnClickListener { onBackPressed() }
-
-            scrollView.applyNavigationBarInsets()
-            scrollView.setupToolbarScrollListener(toolbar)
-
-            val incentive = Money.of(incentiveAmount, incentiveCurrency)
-            body.text = getString(
-                R.string.referrals_info_sheet_body,
-                incentive.format(this@ReferralsInformationActivity, marketManager.market),
-            )
-
-            val termsAsUri = Uri.parse(termsUrl)
-
-            termsAndConditions.setHapticClickListener {
-                if (canOpenUri(termsAsUri)) {
-                    openUri(termsAsUri)
-                }
-            }
-        }
+    if (termsUrl == null || incentiveAmount == null || incentiveCurrency == null) {
+      e {
+        "Programmer error: TERMS_URL ||" +
+          "INCENTIVE_AMOUNT ||" +
+          "INCENTIVE_CURRENCY not provided to ${this.javaClass.name}"
+      }
+      return
     }
 
-    companion object {
-        private const val TERMS_URL = "TERMS_URL"
+    binding.apply {
+      window.compatSetDecorFitsSystemWindows(false)
 
-        private const val INCENTIVE_AMOUNT = "INCENTIVE_AMOUNT"
-        private const val INCENTIVE_CURRENCY = "INCENTIVE_CURRENCY"
+      toolbar.applyStatusBarInsets()
+      toolbar.setNavigationOnClickListener { onBackPressed() }
 
-        fun newInstance(context: Context, termsUrl: String, incentive: MonetaryAmount) =
-            Intent(context, ReferralsInformationActivity::class.java).apply {
-                putExtra(TERMS_URL, termsUrl)
-                putExtra(
-                    INCENTIVE_AMOUNT,
-                    incentive.number.numberValueExact(BigDecimal::class.java),
-                )
-                putExtra(INCENTIVE_CURRENCY, incentive.currency.currencyCode)
-            }
+      scrollView.applyNavigationBarInsets()
+      scrollView.setupToolbarScrollListener(toolbar)
+
+      val incentive = Money.of(incentiveAmount, incentiveCurrency)
+      body.text = getString(
+        R.string.referrals_info_sheet_body,
+        incentive.format(this@ReferralsInformationActivity, marketManager.market),
+      )
+
+      val termsAsUri = Uri.parse(termsUrl)
+
+      termsAndConditions.setHapticClickListener {
+        if (canOpenUri(termsAsUri)) {
+          openUri(termsAsUri)
+        }
+      }
     }
+  }
+
+  companion object {
+    private const val TERMS_URL = "TERMS_URL"
+
+    private const val INCENTIVE_AMOUNT = "INCENTIVE_AMOUNT"
+    private const val INCENTIVE_CURRENCY = "INCENTIVE_CURRENCY"
+
+    fun newInstance(context: Context, termsUrl: String, incentive: MonetaryAmount) =
+      Intent(context, ReferralsInformationActivity::class.java).apply {
+        putExtra(TERMS_URL, termsUrl)
+        putExtra(
+          INCENTIVE_AMOUNT,
+          incentive.number.numberValueExact(BigDecimal::class.java),
+        )
+        putExtra(INCENTIVE_CURRENCY, incentive.currency.currencyCode)
+      }
+  }
 }

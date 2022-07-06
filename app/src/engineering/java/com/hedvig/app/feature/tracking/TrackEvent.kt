@@ -6,7 +6,7 @@ import java.time.LocalDateTime
 
 @Parcelize
 data class TrackEvent(
-    val name: String,
-    val propertiesJsonString: String?,
-    val timestamp: LocalDateTime,
+  val name: String,
+  val propertiesJsonString: String?,
+  val timestamp: LocalDateTime,
 ) : Parcelable

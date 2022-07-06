@@ -21,70 +21,70 @@ import org.junit.Test
 
 class PaymentHistoryTest : TestCase() {
 
-    @get:Rule
-    val activityRule = LazyIntentsActivityScenarioRule(PaymentActivity::class.java)
+  @get:Rule
+  val activityRule = LazyIntentsActivityScenarioRule(PaymentActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        PaymentQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYMENT_DATA_HISTORIC_PAYMENTS) },
-        PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_ACTIVE) },
-    )
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    PaymentQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYMENT_DATA_HISTORIC_PAYMENTS) },
+    PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_ACTIVE) },
+  )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
 
-    @Test
-    fun shouldShowPaymentHistoryWhenUserHasHistoricPayments() = run {
-        activityRule.launch(PaymentActivity.newInstance(context()))
+  @Test
+  fun shouldShowPaymentHistoryWhenUserHasHistoricPayments() = run {
+    activityRule.launch(PaymentActivity.newInstance(context()))
 
-        onScreen<PaymentScreen> {
-            paymentHistory { stub() }
-            recycler {
-                childAt<PaymentScreen.Charge>(3) {
-                    amount {
-                        hasText(
-                            PAYMENT_DATA_HISTORIC_PAYMENTS
-                                .chargeHistory[0]
-                                .amount
-                                .fragments
-                                .monetaryAmountFragment
-                                .toMonetaryAmount()
-                                .format(context(), market()),
-                        )
-                    }
-                    date {
-                        hasText(
-                            PAYMENT_DATA_HISTORIC_PAYMENTS.chargeHistory[0].date.format(
-                                PaymentActivity.DATE_FORMAT,
-                            ),
-                        )
-                    }
-                }
-                childAt<PaymentScreen.Charge>(4) {
-                    amount {
-                        hasText(
-                            PAYMENT_DATA_HISTORIC_PAYMENTS
-                                .chargeHistory[1]
-                                .amount
-                                .fragments
-                                .monetaryAmountFragment
-                                .toMonetaryAmount()
-                                .format(context(), market()),
-                        )
-                    }
-                    date {
-                        hasText(
-                            PAYMENT_DATA_HISTORIC_PAYMENTS.chargeHistory[1].date.format(
-                                PaymentActivity.DATE_FORMAT,
-                            ),
-                        )
-                    }
-                }
-                childAt<PaymentScreen.PaymentHistoryLink>(5) {
-                    click()
-                }
-            }
-            paymentHistory { intended() }
+    onScreen<PaymentScreen> {
+      paymentHistory { stub() }
+      recycler {
+        childAt<PaymentScreen.Charge>(3) {
+          amount {
+            hasText(
+              PAYMENT_DATA_HISTORIC_PAYMENTS
+                .chargeHistory[0]
+                .amount
+                .fragments
+                .monetaryAmountFragment
+                .toMonetaryAmount()
+                .format(context(), market()),
+            )
+          }
+          date {
+            hasText(
+              PAYMENT_DATA_HISTORIC_PAYMENTS.chargeHistory[0].date.format(
+                PaymentActivity.DATE_FORMAT,
+              ),
+            )
+          }
         }
+        childAt<PaymentScreen.Charge>(4) {
+          amount {
+            hasText(
+              PAYMENT_DATA_HISTORIC_PAYMENTS
+                .chargeHistory[1]
+                .amount
+                .fragments
+                .monetaryAmountFragment
+                .toMonetaryAmount()
+                .format(context(), market()),
+            )
+          }
+          date {
+            hasText(
+              PAYMENT_DATA_HISTORIC_PAYMENTS.chargeHistory[1].date.format(
+                PaymentActivity.DATE_FORMAT,
+              ),
+            )
+          }
+        }
+        childAt<PaymentScreen.PaymentHistoryLink>(5) {
+          click()
+        }
+      }
+      paymentHistory { intended() }
     }
+  }
 }

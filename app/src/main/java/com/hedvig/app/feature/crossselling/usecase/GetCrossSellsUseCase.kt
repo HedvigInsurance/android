@@ -9,30 +9,30 @@ import com.hedvig.app.util.apollo.safeQuery
 import e
 
 class GetCrossSellsUseCase(
-    private val apolloClient: ApolloClient,
-    private val localeManager: LocaleManager,
+  private val apolloClient: ApolloClient,
+  private val localeManager: LocaleManager,
 ) {
-    suspend operator fun invoke() = when (
-        val result = apolloClient
-            .query(CrossSellsQuery(localeManager.defaultLocale()))
-            .safeQuery()
-    ) {
-        is QueryResult.Success -> {
-            getCrossSellsContractTypes(result.data)
-        }
-        is QueryResult.Error -> {
-            e { "Error when loading potential cross-sells: ${result.message}" }
-            emptySet()
-        }
+  suspend operator fun invoke() = when (
+    val result = apolloClient
+      .query(CrossSellsQuery(localeManager.defaultLocale()))
+      .safeQuery()
+  ) {
+    is QueryResult.Success -> {
+      getCrossSellsContractTypes(result.data)
     }
+    is QueryResult.Error -> {
+      e { "Error when loading potential cross-sells: ${result.message}" }
+      emptySet()
+    }
+  }
 
-    private fun getCrossSellsContractTypes(
-        crossSellData: CrossSellsQuery.Data,
-    ) = crossSellData
-        .activeContractBundles
-        .flatMap { contractBundle ->
-            contractBundle.potentialCrossSells
-        }.map {
-            CrossSellData.from(it.fragments.crossSellFragment)
-        }
+  private fun getCrossSellsContractTypes(
+    crossSellData: CrossSellsQuery.Data,
+  ) = crossSellData
+    .activeContractBundles
+    .flatMap { contractBundle ->
+      contractBundle.potentialCrossSells
+    }.map {
+      CrossSellData.from(it.fragments.crossSellFragment)
+    }
 }

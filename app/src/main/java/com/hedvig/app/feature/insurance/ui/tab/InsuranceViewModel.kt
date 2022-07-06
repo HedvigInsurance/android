@@ -20,87 +20,87 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class InsuranceViewModel(
-    private val getContractsUseCase: GetContractsUseCase,
-    private val crossSellNotificationBadgeService: CrossSellNotificationBadgeService,
-    private val createQuoteCartUseCase: CreateQuoteCartUseCase,
-    private val hAnalytics: HAnalytics,
+  private val getContractsUseCase: GetContractsUseCase,
+  private val crossSellNotificationBadgeService: CrossSellNotificationBadgeService,
+  private val createQuoteCartUseCase: CreateQuoteCartUseCase,
+  private val hAnalytics: HAnalytics,
 ) : ViewModel() {
 
-    data class ViewState(
-        val items: List<InsuranceModel>? = null,
-        val navigateEmbark: NavigateEmbark? = null,
-        val navigateChat: NavigateChat? = null,
-        val errorMessage: String? = null,
-        val loading: Boolean = false,
+  data class ViewState(
+    val items: List<InsuranceModel>? = null,
+    val navigateEmbark: NavigateEmbark? = null,
+    val navigateChat: NavigateChat? = null,
+    val errorMessage: String? = null,
+    val loading: Boolean = false,
+  )
+
+  private val _viewState = MutableStateFlow(ViewState(loading = true))
+  val viewState = _viewState.asStateFlow()
+
+  fun load() {
+    viewModelScope.launch {
+      _viewState.value = ViewState(loading = true)
+      when (val result = getContractsUseCase.invoke()) {
+        is Either.Left -> _viewState.value = ViewState(errorMessage = result.value.message, items = null)
+        is Either.Right -> _viewState.value = ViewState(items = createInsuranceItems(result))
+      }
+    }
+  }
+
+  private suspend fun createInsuranceItems(result: Either.Right<InsuranceQuery.Data>): List<InsuranceModel> {
+    val showNotificationBadge = crossSellNotificationBadgeService
+      .getUnseenCrossSells(CrossSellNotificationBadgeService.CrossSellBadgeType.InsuranceFragmentCard)
+      .first()
+      .isNotEmpty()
+
+    return items(
+      data = result.value,
+      showCrossSellNotificationBadge = showNotificationBadge,
     )
+  }
 
-    private val _viewState = MutableStateFlow(ViewState(loading = true))
-    val viewState = _viewState.asStateFlow()
+  fun markCardCrossSellsAsSeen() {
+    viewModelScope.launch {
+      crossSellNotificationBadgeService.markCurrentCrossSellsAsSeen(
+        CrossSellNotificationBadgeService.CrossSellBadgeType.InsuranceFragmentCard,
+      )
+    }
+  }
 
-    fun load() {
-        viewModelScope.launch {
-            _viewState.value = ViewState(loading = true)
-            when (val result = getContractsUseCase.invoke()) {
-                is Either.Left -> _viewState.value = ViewState(errorMessage = result.value.message, items = null)
-                is Either.Right -> _viewState.value = ViewState(items = createInsuranceItems(result))
-            }
+  fun onClickCrossSellCard(data: CrossSellData) {
+    hAnalytics.cardClickCrossSellDetail(id = data.typeOfContract)
+  }
+
+  fun onClickCrossSellAction(data: CrossSellData) {
+    viewModelScope.launch {
+      when (val action = data.action) {
+        CrossSellData.Action.Chat -> _viewState.update {
+          it.copy(navigateChat = NavigateChat)
         }
-    }
-
-    private suspend fun createInsuranceItems(result: Either.Right<InsuranceQuery.Data>): List<InsuranceModel> {
-        val showNotificationBadge = crossSellNotificationBadgeService
-            .getUnseenCrossSells(CrossSellNotificationBadgeService.CrossSellBadgeType.InsuranceFragmentCard)
-            .first()
-            .isNotEmpty()
-
-        return items(
-            data = result.value,
-            showCrossSellNotificationBadge = showNotificationBadge,
-        )
-    }
-
-    fun markCardCrossSellsAsSeen() {
-        viewModelScope.launch {
-            crossSellNotificationBadgeService.markCurrentCrossSellsAsSeen(
-                CrossSellNotificationBadgeService.CrossSellBadgeType.InsuranceFragmentCard,
-            )
+        is CrossSellData.Action.Embark -> {
+          hAnalytics.cardClickCrossSellDetail(
+            id = data.typeOfContract,
+          )
+          _viewState.value = action.toViewState()
         }
+      }
     }
+  }
 
-    fun onClickCrossSellCard(data: CrossSellData) {
-        hAnalytics.cardClickCrossSellDetail(id = data.typeOfContract)
+  private suspend fun CrossSellData.Action.Embark.toViewState(): ViewState {
+    return when (val result = createQuoteCartUseCase.invoke()) {
+      is Either.Left -> _viewState.value.copy(errorMessage = result.value.message)
+      is Either.Right -> {
+        val embarkStoryId = appendQuoteCartId(embarkStoryId, result.value.id)
+        val navigateEmbark = NavigateEmbark(embarkStoryId, title)
+        _viewState.value.copy(navigateEmbark = navigateEmbark)
+      }
     }
+  }
 
-    fun onClickCrossSellAction(data: CrossSellData) {
-        viewModelScope.launch {
-            when (val action = data.action) {
-                CrossSellData.Action.Chat -> _viewState.update {
-                    it.copy(navigateChat = NavigateChat)
-                }
-                is CrossSellData.Action.Embark -> {
-                    hAnalytics.cardClickCrossSellDetail(
-                        id = data.typeOfContract,
-                    )
-                    _viewState.value = action.toViewState()
-                }
-            }
-        }
+  fun crossSellActionOpened() {
+    _viewState.update {
+      it.copy(navigateChat = null, navigateEmbark = null)
     }
-
-    private suspend fun CrossSellData.Action.Embark.toViewState(): ViewState {
-        return when (val result = createQuoteCartUseCase.invoke()) {
-            is Either.Left -> _viewState.value.copy(errorMessage = result.value.message)
-            is Either.Right -> {
-                val embarkStoryId = appendQuoteCartId(embarkStoryId, result.value.id)
-                val navigateEmbark = NavigateEmbark(embarkStoryId, title)
-                _viewState.value.copy(navigateEmbark = navigateEmbark)
-            }
-        }
-    }
-
-    fun crossSellActionOpened() {
-        _viewState.update {
-            it.copy(navigateChat = null, navigateEmbark = null)
-        }
-    }
+  }
 }

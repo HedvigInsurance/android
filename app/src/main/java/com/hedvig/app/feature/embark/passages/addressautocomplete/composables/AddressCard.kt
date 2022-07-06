@@ -24,73 +24,73 @@ import com.hedvig.app.ui.compose.theme.HedvigTheme
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AddressCard(
-    addressText: Pair<String, String?>?,
-    placeholderText: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
+  addressText: Pair<String, String?>?,
+  placeholderText: String,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
 ) {
-    Card(
-        onClick = onClick,
-        modifier = modifier.fillMaxWidth(),
-    ) {
-        AddressTextColumn(
-            addressText = addressText,
-            placeholderText = placeholderText,
-            modifier = Modifier.padding(24.dp),
-        )
-    }
+  Card(
+    onClick = onClick,
+    modifier = modifier.fillMaxWidth(),
+  ) {
+    AddressTextColumn(
+      addressText = addressText,
+      placeholderText = placeholderText,
+      modifier = Modifier.padding(24.dp),
+    )
+  }
 }
 
 @Composable
 private fun AddressTextColumn(
-    addressText: Pair<String, String?>?,
-    placeholderText: String,
-    modifier: Modifier = Modifier,
+  addressText: Pair<String, String?>?,
+  placeholderText: String,
+  modifier: Modifier = Modifier,
 ) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier,
-    ) {
-        if (addressText == null) {
-            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                Text(
-                    placeholderText,
-                    style = MaterialTheme.typography.subtitle1,
-                    textAlign = TextAlign.Center,
-                )
-            }
-        } else {
-            Text(
-                addressText.first,
-                style = MaterialTheme.typography.subtitle1,
-                textAlign = TextAlign.Center,
-            )
-            addressText.second?.let { secondaryText ->
-                if (secondaryText.isBlank()) return@let
-                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                    Text(
-                        secondaryText,
-                        style = MaterialTheme.typography.body1,
-                        textAlign = TextAlign.Center,
-                    )
-                }
-            }
+  Column(
+    verticalArrangement = Arrangement.spacedBy(4.dp),
+    horizontalAlignment = Alignment.CenterHorizontally,
+    modifier = modifier,
+  ) {
+    if (addressText == null) {
+      CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+        Text(
+          placeholderText,
+          style = MaterialTheme.typography.subtitle1,
+          textAlign = TextAlign.Center,
+        )
+      }
+    } else {
+      Text(
+        addressText.first,
+        style = MaterialTheme.typography.subtitle1,
+        textAlign = TextAlign.Center,
+      )
+      addressText.second?.let { secondaryText ->
+        if (secondaryText.isBlank()) return@let
+        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+          Text(
+            secondaryText,
+            style = MaterialTheme.typography.body1,
+            textAlign = TextAlign.Center,
+          )
         }
+      }
     }
+  }
 }
 
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun AddressCardPreview() {
-    HedvigTheme {
-        Surface(color = MaterialTheme.colors.background) {
-            AddressCard(
-                "Willemoesgade 4, st. tv".repeat(3) to "2100 København Ø".repeat(1),
-                "",
-                {},
-            )
-        }
+  HedvigTheme {
+    Surface(color = MaterialTheme.colors.background) {
+      AddressCard(
+        "Willemoesgade 4, st. tv".repeat(3) to "2100 København Ø".repeat(1),
+        "",
+        {},
+      )
     }
+  }
 }

@@ -14,17 +14,17 @@ import org.junit.Test
 
 class PaymentQueryParsingTest {
 
-    @Test
-    fun `apollo parses a payment with adyent connected`() = runApolloTest { mockServer, apolloClient ->
-        val originalData = PAYMENT_DATA_ADYEN_CONNECTED
-        val jsonData = originalData.toJsonStringWithData()
-        mockServer.enqueue(jsonData)
+  @Test
+  fun `apollo parses a payment with adyent connected`() = runApolloTest { mockServer, apolloClient ->
+    val originalData = PAYMENT_DATA_ADYEN_CONNECTED
+    val jsonData = originalData.toJsonStringWithData()
+    mockServer.enqueue(jsonData)
 
-        val response = apolloClient
-            .query(PaymentQuery(Locale.sv_SE))
-            .execute()
+    val response = apolloClient
+      .query(PaymentQuery(Locale.sv_SE))
+      .execute()
 
-        assertThat(response.data).isNotNull()
-        assertThat(response.data!!).isEqualTo(originalData)
-    }
+    assertThat(response.data).isNotNull()
+    assertThat(response.data!!).isEqualTo(originalData)
+  }
 }

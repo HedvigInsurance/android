@@ -32,73 +32,73 @@ import java.util.UUID
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ClaimStatusCards(
-    goToDetailScreen: ((claimId: String) -> Unit)?,
-    onClaimCardShown: (String) -> Unit,
-    claimStatusCardsUiState: NonEmptyList<ClaimStatusCardUiState>,
+  goToDetailScreen: ((claimId: String) -> Unit)?,
+  onClaimCardShown: (String) -> Unit,
+  claimStatusCardsUiState: NonEmptyList<ClaimStatusCardUiState>,
 ) {
-    val pagerState = rememberPagerState()
-    val areCardsClickable = goToDetailScreen != null
-    Column {
-        val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-        HorizontalPager(
-            count = claimStatusCardsUiState.size,
-            state = pagerState,
-            itemSpacing = 0.dp,
-            modifier = Modifier.fillMaxWidth(),
-        ) { page: Int ->
-            val claimStatusUiState = claimStatusCardsUiState[page]
-            val itemWidth = screenWidth - (16 * 2).dp
-            val itemSpacingPadding = PaddingValues(
-                start = if (page == 0) 0.dp else 6.dp,
-                end = if (page == claimStatusCardsUiState.lastIndex) 0.dp else 6.dp,
-            )
-            ClaimStatusCard(
-                uiState = claimStatusUiState,
-                modifier = Modifier
-                    .width(itemWidth)
-                    .padding(itemSpacingPadding)
-                    .clickable(
-                        enabled = areCardsClickable,
-                        onClick = {
-                            goToDetailScreen?.invoke(claimStatusUiState.id)
-                        },
-                    ),
-                isClickable = areCardsClickable,
-                onClaimCardShown = onClaimCardShown,
-            )
-        }
-        if (claimStatusCardsUiState.size == 1) {
-            Spacer(Modifier.height(14.dp))
-        } else {
-            Spacer(Modifier.height(16.dp))
-
-            HorizontalPagerIndicator(
-                pagerState = pagerState,
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-            )
-        }
+  val pagerState = rememberPagerState()
+  val areCardsClickable = goToDetailScreen != null
+  Column {
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+    HorizontalPager(
+      count = claimStatusCardsUiState.size,
+      state = pagerState,
+      itemSpacing = 0.dp,
+      modifier = Modifier.fillMaxWidth(),
+    ) { page: Int ->
+      val claimStatusUiState = claimStatusCardsUiState[page]
+      val itemWidth = screenWidth - (16 * 2).dp
+      val itemSpacingPadding = PaddingValues(
+        start = if (page == 0) 0.dp else 6.dp,
+        end = if (page == claimStatusCardsUiState.lastIndex) 0.dp else 6.dp,
+      )
+      ClaimStatusCard(
+        uiState = claimStatusUiState,
+        modifier = Modifier
+          .width(itemWidth)
+          .padding(itemSpacingPadding)
+          .clickable(
+            enabled = areCardsClickable,
+            onClick = {
+              goToDetailScreen?.invoke(claimStatusUiState.id)
+            },
+          ),
+        isClickable = areCardsClickable,
+        onClaimCardShown = onClaimCardShown,
+      )
     }
+    if (claimStatusCardsUiState.size == 1) {
+      Spacer(Modifier.height(14.dp))
+    } else {
+      Spacer(Modifier.height(16.dp))
+
+      HorizontalPagerIndicator(
+        pagerState = pagerState,
+        modifier = Modifier.align(Alignment.CenterHorizontally),
+      )
+    }
+  }
 }
 
 @Preview(name = "ClaimStatusCard", group = "Claim Status")
 @Composable
 fun ClaimStatusCardsPreview() {
-    HedvigTheme {
-        Surface(
-            color = MaterialTheme.colors.background,
-        ) {
-            val claimStatusCardsUiState = ClaimStatusCardUiState(
-                id = UUID.randomUUID().toString(),
-                pillsUiState = PillUiState.previewList(),
-                title = "All-risk",
-                subtitle = "Contents insurance",
-                claimProgressItemsUiState = ClaimProgressUiState.previewList(),
-            )
-            ClaimStatusCards(
-                goToDetailScreen = {},
-                claimStatusCardsUiState = nonEmptyListOf(claimStatusCardsUiState),
-                onClaimCardShown = {},
-            )
-        }
+  HedvigTheme {
+    Surface(
+      color = MaterialTheme.colors.background,
+    ) {
+      val claimStatusCardsUiState = ClaimStatusCardUiState(
+        id = UUID.randomUUID().toString(),
+        pillsUiState = PillUiState.previewList(),
+        title = "All-risk",
+        subtitle = "Contents insurance",
+        claimProgressItemsUiState = ClaimProgressUiState.previewList(),
+      )
+      ClaimStatusCards(
+        goToDetailScreen = {},
+        claimStatusCardsUiState = nonEmptyListOf(claimStatusCardsUiState),
+        onClaimCardShown = {},
+      )
     }
+  }
 }

@@ -22,42 +22,42 @@ import org.junit.Rule
 import org.junit.Test
 
 class MultipleOptionApi : TestCase() {
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
 
-    @get:Rule
-    val compose = createComposeRule()
+  @get:Rule
+  val compose = createComposeRule()
 
-    @get:Rule
-    val apolloMockServerRule = ApolloMockServerRule(
-        EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(STORY_WITH_SELECT_ACTION_API_MULTIPLE_OPTIONS)
-        },
-        HELLO_QUERY to apolloResponse {
-            success(jsonObjectOf("hello" to "world"))
-        },
-    )
+  @get:Rule
+  val apolloMockServerRule = ApolloMockServerRule(
+    EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(STORY_WITH_SELECT_ACTION_API_MULTIPLE_OPTIONS)
+    },
+    HELLO_QUERY to apolloResponse {
+      success(jsonObjectOf("hello" to "world"))
+    },
+  )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
 
-    @Test
-    fun whenSubmittingSelectActionWithApiShouldCallApi() = run {
-        activityRule.launch(EmbarkActivity.newInstance(context(), "", ""))
+  @Test
+  fun whenSubmittingSelectActionWithApiShouldCallApi() = run {
+    activityRule.launch(EmbarkActivity.newInstance(context(), "", ""))
 
-        onScreen<EmbarkScreen> {
-            step("Click select option with API") {
-                compose
-                    .onNodeWithTag("SelectActionGrid")
-                    .onChildren()
-                    .get(1)
-                    .performClick()
-            }
-            step("Verify that success-passage from API is redirected to") {
-                messages {
-                    childAt<EmbarkScreen.MessageRow>(0) { text { hasText(STANDARD_THIRD_MESSAGE.text) } }
-                }
-            }
+    onScreen<EmbarkScreen> {
+      step("Click select option with API") {
+        compose
+          .onNodeWithTag("SelectActionGrid")
+          .onChildren()
+          .get(1)
+          .performClick()
+      }
+      step("Verify that success-passage from API is redirected to") {
+        messages {
+          childAt<EmbarkScreen.MessageRow>(0) { text { hasText(STANDARD_THIRD_MESSAGE.text) } }
         }
+      }
     }
+  }
 }

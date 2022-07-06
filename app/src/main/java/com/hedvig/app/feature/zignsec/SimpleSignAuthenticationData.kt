@@ -6,5 +6,5 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class SimpleSignAuthenticationData(
-    val market: Market,
+  val market: Market,
 ) : Parcelable

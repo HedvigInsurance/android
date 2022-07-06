@@ -7,8 +7,8 @@ import org.koin.test.KoinTest
 import org.koin.test.get
 
 class ApolloCacheClearRule : ExternalResource(), KoinTest {
-    override fun before() {
-        val apolloClient: ApolloClient = get()
-        apolloClient.apolloStore.clearAll()
-    }
+  override fun before() {
+    val apolloClient: ApolloClient = get()
+    apolloClient.apolloStore.clearAll()
+  }
 }

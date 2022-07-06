@@ -23,112 +23,112 @@ import org.junit.Test
 
 class MultipleReferralsTest : TestCase() {
 
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(LOGGED_IN_DATA)
-        },
-        ReferralsQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(
-                REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES,
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(LOGGED_IN_DATA)
+    },
+    ReferralsQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(
+        REFERRALS_DATA_WITH_MULTIPLE_REFERRALS_IN_DIFFERENT_STATES,
+      )
+    },
+  )
+
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
+
+  @get:Rule
+  val featureFlagRule = FeatureFlagRule(
+    Feature.REFERRAL_CAMPAIGN to false,
+    Feature.KEY_GEAR to false,
+    Feature.REFERRALS to true,
+  )
+
+  @Test
+  fun shouldShowActiveStateWhenUserHasMultipleReferrals() = run {
+    val intent = LoggedInActivity.newInstance(
+      context(),
+      initialTab = LoggedInTabs.REFERRALS,
+    )
+
+    activityRule.launch(intent)
+
+    Screen.onScreen<ReferralTabScreen> {
+      share { isVisible() }
+      recycler {
+        hasSize(7)
+        childAt<ReferralTabScreen.HeaderItem>(1) {
+          grossPrice {
+            isVisible()
+            hasText(
+              Money.of(349, "SEK")
+                .format(context(), market()),
             )
-        },
-    )
-
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
-
-    @get:Rule
-    val featureFlagRule = FeatureFlagRule(
-        Feature.REFERRAL_CAMPAIGN to false,
-        Feature.KEY_GEAR to false,
-        Feature.REFERRALS to true,
-    )
-
-    @Test
-    fun shouldShowActiveStateWhenUserHasMultipleReferrals() = run {
-        val intent = LoggedInActivity.newInstance(
-            context(),
-            initialTab = LoggedInTabs.REFERRALS,
-        )
-
-        activityRule.launch(intent)
-
-        Screen.onScreen<ReferralTabScreen> {
-            share { isVisible() }
-            recycler {
-                hasSize(7)
-                childAt<ReferralTabScreen.HeaderItem>(1) {
-                    grossPrice {
-                        isVisible()
-                        hasText(
-                            Money.of(349, "SEK")
-                                .format(context(), market()),
-                        )
-                    }
-                    discountPerMonthPlaceholder { isGone() }
-                    newPricePlaceholder { isGone() }
-                    discountPerMonth {
-                        isVisible()
-                        hasText(
-                            Money.of(-10, "SEK")
-                                .format(context(), market()),
-                        )
-                    }
-                    newPrice {
-                        isVisible()
-                        hasText(
-                            Money.of(339, "SEK")
-                                .format(context(), market()),
-                        )
-                    }
-                    discountPerMonthLabel { isVisible() }
-                    newPriceLabel { isVisible() }
-                    emptyHeadline { isGone() }
-                    emptyBody { isGone() }
-                    otherDiscountBox { isGone() }
-                }
-                childAt<ReferralTabScreen.CodeItem>(2) {
-                    placeholder { isGone() }
-                    code {
-                        isVisible()
-                        hasText("TEST123")
-                    }
-                }
-                childAt<ReferralTabScreen.InvitesHeaderItem>(3) {
-                    isVisible()
-                }
-                childAt<ReferralTabScreen.ReferralItem>(4) {
-                    iconPlaceholder { isGone() }
-                    textPlaceholder { isGone() }
-                    name { hasText("Example") }
-                    referee { isGone() }
-                    // icon { hasDrawable(R.drawable.ic_basketball) } // This assertion fails incorrectly on Kakao 2.4.0
-                    status {
-                        hasText(
-                            Money.of(-10, "SEK")
-                                .format(context(), market()),
-                        )
-                    }
-                }
-                childAt<ReferralTabScreen.ReferralItem>(5) {
-                    iconPlaceholder { isGone() }
-                    textPlaceholder { isGone() }
-                    name { hasText("Example 2") }
-                    referee { isGone() }
-                    // icon { hasDrawable(R.drawable.ic_clock_colorless) } // This assertion fails incorrectly on Kakao 2.4.0
-                }
-                childAt<ReferralTabScreen.ReferralItem>(6) {
-                    iconPlaceholder { isGone() }
-                    textPlaceholder { isGone() }
-                    name { hasText("Example 3") }
-                    referee { isGone() }
-                    // icon { hasDrawable(R.drawable.ic_x_in_circle) } // This assertion fails incorrectly on Kakao 2.4.0
-                }
-            }
+          }
+          discountPerMonthPlaceholder { isGone() }
+          newPricePlaceholder { isGone() }
+          discountPerMonth {
+            isVisible()
+            hasText(
+              Money.of(-10, "SEK")
+                .format(context(), market()),
+            )
+          }
+          newPrice {
+            isVisible()
+            hasText(
+              Money.of(339, "SEK")
+                .format(context(), market()),
+            )
+          }
+          discountPerMonthLabel { isVisible() }
+          newPriceLabel { isVisible() }
+          emptyHeadline { isGone() }
+          emptyBody { isGone() }
+          otherDiscountBox { isGone() }
         }
+        childAt<ReferralTabScreen.CodeItem>(2) {
+          placeholder { isGone() }
+          code {
+            isVisible()
+            hasText("TEST123")
+          }
+        }
+        childAt<ReferralTabScreen.InvitesHeaderItem>(3) {
+          isVisible()
+        }
+        childAt<ReferralTabScreen.ReferralItem>(4) {
+          iconPlaceholder { isGone() }
+          textPlaceholder { isGone() }
+          name { hasText("Example") }
+          referee { isGone() }
+          // icon { hasDrawable(R.drawable.ic_basketball) } // This assertion fails incorrectly on Kakao 2.4.0
+          status {
+            hasText(
+              Money.of(-10, "SEK")
+                .format(context(), market()),
+            )
+          }
+        }
+        childAt<ReferralTabScreen.ReferralItem>(5) {
+          iconPlaceholder { isGone() }
+          textPlaceholder { isGone() }
+          name { hasText("Example 2") }
+          referee { isGone() }
+          // icon { hasDrawable(R.drawable.ic_clock_colorless) } // This assertion fails incorrectly on Kakao 2.4.0
+        }
+        childAt<ReferralTabScreen.ReferralItem>(6) {
+          iconPlaceholder { isGone() }
+          textPlaceholder { isGone() }
+          name { hasText("Example 3") }
+          referee { isGone() }
+          // icon { hasDrawable(R.drawable.ic_x_in_circle) } // This assertion fails incorrectly on Kakao 2.4.0
+        }
+      }
     }
+  }
 }

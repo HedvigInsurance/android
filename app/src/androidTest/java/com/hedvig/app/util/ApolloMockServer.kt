@@ -27,161 +27,161 @@ import org.koin.dsl.module
 import org.koin.test.KoinTest
 
 interface ApolloResultProvider {
-    fun provideResult(withVariables: JSONObject): ApolloMockServerResult
+  fun provideResult(withVariables: JSONObject): ApolloMockServerResult
 }
 
 data class QueryToResultProvider(
-    val queryDocument: String,
-    val apolloResultProvider: ApolloResultProvider,
+  val queryDocument: String,
+  val apolloResultProvider: ApolloResultProvider,
 ) {
-    companion object {
-        fun fromPair(pair: Pair<String, ApolloResultProvider>): QueryToResultProvider {
-            return QueryToResultProvider(pair.first, pair.second)
-        }
+  companion object {
+    fun fromPair(pair: Pair<String, ApolloResultProvider>): QueryToResultProvider {
+      return QueryToResultProvider(pair.first, pair.second)
     }
+  }
 }
 
 fun apolloMockServer(vararg mocks: Pair<String, ApolloResultProvider>): MockWebServer {
-    @Suppress("NAME_SHADOWING")
-    val mocks: List<QueryToResultProvider> = mocks.map(QueryToResultProvider::fromPair)
-    return MockWebServer().apply {
-        dispatcher = object : Dispatcher() {
-            override fun dispatch(request: RecordedRequest): MockResponse {
-                if (request.headers.find { it.first == "Upgrade" && it.second == "websocket" } != null) {
-                    return handleWebSocket()
-                }
-                return handleHttp(request)
-            }
-
-            private fun handleHttp(request: RecordedRequest): MockResponse {
-                val body = request.body.peek().readUtf8()
-                val bodyAsJson = JSONObject(body)
-                val query = bodyAsJson.getString("query")
-                val variables = if (bodyAsJson.has("variables")) {
-                    bodyAsJson.getJSONObject("variables")
-                } else {
-                    JSONObject()
-                }
-
-                val dataProvider =
-                    mocks.firstOrNull { it.queryDocument == query }?.apolloResultProvider
-                        ?: return super.peek()
-                return when (val result = dataProvider.provideResult(withVariables = variables)) {
-                    ApolloMockServerResult.InternalServerError -> MockResponse().setResponseCode(500)
-                    is ApolloMockServerResult.GraphQLError -> MockResponse().setBody(
-                        jsonObjectOf(
-                            "errors" to result.errors.toJsonArray(),
-                        ).toString(),
-                    )
-                    is ApolloMockServerResult.GraphQLResponse -> MockResponse().setBody(result.body)
-                }
-            }
-
-            private fun handleWebSocket(): MockResponse {
-                return MockResponse().withWebSocketUpgrade(
-                    object : WebSocketListener() {
-                        override fun onMessage(webSocket: WebSocket, text: String) {
-                            val message = JSONObject(text)
-                            if (message.getString("type") == "connection_init") {
-                                webSocket.send(
-                                    jsonObjectOf(
-                                        "type" to "connection_ack",
-                                    ).toString(),
-                                )
-                            }
-                        }
-                    },
-                )
-            }
+  @Suppress("NAME_SHADOWING")
+  val mocks: List<QueryToResultProvider> = mocks.map(QueryToResultProvider::fromPair)
+  return MockWebServer().apply {
+    dispatcher = object : Dispatcher() {
+      override fun dispatch(request: RecordedRequest): MockResponse {
+        if (request.headers.find { it.first == "Upgrade" && it.second == "websocket" } != null) {
+          return handleWebSocket()
         }
+        return handleHttp(request)
+      }
+
+      private fun handleHttp(request: RecordedRequest): MockResponse {
+        val body = request.body.peek().readUtf8()
+        val bodyAsJson = JSONObject(body)
+        val query = bodyAsJson.getString("query")
+        val variables = if (bodyAsJson.has("variables")) {
+          bodyAsJson.getJSONObject("variables")
+        } else {
+          JSONObject()
+        }
+
+        val dataProvider =
+          mocks.firstOrNull { it.queryDocument == query }?.apolloResultProvider
+            ?: return super.peek()
+        return when (val result = dataProvider.provideResult(withVariables = variables)) {
+          ApolloMockServerResult.InternalServerError -> MockResponse().setResponseCode(500)
+          is ApolloMockServerResult.GraphQLError -> MockResponse().setBody(
+            jsonObjectOf(
+              "errors" to result.errors.toJsonArray(),
+            ).toString(),
+          )
+          is ApolloMockServerResult.GraphQLResponse -> MockResponse().setBody(result.body)
+        }
+      }
+
+      private fun handleWebSocket(): MockResponse {
+        return MockResponse().withWebSocketUpgrade(
+          object : WebSocketListener() {
+            override fun onMessage(webSocket: WebSocket, text: String) {
+              val message = JSONObject(text)
+              if (message.getString("type") == "connection_init") {
+                webSocket.send(
+                  jsonObjectOf(
+                    "type" to "connection_ack",
+                  ).toString(),
+                )
+              }
+            }
+          },
+        )
+      }
     }
+  }
 }
 
 inline fun apolloResponse(
-    crossinline build: ApolloMockServerResponseBuilder.() -> ApolloMockServerResult,
+  crossinline build: ApolloMockServerResponseBuilder.() -> ApolloMockServerResult,
 ): ApolloResultProvider = object : ApolloResultProvider {
-    override fun provideResult(withVariables: JSONObject): ApolloMockServerResult {
-        return ApolloMockServerResponseBuilder(withVariables).build()
-    }
+  override fun provideResult(withVariables: JSONObject): ApolloMockServerResult {
+    return ApolloMockServerResponseBuilder(withVariables).build()
+  }
 }
 
 sealed class ApolloMockServerResult {
-    object InternalServerError : ApolloMockServerResult()
+  object InternalServerError : ApolloMockServerResult()
 
-    data class GraphQLError(
-        val errors: List<JSONObject>,
-    ) : ApolloMockServerResult()
+  data class GraphQLError(
+    val errors: List<JSONObject>,
+  ) : ApolloMockServerResult()
 
-    data class GraphQLResponse(
-        val body: String,
-    ) : ApolloMockServerResult()
+  data class GraphQLResponse(
+    val body: String,
+  ) : ApolloMockServerResult()
 }
 
 class ApolloMockServerResponseBuilder(
-    val variables: JSONObject,
+  val variables: JSONObject,
 ) {
-    fun internalServerError() = ApolloMockServerResult.InternalServerError
+  fun internalServerError() = ApolloMockServerResult.InternalServerError
 
-    fun graphQLError(vararg errors: JSONObject): ApolloMockServerResult.GraphQLError {
-        return ApolloMockServerResult.GraphQLError(errors.toList())
-    }
+  fun graphQLError(vararg errors: JSONObject): ApolloMockServerResult.GraphQLError {
+    return ApolloMockServerResult.GraphQLError(errors.toList())
+  }
 
-    fun success(operationData: Operation.Data): ApolloMockServerResult.GraphQLResponse {
-        val dataJsonString = operationData.toJsonStringWithData()
-        return ApolloMockServerResult.GraphQLResponse(dataJsonString)
-    }
+  fun success(operationData: Operation.Data): ApolloMockServerResult.GraphQLResponse {
+    val dataJsonString = operationData.toJsonStringWithData()
+    return ApolloMockServerResult.GraphQLResponse(dataJsonString)
+  }
 
-    fun success(data: JSONObject): ApolloMockServerResult.GraphQLResponse {
-        return ApolloMockServerResult.GraphQLResponse(jsonObjectOf("data" to data).toString())
-    }
+  fun success(data: JSONObject): ApolloMockServerResult.GraphQLResponse {
+    return ApolloMockServerResult.GraphQLResponse(jsonObjectOf("data" to data).toString())
+  }
 }
 
 class ApolloMockServerRule(
-    vararg mocks: Pair<String, ApolloResultProvider>,
+  vararg mocks: Pair<String, ApolloResultProvider>,
 ) : ExternalResource(), KoinTest {
-    private val mockWebServer = apolloMockServer(*mocks)
-    private val idlingResource = ApolloIdlingResource("ApolloIdlingResource")
+  private val mockWebServer = apolloMockServer(*mocks)
+  private val idlingResource = ApolloIdlingResource("ApolloIdlingResource")
 
-    private val originalApolloClientModule = apolloClientModule
+  private val originalApolloClientModule = apolloClientModule
 
-    private var testApolloModule: Module = constructTestApolloModule(idlingResource)
+  private var testApolloModule: Module = constructTestApolloModule(idlingResource)
 
-    override fun before() {
-        mockWebServer.start(TestApplication.PORT)
-        IdlingRegistry.getInstance().register(idlingResource)
-        unloadKoinModules(originalApolloClientModule)
-        loadKoinModules(testApolloModule)
-    }
+  override fun before() {
+    mockWebServer.start(TestApplication.PORT)
+    IdlingRegistry.getInstance().register(idlingResource)
+    unloadKoinModules(originalApolloClientModule)
+    loadKoinModules(testApolloModule)
+  }
 
-    override fun after() {
-        mockWebServer.close()
-        IdlingRegistry.getInstance().unregister(idlingResource)
-        unloadKoinModules(testApolloModule)
-        loadKoinModules(originalApolloClientModule)
-    }
+  override fun after() {
+    mockWebServer.close()
+    IdlingRegistry.getInstance().unregister(idlingResource)
+    unloadKoinModules(testApolloModule)
+    loadKoinModules(originalApolloClientModule)
+  }
 }
 
 @Suppress("RemoveExplicitTypeArguments")
 private fun constructTestApolloModule(
-    idlingResource: ApolloIdlingResource,
+  idlingResource: ApolloIdlingResource,
 ): Module {
-    return module {
-        single<ApolloClient> {
-            // Copy builder to not accumulate many idlingResource calls which crashes the tests.
-            val builder: ApolloClient.Builder = get<ApolloClient.Builder>().copy()
-            builder.idlingResource(idlingResource)
-            builder.build()
-        }
+  return module {
+    single<ApolloClient> {
+      // Copy builder to not accumulate many idlingResource calls which crashes the tests.
+      val builder: ApolloClient.Builder = get<ApolloClient.Builder>().copy()
+      builder.idlingResource(idlingResource)
+      builder.build()
     }
+  }
 }
 
 private fun Operation.Data.toJsonStringWithData(
-    customScalarAdapters: CustomScalarAdapters = CustomScalarAdapters.Empty,
+  customScalarAdapters: CustomScalarAdapters = CustomScalarAdapters.Empty,
 ): String {
-    return buildJsonString {
-        beginObject()
-        name("data")
-        this@toJsonStringWithData.toJson(jsonWriter = this@buildJsonString, customScalarAdapters)
-        endObject()
-    }
+  return buildJsonString {
+    beginObject()
+    name("data")
+    this@toJsonStringWithData.toJson(jsonWriter = this@buildJsonString, customScalarAdapters)
+    endObject()
+  }
 }

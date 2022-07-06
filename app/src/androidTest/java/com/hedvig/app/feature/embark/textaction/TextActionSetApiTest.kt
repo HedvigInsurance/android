@@ -19,39 +19,39 @@ import org.junit.Rule
 import org.junit.Test
 
 class TextActionSetApiTest : TestCase() {
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(EmbarkActivity::class.java)
 
-    @get:Rule
-    val apolloMockServerRule = ApolloMockServerRule(
-        EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse { success(STORY_WITH_TEXT_ACTION_SET_API) },
-        HELLO_QUERY to apolloResponse {
-            success(jsonObjectOf("hello" to "world"))
-        },
-    )
+  @get:Rule
+  val apolloMockServerRule = ApolloMockServerRule(
+    EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse { success(STORY_WITH_TEXT_ACTION_SET_API) },
+    HELLO_QUERY to apolloResponse {
+      success(jsonObjectOf("hello" to "world"))
+    },
+  )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
 
-    @Test
-    fun whenSubmittingTextActionSetWithApiShouldCallApi() = run {
-        activityRule.launch(EmbarkActivity.newInstance(context(), "", ""))
+  @Test
+  fun whenSubmittingTextActionSetWithApiShouldCallApi() = run {
+    activityRule.launch(EmbarkActivity.newInstance(context(), "", ""))
 
-        step("Input something into field and submit") {
-            TextActionSetScreen {
-                input(0) {
-                    edit { typeText("test") }
-                }
-                submit { click() }
-            }
+    step("Input something into field and submit") {
+      TextActionSetScreen {
+        input(0) {
+          edit { typeText("test") }
         }
-
-        step("Verify that success-passage from API is redirected to") {
-            onScreen<EmbarkScreen> {
-                messages {
-                    childAt<EmbarkScreen.MessageRow>(0) { text { hasText(STANDARD_THIRD_MESSAGE.text) } }
-                }
-            }
-        }
+        submit { click() }
+      }
     }
+
+    step("Verify that success-passage from API is redirected to") {
+      onScreen<EmbarkScreen> {
+        messages {
+          childAt<EmbarkScreen.MessageRow>(0) { text { hasText(STANDARD_THIRD_MESSAGE.text) } }
+        }
+      }
+    }
+  }
 }

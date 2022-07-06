@@ -8,27 +8,27 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class OfferRedeemCodeBottomSheet : RedeemCodeBottomSheet() {
 
-    override val quoteCartId: QuoteCartId?
-        get() = arguments?.getParcelable(QUOTE_CART_ID)
+  override val quoteCartId: QuoteCartId?
+    get() = arguments?.getParcelable(QUOTE_CART_ID)
 
-    private val offerViewModel: OfferViewModel by sharedViewModel()
+  private val offerViewModel: OfferViewModel by sharedViewModel()
 
-    override fun onRedeemSuccess(data: RedeemReferralCodeMutation.Data) {
-        dismiss()
+  override fun onRedeemSuccess(data: RedeemReferralCodeMutation.Data) {
+    dismiss()
+  }
+
+  companion object {
+    const val TAG = "OfferRedeemCodeDialog"
+    private const val QUOTE_CART_ID = "QUOTE_CART_ID"
+
+    fun newInstance(
+      quoteCartId: QuoteCartId?,
+    ) = OfferRedeemCodeBottomSheet().apply {
+      if (quoteCartId != null) {
+        val bundle = Bundle()
+        bundle.putParcelable(QUOTE_CART_ID, quoteCartId)
+        arguments = bundle
+      }
     }
-
-    companion object {
-        const val TAG = "OfferRedeemCodeDialog"
-        private const val QUOTE_CART_ID = "QUOTE_CART_ID"
-
-        fun newInstance(
-            quoteCartId: QuoteCartId?,
-        ) = OfferRedeemCodeBottomSheet().apply {
-            if (quoteCartId != null) {
-                val bundle = Bundle()
-                bundle.putParcelable(QUOTE_CART_ID, quoteCartId)
-                arguments = bundle
-            }
-        }
-    }
+  }
 }

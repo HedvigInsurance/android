@@ -43,128 +43,128 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 class SwedishBankIdSignDialog : DialogFragment() {
-    private val viewModel: SwedishBankIdSignViewModel by viewModel {
-        parametersOf(
-            requireArguments().getParcelable(QUOTE_CART_ID),
-        )
-    }
-    private val marketManager: MarketManager by inject()
+  private val viewModel: SwedishBankIdSignViewModel by viewModel {
+    parametersOf(
+      requireArguments().getParcelable(QUOTE_CART_ID),
+    )
+  }
+  private val marketManager: MarketManager by inject()
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ) = ComposeView(requireContext()).apply {
-        setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnLifecycleDestroyed(viewLifecycleOwner))
+  override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?,
+  ) = ComposeView(requireContext()).apply {
+    setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnLifecycleDestroyed(viewLifecycleOwner))
 
-        var viewState: BankIdSignViewState by mutableStateOf(viewModel.viewState.value)
-        viewLifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.viewState.collect { state ->
-                    viewState = state
-                    dialog?.setCanceledOnTouchOutside(viewState.isDialogDismissible)
-                    if (state is BankIdSignViewState.StartBankId) {
-                        val bankIdUri = bankIdUri()
-                        if (requireActivity().canOpenUri(bankIdUri)) {
-                            startActivity(
-                                Intent(
-                                    Intent.ACTION_VIEW,
-                                    bankIdUri,
-                                ),
-                            )
-                            viewModel.bankIdStarted()
-                        }
-                    } else if (state is BankIdSignViewState.StartDirectDebit) {
-                        val market = marketManager.market ?: return@collect
-                        startActivity(
-                            connectPayinIntent(
-                                requireContext(),
-                                state.payinType,
-                                market,
-                                true,
-                            ),
-                        )
-                        viewModel.directDebitStarted()
-                    }
-                }
+    var viewState: BankIdSignViewState by mutableStateOf(viewModel.viewState.value)
+    viewLifecycleScope.launch {
+      viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+        viewModel.viewState.collect { state ->
+          viewState = state
+          dialog?.setCanceledOnTouchOutside(viewState.isDialogDismissible)
+          if (state is BankIdSignViewState.StartBankId) {
+            val bankIdUri = bankIdUri()
+            if (requireActivity().canOpenUri(bankIdUri)) {
+              startActivity(
+                Intent(
+                  Intent.ACTION_VIEW,
+                  bankIdUri,
+                ),
+              )
+              viewModel.bankIdStarted()
             }
-        }
-        setContent {
-            HedvigTheme {
-                SwedishBankIdSignDialog(
-                    text = textFromViewState(viewState),
-                )
-            }
-        }
-    }
-
-    override fun onCreateDialog(savedInstanceState: Bundle?) =
-        super.onCreateDialog(savedInstanceState).apply {
-            window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            setCanceledOnTouchOutside(false)
-        }
-
-    @Composable
-    private fun textFromViewState(viewState: BankIdSignViewState): String {
-        return when (viewState) {
-            is BankIdSignViewState.StartBankId -> stringResource(R.string.SIGN_START_BANKID)
-            BankIdSignViewState.Cancelled -> stringResource(R.string.SIGN_CANCELED)
-            BankIdSignViewState.SignInProgress -> stringResource(R.string.SIGN_IN_PROGRESS)
-            is BankIdSignViewState.Error -> {
-                if (viewState.message != null) return viewState.message
-                stringResource(R.string.SIGN_FAILED_REASON_UNKNOWN)
-            }
-            BankIdSignViewState.BankIdSuccess -> stringResource(R.string.SIGN_IN_PROGRESS)
-            is BankIdSignViewState.StartDirectDebit -> stringResource(R.string.SIGN_IN_PROGRESS)
-            BankIdSignViewState.Success -> stringResource(R.string.SIGN_SUCCESSFUL)
-        }
-    }
-
-    companion object {
-        private fun bankIdUri() = Uri.parse("bankid:///?redirect=hedvig://")
-
-        private const val QUOTE_CART_ID = "QUOTE_CART_ID"
-        const val TAG = "OfferSignDialog"
-        fun newInstance(
-            quoteCartId: QuoteCartId,
-        ) = SwedishBankIdSignDialog().apply {
-            arguments = bundleOf(
-                QUOTE_CART_ID to quoteCartId,
+          } else if (state is BankIdSignViewState.StartDirectDebit) {
+            val market = marketManager.market ?: return@collect
+            startActivity(
+              connectPayinIntent(
+                requireContext(),
+                state.payinType,
+                market,
+                true,
+              ),
             )
+            viewModel.directDebitStarted()
+          }
         }
+      }
     }
+    setContent {
+      HedvigTheme {
+        SwedishBankIdSignDialog(
+          text = textFromViewState(viewState),
+        )
+      }
+    }
+  }
+
+  override fun onCreateDialog(savedInstanceState: Bundle?) =
+    super.onCreateDialog(savedInstanceState).apply {
+      window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+      setCanceledOnTouchOutside(false)
+    }
+
+  @Composable
+  private fun textFromViewState(viewState: BankIdSignViewState): String {
+    return when (viewState) {
+      is BankIdSignViewState.StartBankId -> stringResource(R.string.SIGN_START_BANKID)
+      BankIdSignViewState.Cancelled -> stringResource(R.string.SIGN_CANCELED)
+      BankIdSignViewState.SignInProgress -> stringResource(R.string.SIGN_IN_PROGRESS)
+      is BankIdSignViewState.Error -> {
+        if (viewState.message != null) return viewState.message
+        stringResource(R.string.SIGN_FAILED_REASON_UNKNOWN)
+      }
+      BankIdSignViewState.BankIdSuccess -> stringResource(R.string.SIGN_IN_PROGRESS)
+      is BankIdSignViewState.StartDirectDebit -> stringResource(R.string.SIGN_IN_PROGRESS)
+      BankIdSignViewState.Success -> stringResource(R.string.SIGN_SUCCESSFUL)
+    }
+  }
+
+  companion object {
+    private fun bankIdUri() = Uri.parse("bankid:///?redirect=hedvig://")
+
+    private const val QUOTE_CART_ID = "QUOTE_CART_ID"
+    const val TAG = "OfferSignDialog"
+    fun newInstance(
+      quoteCartId: QuoteCartId,
+    ) = SwedishBankIdSignDialog().apply {
+      arguments = bundleOf(
+        QUOTE_CART_ID to quoteCartId,
+      )
+    }
+  }
 }
 
 @Composable
 fun SwedishBankIdSignDialog(text: String) {
-    Surface(
-        shape = RoundedCornerShape(8.dp),
+  Surface(
+    shape = RoundedCornerShape(8.dp),
+  ) {
+    Column(
+      horizontalAlignment = Alignment.CenterHorizontally,
+      modifier = Modifier
+        .padding(16.dp),
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .padding(16.dp),
-        ) {
-            Text(
-                text = text,
-                style = MaterialTheme.typography.subtitle1,
-            )
-            Image(
-                painter = painterResource(id = R.drawable.ic_bank_id),
-                contentDescription = null,
-                modifier = Modifier.padding(top = 8.dp),
-            )
-        }
+      Text(
+        text = text,
+        style = MaterialTheme.typography.subtitle1,
+      )
+      Image(
+        painter = painterResource(id = R.drawable.ic_bank_id),
+        contentDescription = null,
+        modifier = Modifier.padding(top = 8.dp),
+      )
     }
+  }
 }
 
 @Composable
 @Preview(
-    name = "Swedish BankID Sign-Dialog",
-    group = "Offer Screen",
+  name = "Swedish BankID Sign-Dialog",
+  group = "Offer Screen",
 )
 fun Preview() {
-    HedvigTheme {
-        SwedishBankIdSignDialog(text = stringResource(id = R.string.SIGN_IN_PROGRESS))
-    }
+  HedvigTheme {
+    SwedishBankIdSignDialog(text = stringResource(id = R.string.SIGN_IN_PROGRESS))
+  }
 }

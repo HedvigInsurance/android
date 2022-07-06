@@ -12,23 +12,23 @@ import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class ErrorFragment : Fragment(R.layout.generic_error) {
-    private val binding by viewBinding(GenericErrorBinding::bind)
-    private val model: SimpleSignAuthenticationViewModel by sharedViewModel()
+  private val binding by viewBinding(GenericErrorBinding::bind)
+  private val model: SimpleSignAuthenticationViewModel by sharedViewModel()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-        enterTransition = MaterialSharedAxis(MaterialSharedAxis.X, true)
-        returnTransition = MaterialSharedAxis(MaterialSharedAxis.X, false)
+    enterTransition = MaterialSharedAxis(MaterialSharedAxis.X, true)
+    returnTransition = MaterialSharedAxis(MaterialSharedAxis.X, false)
+  }
+
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    binding.retry.setHapticClickListener {
+      model.restart()
     }
+  }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.retry.setHapticClickListener {
-            model.restart()
-        }
-    }
-
-    companion object {
-        fun newInstance() = ErrorFragment()
-    }
+  companion object {
+    fun newInstance() = ErrorFragment()
+  }
 }

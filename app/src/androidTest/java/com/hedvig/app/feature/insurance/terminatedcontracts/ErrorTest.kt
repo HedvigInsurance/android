@@ -18,39 +18,39 @@ import org.junit.Test
 
 class ErrorTest : TestCase() {
 
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(TerminatedContractsActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(TerminatedContractsActivity::class.java)
 
-    var shouldFail = true
+  var shouldFail = true
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        InsuranceQuery.OPERATION_DOCUMENT to apolloResponse {
-            if (shouldFail) {
-                shouldFail = false
-                graphQLError(jsonObjectOf("message" to "error"))
-            } else {
-                success(INSURANCE_DATA_ONE_ACTIVE_ONE_TERMINATED)
-            }
-        },
-    )
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    InsuranceQuery.OPERATION_DOCUMENT to apolloResponse {
+      if (shouldFail) {
+        shouldFail = false
+        graphQLError(jsonObjectOf("message" to "error"))
+      } else {
+        success(INSURANCE_DATA_ONE_ACTIVE_ONE_TERMINATED)
+      }
+    },
+  )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
 
-    @Test
-    fun shouldShowErrorOnGraphQLError() = run {
-        activityRule.launch(TerminatedContractsActivity.newInstance(context()))
+  @Test
+  fun shouldShowErrorOnGraphQLError() = run {
+    activityRule.launch(TerminatedContractsActivity.newInstance(context()))
 
-        onScreen<TerminatedContractsScreen> {
-            recycler {
-                childAt<InsuranceScreen.Error>(0) {
-                    retry { click() }
-                }
-                childAt<InsuranceScreen.ContractCard>(0) {
-                    contractName { isVisible() }
-                }
-            }
+    onScreen<TerminatedContractsScreen> {
+      recycler {
+        childAt<InsuranceScreen.Error>(0) {
+          retry { click() }
         }
+        childAt<InsuranceScreen.ContractCard>(0) {
+          contractName { isVisible() }
+        }
+      }
     }
+  }
 }

@@ -23,84 +23,84 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 class SimpleSignAuthenticationActivity : BaseActivity(R.layout.simple_sign_authentication_activity) {
-    private val binding by viewBinding(SimpleSignAuthenticationActivityBinding::bind)
-    private val model: SimpleSignAuthenticationViewModel by viewModel { parametersOf(data) }
+  private val binding by viewBinding(SimpleSignAuthenticationActivityBinding::bind)
+  private val model: SimpleSignAuthenticationViewModel by viewModel { parametersOf(data) }
 
-    private val data by lazy {
-        intent.getParcelableExtra<SimpleSignAuthenticationData>(DATA)
-            ?: throw Error("Programmer error: DATA not passed to ${this.javaClass.name}")
+  private val data by lazy {
+    intent.getParcelableExtra<SimpleSignAuthenticationData>(DATA)
+      ?: throw Error("Programmer error: DATA not passed to ${this.javaClass.name}")
+  }
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    window.compatSetDecorFitsSystemWindows(false)
+    binding.toolbar.apply {
+      applyStatusBarInsets()
+      setNavigationOnClickListener { finish() }
+    }
+    binding.container.applyNavigationBarInsets()
+    if (savedInstanceState == null) {
+      supportFragmentManager.commit {
+        replace(R.id.container, IdentityInputFragment.newInstance(data))
+      }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        window.compatSetDecorFitsSystemWindows(false)
-        binding.toolbar.apply {
-            applyStatusBarInsets()
-            setNavigationOnClickListener { finish() }
+    model.authStatus.observe(this) {
+      when (it) {
+        AuthState.FAILED -> {
+          showError()
         }
-        binding.container.applyNavigationBarInsets()
-        if (savedInstanceState == null) {
-            supportFragmentManager.commit {
-                replace(R.id.container, IdentityInputFragment.newInstance(data))
-            }
+        else -> {
         }
-
-        model.authStatus.observe(this) {
-            when (it) {
-                AuthState.FAILED -> {
-                    showError()
-                }
-                else -> {
-                }
-            }
+      }
+    }
+    model.events.observe(this) {
+      when (it) {
+        SimpleSignAuthenticationViewModel.Event.LoadWebView -> showWebView()
+        SimpleSignAuthenticationViewModel.Event.Success -> {
+          goToLoggedIn()
         }
-        model.events.observe(this) {
-            when (it) {
-                SimpleSignAuthenticationViewModel.Event.LoadWebView -> showWebView()
-                SimpleSignAuthenticationViewModel.Event.Success -> {
-                    goToLoggedIn()
-                }
-                SimpleSignAuthenticationViewModel.Event.Error -> showError()
-                SimpleSignAuthenticationViewModel.Event.Restart -> restart()
-            }
-        }
+        SimpleSignAuthenticationViewModel.Event.Error -> showError()
+        SimpleSignAuthenticationViewModel.Event.Restart -> restart()
+      }
     }
+  }
 
-    private fun goToLoggedIn() {
-        startActivity(
-            LoggedInActivity.newInstance(
-                this,
-                withoutHistory = true,
-            ),
-        )
-    }
+  private fun goToLoggedIn() {
+    startActivity(
+      LoggedInActivity.newInstance(
+        this,
+        withoutHistory = true,
+      ),
+    )
+  }
 
-    private fun restart() {
-        supportFragmentManager.popBackStack(
-            supportFragmentManager.getBackStackEntryAt(0).id,
-            FragmentManager.POP_BACK_STACK_INCLUSIVE,
-        )
-    }
+  private fun restart() {
+    supportFragmentManager.popBackStack(
+      supportFragmentManager.getBackStackEntryAt(0).id,
+      FragmentManager.POP_BACK_STACK_INCLUSIVE,
+    )
+  }
 
-    private fun showWebView() {
-        supportFragmentManager.commit {
-            replace(R.id.container, ZignSecWebViewFragment.newInstance())
-            addToBackStack()
-        }
+  private fun showWebView() {
+    supportFragmentManager.commit {
+      replace(R.id.container, ZignSecWebViewFragment.newInstance())
+      addToBackStack()
     }
+  }
 
-    private fun showError() {
-        supportFragmentManager.commit {
-            replace(R.id.container, ErrorFragment.newInstance())
-            addToBackStack()
-        }
+  private fun showError() {
+    supportFragmentManager.commit {
+      replace(R.id.container, ErrorFragment.newInstance())
+      addToBackStack()
     }
+  }
 
-    companion object {
-        private const val DATA = "DATA"
-        fun newInstance(context: Context, market: Market) =
-            Intent(context, SimpleSignAuthenticationActivity::class.java).apply {
-                putExtra(DATA, SimpleSignAuthenticationData(market))
-            }
-    }
+  companion object {
+    private const val DATA = "DATA"
+    fun newInstance(context: Context, market: Market) =
+      Intent(context, SimpleSignAuthenticationActivity::class.java).apply {
+        putExtra(DATA, SimpleSignAuthenticationData(market))
+      }
+  }
 }

@@ -12,33 +12,33 @@ import com.hedvig.app.util.apollo.safeQuery
 import com.hedvig.hanalytics.HAnalytics
 
 class StartCheckoutUseCase(
-    private val apolloClient: ApolloClient,
-    private val cacheManager: CacheManager,
-    private val hAnalytics: HAnalytics,
+  private val apolloClient: ApolloClient,
+  private val cacheManager: CacheManager,
+  private val hAnalytics: HAnalytics,
 ) {
-    object Success
+  object Success
 
-    suspend fun startCheckoutAndClearCache(
-        quoteCartId: QuoteCartId?,
-        quoteIds: List<String>,
-    ): Either<ErrorMessage, Success> = either {
-        ensureNotNull(quoteCartId) { ErrorMessage("Quote cart id not found") }
+  suspend fun startCheckoutAndClearCache(
+    quoteCartId: QuoteCartId?,
+    quoteIds: List<String>,
+  ): Either<ErrorMessage, Success> = either {
+    ensureNotNull(quoteCartId) { ErrorMessage("Quote cart id not found") }
 
-        val result = mutateQuoteCart(quoteCartId, quoteIds).bind()
-        val errorMessage = result.quoteCartStartCheckout.asBasicError?.message
+    val result = mutateQuoteCart(quoteCartId, quoteIds).bind()
+    val errorMessage = result.quoteCartStartCheckout.asBasicError?.message
 
-        ensure(errorMessage == null) { ErrorMessage(errorMessage) }
-        cacheManager.clearCache()
-        hAnalytics.quotesSigned(quoteIds)
-        Success
-    }
+    ensure(errorMessage == null) { ErrorMessage(errorMessage) }
+    cacheManager.clearCache()
+    hAnalytics.quotesSigned(quoteIds)
+    Success
+  }
 
-    private suspend fun mutateQuoteCart(
-        quoteCartId: QuoteCartId,
-        quoteIds: List<String>,
-    ): Either<ErrorMessage, QuoteCartStartCheckoutMutation.Data> = apolloClient
-        .mutation(QuoteCartStartCheckoutMutation(quoteCartId.id, quoteIds))
-        .safeQuery()
-        .toEither()
-        .mapLeft { ErrorMessage(it.message) }
+  private suspend fun mutateQuoteCart(
+    quoteCartId: QuoteCartId,
+    quoteIds: List<String>,
+  ): Either<ErrorMessage, QuoteCartStartCheckoutMutation.Data> = apolloClient
+    .mutation(QuoteCartStartCheckoutMutation(quoteCartId.id, quoteIds))
+    .safeQuery()
+    .toEither()
+    .mapLeft { ErrorMessage(it.message) }
 }

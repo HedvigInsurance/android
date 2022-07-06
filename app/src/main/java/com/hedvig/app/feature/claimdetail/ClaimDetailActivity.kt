@@ -24,52 +24,52 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 class ClaimDetailActivity : BaseActivity() {
-    private val marketManager: MarketManager by inject()
+  private val marketManager: MarketManager by inject()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-        val claimId = intent.getStringExtra(CLAIM_ID)
-            ?: throw IllegalArgumentException("Programmer error: Missing claimId in ${this.javaClass.name}")
-        val viewModel: ClaimDetailViewModel by viewModel { parametersOf(claimId) }
+    val claimId = intent.getStringExtra(CLAIM_ID)
+      ?: throw IllegalArgumentException("Programmer error: Missing claimId in ${this.javaClass.name}")
+    val viewModel: ClaimDetailViewModel by viewModel { parametersOf(claimId) }
 
-        viewModel
-            .events
-            .flowWithLifecycle(lifecycle)
-            .onEach { event ->
-                when (event) {
-                    ClaimDetailViewModel.Event.StartChat -> startChat()
-                    ClaimDetailViewModel.Event.Error -> showErrorDialog(
-                        getString(R.string.NETWORK_ERROR_ALERT_MESSAGE),
-                    ) {}
-                }
-            }
-            .launchIn(lifecycleScope)
-
-        val locale = getLocale(this, marketManager.market)
-        setContent {
-            val viewState by viewModel.viewState.collectAsState()
-
-            HedvigTheme {
-                ClaimDetailScreen(
-                    viewState = viewState,
-                    locale = locale,
-                    retry = viewModel::retry,
-                    onUpClick = ::finish,
-                    onChatClick = viewModel::onChatClick,
-                    onPlayClick = viewModel::onPlayClick,
-                )
-            }
+    viewModel
+      .events
+      .flowWithLifecycle(lifecycle)
+      .onEach { event ->
+        when (event) {
+          ClaimDetailViewModel.Event.StartChat -> startChat()
+          ClaimDetailViewModel.Event.Error -> showErrorDialog(
+            getString(R.string.NETWORK_ERROR_ALERT_MESSAGE),
+          ) {}
         }
-    }
+      }
+      .launchIn(lifecycleScope)
 
-    companion object {
-        private const val CLAIM_ID = "com.hedvig.app.feature.claimdetail.CLAIM_ID"
-        fun newInstance(
-            context: Context,
-            claimId: String,
-        ) = Intent(context, ClaimDetailActivity::class.java).apply {
-            putExtra(CLAIM_ID, claimId)
-        }
+    val locale = getLocale(this, marketManager.market)
+    setContent {
+      val viewState by viewModel.viewState.collectAsState()
+
+      HedvigTheme {
+        ClaimDetailScreen(
+          viewState = viewState,
+          locale = locale,
+          retry = viewModel::retry,
+          onUpClick = ::finish,
+          onChatClick = viewModel::onChatClick,
+          onPlayClick = viewModel::onPlayClick,
+        )
+      }
     }
+  }
+
+  companion object {
+    private const val CLAIM_ID = "com.hedvig.app.feature.claimdetail.CLAIM_ID"
+    fun newInstance(
+      context: Context,
+      claimId: String,
+    ) = Intent(context, ClaimDetailActivity::class.java).apply {
+      putExtra(CLAIM_ID, claimId)
+    }
+  }
 }

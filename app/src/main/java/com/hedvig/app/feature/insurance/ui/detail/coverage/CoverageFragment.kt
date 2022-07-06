@@ -23,43 +23,43 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class CoverageFragment : Fragment(R.layout.contract_detail_coverage_fragment) {
-    private val binding by viewBinding(ContractDetailCoverageFragmentBinding::bind)
-    private val model: ContractDetailViewModel by sharedViewModel()
-    private val imageLoader: ImageLoader by inject()
+  private val binding by viewBinding(ContractDetailCoverageFragmentBinding::bind)
+  private val model: ContractDetailViewModel by sharedViewModel()
+  private val imageLoader: ImageLoader by inject()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val perilsAdapter = PerilsAdapter(
-            fragmentManager = parentFragmentManager,
-            imageLoader = imageLoader,
-        )
-        val insurableLimitsAdapter = InsurableLimitsAdapter(parentFragmentManager)
-        val concatAdapter = ConcatAdapter(perilsAdapter, insurableLimitsAdapter)
-        binding.root.apply {
-            applyNavigationBarInsets()
-            adapter = concatAdapter
-            (layoutManager as? GridLayoutManager)?.let { lm ->
-                lm.spanSizeLookup = ConcatSpanSizeLookup(lm.spanCount) { concatAdapter.adapters }
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    val perilsAdapter = PerilsAdapter(
+      fragmentManager = parentFragmentManager,
+      imageLoader = imageLoader,
+    )
+    val insurableLimitsAdapter = InsurableLimitsAdapter(parentFragmentManager)
+    val concatAdapter = ConcatAdapter(perilsAdapter, insurableLimitsAdapter)
+    binding.root.apply {
+      applyNavigationBarInsets()
+      adapter = concatAdapter
+      (layoutManager as? GridLayoutManager)?.let { lm ->
+        lm.spanSizeLookup = ConcatSpanSizeLookup(lm.spanCount) { concatAdapter.adapters }
+      }
+      addItemDecoration(ConcatItemDecoration { concatAdapter.adapters })
+      model.viewState
+        .flowWithLifecycle(lifecycle)
+        .onEach { viewState ->
+          when (viewState) {
+            ContractDetailViewModel.ViewState.Error -> {
+              perilsAdapter.submitList(emptyList())
+              insurableLimitsAdapter.submitList(emptyList())
             }
-            addItemDecoration(ConcatItemDecoration { concatAdapter.adapters })
-            model.viewState
-                .flowWithLifecycle(lifecycle)
-                .onEach { viewState ->
-                    when (viewState) {
-                        ContractDetailViewModel.ViewState.Error -> {
-                            perilsAdapter.submitList(emptyList())
-                            insurableLimitsAdapter.submitList(emptyList())
-                        }
-                        ContractDetailViewModel.ViewState.Loading -> {
-                            perilsAdapter.submitList(emptyList())
-                            insurableLimitsAdapter.submitList(emptyList())
-                        }
-                        is ContractDetailViewModel.ViewState.Success -> {
-                            perilsAdapter.submitList(viewState.state.coverageViewState.perils)
-                            insurableLimitsAdapter.submitList(viewState.state.coverageViewState.insurableLimits)
-                        }
-                    }
-                }
-                .launchIn(viewLifecycleScope)
+            ContractDetailViewModel.ViewState.Loading -> {
+              perilsAdapter.submitList(emptyList())
+              insurableLimitsAdapter.submitList(emptyList())
+            }
+            is ContractDetailViewModel.ViewState.Success -> {
+              perilsAdapter.submitList(viewState.state.coverageViewState.perils)
+              insurableLimitsAdapter.submitList(viewState.state.coverageViewState.insurableLimits)
+            }
+          }
         }
+        .launchIn(viewLifecycleScope)
     }
+  }
 }

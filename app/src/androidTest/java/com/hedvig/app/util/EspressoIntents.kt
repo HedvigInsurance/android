@@ -7,10 +7,10 @@ import androidx.test.espresso.intent.matcher.IntentMatchers
 import org.hamcrest.Matchers
 
 fun stubExternalIntents() {
-    Intents.intending(Matchers.not(IntentMatchers.isInternal())).respondWith(
-        Instrumentation.ActivityResult(
-            Activity.RESULT_OK,
-            null,
-        ),
-    )
+  Intents.intending(Matchers.not(IntentMatchers.isInternal())).respondWith(
+    Instrumentation.ActivityResult(
+      Activity.RESULT_OK,
+      null,
+    ),
+  )
 }

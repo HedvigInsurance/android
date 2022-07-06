@@ -20,46 +20,46 @@ import org.junit.Test
 
 class ErrorTest : TestCase() {
 
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
-    var shouldFail = true
+  var shouldFail = true
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(LOGGED_IN_DATA)
-        },
-        InsuranceQuery.OPERATION_DOCUMENT to apolloResponse {
-            if (shouldFail) {
-                shouldFail = false
-                graphQLError(jsonObjectOf("message" to "error"))
-            } else {
-                success(INSURANCE_DATA)
-            }
-        },
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(LOGGED_IN_DATA)
+    },
+    InsuranceQuery.OPERATION_DOCUMENT to apolloResponse {
+      if (shouldFail) {
+        shouldFail = false
+        graphQLError(jsonObjectOf("message" to "error"))
+      } else {
+        success(INSURANCE_DATA)
+      }
+    },
+  )
+
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
+
+  @Test
+  fun shouldShowErrorOnGraphQLError() = run {
+    val intent = LoggedInActivity.newInstance(
+      context(),
+      initialTab = LoggedInTabs.INSURANCE,
     )
+    activityRule.launch(intent)
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
-
-    @Test
-    fun shouldShowErrorOnGraphQLError() = run {
-        val intent = LoggedInActivity.newInstance(
-            context(),
-            initialTab = LoggedInTabs.INSURANCE,
-        )
-        activityRule.launch(intent)
-
-        onScreen<InsuranceScreen> {
-            insuranceRecycler {
-                childAt<InsuranceScreen.Error>(1) {
-                    retry { click() }
-                }
-                childAt<InsuranceScreen.ContractCard>(1) {
-                    contractName { isVisible() }
-                }
-            }
+    onScreen<InsuranceScreen> {
+      insuranceRecycler {
+        childAt<InsuranceScreen.Error>(1) {
+          retry { click() }
         }
+        childAt<InsuranceScreen.ContractCard>(1) {
+          contractName { isVisible() }
+        }
+      }
     }
+  }
 }

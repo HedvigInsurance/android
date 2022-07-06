@@ -57,75 +57,75 @@ import androidx.annotation.RequiresApi
  */
 @RequiresApi(Build.VERSION_CODES.R)
 class RootViewDeferringInsetsCallback(
-    val persistentInsetTypes: Int,
-    val deferredInsetTypes: Int,
-    val setPaddingTop: Boolean = true,
+  val persistentInsetTypes: Int,
+  val deferredInsetTypes: Int,
+  val setPaddingTop: Boolean = true,
 ) : WindowInsetsAnimation.Callback(DISPATCH_MODE_CONTINUE_ON_SUBTREE),
-    View.OnApplyWindowInsetsListener {
-    init {
-        require(persistentInsetTypes and deferredInsetTypes == 0) {
-            "persistentInsetTypes and deferredInsetTypes can not contain any of " +
-                " same WindowInsets.Type values"
-        }
+  View.OnApplyWindowInsetsListener {
+  init {
+    require(persistentInsetTypes and deferredInsetTypes == 0) {
+      "persistentInsetTypes and deferredInsetTypes can not contain any of " +
+        " same WindowInsets.Type values"
+    }
+  }
+
+  private var view: View? = null
+  private var lastWindowInsets: WindowInsets? = null
+
+  private var deferredInsets = false
+
+  override fun onApplyWindowInsets(v: View, windowInsets: WindowInsets): WindowInsets {
+    // Store the view and insets for us in onEnd() below
+    view = v
+    lastWindowInsets = windowInsets
+
+    val types = when {
+      // When the deferred flag is enabled, we only use the systemBars() insets
+      deferredInsets -> persistentInsetTypes
+      // Otherwise we handle the combination of the the systemBars() and ime() insets
+      else -> persistentInsetTypes or deferredInsetTypes
     }
 
-    private var view: View? = null
-    private var lastWindowInsets: WindowInsets? = null
+    // Finally we apply the resolved insets by setting them as padding
+    val typeInsets = windowInsets.getInsets(types)
+    v.setPadding(typeInsets.left, if (setPaddingTop) typeInsets.top else 0, typeInsets.right, typeInsets.bottom)
 
-    private var deferredInsets = false
+    // We return the new WindowInsets.CONSUMED to stop the insets being dispatched any
+    // further into the view hierarchy. This replaces the deprecated
+    // WindowInsets.consumeSystemWindowInsets() and related functions.
+    return WindowInsets.CONSUMED
+  }
 
-    override fun onApplyWindowInsets(v: View, windowInsets: WindowInsets): WindowInsets {
-        // Store the view and insets for us in onEnd() below
-        view = v
-        lastWindowInsets = windowInsets
-
-        val types = when {
-            // When the deferred flag is enabled, we only use the systemBars() insets
-            deferredInsets -> persistentInsetTypes
-            // Otherwise we handle the combination of the the systemBars() and ime() insets
-            else -> persistentInsetTypes or deferredInsetTypes
-        }
-
-        // Finally we apply the resolved insets by setting them as padding
-        val typeInsets = windowInsets.getInsets(types)
-        v.setPadding(typeInsets.left, if (setPaddingTop) typeInsets.top else 0, typeInsets.right, typeInsets.bottom)
-
-        // We return the new WindowInsets.CONSUMED to stop the insets being dispatched any
-        // further into the view hierarchy. This replaces the deprecated
-        // WindowInsets.consumeSystemWindowInsets() and related functions.
-        return WindowInsets.CONSUMED
+  override fun onPrepare(animation: WindowInsetsAnimation) {
+    if (animation.typeMask and deferredInsetTypes != 0) {
+      // We defer the WindowInsets.Type.ime() insets if the IME is currently not visible.
+      // This results in only the WindowInsets.Type.systemBars() being applied, allowing
+      // the scrolling view to remain at it's larger size.
+      deferredInsets = true
     }
+  }
 
-    override fun onPrepare(animation: WindowInsetsAnimation) {
-        if (animation.typeMask and deferredInsetTypes != 0) {
-            // We defer the WindowInsets.Type.ime() insets if the IME is currently not visible.
-            // This results in only the WindowInsets.Type.systemBars() being applied, allowing
-            // the scrolling view to remain at it's larger size.
-            deferredInsets = true
-        }
+  override fun onProgress(
+    insets: WindowInsets,
+    runningAnims: List<WindowInsetsAnimation>,
+  ): WindowInsets {
+    // This is a no-op. We don't actually want to handle any WindowInsetsAnimations
+    return insets
+  }
+
+  override fun onEnd(animation: WindowInsetsAnimation) {
+    if (deferredInsets && (animation.typeMask and deferredInsetTypes) != 0) {
+      // If we deferred the IME insets and an IME animation has finished, we need to reset
+      // the flag
+      deferredInsets = false
+
+      // And finally dispatch the deferred insets to the view now.
+      // Ideally we would just call view.requestApplyInsets() and let the normal dispatch
+      // cycle happen, but this happens too late resulting in a visual flicker.
+      // Instead we manually dispatch the most recent WindowInsets to the view.
+      if (lastWindowInsets != null) {
+        view?.dispatchApplyWindowInsets(lastWindowInsets!!)
+      }
     }
-
-    override fun onProgress(
-        insets: WindowInsets,
-        runningAnims: List<WindowInsetsAnimation>,
-    ): WindowInsets {
-        // This is a no-op. We don't actually want to handle any WindowInsetsAnimations
-        return insets
-    }
-
-    override fun onEnd(animation: WindowInsetsAnimation) {
-        if (deferredInsets && (animation.typeMask and deferredInsetTypes) != 0) {
-            // If we deferred the IME insets and an IME animation has finished, we need to reset
-            // the flag
-            deferredInsets = false
-
-            // And finally dispatch the deferred insets to the view now.
-            // Ideally we would just call view.requestApplyInsets() and let the normal dispatch
-            // cycle happen, but this happens too late resulting in a visual flicker.
-            // Instead we manually dispatch the most recent WindowInsets to the view.
-            if (lastWindowInsets != null) {
-                view?.dispatchApplyWindowInsets(lastWindowInsets!!)
-            }
-        }
-    }
+  }
 }

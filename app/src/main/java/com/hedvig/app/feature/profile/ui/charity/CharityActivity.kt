@@ -31,84 +31,84 @@ import org.koin.androidx.viewmodel.ext.android.getViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CharityActivity : BaseActivity(R.layout.activity_charity) {
-    private val binding by viewBinding(ActivityCharityBinding::bind)
-    private val profileViewModel: ProfileViewModel by viewModel()
-    private val imageLoader: ImageLoader by inject()
+  private val binding by viewBinding(ActivityCharityBinding::bind)
+  private val profileViewModel: ProfileViewModel by viewModel()
+  private val imageLoader: ImageLoader by inject()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        getViewModel<CharityViewModel>()
-        window.compatSetDecorFitsSystemWindows(false)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    getViewModel<CharityViewModel>()
+    window.compatSetDecorFitsSystemWindows(false)
 
-        setupToolbar(R.id.toolbar, R.drawable.ic_back, true) {
-            onBackPressed()
-        }
-
-        profileViewModel
-            .data
-            .flowWithLifecycle(lifecycle)
-            .onEach { viewState ->
-                binding.loadingSpinner.loadingSpinner.isVisible = viewState is ProfileViewModel.ViewState.Loading
-
-                when (viewState) {
-                    is ProfileViewModel.ViewState.Success -> {
-                        if (viewState.profileUiState.cashbackUiState != null) {
-                            showSelectedCharity(viewState.profileUiState.cashbackUiState)
-                        } else {
-                            showCharityPicker(viewState.profileUiState.charityOptions)
-                        }
-                    }
-                    else -> {}
-                }
-            }
-            .launchIn(lifecycleScope)
+    setupToolbar(R.id.toolbar, R.drawable.ic_back, true) {
+      onBackPressed()
     }
 
-    private fun showSelectedCharity(cashback: CashbackUiState) {
-        binding.apply {
-            selectedCharityBanner.setContent {
-                Box {
-                    AsyncImage(
-                        model = cashback.imageUrl,
-                        contentDescription = null,
-                        imageLoader = imageLoader,
-                        modifier = Modifier
-                            .heightIn(max = 300.dp)
-                            .align(Alignment.Center)
-                            .padding(horizontal = 24.dp),
-                    )
-                }
-            }
-            selectedCharityContainer.show()
-            selectCharityContainer.remove()
-            selectedCharityCardTitle.text = cashback.name
-            selectedCharityCardParagraph.text = cashback.description
-            charitySelectedHowDoesItWorkButton.setHapticClickListener {
-                ExplanationBottomSheet.newInstance(
-                    title = getString(R.string.CHARITY_INFO_DIALOG_TITLE),
-                    markDownText = getString(R.string.PROFILE_MY_CHARITY_INFO_BODY),
-                )
-                    .show(supportFragmentManager, ExplanationBottomSheet.TAG)
-            }
-        }
-    }
+    profileViewModel
+      .data
+      .flowWithLifecycle(lifecycle)
+      .onEach { viewState ->
+        binding.loadingSpinner.loadingSpinner.isVisible = viewState is ProfileViewModel.ViewState.Loading
 
-    private fun showCharityPicker(options: List<CharityOption>) {
-        binding.apply {
-            selectCharityContainer.show()
-            cashbackOptions.adapter = CharityAdapter(
-                context = this@CharityActivity,
-                clickListener = { id -> profileViewModel.selectCashback(id) },
-            ).also {
-                it.submitList(options)
+        when (viewState) {
+          is ProfileViewModel.ViewState.Success -> {
+            if (viewState.profileUiState.cashbackUiState != null) {
+              showSelectedCharity(viewState.profileUiState.cashbackUiState)
+            } else {
+              showCharityPicker(viewState.profileUiState.charityOptions)
             }
-            selectCharityHowDoesItWorkButton.setHapticClickListener {
-                ExplanationBottomSheet.newInstance(
-                    title = getString(R.string.CHARITY_INFO_DIALOG_TITLE),
-                    markDownText = getString(R.string.PROFILE_MY_CHARITY_INFO_BODY),
-                )
-                    .show(supportFragmentManager, ExplanationBottomSheet.TAG)
-            }
+          }
+          else -> {}
         }
+      }
+      .launchIn(lifecycleScope)
+  }
+
+  private fun showSelectedCharity(cashback: CashbackUiState) {
+    binding.apply {
+      selectedCharityBanner.setContent {
+        Box {
+          AsyncImage(
+            model = cashback.imageUrl,
+            contentDescription = null,
+            imageLoader = imageLoader,
+            modifier = Modifier
+              .heightIn(max = 300.dp)
+              .align(Alignment.Center)
+              .padding(horizontal = 24.dp),
+          )
+        }
+      }
+      selectedCharityContainer.show()
+      selectCharityContainer.remove()
+      selectedCharityCardTitle.text = cashback.name
+      selectedCharityCardParagraph.text = cashback.description
+      charitySelectedHowDoesItWorkButton.setHapticClickListener {
+        ExplanationBottomSheet.newInstance(
+          title = getString(R.string.CHARITY_INFO_DIALOG_TITLE),
+          markDownText = getString(R.string.PROFILE_MY_CHARITY_INFO_BODY),
+        )
+          .show(supportFragmentManager, ExplanationBottomSheet.TAG)
+      }
     }
+  }
+
+  private fun showCharityPicker(options: List<CharityOption>) {
+    binding.apply {
+      selectCharityContainer.show()
+      cashbackOptions.adapter = CharityAdapter(
+        context = this@CharityActivity,
+        clickListener = { id -> profileViewModel.selectCashback(id) },
+      ).also {
+        it.submitList(options)
+      }
+      selectCharityHowDoesItWorkButton.setHapticClickListener {
+        ExplanationBottomSheet.newInstance(
+          title = getString(R.string.CHARITY_INFO_DIALOG_TITLE),
+          markDownText = getString(R.string.PROFILE_MY_CHARITY_INFO_BODY),
+        )
+          .show(supportFragmentManager, ExplanationBottomSheet.TAG)
+      }
+    }
+  }
 }

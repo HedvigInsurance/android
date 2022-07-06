@@ -19,34 +19,34 @@ import org.junit.Test
 
 class FailedPaymentsTest : TestCase() {
 
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(PaymentActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(PaymentActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        PaymentQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYMENT_DATA_FAILED_PAYMENTS) },
-        PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_NEEDS_SETUP) },
-    )
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    PaymentQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYMENT_DATA_FAILED_PAYMENTS) },
+    PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_NEEDS_SETUP) },
+  )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
 
-    @Test
-    fun shouldShowWarningWhenUserHasMissedPayments() = run {
-        activityRule.launch(PaymentActivity.newInstance(context()))
+  @Test
+  fun shouldShowWarningWhenUserHasMissedPayments() = run {
+    activityRule.launch(PaymentActivity.newInstance(context()))
 
-        onScreen<PaymentScreen> {
-            recycler {
-                childAt<PaymentScreen.FailedPayments>(1) {
-                    paragraph {
-                        hasText(
-                            R.string.PAYMENTS_LATE_PAYMENTS_MESSAGE,
-                            PAYMENT_DATA_FAILED_PAYMENTS.balance.failedCharges!!,
-                            PAYMENT_DATA_FAILED_PAYMENTS.nextChargeDate!!,
-                        )
-                    }
-                }
-            }
+    onScreen<PaymentScreen> {
+      recycler {
+        childAt<PaymentScreen.FailedPayments>(1) {
+          paragraph {
+            hasText(
+              R.string.PAYMENTS_LATE_PAYMENTS_MESSAGE,
+              PAYMENT_DATA_FAILED_PAYMENTS.balance.failedCharges!!,
+              PAYMENT_DATA_FAILED_PAYMENTS.nextChargeDate!!,
+            )
+          }
         }
+      }
     }
+  }
 }

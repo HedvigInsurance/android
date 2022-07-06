@@ -19,54 +19,54 @@ import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class GenericAuthActivity : BaseActivity() {
-    val model: GenericAuthViewModel by viewModel()
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+  val model: GenericAuthViewModel by viewModel()
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-        window.compatSetDecorFitsSystemWindows(false)
+    window.compatSetDecorFitsSystemWindows(false)
 
-        setContent {
-            val viewState by model.viewState.collectAsState()
-            LaunchedEffect(model.eventsFlow) {
-                repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    model.eventsFlow.collect { event ->
-                        when (event) {
-                            is GenericAuthViewModel.Event.SubmitEmailSuccess -> startOtpInputActivity(event)
-                        }
-                    }
-                }
+    setContent {
+      val viewState by model.viewState.collectAsState()
+      LaunchedEffect(model.eventsFlow) {
+        repeatOnLifecycle(Lifecycle.State.STARTED) {
+          model.eventsFlow.collect { event ->
+            when (event) {
+              is GenericAuthViewModel.Event.SubmitEmailSuccess -> startOtpInputActivity(event)
             }
-            HedvigTheme {
-                EmailInputScreen(
-                    onUpClick = ::finish,
-                    onInputChanged = model::setInput,
-                    onSubmitEmail = model::submitEmail,
-                    onClear = model::clear,
-                    onBlur = model::blur,
-                    inputValue = viewState.input,
-                    error = viewState.error?.let { errorMessage(it) },
-                )
-            }
+          }
         }
+      }
+      HedvigTheme {
+        EmailInputScreen(
+          onUpClick = ::finish,
+          onInputChanged = model::setInput,
+          onSubmitEmail = model::submitEmail,
+          onClear = model::clear,
+          onBlur = model::blur,
+          inputValue = viewState.input,
+          error = viewState.error?.let { errorMessage(it) },
+        )
+      }
     }
+  }
 
-    @Composable
-    private fun errorMessage(error: GenericAuthViewModel.ViewState.TextFieldError) = stringResource(
-        when (error) {
-            GenericAuthViewModel.ViewState.TextFieldError.EMPTY ->
-                R.string.login_text_input_email_error_enter_email
-            GenericAuthViewModel.ViewState.TextFieldError.INVALID_EMAIL ->
-                R.string.login_text_input_email_error_not_valid
-            GenericAuthViewModel.ViewState.TextFieldError.NETWORK_ERROR -> R.string.NETWORK_ERROR_ALERT_MESSAGE
-        },
-    )
+  @Composable
+  private fun errorMessage(error: GenericAuthViewModel.ViewState.TextFieldError) = stringResource(
+    when (error) {
+      GenericAuthViewModel.ViewState.TextFieldError.EMPTY ->
+        R.string.login_text_input_email_error_enter_email
+      GenericAuthViewModel.ViewState.TextFieldError.INVALID_EMAIL ->
+        R.string.login_text_input_email_error_not_valid
+      GenericAuthViewModel.ViewState.TextFieldError.NETWORK_ERROR -> R.string.NETWORK_ERROR_ALERT_MESSAGE
+    },
+  )
 
-    private fun startOtpInputActivity(value: GenericAuthViewModel.Event.SubmitEmailSuccess) {
-        val intent = OtpInputActivity.newInstance(this, value.id, value.credential)
-        startActivity(intent)
-    }
+  private fun startOtpInputActivity(value: GenericAuthViewModel.Event.SubmitEmailSuccess) {
+    val intent = OtpInputActivity.newInstance(this, value.id, value.credential)
+    startActivity(intent)
+  }
 
-    companion object {
-        fun newInstance(context: Context) = Intent(context, GenericAuthActivity::class.java)
-    }
+  companion object {
+    fun newInstance(context: Context) = Intent(context, GenericAuthActivity::class.java)
+  }
 }

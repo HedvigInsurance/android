@@ -21,36 +21,36 @@ import com.hedvig.app.ui.compose.composables.buttons.LargeContainedTextButton
 
 @Composable
 fun RetrievePriceSuccess(
-    onContinue: () -> Unit,
+  onContinue: () -> Unit,
 ) {
-    Column(
-        modifier = Modifier
-            .padding(dimensionResource(R.dimen.base_margin_double))
-            .fillMaxWidth(),
-    ) {
-        Spacer(modifier = Modifier.height(48.dp))
-        Image(
-            painter = painterResource(R.drawable.ic_checkmark_in_circle),
-            contentDescription = null,
-            modifier = Modifier.size(32.dp),
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = stringResource(R.string.insurely_confirmation_title),
-            style = MaterialTheme.typography.h6,
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = stringResource(R.string.insurely_confirmation_description),
-        )
-        Spacer(modifier = Modifier.height(40.dp))
-        LargeContainedTextButton(text = stringResource(R.string.continue_button), onClick = onContinue)
-    }
+  Column(
+    modifier = Modifier
+      .padding(dimensionResource(R.dimen.base_margin_double))
+      .fillMaxWidth(),
+  ) {
+    Spacer(modifier = Modifier.height(48.dp))
+    Image(
+      painter = painterResource(R.drawable.ic_checkmark_in_circle),
+      contentDescription = null,
+      modifier = Modifier.size(32.dp),
+    )
+    Spacer(modifier = Modifier.height(16.dp))
+    Text(
+      text = stringResource(R.string.insurely_confirmation_title),
+      style = MaterialTheme.typography.h6,
+    )
+    Spacer(modifier = Modifier.height(16.dp))
+    Text(
+      text = stringResource(R.string.insurely_confirmation_description),
+    )
+    Spacer(modifier = Modifier.height(40.dp))
+    LargeContainedTextButton(text = stringResource(R.string.continue_button), onClick = onContinue)
+  }
 }
 
 @Preview
 @Composable
 fun RetrievePriceSuccessPreview() {
-    RetrievePriceSuccess {
-    }
+  RetrievePriceSuccess {
+  }
 }

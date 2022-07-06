@@ -5,8 +5,8 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class AudioRecorderParameters(
-    val messages: List<String>,
-    val key: String,
-    val label: String,
-    val link: String,
+  val messages: List<String>,
+  val key: String,
+  val label: String,
+  val link: String,
 ) : Parcelable

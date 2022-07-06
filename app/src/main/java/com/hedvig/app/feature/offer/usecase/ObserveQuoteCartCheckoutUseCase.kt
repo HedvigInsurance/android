@@ -14,29 +14,29 @@ import kotlinx.coroutines.isActive
 import kotlin.time.Duration.Companion.milliseconds
 
 interface ObserveQuoteCartCheckoutUseCase {
-    fun invoke(quoteCartId: QuoteCartId): Flow<Either<QueryResult.Error, Checkout>>
+  fun invoke(quoteCartId: QuoteCartId): Flow<Either<QueryResult.Error, Checkout>>
 }
 
 class ObserveQuoteCartCheckoutUseCaseImpl(
-    private val getQuoteCartCheckoutUseCase: GetQuoteCartCheckoutUseCase,
+  private val getQuoteCartCheckoutUseCase: GetQuoteCartCheckoutUseCase,
 ) : ObserveQuoteCartCheckoutUseCase {
-    override fun invoke(quoteCartId: QuoteCartId): Flow<Either<QueryResult.Error, Checkout>> {
-        return flow {
-            while (currentCoroutineContext().isActive) {
-                val result = either<QueryResult.Error, Checkout> {
-                    val checkout = getQuoteCartCheckoutUseCase.invoke(quoteCartId).bind()
-                    ensureNotNull(checkout) {
-                        QueryResult.Error.NoDataError(null)
-                    }
-                    checkout
-                }
-                emit(result)
-                delay(fetchFrequency)
-            }
+  override fun invoke(quoteCartId: QuoteCartId): Flow<Either<QueryResult.Error, Checkout>> {
+    return flow {
+      while (currentCoroutineContext().isActive) {
+        val result = either<QueryResult.Error, Checkout> {
+          val checkout = getQuoteCartCheckoutUseCase.invoke(quoteCartId).bind()
+          ensureNotNull(checkout) {
+            QueryResult.Error.NoDataError(null)
+          }
+          checkout
         }
+        emit(result)
+        delay(fetchFrequency)
+      }
     }
+  }
 
-    companion object {
-        private val fetchFrequency = 500.milliseconds
-    }
+  companion object {
+    private val fetchFrequency = 500.milliseconds
+  }
 }

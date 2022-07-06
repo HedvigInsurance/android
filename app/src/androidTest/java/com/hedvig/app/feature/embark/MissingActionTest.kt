@@ -16,33 +16,33 @@ import org.junit.Rule
 import org.junit.Test
 
 class MissingActionTest : TestCase() {
-    @get:Rule
-    val activityRule = LazyIntentsActivityScenarioRule(EmbarkActivity::class.java)
+  @get:Rule
+  val activityRule = LazyIntentsActivityScenarioRule(EmbarkActivity::class.java)
 
-    @get:Rule
-    val apolloMockServerRule = ApolloMockServerRule(
-        EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse { success(STORY_WITH_INCOMPATIBLE_ACTION) },
+  @get:Rule
+  val apolloMockServerRule = ApolloMockServerRule(
+    EmbarkStoryQuery.OPERATION_DOCUMENT to apolloResponse { success(STORY_WITH_INCOMPATIBLE_ACTION) },
+  )
+
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
+
+  @Test
+  fun shouldShowMessagesIfNoActionIsPresent() = run {
+    activityRule.launch(
+      EmbarkActivity.newInstance(
+        context(),
+        this.javaClass.name,
+        "",
+      ),
     )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+    stubExternalIntents()
 
-    @Test
-    fun shouldShowMessagesIfNoActionIsPresent() = run {
-        activityRule.launch(
-            EmbarkActivity.newInstance(
-                context(),
-                this.javaClass.name,
-                "",
-            ),
-        )
-
-        stubExternalIntents()
-
-        onScreen<EmbarkScreen> {
-            messages {
-                isVisible()
-            }
-        }
+    onScreen<EmbarkScreen> {
+      messages {
+        isVisible()
+      }
     }
+  }
 }

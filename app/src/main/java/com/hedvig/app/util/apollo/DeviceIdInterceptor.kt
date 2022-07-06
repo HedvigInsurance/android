@@ -11,30 +11,30 @@ import okhttp3.Response
 private const val HEADER_NAME = "hedvig-device-id"
 
 class DeviceIdInterceptor(
-    private val deviceIdStore: DeviceIdStore,
+  private val deviceIdStore: DeviceIdStore,
 ) : Interceptor {
 
-    private var deviceId: String? = null
+  private var deviceId: String? = null
 
-    init {
-        CoroutineScope(Dispatchers.IO).launch {
-            deviceIdStore.observeDeviceId().collect {
-                deviceId = it
-            }
-        }
+  init {
+    CoroutineScope(Dispatchers.IO).launch {
+      deviceIdStore.observeDeviceId().collect {
+        deviceId = it
+      }
     }
+  }
 
-    override fun intercept(chain: Interceptor.Chain): Response {
-        val request = deviceId?.let {
-            addHeader(chain, it)
-        } ?: chain.request()
+  override fun intercept(chain: Interceptor.Chain): Response {
+    val request = deviceId?.let {
+      addHeader(chain, it)
+    } ?: chain.request()
 
-        return chain.proceed(request)
-    }
+    return chain.proceed(request)
+  }
 
-    private fun addHeader(chain: Interceptor.Chain, it: String): Request {
-        return chain.request().newBuilder()
-            .addHeader(HEADER_NAME, it)
-            .build()
-    }
+  private fun addHeader(chain: Interceptor.Chain, it: String): Request {
+    return chain.request().newBuilder()
+      .addHeader(HEADER_NAME, it)
+      .build()
+  }
 }

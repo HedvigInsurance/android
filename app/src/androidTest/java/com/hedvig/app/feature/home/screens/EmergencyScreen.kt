@@ -5,6 +5,6 @@ import io.github.kakaocup.kakao.screen.Screen
 import io.github.kakaocup.kakao.toolbar.KToolbar
 
 class EmergencyScreen : Screen<EmergencyScreen>() {
-    val title =
-        KToolbar { withId(R.id.toolbar) }
+  val title =
+    KToolbar { withId(R.id.toolbar) }
 }

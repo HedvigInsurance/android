@@ -6,23 +6,23 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Peril(
-    val title: String,
-    val description: String,
-    val darkUrl: String,
-    val lightUrl: String,
-    val exception: List<String>,
-    val covered: List<String>,
-    val info: String,
+  val title: String,
+  val description: String,
+  val darkUrl: String,
+  val lightUrl: String,
+  val exception: List<String>,
+  val covered: List<String>,
+  val info: String,
 ) : Parcelable {
-    companion object {
-        fun from(fragment: PerilFragment) = Peril(
-            title = fragment.title,
-            description = fragment.description,
-            darkUrl = fragment.icon.variants.dark.svgUrl,
-            lightUrl = fragment.icon.variants.light.svgUrl,
-            exception = fragment.exceptions,
-            covered = fragment.covered,
-            info = fragment.info,
-        )
-    }
+  companion object {
+    fun from(fragment: PerilFragment) = Peril(
+      title = fragment.title,
+      description = fragment.description,
+      darkUrl = fragment.icon.variants.dark.svgUrl,
+      lightUrl = fragment.icon.variants.light.svgUrl,
+      exception = fragment.exceptions,
+      covered = fragment.covered,
+      info = fragment.info,
+    )
+  }
 }

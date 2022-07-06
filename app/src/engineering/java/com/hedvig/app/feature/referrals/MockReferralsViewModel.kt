@@ -6,39 +6,39 @@ import com.hedvig.app.feature.referrals.ui.tab.ReferralsViewModel
 import com.hedvig.app.testdata.feature.referrals.REFERRALS_DATA_WITH_NO_DISCOUNTS
 
 class MockReferralsViewModel : ReferralsViewModel() {
-    init {
-        if (loadInitially) {
-            load()
-        }
+  init {
+    if (loadInitially) {
+      load()
     }
+  }
 
-    override fun load() {
-        if (shouldSucceed) {
-            Handler(getMainLooper()).postDelayed(
-                {
-                    if (!hasLoadedOnce) {
-                        hasLoadedOnce = true
-                        _data.value = ViewState.Success(
-                            data = referralsData,
-                        )
-                    } else {
-                        _data.value = ViewState.Error
-                    }
-                },
-                1000,
+  override fun load() {
+    if (shouldSucceed) {
+      Handler(getMainLooper()).postDelayed(
+        {
+          if (!hasLoadedOnce) {
+            hasLoadedOnce = true
+            _data.value = ViewState.Success(
+              data = referralsData,
             )
-        } else {
-            shouldSucceed = true
+          } else {
             _data.value = ViewState.Error
-        }
-        _isRefreshing.postValue(false)
+          }
+        },
+        1000,
+      )
+    } else {
+      shouldSucceed = true
+      _data.value = ViewState.Error
     }
+    _isRefreshing.postValue(false)
+  }
 
-    companion object {
-        var loadInitially = false
-        var shouldSucceed = false
-        var referralsData = REFERRALS_DATA_WITH_NO_DISCOUNTS
-        var hasLoadedOnce = false
-        var afterRefreshData = referralsData
-    }
+  companion object {
+    var loadInitially = false
+    var shouldSucceed = false
+    var referralsData = REFERRALS_DATA_WITH_NO_DISCOUNTS
+    var hasLoadedOnce = false
+    var afterRefreshData = referralsData
+  }
 }

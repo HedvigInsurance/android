@@ -8,15 +8,15 @@ import com.hedvig.app.feature.trustly.TrustlyConnectPayinActivity
 import com.hedvig.hanalytics.PaymentType
 
 fun connectPayinIntent(
-    context: Context,
-    paymentType: PaymentType,
-    market: Market,
-    isPostSign: Boolean,
+  context: Context,
+  paymentType: PaymentType,
+  market: Market,
+  isPostSign: Boolean,
 ) = when (paymentType) {
-    PaymentType.ADYEN -> {
-        AdyenConnectPayinActivity.newInstance(context, AdyenCurrency.fromMarket(market), isPostSign)
-    }
-    PaymentType.TRUSTLY -> {
-        TrustlyConnectPayinActivity.newInstance(context, isPostSign)
-    }
+  PaymentType.ADYEN -> {
+    AdyenConnectPayinActivity.newInstance(context, AdyenCurrency.fromMarket(market), isPostSign)
+  }
+  PaymentType.TRUSTLY -> {
+    TrustlyConnectPayinActivity.newInstance(context, isPostSign)
+  }
 }

@@ -21,35 +21,35 @@ import org.junit.Rule
 import org.junit.Test
 
 class TerminatedTest : TestCase() {
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        ContractStatusQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(CONTRACT_STATUS_DATA_ONE_TERMINATED_CONTRACT)
-        },
-        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(LOGGED_IN_DATA)
-        },
-        HomeQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(HOME_DATA_TERMINATED)
-        },
-    )
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    ContractStatusQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(CONTRACT_STATUS_DATA_ONE_TERMINATED_CONTRACT)
+    },
+    LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(LOGGED_IN_DATA)
+    },
+    HomeQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(HOME_DATA_TERMINATED)
+    },
+  )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
 
-    private val loginStatusService = mockk<LoginStatusService>(relaxed = true)
+  private val loginStatusService = mockk<LoginStatusService>(relaxed = true)
 
-    @Test
-    fun shouldOpenWithHomeTabWhenUserIsNotTerminated() = run {
-        every { loginStatusService.isLoggedIn }.returns(false)
-        activityRule.launch()
+  @Test
+  fun shouldOpenWithHomeTabWhenUserIsNotTerminated() = run {
+    every { loginStatusService.isLoggedIn }.returns(false)
+    activityRule.launch()
 
-        onScreen<LoggedInScreen> {
-            root { isVisible() }
-            bottomTabs { hasSelectedItem(R.id.home) }
-        }
+    onScreen<LoggedInScreen> {
+      root { isVisible() }
+      bottomTabs { hasSelectedItem(R.id.home) }
     }
+  }
 }

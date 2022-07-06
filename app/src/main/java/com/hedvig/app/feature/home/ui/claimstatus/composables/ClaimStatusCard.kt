@@ -22,51 +22,51 @@ import java.util.UUID
 
 @Composable
 fun ClaimStatusCard(
-    uiState: ClaimStatusCardUiState,
-    modifier: Modifier = Modifier,
-    isClickable: Boolean = false,
-    onClaimCardShown: (String) -> Unit,
+  uiState: ClaimStatusCardUiState,
+  modifier: Modifier = Modifier,
+  isClickable: Boolean = false,
+  onClaimCardShown: (String) -> Unit,
 ) {
-    LaunchedEffect(uiState.id) {
-        onClaimCardShown(uiState.id)
+  LaunchedEffect(uiState.id) {
+    onClaimCardShown(uiState.id)
+  }
+  Card(
+    modifier = modifier,
+    elevation = 4.dp,
+  ) {
+    Column {
+      TopInfo(
+        pillsUiState = uiState.pillsUiState,
+        title = uiState.title,
+        subtitle = uiState.subtitle,
+        isClickable = isClickable,
+        modifier = Modifier.padding(16.dp),
+      )
+      Divider()
+      ClaimProgressRow(
+        claimProgressItemsUiState = uiState.claimProgressItemsUiState,
+        modifier = Modifier.padding(16.dp),
+      )
     }
-    Card(
-        modifier = modifier,
-        elevation = 4.dp,
-    ) {
-        Column {
-            TopInfo(
-                pillsUiState = uiState.pillsUiState,
-                title = uiState.title,
-                subtitle = uiState.subtitle,
-                isClickable = isClickable,
-                modifier = Modifier.padding(16.dp),
-            )
-            Divider()
-            ClaimProgressRow(
-                claimProgressItemsUiState = uiState.claimProgressItemsUiState,
-                modifier = Modifier.padding(16.dp),
-            )
-        }
-    }
+  }
 }
 
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun ClaimStatusCardPreview() {
-    HedvigTheme {
-        Surface(
-            color = MaterialTheme.colors.background,
-        ) {
-            val claimStatusData = ClaimStatusCardUiState(
-                id = UUID.randomUUID().toString(),
-                pillsUiState = PillUiState.previewList(),
-                title = "All-risk",
-                subtitle = "Home Insurance Renter",
-                claimProgressItemsUiState = ClaimProgressUiState.previewList(),
-            )
-            ClaimStatusCard(claimStatusData, onClaimCardShown = {})
-        }
+  HedvigTheme {
+    Surface(
+      color = MaterialTheme.colors.background,
+    ) {
+      val claimStatusData = ClaimStatusCardUiState(
+        id = UUID.randomUUID().toString(),
+        pillsUiState = PillUiState.previewList(),
+        title = "All-risk",
+        subtitle = "Home Insurance Renter",
+        claimProgressItemsUiState = ClaimProgressUiState.previewList(),
+      )
+      ClaimStatusCard(claimStatusData, onClaimCardShown = {})
     }
+  }
 }

@@ -9,17 +9,17 @@ import e
 import i
 
 class LanguageRepository(
-    private val apolloClient: ApolloClient,
+  private val apolloClient: ApolloClient,
 ) {
 
-    suspend fun uploadLanguage(acceptLanguage: String, locale: Locale) {
-        val response = apolloClient
-            .mutation(UpdateLanguageMutation(acceptLanguage, locale))
-            .safeQuery()
-            .toEither()
-        when (response) {
-            is Either.Left -> e { "Failed to update language: Error message: ${response.value.message}" }
-            is Either.Right -> i { "Successfully updated language" }
-        }
+  suspend fun uploadLanguage(acceptLanguage: String, locale: Locale) {
+    val response = apolloClient
+      .mutation(UpdateLanguageMutation(acceptLanguage, locale))
+      .safeQuery()
+      .toEither()
+    when (response) {
+      is Either.Left -> e { "Failed to update language: Error message: ${response.value.message}" }
+      is Either.Right -> i { "Successfully updated language" }
     }
+  }
 }

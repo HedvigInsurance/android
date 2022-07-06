@@ -23,59 +23,59 @@ import org.junit.Test
 
 class AdyenConnectedTest : TestCase() {
 
-    @get:Rule
-    val activityRule = LazyIntentsActivityScenarioRule(PaymentActivity::class.java)
+  @get:Rule
+  val activityRule = LazyIntentsActivityScenarioRule(PaymentActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        PaymentQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYMENT_DATA_ADYEN_CONNECTED) },
-        PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_ACTIVE) },
-    )
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    PaymentQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYMENT_DATA_ADYEN_CONNECTED) },
+    PayinStatusQuery.OPERATION_DOCUMENT to apolloResponse { success(PAYIN_STATUS_DATA_ACTIVE) },
+  )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
 
-    @get:Rule
-    val marketRule = MarketRule(Market.NO)
+  @get:Rule
+  val marketRule = MarketRule(Market.NO)
 
-    @get:Rule
-    val featureFlagRule = FeatureFlagRule(paymentType = PaymentType.ADYEN)
+  @get:Rule
+  val featureFlagRule = FeatureFlagRule(paymentType = PaymentType.ADYEN)
 
-    @Test
-    fun shouldShowCardInformationWhenAdyenIsConnected() = run {
-        activityRule.launch(PaymentActivity.newInstance(context()))
+  @Test
+  fun shouldShowCardInformationWhenAdyenIsConnected() = run {
+    activityRule.launch(PaymentActivity.newInstance(context()))
 
-        onScreen<PaymentScreen> {
-            adyenConnectPayin { stub() }
-            recycler {
-                childAt<PaymentScreen.AdyenPayinDetails>(3) {
-                    cardType {
-                        hasText(
-                            PAYMENT_DATA_ADYEN_CONNECTED
-                                .activePaymentMethodsV2!!
-                                .fragments
-                                .activePaymentMethodsFragment
-                                .asStoredCardDetails!!.brand!!,
-                        )
-                    }
-                    maskedCardNumber {
-                        containsText(
-                            PAYMENT_DATA_ADYEN_CONNECTED
-                                .activePaymentMethodsV2!!
-                                .fragments
-                                .activePaymentMethodsFragment
-                                .asStoredCardDetails!!.lastFourDigits,
-                        )
-                    }
-                }
-                childAt<PaymentScreen.Link>(4) {
-                    button {
-                        hasText(R.string.MY_PAYMENT_CHANGE_CREDIT_CARD_BUTTON)
-                        click()
-                    }
-                }
-            }
-            adyenConnectPayin { intended() }
+    onScreen<PaymentScreen> {
+      adyenConnectPayin { stub() }
+      recycler {
+        childAt<PaymentScreen.AdyenPayinDetails>(3) {
+          cardType {
+            hasText(
+              PAYMENT_DATA_ADYEN_CONNECTED
+                .activePaymentMethodsV2!!
+                .fragments
+                .activePaymentMethodsFragment
+                .asStoredCardDetails!!.brand!!,
+            )
+          }
+          maskedCardNumber {
+            containsText(
+              PAYMENT_DATA_ADYEN_CONNECTED
+                .activePaymentMethodsV2!!
+                .fragments
+                .activePaymentMethodsFragment
+                .asStoredCardDetails!!.lastFourDigits,
+            )
+          }
         }
+        childAt<PaymentScreen.Link>(4) {
+          button {
+            hasText(R.string.MY_PAYMENT_CHANGE_CREDIT_CARD_BUTTON)
+            click()
+          }
+        }
+      }
+      adyenConnectPayin { intended() }
     }
+  }
 }

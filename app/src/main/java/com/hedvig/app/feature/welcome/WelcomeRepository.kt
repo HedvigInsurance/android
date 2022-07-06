@@ -5,10 +5,10 @@ import com.hedvig.android.owldroid.graphql.WelcomeQuery
 import com.hedvig.app.util.LocaleManager
 
 class WelcomeRepository(
-    private val apolloClient: ApolloClient,
-    private val localeManager: LocaleManager,
+  private val apolloClient: ApolloClient,
+  private val localeManager: LocaleManager,
 ) {
-    suspend fun fetchWelcomeScreens() = apolloClient
-        .query(WelcomeQuery(localeManager.defaultLocale()))
-        .execute()
+  suspend fun fetchWelcomeScreens() = apolloClient
+    .query(WelcomeQuery(localeManager.defaultLocale()))
+    .execute()
 }

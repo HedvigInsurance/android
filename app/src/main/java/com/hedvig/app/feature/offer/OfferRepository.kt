@@ -18,42 +18,42 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 
 class OfferRepository(
-    private val apolloClient: ApolloClient,
-    private val localeManager: LocaleManager,
-    private val quoteCartFragmentToOfferModelMapper: QuoteCartFragmentToOfferModelMapper,
-    private val hAnalytics: HAnalytics,
+  private val apolloClient: ApolloClient,
+  private val localeManager: LocaleManager,
+  private val quoteCartFragmentToOfferModelMapper: QuoteCartFragmentToOfferModelMapper,
+  private val hAnalytics: HAnalytics,
 ) {
 
-    val offerFlow: MutableSharedFlow<Either<ErrorMessage, OfferModel>> = MutableSharedFlow(
-        replay = 1,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST,
-    )
+  val offerFlow: MutableSharedFlow<Either<ErrorMessage, OfferModel>> = MutableSharedFlow(
+    replay = 1,
+    onBufferOverflow = BufferOverflow.DROP_OLDEST,
+  )
 
-    suspend fun queryAndEmitOffer(quoteCartId: QuoteCartId) {
-        val offer = queryQuoteCart(quoteCartId)
-        offerFlow.tryEmit(offer)
+  suspend fun queryAndEmitOffer(quoteCartId: QuoteCartId) {
+    val offer = queryQuoteCart(quoteCartId)
+    offerFlow.tryEmit(offer)
+  }
+
+  private suspend fun queryQuoteCart(
+    id: QuoteCartId,
+  ): Either<ErrorMessage, OfferModel> = either {
+    val result = apolloClient
+      .query(QuoteCartQuery(localeManager.defaultLocale(), id.id))
+      .fetchPolicy(FetchPolicy.NetworkOnly)
+      .safeQuery()
+      .toEither { ErrorMessage(it) }
+      .bind()
+
+    val quoteCartFragment = result.quoteCart.fragments.quoteCartFragment
+    val bundle = quoteCartFragment.bundle
+    ensureNotNull(bundle) {
+      ErrorMessage("No quotes in offer, please try again")
     }
+    val receivedQuoteIds = bundle.possibleVariations
+      .flatMap { variation -> variation.bundle.fragments.quoteBundleFragment.quotes }
+      .map { quote -> quote.id }
+    hAnalytics.receivedQuotes(receivedQuoteIds)
 
-    private suspend fun queryQuoteCart(
-        id: QuoteCartId,
-    ): Either<ErrorMessage, OfferModel> = either {
-        val result = apolloClient
-            .query(QuoteCartQuery(localeManager.defaultLocale(), id.id))
-            .fetchPolicy(FetchPolicy.NetworkOnly)
-            .safeQuery()
-            .toEither { ErrorMessage(it) }
-            .bind()
-
-        val quoteCartFragment = result.quoteCart.fragments.quoteCartFragment
-        val bundle = quoteCartFragment.bundle
-        ensureNotNull(bundle) {
-            ErrorMessage("No quotes in offer, please try again")
-        }
-        val receivedQuoteIds = bundle.possibleVariations
-            .flatMap { variation -> variation.bundle.fragments.quoteBundleFragment.quotes }
-            .map { quote -> quote.id }
-        hAnalytics.receivedQuotes(receivedQuoteIds)
-
-        quoteCartFragmentToOfferModelMapper.map(quoteCartFragment)
-    }
+    quoteCartFragmentToOfferModelMapper.map(quoteCartFragment)
+  }
 }

@@ -10,11 +10,11 @@ import d
  * Use by opening AS Logcat on "Debug" mode with the filter "DebugLogTrackerSink"
  */
 class DebugLogTrackerSink : HAnalyticsSink {
-    override fun send(event: HAnalyticsEvent) {
-        d { "Track ${event.name}, properties: ${event.properties.toJsonObject().toString(2)}" }
-    }
+  override fun send(event: HAnalyticsEvent) {
+    d { "Track ${event.name}, properties: ${event.properties.toJsonObject().toString(2)}" }
+  }
 
-    override fun identify() {
-        d { "Identify" }
-    }
+  override fun identify() {
+    d { "Identify" }
+  }
 }

@@ -14,34 +14,34 @@ import com.hedvig.app.R
  */
 @Composable
 fun ScreenOnFlag() {
-    val view = LocalView.current
-    DisposableEffect(view) {
-        val keepScreenOnState = view.keepScreenOnState
-        keepScreenOnState.request()
-        onDispose {
-            keepScreenOnState.release()
-        }
+  val view = LocalView.current
+  DisposableEffect(view) {
+    val keepScreenOnState = view.keepScreenOnState
+    keepScreenOnState.request()
+    onDispose {
+      keepScreenOnState.release()
     }
+  }
 }
 
 private val View.keepScreenOnState: KeepScreenOnState
-    get() = getTag(R.id.keep_screen_on_state) as? KeepScreenOnState
-        ?: KeepScreenOnState(this).also { setTag(R.id.keep_screen_on_state, it) }
+  get() = getTag(R.id.keep_screen_on_state) as? KeepScreenOnState
+    ?: KeepScreenOnState(this).also { setTag(R.id.keep_screen_on_state, it) }
 
 private class KeepScreenOnState(private val view: View) {
 
-    private var refCount = 0
-        set(value) {
-            val newValue = value.coerceAtLeast(0)
-            field = newValue
-            view.keepScreenOn = newValue > 0
-        }
-
-    fun request() {
-        refCount++
+  private var refCount = 0
+    set(value) {
+      val newValue = value.coerceAtLeast(0)
+      field = newValue
+      view.keepScreenOn = newValue > 0
     }
 
-    fun release() {
-        refCount--
-    }
+  fun request() {
+    refCount++
+  }
+
+  fun release() {
+    refCount--
+  }
 }

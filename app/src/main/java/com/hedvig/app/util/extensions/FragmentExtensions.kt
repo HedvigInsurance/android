@@ -5,12 +5,12 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.lifecycleScope
 
 val Fragment.screenWidth: Int
-    get() = requireActivity().screenWidth
+  get() = requireActivity().screenWidth
 
 val Fragment.viewLifecycleScope
-    get() = viewLifecycleOwner.lifecycleScope
+  get() = viewLifecycleOwner.lifecycleScope
 
 val Fragment.viewLifecycle
-    get() = viewLifecycleOwner.lifecycle
+  get() = viewLifecycleOwner.lifecycle
 
 fun FragmentTransaction.addToBackStack() = addToBackStack(null)

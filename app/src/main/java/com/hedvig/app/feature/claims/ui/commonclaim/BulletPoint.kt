@@ -7,18 +7,18 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class BulletPoint(
-    val title: String,
-    val description: String,
-    val iconUrls: ThemedIconUrls,
+  val title: String,
+  val description: String,
+  val iconUrls: ThemedIconUrls,
 ) : Parcelable {
-    companion object {
+  companion object {
 
-        fun from(bulletPoints: List<HomeQuery.BulletPoint>) = bulletPoints.map { bp ->
-            BulletPoint(
-                bp.title,
-                bp.description,
-                ThemedIconUrls.from(bp.icon.variants.fragments.iconVariantsFragment),
-            )
-        }
+    fun from(bulletPoints: List<HomeQuery.BulletPoint>) = bulletPoints.map { bp ->
+      BulletPoint(
+        bp.title,
+        bp.description,
+        ThemedIconUrls.from(bp.icon.variants.fragments.iconVariantsFragment),
+      )
     }
+  }
 }

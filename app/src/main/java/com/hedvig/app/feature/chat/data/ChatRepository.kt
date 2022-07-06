@@ -39,151 +39,151 @@ import java.io.File
 import java.util.UUID
 
 class ChatRepository(
-    private val apolloClient: ApolloClient,
-    private val fileService: FileService,
-    private val context: Context,
+  private val apolloClient: ApolloClient,
+  private val fileService: FileService,
+  private val context: Context,
 ) {
-    private lateinit var messagesQuery: ChatMessagesQuery
+  private lateinit var messagesQuery: ChatMessagesQuery
 
-    fun fetchChatMessages(): Flow<ApolloResponse<ChatMessagesQuery.Data>> {
-        messagesQuery = ChatMessagesQuery()
-        return apolloClient
-            .query(messagesQuery)
-            .fetchPolicy(FetchPolicy.NetworkOnly)
-            .watch()
+  fun fetchChatMessages(): Flow<ApolloResponse<ChatMessagesQuery.Data>> {
+    messagesQuery = ChatMessagesQuery()
+    return apolloClient
+      .query(messagesQuery)
+      .fetchPolicy(FetchPolicy.NetworkOnly)
+      .watch()
+  }
+
+  suspend fun messageIds() =
+    apolloClient
+      .query(ChatMessageIdQuery())
+      .fetchPolicy(FetchPolicy.NetworkOnly)
+      .execute()
+
+  fun subscribeToChatMessages() =
+    apolloClient.subscription(ChatMessageSubscription()).toFlow()
+
+  suspend fun sendChatMessage(
+    id: String,
+    message: String,
+  ) = apolloClient.mutation(
+    SendChatTextResponseMutation(
+      ChatResponseTextInput(
+        id,
+        ChatResponseBodyTextInput(message),
+      ),
+    ),
+  ).execute()
+
+  suspend fun sendSingleSelect(
+    id: String,
+    value: String,
+  ) = apolloClient.mutation(
+    SendChatSingleSelectResponseMutation(
+      ChatResponseSingleSelectInput(id, ChatResponseBodySingleSelectInput(value)),
+    ),
+  ).execute()
+
+  suspend fun writeNewMessage(message: ChatMessageFragment) {
+    val cachedData = apolloClient
+      .apolloStore
+      .readOperation(messagesQuery)
+
+    val chatMessagesFragment =
+      ChatMessagesQuery
+        .Message
+        .Fragments(chatMessageFragment = message)
+
+    val newMessages = cachedData.messages.toMutableList()
+    newMessages.add(
+      0,
+      ChatMessagesQuery.Message(
+        message.body.__typename,
+        fragments = chatMessagesFragment,
+      ),
+    )
+
+    val newData = cachedData
+      .copy(messages = newMessages)
+
+    apolloClient
+      .apolloStore
+      .writeOperation(messagesQuery, newData)
+  }
+
+  suspend fun uploadFileFromProvider(uri: Uri): ApolloResponse<UploadFileMutation.Data> {
+    val mimeType = fileService.getMimeType(uri)
+    val file = File(
+      context.cacheDir,
+      fileService.getFileName(uri)
+        ?: "${UUID.randomUUID()}.${fileService.getFileExtension(uri.toString())}",
+    ) // I hate this but it seems there's no other way
+    return withContext(Dispatchers.IO) {
+      context.contentResolver.openInputStream(uri)?.into(file)
+      return@withContext uploadFile(file.path, mimeType)
     }
+  }
 
-    suspend fun messageIds() =
-        apolloClient
-            .query(ChatMessageIdQuery())
-            .fetchPolicy(FetchPolicy.NetworkOnly)
-            .execute()
+  suspend fun uploadFile(uri: Uri): ApolloResponse<UploadFileMutation.Data> =
+    uploadFile(uri.path!!, fileService.getMimeType(uri))
 
-    fun subscribeToChatMessages() =
-        apolloClient.subscription(ChatMessageSubscription()).toFlow()
+  private suspend fun uploadFile(
+    path: String,
+    mimeType: String,
+  ): ApolloResponse<UploadFileMutation.Data> {
+    val uploadFileMutation = UploadFileMutation(
+      file = DefaultUpload.Builder()
+        .contentType(mimeType)
+        .content(File(path))
+        .build(),
+    )
 
-    suspend fun sendChatMessage(
-        id: String,
-        message: String,
-    ) = apolloClient.mutation(
-        SendChatTextResponseMutation(
-            ChatResponseTextInput(
-                id,
-                ChatResponseBodyTextInput(message),
-            ),
-        ),
-    ).execute()
+    return apolloClient.mutation(uploadFileMutation).execute()
+  }
 
-    suspend fun sendSingleSelect(
-        id: String,
-        value: String,
-    ) = apolloClient.mutation(
-        SendChatSingleSelectResponseMutation(
-            ChatResponseSingleSelectInput(id, ChatResponseBodySingleSelectInput(value)),
-        ),
-    ).execute()
+  suspend fun sendFileResponse(
+    id: String,
+    key: String,
+    uri: Uri,
+  ): ApolloResponse<SendChatFileResponseMutation.Data> {
+    val mimeType = fileService.getMimeType(uri)
 
-    suspend fun writeNewMessage(message: ChatMessageFragment) {
-        val cachedData = apolloClient
-            .apolloStore
-            .readOperation(messagesQuery)
+    val input = ChatResponseFileInput(
+      body = ChatResponseBodyFileInput(
+        key = key,
+        mimeType = mimeType,
+      ),
+      globalId = id,
+    )
 
-        val chatMessagesFragment =
-            ChatMessagesQuery
-                .Message
-                .Fragments(chatMessageFragment = message)
+    val chatFileResponse = SendChatFileResponseMutation(input)
 
-        val newMessages = cachedData.messages.toMutableList()
-        newMessages.add(
-            0,
-            ChatMessagesQuery.Message(
-                message.body.__typename,
-                fragments = chatMessagesFragment,
-            ),
+    return apolloClient.mutation(chatFileResponse).execute()
+  }
+
+  suspend fun editLastResponse(): ApolloResponse<EditLastResponseMutation.Data> =
+    apolloClient.mutation(EditLastResponseMutation()).execute()
+
+  suspend fun triggerFreeTextChat(): Either<FreeTextError, FreeTextSuccess> =
+    apolloClient.mutation(TriggerFreeTextChatMutation())
+      .safeQuery()
+      .toEither { FreeTextError.NetworkError }
+      .flatMap { data ->
+        val didTriggerFreeTextChat = data.triggerFreeTextChat ?: false
+
+        Either.conditionally(
+          didTriggerFreeTextChat,
+          ifFalse = { FreeTextError.CouldNotTrigger },
+          ifTrue = { FreeTextSuccess },
         )
+      }
 
-        val newData = cachedData
-            .copy(messages = newMessages)
-
-        apolloClient
-            .apolloStore
-            .writeOperation(messagesQuery, newData)
-    }
-
-    suspend fun uploadFileFromProvider(uri: Uri): ApolloResponse<UploadFileMutation.Data> {
-        val mimeType = fileService.getMimeType(uri)
-        val file = File(
-            context.cacheDir,
-            fileService.getFileName(uri)
-                ?: "${UUID.randomUUID()}.${fileService.getFileExtension(uri.toString())}",
-        ) // I hate this but it seems there's no other way
-        return withContext(Dispatchers.IO) {
-            context.contentResolver.openInputStream(uri)?.into(file)
-            return@withContext uploadFile(file.path, mimeType)
-        }
-    }
-
-    suspend fun uploadFile(uri: Uri): ApolloResponse<UploadFileMutation.Data> =
-        uploadFile(uri.path!!, fileService.getMimeType(uri))
-
-    private suspend fun uploadFile(
-        path: String,
-        mimeType: String,
-    ): ApolloResponse<UploadFileMutation.Data> {
-        val uploadFileMutation = UploadFileMutation(
-            file = DefaultUpload.Builder()
-                .contentType(mimeType)
-                .content(File(path))
-                .build(),
-        )
-
-        return apolloClient.mutation(uploadFileMutation).execute()
-    }
-
-    suspend fun sendFileResponse(
-        id: String,
-        key: String,
-        uri: Uri,
-    ): ApolloResponse<SendChatFileResponseMutation.Data> {
-        val mimeType = fileService.getMimeType(uri)
-
-        val input = ChatResponseFileInput(
-            body = ChatResponseBodyFileInput(
-                key = key,
-                mimeType = mimeType,
-            ),
-            globalId = id,
-        )
-
-        val chatFileResponse = SendChatFileResponseMutation(input)
-
-        return apolloClient.mutation(chatFileResponse).execute()
-    }
-
-    suspend fun editLastResponse(): ApolloResponse<EditLastResponseMutation.Data> =
-        apolloClient.mutation(EditLastResponseMutation()).execute()
-
-    suspend fun triggerFreeTextChat(): Either<FreeTextError, FreeTextSuccess> =
-        apolloClient.mutation(TriggerFreeTextChatMutation())
-            .safeQuery()
-            .toEither { FreeTextError.NetworkError }
-            .flatMap { data ->
-                val didTriggerFreeTextChat = data.triggerFreeTextChat ?: false
-
-                Either.conditionally(
-                    didTriggerFreeTextChat,
-                    ifFalse = { FreeTextError.CouldNotTrigger },
-                    ifTrue = { FreeTextSuccess },
-                )
-            }
-
-    suspend fun searchGifs(query: String): ApolloResponse<GifQuery.Data> =
-        apolloClient.query(GifQuery(query)).execute()
+  suspend fun searchGifs(query: String): ApolloResponse<GifQuery.Data> =
+    apolloClient.query(GifQuery(query)).execute()
 }
 
 sealed class FreeTextError {
-    object NetworkError : FreeTextError()
-    object CouldNotTrigger : FreeTextError()
+  object NetworkError : FreeTextError()
+  object CouldNotTrigger : FreeTextError()
 }
 
 object FreeTextSuccess

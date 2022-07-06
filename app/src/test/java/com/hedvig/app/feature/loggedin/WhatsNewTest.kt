@@ -23,35 +23,35 @@ import org.junit.Test
 @OptIn(ApolloExperimental::class)
 class WhatsNewTest {
 
-    @get:Rule
-    val mainCoroutineRule = MainCoroutineRule()
+  @get:Rule
+  val mainCoroutineRule = MainCoroutineRule()
 
-    @get:Rule
-    val instantTaskExecutorRule: InstantTaskExecutorRule = InstantTaskExecutorRule()
+  @get:Rule
+  val instantTaskExecutorRule: InstantTaskExecutorRule = InstantTaskExecutorRule()
 
-    @Test
-    fun `fetching what's new with present news shows them`() = runApolloTest { mockServer, apolloClient ->
-        mockServer.enqueue(WHATS_NEW.toJsonStringWithData())
-        val viewModel: WhatsNewViewModel = WhatsNewViewModelImpl(
-            WhatsNewRepository(
-                apolloClient = apolloClient,
-                context = mockk(),
-                localeManager = mockk {
-                    every { this@mockk.defaultLocale() } returns Locale.sv_SE
-                },
-            ),
-        )
+  @Test
+  fun `fetching what's new with present news shows them`() = runApolloTest { mockServer, apolloClient ->
+    mockServer.enqueue(WHATS_NEW.toJsonStringWithData())
+    val viewModel: WhatsNewViewModel = WhatsNewViewModelImpl(
+      WhatsNewRepository(
+        apolloClient = apolloClient,
+        context = mockk(),
+        localeManager = mockk {
+          every { this@mockk.defaultLocale() } returns Locale.sv_SE
+        },
+      ),
+    )
 
-        var eventData: WhatsNewQuery.Data? = null
-        val observer: (t: WhatsNewQuery.Data) -> Unit = {
-            eventData = it
-        }
-        viewModel.news.observeForever(observer)
-
-        viewModel.fetchNews("")
-        runCurrent()
-
-        assertThat(eventData).isNotNull()
-        viewModel.news.removeObserver(observer)
+    var eventData: WhatsNewQuery.Data? = null
+    val observer: (t: WhatsNewQuery.Data) -> Unit = {
+      eventData = it
     }
+    viewModel.news.observeForever(observer)
+
+    viewModel.fetchNews("")
+    runCurrent()
+
+    assertThat(eventData).isNotNull()
+    viewModel.news.removeObserver(observer)
+  }
 }

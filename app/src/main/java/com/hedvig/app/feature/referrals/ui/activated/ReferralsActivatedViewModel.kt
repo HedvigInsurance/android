@@ -11,20 +11,20 @@ import e
 import kotlinx.coroutines.launch
 
 abstract class ReferralsActivatedViewModel : ViewModel() {
-    abstract val data: LiveData<LoggedInQuery.Data>
+  abstract val data: LiveData<LoggedInQuery.Data>
 }
 
 class ReferralsActivatedViewModelImpl(
-    private val loggedInRepository: LoggedInRepository,
+  private val loggedInRepository: LoggedInRepository,
 ) : ReferralsActivatedViewModel() {
-    override val data = MutableLiveData<LoggedInQuery.Data>()
+  override val data = MutableLiveData<LoggedInQuery.Data>()
 
-    init {
-        viewModelScope.launch {
-            when (val loggedInData = loggedInRepository.loggedInData()) {
-                is Either.Left -> e { "loggedInData failed to fetch: ${loggedInData.value.message}" }
-                is Either.Right -> loggedInData.value.let { data.postValue(it) }
-            }
-        }
+  init {
+    viewModelScope.launch {
+      when (val loggedInData = loggedInRepository.loggedInData()) {
+        is Either.Left -> e { "loggedInData failed to fetch: ${loggedInData.value.message}" }
+        is Either.Right -> loggedInData.value.let { data.postValue(it) }
+      }
     }
+  }
 }

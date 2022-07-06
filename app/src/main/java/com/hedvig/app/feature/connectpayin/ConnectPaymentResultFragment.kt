@@ -15,75 +15,75 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class ConnectPaymentResultFragment : Fragment(R.layout.connect_payment_result_fragment) {
 
-    private val binding by viewBinding(ConnectPaymentResultFragmentBinding::bind)
-    private val connectPaymentViewModel: ConnectPaymentViewModel by sharedViewModel()
+  private val binding by viewBinding(ConnectPaymentResultFragmentBinding::bind)
+  private val connectPaymentViewModel: ConnectPaymentViewModel by sharedViewModel()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enterTransition = MaterialSharedAxis(MaterialSharedAxis.X, true)
-        exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, false)
-    }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    enterTransition = MaterialSharedAxis(MaterialSharedAxis.X, true)
+    exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, false)
+  }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.apply {
-            val success = requireArguments().getBoolean(SUCCESS)
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    binding.apply {
+      val success = requireArguments().getBoolean(SUCCESS)
 
-            val payinType = requireArguments().getSerializable(PAYIN_TYPE) as? ConnectPayinType
+      val payinType = requireArguments().getSerializable(PAYIN_TYPE) as? ConnectPayinType
 
-            if (payinType == null) {
-                e { "Programmer error: PAYIN_TYPE not supplied to ${this.javaClass.name}" }
-                return
-            }
+      if (payinType == null) {
+        e { "Programmer error: PAYIN_TYPE not supplied to ${this.javaClass.name}" }
+        return
+      }
 
-            if (success) {
-                icon.setImageResource(R.drawable.ic_checkmark_in_circle)
-                title.setText(
-                    when (payinType) {
-                        ConnectPayinType.ADYEN -> R.string.pay_in_confirmation_headline
-                        ConnectPayinType.TRUSTLY -> R.string.pay_in_confirmation_direct_debit_headline
-                    },
-                )
-                doItLater.isVisible = false
-                close.setText(R.string.pay_in_confirmation_continue_button)
-                close.setHapticClickListener {
-                    connectPaymentViewModel.close()
-                }
-            } else {
-                icon.setImageResource(R.drawable.ic_warning_triangle)
-                title.setText(R.string.pay_in_error_headline)
-                body.setText(
-                    when (payinType) {
-                        ConnectPayinType.TRUSTLY -> R.string.pay_in_error_direct_debit_body
-                        ConnectPayinType.ADYEN -> R.string.pay_in_error_body
-                    },
-                )
-                body.isVisible = true
-                doItLater.isVisible = true
-                doItLater.setHapticClickListener {
-                    connectPaymentViewModel.close()
-                }
-                close.setText(R.string.pay_in_error_retry_button)
-                close.setHapticClickListener {
-                    connectPaymentViewModel.navigateTo(
-                        ConnectPaymentScreenState.Connect(
-                            TransitionType.ENTER_RIGHT_EXIT_RIGHT,
-                        ),
-                    )
-                }
-            }
+      if (success) {
+        icon.setImageResource(R.drawable.ic_checkmark_in_circle)
+        title.setText(
+          when (payinType) {
+            ConnectPayinType.ADYEN -> R.string.pay_in_confirmation_headline
+            ConnectPayinType.TRUSTLY -> R.string.pay_in_confirmation_direct_debit_headline
+          },
+        )
+        doItLater.isVisible = false
+        close.setText(R.string.pay_in_confirmation_continue_button)
+        close.setHapticClickListener {
+          connectPaymentViewModel.close()
         }
+      } else {
+        icon.setImageResource(R.drawable.ic_warning_triangle)
+        title.setText(R.string.pay_in_error_headline)
+        body.setText(
+          when (payinType) {
+            ConnectPayinType.TRUSTLY -> R.string.pay_in_error_direct_debit_body
+            ConnectPayinType.ADYEN -> R.string.pay_in_error_body
+          },
+        )
+        body.isVisible = true
+        doItLater.isVisible = true
+        doItLater.setHapticClickListener {
+          connectPaymentViewModel.close()
+        }
+        close.setText(R.string.pay_in_error_retry_button)
+        close.setHapticClickListener {
+          connectPaymentViewModel.navigateTo(
+            ConnectPaymentScreenState.Connect(
+              TransitionType.ENTER_RIGHT_EXIT_RIGHT,
+            ),
+          )
+        }
+      }
     }
+  }
 
-    companion object {
-        private const val SUCCESS = "SUCCESS"
-        private const val PAYIN_TYPE = "PAYIN_TYPE"
+  companion object {
+    private const val SUCCESS = "SUCCESS"
+    private const val PAYIN_TYPE = "PAYIN_TYPE"
 
-        fun newInstance(success: Boolean, payinType: ConnectPayinType) =
-            ConnectPaymentResultFragment().apply {
-                arguments = bundleOf(
-                    SUCCESS to success,
-                    PAYIN_TYPE to payinType,
-                )
-            }
-    }
+    fun newInstance(success: Boolean, payinType: ConnectPayinType) =
+      ConnectPaymentResultFragment().apply {
+        arguments = bundleOf(
+          SUCCESS to success,
+          PAYIN_TYPE to payinType,
+        )
+      }
+  }
 }

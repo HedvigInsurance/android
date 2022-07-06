@@ -13,58 +13,58 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class ProfileRepository(
-    private val apolloClient: ApolloClient,
+  private val apolloClient: ApolloClient,
 ) {
-    private val profileQuery = ProfileQuery()
+  private val profileQuery = ProfileQuery()
 
-    fun profile(): Flow<Either<QueryResult.Error, ProfileQuery.Data>> = apolloClient
-        .query(profileQuery)
-        .safeWatch()
-        .map(QueryResult<ProfileQuery.Data>::toEither)
+  fun profile(): Flow<Either<QueryResult.Error, ProfileQuery.Data>> = apolloClient
+    .query(profileQuery)
+    .safeWatch()
+    .map(QueryResult<ProfileQuery.Data>::toEither)
 
-    suspend fun updateEmail(input: String) =
-        apolloClient.mutation(UpdateEmailMutation(input)).execute()
+  suspend fun updateEmail(input: String) =
+    apolloClient.mutation(UpdateEmailMutation(input)).execute()
 
-    suspend fun updatePhoneNumber(input: String) =
-        apolloClient.mutation(UpdatePhoneNumberMutation(input)).execute()
+  suspend fun updatePhoneNumber(input: String) =
+    apolloClient.mutation(UpdatePhoneNumberMutation(input)).execute()
 
-    suspend fun writeEmailAndPhoneNumberInCache(email: String?, phoneNumber: String?) {
-        val cachedData = apolloClient
-            .apolloStore
-            .readOperation(profileQuery)
-        val newMember = cachedData
-            .member
-            .copy(
-                email = email,
-                phoneNumber = phoneNumber,
-            )
+  suspend fun writeEmailAndPhoneNumberInCache(email: String?, phoneNumber: String?) {
+    val cachedData = apolloClient
+      .apolloStore
+      .readOperation(profileQuery)
+    val newMember = cachedData
+      .member
+      .copy(
+        email = email,
+        phoneNumber = phoneNumber,
+      )
 
-        val newData = cachedData
-            .copy(member = newMember)
+    val newData = cachedData
+      .copy(member = newMember)
 
-        apolloClient
-            .apolloStore
-            .writeOperation(profileQuery, newData)
-    }
+    apolloClient
+      .apolloStore
+      .writeOperation(profileQuery, newData)
+  }
 
-    suspend fun selectCashback(id: String) =
-        apolloClient.mutation(SelectCashbackMutation(id)).execute()
+  suspend fun selectCashback(id: String) =
+    apolloClient.mutation(SelectCashbackMutation(id)).execute()
 
-    suspend fun writeCashbackToCache(cashback: SelectCashbackMutation.SelectCashbackOption) {
-        val cachedData = apolloClient
-            .apolloStore
-            .readOperation(profileQuery)
+  suspend fun writeCashbackToCache(cashback: SelectCashbackMutation.SelectCashbackOption) {
+    val cachedData = apolloClient
+      .apolloStore
+      .readOperation(profileQuery)
 
-        val newData = cachedData
-            .copy(
-                cashback = ProfileQuery.Cashback(
-                    __typename = "Cashback",
-                    fragments = ProfileQuery.Cashback.Fragments(cashback.fragments.cashbackFragment),
-                ),
-            )
+    val newData = cachedData
+      .copy(
+        cashback = ProfileQuery.Cashback(
+          __typename = "Cashback",
+          fragments = ProfileQuery.Cashback.Fragments(cashback.fragments.cashbackFragment),
+        ),
+      )
 
-        apolloClient
-            .apolloStore
-            .writeOperation(profileQuery, newData)
-    }
+    apolloClient
+      .apolloStore
+      .writeOperation(profileQuery, newData)
+  }
 }

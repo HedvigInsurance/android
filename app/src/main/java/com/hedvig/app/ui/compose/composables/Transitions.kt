@@ -8,13 +8,13 @@ import androidx.compose.runtime.Composable
 
 @Composable
 fun FadeWhen(
-    visible: Boolean,
-    content: @Composable (AnimatedVisibilityScope.() -> Unit),
+  visible: Boolean,
+  content: @Composable (AnimatedVisibilityScope.() -> Unit),
 ) {
-    AnimatedVisibility(
-        visible = visible,
-        enter = fadeIn(),
-        exit = fadeOut(),
-        content = content,
-    )
+  AnimatedVisibility(
+    visible = visible,
+    enter = fadeIn(),
+    exit = fadeOut(),
+    content = content,
+  )
 }

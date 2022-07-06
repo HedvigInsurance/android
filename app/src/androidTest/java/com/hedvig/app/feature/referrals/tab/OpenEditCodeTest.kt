@@ -22,51 +22,51 @@ import org.junit.Test
 
 class OpenEditCodeTest : TestCase() {
 
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(LOGGED_IN_DATA)
-        },
-        ReferralsQuery.OPERATION_DOCUMENT to apolloResponse { success(REFERRALS_DATA_WITH_NO_DISCOUNTS) },
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(LOGGED_IN_DATA)
+    },
+    ReferralsQuery.OPERATION_DOCUMENT to apolloResponse { success(REFERRALS_DATA_WITH_NO_DISCOUNTS) },
+  )
+
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
+
+  @get:Rule
+  val featureFlagRule = FeatureFlagRule(
+    Feature.REFERRAL_CAMPAIGN to false,
+    Feature.KEY_GEAR to false,
+    Feature.REFERRALS to true,
+  )
+
+  @Ignore("Succeeds locally but always fails on CI. Need to look into why")
+  @Test
+  fun shouldOpenEditCodeScreenWhenPressingEdit() = run {
+    activityRule.launch(
+      LoggedInActivity.newInstance(
+        context(),
+        initialTab = LoggedInTabs.REFERRALS,
+      ),
     )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
-
-    @get:Rule
-    val featureFlagRule = FeatureFlagRule(
-        Feature.REFERRAL_CAMPAIGN to false,
-        Feature.KEY_GEAR to false,
-        Feature.REFERRALS to true,
-    )
-
-    @Ignore("Succeeds locally but always fails on CI. Need to look into why")
-    @Test
-    fun shouldOpenEditCodeScreenWhenPressingEdit() = run {
-        activityRule.launch(
-            LoggedInActivity.newInstance(
-                context(),
-                initialTab = LoggedInTabs.REFERRALS,
-            ),
-        )
-
-        onScreen<ReferralTabScreen> {
-            recycler {
-                childAt<ReferralTabScreen.CodeItem>(2) {
-                    edit { click() }
-                }
-            }
+    onScreen<ReferralTabScreen> {
+      recycler {
+        childAt<ReferralTabScreen.CodeItem>(2) {
+          edit { click() }
         }
-
-        onScreen<ReferralsEditCodeScreen> {
-            editLayout {
-                edit {
-                    hasText("TEST123")
-                }
-            }
-        }
+      }
     }
+
+    onScreen<ReferralsEditCodeScreen> {
+      editLayout {
+        edit {
+          hasText("TEST123")
+        }
+      }
+    }
+  }
 }

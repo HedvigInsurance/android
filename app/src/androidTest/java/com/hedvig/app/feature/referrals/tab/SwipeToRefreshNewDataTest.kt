@@ -22,53 +22,53 @@ import org.junit.Test
 
 class SwipeToRefreshNewDataTest : TestCase() {
 
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
-    private var firstLoadFlag = false
+  private var firstLoadFlag = false
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(LOGGED_IN_DATA)
-        },
-        ReferralsQuery.OPERATION_DOCUMENT to apolloResponse {
-            if (!firstLoadFlag) {
-                firstLoadFlag = true
-                success(REFERRALS_DATA_WITH_NO_DISCOUNTS)
-            } else {
-                success(REFERRALS_DATA_WITH_ONE_REFEREE)
-            }
-        },
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(LOGGED_IN_DATA)
+    },
+    ReferralsQuery.OPERATION_DOCUMENT to apolloResponse {
+      if (!firstLoadFlag) {
+        firstLoadFlag = true
+        success(REFERRALS_DATA_WITH_NO_DISCOUNTS)
+      } else {
+        success(REFERRALS_DATA_WITH_ONE_REFEREE)
+      }
+    },
+  )
+
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
+
+  @get:Rule
+  val featureFlagRule = FeatureFlagRule(
+    Feature.REFERRAL_CAMPAIGN to false,
+    Feature.KEY_GEAR to false,
+    Feature.REFERRALS to true,
+  )
+
+  @Test
+  fun shouldRefreshDataWhenSwipingDownToRefreshWithWhenDataHasChanged() = run {
+    val intent = LoggedInActivity.newInstance(
+      context(),
+      initialTab = LoggedInTabs.REFERRALS,
     )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+    activityRule.launch(intent)
 
-    @get:Rule
-    val featureFlagRule = FeatureFlagRule(
-        Feature.REFERRAL_CAMPAIGN to false,
-        Feature.KEY_GEAR to false,
-        Feature.REFERRALS to true,
-    )
-
-    @Test
-    fun shouldRefreshDataWhenSwipingDownToRefreshWithWhenDataHasChanged() = run {
-        val intent = LoggedInActivity.newInstance(
-            context(),
-            initialTab = LoggedInTabs.REFERRALS,
-        )
-
-        activityRule.launch(intent)
-
-        Screen.onScreen<ReferralTabScreen> {
-            share { isVisible() }
-            recycler {
-                hasSize(3)
-            }
-            swipeToRefresh { swipeDownInCenter() }
-            recycler { hasSize(5) }
-            swipeToRefresh { isNotRefreshing() }
-        }
+    Screen.onScreen<ReferralTabScreen> {
+      share { isVisible() }
+      recycler {
+        hasSize(3)
+      }
+      swipeToRefresh { swipeDownInCenter() }
+      recycler { hasSize(5) }
+      swipeToRefresh { isNotRefreshing() }
     }
+  }
 }

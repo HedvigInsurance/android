@@ -19,39 +19,39 @@ import org.junit.Rule
 import org.junit.Test
 
 class TerminatedTodayTest : TestCase() {
-    @get:Rule
-    val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
+  @get:Rule
+  val activityRule = LazyActivityScenarioRule(LoggedInActivity::class.java)
 
-    @get:Rule
-    val mockServerRule = ApolloMockServerRule(
-        LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(LOGGED_IN_DATA)
-        },
-        HomeQuery.OPERATION_DOCUMENT to apolloResponse {
-            success(HOME_DATA_TERMINATED_TODAY)
-        },
-    )
+  @get:Rule
+  val mockServerRule = ApolloMockServerRule(
+    LoggedInQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(LOGGED_IN_DATA)
+    },
+    HomeQuery.OPERATION_DOCUMENT to apolloResponse {
+      success(HOME_DATA_TERMINATED_TODAY)
+    },
+  )
 
-    @get:Rule
-    val apolloCacheClearRule = ApolloCacheClearRule()
+  @get:Rule
+  val apolloCacheClearRule = ApolloCacheClearRule()
 
-    @Test
-    fun shouldShowTitleClaimButtonAndCommonClaimsWhenUserHasOneContractInTerminatedTodayState() =
-        run {
-            activityRule.launch(LoggedInActivity.newInstance(context()))
+  @Test
+  fun shouldShowTitleClaimButtonAndCommonClaimsWhenUserHasOneContractInTerminatedTodayState() =
+    run {
+      activityRule.launch(LoggedInActivity.newInstance(context()))
 
-            onScreen<HomeTabScreen> {
-                recycler {
-                    childAt<HomeTabScreen.BigTextItem>(0) {
-                        text { hasText(R.string.home_tab_welcome_title, "Test") }
-                    }
-                    childAt<HomeTabScreen.CommonClaimTitleItem>(3) {
-                        isVisible()
-                    }
-                    childAt<HomeTabScreen.CommonClaimItem>(4) {
-                        text { hasText("Det är kris!") }
-                    }
-                }
-            }
+      onScreen<HomeTabScreen> {
+        recycler {
+          childAt<HomeTabScreen.BigTextItem>(0) {
+            text { hasText(R.string.home_tab_welcome_title, "Test") }
+          }
+          childAt<HomeTabScreen.CommonClaimTitleItem>(3) {
+            isVisible()
+          }
+          childAt<HomeTabScreen.CommonClaimItem>(4) {
+            text { hasText("Det är kris!") }
+          }
         }
+      }
+    }
 }

@@ -5,10 +5,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
 class FakeLoginStatusService(
-    override var isViewingOffer: Boolean = false,
-    override var isLoggedIn: Boolean = false,
+  override var isViewingOffer: Boolean = false,
+  override var isLoggedIn: Boolean = false,
 ) : LoginStatusService {
-    override suspend fun getLoginStatus(): LoginStatus = error("Not implemented")
-    override fun getLoginStatusAsFlow(): Flow<LoginStatus> = emptyFlow()
-    override fun persistOfferIds(quoteCartId: QuoteCartId) {}
+  override suspend fun getLoginStatus(): LoginStatus = error("Not implemented")
+  override fun getLoginStatusAsFlow(): Flow<LoginStatus> = emptyFlow()
+  override fun persistOfferIds(quoteCartId: QuoteCartId) {}
 }

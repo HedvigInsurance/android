@@ -7,11 +7,11 @@ import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.hedvig.app.util.LiveEvent
 
 abstract class AdyenConnectPayoutViewModel : ViewModel() {
-    protected val _payoutMethods = MutableLiveData<PaymentMethodsApiResponse>()
-    val payoutMethods: LiveData<PaymentMethodsApiResponse> = _payoutMethods
-    val shouldClose = LiveEvent<Boolean>()
+  protected val _payoutMethods = MutableLiveData<PaymentMethodsApiResponse>()
+  val payoutMethods: LiveData<PaymentMethodsApiResponse> = _payoutMethods
+  val shouldClose = LiveEvent<Boolean>()
 
-    fun close() {
-        shouldClose.postValue(true)
-    }
+  fun close() {
+    shouldClose.postValue(true)
+  }
 }

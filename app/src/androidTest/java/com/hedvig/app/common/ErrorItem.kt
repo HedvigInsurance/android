@@ -7,5 +7,5 @@ import io.github.kakaocup.kakao.text.KButton
 import org.hamcrest.Matcher
 
 class ErrorItem(parent: Matcher<View>) : KRecyclerItem<ErrorItem>(parent) {
-    val retry = KButton(parent) { withId(R.id.retry) }
+  val retry = KButton(parent) { withId(R.id.retry) }
 }

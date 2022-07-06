@@ -9,19 +9,19 @@ import com.hedvig.app.util.containsOfType
 import org.junit.Test
 
 class ItemsTest {
-    @Test
-    fun `when no cross-sells are available, should not contain any items referencing cross-sells`() {
-        val result = items(INSURANCE_DATA)
+  @Test
+  fun `when no cross-sells are available, should not contain any items referencing cross-sells`() {
+    val result = items(INSURANCE_DATA)
 
-        assertThat(result).containsNoneOfType<InsuranceModel.CrossSellHeader>()
-        assertThat(result).containsNoneOfType<InsuranceModel.CrossSellCard>()
-    }
+    assertThat(result).containsNoneOfType<InsuranceModel.CrossSellHeader>()
+    assertThat(result).containsNoneOfType<InsuranceModel.CrossSellCard>()
+  }
 
-    @Test
-    fun `when cross-sell are available, should contain cross-sell header and cross-sell`() {
-        val result = items(INSURANCE_DATA_WITH_CROSS_SELL)
+  @Test
+  fun `when cross-sell are available, should contain cross-sell header and cross-sell`() {
+    val result = items(INSURANCE_DATA_WITH_CROSS_SELL)
 
-        assertThat(result).containsOfType<InsuranceModel.CrossSellHeader>()
-        assertThat(result).containsOfType<InsuranceModel.CrossSellCard>()
-    }
+    assertThat(result).containsOfType<InsuranceModel.CrossSellHeader>()
+    assertThat(result).containsOfType<InsuranceModel.CrossSellCard>()
+  }
 }

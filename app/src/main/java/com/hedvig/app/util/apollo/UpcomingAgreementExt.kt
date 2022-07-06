@@ -7,23 +7,23 @@ import com.hedvig.app.feature.table.intoTable
 import java.time.LocalDate
 
 fun UpcomingAgreementFragment.toUpcomingAgreementResult(): UpcomingAgreement? {
-    if (status.newAgreement() == null) {
-        return null
-    }
+  if (status.newAgreement() == null) {
+    return null
+  }
 
-    return UpcomingAgreement(
-        activeFrom = activeFrom(),
-        table = upcomingAgreementDetailsTable.fragments.tableFragment.intoTable(),
-    )
+  return UpcomingAgreement(
+    activeFrom = activeFrom(),
+    table = upcomingAgreementDetailsTable.fragments.tableFragment.intoTable(),
+  )
 }
 
 private fun UpcomingAgreementFragment.activeFrom(): LocalDate? {
-    val newAgreement = status.newAgreement()
-    return newAgreement?.asAgreementCore?.activeFrom
+  val newAgreement = status.newAgreement()
+  return newAgreement?.asAgreementCore?.activeFrom
 }
 
 private fun UpcomingAgreementFragment.Status.newAgreement(): UpcomingAgreementChangeFragment.NewAgreement? {
-    return asActiveStatus?.upcomingAgreementChange?.fragments?.upcomingAgreementChangeFragment?.newAgreement
-        ?: asTerminatedInFutureStatus?.upcomingAgreementChange?.fragments?.upcomingAgreementChangeFragment?.newAgreement
-        ?: asTerminatedTodayStatus?.upcomingAgreementChange?.fragments?.upcomingAgreementChangeFragment?.newAgreement
+  return asActiveStatus?.upcomingAgreementChange?.fragments?.upcomingAgreementChangeFragment?.newAgreement
+    ?: asTerminatedInFutureStatus?.upcomingAgreementChange?.fragments?.upcomingAgreementChangeFragment?.newAgreement
+    ?: asTerminatedTodayStatus?.upcomingAgreementChange?.fragments?.upcomingAgreementChangeFragment?.newAgreement
 }

@@ -12,34 +12,34 @@ import com.hedvig.app.util.apollo.safeQuery
 import org.json.JSONObject
 
 class ConnectPayoutUseCase(
-    private val apolloClient: ApolloClient,
-    private val context: Context,
+  private val apolloClient: ApolloClient,
+  private val context: Context,
 ) {
 
-    data class PayOutResult(
-        val code: String,
-        val tokenizationResultType: TokenizationResultType,
-    )
+  data class PayOutResult(
+    val code: String,
+    val tokenizationResultType: TokenizationResultType,
+  )
 
-    sealed interface Error {
-        data class CheckoutPaymentAction(val action: String) : Error
-        data class ErrorMessage(val message: String?) : Error
+  sealed interface Error {
+    data class CheckoutPaymentAction(val action: String) : Error
+    data class ErrorMessage(val message: String?) : Error
+  }
+
+  suspend fun connectPayout(data: JSONObject) = apolloClient
+    .mutation(createTokenizePayoutDetailsMutation(data))
+    .safeQuery()
+    .toEither { Error.ErrorMessage(it) }
+    .flatMap {
+      it.tokenizePayoutDetails?.asTokenizationResponseAction?.let {
+        Error.CheckoutPaymentAction(it.action).left()
+      } ?: it.tokenizePayoutDetails?.asTokenizationResponseFinished?.let {
+        PayOutResult(it.resultCode, it.tokenizationResult).right()
+      } ?: Error.ErrorMessage(null).left()
     }
 
-    suspend fun connectPayout(data: JSONObject) = apolloClient
-        .mutation(createTokenizePayoutDetailsMutation(data))
-        .safeQuery()
-        .toEither { Error.ErrorMessage(it) }
-        .flatMap {
-            it.tokenizePayoutDetails?.asTokenizationResponseAction?.let {
-                Error.CheckoutPaymentAction(it.action).left()
-            } ?: it.tokenizePayoutDetails?.asTokenizationResponseFinished?.let {
-                PayOutResult(it.resultCode, it.tokenizationResult).right()
-            } ?: Error.ErrorMessage(null).left()
-        }
-
-    private fun createTokenizePayoutDetailsMutation(data: JSONObject) = TokenizePayoutDetailsMutation(
-        data.getJSONObject("paymentMethod").toString(),
-        RedirectComponent.getReturnUrl(context),
-    )
+  private fun createTokenizePayoutDetailsMutation(data: JSONObject) = TokenizePayoutDetailsMutation(
+    data.getJSONObject("paymentMethod").toString(),
+    RedirectComponent.getReturnUrl(context),
+  )
 }

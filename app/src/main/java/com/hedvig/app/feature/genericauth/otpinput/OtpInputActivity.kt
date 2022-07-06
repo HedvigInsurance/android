@@ -27,93 +27,93 @@ import kotlin.time.Duration.Companion.seconds
 
 class OtpInputActivity : BaseActivity() {
 
-    val model: OtpInputViewModel by viewModel {
-        parametersOf(
-            intent.getStringExtra(OTP_ID_EXTRA) ?: throw IllegalArgumentException(
-                "Programmer error: Missing OTP_ID in ${this.javaClass.name}",
-            ),
-            intent.getStringExtra(CREDENTIAL_EXTRA) ?: throw IllegalArgumentException(
-                "Programmer error: Missing CREDENTIAL in ${this.javaClass.name}",
-            ),
-        )
-    }
+  val model: OtpInputViewModel by viewModel {
+    parametersOf(
+      intent.getStringExtra(OTP_ID_EXTRA) ?: throw IllegalArgumentException(
+        "Programmer error: Missing OTP_ID in ${this.javaClass.name}",
+      ),
+      intent.getStringExtra(CREDENTIAL_EXTRA) ?: throw IllegalArgumentException(
+        "Programmer error: Missing CREDENTIAL in ${this.javaClass.name}",
+      ),
+    )
+  }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-        window.compatSetDecorFitsSystemWindows(false)
+    window.compatSetDecorFitsSystemWindows(false)
 
-        setContent {
-            val scaffoldState = rememberScaffoldState()
+    setContent {
+      val scaffoldState = rememberScaffoldState()
 
-            HedvigTheme {
-                LaunchedEffect(Unit) {
-                    model.events.collectLatest { event ->
-                        when (event) {
-                            is OtpInputViewModel.Event.Success -> startLoggedIn()
-                            OtpInputViewModel.Event.CodeResent -> {
-                                delay(1.seconds)
-                                val message = getString(R.string.login_snackbar_code_resent)
-                                scaffoldState.snackbarHostState.showSnackbar(message)
-                            }
-                        }
-                    }
-                }
-
-                Scaffold(
-                    topBar = {
-                        TopAppBarWithBack(
-                            onClick = ::onBackPressed,
-                            title = stringResource(R.string.login_navigation_bar_center_element_title),
-                        )
-                    },
-                    scaffoldState = scaffoldState,
-                    modifier = Modifier.systemBarsPadding(top = true),
-                ) {
-                    val viewState by model.viewState.collectAsState()
-
-                    OtpInputScreen(
-                        onInputChanged = model::setInput,
-                        onOpenExternalApp = { openEmail(getString(R.string.login_bottom_sheet_view_code)) },
-                        onSubmitCode = model::submitCode,
-                        onResendCode = model::resendCode,
-                        onDismissError = model::dismissError,
-                        inputValue = viewState.input,
-                        credential = viewState.credential,
-                        otpErrorMessage = viewState.otpError?.toStringRes()?.let(::getString),
-                        networkErrorMessage = viewState.networkErrorMessage,
-                        loadingResend = viewState.loadingResend,
-                        loadingCode = viewState.loadingCode,
-                    )
-                }
+      HedvigTheme {
+        LaunchedEffect(Unit) {
+          model.events.collectLatest { event ->
+            when (event) {
+              is OtpInputViewModel.Event.Success -> startLoggedIn()
+              OtpInputViewModel.Event.CodeResent -> {
+                delay(1.seconds)
+                val message = getString(R.string.login_snackbar_code_resent)
+                scaffoldState.snackbarHostState.showSnackbar(message)
+              }
             }
+          }
         }
-    }
 
-    private fun OtpResult.Error.OtpError.toStringRes() = when (this) {
-        OtpResult.Error.OtpError.AlreadyCompleted -> R.string.login_code_input_error_msg_code_already_used
-        OtpResult.Error.OtpError.Expired -> R.string.login_code_input_error_msg_expired
-        OtpResult.Error.OtpError.TooManyAttempts -> R.string.login_code_input_error_msg_too_many_wrong_attempts
-        OtpResult.Error.OtpError.Unknown -> R.string.general_unknown_error
-        OtpResult.Error.OtpError.WrongOtp -> R.string.login_code_input_error_msg_code_not_valid
-    }
+        Scaffold(
+          topBar = {
+            TopAppBarWithBack(
+              onClick = ::onBackPressed,
+              title = stringResource(R.string.login_navigation_bar_center_element_title),
+            )
+          },
+          scaffoldState = scaffoldState,
+          modifier = Modifier.systemBarsPadding(top = true),
+        ) {
+          val viewState by model.viewState.collectAsState()
 
-    private fun startLoggedIn() {
-        val intent = LoggedInActivity.newInstance(this, withoutHistory = true)
-        startActivity(intent)
-    }
-
-    companion object {
-        private const val OTP_ID_EXTRA = "OTP_ID_EXTRA"
-        private const val CREDENTIAL_EXTRA = "CREDENTIAL_EXTRA"
-
-        fun newInstance(
-            context: Context,
-            id: String,
-            credential: String,
-        ) = Intent(context, OtpInputActivity::class.java).apply {
-            putExtra(OTP_ID_EXTRA, id)
-            putExtra(CREDENTIAL_EXTRA, credential)
+          OtpInputScreen(
+            onInputChanged = model::setInput,
+            onOpenExternalApp = { openEmail(getString(R.string.login_bottom_sheet_view_code)) },
+            onSubmitCode = model::submitCode,
+            onResendCode = model::resendCode,
+            onDismissError = model::dismissError,
+            inputValue = viewState.input,
+            credential = viewState.credential,
+            otpErrorMessage = viewState.otpError?.toStringRes()?.let(::getString),
+            networkErrorMessage = viewState.networkErrorMessage,
+            loadingResend = viewState.loadingResend,
+            loadingCode = viewState.loadingCode,
+          )
         }
+      }
     }
+  }
+
+  private fun OtpResult.Error.OtpError.toStringRes() = when (this) {
+    OtpResult.Error.OtpError.AlreadyCompleted -> R.string.login_code_input_error_msg_code_already_used
+    OtpResult.Error.OtpError.Expired -> R.string.login_code_input_error_msg_expired
+    OtpResult.Error.OtpError.TooManyAttempts -> R.string.login_code_input_error_msg_too_many_wrong_attempts
+    OtpResult.Error.OtpError.Unknown -> R.string.general_unknown_error
+    OtpResult.Error.OtpError.WrongOtp -> R.string.login_code_input_error_msg_code_not_valid
+  }
+
+  private fun startLoggedIn() {
+    val intent = LoggedInActivity.newInstance(this, withoutHistory = true)
+    startActivity(intent)
+  }
+
+  companion object {
+    private const val OTP_ID_EXTRA = "OTP_ID_EXTRA"
+    private const val CREDENTIAL_EXTRA = "CREDENTIAL_EXTRA"
+
+    fun newInstance(
+      context: Context,
+      id: String,
+      credential: String,
+    ) = Intent(context, OtpInputActivity::class.java).apply {
+      putExtra(OTP_ID_EXTRA, id)
+      putExtra(CREDENTIAL_EXTRA, credential)
+    }
+  }
 }
