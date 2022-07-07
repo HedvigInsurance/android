@@ -23,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hedvig.app.R
@@ -64,7 +63,7 @@ fun FullScreenProgressOverlay(show: Boolean) {
             )
             .width(32.dp)
             .height(32.dp),
-          contentDescription = stringResource(R.string.login_smedium_button_active_resend_code),
+          contentDescription = null,
         )
       }
     }

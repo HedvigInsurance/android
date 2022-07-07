@@ -16,8 +16,8 @@ import com.hedvig.app.R
 import com.hedvig.app.feature.claimdetail.model.ClaimDetailResult
 import com.hedvig.app.feature.claimdetail.model.ClaimDetailUiState
 import com.hedvig.app.ui.compose.composables.CenteredProgressIndicator
-import com.hedvig.app.ui.compose.composables.GenericErrorScreen
 import com.hedvig.app.ui.compose.composables.appbar.TopAppBarWithBack
+import com.hedvig.app.ui.compose.composables.screens.GenericErrorScreen
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.compose.preview.previewData
 import java.util.Locale
