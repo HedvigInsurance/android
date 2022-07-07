@@ -15,7 +15,7 @@
             android:layout_height="@dimen/home_error_icon_size"
             android:layout_marginTop="@dimen/base_margin_octuple"
             android:contentDescription="@null"
-            app:srcCompat="@drawable/ic_claims" />
+            app:srcCompat="@drawable/ic_warning_triangle" />
 
         <TextView
             android:layout_width="wrap_content"

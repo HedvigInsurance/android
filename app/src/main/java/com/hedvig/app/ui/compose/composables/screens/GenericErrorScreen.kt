@@ -21,7 +21,7 @@ fun GenericErrorScreen(
     modifier = modifier,
     title = title,
     description = description,
-    icon = R.drawable.ic_claims,
+    icon = R.drawable.ic_warning_triangle,
     primaryButtonText = stringResource(id = R.string.home_tab_error_button_text),
     onPrimaryButtonClicked = onRetryButtonClicked,
     onSecondaryButtonClicked = null,
