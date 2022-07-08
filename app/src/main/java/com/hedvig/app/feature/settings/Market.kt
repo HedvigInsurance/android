@@ -1,7 +1,10 @@
 package com.hedvig.app.feature.settings
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.annotation.StringRes
+import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.FragmentManager
 import com.hedvig.android.owldroid.graphql.fragment.ActivePaymentMethodsFragment
 import com.hedvig.android.owldroid.graphql.type.DirectDebitStatus
@@ -10,8 +13,6 @@ import com.hedvig.app.authenticate.AuthenticateDialog
 import com.hedvig.app.authenticate.LoginDialog
 import com.hedvig.app.feature.adyen.AdyenCurrency
 import com.hedvig.app.feature.adyen.payout.AdyenConnectPayoutActivity
-import com.hedvig.app.feature.onboarding.ui.ChoosePlanActivity
-import com.hedvig.app.feature.webonboarding.WebOnboardingActivity
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationActivity
 
 enum class Market {
@@ -58,19 +59,11 @@ enum class Market {
     }
   }
 
-  fun openOnboarding(context: Context) = when (this) {
-    SE -> {
-      context.startActivity(ChoosePlanActivity.newInstance(context))
-    }
-    NO -> {
-      context.startActivity(ChoosePlanActivity.newInstance(context))
-    }
-    DK -> {
-      context.startActivity(ChoosePlanActivity.newInstance(context))
-    }
-    FR -> {
-      context.startActivity(WebOnboardingActivity.newInstance(context))
-    }
+  fun openOnboarding(context: Context) {
+    val webPath = Language.fromSettings(context, this).webPath()
+    val url = context.getString(R.string.WEB_BASE_URL) + "/" + webPath + "/new-member"
+    val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+    context.startActivity(browserIntent)
   }
 
   @StringRes
