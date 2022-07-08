@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Button
@@ -42,8 +40,6 @@ import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
 import com.hedvig.app.feature.home.ui.changeaddress.appendQuoteCartId
 import com.hedvig.app.feature.offer.model.QuoteCartId
-import com.hedvig.app.feature.onboarding.BundlesResult
-import com.hedvig.app.feature.onboarding.GetBundlesUseCase
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
@@ -101,9 +97,12 @@ class EmbarkStoryTesterActivity : AppCompatActivity() {
             modifier = Modifier.systemBarsPadding(top = true),
           )
           Text(text = "Optional auth token or payments url")
-          TextField(value = viewState.authTokenInput ?: "", onValueChange = {
-            model.onAuthToken(it)
-          },)
+          TextField(
+            value = viewState.authTokenInput ?: "",
+            onValueChange = {
+              model.onAuthToken(it)
+            },
+          )
           Button(
             onClick = {
               viewState.authTokenInput?.let {
@@ -123,9 +122,12 @@ class EmbarkStoryTesterActivity : AppCompatActivity() {
             Text("Generate and set token from payments url")
           }
           Text(text = "Custom Story")
-          TextField(value = viewState.storyNameInput ?: "", onValueChange = {
-            model.onStoryName(it)
-          },)
+          TextField(
+            value = viewState.storyNameInput ?: "",
+            onValueChange = {
+              model.onStoryName(it)
+            },
+          )
           Button(
             onClick = {
               viewState.storyNameInput?.let {
@@ -148,44 +150,6 @@ class EmbarkStoryTesterActivity : AppCompatActivity() {
               }
             }
           }
-          Text(text = "Stories")
-          LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-            modifier = Modifier
-              .padding(horizontal = 16.dp)
-              .fillMaxWidth(),
-          ) {
-            items(viewState.bundles) { bundle ->
-              EmbarkStoryItem(bundle) {
-                model.onStorySelected(bundle.storyName)
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-
-  @Composable
-  fun EmbarkStoryItem(bundle: BundlesResult.Success.Bundle, onClick: () -> Unit) {
-    Surface(
-      shape = MaterialTheme.shapes.medium,
-      modifier = Modifier.clickable { onClick() },
-    ) {
-      Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier
-          .padding(12.dp)
-          .fillMaxWidth(),
-      ) {
-        Column {
-          Text(
-            text = bundle.storyName,
-            style = MaterialTheme.typography.subtitle1,
-            modifier = Modifier
-              .padding(bottom = 8.dp)
-              .width(300.dp),
-          )
         }
       }
     }
@@ -221,11 +185,10 @@ class EmbarkStoryTesterActivity : AppCompatActivity() {
 }
 
 val embarkStoryTesterModule = module {
-  viewModel { EmbarkStoryTesterViewModel(get(), get(), get(), get(), get(), get()) }
+  viewModel { EmbarkStoryTesterViewModel(get(), get(), get(), get(), get()) }
 }
 
 class EmbarkStoryTesterViewModel(
-  private val getBundlesUseCase: GetBundlesUseCase,
   private val marketManager: MarketManager,
   private val authenticationTokenService: AuthenticationTokenService,
   private val apolloClient: ApolloClient,
@@ -234,7 +197,6 @@ class EmbarkStoryTesterViewModel(
 ) : ViewModel() {
 
   data class ViewState(
-    val bundles: List<BundlesResult.Success.Bundle> = emptyList(),
     val selectedStoryName: String? = null,
     val storyNameInput: String? = null,
     val authTokenInput: String? = null,
@@ -250,16 +212,8 @@ class EmbarkStoryTesterViewModel(
 
   init {
     viewModelScope.launch {
-      fetchEmbarkStories()
       _viewState.value = viewState.value.copy(availableMarkets = marketManager.enabledMarkets)
       createQuoteCartUseCase.invoke().tap { quoteCartId = it }
-    }
-  }
-
-  private suspend fun fetchEmbarkStories() {
-    _viewState.value = when (val bundleResult = getBundlesUseCase.invoke(null)) {
-      BundlesResult.Error -> viewState.value.copy(errorMessage = "Could not fetch embark stories")
-      is BundlesResult.Success -> viewState.value.copy(bundles = bundleResult.bundles)
     }
   }
 
@@ -277,9 +231,6 @@ class EmbarkStoryTesterViewModel(
     marketManager.market = market
     val language = Language.getAvailableLanguages(market).first()
     Language.persist(context, language)
-    viewModelScope.launch {
-      fetchEmbarkStories()
-    }
   }
 
   fun onStoryName(storyName: String) {

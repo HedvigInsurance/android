@@ -88,6 +88,9 @@ import com.hedvig.app.feature.embark.passages.numberactionset.NumberActionViewMo
 import com.hedvig.app.feature.embark.passages.textaction.TextActionParameter
 import com.hedvig.app.feature.embark.passages.textaction.TextActionViewModel
 import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
+import com.hedvig.app.feature.embark.ui.GetMemberIdUseCase
+import com.hedvig.app.feature.embark.ui.MemberIdViewModel
+import com.hedvig.app.feature.embark.ui.MemberIdViewModelImpl
 import com.hedvig.app.feature.embark.ui.TooltipViewModel
 import com.hedvig.app.feature.genericauth.CreateOtpAttemptUseCase
 import com.hedvig.app.feature.genericauth.GenericAuthViewModel
@@ -162,11 +165,6 @@ import com.hedvig.app.feature.offer.usecase.StartCheckoutUseCase
 import com.hedvig.app.feature.offer.usecase.datacollectionresult.GetDataCollectionResultUseCase
 import com.hedvig.app.feature.offer.usecase.datacollectionstatus.SubscribeToDataCollectionStatusUseCase
 import com.hedvig.app.feature.offer.usecase.providerstatus.GetProviderDisplayNameUseCase
-import com.hedvig.app.feature.onboarding.ChoosePlanViewModel
-import com.hedvig.app.feature.onboarding.GetBundlesUseCase
-import com.hedvig.app.feature.onboarding.GetMemberIdUseCase
-import com.hedvig.app.feature.onboarding.MemberIdViewModel
-import com.hedvig.app.feature.onboarding.MemberIdViewModelImpl
 import com.hedvig.app.feature.profile.data.ProfileRepository
 import com.hedvig.app.feature.profile.ui.ProfileViewModel
 import com.hedvig.app.feature.profile.ui.aboutapp.AboutAppViewModel
@@ -431,10 +429,6 @@ val viewModelModule = module {
   viewModel { MarketingViewModel(get<MarketManager>().market, get(), get(), get(), get(), get(), get()) }
 }
 
-val choosePlanModule = module {
-  viewModel { ChoosePlanViewModel(get(), get(), get()) }
-}
-
 val onboardingModule = module {
   viewModel<MemberIdViewModel> { MemberIdViewModelImpl(get()) }
 }
@@ -631,7 +625,6 @@ val repositoriesModule = module {
   single { TrustlyRepository(get()) }
   single { GetMemberIdUseCase(get()) }
   single { PaymentRepository(get(), get()) }
-  single { GetBundlesUseCase(get(), get()) }
 }
 
 val trackerModule = module {

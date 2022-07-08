@@ -10,7 +10,6 @@ import com.hedvig.app.changeAddressModule
 import com.hedvig.app.changeDateBottomSheetModule
 import com.hedvig.app.chatEventModule
 import com.hedvig.app.checkoutModule
-import com.hedvig.app.choosePlanModule
 import com.hedvig.app.clockModule
 import com.hedvig.app.coilModule
 import com.hedvig.app.connectPaymentModule
@@ -83,7 +82,6 @@ class KoinInitializer : Initializer<KoinApplication> {
         notificationModule,
         textActionSetModule,
         numberActionSetModule,
-        choosePlanModule,
         clockModule,
         localeManagerModule,
         changeAddressModule,

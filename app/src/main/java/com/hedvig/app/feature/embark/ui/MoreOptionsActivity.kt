@@ -8,7 +8,6 @@ import androidx.lifecycle.lifecycleScope
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityMoreOptionsBinding
-import com.hedvig.app.feature.onboarding.MemberIdViewModel
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.viewBinding
@@ -50,8 +49,7 @@ class MoreOptionsActivity : BaseActivity(R.layout.activity_more_options) {
                 ),
               )
             }
-            MemberIdViewModel.State.Loading -> {
-            }
+            MemberIdViewModel.State.Loading -> {}
             is MemberIdViewModel.State.Success -> {
               adapter.submitList(
                 listOf(

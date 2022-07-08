@@ -6,8 +6,8 @@ import com.hedvig.app.embarkModule
 import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.AskForPriceInfoActivity
 import com.hedvig.app.feature.embark.passages.externalinsurer.askforprice.InsuranceProviderParameter
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
+import com.hedvig.app.feature.embark.ui.MemberIdViewModel
 import com.hedvig.app.feature.embark.ui.MoreOptionsActivity
-import com.hedvig.app.feature.onboarding.MemberIdViewModel
 import com.hedvig.app.feature.onboarding.MockMemberIdViewModel
 import com.hedvig.app.feature.tracking.MockHAnalytics
 import com.hedvig.app.genericDevelopmentAdapter
