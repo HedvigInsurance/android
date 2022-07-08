@@ -152,7 +152,7 @@ fun PickMarketScreen(
         LargeContainedButton(
           onClick = onSubmit,
           modifier = Modifier.padding(horizontal = 16.dp),
-          enabled = true,
+          enabled = enabled,
         ) {
           Text(stringResource(R.string.market_language_screen_continue_button_text))
         }
