@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.util.Pair
-import androidx.core.view.isVisible
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -20,8 +19,8 @@ import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.ui.animator.SlideInItemAnimator
 import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
+import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.remove
-import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
 import com.hedvig.app.util.extensions.viewLifecycle
@@ -57,9 +56,7 @@ class KeyGearFragment : Fragment(R.layout.fragment_key_gear) {
         }
       }
 
-      errorContainer.retry.setHapticClickListener {
-        model.load()
-      }
+      error.onClick = { model.load() }
 
       items.adapter =
         KeyGearItemsAdapter(
@@ -96,12 +93,12 @@ class KeyGearFragment : Fragment(R.layout.fragment_key_gear) {
             KeyGearViewModel.ViewState.Loading -> {
             }
             KeyGearViewModel.ViewState.Error -> {
-              errorContainer.root.isVisible = true
-              contentContainer.isVisible = false
+              error.show()
+              contentContainer.remove()
             }
             is KeyGearViewModel.ViewState.Success -> {
-              errorContainer.root.isVisible = false
-              contentContainer.isVisible = true
+              error.hide()
+              contentContainer.remove()
               bind(viewState.data)
             }
           }

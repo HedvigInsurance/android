@@ -7,7 +7,7 @@ import io.github.kakaocup.kakao.text.KButton
 import io.github.kakaocup.kakao.text.KTextView
 
 object KeyGearScreen : KScreen<KeyGearScreen>() {
-  override val layoutId = R.layout.generic_error
+  override val layoutId = R.layout.fragment_key_gear
   override val viewClass = KeyGearFragment::class.java
 
   val reload = KButton { withId(R.id.retry) }
