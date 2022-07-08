@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.marketing.marketpicked
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,20 +23,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.LocalWindowInsets
 import com.hedvig.app.R
-import com.hedvig.app.feature.marketing.MarketPicked
-import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.ui.compose.composables.buttons.LargeContainedButton
 import com.hedvig.app.ui.compose.composables.buttons.LargeOutlinedButton
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.ui.compose.theme.hedvigOffWhite
-import com.hedvig.hanalytics.LoginMethod
 
 @Composable
 fun MarketPickedScreen(
   onClickMarket: () -> Unit,
   onClickSignUp: () -> Unit,
   onClickLogIn: () -> Unit,
-  data: MarketPicked.Loaded,
+  @DrawableRes flagRes: Int,
 ) {
   val insets = LocalWindowInsets.current
   val statusBarHeight = with(LocalDensity.current) { insets.statusBars.top.toDp() }
@@ -50,7 +48,7 @@ fun MarketPickedScreen(
         ),
     ) {
       Image(
-        painter = painterResource(data.selectedMarket.flag),
+        painter = painterResource(flagRes),
         contentDescription = null,
       )
     }
@@ -92,10 +90,7 @@ fun MarketPickedPreview() {
       onClickMarket = {},
       onClickSignUp = {},
       onClickLogIn = {},
-      data = MarketPicked.Loaded(
-        selectedMarket = Market.SE,
-        loginMethod = LoginMethod.BANK_ID_SWEDEN,
-      ),
+      flagRes = R.drawable.ic_flag_se,
     )
   }
 }

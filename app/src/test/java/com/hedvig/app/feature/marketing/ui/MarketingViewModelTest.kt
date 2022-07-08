@@ -5,7 +5,6 @@ import assertk.all
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
-import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.isTrue
@@ -17,12 +16,10 @@ import com.hedvig.app.feature.marketing.data.SubmitMarketAndLanguagePreferencesU
 import com.hedvig.app.feature.marketing.data.UpdateApplicationLanguageUseCase
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.Market
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.coroutines.MainCoroutineRule
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.hanalytics.HAnalytics
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -33,8 +30,8 @@ class MarketingViewModelTest {
   @get:Rule
   val mainCoroutineRule = MainCoroutineRule()
 
-  private fun sut(
-    marketManager: MarketManager = mockk(relaxed = true),
+  private fun createMarketingViewModel(
+    market: Market? = null,
     hAnalytics: HAnalytics = mockk(relaxed = true),
     submitMarketAndLanguagePreferencesUseCase: SubmitMarketAndLanguagePreferencesUseCase = mockk(
       relaxed = true,
@@ -44,7 +41,7 @@ class MarketingViewModelTest {
     getInitialMarketPickerValuesUseCase: GetInitialMarketPickerValuesUseCase = mockk(relaxed = true),
     featureManager: FeatureManager = mockk(relaxed = true),
   ) = MarketingViewModel(
-    marketManager = marketManager,
+    market = market,
     hAnalytics = hAnalytics,
     submitMarketAndLanguagePreferencesUseCase = submitMarketAndLanguagePreferencesUseCase,
     getMarketingBackgroundUseCase = getMarketingBackgroundUseCase,
@@ -55,158 +52,98 @@ class MarketingViewModelTest {
 
   @Test
   fun `when no market is selected, should display the market picker`() = runTest {
-    val marketManager = mockk<MarketManager>()
-    every { marketManager.hasSelectedMarket } returns false
+    val model = createMarketingViewModel()
 
-    val model = sut(
-      marketManager = marketManager,
-    )
-
-    assertThat(model.state.value)
-      .isInstanceOf(com.hedvig.app.feature.marketing.PickMarket::class)
-      .prop(com.hedvig.app.feature.marketing.PickMarket::isLoading).isTrue()
+    assertThat(model.state.value.selectedMarket).isEqualTo(null)
+    assertThat(model.state.value).prop(com.hedvig.app.feature.marketing.ViewState::isLoading).isTrue()
   }
 
   @Test
   fun `when geo returns always enabled market, should pre-select that market`() = runTest {
-    val marketManager = mockk<MarketManager>()
-    every { marketManager.hasSelectedMarket } returns false
     val initialValues = mockk<GetInitialMarketPickerValuesUseCase>()
     coEvery { initialValues.invoke() } returns Pair(Market.SE, null)
 
-    val model = sut(
-      marketManager = marketManager,
-      getInitialMarketPickerValuesUseCase = initialValues,
-    )
+    val model = createMarketingViewModel(getInitialMarketPickerValuesUseCase = initialValues)
     advanceUntilIdle()
 
-    assertThat(model.state.value)
-      .isInstanceOf(com.hedvig.app.feature.marketing.PickMarket::class)
-      .all {
-        prop(com.hedvig.app.feature.marketing.PickMarket::isLoading).isFalse()
-        prop(com.hedvig.app.feature.marketing.PickMarket::market).isEqualTo(Market.SE)
-      }
+    assertThat(model.state.value.isLoading).isFalse()
+    assertThat(model.state.value.market).isEqualTo(Market.SE)
   }
 
   @Test
   fun `when selecting a market, should update with that market showing`() = runTest {
-    val marketManager = mockk<MarketManager>()
-    every { marketManager.hasSelectedMarket } returns false
-
-    val model = sut(
-      marketManager = marketManager,
-    )
+    val model = createMarketingViewModel()
     advanceUntilIdle()
     model.setMarket(Market.SE)
 
-    assertThat(model.state.value)
-      .isInstanceOf(com.hedvig.app.feature.marketing.PickMarket::class)
-      .prop(com.hedvig.app.feature.marketing.PickMarket::market).isEqualTo(Market.SE)
+    assertThat(model.state.value.market).isEqualTo(Market.SE)
   }
 
   @Test
   fun `when selecting a language, should update with that language showing`() = runTest {
-    val marketManager = mockk<MarketManager>()
-    every { marketManager.hasSelectedMarket } returns false
-
-    val model = sut(
-      marketManager = marketManager,
-    )
+    val model = createMarketingViewModel()
     advanceUntilIdle()
     model.setLanguage(Language.EN_SE)
 
-    assertThat(model.state.value)
-      .isInstanceOf(com.hedvig.app.feature.marketing.PickMarket::class)
-      .prop(com.hedvig.app.feature.marketing.PickMarket::language).isEqualTo(Language.EN_SE)
+    assertThat(model.state.value.language).isEqualTo(Language.EN_SE)
   }
 
   @Test
-  fun `after setting both market and language, should be valid`() = runTest {
-    val marketManager = mockk<MarketManager>()
-    every { marketManager.hasSelectedMarket } returns false
+  fun `after setting both market and language, should be able to set`() = runTest {
+    val model = createMarketingViewModel()
 
-    val model = sut(
-      marketManager = marketManager,
-    )
     advanceUntilIdle()
     model.setMarket(Market.SE)
     model.setLanguage(Language.EN_SE)
 
-    assertThat(model.state.value)
-      .isInstanceOf(com.hedvig.app.feature.marketing.PickMarket::class)
-      .prop(com.hedvig.app.feature.marketing.PickMarket::isValid).isTrue()
+    assertThat(model.state.value.canSetMarketAndLanguage()).isTrue()
   }
 
   @Test
-  fun `when setting market but not language, should set a default language for that market`() =
-    runTest {
-      val marketManager = mockk<MarketManager>()
-      every { marketManager.hasSelectedMarket } returns false
+  fun `when setting market but not language, should set a default language for that market`() = runTest {
+    val model = createMarketingViewModel()
 
-      val model = sut(
-        marketManager = marketManager,
-      )
-      advanceUntilIdle()
-      model.setMarket(Market.SE)
+    advanceUntilIdle()
+    model.setMarket(Market.SE)
 
-      assertThat(model.state.value)
-        .isInstanceOf(com.hedvig.app.feature.marketing.PickMarket::class)
-        .prop(com.hedvig.app.feature.marketing.PickMarket::language).isNotNull()
-    }
+    assertThat(model.state.value.language).isNotNull()
+  }
 
   @Test
   fun `when switching market and old language is incompatible, should set default language for that market`() =
     runTest {
-      val marketManager = mockk<MarketManager>()
-      every { marketManager.hasSelectedMarket } returns false
+      val model = createMarketingViewModel()
 
-      val model = sut(
-        marketManager = marketManager,
-      )
       advanceUntilIdle()
       model.setMarket(Market.SE)
       model.setMarket(Market.NO)
 
-      assertThat(model.state.value)
-        .isInstanceOf(com.hedvig.app.feature.marketing.PickMarket::class)
-        .prop(com.hedvig.app.feature.marketing.PickMarket::language).all {
-          isNotEqualTo(Language.EN_SE)
-          isNotNull()
-        }
+      assertThat(model.state.value.language).all {
+        isNotNull()
+        isNotEqualTo(Language.EN_SE)
+      }
     }
 
   @Test
-  fun `when a market is selected, should display market picked`() = runTest {
-    val marketManager = mockk<MarketManager>()
-    every { marketManager.hasSelectedMarket } returns true
-
-    val model = sut(
-      marketManager = marketManager,
-    )
-
-    assertThat(model.state.value)
-      .isInstanceOf(com.hedvig.app.feature.marketing.MarketPicked.Loading::class)
+  fun `when a market is provided to view model, should have a selected market`() = runTest {
+    val model = createMarketingViewModel(market = Market.SE)
+    assertThat(model.state.value.selectedMarket).isEqualTo(Market.SE)
   }
 
   @Test
-  fun `when submitting market and language preferences, should transition to market picked`() =
-    runTest {
-      val marketManager = mockk<MarketManager>()
-      every { marketManager.hasSelectedMarket } returns false
+  fun `when submitting market and language preferences, should transition to market picked`() = runTest {
+    val submitMarketAndLanguagePreferencesUseCase = mockk<SubmitMarketAndLanguagePreferencesUseCase>()
+    coEvery { submitMarketAndLanguagePreferencesUseCase.invoke(any(), any()) } returns Either.Right(Unit)
 
-      val submitMarketAndLanguagePreferencesUseCase = mockk<SubmitMarketAndLanguagePreferencesUseCase>()
-      coEvery { submitMarketAndLanguagePreferencesUseCase.invoke(any(), any()) } returns Either.Right(Unit)
+    val model = createMarketingViewModel(
+      market = null,
+      submitMarketAndLanguagePreferencesUseCase = submitMarketAndLanguagePreferencesUseCase,
+    )
+    advanceUntilIdle()
+    model.setMarket(Market.SE)
+    model.submitMarketAndLanguage()
+    advanceUntilIdle()
 
-      val model = sut(
-        marketManager = marketManager,
-        submitMarketAndLanguagePreferencesUseCase = submitMarketAndLanguagePreferencesUseCase,
-      )
-      advanceUntilIdle()
-      model.setMarket(Market.SE)
-      model.submitMarketAndLanguage()
-      advanceUntilIdle()
-
-      assertThat(model.state.value)
-        .isInstanceOf(com.hedvig.app.feature.marketing.MarketPicked::class)
-    }
+    assertThat(model.state.value.selectedMarket).isNotNull()
+  }
 }

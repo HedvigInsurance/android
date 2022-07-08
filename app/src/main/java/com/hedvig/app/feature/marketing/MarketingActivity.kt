@@ -14,6 +14,7 @@ import com.hedvig.app.authenticate.LoginDialog
 import com.hedvig.app.feature.marketing.marketpicked.MarketPickedScreen
 import com.hedvig.app.feature.marketing.pickmarket.PickMarketScreen
 import com.hedvig.app.feature.marketing.ui.BackgroundImage
+import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationActivity
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.ui.compose.theme.hedvigBlack
@@ -43,56 +44,61 @@ class MarketingActivity : BaseActivity() {
         val background by viewModel.background.collectAsState()
         BackgroundImage(background) {
           val state by viewModel.state.collectAsState()
-          when (val s = state) {
-            Loading, MarketPicked.Loading -> CircularProgressIndicator(
-              Modifier.align(Alignment.Center),
+
+          if (state.isLoading) {
+            CircularProgressIndicator(Modifier.align(Alignment.Center))
+          }
+
+          val selectedMarket = state.selectedMarket
+          if (selectedMarket == null) {
+            PickMarketScreen(
+              onSubmit = viewModel::submitMarketAndLanguage,
+              onSelectMarket = viewModel::setMarket,
+              onSelectLanguage = viewModel::setLanguage,
+              selectedMarket = state.market,
+              selectedLanguage = state.language,
+              markets = state.availableMarkets,
+              enabled = state.canSetMarketAndLanguage()
             )
-            is MarketPicked.Loaded -> MarketPickedScreen(
-              onClickMarket = viewModel::goToMarketPicker,
+          } else {
+            MarketPickedScreen(
+              onClickMarket = viewModel::onFlagClick,
               onClickSignUp = {
                 viewModel.onClickSignUp()
-                s.selectedMarket.openOnboarding(this@MarketingActivity)
+                selectedMarket.openOnboarding(this@MarketingActivity)
               },
               onClickLogIn = {
                 viewModel.onClickLogIn()
-                when (s.loginMethod) {
-                  LoginMethod.BANK_ID_SWEDEN -> LoginDialog().show(
-                    supportFragmentManager,
-                    LoginDialog.TAG,
-                  )
-                  LoginMethod.NEM_ID, LoginMethod.BANK_ID_NORWAY -> {
-                    startActivity(
-                      SimpleSignAuthenticationActivity.newInstance(
-                        this@MarketingActivity,
-                        s.selectedMarket,
-                      ),
-                    )
-                  }
-                  LoginMethod.OTP -> {
-                    // Not implemented
-                  }
-                }
+                onClickLogin(state, selectedMarket)
               },
-              data = s,
+              flagRes = selectedMarket.flag,
             )
-            is PickMarket -> {
-              if (s.isLoading) {
-                CircularProgressIndicator(
-                  Modifier.align(Alignment.Center),
-                )
-              } else {
-                PickMarketScreen(
-                  onSubmit = viewModel::submitMarketAndLanguage,
-                  onSelectMarket = viewModel::setMarket,
-                  onSelectLanguage = viewModel::setLanguage,
-                  data = s,
-                )
-              }
-            }
           }
         }
       }
     }
+  }
+
+  private fun onClickLogin(
+    state: ViewState,
+    market: Market,
+  ) = when (state.loginMethod) {
+    LoginMethod.BANK_ID_SWEDEN -> LoginDialog().show(
+      supportFragmentManager,
+      LoginDialog.TAG,
+    )
+    LoginMethod.NEM_ID, LoginMethod.BANK_ID_NORWAY -> {
+      startActivity(
+        SimpleSignAuthenticationActivity.newInstance(
+          this@MarketingActivity,
+          market,
+        ),
+      )
+    }
+    LoginMethod.OTP -> {
+      // Not implemented
+    }
+    null -> {}
   }
 
   companion object {

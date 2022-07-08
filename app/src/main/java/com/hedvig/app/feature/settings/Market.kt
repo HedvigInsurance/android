@@ -94,13 +94,6 @@ enum class Market {
     FR -> TODO()
   }
 
-  fun isCompatible(language: Language) = when (this) {
-    SE -> language == Language.EN_SE || language == Language.SV_SE
-    NO -> language == Language.EN_NO || language == Language.NB_NO
-    DK -> language == Language.EN_DK || language == Language.DA_DK
-    FR -> language == Language.EN_FR || language == Language.FR_FR
-  }
-
   fun defaultLanguage() = when (this) {
     SE -> Language.EN_SE
     NO -> Language.EN_NO

@@ -39,6 +39,6 @@ class GetInitialMarketPickerValuesUseCase(
       .fold({ null }, ::identity)
       ?: Market.SE
 
-    return Pair(marketOrDefault, null)
+    return Pair(marketOrDefault, marketOrDefault.defaultLanguage())
   }
 }
