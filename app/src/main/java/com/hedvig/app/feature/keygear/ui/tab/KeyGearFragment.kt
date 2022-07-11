@@ -19,7 +19,6 @@ import com.hedvig.app.feature.keygear.ui.itemdetail.KeyGearItemDetailActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.ui.animator.SlideInItemAnimator
 import com.hedvig.app.ui.decoration.GridSpacingItemDecoration
-import com.hedvig.app.util.extensions.view.hide
 import com.hedvig.app.util.extensions.view.remove
 import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.view.updateMargin
@@ -97,7 +96,7 @@ class KeyGearFragment : Fragment(R.layout.fragment_key_gear) {
               contentContainer.remove()
             }
             is KeyGearViewModel.ViewState.Success -> {
-              error.hide()
+              error.show()
               contentContainer.remove()
               bind(viewState.data)
             }

@@ -28,7 +28,6 @@ class ReferralTabScreen : Screen<ReferralTabScreen>() {
       itemType(ReferralTabScreen::CodeItem)
       itemType(ReferralTabScreen::InvitesHeaderItem)
       itemType(ReferralTabScreen::ReferralItem)
-      itemType(ReferralTabScreen::ErrorItem)
     },
   )
 
@@ -67,11 +66,5 @@ class ReferralTabScreen : Screen<ReferralTabScreen>() {
     val name = KTextView(parent) { withId(R.id.name) }
     val referee = KTextView(parent) { withId(R.id.refereeLabel) }
     val status = KTextView(parent) { withId(R.id.status) }
-  }
-
-  class ErrorItem(parent: Matcher<View>) : KRecyclerItem<ErrorItem>(parent) {
-    val errorTitle = KTextView(parent) { withId(R.id.errorTitle) }
-    val errorParagraph = KTextView(parent) { withId(R.id.errorParagraph) }
-    val retry = KTextView(parent) { withId(R.id.retry) }
   }
 }

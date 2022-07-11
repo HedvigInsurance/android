@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -44,18 +44,24 @@ fun GenericInfoScreen(
       Icon(
         painter = painterResource(id = icon),
         contentDescription = null,
-        Modifier.padding(top = 80.dp).height(25.dp).width(25.dp),
+        Modifier.padding(top = 80.dp).size(25.dp),
       )
+
+      Spacer(modifier = Modifier.height(16.dp))
+
       Text(
         text = title,
         style = HedvigTypography.h5,
-        modifier = Modifier.padding(top = 16.dp),
       )
+
+      Spacer(modifier = Modifier.height(8.dp))
+
       Text(
         text = description,
         style = HedvigTypography.body2,
-        modifier = Modifier.padding(top = 8.dp, bottom = 32.dp),
       )
+
+      Spacer(modifier = Modifier.height(32.dp))
 
       Column(
         modifier = modifier.fillMaxSize(),

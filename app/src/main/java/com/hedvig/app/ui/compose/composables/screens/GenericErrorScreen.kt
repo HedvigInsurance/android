@@ -19,7 +19,7 @@ import com.hedvig.app.ui.compose.theme.HedvigTheme
 class GenericErrorScreenView @JvmOverloads constructor(
   context: Context,
   attrs: AttributeSet? = null,
-  defStyle: Int = 0
+  defStyle: Int = 0,
 ) : AbstractComposeView(context, attrs, defStyle) {
 
   var onClick by mutableStateOf({})
