@@ -13,7 +13,7 @@ class DevLoginMethodProvider(
       Market.NO -> LoginMethod.BANK_ID_NORWAY
       Market.DK -> LoginMethod.NEM_ID
       Market.FR -> throw IllegalArgumentException()
-      null -> throw IllegalArgumentException()
+      null -> LoginMethod.BANK_ID_SWEDEN
     }
   }
 }

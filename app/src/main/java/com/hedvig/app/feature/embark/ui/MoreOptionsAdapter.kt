@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.databinding.MoreOptionsRowBinding
-import com.hedvig.app.feature.onboarding.MemberIdViewModel
 import com.hedvig.app.isDebug
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.dp

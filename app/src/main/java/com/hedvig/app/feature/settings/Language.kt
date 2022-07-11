@@ -93,6 +93,17 @@ enum class Language {
     EN_FR -> SETTING_EN_FR
   }
 
+  fun webPath() = when (this) {
+    SV_SE -> "se"
+    EN_SE -> "se-en"
+    NB_NO -> "no"
+    EN_NO -> "no-en"
+    DA_DK -> "dk"
+    EN_DK -> "dk-en"
+    FR_FR -> "fr"
+    EN_FR -> "fr-en"
+  }
+
   companion object {
     const val SETTING_SYSTEM_DEFAULT = "system_default"
     const val SETTING_SV_SE = "sv-SE"

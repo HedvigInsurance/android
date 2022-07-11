@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.onboarding
+package com.hedvig.app.feature.embark.ui
 
 import com.apollographql.apollo3.ApolloClient
 import com.hedvig.android.owldroid.graphql.MemberIdQuery

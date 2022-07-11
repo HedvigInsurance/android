@@ -41,7 +41,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.LocalWindowInsets
 import com.hedvig.app.R
-import com.hedvig.app.feature.marketing.PickMarket
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.ui.compose.composables.buttons.LargeContainedButton
@@ -60,7 +59,10 @@ fun PickMarketScreen(
   onSubmit: () -> Unit,
   onSelectMarket: (Market) -> Unit,
   onSelectLanguage: (Language) -> Unit,
-  data: PickMarket,
+  selectedMarket: Market?,
+  selectedLanguage: Language?,
+  markets: List<Market>,
+  enabled: Boolean,
 ) {
   var sheet by rememberSaveable { mutableStateOf<PickMarketSheet?>(null) }
   val coroutineScope = rememberCoroutineScope()
@@ -88,7 +90,8 @@ fun PickMarketScreen(
                 onSelectMarket(market)
               }
             },
-            data = data,
+            selectedMarket = selectedMarket,
+            markets = markets,
           )
           PickMarketSheet.COUNTRY -> PickLanguageSheetContent(
             onSelectLanguage = { language ->
@@ -97,7 +100,8 @@ fun PickMarketScreen(
                 onSelectLanguage(language)
               }
             },
-            data = data,
+            selectedLanguage = selectedLanguage,
+            selectedMarket = selectedMarket,
           )
           null -> {}
         }
@@ -120,7 +124,7 @@ fun PickMarketScreen(
             sheet = PickMarketSheet.MARKET
             coroutineScope.launch { modalBottomSheetState.show() }
           },
-          icon = data.market?.flag?.let { flagId ->
+          icon = selectedMarket?.flag?.let { flagId ->
             {
               Image(
                 painter = painterResource(flagId),
@@ -129,7 +133,7 @@ fun PickMarketScreen(
             }
           },
           header = stringResource(R.string.market_language_screen_market_label),
-          label = data.market?.label?.let { stringResource(it) },
+          label = selectedMarket?.label?.let { stringResource(it) },
           enabled = true,
         )
         PickerRow(
@@ -141,14 +145,14 @@ fun PickMarketScreen(
             LanguageFlag()
           },
           header = stringResource(R.string.market_language_screen_language_label),
-          label = data.language?.getLabel()?.let { stringResource(it) },
-          enabled = data.market?.let { Language.getAvailableLanguages(it).isNotEmpty() } ?: false,
+          label = selectedLanguage?.getLabel()?.let { stringResource(it) },
+          enabled = selectedMarket?.let { Language.getAvailableLanguages(it).isNotEmpty() } ?: false,
         )
         Spacer(Modifier.height(32.dp))
         LargeContainedButton(
           onClick = onSubmit,
           modifier = Modifier.padding(horizontal = 16.dp),
-          enabled = data.isValid,
+          enabled = enabled,
         ) {
           Text(stringResource(R.string.market_language_screen_continue_button_text))
         }
@@ -176,14 +180,14 @@ fun BottomSheetHandle(modifier: Modifier = Modifier) {
         color = MaterialTheme.colors.separator,
         shape = RoundedCornerShape(20.dp),
       ),
-
   )
 }
 
 @Composable
 fun PickMarketSheetContent(
   onSelectMarket: (Market) -> Unit,
-  data: PickMarket,
+  selectedMarket: Market?,
+  markets: List<Market>,
 ) {
   Spacer(Modifier.height(24.dp))
   Text(
@@ -192,10 +196,10 @@ fun PickMarketSheetContent(
     style = MaterialTheme.typography.h5,
   )
   Spacer(Modifier.height(8.dp))
-  data.availableMarkets.forEach { market ->
+  markets.forEach { market ->
     RadioButtonRow(
       onClick = { onSelectMarket(market) },
-      selected = data.market == market,
+      selected = selectedMarket == market,
       text = stringResource(market.label),
     )
   }
@@ -204,9 +208,12 @@ fun PickMarketSheetContent(
 @Composable
 fun PickLanguageSheetContent(
   onSelectLanguage: (Language) -> Unit,
-  data: PickMarket,
+  selectedLanguage: Language?,
+  selectedMarket: Market?,
 ) {
-  val market = data.market ?: return
+  if (selectedMarket == null) {
+    return
+  }
   Spacer(Modifier.height(24.dp))
   Text(
     text = stringResource(R.string.language_picker_modal_title),
@@ -219,10 +226,10 @@ fun PickLanguageSheetContent(
     modifier = Modifier.padding(horizontal = 16.dp),
     style = MaterialTheme.typography.body1,
   )
-  Language.getAvailableLanguages(market).forEach { language ->
+  Language.getAvailableLanguages(selectedMarket).forEach { language ->
     RadioButtonRow(
       onClick = { onSelectLanguage(language) },
-      selected = data.language == language,
+      selected = selectedLanguage == language,
       text = stringResource(language.getLabel()),
     )
   }
@@ -324,13 +331,10 @@ fun PickMarketPreview() {
       onSubmit = {},
       onSelectMarket = {},
       onSelectLanguage = {},
-      data = PickMarket(
-        isLoading = false,
-        isValid = false,
-        market = Market.SE,
-        language = null,
-        availableMarkets = emptyList(),
-      ),
+      selectedMarket = Market.SE,
+      selectedLanguage = Language.SV_SE,
+      markets = emptyList(),
+      enabled = true,
     )
   }
 }

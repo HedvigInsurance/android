@@ -10,19 +10,17 @@ import com.hedvig.app.feature.marketing.data.SubmitMarketAndLanguagePreferencesU
 import com.hedvig.app.feature.marketing.data.UpdateApplicationLanguageUseCase
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.Market
-import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.app.util.featureflags.flags.Feature
-import com.hedvig.app.util.safeLet
 import com.hedvig.hanalytics.HAnalytics
 import com.hedvig.hanalytics.LoginMethod
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.updateAndGet
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class MarketingViewModel(
-  private val marketManager: MarketManager,
+  market: Market?,
   private val hAnalytics: HAnalytics,
   private val submitMarketAndLanguagePreferencesUseCase: SubmitMarketAndLanguagePreferencesUseCase,
   private val getMarketingBackgroundUseCase: GetMarketingBackgroundUseCase,
@@ -30,13 +28,8 @@ class MarketingViewModel(
   private val getInitialMarketPickerValuesUseCase: GetInitialMarketPickerValuesUseCase,
   private val featureManager: FeatureManager,
 ) : ViewModel() {
-  private val _state = MutableStateFlow(
-    if (marketManager.hasSelectedMarket) {
-      MarketPicked.Loading
-    } else {
-      PICK_MARKET_INITIAL
-    },
-  )
+
+  private val _state = MutableStateFlow(MarketingViewState(selectedMarket = market))
   val state = _state.asStateFlow()
 
   private val _background = MutableStateFlow(Background(data = null))
@@ -44,10 +37,15 @@ class MarketingViewModel(
 
   init {
     viewModelScope.launch {
-      if (marketManager.hasSelectedMarket) {
-        loadMarketPicked()
-      } else {
-        loadMarketPicker()
+      val initialValues = getInitialMarketPickerValuesUseCase.invoke()
+      _state.update {
+        it.copy(
+          loginMethod = featureManager.getLoginMethod(),
+          availableMarkets = getAvailableMarkets(),
+          market = initialValues.first,
+          language = initialValues.second,
+          isLoading = false,
+        )
       }
 
       getMarketingBackgroundUseCase.invoke().tap { bg ->
@@ -56,108 +54,64 @@ class MarketingViewModel(
     }
   }
 
-  private suspend fun loadMarketPicked() {
-    val market = marketManager.market ?: throw IllegalStateException("Market cannot be null when loaded")
-    _state.value = MarketPicked.Loaded(
-      selectedMarket = market,
-      loginMethod = featureManager.getLoginMethod(),
-    )
-  }
-
-  private suspend fun loadMarketPicker() {
-    val availableMarkets = listOfNotNull(
-      Market.SE,
-      Market.NO,
-      Market.DK,
-      if (featureManager.isFeatureEnabled(Feature.FRANCE_MARKET)) {
-        Market.FR
-      } else {
-        null
-      },
-    )
-
-    val initialValues = getInitialMarketPickerValuesUseCase.invoke()
-    updateMarketPickerState {
-      it.copy(
-        isLoading = false,
-        market = initialValues.first,
-        language = initialValues.second,
-        availableMarkets = availableMarkets,
-      )
-    }
-  }
+  private suspend fun getAvailableMarkets() = listOfNotNull(
+    Market.SE,
+    Market.NO,
+    Market.DK,
+    if (featureManager.isFeatureEnabled(Feature.FRANCE_MARKET)) {
+      Market.FR
+    } else {
+      null
+    },
+  )
 
   fun setMarket(market: Market) {
-    val newState = updateMarketPickerState { it.copy(market = market) }
-    safeLet((newState as? PickMarket)?.market, (newState as? PickMarket)?.language) { m, l ->
-      updateApplicationLanguageUseCase.invoke(m, l)
+    updateApplicationLanguageUseCase.invoke(market, market.defaultLanguage())
+
+    _state.update {
+      it.copy(
+        market = market,
+        language = market.defaultLanguage(),
+      )
     }
   }
 
   fun setLanguage(language: Language) {
-    val newState = updateMarketPickerState { it.copy(language = language) }
-    safeLet((newState as? PickMarket)?.market, (newState as? PickMarket)?.language) { m, l ->
-      updateApplicationLanguageUseCase.invoke(m, l)
-    }
-  }
-
-  private fun updateMarketPickerState(transform: (oldState: PickMarket) -> PickMarket): ViewState {
-    val oldState = state.value as? PickMarket
-      ?: throw IllegalStateException("Cannot update market picker state when not on market picker")
-    val newState = transform(oldState)
-    val newStateWithLanguage = newState.copy(
-      language = languageFromState(newState),
-    )
-    return _state.updateAndGet {
-      newStateWithLanguage.copy(
-        isValid = isValid(newStateWithLanguage),
-      )
-    }
-  }
-
-  private fun isValid(state: PickMarket): Boolean {
-    return (state.market != null && state.language != null)
-  }
-
-  private fun languageFromState(state: PickMarket): Language? {
-    val market = state.market ?: return state.language
-    val language = state.language ?: return market.defaultLanguage()
-
-    if (!market.isCompatible(language)) {
-      return market.defaultLanguage()
+    state.value.market?.let {
+      updateApplicationLanguageUseCase.invoke(it, language)
     }
 
-    return language
+    _state.update { it.copy(language = language) }
   }
 
   fun submitMarketAndLanguage() {
-    val currentState = state.value as? PickMarket ?: throw IllegalStateException("Can't submit, not in PickMarket")
-    if (!currentState.isValid) {
-      throw IllegalStateException("Can't submit, PickMarket is not valid")
-    }
-    val market = currentState.market ?: throw IllegalStateException("Can't submit, market is null")
-    val language = currentState.language ?: throw IllegalStateException("Can't submit, language is null")
-    updateMarketPickerState { it.copy(isLoading = true) }
     viewModelScope.launch {
-      val result = submitMarketAndLanguagePreferencesUseCase
-        .invoke(language, market)
-      when (result) {
+      val market = _state.value.market ?: error("Market null")
+      val language = _state.value.language ?: error("Language null")
+
+      _state.update { it.copy(isLoading = true) }
+
+      when (submitMarketAndLanguagePreferencesUseCase.invoke(language, market)) {
         is Either.Left -> {
-          updateMarketPickerState { it.copy(isLoading = false) }
+          _state.update { it.copy(isLoading = false) }
         }
         is Either.Right -> {
           updateApplicationLanguageUseCase.invoke(market, language)
           featureManager.invalidateExperiments()
-          _state.value = MarketPicked.Loading
-          loadMarketPicked()
+          _state.update {
+            it.copy(
+              selectedMarket = market,
+              loginMethod = featureManager.getLoginMethod(),
+              isLoading = false,
+            )
+          }
         }
       }
     }
   }
 
-  fun goToMarketPicker() {
-    _state.value = PICK_MARKET_INITIAL
-    viewModelScope.launch { loadMarketPicker() }
+  fun onFlagClick() {
+    _state.update { it.copy(selectedMarket = null) }
   }
 
   fun onClickSignUp() {
@@ -167,37 +121,17 @@ class MarketingViewModel(
   fun onClickLogIn() {
     hAnalytics.buttonClickMarketingLogin()
   }
-
-  companion object {
-    private val PICK_MARKET_INITIAL = PickMarket(
-      isLoading = true,
-      isValid = false,
-      market = null,
-      language = null,
-      availableMarkets = emptyList(),
-    )
-  }
 }
 
-sealed interface ViewState
-
-object Loading : ViewState
-
-data class PickMarket(
-  val isLoading: Boolean,
-  val isValid: Boolean,
-  val market: Market?,
-  val language: Language?,
-  val availableMarkets: List<Market>,
-) : ViewState
-
-sealed interface MarketPicked : ViewState {
-  object Loading : MarketPicked
-
-  data class Loaded(
-    val selectedMarket: Market,
-    val loginMethod: LoginMethod,
-  ) : MarketPicked
+data class MarketingViewState(
+  val market: Market? = null,
+  val language: Language? = null,
+  val availableMarkets: List<Market> = emptyList(),
+  val selectedMarket: Market? = null,
+  val loginMethod: LoginMethod? = null,
+  val isLoading: Boolean = true,
+) {
+  fun canSetMarketAndLanguage() = market != null && language != null
 }
 
 data class Background(

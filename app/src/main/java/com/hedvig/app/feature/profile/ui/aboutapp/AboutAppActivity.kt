@@ -9,7 +9,7 @@ import com.hedvig.app.BuildConfig
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ActivityAboutAppBinding
 import com.hedvig.app.feature.dismissiblepager.DismissiblePagerModel
-import com.hedvig.app.feature.onboarding.MemberIdViewModel
+import com.hedvig.app.feature.embark.ui.MemberIdViewModel
 import com.hedvig.app.feature.whatsnew.WhatsNewDialog
 import com.hedvig.app.feature.whatsnew.WhatsNewViewModel
 import com.hedvig.app.isDebug

@@ -1,4 +1,4 @@
-package com.hedvig.app.feature.onboarding
+package com.hedvig.app.feature.embark.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

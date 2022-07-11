@@ -1,5 +1,6 @@
 package com.hedvig.app.feature.onboarding
 
+import com.hedvig.app.feature.embark.ui.MemberIdViewModel
 import com.hedvig.app.testdata.feature.onboarding.MEMBER_ID_DATA
 
 class MockMemberIdViewModel : MemberIdViewModel() {
