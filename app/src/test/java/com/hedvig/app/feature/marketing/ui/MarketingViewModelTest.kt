@@ -61,7 +61,7 @@ class MarketingViewModelTest {
   @Test
   fun `when geo returns always enabled market, should pre-select that market`() = runTest {
     val initialValues = mockk<GetInitialMarketPickerValuesUseCase>()
-    coEvery { initialValues.invoke() } returns Pair(Market.SE, null)
+    coEvery { initialValues.invoke() } returns Pair(Market.SE, Language.EN_SE)
 
     val model = createMarketingViewModel(getInitialMarketPickerValuesUseCase = initialValues)
     advanceUntilIdle()
