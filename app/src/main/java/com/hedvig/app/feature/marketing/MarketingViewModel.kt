@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.lang.IllegalArgumentException
 
 class MarketingViewModel(
   market: Market?,
@@ -30,7 +29,7 @@ class MarketingViewModel(
   private val featureManager: FeatureManager,
 ) : ViewModel() {
 
-  private val _state = MutableStateFlow(ViewState(selectedMarket = market))
+  private val _state = MutableStateFlow(MarketingViewState(selectedMarket = market))
   val state = _state.asStateFlow()
 
   private val _background = MutableStateFlow(Background(data = null))
@@ -87,8 +86,10 @@ class MarketingViewModel(
 
   fun submitMarketAndLanguage() {
     viewModelScope.launch {
-      val market = _state.value.market ?: throw IllegalArgumentException("Market null")
-      val language = _state.value.language ?: throw IllegalArgumentException("Language null")
+      val market = _state.value.market ?: error("Market null")
+      val language = _state.value.language ?: error("Language null")
+
+      _state.update { it.copy(isLoading = true) }
 
       when (submitMarketAndLanguagePreferencesUseCase.invoke(language, market)) {
         is Either.Left -> {
@@ -100,6 +101,7 @@ class MarketingViewModel(
           _state.update {
             it.copy(
               selectedMarket = market,
+              loginMethod = featureManager.getLoginMethod(),
               isLoading = false,
             )
           }
@@ -121,7 +123,7 @@ class MarketingViewModel(
   }
 }
 
-data class ViewState(
+data class MarketingViewState(
   val market: Market? = null,
   val language: Language? = null,
   val availableMarkets: List<Market> = emptyList(),

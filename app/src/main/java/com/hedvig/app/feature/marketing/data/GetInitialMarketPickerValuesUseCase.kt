@@ -17,7 +17,7 @@ class GetInitialMarketPickerValuesUseCase(
   private val apolloClient: ApolloClient,
   private val featureManager: FeatureManager,
 ) {
-  suspend operator fun invoke(): Pair<Market, Language?> {
+  suspend operator fun invoke(): Pair<Market, Language> {
     val currentMarket = marketManager.market
     if (currentMarket != null) {
       val currentLanguage = Language.fromSettings(context, currentMarket)
@@ -39,6 +39,6 @@ class GetInitialMarketPickerValuesUseCase(
       .fold({ null }, ::identity)
       ?: Market.SE
 
-    return Pair(marketOrDefault, marketOrDefault.defaultLanguage())
+    return marketOrDefault to marketOrDefault.defaultLanguage()
   }
 }

@@ -134,7 +134,7 @@ fun PickMarketScreen(
           },
           header = stringResource(R.string.market_language_screen_market_label),
           label = selectedMarket?.label?.let { stringResource(it) },
-          enabled = enabled,
+          enabled = true,
         )
         PickerRow(
           onClick = {

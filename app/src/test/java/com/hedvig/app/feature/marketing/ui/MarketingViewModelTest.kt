@@ -55,7 +55,7 @@ class MarketingViewModelTest {
     val model = createMarketingViewModel()
 
     assertThat(model.state.value.selectedMarket).isEqualTo(null)
-    assertThat(model.state.value).prop(com.hedvig.app.feature.marketing.ViewState::isLoading).isTrue()
+    assertThat(model.state.value).prop(com.hedvig.app.feature.marketing.MarketingViewState::isLoading).isTrue()
   }
 
   @Test

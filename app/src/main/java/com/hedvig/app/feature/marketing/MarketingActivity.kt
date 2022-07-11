@@ -80,7 +80,7 @@ class MarketingActivity : BaseActivity() {
   }
 
   private fun onClickLogin(
-    state: ViewState,
+    state: MarketingViewState,
     market: Market,
   ) = when (state.loginMethod) {
     LoginMethod.BANK_ID_SWEDEN -> LoginDialog().show(
