@@ -58,7 +58,7 @@ class MarketingActivity : BaseActivity() {
               selectedMarket = state.market,
               selectedLanguage = state.language,
               markets = state.availableMarkets,
-              enabled = state.canSetMarketAndLanguage()
+              enabled = state.canSetMarketAndLanguage(),
             )
           } else {
             MarketPickedScreen(
