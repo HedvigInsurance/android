@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - develop
-      - poc/staging-build-and-publish-on-develop # Temporary, to test out this action
 jobs:
   build_staging:
     runs-on: ubuntu-latest
