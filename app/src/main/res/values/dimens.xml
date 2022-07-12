@@ -81,7 +81,6 @@
     <dimen name="connect_payment_result_icon_size">56dp</dimen>
     <dimen name="referral_icon_placeholder_size">16dp</dimen>
     <dimen name="small_component_corner_radius">4dp</dimen>
-    <dimen name="home_error_icon_size">32dp</dimen>
     <dimen name="dismissible_page_illustration_size">200dp</dimen>
     <dimen name="pill_corner_radius">4dp</dimen>
     <dimen name="pill_padding_vertical">4dp</dimen>
