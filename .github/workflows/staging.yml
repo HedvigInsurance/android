@@ -30,7 +30,7 @@ jobs:
           gradlePath: app/build.gradle.kts
           versionCode: ${{ env.VERSION_CODE }}
       - name: Prebuild
-        run: ./ci-prebuild.sh
+        run: ./ci-staging-prebuild.sh
         env:
           LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
