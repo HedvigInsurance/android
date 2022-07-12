@@ -3,7 +3,6 @@ package com.hedvig.app.feature.home.screens
 import android.content.Intent
 import android.view.View
 import com.hedvig.app.R
-import com.hedvig.app.common.ErrorItem
 import io.github.kakaocup.kakao.image.KImageView
 import io.github.kakaocup.kakao.intent.KIntent
 import io.github.kakaocup.kakao.recycler.KRecyclerItem
@@ -26,7 +25,6 @@ class HomeTabScreen : Screen<HomeTabScreen>() {
         itemType(::StartClaimItem)
         itemType(::CommonClaimTitleItem)
         itemType(::CommonClaimItem)
-        itemType(::ErrorItem)
         itemType(::ChangeAddressItem)
       },
     )

@@ -10,7 +10,6 @@ class TerminatedContractsScreen : Screen<TerminatedContractsScreen>() {
       { withId(R.id.recycler) },
       {
         itemType(InsuranceScreen::ContractCard)
-        itemType(InsuranceScreen::Error)
       },
     )
 }

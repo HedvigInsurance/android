@@ -7,7 +7,6 @@ import io.github.kakaocup.kakao.intent.KIntent
 import io.github.kakaocup.kakao.recycler.KRecyclerItem
 import io.github.kakaocup.kakao.recycler.KRecyclerView
 import io.github.kakaocup.kakao.screen.Screen
-import io.github.kakaocup.kakao.text.KButton
 import io.github.kakaocup.kakao.text.KTextView
 import org.hamcrest.Matcher
 
@@ -17,7 +16,6 @@ class InsuranceScreen : Screen<InsuranceScreen>() {
       { withId(R.id.insuranceRecycler) },
       {
         itemType(::ContractCard)
-        itemType(::Error)
         itemType(::TerminatedContractsHeader)
         itemType(::TerminatedContracts)
       },
@@ -38,10 +36,6 @@ class InsuranceScreen : Screen<InsuranceScreen>() {
     class ContractPill(parent: Matcher<View>) : KRecyclerItem<ContractPill>(parent) {
       val text = KTextView { withMatcher(parent) }
     }
-  }
-
-  class Error(parent: Matcher<View>) : KRecyclerItem<Error>(parent) {
-    val retry = KButton(parent) { withId(R.id.retry) }
   }
 
   class TerminatedContractsHeader(parent: Matcher<View>) :

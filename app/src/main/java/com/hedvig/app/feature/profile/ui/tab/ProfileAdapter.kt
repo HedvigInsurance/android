@@ -2,20 +2,21 @@ package com.hedvig.app.feature.profile.ui.tab
 
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.ui.platform.ComposeView
 import androidx.core.view.isGone
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.hedvig.app.R
-import com.hedvig.app.databinding.GenericErrorBinding
 import com.hedvig.app.databinding.ProfileLogoutBinding
 import com.hedvig.app.databinding.ProfileRowBinding
+import com.hedvig.app.ui.compose.composables.screens.GenericErrorScreen
+import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.extensions.inflate
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
 import e
-import i
 
 class ProfileAdapter(
   private val lifecycleOwner: LifecycleOwner,
@@ -28,7 +29,7 @@ class ProfileAdapter(
     R.layout.profile_row -> ViewHolder.Row(parent)
     R.layout.profile_subtitle -> ViewHolder.Subtitle(parent)
     R.layout.profile_logout -> ViewHolder.Logout(parent, onLogoutListener)
-    R.layout.generic_error -> ViewHolder.Error(parent, retry)
+    ERROR -> ViewHolder.Error(ComposeView(parent.context), retry)
     else -> throw Error("Invalid viewType")
   }
 
@@ -37,7 +38,7 @@ class ProfileAdapter(
     is ProfileModel.Row -> R.layout.profile_row
     ProfileModel.Subtitle -> R.layout.profile_subtitle
     ProfileModel.Logout -> R.layout.profile_logout
-    ProfileModel.Error -> R.layout.generic_error
+    ProfileModel.Error -> ERROR
   }
 
   override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -88,16 +89,20 @@ class ProfileAdapter(
     }
 
     class Error(
-      parent: ViewGroup,
+      val composeView: ComposeView,
       private val retry: () -> Unit,
-    ) : ViewHolder(parent.inflate(R.layout.generic_error)) {
-      private val binding by viewBinding(GenericErrorBinding::bind)
-      override fun bind(data: ProfileModel, lifecycleOwner: LifecycleOwner) = with(binding) {
-        retry.setHapticClickListener {
-          i { "Attempting retry" }
-          retry()
+    ) : ViewHolder(composeView) {
+      override fun bind(data: ProfileModel, lifecycleOwner: LifecycleOwner) {
+        composeView.setContent {
+          HedvigTheme {
+            GenericErrorScreen(onRetryButtonClicked = { retry() })
+          }
         }
       }
     }
+  }
+
+  companion object {
+    const val ERROR = 1
   }
 }

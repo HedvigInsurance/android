@@ -17,7 +17,6 @@ import coil.ImageLoader
 import coil.load
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ChangeAddressPendingChangeCardBinding
-import com.hedvig.app.databinding.GenericErrorBinding
 import com.hedvig.app.databinding.HeaderItemLayoutBinding
 import com.hedvig.app.databinding.HomeBigTextBinding
 import com.hedvig.app.databinding.HomeBodyTextBinding
@@ -39,6 +38,7 @@ import com.hedvig.app.feature.home.ui.claimstatus.composables.ClaimStatusCards
 import com.hedvig.app.feature.home.ui.connectpayincard.ConnectPayinCard
 import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.ui.compose.composables.screens.GenericErrorScreen
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.apollo.ThemedIconUrls
 import com.hedvig.app.util.extensions.canOpenUri
@@ -77,7 +77,7 @@ class HomeAdapter(
     R.layout.home_start_claim_contained -> ViewHolder.StartClaimContained(parent, startIntentForResult)
     CONNECT_PAYIN -> ViewHolder.InfoCard(ComposeView(parent.context), onPaymentCardShown)
     R.layout.home_common_claim -> ViewHolder.CommonClaim(parent, imageLoader)
-    R.layout.generic_error -> ViewHolder.Error(parent, retry)
+    ERROR -> ViewHolder.Error(ComposeView(parent.context), retry)
     R.layout.how_claims_work_button -> ViewHolder.HowClaimsWorkButton(parent)
     R.layout.upcoming_renewal_card -> ViewHolder.UpcomingRenewal(parent)
     R.layout.home_change_address_button -> ViewHolder.ChangeAddress(parent)
@@ -95,7 +95,7 @@ class HomeAdapter(
     is HomeModel.StartClaimContained -> R.layout.home_start_claim_contained
     is HomeModel.ConnectPayin -> CONNECT_PAYIN
     is HomeModel.CommonClaim -> R.layout.home_common_claim
-    HomeModel.Error -> R.layout.generic_error
+    HomeModel.Error -> ERROR
     is HomeModel.PSA -> R.layout.home_psa
     is HomeModel.HowClaimsWork -> R.layout.how_claims_work_button
     is HomeModel.UpcomingRenewal -> R.layout.upcoming_renewal_card
@@ -459,17 +459,23 @@ class HomeAdapter(
     }
 
     class Error(
-      parent: ViewGroup,
+      val composeView: ComposeView,
       private val retry: () -> Unit,
-    ) : ViewHolder(parent.inflate(R.layout.generic_error)) {
-      private val binding by viewBinding(GenericErrorBinding::bind)
+    ) : ViewHolder(composeView) {
+
+      init {
+        composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+      }
+
       override fun bind(
         data: HomeModel,
         fragmentManager: FragmentManager,
         marketManager: MarketManager,
-      ) = with(binding) {
-        this.retry.setHapticClickListener {
-          retry()
+      ) {
+        composeView.setContent {
+          HedvigTheme {
+            GenericErrorScreen(onRetryButtonClicked = { retry() })
+          }
         }
       }
     }
@@ -531,6 +537,7 @@ class HomeAdapter(
     const val ACTIVE_CLAIM = 1
     const val CONNECT_PAYIN = 2
     const val SPACE = 3
+    const val ERROR = 4
 
     fun daysLeft(date: LocalDate): Int = ChronoUnit.DAYS.between(LocalDate.now(), date).toInt()
 

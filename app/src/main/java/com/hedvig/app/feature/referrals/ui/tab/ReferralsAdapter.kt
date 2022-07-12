@@ -4,6 +4,7 @@ import android.animation.ValueAnimator
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.compose.ui.platform.ComposeView
 import androidx.core.view.doOnDetach
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.ListAdapter
@@ -13,12 +14,13 @@ import com.hedvig.android.owldroid.graphql.ReferralsQuery
 import com.hedvig.android.owldroid.graphql.fragment.ReferralFragment
 import com.hedvig.app.R
 import com.hedvig.app.databinding.ReferralsCodeBinding
-import com.hedvig.app.databinding.ReferralsErrorBinding
 import com.hedvig.app.databinding.ReferralsHeaderBinding
 import com.hedvig.app.databinding.ReferralsRowBinding
 import com.hedvig.app.feature.referrals.ui.editcode.ReferralsEditCodeActivity
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.ui.compose.composables.screens.GenericErrorScreen
+import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.GenericDiffUtilItemCallback
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.apollo.toMonetaryAmount
@@ -49,7 +51,7 @@ class ReferralsAdapter(
     is ReferralsModel.Code -> R.layout.referrals_code
     ReferralsModel.InvitesHeader -> R.layout.referrals_invites_header
     is ReferralsModel.Referral -> R.layout.referrals_row
-    ReferralsModel.Error -> R.layout.referrals_error
+    ReferralsModel.Error -> ERROR
   }
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
@@ -58,7 +60,7 @@ class ReferralsAdapter(
     R.layout.referrals_code -> ViewHolder.CodeViewHolder(parent)
     R.layout.referrals_invites_header -> ViewHolder.InvitesHeaderViewHolder(parent)
     R.layout.referrals_row -> ViewHolder.ReferralViewHolder(parent)
-    R.layout.referrals_error -> ViewHolder.ErrorViewHolder(parent)
+    ERROR -> ViewHolder.ErrorViewHolder(ComposeView(parent.context))
     else -> throw Error("Invalid viewType")
   }
 
@@ -446,15 +448,16 @@ class ReferralsAdapter(
       }
     }
 
-    class ErrorViewHolder(parent: ViewGroup) : ViewHolder(parent.inflate(R.layout.referrals_error)) {
-      private val binding by viewBinding(ReferralsErrorBinding::bind)
+    class ErrorViewHolder(val composeView: ComposeView) : ViewHolder(composeView) {
       override fun bind(
         data: ReferralsModel,
         reload: () -> Unit,
         marketManager: MarketManager,
       ) {
-        binding.retry.setHapticClickListener {
-          reload()
+        composeView.setContent {
+          HedvigTheme {
+            GenericErrorScreen(onRetryButtonClicked = { reload() })
+          }
         }
       }
     }
@@ -473,5 +476,6 @@ class ReferralsAdapter(
       ReferralsModel.Title,
       ReferralsModel.Error,
     )
+    const val ERROR = 1
   }
 }

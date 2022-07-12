@@ -21,10 +21,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.adyen.checkout.components.model.PaymentMethodsApiResponse
 import com.hedvig.app.BASE_MARGIN
 import com.hedvig.app.BASE_MARGIN_DOUBLE
-import com.hedvig.app.BASE_MARGIN_OCTUPLE
 import com.hedvig.app.BASE_MARGIN_TRIPLE
 import com.hedvig.app.R
-import com.hedvig.app.databinding.GenericErrorBinding
 import com.hedvig.app.databinding.InfoCardBinding
 import com.hedvig.app.databinding.OfferFactAreaBinding
 import com.hedvig.app.databinding.OfferFaqBinding
@@ -47,6 +45,7 @@ import com.hedvig.app.feature.offer.ui.composable.insurely.InsurelyCard
 import com.hedvig.app.feature.offer.ui.composable.variants.VariantButton
 import com.hedvig.app.feature.offer.ui.composable.variants.VariantHeader
 import com.hedvig.app.feature.table.generateTable
+import com.hedvig.app.ui.compose.composables.screens.GenericErrorScreen
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.apollo.format
 import com.hedvig.app.util.extensions.colorAttr
@@ -94,7 +93,7 @@ class OfferAdapter(
     R.layout.offer_faq -> ViewHolder.FAQ(parent, fragmentManager)
     R.layout.info_card -> ViewHolder.InfoCard(parent)
     R.layout.warning_card -> ViewHolder.WarningCard(parent)
-    R.layout.generic_error -> ViewHolder.Error(parent, reload)
+    ERROR -> ViewHolder.Error(ComposeView(parent.context), reload)
     else -> throw Error("Invalid viewType: $viewType")
   }
 
@@ -114,7 +113,7 @@ class OfferAdapter(
     is OfferItems.FAQ -> R.layout.offer_faq
     OfferItems.AutomaticSwitchCard -> R.layout.info_card
     OfferItems.ManualSwitchCard -> R.layout.warning_card
-    OfferItems.Error -> R.layout.generic_error
+    OfferItems.Error -> ERROR
   }
 
   override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -528,21 +527,23 @@ class OfferAdapter(
     }
 
     class Error(
-      parent: ViewGroup,
+      val composeView: ComposeView,
       private val reload: () -> Unit,
-    ) : ViewHolder(parent.inflate(R.layout.generic_error)) {
-      private val binding by viewBinding(GenericErrorBinding::bind)
+    ) : ViewHolder(composeView) {
 
       init {
-        binding.root.setPadding(0, BASE_MARGIN_OCTUPLE, 0, 0)
-        binding.root.setBackgroundColor(binding.root.context.colorAttr(android.R.attr.colorBackground))
+        composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
       }
 
-      override fun bind(data: OfferItems) = with(binding.retry) {
+      override fun bind(data: OfferItems) {
         if (data !is OfferItems.Error) {
           return invalid(data)
         }
-        setHapticClickListener { reload() }
+        composeView.setContent {
+          HedvigTheme {
+            GenericErrorScreen(onRetryButtonClicked = { reload() })
+          }
+        }
       }
     }
   }
@@ -553,6 +554,7 @@ class OfferAdapter(
     const val INSURELY_DIVIDER = 3
     const val VARIANT_BUTTON = 4
     const val VARIANT_HEADER = 5
+    const val ERROR = 6
 
     class OfferDiffUtilCallback : DiffUtil.ItemCallback<OfferItems>() {
       override fun areItemsTheSame(oldItem: OfferItems, newItem: OfferItems): Boolean = when {

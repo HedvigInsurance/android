@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
 import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.hedvig.app.R
-import com.hedvig.app.databinding.GenericErrorBinding
 import com.hedvig.app.databinding.InsuranceContractCardBinding
 import com.hedvig.app.databinding.InsuranceTerminatedContractsBinding
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
@@ -25,6 +24,7 @@ import com.hedvig.app.feature.insurance.ui.detail.ContractDetailActivity
 import com.hedvig.app.feature.insurance.ui.terminatedcontracts.TerminatedContractsActivity
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.feature.settings.MarketManager
+import com.hedvig.app.ui.compose.composables.screens.GenericErrorScreen
 import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.extensions.getActivity
 import com.hedvig.app.util.extensions.inflate
@@ -48,7 +48,7 @@ class InsuranceAdapter(
       onClickCrossSellCard,
     )
     R.layout.insurance_header -> ViewHolder.TitleViewHolder(parent)
-    R.layout.generic_error -> ViewHolder.Error(parent)
+    ERROR -> ViewHolder.Error(ComposeView(parent.context))
     SUBHEADING -> ViewHolder.SubheadingViewHolder(ComposeView(parent.context))
     NOTIFICATION_SUBHEADING -> ViewHolder.NotificationSubheadingViewHolder(ComposeView(parent.context))
     R.layout.insurance_terminated_contracts -> ViewHolder.TerminatedContracts(parent)
@@ -64,7 +64,7 @@ class InsuranceAdapter(
     InsuranceModel.TerminatedContractsHeader -> SUBHEADING
     is InsuranceModel.CrossSellHeader -> NOTIFICATION_SUBHEADING
     is InsuranceModel.TerminatedContracts -> R.layout.insurance_terminated_contracts
-    InsuranceModel.Error -> R.layout.generic_error
+    InsuranceModel.Error -> ERROR
   }
 
   override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -168,16 +168,22 @@ class InsuranceAdapter(
     }
 
     class Error(
-      parent: ViewGroup,
-    ) : ViewHolder(parent.inflate(R.layout.generic_error)) {
-      private val binding by viewBinding(GenericErrorBinding::bind)
+      val composeView: ComposeView,
+    ) : ViewHolder(composeView) {
+
+      init {
+        composeView.setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+      }
+
       override fun bind(
         data: InsuranceModel,
         retry: () -> Unit,
         marketManager: MarketManager,
-      ) = with(binding) {
-        this.retry.setHapticClickListener {
-          retry()
+      ) {
+        composeView.setContent {
+          HedvigTheme {
+            GenericErrorScreen(onRetryButtonClicked = { retry() })
+          }
         }
       }
     }
@@ -272,6 +278,7 @@ class InsuranceAdapter(
     private const val CROSS_SELL = 1
     private const val SUBHEADING = 2
     private const val NOTIFICATION_SUBHEADING = 3
+    private const val ERROR = 4
 
     object InsuranceAdapterDiffUtilItemCallback : DiffUtil.ItemCallback<InsuranceModel>() {
       override fun areItemsTheSame(oldItem: InsuranceModel, newItem: InsuranceModel): Boolean {

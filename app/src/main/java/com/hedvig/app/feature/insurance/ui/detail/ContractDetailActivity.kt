@@ -8,7 +8,6 @@ import android.view.Window
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isInvisible
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -23,10 +22,10 @@ import com.hedvig.app.feature.insurance.ui.detail.coverage.CoverageFragment
 import com.hedvig.app.feature.insurance.ui.detail.documents.DocumentsFragment
 import com.hedvig.app.feature.insurance.ui.detail.yourinfo.YourInfoFragment
 import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.util.extensions.colorAttr
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
-import com.hedvig.app.util.extensions.view.setHapticClickListener
+import com.hedvig.app.util.extensions.view.remove
+import com.hedvig.app.util.extensions.view.show
 import com.hedvig.app.util.extensions.viewBinding
 import e
 import kotlinx.coroutines.flow.launchIn
@@ -55,7 +54,6 @@ class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
       sharedElementExitTransition = sharedElementTransition()
     }
     super.onCreate(savedInstanceState)
-
     binding.apply {
       window.compatSetDecorFitsSystemWindows(false)
       toolbar.applyStatusBarInsets()
@@ -81,9 +79,7 @@ class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
       }.attach()
       cardContainer.arrow.isInvisible = true
       cardContainer.card.transitionName = "contract_card"
-      error.retry.setHapticClickListener {
-        model.loadContract(contractId)
-      }
+      error.onClick = { model.loadContract(contractId) }
 
       model
         .viewState
@@ -91,17 +87,13 @@ class ContractDetailActivity : BaseActivity(R.layout.contract_detail_activity) {
         .onEach { viewState ->
           when (viewState) {
             ContractDetailViewModel.ViewState.Error -> {
-              content.isVisible = false
-              error.root.apply {
-                isVisible = true
-                setBackgroundColor(context.colorAttr(R.attr.colorSurface))
-              }
+              content.remove()
+              error.show()
             }
-            ContractDetailViewModel.ViewState.Loading -> {
-            }
+            ContractDetailViewModel.ViewState.Loading -> {}
             is ContractDetailViewModel.ViewState.Success -> {
-              content.isVisible = true
-              error.root.isVisible = false
+              content.show()
+              error.remove()
               val contract = viewState.state.contractCardViewState
               contract.bindTo(cardContainer, marketManager, imageLoader)
             }
