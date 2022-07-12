@@ -1,7 +1,7 @@
 [versions]
 # androidSdkVersions
 compileSdkVersion = "32"
-targetSdkVersion = "30"
+targetSdkVersion = "31"
 minSdkVersion = "23"
 
 # gradlePlugin versions
