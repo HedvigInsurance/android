@@ -62,3 +62,12 @@ dependencies {
 
   implementation(libs.adyen)
 }
+
+tasks.withType<com.apollographql.apollo3.gradle.internal.ApolloDownloadSchemaTask> {
+  doLast {
+    val schemaPath = schema.get()
+    val schemaFile = file(schemaPath)
+    val textWithoutDoubleLineBreaks = schemaFile.readText().replace("\n\n", "\n")
+    schemaFile.writeText(textWithoutDoubleLineBreaks)
+  }
+}
