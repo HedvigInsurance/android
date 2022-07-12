@@ -76,7 +76,7 @@ class HomeItemsBuilder(
     claimStatusCardOrNull(homeData)?.let(::add)
   }
 
-  private suspend fun buildTerminatedItems(homeData: HomeQuery.Data): List<HomeModel> = buildList {
+  private fun buildTerminatedItems(homeData: HomeQuery.Data): List<HomeModel> = buildList {
     add(HomeModel.BigText.Terminated(homeData.member.firstName ?: ""))
     add(HomeModel.BodyText.Terminated)
     val claimStatusCard: HomeModel.ClaimStatus? = claimStatusCardOrNull(homeData)
@@ -88,9 +88,6 @@ class HomeItemsBuilder(
       add(HomeModel.StartClaimContained.FirstClaim)
     }
     add(HomeModel.HowClaimsWork(homeData.howClaimsWork))
-
-    add(HomeModel.Header(R.string.home_tab_editing_section_title))
-    add(HomeModel.ChangeAddress)
   }
 
   private fun buildPendingItems(homeData: HomeQuery.Data): List<HomeModel> = buildList {
