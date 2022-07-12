@@ -1,0 +1,58 @@
+name: Build and Publish to Staging
+on:
+  push:
+    branches:
+      - develop
+      - poc/staging-build-and-publish-on-develop # Temporary, to test out this action
+jobs:
+  build_staging:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup JDK 11
+        uses: actions/setup-java@v3.3.0
+        with:
+          java-version: '11'
+          distribution: 'zulu'
+          cache: 'gradle'
+      - uses: actions/cache@v3
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+      - uses: actions/cache@v3
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+      - run: echo VERSION_CODE=$(expr 4700 + ${{ github.run_number }} + ${{ github.run_attempt }} - 1) >> $GITHUB_ENV
+      - uses: chkfung/android-version-actions@v1.1
+        with:
+          gradlePath: app/build.gradle.kts
+          versionCode: ${{ env.VERSION_CODE }}
+      - name: Prebuild
+        run: ./ci-staging-prebuild.sh
+        env:
+          LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
+          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
+          ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_TEST_CLIENT_KEY }}
+          SHAKE_CLIENT_ID: ${{ secrets.SHAKE_CLIENT_ID }}
+          SHAKE_CLIENT_SECRET: ${{ secrets.SHAKE_CLIENT_SECRET }}
+      - name: Build
+        run: "./gradlew app:assembleStaging"
+      - uses: r0adkll/sign-android-release@v1
+        name: Sign app APK
+        id: sign_app
+        with:
+          releaseDirectory: app/build/outputs/apk/staging
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+        env:
+          BUILD_TOOLS_VERSION: "30.0.2"
+      - uses: wzieba/Firebase-Distribution-Github-Action@v1.3.3
+        with:
+          token: ${{ secrets.FIREBASE_STAGING_TOKEN }}
+          appId: ${{ secrets.FIREBASE_STAGING_APP_ID }}
+          file: ${{ steps.sign_app.outputs.signedReleaseFile }}
+          groups: android-testers
