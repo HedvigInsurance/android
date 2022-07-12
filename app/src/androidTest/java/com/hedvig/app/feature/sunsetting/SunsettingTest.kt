@@ -14,6 +14,7 @@ import com.hedvig.app.util.stub
 import com.kaspersky.kaspresso.screens.KScreen
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.kakao.intent.KIntent
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -41,6 +42,7 @@ class SunsettingTest : TestCase() {
   val apolloCacheClearRule = ApolloCacheClearRule()
 
   @Test
+  @Ignore("Racing condition with sunsetting on apollo SunsettingInterceptor which is running on a coroutine")
   fun whenReceivingResponseWithSunsetErrorShouldOpenForceUpgrade() = run {
     ForceUpgradeScreen {
       step("Stub force upgrade") {
