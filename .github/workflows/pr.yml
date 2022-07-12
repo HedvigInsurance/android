@@ -61,7 +61,7 @@ jobs:
           SHAKE_CLIENT_ID: ${{ secrets.SHAKE_CLIENT_ID }}
           SHAKE_CLIENT_SECRET: ${{ secrets.SHAKE_CLIENT_SECRET }}
       - run: ./gradlew lintDebug
-      - uses: yutailang0119/action-android-lint@v3.0.0
+      - uses: yutailang0119/action-android-lint@v3.1.0
         with:
           report-path: app/build/reports/lint-results-debug.xml
         continue-on-error: true
