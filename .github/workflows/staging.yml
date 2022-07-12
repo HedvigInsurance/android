@@ -34,7 +34,7 @@ jobs:
         env:
           LOKALISE_ID: ${{ secrets.LOKALISE_ID }}
           LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
-          ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_CLIENT_KEY_TEST }}
+          ADYEN_CLIENT_KEY: ${{ secrets.ADYEN_TEST_CLIENT_KEY }}
           SHAKE_CLIENT_ID: ${{ secrets.SHAKE_CLIENT_ID }}
           SHAKE_CLIENT_SECRET: ${{ secrets.SHAKE_CLIENT_SECRET }}
       - name: Build
