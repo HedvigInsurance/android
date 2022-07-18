@@ -37,3 +37,7 @@ buildtimetracker {
     }
   }
 }
+
+apply {
+  from(file("gradle/projectDependencyGraph.gradle"))
+}
