@@ -46,9 +46,6 @@ class SimpleSignAuthenticationViewModel(
   private val _zignSecUrl = MutableLiveData<String>()
   val zignSecUrl: LiveData<String> = _zignSecUrl
 
-  private val _authStatus = MutableLiveData<AuthState>()
-  val authStatus: LiveData<AuthState> = _authStatus
-
   private val _events = LiveEvent<Event>()
   val events: LiveData<Event> = _events
 

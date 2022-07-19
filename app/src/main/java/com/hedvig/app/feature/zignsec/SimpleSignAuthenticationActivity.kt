@@ -45,15 +45,6 @@ class SimpleSignAuthenticationActivity : BaseActivity(R.layout.simple_sign_authe
       }
     }
 
-    model.authStatus.observe(this) {
-      when (it) {
-        AuthState.FAILED -> {
-          showError()
-        }
-        else -> {
-        }
-      }
-    }
     model.events.observe(this) {
       when (it) {
         SimpleSignAuthenticationViewModel.Event.LoadWebView -> showWebView()
