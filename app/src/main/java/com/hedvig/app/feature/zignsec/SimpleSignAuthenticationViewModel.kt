@@ -57,7 +57,7 @@ class SimpleSignAuthenticationViewModel(
   }
 
   init {
-    subscribeToAuthStatusUseCase().onEach { response ->
+    subscribeToAuthStatusUseCase.invoke().onEach { response ->
       when (response.data?.authStatus?.status) {
         AuthState.SUCCESS -> {
           onAuthSuccess()
@@ -99,13 +99,13 @@ class SimpleSignAuthenticationViewModel(
       Market.NO -> {
         val nationalIdentityNumber = input.value ?: return
         viewModelScope.launch {
-          handleStartAuth(startNorwegianAuthUseCase(nationalIdentityNumber))
+          handleStartAuth(startNorwegianAuthUseCase.invoke(nationalIdentityNumber))
         }
       }
       Market.DK -> {
         val personalIdentificationNumber = input.value ?: return
         viewModelScope.launch {
-          handleStartAuth(startDanishAuthUseCase(personalIdentificationNumber))
+          handleStartAuth(startDanishAuthUseCase.invoke(personalIdentificationNumber))
         }
       }
       else -> {
