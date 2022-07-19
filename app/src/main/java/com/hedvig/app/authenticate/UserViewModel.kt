@@ -44,7 +44,7 @@ class UserViewModel(
         .subscribeAuthStatus()
         .onEach { response ->
           response.data?.let { status ->
-            if (status.authStatus?.status == AuthState.SUCCESS) {
+            if (status.authStatus?.status is AuthState.SUCCESS) {
               onAuthSuccess()
               runCatching {
                 pushTokenManager.refreshToken()
