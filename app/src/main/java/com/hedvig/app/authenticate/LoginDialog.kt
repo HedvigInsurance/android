@@ -29,21 +29,23 @@ class LoginDialog : AuthenticateDialog() {
     }
   }
 
-  private fun bindNewStatus(state: AuthState): Any? = when (state) {
-    AuthState.INITIATED -> binding.authTitle.setText(R.string.BANK_ID_AUTH_TITLE_INITIATED)
-    AuthState.IN_PROGRESS -> binding.authTitle.setText(R.string.BANK_ID_LOG_IN_TITLE_IN_PROGRESS)
-    AuthState.UNKNOWN__,
-    AuthState.FAILED,
-    -> {
-      binding.authTitle.setText(R.string.BANK_ID_LOG_IN_TITLE_FAILED)
-      dialog?.setCanceledOnTouchOutside(true)
-    }
-    AuthState.SUCCESS -> {
-      binding.authTitle.setText(R.string.BANK_ID_LOG_IN_TITLE_SUCCESS)
-      dismissAllowingStateLoss()
-      startActivity(
-        LoggedInActivity.newInstance(requireContext(), withoutHistory = true),
-      )
+  private fun bindNewStatus(state: AuthState) {
+    when (state) {
+      AuthState.INITIATED -> binding.authTitle.setText(R.string.BANK_ID_AUTH_TITLE_INITIATED)
+      AuthState.IN_PROGRESS -> binding.authTitle.setText(R.string.BANK_ID_LOG_IN_TITLE_IN_PROGRESS)
+      is AuthState.UNKNOWN__,
+      AuthState.FAILED,
+      -> {
+        binding.authTitle.setText(R.string.BANK_ID_LOG_IN_TITLE_FAILED)
+        dialog?.setCanceledOnTouchOutside(true)
+      }
+      AuthState.SUCCESS -> {
+        binding.authTitle.setText(R.string.BANK_ID_LOG_IN_TITLE_SUCCESS)
+        dismissAllowingStateLoss()
+        startActivity(
+          LoggedInActivity.newInstance(requireContext(), withoutHistory = true),
+        )
+      }
     }
   }
 
