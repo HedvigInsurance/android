@@ -31,3 +31,10 @@ run `./gradlew ktlintFormat` to make ktlint to format all files according to the
 * Release: `com.hedvig.app` Build for the customer on Play Store. Using production backend
 * Staging: `com.hedvig.test.app` Build for internal testing using Firebase App Distribution. Using staging backend
 * Develop: `com.hedvig.dev.app` Build for development. Using staging backend
+
+## Module structure
+
+![Module graph](misc/images/modularization-graph.png "Image showing the module dependencies graph")
+
+Generated from `./gradlew :generateProjectDependencyGraph`*\
+*Note that this requires `dot` from graphviz to be on your path. Run `brew install graphviz`
