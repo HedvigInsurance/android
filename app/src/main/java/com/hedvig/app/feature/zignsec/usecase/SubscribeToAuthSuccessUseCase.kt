@@ -6,6 +6,7 @@ import com.hedvig.android.owldroid.graphql.AuthStatusSubscription
 import com.hedvig.android.owldroid.graphql.type.AuthState
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeSubscription
+import d
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -30,6 +31,7 @@ class SubscribeToAuthSuccessUseCase(
           .safeSubscription()
           .map(QueryResult<AuthStatusSubscription.Data>::toEither)
           .collect { response ->
+            d { "Auth subscription result:$response" }
             when (response) {
               is Either.Left -> return@collect
               is Either.Right -> {

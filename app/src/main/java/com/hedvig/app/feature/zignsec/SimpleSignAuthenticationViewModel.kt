@@ -14,6 +14,8 @@ import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthSuccessUseCase
 import com.hedvig.app.util.LiveEvent
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.hanalytics.HAnalytics
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class SimpleSignAuthenticationViewModel(
@@ -23,7 +25,7 @@ class SimpleSignAuthenticationViewModel(
   private val hAnalytics: HAnalytics,
   private val featureManager: FeatureManager,
   private val loginStatusService: LoginStatusService,
-  subscribeToAuthSuccessUseCase: SubscribeToAuthSuccessUseCase,
+  private val subscribeToAuthSuccessUseCase: SubscribeToAuthSuccessUseCase,
 ) : ViewModel() {
   private val _input = MutableLiveData("")
   val input: LiveData<String> = _input
@@ -51,12 +53,10 @@ class SimpleSignAuthenticationViewModel(
     object Restart : Event()
   }
 
-  init {
-    viewModelScope.launch {
-      subscribeToAuthSuccessUseCase.invoke().collect {
-        onAuthSuccess()
-        _events.postValue(Event.Success)
-      }
+  fun subscribeToAuthSuccessEvent(): Flow<*> {
+    return subscribeToAuthSuccessUseCase.invoke().onEach {
+      onAuthSuccess()
+      _events.postValue(Event.Success)
     }
   }
 

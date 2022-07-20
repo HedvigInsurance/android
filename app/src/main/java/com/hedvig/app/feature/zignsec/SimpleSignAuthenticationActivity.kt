@@ -5,6 +5,9 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.SimpleSignAuthenticationActivityBinding
@@ -18,12 +21,14 @@ import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.viewBinding
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 class SimpleSignAuthenticationActivity : BaseActivity(R.layout.simple_sign_authentication_activity) {
   private val binding by viewBinding(SimpleSignAuthenticationActivityBinding::bind)
-  private val model: SimpleSignAuthenticationViewModel by viewModel { parametersOf(data) }
+  private val viewModel: SimpleSignAuthenticationViewModel by viewModel { parametersOf(data) }
 
   private val data by lazy {
     intent.getParcelableExtra<SimpleSignAuthenticationData>(DATA)
@@ -44,8 +49,13 @@ class SimpleSignAuthenticationActivity : BaseActivity(R.layout.simple_sign_authe
       }
     }
 
-    model.events.observe(this) {
-      when (it) {
+    lifecycleScope.launch {
+      lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+        viewModel.subscribeToAuthSuccessEvent().collect()
+      }
+    }
+    viewModel.events.observe(this) { event ->
+      when (event) {
         SimpleSignAuthenticationViewModel.Event.LoadWebView -> showWebView()
         SimpleSignAuthenticationViewModel.Event.Success -> {
           goToLoggedIn()
