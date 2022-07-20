@@ -36,6 +36,7 @@ class ConnectPaymentResultFragment : Fragment(R.layout.connect_payment_result_fr
       }
 
       if (success) {
+        connectPaymentViewModel.onPaymentSuccess()
         icon.setImageResource(R.drawable.ic_checkmark_in_circle)
         title.setText(
           when (payinType) {

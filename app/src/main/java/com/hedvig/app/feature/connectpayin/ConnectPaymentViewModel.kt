@@ -54,6 +54,10 @@ class ConnectPaymentViewModel(
   fun close() {
     shouldClose.postValue(true)
   }
+
+  fun onPaymentSuccess() {
+    hAnalytics.paymentConnected()
+  }
 }
 
 sealed class ConnectPaymentScreenState {

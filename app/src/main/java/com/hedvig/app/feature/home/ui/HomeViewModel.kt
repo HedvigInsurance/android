@@ -53,6 +53,10 @@ abstract class HomeViewModel(
   fun onPaymentCardShown() {
     hAnalytics.homePaymentCardVisible()
   }
+
+  fun onPaymentCardClicked() {
+    hAnalytics.homePaymentCardClick()
+  }
 }
 
 class HomeViewModelImpl(
