@@ -14,6 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.hedvig.android.designsystem.theme.HedvigTheme
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.authenticate.AuthenticateDialog
@@ -24,7 +25,6 @@ import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.ui.compose.composables.CenteredProgressIndicator
 import com.hedvig.app.ui.compose.composables.FadeWhen
 import com.hedvig.app.ui.compose.composables.appbar.TopAppBarWithBack
-import com.hedvig.app.ui.compose.theme.HedvigTheme
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel

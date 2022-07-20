@@ -42,11 +42,11 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
+import com.hedvig.android.designsystem.component.button.LargeContainedButton
+import com.hedvig.android.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
 import com.hedvig.app.ui.compose.composables.ErrorDialog
 import com.hedvig.app.ui.compose.composables.FullScreenProgressOverlay
-import com.hedvig.app.ui.compose.composables.buttons.LargeContainedButton
-import com.hedvig.app.ui.compose.theme.HedvigTheme
 
 @OptIn(ExperimentalUnitApi::class, ExperimentalComposeUiApi::class)
 @Composable

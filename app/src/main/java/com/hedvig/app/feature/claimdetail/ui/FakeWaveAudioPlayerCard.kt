@@ -36,10 +36,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
 import com.hedvig.app.service.audioplayer.AudioPlayerState
 import com.hedvig.app.service.audioplayer.AudioPlayerState.Ready.ReadyState
-import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.ui.compose.theme.onWarning
 import com.hedvig.app.ui.compose.theme.warning
 import com.hedvig.app.util.ProgressPercentage

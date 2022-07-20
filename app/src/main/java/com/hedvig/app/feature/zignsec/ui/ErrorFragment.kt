@@ -3,13 +3,12 @@ package com.hedvig.app.feature.zignsec.ui
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.activity.compose.setContent
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import com.google.android.material.transition.MaterialSharedAxis
+import com.hedvig.android.designsystem.theme.HedvigTheme
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
 import com.hedvig.app.ui.compose.composables.screens.GenericErrorScreen
-import com.hedvig.app.ui.compose.theme.HedvigTheme
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class ErrorFragment : Fragment() {

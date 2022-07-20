@@ -34,13 +34,13 @@ import com.commit451.coiltransformations.CropTransformation
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.systemBarsPadding
+import com.hedvig.android.designsystem.component.button.LargeContainedButton
+import com.hedvig.android.designsystem.component.list.SectionTitle
+import com.hedvig.android.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
 import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.ui.compose.composables.ErrorDialog
 import com.hedvig.app.ui.compose.composables.appbar.FadingTopAppBar
-import com.hedvig.app.ui.compose.composables.buttons.LargeContainedButton
-import com.hedvig.app.ui.compose.composables.list.SectionTitle
-import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.compose.rememberBlurHash
 
 @Composable

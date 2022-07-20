@@ -1,4 +1,4 @@
-package com.hedvig.app.ui.compose.composables.buttons
+package com.hedvig.android.designsystem.component.button
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
@@ -10,10 +10,9 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.hedvig.app.R
-import com.hedvig.app.ui.compose.theme.HedvigTheme
+import androidx.compose.ui.unit.dp
+import com.hedvig.android.designsystem.theme.HedvigTheme
 
 @Composable
 fun LargeContainedTextButton(
@@ -53,7 +52,7 @@ fun LargeContainedButton(
       .fillMaxWidth()
       .then(modifier),
     shape = MaterialTheme.shapes.large,
-    contentPadding = PaddingValues(dimensionResource(R.dimen.base_margin_double)),
+    contentPadding = PaddingValues(16.dp),
     colors = colors,
     content = content,
   )

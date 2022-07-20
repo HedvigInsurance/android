@@ -9,6 +9,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.hedvig.android.designsystem.theme.HedvigTheme
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.authenticate.LoginDialog
 import com.hedvig.app.feature.marketing.marketpicked.MarketPickedScreen
@@ -16,7 +17,6 @@ import com.hedvig.app.feature.marketing.pickmarket.PickMarketScreen
 import com.hedvig.app.feature.marketing.ui.BackgroundImage
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationActivity
-import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.ui.compose.theme.hedvigBlack
 import com.hedvig.app.ui.compose.theme.hedvigOffWhite
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
