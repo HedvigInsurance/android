@@ -15,15 +15,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
 import kotlin.time.Duration.Companion.seconds
 
-/**
- * Subscribes to the [AuthStatusSubscription] and ensures re-subscribing to it when there is a failed auth status or
- * anything else goes wrong with the network. This is necessary to no matter what always make sure that we get informed
- * about the success auth case as long as we're collecting this flow.
- */
-class SubscribeToAuthSuccessUseCase(
+class SubscribeToAuthResultUseCase(
   private val apolloClient: ApolloClient,
 ) {
-  fun invoke(): Flow<AuthState.SUCCESS> {
+  fun invoke(): Flow<AuthResult> {
     return flow {
       while (currentCoroutineContext().isActive) {
         apolloClient
@@ -36,9 +31,8 @@ class SubscribeToAuthSuccessUseCase(
               is Either.Left -> return@collect
               is Either.Right -> {
                 when (val status = response.value.authStatus?.status) {
-                  is AuthState.SUCCESS -> emit(status)
-                  // Stop collecting to restart the subscription to ensure we're still listening for the SUCCESS case
-                  is AuthState.FAILED -> return@collect
+                  is AuthState.SUCCESS -> emit(AuthResult.Success)
+                  is AuthState.FAILED -> emit(AuthResult.Failed)
                   // INITIATED/IN_PROGRESS are not necessary to address, they are entirely captured by the WebView-flow
                   else -> {}
                 }
@@ -49,4 +43,9 @@ class SubscribeToAuthSuccessUseCase(
       }
     }
   }
+}
+
+sealed interface AuthResult {
+  object Success : AuthResult
+  object Failed : AuthResult
 }

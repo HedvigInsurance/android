@@ -7,10 +7,11 @@ import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.settings.Market
+import com.hedvig.app.feature.zignsec.usecase.AuthResult
 import com.hedvig.app.feature.zignsec.usecase.SimpleSignStartAuthResult
 import com.hedvig.app.feature.zignsec.usecase.StartDanishAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.StartNorwegianAuthUseCase
-import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthSuccessUseCase
+import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthResultUseCase
 import com.hedvig.app.util.LiveEvent
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.hanalytics.HAnalytics
@@ -25,7 +26,7 @@ class SimpleSignAuthenticationViewModel(
   private val hAnalytics: HAnalytics,
   private val featureManager: FeatureManager,
   private val loginStatusService: LoginStatusService,
-  private val subscribeToAuthSuccessUseCase: SubscribeToAuthSuccessUseCase,
+  private val subscribeToAuthResultUseCase: SubscribeToAuthResultUseCase,
 ) : ViewModel() {
   private val _input = MutableLiveData("")
   val input: LiveData<String> = _input
@@ -53,10 +54,18 @@ class SimpleSignAuthenticationViewModel(
     object CancelSignIn : Event()
   }
 
+  /**
+   * While this flow is active, we listen to changes in authentication status and report Error/Success in [events]
+   */
   fun subscribeToAuthSuccessEvent(): Flow<*> {
-    return subscribeToAuthSuccessUseCase.invoke().onEach {
-      onAuthSuccess()
-      _events.postValue(Event.Success)
+    return subscribeToAuthResultUseCase.invoke().onEach { authResult ->
+      when (authResult) {
+        AuthResult.Failed -> _events.postValue(Event.Error)
+        AuthResult.Success -> {
+          onAuthSuccess()
+          _events.postValue(Event.Success)
+        }
+      }
     }
   }
 
