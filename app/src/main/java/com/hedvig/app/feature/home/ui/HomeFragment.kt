@@ -15,10 +15,12 @@ import com.hedvig.app.databinding.HomeFragmentBinding
 import com.hedvig.app.feature.home.model.HomeModel
 import com.hedvig.app.feature.loggedin.ui.LoggedInViewModel
 import com.hedvig.app.feature.loggedin.ui.ScrollPositionListener
+import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.ui.animator.ViewHolderReusingDefaultItemAnimator
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
+import com.hedvig.hanalytics.PaymentType
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -56,6 +58,7 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
       onClaimDetailCardClicked = model::onClaimDetailCardClicked,
       onClaimDetailCardShown = model::onClaimDetailCardShown,
       onPaymentCardShown = model::onPaymentCardShown,
+      onPaymentCardClicked = ::onPaymentCardClicked,
     )
 
     binding.swipeToRefresh.setOnRefreshListener {
@@ -105,6 +108,19 @@ class HomeFragment : Fragment(R.layout.home_fragment) {
         }
       }
       .launchIn(lifecycleScope)
+  }
+
+  private fun onPaymentCardClicked(paymentType: PaymentType) {
+    model.onPaymentCardClicked()
+    val market = marketManager.market ?: return
+    startActivity(
+      connectPayinIntent(
+        requireContext(),
+        paymentType,
+        market,
+        false,
+      ),
+    )
   }
 
   private fun startEmbarkForResult(intent: Intent) {

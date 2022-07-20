@@ -36,7 +36,6 @@ import com.hedvig.app.feature.home.model.HomeModel
 import com.hedvig.app.feature.home.ui.changeaddress.ChangeAddressActivity
 import com.hedvig.app.feature.home.ui.claimstatus.composables.ClaimStatusCards
 import com.hedvig.app.feature.home.ui.connectpayincard.ConnectPayinCard
-import com.hedvig.app.feature.payment.connectPayinIntent
 import com.hedvig.app.feature.settings.MarketManager
 import com.hedvig.app.ui.compose.composables.screens.GenericErrorScreen
 import com.hedvig.app.ui.compose.theme.HedvigTheme
@@ -47,6 +46,7 @@ import com.hedvig.app.util.extensions.invalid
 import com.hedvig.app.util.extensions.openUri
 import com.hedvig.app.util.extensions.view.setHapticClickListener
 import com.hedvig.app.util.extensions.viewBinding
+import com.hedvig.hanalytics.PaymentType
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -61,6 +61,7 @@ class HomeAdapter(
   private val onClaimDetailCardClicked: (String) -> Unit,
   private val onClaimDetailCardShown: (String) -> Unit,
   private val onPaymentCardShown: () -> Unit,
+  private val onPaymentCardClicked: (PaymentType) -> Unit,
 ) : ListAdapter<HomeModel, HomeAdapter.ViewHolder>(HomeModelDiffUtilItemCallback) {
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
@@ -75,7 +76,7 @@ class HomeAdapter(
     SPACE -> ViewHolder.Space(ComposeView(parent.context))
     R.layout.home_start_claim_outlined -> ViewHolder.StartClaimOutlined(parent, startIntentForResult)
     R.layout.home_start_claim_contained -> ViewHolder.StartClaimContained(parent, startIntentForResult)
-    CONNECT_PAYIN -> ViewHolder.InfoCard(ComposeView(parent.context), onPaymentCardShown)
+    CONNECT_PAYIN -> ViewHolder.InfoCard(ComposeView(parent.context), onPaymentCardShown, onPaymentCardClicked)
     R.layout.home_common_claim -> ViewHolder.CommonClaim(parent, imageLoader)
     ERROR -> ViewHolder.Error(ComposeView(parent.context), retry)
     R.layout.how_claims_work_button -> ViewHolder.HowClaimsWorkButton(parent)
@@ -327,6 +328,7 @@ class HomeAdapter(
     class InfoCard(
       val composeView: ComposeView,
       private val onPaymentCardShown: () -> Unit,
+      private val onPaymentCardClicked: (PaymentType) -> Unit,
     ) : ViewHolder(composeView) {
 
       init {
@@ -345,17 +347,7 @@ class HomeAdapter(
         composeView.setContent {
           HedvigTheme {
             ConnectPayinCard(
-              onActionClick = {
-                val market = marketManager.market ?: return@ConnectPayinCard
-                composeView.context.startActivity(
-                  connectPayinIntent(
-                    composeView.context,
-                    data.payinType,
-                    market,
-                    false,
-                  ),
-                )
-              },
+              onActionClick = { onPaymentCardClicked(data.payinType) },
               onShown = onPaymentCardShown,
             )
           }
