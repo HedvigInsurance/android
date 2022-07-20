@@ -36,4 +36,6 @@ rootProject.name = "hedvigandroid"
 include(":apollo")
 include(":app")
 include(":core-common")
+include(":core-design-system")
+include(":core-ui")
 include(":testdata")
