@@ -3,7 +3,6 @@ package com.hedvig.app.feature.zignsec
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -40,7 +39,7 @@ class SimpleSignAuthenticationActivity : BaseActivity(R.layout.simple_sign_authe
     window.compatSetDecorFitsSystemWindows(false)
     binding.toolbar.apply {
       applyStatusBarInsets()
-      setNavigationOnClickListener { finish() }
+      setNavigationOnClickListener { finishSignInActivity() }
     }
     binding.container.applyNavigationBarInsets()
     if (savedInstanceState == null) {
@@ -61,7 +60,7 @@ class SimpleSignAuthenticationActivity : BaseActivity(R.layout.simple_sign_authe
           goToLoggedIn()
         }
         SimpleSignAuthenticationViewModel.Event.Error -> showError()
-        SimpleSignAuthenticationViewModel.Event.Restart -> restart()
+        SimpleSignAuthenticationViewModel.Event.CancelSignIn -> finishSignInActivity()
       }
     }
   }
@@ -75,11 +74,8 @@ class SimpleSignAuthenticationActivity : BaseActivity(R.layout.simple_sign_authe
     )
   }
 
-  private fun restart() {
-    supportFragmentManager.popBackStack(
-      supportFragmentManager.getBackStackEntryAt(0).id,
-      FragmentManager.POP_BACK_STACK_INCLUSIVE,
-    )
+  private fun finishSignInActivity() {
+    finish()
   }
 
   private fun showWebView() {

@@ -50,7 +50,7 @@ class SimpleSignAuthenticationViewModel(
     object Success : Event()
     object Error : Event()
     object LoadWebView : Event()
-    object Restart : Event()
+    object CancelSignIn : Event()
   }
 
   fun subscribeToAuthSuccessEvent(): Flow<*> {
@@ -108,8 +108,8 @@ class SimpleSignAuthenticationViewModel(
     _isSubmitting.postValue(false)
   }
 
-  fun restart() {
-    _events.value = Event.Restart
+  fun cancelSignIn() {
+    _events.value = Event.CancelSignIn
   }
 
   private suspend fun onAuthSuccess() {

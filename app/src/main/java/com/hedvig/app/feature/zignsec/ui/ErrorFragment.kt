@@ -3,7 +3,6 @@ package com.hedvig.app.feature.zignsec.ui
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.activity.compose.setContent
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import com.google.android.material.transition.MaterialSharedAxis
@@ -26,7 +25,7 @@ class ErrorFragment : Fragment() {
     ComposeView(requireContext()).apply {
       setContent {
         HedvigTheme {
-          GenericErrorScreen(onRetryButtonClicked = { model.restart() })
+          GenericErrorScreen(onRetryButtonClicked = { model.cancelSignIn() })
         }
       }
     }
