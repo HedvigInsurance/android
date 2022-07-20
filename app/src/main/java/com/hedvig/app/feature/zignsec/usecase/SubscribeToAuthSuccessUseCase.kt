@@ -6,14 +6,13 @@ import com.hedvig.android.owldroid.graphql.AuthStatusSubscription
 import com.hedvig.android.owldroid.graphql.type.AuthState
 import com.hedvig.app.util.apollo.QueryResult
 import com.hedvig.app.util.apollo.safeSubscription
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
 import kotlin.time.Duration.Companion.seconds
-import kotlinx.coroutines.flow.map
 
 /**
  * Subscribes to the [AuthStatusSubscription] and ensures re-subscribing to it when there is a failed auth status or
