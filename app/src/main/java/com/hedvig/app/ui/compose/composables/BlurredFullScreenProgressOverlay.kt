@@ -30,8 +30,6 @@ import com.hedvig.app.ui.compose.theme.HedvigTypography
 import com.hedvig.app.ui.compose.theme.progressBlue
 import com.hedvig.app.ui.compose.theme.progressYellow
 import java.lang.Float.min
-import kotlin.random.Random
-import kotlin.random.nextInt
 
 @Composable
 fun TextProgressOverlay(progressText: String) {
@@ -58,8 +56,8 @@ private fun AnimatedCircles() {
   val configuration = LocalConfiguration.current
 
   val translationX by transition.animateValue(
-    initialValue = Random.nextInt(-200..-100).dp,
-    targetValue = Random.nextInt(40..300).dp,
+    initialValue = (-200..-100).random().dp,
+    targetValue = (40..300).random().dp,
     typeConverter = Dp.VectorConverter,
     animationSpec = infiniteRepeatable(
       animation = tween(durationMillis = 12000, easing = FastOutSlowInEasing),
@@ -68,8 +66,8 @@ private fun AnimatedCircles() {
   )
 
   val translationY by transition.animateValue(
-    initialValue = Random.nextInt(50..500).dp,
-    targetValue = Random.nextInt(-500..-400).dp,
+    initialValue = (50..500).random().dp,
+    targetValue = (-500..-400).random().dp,
     typeConverter = Dp.VectorConverter,
     animationSpec = infiniteRepeatable(
       animation = tween(durationMillis = 10000, easing = FastOutSlowInEasing),
@@ -78,8 +76,8 @@ private fun AnimatedCircles() {
   )
 
   val translationX2 by transition.animateValue(
-    initialValue = Random.nextInt(-200..0).dp,
-    targetValue = Random.nextInt(0..100).dp,
+    initialValue = (-200..0).random().dp,
+    targetValue = (0..100).random().dp,
     typeConverter = Dp.VectorConverter,
     animationSpec = infiniteRepeatable(
       animation = tween(durationMillis = 8000, easing = FastOutSlowInEasing),
@@ -88,8 +86,8 @@ private fun AnimatedCircles() {
   )
 
   val translationY2 by transition.animateValue(
-    initialValue = Random.nextInt(-200..-50).dp,
-    targetValue = Random.nextInt(50..200).dp,
+    initialValue = (-200..-50).random().dp,
+    targetValue = (50..200).random().dp,
     typeConverter = Dp.VectorConverter,
     animationSpec = infiniteRepeatable(
       animation = tween(durationMillis = 15000, easing = FastOutSlowInEasing),
@@ -98,8 +96,8 @@ private fun AnimatedCircles() {
   )
 
   val radius by transition.animateValue(
-    initialValue = Random.nextInt(150..200).dp,
-    targetValue = Random.nextInt(220..250).dp,
+    initialValue = (150..200).random().dp,
+    targetValue = (220..250).random().dp,
     typeConverter = Dp.VectorConverter,
     animationSpec = infiniteRepeatable(
       animation = tween(durationMillis = 10000, easing = FastOutSlowInEasing),
@@ -108,8 +106,8 @@ private fun AnimatedCircles() {
   )
 
   val radius2 by transition.animateValue(
-    initialValue = Random.nextInt(70..80).dp,
-    targetValue = Random.nextInt(150..300).dp,
+    initialValue = (70..80).random().dp,
+    targetValue = (150..300).random().dp,
     typeConverter = Dp.VectorConverter,
     animationSpec = infiniteRepeatable(
       animation = tween(durationMillis = 16000, easing = FastOutSlowInEasing),
@@ -125,7 +123,6 @@ private fun AnimatedCircles() {
 
     val screenHeight = configuration.screenHeightDp.dp.toPx()
     val screenWidth = configuration.screenWidthDp.dp.toPx()
-
     translate(
       left = min(translationX.toPx(), screenWidth),
       top = min(translationY.toPx(), screenHeight),
