@@ -201,7 +201,7 @@ import com.hedvig.app.feature.whatsnew.WhatsNewViewModelImpl
 import com.hedvig.app.feature.zignsec.SimpleSignAuthenticationViewModel
 import com.hedvig.app.feature.zignsec.usecase.StartDanishAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.StartNorwegianAuthUseCase
-import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthStatusUseCase
+import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthResultUseCase
 import com.hedvig.app.service.FileService
 import com.hedvig.app.service.badge.CrossSellNotificationBadgeService
 import com.hedvig.app.service.badge.NotificationBadgeService
@@ -670,7 +670,7 @@ val useCaseModule = module {
   single { GetAddressChangeStoryIdUseCase(get(), get(), get()) }
   single { StartDanishAuthUseCase(get()) }
   single { StartNorwegianAuthUseCase(get()) }
-  single { SubscribeToAuthStatusUseCase(get()) }
+  single { SubscribeToAuthResultUseCase(get()) }
   single { StartCheckoutUseCase(get(), get(), get()) }
   single { LogoutUseCase(get(), get(), get(), get(), get(), get(), get()) }
   single { GetContractsUseCase(get(), get()) }

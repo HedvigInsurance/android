@@ -25,7 +25,7 @@ class ErrorFragment : Fragment() {
     ComposeView(requireContext()).apply {
       setContent {
         HedvigTheme {
-          GenericErrorScreen(onRetryButtonClicked = { model.restart() })
+          GenericErrorScreen(onRetryButtonClicked = { model.cancelSignIn() })
         }
       }
     }

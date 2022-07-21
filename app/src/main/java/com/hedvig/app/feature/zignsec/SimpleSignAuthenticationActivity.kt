@@ -3,9 +3,10 @@ package com.hedvig.app.feature.zignsec
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
-import com.hedvig.android.owldroid.graphql.type.AuthState
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.databinding.SimpleSignAuthenticationActivityBinding
@@ -19,12 +20,14 @@ import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.applyStatusBarInsets
 import com.hedvig.app.util.extensions.viewBinding
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 class SimpleSignAuthenticationActivity : BaseActivity(R.layout.simple_sign_authentication_activity) {
   private val binding by viewBinding(SimpleSignAuthenticationActivityBinding::bind)
-  private val model: SimpleSignAuthenticationViewModel by viewModel { parametersOf(data) }
+  private val viewModel: SimpleSignAuthenticationViewModel by viewModel { parametersOf(data) }
 
   private val data by lazy {
     intent.getParcelableExtra<SimpleSignAuthenticationData>(DATA)
@@ -36,7 +39,7 @@ class SimpleSignAuthenticationActivity : BaseActivity(R.layout.simple_sign_authe
     window.compatSetDecorFitsSystemWindows(false)
     binding.toolbar.apply {
       applyStatusBarInsets()
-      setNavigationOnClickListener { finish() }
+      setNavigationOnClickListener { finishSignInActivity() }
     }
     binding.container.applyNavigationBarInsets()
     if (savedInstanceState == null) {
@@ -45,23 +48,19 @@ class SimpleSignAuthenticationActivity : BaseActivity(R.layout.simple_sign_authe
       }
     }
 
-    model.authStatus.observe(this) {
-      when (it) {
-        AuthState.FAILED -> {
-          showError()
-        }
-        else -> {
-        }
+    lifecycleScope.launch {
+      lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+        viewModel.subscribeToAuthSuccessEvent().collect()
       }
     }
-    model.events.observe(this) {
-      when (it) {
+    viewModel.events.observe(this) { event ->
+      when (event) {
         SimpleSignAuthenticationViewModel.Event.LoadWebView -> showWebView()
         SimpleSignAuthenticationViewModel.Event.Success -> {
           goToLoggedIn()
         }
         SimpleSignAuthenticationViewModel.Event.Error -> showError()
-        SimpleSignAuthenticationViewModel.Event.Restart -> restart()
+        SimpleSignAuthenticationViewModel.Event.CancelSignIn -> finishSignInActivity()
       }
     }
   }
@@ -75,11 +74,8 @@ class SimpleSignAuthenticationActivity : BaseActivity(R.layout.simple_sign_authe
     )
   }
 
-  private fun restart() {
-    supportFragmentManager.popBackStack(
-      supportFragmentManager.getBackStackEntryAt(0).id,
-      FragmentManager.POP_BACK_STACK_INCLUSIVE,
-    )
+  private fun finishSignInActivity() {
+    finish()
   }
 
   private fun showWebView() {

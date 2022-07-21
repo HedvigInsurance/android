@@ -8,7 +8,7 @@ import com.hedvig.app.util.apollo.safeQuery
 class StartDanishAuthUseCase(
   private val apolloClient: ApolloClient,
 ) {
-  suspend operator fun invoke(personalIdentificationNumber: String) =
+  suspend fun invoke(personalIdentificationNumber: String): SimpleSignStartAuthResult =
     when (val response = apolloClient.mutation(DanishAuthMutation(personalIdentificationNumber)).safeQuery()) {
       is QueryResult.Error -> SimpleSignStartAuthResult.Error
       is QueryResult.Success -> {

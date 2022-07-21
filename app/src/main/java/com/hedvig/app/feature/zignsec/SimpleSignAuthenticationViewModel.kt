@@ -5,19 +5,17 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
-import com.hedvig.android.owldroid.graphql.type.AuthState
 import com.hedvig.app.authenticate.LoginStatusService
 import com.hedvig.app.feature.settings.Market
+import com.hedvig.app.feature.zignsec.usecase.AuthResult
 import com.hedvig.app.feature.zignsec.usecase.SimpleSignStartAuthResult
 import com.hedvig.app.feature.zignsec.usecase.StartDanishAuthUseCase
 import com.hedvig.app.feature.zignsec.usecase.StartNorwegianAuthUseCase
-import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthStatusUseCase
+import com.hedvig.app.feature.zignsec.usecase.SubscribeToAuthResultUseCase
 import com.hedvig.app.util.LiveEvent
 import com.hedvig.app.util.featureflags.FeatureManager
 import com.hedvig.hanalytics.HAnalytics
-import e
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
@@ -28,7 +26,7 @@ class SimpleSignAuthenticationViewModel(
   private val hAnalytics: HAnalytics,
   private val featureManager: FeatureManager,
   private val loginStatusService: LoginStatusService,
-  subscribeToAuthStatusUseCase: SubscribeToAuthStatusUseCase,
+  private val subscribeToAuthResultUseCase: SubscribeToAuthResultUseCase,
 ) : ViewModel() {
   private val _input = MutableLiveData("")
   val input: LiveData<String> = _input
@@ -46,9 +44,6 @@ class SimpleSignAuthenticationViewModel(
   private val _zignSecUrl = MutableLiveData<String>()
   val zignSecUrl: LiveData<String> = _zignSecUrl
 
-  private val _authStatus = MutableLiveData<AuthState>()
-  val authStatus: LiveData<AuthState> = _authStatus
-
   private val _events = LiveEvent<Event>()
   val events: LiveData<Event> = _events
 
@@ -56,29 +51,22 @@ class SimpleSignAuthenticationViewModel(
     object Success : Event()
     object Error : Event()
     object LoadWebView : Event()
-    object Restart : Event()
+    object CancelSignIn : Event()
   }
 
-  init {
-    subscribeToAuthStatusUseCase().onEach { response ->
-      when (response.data?.authStatus?.status) {
-        AuthState.SUCCESS -> {
+  /**
+   * While this flow is active, we listen to changes in authentication status and report Error/Success in [events]
+   */
+  fun subscribeToAuthSuccessEvent(): Flow<*> {
+    return subscribeToAuthResultUseCase.invoke().onEach { authResult ->
+      when (authResult) {
+        AuthResult.Failed -> _events.postValue(Event.Error)
+        AuthResult.Success -> {
           onAuthSuccess()
           _events.postValue(Event.Success)
         }
-        AuthState.FAILED -> {
-          _events.postValue(Event.Error)
-        }
-        // INITIATED/IN_PROGRESS are not necessary to address, as this is entirely captured by the WebView-flow.
-        else -> {
-        }
       }
     }
-      .catch { ex ->
-        e(ex)
-        _events.postValue(Event.Error)
-      }
-      .launchIn(viewModelScope)
   }
 
   fun setInput(text: CharSequence?) {
@@ -102,13 +90,13 @@ class SimpleSignAuthenticationViewModel(
       Market.NO -> {
         val nationalIdentityNumber = input.value ?: return
         viewModelScope.launch {
-          handleStartAuth(startNorwegianAuthUseCase(nationalIdentityNumber))
+          handleStartAuth(startNorwegianAuthUseCase.invoke(nationalIdentityNumber))
         }
       }
       Market.DK -> {
         val personalIdentificationNumber = input.value ?: return
         viewModelScope.launch {
-          handleStartAuth(startDanishAuthUseCase(personalIdentificationNumber))
+          handleStartAuth(startDanishAuthUseCase.invoke(personalIdentificationNumber))
         }
       }
       else -> {
@@ -129,8 +117,8 @@ class SimpleSignAuthenticationViewModel(
     _isSubmitting.postValue(false)
   }
 
-  fun restart() {
-    _events.value = Event.Restart
+  fun cancelSignIn() {
+    _events.value = Event.CancelSignIn
   }
 
   private suspend fun onAuthSuccess() {
