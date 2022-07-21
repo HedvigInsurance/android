@@ -120,7 +120,6 @@ private fun AnimatedCircles() {
       .fillMaxSize()
       .blur(80.dp, BlurredEdgeTreatment.Rectangle),
   ) {
-
     val screenHeight = configuration.screenHeightDp.dp.toPx()
     val screenWidth = configuration.screenWidthDp.dp.toPx()
     translate(
