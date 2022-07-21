@@ -25,8 +25,8 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hedvig.android.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
-import com.hedvig.app.ui.compose.theme.HedvigTheme
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable

@@ -1,4 +1,4 @@
-package com.hedvig.app.ui.compose.composables.list
+package com.hedvig.android.designsystem.component.list
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Canvas
@@ -15,11 +15,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hedvig.app.ui.compose.theme.HedvigTheme
+import com.hedvig.android.designsystem.theme.HedvigTheme
 
 /**
  * Matches the specification of the Section Title-component from the List-components section of the design system
- * https://www.figma.com/file/tpp00CvD8ALUKdjDRzyygv/Android-UI-Kit?node-id=1711%3A3938
+ * https://www.figma.com/file/tpp00CvD8ALUKdjDRzyygv/Android%E2%80%A8-UI-Kit?node-id=1711%3A3938
  */
 @Composable
 fun SectionTitle(

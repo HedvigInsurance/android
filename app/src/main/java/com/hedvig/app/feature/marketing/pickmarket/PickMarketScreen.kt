@@ -40,11 +40,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.insets.LocalWindowInsets
+import com.hedvig.android.designsystem.component.button.LargeContainedButton
+import com.hedvig.android.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.Market
-import com.hedvig.app.ui.compose.composables.buttons.LargeContainedButton
-import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.ui.compose.theme.separator
 import kotlinx.coroutines.launch
 

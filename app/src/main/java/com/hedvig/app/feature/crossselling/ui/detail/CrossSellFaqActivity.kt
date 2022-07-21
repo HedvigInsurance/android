@@ -9,6 +9,7 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import arrow.core.Either
+import com.hedvig.android.designsystem.theme.HedvigTheme
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.chat.data.ChatRepository
@@ -18,7 +19,6 @@ import com.hedvig.app.feature.crossselling.ui.CrossSellData
 import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
 import com.hedvig.app.feature.faq.FAQBottomSheet
 import com.hedvig.app.feature.home.ui.changeaddress.appendQuoteCartId
-import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.extensions.showErrorDialog
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

@@ -5,6 +5,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import com.hedvig.android.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
 import com.hedvig.app.databinding.FragmentEmbarkAddressAutoCompleteActionBinding
 import com.hedvig.app.feature.addressautocompletion.activityresult.FetchDanishAddressContract
@@ -19,7 +20,6 @@ import com.hedvig.app.feature.embark.passages.MessageAdapter
 import com.hedvig.app.feature.embark.passages.addressautocomplete.composables.AddressCard
 import com.hedvig.app.feature.embark.passages.animateResponse
 import com.hedvig.app.feature.embark.ui.EmbarkActivity
-import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.extensions.view.applyNavigationBarInsets
 import com.hedvig.app.util.extensions.view.hapticClicks
 import com.hedvig.app.util.extensions.viewLifecycle

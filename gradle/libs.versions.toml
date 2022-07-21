@@ -104,6 +104,7 @@ androidx-compose-runtime = { module = "androidx.compose.runtime:runtime", versio
 androidx-compose-uiTestJunit = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "androidx-compose" }
 androidx-compose-uiTestManifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "androidx-compose" }
 androidx-compose-uiTooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "androidx-compose" }
+androidx-compose-uiToolingPreview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "androidx-compose" }
 androidx-compose-uiViewBinding = { module = "androidx.compose.ui:ui-viewbinding", version.ref = "androidx-compose" }
 androidx-datastore-core = { module = "androidx.datastore:datastore-core", version.ref = "androidx-datastore" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "androidx-datastore" }

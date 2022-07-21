@@ -48,11 +48,11 @@ import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.derivedWindowInsetsTypeOf
 import com.google.accompanist.insets.rememberInsetsPaddingValues
 import com.google.accompanist.insets.ui.Scaffold
+import com.hedvig.android.designsystem.theme.HedvigTheme
 import com.hedvig.app.R
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddress
 import com.hedvig.app.feature.addressautocompletion.model.DanishAddressInput
 import com.hedvig.app.ui.compose.composables.appbar.CenterAlignedTopAppBar
-import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.compose.preview.previewData
 import com.hedvig.app.util.compose.preview.previewList
 import kotlinx.coroutines.delay

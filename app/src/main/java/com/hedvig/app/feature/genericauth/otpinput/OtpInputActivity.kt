@@ -12,11 +12,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.google.accompanist.insets.systemBarsPadding
+import com.hedvig.android.designsystem.theme.HedvigTheme
 import com.hedvig.app.BaseActivity
 import com.hedvig.app.R
 import com.hedvig.app.feature.loggedin.ui.LoggedInActivity
 import com.hedvig.app.ui.compose.composables.appbar.TopAppBarWithBack
-import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.extensions.compatSetDecorFitsSystemWindows
 import com.hedvig.app.util.extensions.openEmail
 import kotlinx.coroutines.delay

@@ -34,6 +34,7 @@ import androidx.lifecycle.viewModelScope
 import arrow.core.Either
 import com.apollographql.apollo3.ApolloClient
 import com.google.accompanist.insets.systemBarsPadding
+import com.hedvig.android.designsystem.theme.HedvigTheme
 import com.hedvig.android.owldroid.graphql.ExchangeTokenMutation
 import com.hedvig.app.authenticate.AuthenticationTokenService
 import com.hedvig.app.feature.embark.quotecart.CreateQuoteCartUseCase
@@ -43,7 +44,6 @@ import com.hedvig.app.feature.offer.model.QuoteCartId
 import com.hedvig.app.feature.settings.Language
 import com.hedvig.app.feature.settings.Market
 import com.hedvig.app.feature.settings.MarketManager
-import com.hedvig.app.ui.compose.theme.HedvigTheme
 import com.hedvig.app.util.apollo.safeQuery
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

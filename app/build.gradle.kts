@@ -138,6 +138,8 @@ android {
 dependencies {
   implementation(projects.apollo)
   implementation(projects.coreCommon)
+  implementation(projects.coreDesignSystem)
+  implementation(projects.coreUi)
 
   androidTestImplementation(projects.testdata)
   testImplementation(projects.testdata)
@@ -271,7 +273,8 @@ dependencies {
   implementation(libs.androidx.compose.runtime)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.mdcAdapter)
-  implementation(libs.androidx.compose.uiTooling)
+  debugImplementation(libs.androidx.compose.uiTooling)
+  implementation(libs.androidx.compose.uiToolingPreview)
   implementation(libs.androidx.compose.uiViewBinding)
   implementation(libs.androidx.lifecycle.compose)
   androidTestImplementation(libs.androidx.compose.uiTestJunit)
