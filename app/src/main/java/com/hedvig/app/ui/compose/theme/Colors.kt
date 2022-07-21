@@ -25,6 +25,9 @@ val textColorPrimaryDark = Color(0x8FFAFAFA)
 
 val surfaceDark = Color(0xffBE9BF3)
 
+val progressBlue = Color(0xffC3CBD6)
+val progressYellow = Color(0xffEDCDAB)
+
 @Composable
 fun hedvigContentColorFor(backgroundColor: Color): Color {
   return when (backgroundColor) {
