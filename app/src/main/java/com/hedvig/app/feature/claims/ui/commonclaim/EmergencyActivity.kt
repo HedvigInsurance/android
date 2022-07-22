@@ -50,7 +50,9 @@ class EmergencyActivity : BaseActivity(R.layout.activity_emergency) {
       .flowWithLifecycle(lifecycle)
       .onEach { event ->
         when (event) {
-          ClaimsViewModel.Event.Error -> showErrorDialog(getString(com.adyen.checkout.dropin.R.string.component_error)) {}
+          ClaimsViewModel.Event.Error -> {
+            showErrorDialog(getString(com.adyen.checkout.dropin.R.string.component_error)) {}
+          }
           ClaimsViewModel.Event.StartChat -> startChat()
         }
       }

@@ -44,7 +44,10 @@ fun RetrievePriceSuccess(
       text = stringResource(R.string.insurely_confirmation_description),
     )
     Spacer(modifier = Modifier.height(40.dp))
-    LargeContainedTextButton(text = stringResource(com.adyen.checkout.dropin.R.string.continue_button), onClick = onContinue)
+    LargeContainedTextButton(
+      text = stringResource(com.adyen.checkout.dropin.R.string.continue_button),
+      onClick = onContinue,
+    )
   }
 }
 

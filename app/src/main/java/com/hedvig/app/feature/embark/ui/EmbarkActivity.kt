@@ -326,7 +326,8 @@ class EmbarkActivity : BaseActivity(R.layout.activity_embark) {
       val params = MultiActionParams(
         key = multiAction.multiActionData.key ?: "",
         link = multiAction.multiActionData.link.fragments.embarkLinkFragment.name,
-        addLabel = multiAction.multiActionData.addLabel ?: getString(com.adyen.checkout.dropin.R.string.continue_button),
+        addLabel = multiAction.multiActionData.addLabel
+          ?: getString(com.adyen.checkout.dropin.R.string.continue_button),
         maxAmount = multiAction.multiActionData.maxAmount.toInt(),
         messages = passage.messages.map { it.fragments.messageFragment.text },
         passageName = passage.name,

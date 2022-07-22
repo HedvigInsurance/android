@@ -27,14 +27,14 @@ import com.hedvig.app.ui.compose.theme.HedvigTypography
 
 @Composable
 fun GenericInfoScreen(
-    modifier: Modifier = Modifier,
-    title: String,
-    description: String,
-    @DrawableRes icon: Int,
-    primaryButtonText: String = stringResource(com.adyen.checkout.dropin.R.string.continue_button),
-    onPrimaryButtonClicked: (() -> Unit)?,
-    secondaryButtonText: String = stringResource(R.string.home_tab_error_button_text),
-    onSecondaryButtonClicked: (() -> Unit)?,
+  modifier: Modifier = Modifier,
+  title: String,
+  description: String,
+  @DrawableRes icon: Int,
+  primaryButtonText: String = stringResource(com.adyen.checkout.dropin.R.string.continue_button),
+  onPrimaryButtonClicked: (() -> Unit)?,
+  secondaryButtonText: String = stringResource(R.string.home_tab_error_button_text),
+  onSecondaryButtonClicked: (() -> Unit)?,
 ) {
   Surface(
     modifier = modifier.fillMaxSize(),
