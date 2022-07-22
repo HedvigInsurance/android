@@ -97,7 +97,10 @@ private fun SavedWithHedvigChip(savedWithHedvig: MonetaryAmount) {
     backgroundColor = MaterialTheme.colors.secondary,
   ) {
     Text(
-      text = stringResource(hedvig.resources.R.string.offer_screen_insurely_card_cost_difference_info, savedWithHedvig.number),
+      text = stringResource(
+        hedvig.resources.R.string.offer_screen_insurely_card_cost_difference_info,
+        savedWithHedvig.number,
+      ),
       style = MaterialTheme.typography.overline,
       modifier = Modifier.padding(vertical = 4.dp, horizontal = 6.dp),
     )

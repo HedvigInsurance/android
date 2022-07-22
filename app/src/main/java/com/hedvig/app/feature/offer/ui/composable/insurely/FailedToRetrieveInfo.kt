@@ -50,7 +50,10 @@ fun FailedToRetrieveInfo(insuranceProviderDisplayName: String?) {
       CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
         Text(
           text = if (insuranceProviderDisplayName != null) {
-            stringResource(hedvig.resources.R.string.offer_screen_insurely_error_description, insuranceProviderDisplayName)
+            stringResource(
+              hedvig.resources.R.string.offer_screen_insurely_error_description,
+              insuranceProviderDisplayName,
+            )
           } else {
             stringResource(hedvig.resources.R.string.offer_screen_insurely_multiple_error_description)
           },

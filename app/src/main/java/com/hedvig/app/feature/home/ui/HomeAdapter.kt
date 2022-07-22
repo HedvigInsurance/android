@@ -153,7 +153,10 @@ class HomeAdapter(
             data.name,
             formatter.format(data.inception),
           )
-          is HomeModel.BigText.Active -> root.resources.getString(hedvig.resources.R.string.home_tab_welcome_title, data.name)
+          is HomeModel.BigText.Active -> root.resources.getString(
+            hedvig.resources.R.string.home_tab_welcome_title,
+            data.name,
+          )
           is HomeModel.BigText.Terminated -> root.resources.getString(
             hedvig.resources.R.string.home_tab_terminated_welcome_title,
             data.name,
@@ -501,7 +504,10 @@ class HomeAdapter(
           return invalid(data)
         }
 
-        paragraph.text = root.context.getString(hedvig.resources.R.string.home_tab_moving_info_card_description, data.address)
+        paragraph.text = root.context.getString(
+          hedvig.resources.R.string.home_tab_moving_info_card_description,
+          data.address,
+        )
         continueButton.text = root.context.getString(hedvig.resources.R.string.home_tab_moving_info_card_button_text)
         continueButton.setHapticClickListener {
           root.context.startActivity(ChangeAddressActivity.newInstance(binding.root.context))

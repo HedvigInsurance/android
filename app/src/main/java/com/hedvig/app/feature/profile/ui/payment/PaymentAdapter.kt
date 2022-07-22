@@ -428,7 +428,9 @@ class PaymentAdapter(
           PayoutMethodStatus.ACTIVE -> root.setText(
             hedvig.resources.R.string.payment_screen_pay_out_connected_payout_footer_connected,
           )
-          PayoutMethodStatus.NEEDS_SETUP -> root.setText(hedvig.resources.R.string.payment_screen_pay_out_footer_not_connected)
+          PayoutMethodStatus.NEEDS_SETUP -> {
+            root.setText(hedvig.resources.R.string.payment_screen_pay_out_footer_not_connected)
+          }
           PayoutMethodStatus.PENDING -> root.setText(hedvig.resources.R.string.payment_screen_pay_out_footer_pending)
           else -> {
             root.text = ""
